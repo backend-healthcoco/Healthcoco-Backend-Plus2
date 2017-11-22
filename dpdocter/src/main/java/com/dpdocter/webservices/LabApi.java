@@ -34,6 +34,8 @@ import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.request.DoctorLabReportsAddRequest;
+import com.dpdocter.request.DoctorRecordUploadRequest;
 import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.request.RecordUploadRequest;
@@ -659,6 +661,21 @@ public class LabApi {
 		}
 		Response<LabReports> response = new Response<LabReports>();
 		response.setDataList(labReportsService.getLabReportsForLab(doctorId, locationId, hospitalId, searchTerm, page, size));
+		return response;
+	}
+	
+	@POST
+	@Path(value = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR)
+	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR, notes = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR)
+	public Response<LabReports> addRecordsBase64(DoctorRecordUploadRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		LabReports labReports = labReportsService.addLabReportBase64(request.getFileDetails(), request.getLabReportsAddRequest());
+
+		Response<LabReports> response = new Response<LabReports>();
+		response.setData(labReports);
 		return response;
 	}
 

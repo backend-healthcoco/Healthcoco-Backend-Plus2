@@ -3463,7 +3463,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			if (DPDoctorUtils.anyStringEmpty(patientId)) {
 				Aggregation aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria("uniqueEmrId").is(uniqueEmrId)),
+						Aggregation.match(new Criteria("uniqueEmrId").is(uniqueEmrId.toUpperCase())),
 						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),

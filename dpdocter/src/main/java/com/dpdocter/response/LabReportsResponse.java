@@ -1,17 +1,19 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.ImageURLResponse;
 
-public class LabReports extends GenericCollection {
+public class LabReportsResponse extends GenericCollection {
 
 	private String id;
 
 	private String requestId;
 
 	private String patientId;
+
+	private PatientCard patient;
 
 	private String doctorId;
 
@@ -51,6 +53,22 @@ public class LabReports extends GenericCollection {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public PatientCard getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientCard patient) {
+		this.patient = patient;
 	}
 
 	public String getDoctorId() {
@@ -141,14 +159,6 @@ public class LabReports extends GenericCollection {
 		this.recordsState = recordsState;
 	}
 
-	public String getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
-
 	public Boolean getIsSharedToPatient() {
 		return isSharedToPatient;
 	}
@@ -159,12 +169,12 @@ public class LabReports extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "LabReports [id=" + id + ", requestId=" + requestId + ", patientId=" + patientId + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", labReports=" + labReports
-				+ ", explanation=" + explanation + ", discarded=" + discarded + ", uploadedByDoctorId="
-				+ uploadedByDoctorId + ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId="
-				+ uploadedByHospitalId + ", labTestSampleId=" + labTestSampleId + ", recordsState=" + recordsState
-				+ "]";
+		return "LabReportsResponse [id=" + id + ", requestId=" + requestId + ", patientId=" + patientId + ", patient="
+				+ patient + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", labReports=" + labReports + ", explanation=" + explanation + ", discarded=" + discarded
+				+ ", uploadedByDoctorId=" + uploadedByDoctorId + ", uploadedByLocationId=" + uploadedByLocationId
+				+ ", uploadedByHospitalId=" + uploadedByHospitalId + ", labTestSampleId=" + labTestSampleId
+				+ ", recordsState=" + recordsState + ", isSharedToPatient=" + isSharedToPatient + "]";
 	}
 
 }

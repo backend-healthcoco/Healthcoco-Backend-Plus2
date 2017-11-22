@@ -19,7 +19,7 @@ public class LabReportsCollection extends GenericCollection {
 	private ObjectId requestId;
 
 	@Field
-	private String patientName;
+	private ObjectId patientId;
 
 	@Field
 	private ObjectId doctorId;
@@ -56,6 +56,9 @@ public class LabReportsCollection extends GenericCollection {
 
 	@Field
 	private Integer uploadCounts = 0;
+
+	@Field
+	private Boolean isSharedToPatient = false;
 
 	public ObjectId getId() {
 		return id;
@@ -161,12 +164,12 @@ public class LabReportsCollection extends GenericCollection {
 		this.labReports = labReports;
 	}
 
-	public String getPatientName() {
-		return patientName;
+	public ObjectId getPatientId() {
+		return patientId;
 	}
 
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
 	}
 
 	public Integer getUploadCounts() {
@@ -175,6 +178,25 @@ public class LabReportsCollection extends GenericCollection {
 
 	public void setUploadCounts(Integer uploadCounts) {
 		this.uploadCounts = uploadCounts;
+	}
+
+	public Boolean getIsSharedToPatient() {
+		return isSharedToPatient;
+	}
+
+	public void setIsSharedToPatient(Boolean isSharedToPatient) {
+		this.isSharedToPatient = isSharedToPatient;
+	}
+
+	@Override
+	public String toString() {
+		return "LabReportsCollection [id=" + id + ", requestId=" + requestId + ", patientId=" + patientId
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", labReports=" + labReports + ", explanation=" + explanation + ", discarded=" + discarded
+				+ ", uploadedByDoctorId=" + uploadedByDoctorId + ", uploadedByLocationId=" + uploadedByLocationId
+				+ ", uploadedByHospitalId=" + uploadedByHospitalId + ", labTestSampleId=" + labTestSampleId
+				+ ", recordsState=" + recordsState + ", uploadCounts=" + uploadCounts + ", isSharedToPatient="
+				+ isSharedToPatient + "]";
 	}
 
 }

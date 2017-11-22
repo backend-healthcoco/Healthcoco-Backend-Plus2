@@ -29,6 +29,7 @@ import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -37,9 +38,12 @@ import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
 import com.dpdocter.repository.LabTestSampleRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.LabReportsResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LabReportsService;
 import com.dpdocter.services.SMSServices;
@@ -69,6 +73,8 @@ public class LabReportsServiceImpl implements LabReportsService{
 	@Autowired
 	SMSServices smsServices;
 	
+	@Autowired
+	UserRepository userRepository;
 	
 	
 	@Autowired
@@ -210,6 +216,89 @@ public class LabReportsServiceImpl implements LabReportsService{
 	
 	@Override
 	@Transactional
+	public LabReports addLabReportBase64(FileDetails fileDetails, DoctorLabReportsAddRequest request) {
+		LabReports response = null;
+		LabReportsCollection labReportsCollection = null;
+		ImageURLResponse imageURLResponse = null;
+		try {
+			Date createdTime = new Date();
+			
+			if (fileDetails != null) {
+				//String path = "lab-reports";
+				//String recordLabel = fileDetails.getFileName();
+				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
+				
+				String path = "lab-reports" + File.separator + request.getPatientId();
+
+				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails,
+						path, true);
+				if(imageURLResponse != null)
+				{
+					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
+					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+				}
+			}
+			
+			if (labReportsCollection == null) {
+				labReportsCollection = new LabReportsCollection();
+			}
+			if (labReportsCollection.getLabReports() == null) {
+				List<ImageURLResponse> responses = new ArrayList<>();
+				labReportsCollection.setLabReports(responses);
+			}
+			BeanUtil.map(request, labReportsCollection);
+			labReportsCollection.getLabReports().add(imageURLResponse);
+			labReportsCollection = labReportsRepository.save(labReportsCollection);
+			response = new LabReports();
+			BeanUtil.map(labReportsCollection, response);
+			
+			
+		
+			
+			if(labReportsCollection != null)
+			{
+				
+				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			
+				if (request.getMobileNumber() != null) {
+					LocationCollection daughterlocationCollection = locationRepository
+							.findOne(labReportsCollection.getLocationId());
+					LocationCollection parentLocationCollection = locationRepository
+							.findOne(labReportsCollection.getUploadedByLocationId());
+					String message = labReportUploadMessage;
+
+					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+
+					smsTrackDetail.setType("LAB REPORT UPLOAD");
+					SMSDetail smsDetail = new SMSDetail();
+					smsDetail.setUserId(daughterlocationCollection.getId());
+					SMS sms = new SMS();
+					smsDetail.setUserName(daughterlocationCollection.getLocationName());
+					message = message.replace("{patientName}", userCollection.getFirstName());
+					message = message.replace("{specimenName}", request.getTestName());
+					message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
+					sms.setSmsText(message);
+					SMSAddress smsAddress = new SMSAddress();
+					smsAddress.setRecipient(request.getMobileNumber());
+					sms.setSmsAddress(smsAddress);
+					smsDetail.setSms(sms);
+					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+					smsDetails.add(smsDetail);
+					smsTrackDetail.setSmsDetails(smsDetails);
+					smsServices.sendSMS(smsTrackDetail, true);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
 	public List<LabReports> getLabReports(String labTestSampleId,
 			String searchTerm, int page, int size) {
 		List<LabReports> response = null;
@@ -243,15 +332,15 @@ public class LabReportsServiceImpl implements LabReportsService{
 	
 	@Override
 	@Transactional
-	public List<LabReports> getLabReportsForDoctor(String doctorId,String locationId,String hospitalId,
+	public List<LabReportsResponse> getLabReportsForDoctor(String doctorId,String locationId,String hospitalId,
 			String searchTerm, int page, int size) {
-		List<LabReports> response = null;
+		List<LabReportsResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientName").regex("^" + searchTerm));
+				criteria = criteria.orOperator(new Criteria("patient.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patient.patientName").regex("^" + searchTerm));
 			}
 
 			criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -259,14 +348,15 @@ public class LabReportsServiceImpl implements LabReportsService{
 			criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
+						Aggregation.unwind("patient"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<LabReports> aggregationResults = mongoTemplate.aggregate(aggregation,
-					LabReportsCollection.class, LabReports.class);
+			AggregationResults<LabReportsResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					LabReportsCollection.class, LabReportsResponse.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -278,15 +368,15 @@ public class LabReportsServiceImpl implements LabReportsService{
 	
 	@Override
 	@Transactional
-	public List<LabReports> getLabReportsForLab(String doctorId,String locationId,String hospitalId,
+	public List<LabReportsResponse> getLabReportsForLab(String doctorId,String locationId,String hospitalId,
 			String searchTerm, int page, int size) {
-		List<LabReports> response = null;
+		List<LabReportsResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientName").regex("^" + searchTerm));
+				criteria = criteria.orOperator(new Criteria("patient.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patient.patientName").regex("^" + searchTerm));
 			}
 
 			criteria.and("uploadedByDoctorId").is(new ObjectId(doctorId));
@@ -294,14 +384,15 @@ public class LabReportsServiceImpl implements LabReportsService{
 			criteria.and("uploadedByHospitalId").is(new ObjectId(hospitalId));
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
+						Aggregation.unwind("patient"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<LabReports> aggregationResults = mongoTemplate.aggregate(aggregation,
-					LabReportsCollection.class, LabReports.class);
+			AggregationResults<LabReportsResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					LabReportsCollection.class, LabReportsResponse.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
