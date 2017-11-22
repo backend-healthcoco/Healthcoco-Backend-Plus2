@@ -5,7 +5,6 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -738,7 +737,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 //						.withSort(SortBuilders.geoDistanceSort("geoPoint")
 //								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
 //								.unit(DistanceUnit.KILOMETERS))
-//						.withPageable(new PageRequest(page, size))
+						.withPageable(new PageRequest(page, size))
 						.build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
