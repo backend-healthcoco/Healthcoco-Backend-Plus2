@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -173,30 +174,33 @@ public class ReportsServiceImpl implements ReportsService {
 	@Transactional
 	public OPDReports submitOPDReport(OPDReports opdReports) {
 		OPDReports response = null;
-		OPDReportsCollection opdReportsCollection = new OPDReportsCollection();
+		OPDReportsCollection opdReportsCollection = null;
 
 		if (opdReports != null) {
 			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
 					.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
 			if (opdReportsCollectionOld != null) {
-				BeanUtil.map(opdReportsCollectionOld, opdReportsCollection);
-				opdReportsCollection.setAmountReceived(opdReports.getAmountReceived());
+				
+				opdReportsCollectionOld.setAmountReceived(opdReports.getAmountReceived());
 				if (opdReports.getReceiptDate() != null) {
-					opdReportsCollection.setReceiptDate(new Date(opdReports.getReceiptDate()));
+					opdReportsCollectionOld.setReceiptDate(new Date(opdReports.getReceiptDate()));
 				} else {
-					opdReportsCollection.setReceiptDate(new Date());
+					opdReportsCollectionOld.setReceiptDate(new Date());
 				}
-				opdReportsCollection.setReceiptNo(opdReports.getReceiptNo());
-				opdReportsCollection.setRemarks(opdReports.getRemarks());
-				opdReportsCollection.setUpdatedTime(new Date());
+				opdReportsCollectionOld.setReceiptNo(opdReports.getReceiptNo());
+				opdReportsCollectionOld.setRemarks(opdReports.getRemarks());
+				opdReportsCollectionOld.setUpdatedTime(new Date());
+				opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
 			} else {
+				opdReportsCollection = new OPDReportsCollection();
 				UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
 				BeanUtil.map(opdReports, opdReportsCollection);
 				opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 				opdReportsCollection.setCreatedTime(new Date());
+				opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 			}
 
-			opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
+			
 			try {
 
 				if (opdReportsCollection != null) {
