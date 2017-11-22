@@ -30,6 +30,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -1563,119 +1564,75 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			List<AppointmentLookupResponse> appointmentLookupResponses = null;
 
-			if (DPDoctorUtils.anyStringEmpty(sortBy) || sortBy.equalsIgnoreCase("startTime")) {
-
-				if (size > 0) {
-					appointmentLookupResponses = mongoTemplate
-							.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-									Aggregation.unwind("doctor"),
-									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-									Aggregation.unwind("location"),
-
-									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$patientCard")
-													.append("preserveNullAndEmptyArrays", true))),
-									new CustomAggregationOperation(new BasicDBObject("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject("if",
-															new BasicDBObject("$eq",
-																	Arrays.asList("$patientCard.locationId",
-																			"$locationId"))).append("then", "$$KEEP")
-																					.append("else", "$$PRUNE")))),
-
-									Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-									Aggregation.unwind("patientCard.user"),
-
-									Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime")),
-									Aggregation.skip((page) * size), Aggregation.limit(size)),
-									AppointmentCollection.class, AppointmentLookupResponse.class)
-							.getMappedResults();
-				} else {
-					appointmentLookupResponses = mongoTemplate
-							.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-									Aggregation.unwind("doctor"),
-									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-									Aggregation.unwind("location"),
-
-									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$patientCard")
-													.append("preserveNullAndEmptyArrays", true))),
-									new CustomAggregationOperation(new BasicDBObject("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject("if",
-															new BasicDBObject("$eq",
-																	Arrays.asList("$patientCard.locationId",
-																			"$locationId"))).append("then", "$$KEEP")
-																					.append("else", "$$PRUNE")))),
-
-									Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-									Aggregation.unwind("patientCard.user"),
-
-									Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))),
-									AppointmentCollection.class, AppointmentLookupResponse.class)
-							.getMappedResults();
+			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"));
+			
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				if(status.equalsIgnoreCase(QueueStatus.WAITING.toString())) {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedInAt"));
+				}else if(status.equalsIgnoreCase(QueueStatus.ENGAGED.toString())) {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "engagedAt"));
+				}else if(status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.toString())) {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedOutAt"));
 				}
-			} else if (sortBy.equalsIgnoreCase("updatedTime")) {
-				if (size > 0) {
-					appointmentLookupResponses = mongoTemplate
-							.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-									Aggregation.unwind("doctor"),
-									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-									Aggregation.unwind("location"),
-
-									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$patientCard")
-													.append("preserveNullAndEmptyArrays", true))),
-									new CustomAggregationOperation(new BasicDBObject("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject("if",
-															new BasicDBObject("$eq",
-																	Arrays.asList("$patientCard.locationId",
-																			"$locationId"))).append("then", "$$KEEP")
-																					.append("else", "$$PRUNE")))),
-
-									Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-									Aggregation.unwind("patientCard.user"),
-
-									Aggregation.sort(new Sort(Direction.DESC, "updatedTime")),
-									Aggregation.skip((page) * size), Aggregation.limit(size)),
-									AppointmentCollection.class, AppointmentLookupResponse.class)
-							.getMappedResults();
-				} else {
-					appointmentLookupResponses = mongoTemplate
-							.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-									Aggregation.unwind("doctor"),
-									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-									Aggregation.unwind("location"),
-
-									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$patientCard")
-													.append("preserveNullAndEmptyArrays", true))),
-									new CustomAggregationOperation(new BasicDBObject("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject("if",
-															new BasicDBObject("$eq",
-																	Arrays.asList("$patientCard.locationId",
-																			"$locationId"))).append("then", "$$KEEP")
-																					.append("else", "$$PRUNE")))),
-
-									Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-									Aggregation.unwind("patientCard.user"),
-
-									Aggregation.sort(new Sort(Direction.DESC, "updatedTime"))),
-									AppointmentCollection.class, AppointmentLookupResponse.class)
-							.getMappedResults();
-
-				}
+			}else if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
+					sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
+			
+			
+			if (size > 0) {
+					appointmentLookupResponses = mongoTemplate
+							.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+									Aggregation.unwind("doctor"),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+
+									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$patientCard")
+													.append("preserveNullAndEmptyArrays", true))),
+									new CustomAggregationOperation(new BasicDBObject("$redact",
+											new BasicDBObject("$cond",
+													new BasicDBObject("if",
+															new BasicDBObject("$eq",
+																	Arrays.asList("$patientCard.locationId",
+																			"$locationId"))).append("then", "$$KEEP")
+																					.append("else", "$$PRUNE")))),
+
+									Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
+									Aggregation.unwind("patientCard.user"),
+									sortOperation,
+									Aggregation.skip((page) * size), Aggregation.limit(size)),
+									AppointmentCollection.class, AppointmentLookupResponse.class)
+							.getMappedResults();
+				} else {
+					appointmentLookupResponses = mongoTemplate
+							.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+									Aggregation.unwind("doctor"),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+
+									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$patientCard")
+													.append("preserveNullAndEmptyArrays", true))),
+									new CustomAggregationOperation(new BasicDBObject("$redact",
+											new BasicDBObject("$cond",
+													new BasicDBObject("if",
+															new BasicDBObject("$eq",
+																	Arrays.asList("$patientCard.locationId",
+																			"$locationId"))).append("then", "$$KEEP")
+																					.append("else", "$$PRUNE")))),
+
+									Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
+									Aggregation.unwind("patientCard.user"),
+									sortOperation),
+									AppointmentCollection.class, AppointmentLookupResponse.class)
+							.getMappedResults();
+
+				}
+			
 
 			if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
 				response = new ArrayList<Appointment>();
