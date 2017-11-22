@@ -3480,8 +3480,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 						Long endTimeinMillis = end.getMillis();
 						List<PatientCollection> lastPatients = patientRepository.findTodaysRegisteredPatient(patient.getLocationId(), patient.getHospitalId(), startTimeinMillis, endTimeinMillis, new PageRequest(0, 1, Direction.DESC, "PID"));
 						 
-						PatientCollection lastPatient = lastPatients.get(0);
-						Integer patientSize = Integer.parseInt(lastPatient.getPID().substring(lastPatient.getPID().length()-2, lastPatient.getPID().length()));
+						Integer patientSize = 0;
+						if(lastPatients != null && !lastPatients.isEmpty()) {
+							PatientCollection lastPatient = lastPatients.get(0);
+							patientSize = Integer.parseInt(lastPatient.getPID().substring(lastPatient.getPID().length()-2, lastPatient.getPID().length()));
+						}
+						 
 						LocationCollection location = locationRepository.findOne(patient.getLocationId());
 						if (location == null) {
 							logger.warn("Invalid Location Id");
@@ -3511,6 +3515,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		
 		} catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
