@@ -985,6 +985,8 @@ public interface PathProxy {
 	public interface SolrCityUrls {
 
 		public static final String SEARCH_LOCATION = "searchLocation";
+
+		public static final String SEARCH_LOCATION_WEB = "searchLocation/web";
 	}
 
 	public static final String SMS_BASE_URL = BASE_URL + "/sms";
@@ -1372,7 +1374,7 @@ public interface PathProxy {
 		public static final String EDIT_LAB_REPORTS = "/editLabReports";
 		public static final String GET_GROUPED_LAB_TEST = "/getGroupedLabTest";
 		public static final String GET_LAB_REPORTS_FOR_DOCTOR = "/getLabReportsForDoctor";
-		public static final String GET_LAB_REPORTS_FOR_LAB= "/getLabReportsForLab";
+		public static final String GET_LAB_REPORTS_FOR_LAB = "/getLabReportsForLab";
 		public static final String UPLOAD_REPORTS_TO_DOCTOR = "/uploadReportsToDoctor";
 
 	}

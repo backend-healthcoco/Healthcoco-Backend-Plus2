@@ -511,6 +511,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
 					.must(QueryBuilders.matchQuery("isClinic", true));
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				city.trim().replace("-", " ");
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
 					latitude = esCityDocument.getLatitude() + "";
@@ -852,8 +853,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		List<ESLabTestDocument> esLabTestDocuments = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				city.trim().replace("-", " ");
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
+
 					latitude = esCityDocument.getLatitude() + "";
 					longitude = esCityDocument.getLongitude() + "";
 				}
@@ -1038,6 +1041,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					.must(QueryBuilders.matchQuery("isLocaleListed", true));
 
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				city.trim().replace("-", " ");
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
 					latitude = esCityDocument.getLatitude() + "";
