@@ -2088,7 +2088,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 							if (bookedSlots != null && !bookedSlots.isEmpty()) {
 								while (i < bookedSlots.size()) {
 									AppointmentBookedSlotCollection bookedSlot = bookedSlots.get(i);
-									if (endTime > startTime) {
+									
+									if (endTime > startTime) {	
 										if (bookedSlot.getTime().getFromTime() >= startTime
 												|| bookedSlot.getTime().getToTime() >= endTime) {
 											if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
@@ -2114,6 +2115,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 											i++;
 											break;
 										}
+									}else {
+										i++;
+										break;
 									}
 								}
 							}
