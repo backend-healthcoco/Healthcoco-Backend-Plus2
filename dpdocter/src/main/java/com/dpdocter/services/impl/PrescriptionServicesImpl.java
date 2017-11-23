@@ -3727,6 +3727,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 							}
 							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
+								prescriptionItem
+										.setInstructions(
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? "<font size='1'><b>Instruction : </b>"
+																+ prescriptionItem.getInstructions() + "</font>"
+														: null);
 								showIntructions = true;
 							}
 							String duration = "";

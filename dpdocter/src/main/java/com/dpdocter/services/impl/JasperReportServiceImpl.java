@@ -21,6 +21,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
+import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
 import common.util.web.DPDoctorUtils;
 import net.sf.jasperreports.components.html.HtmlComponent;
@@ -106,6 +107,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		AmazonS3 s3client = new AmazonS3Client(credentials);
 
 		try {
+			MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
+			parameters.put("REPORT_CONNECTION", mongoConnection);
 			parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 			JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin + 45, bottonMargin,
 					leftMargin + 28, rightMargin + 28, componentType);
@@ -1308,53 +1311,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 		}
 
-		if (showDirection && showIntructions) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{Duration}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
-			jrDesignTextField.setY(4);
-			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth(durationWidth - 15 + 5);
-			jrDesignTextField.setBold(true);
-			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			band.addElement(jrDesignTextField);
-
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{Instruction}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
-			jrDesignTextField.setY(4);
-			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth(instructionWidth);
-			jrDesignTextField.setBold(true);
-			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			band.addElement(jrDesignTextField);
-
-		} else {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{Duration}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
-			jrDesignTextField.setY(4);
-			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth(durationWidth - 15);
-			jrDesignTextField.setBold(true);
-			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			band.addElement(jrDesignTextField);
-			if (showIntructions) {
-				jrDesignTextField = new JRDesignTextField();
-				jrDesignTextField.setExpression(new JRDesignExpression("$P{Instruction}"));
-				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth);
-				jrDesignTextField.setY(4);
-				jrDesignTextField.setHeight(15);
-				jrDesignTextField.setWidth(instructionWidth);
-				jrDesignTextField.setBold(true);
-				jrDesignTextField.setStretchWithOverflow(true);
-				jrDesignTextField.setFontSize(new Float(titleFontSize));
-				band.addElement(jrDesignTextField);
-			}
-		}
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{Duration}"));
+		jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(durationWidth - 15);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(titleFontSize));
+		band.addElement(jrDesignTextField);
 
 		// if(showIntructions){
 		// jrDesignTextField = new JRDesignTextField();
@@ -1411,7 +1377,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
-		if (showDirection) {
+		if (showDirection)
+
+		{
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{direction}"));
 			jrDesignTextField.setX(35 + drugWidth + dosageWidth);
@@ -1422,49 +1390,41 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 		}
 
-		if (showDirection && showIntructions) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$F{duration}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
-			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(durationWidth - 15 + 5);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{duration}"));
+		jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(durationWidth - 15);
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
 
-			if (showIntructions) {
-				jrDesignTextField = new JRDesignTextField();
-				jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
-				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
-				jrDesignTextField.setY(0);
-				jrDesignTextField.setHeight(18);
-				jrDesignTextField.setWidth(instructionWidth);
-				jrDesignTextField.setStretchWithOverflow(true);
-				band.addElement(jrDesignTextField);
-			}
-		} else {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$F{duration}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
-			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(durationWidth - 15);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-
-			if (showIntructions) {
-				jrDesignTextField = new JRDesignTextField();
-				jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
-				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth);
-				jrDesignTextField.setY(0);
-				jrDesignTextField.setHeight(18);
-				jrDesignTextField.setWidth(instructionWidth);
-				jrDesignTextField.setStretchWithOverflow(true);
-				band.addElement(jrDesignTextField);
-			}
-		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+		if (showIntructions) {
+			band = new JRDesignBand();
+			band.setPrintWhenExpression(new JRDesignExpression(
+					"!$P{instruction}.equals( null ) && !$P{instruction}.isEmpty()&& !$P{instruction}.equals(" + "--"
+							+ ")"));
+			band.setSplitType(SplitTypeEnum.STRETCH);
+			if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
+				band.setHeight(22);
+			else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.MEDIUM.name()))
+				band.setHeight(27);
+			else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.LARGE.name()))
+				band.setHeight(32);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
+			jrDesignTextField.setX(35);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(columnWidth - 40);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
 		/*
 		 * band = new JRDesignBand(); band.setHeight(20);
 		 * band.setPrintWhenExpression( new JRDesignExpression(
@@ -1497,12 +1457,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setBlankWhenNull(true);
 		band.addElement(jrDesignTextField);
-
 		jasperDesign.setColumnFooter(band);
-
 		JasperCompileManager.compileReportToFile(jasperDesign,
 				JASPER_TEMPLATES_RESOURCE + "new/mongo-prescription_items_subreport-A4.jasper");
-
 		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
 		jSubreport.setUsingCache(false);
 		jSubreport.setRemoveLineWhenBlank(true);
@@ -1517,11 +1474,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jSubreport.setExpression(new JRDesignExpression(
 				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-prescription_items_subreport-A4.jasper\""));
-
 		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
 		designSubreportParameter.setName("REPORT_CONNECTION");
 		designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
-
 		band = new JRDesignBand();
 		band.setHeight(0);
 		band.addElement(jSubreport);
@@ -2514,7 +2469,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{note}"));
-		jrDesignTextField.setX(0);
+		jrDesignTextField.setX(35);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(columnWidth);
@@ -2615,7 +2570,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{note}"));
-		jrDesignTextField.setX(0);
+		jrDesignTextField.setX(35);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(columnWidth - 35);

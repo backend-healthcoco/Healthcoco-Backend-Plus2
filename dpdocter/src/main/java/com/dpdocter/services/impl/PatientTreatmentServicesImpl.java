@@ -1420,7 +1420,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				}
 				if (treatment.getDiscount() != null && treatment.getDiscount().getValue() > 0)
 					showTreatmentDiscount = true;
-				patientTreatments.setNote(treatment.getNote() != null ? "<b>Note :</b> " + treatment.getNote() : "");
+				patientTreatments.setNote(treatment.getNote() != null
+						? "<font size='1'><b>Note :</b> " + treatment.getNote() + "</font>" : "");
 				patientTreatments.setCost(treatment.getCost() + "");
 				patientTreatments.setDiscount((treatment.getDiscount() != null)
 						? treatment.getDiscount().getValue() + " " + treatment.getDiscount().getUnit().getUnit() : "");
