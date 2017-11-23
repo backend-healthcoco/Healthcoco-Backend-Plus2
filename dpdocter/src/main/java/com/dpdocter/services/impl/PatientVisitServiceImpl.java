@@ -512,32 +512,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (visitId != null) {
 				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 				patientVisitCollection.setUpdatedTime(new Date());
-				if (patientVisitCollection.getPrescriptionId() != null
-						&& patientVisitCollection.getPrescriptionId().size() > 0 && request.getPrescription() != null
-						&& request.getPrescription().getId() == null) {
-					/*
-					 * ObjectMapper objectMapper = new ObjectMapper(); String
-					 * collectionBody =
-					 * objectMapper.writeValueAsString(patientVisitCollection);
-					 * String mailRequestBody =
-					 * objectMapper.writeValueAsString(request);
-					 * mailService.sendMailToIOSteam(
-					 * "Multiple prescription for visit in database",
-					 * mailBodyGenerator.generatePrescriptionListMail(
-					 * collectionBody, mailRequestBody));
-					 */
-
-					throw new BusinessException(ServiceError.NotAcceptable,
-							"Trying to add multipl prescription in visit");
-
+				if (request.getPrescription() != null && request.getPrescription().getId() == null &&patientVisitCollection.getPrescriptionId() != null
+						&& patientVisitCollection.getPrescriptionId().size() > 0) {
+					throw new BusinessException(ServiceError.NotAcceptable,"Trying to add multipl prescription in visit");
 				}
-				if (patientVisitCollection.getClinicalNotesId() != null
-						&& patientVisitCollection.getClinicalNotesId().size() > 0 && request.getClinicalNote() != null
-						&& request.getClinicalNote().getId() == null) {
-
-					throw new BusinessException(ServiceError.NotAcceptable,
-							"Trying to add multipl clinical notes in visit");
-
+				if (request.getClinicalNote() != null && request.getClinicalNote().getId() == null && patientVisitCollection.getClinicalNotesId() != null
+						&& patientVisitCollection.getClinicalNotesId().size() > 0) {
+					throw new BusinessException(ServiceError.NotAcceptable,"Trying to add multipl clinical notes in visit");
 				}
 			} else {
 				patientVisitCollection = new PatientVisitCollection();
@@ -546,12 +527,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientVisitCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 				patientVisitCollection.setPatientId(new ObjectId(request.getPatientId()));
 				patientVisitCollection.setCreatedTime(new Date());
-				patientVisitCollection
-						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
+				patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
 				if (userCollection != null) {
-					patientVisitCollection
-							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+					patientVisitCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
 				patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
