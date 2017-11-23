@@ -33,5 +33,7 @@ public interface LabReportsService {
 
 	List<LabReportsResponse> getLabReportsForLab(String doctorId, String locationId, String hospitalId,
 			String patientId, String searchTerm, int page, int size);
+
+	LabReportsResponse changePatientShareStatus(String id, Boolean status);
 	
 }

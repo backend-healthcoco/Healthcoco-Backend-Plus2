@@ -13,6 +13,8 @@ public class LabReportsResponse extends GenericCollection {
 
 	private String patientId;
 
+	private String testName;
+
 	private PatientCard patient;
 
 	private String doctorId;
@@ -165,6 +167,14 @@ public class LabReportsResponse extends GenericCollection {
 
 	public void setIsSharedToPatient(Boolean isSharedToPatient) {
 		this.isSharedToPatient = isSharedToPatient;
+	}
+
+	public String getTestName() {
+		return testName;
+	}
+
+	public void setTestName(String testName) {
+		this.testName = testName;
 	}
 
 	@Override

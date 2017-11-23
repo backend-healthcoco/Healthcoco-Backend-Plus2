@@ -437,4 +437,29 @@ public class LabReportsServiceImpl implements LabReportsService{
 		
 	}
 	
+	@Override
+	@Transactional
+	public LabReportsResponse changePatientShareStatus(String id , Boolean status)
+	{
+		LabReportsResponse LabReportsResponse = null;
+		try
+		{
+			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(id));
+			if (labReportsCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+			LabReportsResponse.setIsSharedToPatient(status);
+			labReportsCollection = labReportsRepository.save(labReportsCollection);
+			LabReportsResponse = new LabReportsResponse();
+			BeanUtil.map(labReportsCollection, LabReportsResponse);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return LabReportsResponse;
+	}
+	
+	
+	
 }

@@ -1378,6 +1378,7 @@ public interface PathProxy {
 		public static final String GET_LAB_REPORTS_FOR_DOCTOR = "/getLabReportsForDoctor";
 		public static final String GET_LAB_REPORTS_FOR_LAB = "/getLabReportsForLab";
 		public static final String UPLOAD_REPORTS_TO_DOCTOR = "/uploadReportsToDoctor";
+		public static final String CHANGE_PATIENT_SHARE_STATUS = "/changePatientShareStatus";
 
 	}
 

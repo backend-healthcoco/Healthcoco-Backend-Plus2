@@ -690,5 +690,23 @@ public class LabApi {
 		response.setData(labReports);
 		return response;
 	}
+	
+
+	@POST
+	@Path(value = PathProxy.LabUrls.CHANGE_PATIENT_SHARE_STATUS)
+	@ApiOperation(value = PathProxy.LabUrls.CHANGE_PATIENT_SHARE_STATUS, notes = PathProxy.LabUrls.CHANGE_PATIENT_SHARE_STATUS)
+	public Response<LabReportsResponse> changePatientShareStatus(@QueryParam("id") String id,@QueryParam("status") Boolean status) {
+		if (id == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		LabReportsResponse labReports = labReportsService.changePatientShareStatus(id, status);
+
+		Response<LabReportsResponse> response = new Response<LabReportsResponse>();
+		response.setData(labReports);
+		return response;
+	}
+	
+	
 
 }
