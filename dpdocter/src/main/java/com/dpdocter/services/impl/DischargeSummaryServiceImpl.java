@@ -1121,7 +1121,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private Appointment addDischageSummaryAppointment(AppointmentRequest appointment) {
 		Appointment response = null;
 		if (appointment.getAppointmentId() == null) {
-			response = appointmentService.addAppointment(appointment);
+			response = appointmentService.addAppointment(appointment, false);
 		} else {
 			response = new Appointment();
 			BeanUtil.map(appointment, response);

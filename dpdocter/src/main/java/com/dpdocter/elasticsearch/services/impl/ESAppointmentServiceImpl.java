@@ -5,7 +5,6 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -751,6 +750,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 
 			if (esDoctorDocuments != null) {
+				
+				List<String> specialities = null;
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 
 					if (!DPDoctorUtils.anyStringEmpty(doctorDocument.getFirstName())) {
@@ -820,7 +821,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				}
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,

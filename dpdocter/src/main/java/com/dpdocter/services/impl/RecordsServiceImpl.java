@@ -235,9 +235,9 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public Records addRecord(RecordsAddRequest request) {
+	public Records addRecord(RecordsAddRequest request, String createdBy) {
 		try {
-			String patientEmailAddress = null, localPatientName = null, patientMobileNumber = null;
+			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
 			if (request.getPrescriptionId() != null) {
 				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(),
@@ -255,7 +255,6 @@ public class RecordsServiceImpl implements RecordsService {
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
 				RegisteredPatientDetails patientDetails = registrationService
 						.registerExistingPatient(patientRegistrationRequest, null);
-				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
 				localPatientName = patientDetails.getLocalPatientName();
 				patientMobileNumber = patientDetails.getMobileNumber();
 
@@ -271,7 +270,6 @@ public class RecordsServiceImpl implements RecordsService {
 								PatientCollection.class, PatientCard.class)
 						.getMappedResults();
 				if (patientCards != null && !patientCards.isEmpty()) {
-					patientEmailAddress = patientCards.get(0).getEmailAddress();
 					localPatientName = patientCards.get(0).getLocalPatientName();
 					patientMobileNumber = patientCards.get(0).getUser().getMobileNumber();
 				}
@@ -305,12 +303,17 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			recordsCollection.setCreatedTime(createdTime);
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
-			UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
-			if (userCollection != null) {
-				recordsCollection
-						.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-								+ userCollection.getFirstName());
+			
+			if(DPDoctorUtils.allStringsEmpty(createdBy)) {
+				UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
+				if (userCollection != null) {
+					createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+									+ userCollection.getFirstName();
+				}
 			}
+			
+			recordsCollection.setCreatedBy(createdBy);
+			
 			LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
 			if (locationCollection != null) {
 				recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
@@ -340,7 +343,7 @@ public class RecordsServiceImpl implements RecordsService {
 			if (prescriptionCollection != null && !DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())) {
 				if (recordsCollection.getRecordsState()
 						.equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
-					userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 					if (userCollection != null) {
 						String subject = approvedRecordToDoctorSubject;
 						subject = subject.replace("{patientName}", localPatientName)
@@ -355,7 +358,7 @@ public class RecordsServiceImpl implements RecordsService {
 					}
 				} else if (recordsCollection.getRecordsState()
 						.equalsIgnoreCase(RecordsState.APPROVAL_REQUIRED.toString())) {
-					userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 					if (userCollection != null) {
 						String subject = notApprovedRecordToDoctorSubject;
 						subject = subject.replace("{patientName}", localPatientName)
@@ -1309,7 +1312,7 @@ public class RecordsServiceImpl implements RecordsService {
 	@Transactional
 	public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
 		try {
-			String patientEmailAddress = null, localPatientName = null, patientMobileNumber = null;
+			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
 			if (request.getPrescriptionId() != null) {
 				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(),
@@ -1327,7 +1330,6 @@ public class RecordsServiceImpl implements RecordsService {
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
 				RegisteredPatientDetails patientDetails = registrationService
 						.registerExistingPatient(patientRegistrationRequest, null);
-				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
 				localPatientName = patientDetails.getLocalPatientName();
 				patientMobileNumber = patientDetails.getMobileNumber();
 
@@ -1343,7 +1345,6 @@ public class RecordsServiceImpl implements RecordsService {
 								PatientCollection.class, PatientCard.class)
 						.getMappedResults();
 				if (patientCards != null && !patientCards.isEmpty()) {
-					patientEmailAddress = patientCards.get(0).getEmailAddress();
 					localPatientName = patientCards.get(0).getLocalPatientName();
 					patientMobileNumber = patientCards.get(0).getUser().getMobileNumber();
 				}

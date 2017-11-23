@@ -48,7 +48,7 @@ public interface AppointmentService {
 
 	SlotDataResponse getTimeSlots(String doctorId, String locationId, Date date, Boolean isPatient);
 
-	Appointment addAppointment(AppointmentRequest request);
+	Appointment addAppointment(AppointmentRequest request, Boolean isFormattedResponseRequired);
 
 	Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit);
 

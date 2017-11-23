@@ -69,7 +69,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private Boolean isDoctorListed = false;
 
 	@Field
-	private long rankingCount = 0;
+	private long rankingCount = 1000;
 
 	@Field
 	private Boolean isSendBirthdaySMS = true;

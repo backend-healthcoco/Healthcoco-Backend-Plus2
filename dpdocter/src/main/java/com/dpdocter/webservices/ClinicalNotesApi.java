@@ -52,9 +52,7 @@ import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
-import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.XRayDetails;
-import com.dpdocter.collections.OralCavityAndThroatExaminationCollection;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
@@ -86,7 +84,6 @@ import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
-import com.dpdocter.elasticsearch.repository.ESProcedureNoteRepository;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.Resource;
@@ -147,7 +144,7 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request, true);
+		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request, true, null, null);
 
 		if (clinicalNotes != null) {
 			String visitId = patientTrackService.addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES,

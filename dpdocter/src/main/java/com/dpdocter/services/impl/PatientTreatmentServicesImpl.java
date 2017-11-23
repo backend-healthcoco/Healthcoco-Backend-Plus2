@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
-import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
@@ -84,7 +83,6 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
-import com.dpdocter.services.ReportsService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 
@@ -156,9 +154,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	private ESTreatmentServiceRepository esTreatmentServiceRepository;
-
-	@Autowired
-	private ReportsService reportsService;
 
 	@Override
 	@Transactional
@@ -303,11 +298,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Override
 	@Transactional
-	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request,
-			Boolean isAppointmentAdd) {
+	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, Boolean isAppointmentAdd, String createdBy, Appointment appointment) {
 		PatientTreatmentResponse response;
 		PatientTreatmentCollection patientTreatmentCollection = new PatientTreatmentCollection();
-		Appointment appointment = null;
 		try {
 			if (request.getAppointmentRequest() != null && isAppointmentAdd) {
 				appointment = addTreatmentAppointment(request.getAppointmentRequest());
@@ -327,17 +320,20 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				BeanUtil.map(request, patientTreatmentCollection);
 				patientTreatmentCollection
 						.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
-				UserCollection userCollection = null;
-				if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-					userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				
+				if(DPDoctorUtils.anyStringEmpty(createdBy)) {
+					UserCollection userCollection = null;
+					if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+						userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+					}
+					if (userCollection != null)
+						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName();
+					else {
+						throw new BusinessException(ServiceError.NotFound, "No Doctor Found");
+					}
 				}
-				if (userCollection != null)
-					patientTreatmentCollection
-							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-									+ userCollection.getFirstName());
-				else {
-					throw new BusinessException(ServiceError.NotFound, "No Doctor Found");
-				}
+				patientTreatmentCollection.setCreatedBy(createdBy);
 			} else {
 				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findOne(
 						new ObjectId(request.getId()), new ObjectId(request.getDoctorId()),
@@ -345,10 +341,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				if (oldPatientTreatmentCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
 				} else {
-					// patientTreatmentCollection.setTotalCost(request.getTotalCost());
+					
+					createdBy = oldPatientTreatmentCollection.getCreatedBy();
+							
 					BeanUtil.map(request, patientTreatmentCollection);
 					patientTreatmentCollection.setUpdatedTime(new Date());
-					patientTreatmentCollection.setCreatedBy(oldPatientTreatmentCollection.getCreatedBy());
+					patientTreatmentCollection.setCreatedBy(createdBy);
 					patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					patientTreatmentCollection.setUniqueEmrId(oldPatientTreatmentCollection.getUniqueEmrId());
 					patientTreatmentCollection.setDiscarded(oldPatientTreatmentCollection.getDiscarded());
@@ -378,7 +376,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
 						treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
 						treatmentService.setCost(treatmentRequest.getCost());
-						addFavouritesToService(treatmentService);
+						addFavouritesToService(treatmentService, createdBy);
 					}
 					treatments.add(treatment);
 					treatmentResponses.add(treatmentResponse);
@@ -390,36 +388,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			response = new PatientTreatmentResponse();
 			BeanUtil.map(patientTreatmentCollection, response);
 			response.setTreatments(treatmentResponses);
-
-			/*
-			 * String visitId = patientVisitService.addRecord(response,
-			 * VisitedFor.TREATMENT, response.getVisitId());
-			 * response.setVisitId(visitId);
-			 */
-			/*
-			 * if (patientTreatmentCollection != null) { OPDReports opdReports =
-			 * new OPDReports();
-			 * 
-			 * OPDReports oldOPDReport =
-			 * reportsService.getOPDReportByVisitId(visitId);
-			 * 
-			 * if (oldOPDReport != null) { BeanUtil.map(oldOPDReport,
-			 * opdReports); opdReports.setPrescriptionId(String.valueOf(
-			 * patientTreatmentCollection.getId())); } else {
-			 * 
-			 * opdReports.setPatientId(String.valueOf(patientTreatmentCollection
-			 * .getPatientId())); opdReports.setTreatmentId(String.valueOf(
-			 * patientTreatmentCollection.getId()));
-			 * opdReports.setDoctorId(String.valueOf(patientTreatmentCollection.
-			 * getDoctorId())); opdReports.setLocationId(String.valueOf(
-			 * patientTreatmentCollection.getLocationId()));
-			 * opdReports.setHospitalId(String.valueOf(
-			 * patientTreatmentCollection.getHospitalId()));
-			 * opdReports.setCreatedTime(patientTreatmentCollection.
-			 * getCreatedTime());
-			 * 
-			 * opdReports = reportsService.submitOPDReport(opdReports); }
-			 */
 
 		} catch (Exception e) {
 			logger.error("Error occurred while adding or editing treatment for patients", e);
@@ -512,7 +480,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	private Appointment addTreatmentAppointment(AppointmentRequest appointment) {
 		Appointment response = null;
 		if (appointment.getAppointmentId() == null) {
-			response = appointmentService.addAppointment(appointment);
+			response = appointmentService.addAppointment(appointment, false);
 		} else {
 			response = appointmentService.updateAppointment(appointment, false);
 		}
@@ -1601,7 +1569,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	}
 
 	@Override
-	public TreatmentService addFavouritesToService(TreatmentService request) {
+	public TreatmentService addFavouritesToService(TreatmentService request, String createdBy) {
 
 		TreatmentService response = null;
 		TreatmentServicesCollection treatmentServicesCollection = new TreatmentServicesCollection();
@@ -1610,13 +1578,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				BeanUtil.map(request, treatmentServicesCollection);
 
 				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
-				if (!DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
+				if (DPDoctorUtils.anyStringEmpty(createdBy) && !DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
 					UserCollection userCollection = userRepository.findOne(treatmentServicesCollection.getDoctorId());
 					if (userCollection != null)
-						treatmentServicesCollection
-								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-										+ userCollection.getFirstName());
+						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName();
 				}
+				treatmentServicesCollection.setCreatedBy(createdBy);
 				Date createdTime = new Date();
 				treatmentServicesCollection.setCreatedTime(createdTime);
 				treatmentServicesCollection.setRankingCount(1);

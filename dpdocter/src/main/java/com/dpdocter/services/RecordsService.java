@@ -21,7 +21,7 @@ import com.dpdocter.response.MailResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface RecordsService {
-	Records addRecord(RecordsAddRequest request);
+	Records addRecord(RecordsAddRequest request, String createdBy);
 
 	void tagRecord(TagRecordRequest request);
 

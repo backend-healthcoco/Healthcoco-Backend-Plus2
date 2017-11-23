@@ -372,7 +372,7 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request, true);
+		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request, true, null, null);
 
 		 //patient track
 		if (prescriptionAddEditResponse != null) {
@@ -939,7 +939,7 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Drug drugAddEditResponse = prescriptionServices.addFavouriteDrug(request);
+		Drug drugAddEditResponse = prescriptionServices.addFavouriteDrug(request, null, null);
 
 		Response<Drug> response = new Response<Drug>();
 		response.setData(drugAddEditResponse);
