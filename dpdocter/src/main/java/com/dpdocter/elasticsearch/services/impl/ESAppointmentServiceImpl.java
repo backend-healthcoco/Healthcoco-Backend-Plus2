@@ -55,6 +55,7 @@ import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
+import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
@@ -1309,4 +1310,143 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 		return response;
 	}
+	
+	
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	@Override
+	public List<ESDoctorCardResponse> getDoctorsShortCard(int page, int size, String city, String location, String latitude,
+			String longitude, String speciality) {
+		List<ESDoctorDocument> esDoctorDocuments = null;
+		List<ESDoctorCardResponse> esDoctorCardResponses = null;
+		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
+		try {
+
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.matchQuery("isClinic", true));
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				city.trim().replace("-", " ");
+				ESCityDocument esCityDocument = esCityRepository.findByName(city);
+				if (esCityDocument != null) {
+					latitude = esCityDocument.getLatitude() + "";
+					longitude = esCityDocument.getLongitude() + "";
+				}
+			}
+
+			/*
+			 * if (!DPDoctorUtils.anyStringEmpty(symptom)) {
+			 * List<ESComplaintsDocument> esComplaintsDocuments =
+			 * esComplaintsRepository.findByComplaint(symptom); if
+			 * (esComplaintsDocuments == null ||
+			 * esComplaintsDocuments.isEmpty()) { return null; } Set<String>
+			 * locationIds = new
+			 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
+			 * BeanToPropertyValueTransformer("locationId"))); Set<String>
+			 * doctorIds = new HashSet<>(
+			 * CollectionUtils.collect(esComplaintsDocuments, new
+			 * BeanToPropertyValueTransformer("doctorId")));
+			 * 
+			 * locationIds.remove(null); doctorIds.remove(null); if
+			 * ((locationIds == null || locationIds.isEmpty()) && (doctorIds ==
+			 * null || doctorIds.isEmpty())) { return null; }
+			 * boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
+			 * doctorIds)) .must(QueryBuilders.termsQuery("locationId",
+			 * locationIds)); }
+			 */
+
+			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
+					speciality = "GYNAECOLOGIST";
+				}
+				List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
+						.findByQueryAnnotation(speciality);
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
+					speciality = "FAMILY PHYSICIAN";
+				} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					speciality = "GENERAL PHYSICIAN";
+				}
+				List<ESSpecialityDocument> esSpecialityDocuments2 = new LinkedList<ESSpecialityDocument>(
+						esSpecialityDocuments);
+
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")
+						|| speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+
+					esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
+					for (ESSpecialityDocument esSpecialityDocument : esSpecialityDocuments) {
+						if (esSpecialityDocument != null) {
+							esSpecialityDocuments2.add(esSpecialityDocuments2.size(), esSpecialityDocument);
+						}
+					}
+				}
+				if (esSpecialityDocuments2 != null) {
+					Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments2,
+							new BeanToPropertyValueTransformer("id"));
+					if (specialityIds == null)
+						specialityIds = CollectionUtils.EMPTY_COLLECTION;
+					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIds));
+				}
+			}
+
+			
+			if (!DPDoctorUtils.anyStringEmpty(location)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
+			}
+
+			
+
+			if (latitude != null && longitude != null)
+				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+						.lon(Double.parseDouble(longitude)).distance("30km"));
+
+			SearchQuery searchQuery = null;
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+//						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+								.unit(DistanceUnit.KILOMETERS))
+						.withPageable(new PageRequest(page, size)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+//						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+								.unit(DistanceUnit.KILOMETERS)).build();
+			
+			esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
+
+			if (esDoctorDocuments != null) {
+				esDoctorCardResponses = new ArrayList<ESDoctorCardResponse>();
+				Collections.sort(esDoctorDocuments);
+				List<String> specialities = null;
+				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+
+					if (doctorDocument.getSpecialities() != null) {
+						specialities = new ArrayList<String>();
+						for (String specialityId : doctorDocument.getSpecialities()) {
+							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
+							if (specialityCollection != null) {
+								specialities.add(specialityCollection.getSuperSpeciality());
+
+							}
+						}
+						doctorDocument.setSpecialities(specialities);
+					}
+
+					ESDoctorCardResponse doctorCardResponse = new ESDoctorCardResponse();
+					BeanUtil.map(doctorDocument, doctorCardResponse);
+					esDoctorCardResponses.add(doctorCardResponse);
+					
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting Doctor Details From ES : " + e.getMessage());
+		}
+		return esDoctorCardResponses;
+	}
+
+	
+	
 }
