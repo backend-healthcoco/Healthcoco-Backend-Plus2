@@ -512,13 +512,17 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (visitId != null) {
 				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 				patientVisitCollection.setUpdatedTime(new Date());
-				if (request.getPrescription() != null && request.getPrescription().getId() == null &&patientVisitCollection.getPrescriptionId() != null
+				if (request.getPrescription() != null && request.getPrescription().getId() == null
+						&& patientVisitCollection.getPrescriptionId() != null
 						&& patientVisitCollection.getPrescriptionId().size() > 0) {
-					throw new BusinessException(ServiceError.NotAcceptable,"Trying to add multipl prescription in visit");
+					throw new BusinessException(ServiceError.NotAcceptable,
+							"Trying to add multipl prescription in visit");
 				}
-				if (request.getClinicalNote() != null && request.getClinicalNote().getId() == null && patientVisitCollection.getClinicalNotesId() != null
+				if (request.getClinicalNote() != null && request.getClinicalNote().getId() == null
+						&& patientVisitCollection.getClinicalNotesId() != null
 						&& patientVisitCollection.getClinicalNotesId().size() > 0) {
-					throw new BusinessException(ServiceError.NotAcceptable,"Trying to add multipl clinical notes in visit");
+					throw new BusinessException(ServiceError.NotAcceptable,
+							"Trying to add multipl clinical notes in visit");
 				}
 			} else {
 				patientVisitCollection = new PatientVisitCollection();
@@ -527,10 +531,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientVisitCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 				patientVisitCollection.setPatientId(new ObjectId(request.getPatientId()));
 				patientVisitCollection.setCreatedTime(new Date());
-				patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
+				patientVisitCollection
+						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
 				if (userCollection != null) {
-					patientVisitCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+					patientVisitCollection
+							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
 				patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
@@ -897,26 +903,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		try {
 
-			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patient")
-											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
-									new BasicDBObject("$cond",
-											new BasicDBObject("if",
-													new BasicDBObject("$eq",
-															Arrays.asList("$patient.locationId",
-																	"$locationId"))).append("then", "$$KEEP")
-																			.append("else", "$$PRUNE")))),
+			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays",
+									true))),
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
-							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-							Aggregation.unwind("patientUser")),
-					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+					Aggregation.unwind("patientUser")), PatientVisitCollection.class, PatientVisitLookupResponse.class)
+					.getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
 				PatientCollection patient = patientVisitLookupResponse.getPatient();
@@ -1209,8 +1213,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? (printSettings.getPageSetup().getPageSize() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4") : "A4";
-		
+				? (printSettings.getPageSetup() != null ? (printSettings.getPageSetup().getPageSize() != null
+						? printSettings.getPageSetup().getPageSize() : "A4") : "A4")
+				: "A4";
+
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "VISITS-"
 				+ patientVisitLookupResponse.getUniqueEmrId() + new Date().getTime();
 		Integer topMargin = printSettings != null
@@ -1296,8 +1302,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							}
 							if (treatment.getDiscount() != null && treatment.getDiscount().getValue() > 0)
 								showTreatmentDiscount = true;
-							patientTreatments
-									.setNote(treatment.getNote() != null ? "<b>Note :</b> " + treatment.getNote() : "");
+							patientTreatments.setNote(treatment.getNote() != null
+									? "<font size='1'><b>Note :</b> " + treatment.getNote() + "</font>" : "");
 							patientTreatments.setCost(treatment.getCost() + "");
 							patientTreatments
 									.setDiscount((treatment.getDiscount() != null) ? treatment.getDiscount().getValue()
@@ -1948,6 +1954,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									}
 									if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
 										showIntructions = true;
+										prescriptionItem.setInstructions(
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? "<font size='1'><b>Instruction : </b>"
+																+ prescriptionItem.getInstructions() + "</font>"
+														: null);
 									}
 									String duration = "";
 									if (durationValue == "" && durationValue == "")
@@ -2329,26 +2340,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
-			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patient")
-											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
-									new BasicDBObject("$cond",
-											new BasicDBObject("if",
-													new BasicDBObject("$eq",
-															Arrays.asList("$patient.locationId",
-																	"$locationId"))).append("then", "$$KEEP")
-																			.append("else", "$$PRUNE")))),
+			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays",
+									true))),
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
-							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-							Aggregation.unwind("patientUser")),
-					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+					Aggregation.unwind("patientUser")), PatientVisitCollection.class, PatientVisitLookupResponse.class)
+					.getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
 				PatientCollection patient = patientVisitLookupResponse.getPatient();
