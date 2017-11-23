@@ -40,6 +40,8 @@ import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
+import com.dpdocter.response.DoctorLabReportResponseWithCount;
+import com.dpdocter.response.LabReportsResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
@@ -638,14 +640,19 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR, notes = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR)
-	public Response<LabReports> getLabReportsForDoctor(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+	public Response<DoctorLabReportResponseWithCount> getLabReportsForDoctor(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,@QueryParam("patientId") String patientId,@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<LabReports> response = new Response<LabReports>();
-		response.setDataList(labReportsService.getLabReportsForDoctor(doctorId, locationId, hospitalId, searchTerm, page, size));
+		DoctorLabReportResponseWithCount doctorLabReportResponseWithCount = new DoctorLabReportResponseWithCount();
+		List<LabReportsResponse> labReportsResponses = labReportsService.getLabReportsForDoctor(doctorId, locationId, hospitalId,patientId, searchTerm, page, size);
+		
+		Response<DoctorLabReportResponseWithCount> response = new Response<DoctorLabReportResponseWithCount>();
+		doctorLabReportResponseWithCount.setLabReportsResponses(labReportsResponses);
+		doctorLabReportResponseWithCount.setCount(labReportsResponses.size());
+		response.setData(doctorLabReportResponseWithCount);
 		return response;
 	}
 	
@@ -653,14 +660,19 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB, notes = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB)
-	public Response<LabReports> getLabReportsForLab(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+	public Response<DoctorLabReportResponseWithCount> getLabReportsForLab(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,@QueryParam("patientId") String patientId,@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<LabReports> response = new Response<LabReports>();
-		response.setDataList(labReportsService.getLabReportsForLab(doctorId, locationId, hospitalId, searchTerm, page, size));
+		DoctorLabReportResponseWithCount doctorLabReportResponseWithCount = new DoctorLabReportResponseWithCount();
+		List<LabReportsResponse> labReportsResponses = labReportsService.getLabReportsForLab(doctorId, locationId, hospitalId,patientId, searchTerm, page, size);
+		
+		Response<DoctorLabReportResponseWithCount> response = new Response<DoctorLabReportResponseWithCount>();
+		doctorLabReportResponseWithCount.setLabReportsResponses(labReportsResponses);
+		doctorLabReportResponseWithCount.setCount(labReportsResponses.size());
+		response.setData(doctorLabReportResponseWithCount);		
 		return response;
 	}
 	

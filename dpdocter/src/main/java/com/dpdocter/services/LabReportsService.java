@@ -20,12 +20,18 @@ public interface LabReportsService {
 
 	LabReports editLabReports(EditLabReportsRequest request);
 
-	List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String locationId, String hospitalId, String searchTerm,
+	/*List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String locationId, String hospitalId, String searchTerm,
 			int page, int size);
 
 	List<LabReportsResponse> getLabReportsForLab(String doctorId, String locationId, String hospitalId, String searchTerm,
-			int page, int size);
+			int page, int size);*/
 
 	LabReports addLabReportBase64(FileDetails fileDetails, DoctorLabReportsAddRequest request);
+
+	List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String locationId, String hospitalId,
+			String doctorId2, String searchTerm, int page, int size);
+
+	List<LabReportsResponse> getLabReportsForLab(String doctorId, String locationId, String hospitalId,
+			String patientId, String searchTerm, int page, int size);
 	
 }

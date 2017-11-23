@@ -16,6 +16,9 @@ public class LabReportsCollection extends GenericCollection {
 	private ObjectId id;
 
 	@Field
+	private String testName;
+
+	@Field
 	private ObjectId requestId;
 
 	@Field
@@ -186,6 +189,14 @@ public class LabReportsCollection extends GenericCollection {
 
 	public void setIsSharedToPatient(Boolean isSharedToPatient) {
 		this.isSharedToPatient = isSharedToPatient;
+	}
+
+	public String getTestName() {
+		return testName;
+	}
+
+	public void setTestName(String testName) {
+		this.testName = testName;
 	}
 
 	@Override
