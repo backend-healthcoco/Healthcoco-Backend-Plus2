@@ -5,6 +5,7 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -749,14 +750,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+//						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
 						.withSort(SortBuilders.geoDistanceSort("geoPoint")
 								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
 								.unit(DistanceUnit.KILOMETERS))
 						.withPageable(new PageRequest(page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+//						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
 						.withSort(SortBuilders.geoDistanceSort("geoPoint")
 								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
 								.unit(DistanceUnit.KILOMETERS)).build();
@@ -764,6 +765,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 
 			if (esDoctorDocuments != null) {
+				Collections.sort(esDoctorDocuments);
 				List<String> specialities = null;
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 
