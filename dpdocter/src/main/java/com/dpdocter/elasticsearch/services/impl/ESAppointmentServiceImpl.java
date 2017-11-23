@@ -59,6 +59,7 @@ import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
+import com.dpdocter.enums.AdvancedSearchType;
 import com.dpdocter.enums.AppointmentResponseType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.SMSStatus;
@@ -1315,14 +1316,18 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	@Override
 	public List<ESDoctorCardResponse> getDoctorsShortCard(int page, int size, String city, String location, String latitude,
-			String longitude, String speciality) {
+			String longitude, String speciality , String searchTerm) {
 		List<ESDoctorDocument> esDoctorDocuments = null;
 		List<ESDoctorCardResponse> esDoctorCardResponses = null;
-		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		try {
 
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isClinic", true));
+			
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm))
+			{
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm));
+			}
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 				city.trim().replace("-", " ");
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
@@ -1331,28 +1336,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					longitude = esCityDocument.getLongitude() + "";
 				}
 			}
-
-			/*
-			 * if (!DPDoctorUtils.anyStringEmpty(symptom)) {
-			 * List<ESComplaintsDocument> esComplaintsDocuments =
-			 * esComplaintsRepository.findByComplaint(symptom); if
-			 * (esComplaintsDocuments == null ||
-			 * esComplaintsDocuments.isEmpty()) { return null; } Set<String>
-			 * locationIds = new
-			 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
-			 * BeanToPropertyValueTransformer("locationId"))); Set<String>
-			 * doctorIds = new HashSet<>(
-			 * CollectionUtils.collect(esComplaintsDocuments, new
-			 * BeanToPropertyValueTransformer("doctorId")));
-			 * 
-			 * locationIds.remove(null); doctorIds.remove(null); if
-			 * ((locationIds == null || locationIds.isEmpty()) && (doctorIds ==
-			 * null || doctorIds.isEmpty())) { return null; }
-			 * boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
-			 * doctorIds)) .must(QueryBuilders.termsQuery("locationId",
-			 * locationIds)); }
-			 */
-
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
 					speciality = "GYNAECOLOGIST";
@@ -1416,7 +1399,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			if (esDoctorDocuments != null) {
 				esDoctorCardResponses = new ArrayList<ESDoctorCardResponse>();
-				Collections.sort(esDoctorDocuments);
+				//Collections.sort(esDoctorDocuments);
 				List<String> specialities = null;
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 

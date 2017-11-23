@@ -84,9 +84,9 @@ public class ESAppointmentApi {
 	public Response<ESDoctorCardResponse> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
-			@QueryParam("speciality") String speciality) {
+			@QueryParam("speciality") String speciality,@QueryParam("searchTerm") String searchTerm) {
 
-		List<ESDoctorCardResponse> doctors = solrAppointmentService.getDoctorsShortCard(page, size, city, location, latitude, longitude, speciality);
+		List<ESDoctorCardResponse> doctors = solrAppointmentService.getDoctorsShortCard(page, size, city, location, latitude, longitude, speciality,searchTerm);
 
 		Response<ESDoctorCardResponse> response = new Response<ESDoctorCardResponse>();
 		response.setDataList(doctors);

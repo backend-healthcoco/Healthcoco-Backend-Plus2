@@ -42,6 +42,6 @@ public interface ESAppointmentService {
 			Boolean onlineReports, Boolean homeService, Boolean nabl);
 
 	List<ESDoctorCardResponse> getDoctorsShortCard(int page, int size, String city, String location, String latitude,
-			String longitude, String speciality);
+			String longitude, String speciality, String searchTerm);
 
 }
