@@ -19,11 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
-import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
@@ -207,7 +205,7 @@ public class PatientTreamentAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Treament request cannot be empty");
 		}
 		PatientTreatmentResponse addEditPatientTreatmentResponse = patientTreatmentServices
-				.addEditPatientTreatment(request, true);
+				.addEditPatientTreatment(request, true, null, null);
 		if (addEditPatientTreatmentResponse != null) {
 			String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
 					request.getVisitId());
@@ -373,7 +371,7 @@ public class PatientTreamentAPI {
 	public Response<TreatmentService> addFevourateToTreatmentService(TreatmentService request) {
 
 		Response<TreatmentService> response = new Response<TreatmentService>();
-		response.setData(patientTreatmentServices.addFavouritesToService(request));
+		response.setData(patientTreatmentServices.addFavouritesToService(request, null));
 		return response;
 	}
 

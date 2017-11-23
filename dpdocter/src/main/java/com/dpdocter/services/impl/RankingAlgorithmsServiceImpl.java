@@ -97,6 +97,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 	private ESUserLocaleRepository esUserLocaleRepository;
 	
 	@Scheduled(cron = "0 0/30 2 * * SAT", zone = "IST")
+//	@Scheduled(fixedDelay = 1800000)
 	@Transactional
 	@Override
 	public void calculateRankingOfResources() {

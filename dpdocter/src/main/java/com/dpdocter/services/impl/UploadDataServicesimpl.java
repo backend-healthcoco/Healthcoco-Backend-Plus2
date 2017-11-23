@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -60,7 +59,6 @@ import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
-import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
@@ -77,7 +75,6 @@ import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.GroupRepository;
-import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
@@ -109,9 +106,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired
-	private LocationRepository locationRepository;
 	
 	@Autowired
 	private ReferenceRepository referenceRepository;
@@ -204,13 +198,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 	
 	@Autowired
 	private ESPatientRepository esPatientRepository;
-	
-	@Autowired
-	private ESDrugRepository esDrugRepository;
-	
-	@Autowired
-	private ElasticsearchTemplate elasticsearchTemplate;
-	
+		
 	@Override
 	public Boolean deletePatients(String doctorId, String locationId, String hospitalId) {
 		try {
@@ -669,7 +657,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							//Instructions13
 							String instruction = fields[13].replace("'", "");
 							
-							Drug drug = prescriptionServices.addFavouriteDrug(drugAddEditRequest);
+							Drug drug = prescriptionServices.addFavouriteDrug(drugAddEditRequest, drugCollection, prescriptionCollection.getCreatedBy());
 							
 							PrescriptionItem prescriptionItem = new PrescriptionItem(new ObjectId(drug.getId()), duration, null, drugTypeObj, drugName, null, null, drugDirections, instruction);
 							
@@ -948,7 +936,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
 								treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
 								treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
-								treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService);
+								treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService, patientTreatmentCollection.getCreatedBy());
 								
 								
 								Treatment treatment = new Treatment();
@@ -1121,7 +1109,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
 							treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
 							treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
-							treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService);
+							treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService, patientTreatmentCollection.getCreatedBy());
 							
 							
 							Treatment treatment = new Treatment();

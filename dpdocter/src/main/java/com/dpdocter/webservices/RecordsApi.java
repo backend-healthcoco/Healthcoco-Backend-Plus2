@@ -81,7 +81,7 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		Records records = recordsService.addRecord(request);
+		Records records = recordsService.addRecord(request, null);
 
 		// patient track
 		if (records != null) {

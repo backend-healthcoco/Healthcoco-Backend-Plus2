@@ -251,7 +251,7 @@ public class AppointmentApi {
 		
 		Appointment appointment = null;
 		if (request.getAppointmentId() == null) {
-			appointment = appointmentService.addAppointment(request);
+			appointment = appointmentService.addAppointment(request, true);
 		} else {
 			appointment = appointmentService.updateAppointment(request, true);
 		}

@@ -5,7 +5,6 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +47,6 @@ import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
-import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
@@ -752,22 +750,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-//						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-						.withSort(SortBuilders.geoDistanceSort("geoPoint")
-								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
-								.unit(DistanceUnit.KILOMETERS))
+						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+//						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+//								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+//								.unit(DistanceUnit.KILOMETERS))
 						.withPageable(new PageRequest(page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-//						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-						.withSort(SortBuilders.geoDistanceSort("geoPoint")
-								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
-								.unit(DistanceUnit.KILOMETERS)).build();
+						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+//						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+//								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+//								.unit(DistanceUnit.KILOMETERS))
+						.build();
 			
 			esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 
 			if (esDoctorDocuments != null) {
-				Collections.sort(esDoctorDocuments);
+				
 				List<String> specialities = null;
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 
@@ -827,7 +826,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				}
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,

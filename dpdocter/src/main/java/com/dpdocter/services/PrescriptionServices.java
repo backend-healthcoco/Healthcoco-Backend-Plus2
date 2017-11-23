@@ -5,6 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Advice;
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.EyePrescription;
@@ -12,6 +13,7 @@ import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.DiagnosticTestCollection;
+import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
@@ -51,7 +53,7 @@ public interface PrescriptionServices {
 	TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId,
 			String locationId);
 
-	PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request, Boolean isAppointmentAdd);
+	PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request, Boolean isAppointmentAdd, String createdBy, Appointment appointment);
 
 	PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request);
 
@@ -147,7 +149,7 @@ public interface PrescriptionServices {
 
 	// Boolean makeCustomDrugFavourite();
 
-	Drug addFavouriteDrug(DrugAddEditRequest request);
+	Drug addFavouriteDrug(DrugAddEditRequest request, DrugCollection originalDrug, String createdBy);
 
 	//Boolean addGenericNameInDrugs();
 

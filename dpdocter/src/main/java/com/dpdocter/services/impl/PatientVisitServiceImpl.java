@@ -93,18 +93,14 @@ import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DiseasesRepository;
-import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.repository.HistoryRepository;
-import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
-import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
-import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
@@ -148,9 +144,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private PatientVisitRepository patientVisitRepository;
 
 	@Autowired
-	private PatientRepository patientRepository;
-
-	@Autowired
 	private HistoryRepository historyRepository;
 
 	@Autowired
@@ -172,13 +165,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private ClinicalNotesRepository clinicalNotesRepository;
 
 	@Autowired
-	private DoctorRepository doctorRepository;
-
-	@Autowired
 	private RecordsService recordsService;
-
-	@Autowired
-	private RecordsRepository recordsRepository;
 
 	@Autowired
 	private DrugRepository drugRepository;
@@ -224,9 +211,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private AppointmentRepository appointmentRepository;
-
-	@Autowired
-	private SpecialityRepository specialityRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -509,7 +493,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PatientVisitCollection patientVisitCollection = null;
 		try {
 
-			if (visitId != null) {
+			if (!DPDoctorUtils.anyStringEmpty(visitId)) {
 				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 				patientVisitCollection.setUpdatedTime(new Date());
 				if (request.getPrescription() != null && request.getPrescription().getId() == null
@@ -554,18 +538,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			BeanUtil.map(request, response);
 			if (request.getClinicalNote() != null) {
-				addClinicalNotes(request, response, patientVisitCollection, visitId, appointment);
+				addClinicalNotes(request, response, patientVisitCollection, visitId, appointment, patientVisitCollection.getCreatedBy());
 			}
 
 			if (request.getPrescription() != null) {
-				addPrescription(request, response, patientVisitCollection, visitId, appointment);
+				addPrescription(request, response, patientVisitCollection, visitId, appointment, patientVisitCollection.getCreatedBy());
 			}
 
 			if (request.getRecord() != null) {
-				addRecords(request, response, patientVisitCollection, visitId, appointment);
+				addRecords(request, response, patientVisitCollection, visitId, appointment, patientVisitCollection.getCreatedBy());
 			}
 			if (request.getTreatmentRequest() != null) {
-				addTreatments(request, response, patientVisitCollection, visitId, appointment);
+				addTreatments(request, response, patientVisitCollection, visitId, appointment, patientVisitCollection.getCreatedBy());
 			}
 			patientVisitCollection.setVisitedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
@@ -600,17 +584,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private void addTreatments(AddMultipleDataRequest request, PatientVisitResponse response,
-			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment) {
+			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
 
-		if (appointment != null) {
-			request.getTreatmentRequest().setAppointmentId(appointment.getAppointmentId());
-			request.getTreatmentRequest().setTime(appointment.getTime());
-			request.getTreatmentRequest().setFromDate(appointment.getFromDate());
-
-		}
-
-		PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
-				.addEditPatientTreatment(request.getTreatmentRequest(), false);
+		PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices.addEditPatientTreatment(request.getTreatmentRequest(), false, createdBy, appointment);
 
 		PatientTreatment patientTreatment = new PatientTreatment();
 		BeanUtil.map(patientTreatmentResponse, patientTreatment);
@@ -639,8 +615,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private void addRecords(AddMultipleDataRequest request, PatientVisitResponse response,
-			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment) {
-		Records records = recordsService.addRecord(request.getRecord());
+			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
+		Records records = recordsService.addRecord(request.getRecord(), createdBy);
 
 		if (records != null) {
 			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
@@ -668,15 +644,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private void addPrescription(AddMultipleDataRequest request, PatientVisitResponse response,
-			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment) {
-		if (appointment != null) {
-			request.getPrescription().setAppointmentId(appointment.getAppointmentId());
-			request.getPrescription().setTime(appointment.getTime());
-			request.getPrescription().setFromDate(appointment.getFromDate());
+			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
 
-		}
-		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices
-				.addPrescription(request.getPrescription(), false);
+		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription(), false, createdBy, appointment);
 		Prescription prescription = new Prescription();
 
 		List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getDiagnosticTests();
@@ -684,26 +654,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		BeanUtil.map(prescriptionResponse, prescription);
 		prescription.setDiagnosticTests(prescriptionTest);
 
-		// if (prescriptionResponse.getItems() != null) {
-		// List<PrescriptionItemDetail> prescriptionItemDetailsList = new
-		// ArrayList<PrescriptionItemDetail>();
-		// for (PrescriptionAddItem prescriptionItem :
-		// prescriptionResponse.getItems()) {
-		// PrescriptionItemDetail prescriptionItemDetails = new
-		// PrescriptionItemDetail();
-		// BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-		// if (prescriptionItem.getDrugId() != null) {
-		// DrugCollection drugCollection = drugRepository
-		// .findOne(new ObjectId(prescriptionItem.getDrugId()));
-		// Drug drug = new Drug();
-		// if (drugCollection != null)
-		// BeanUtil.map(drugCollection, drug);
-		// prescriptionItemDetails.setDrug(drug);
-		// }
-		// prescriptionItemDetailsList.add(prescriptionItemDetails);
-		// }
-		// prescription.setItems(prescriptionItemDetailsList);
-		// }
 		if (prescriptionResponse != null) {
 			if (patientVisitCollection.getVisitedFor() != null) {
 				if (!patientVisitCollection.getVisitedFor().contains(VisitedFor.PRESCRIPTION))
@@ -728,14 +678,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private void addClinicalNotes(AddMultipleDataRequest request, PatientVisitResponse response,
-			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment) {
-		if (appointment != null) {
-			request.getClinicalNote().setAppointmentId(appointment.getAppointmentId());
-			request.getClinicalNote().setTime(appointment.getTime());
-			request.getClinicalNote().setFromDate(appointment.getFromDate());
-
-		}
-		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false);
+			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
+		
+		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false, createdBy, appointment);
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 			clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 		}
@@ -2390,14 +2335,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private Appointment addVisitAppointment(AppointmentRequest appointment) {
 		Appointment response = null;
 		if (appointment.getAppointmentId() == null) {
-			response = appointmentService.addAppointment(appointment);
+			response = appointmentService.addAppointment(appointment, false);
 		} else {
 			response = new Appointment();
 			BeanUtil.map(appointment, response);
 		}
-
 		return response;
-
 	}
 
 	@Override

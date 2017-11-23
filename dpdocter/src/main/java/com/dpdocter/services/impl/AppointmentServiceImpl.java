@@ -756,62 +756,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public Appointment addAppointment(AppointmentRequest request) {
+	public Appointment addAppointment(AppointmentRequest request, Boolean isFormattedResponseRequired) {
 		Appointment response = null;
 		DoctorClinicProfileCollection clinicProfileCollection = null;
 		try {
-			// New functionality for registering patient while adding
-			// appointment
-
-			ObjectId doctorId = new ObjectId(request.getDoctorId()), locationId = new ObjectId(request.getLocationId()),
-					hospitalId = new ObjectId(request.getHospitalId()), patientId = null;
-			if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
-				if (request.getLocalPatientName() == null || request.getMobileNumber() == null) {
-					throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
-				}
-				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
-				patientRegistrationRequest.setFirstName(request.getLocalPatientName());
-				patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
-				patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
-				patientRegistrationRequest.setDoctorId(request.getDoctorId());
-				patientRegistrationRequest.setLocationId(request.getLocationId());
-				patientRegistrationRequest.setHospitalId(request.getHospitalId());
-				RegisteredPatientDetails patientDetails = null;
-				patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
-				if (patientDetails != null) {
-					request.setPatientId(patientDetails.getUserId());
-				}
-				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
-				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
-				patientId = new ObjectId(request.getPatientId());
-			} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-
-				patientId = new ObjectId(request.getPatientId());
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(patientId, locationId,
-						hospitalId);
-				if (patient == null) {
-					PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
-					patientRegistrationRequest.setDoctorId(request.getDoctorId());
-					patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
-					patientRegistrationRequest.setFirstName(request.getLocalPatientName());
-					patientRegistrationRequest.setUserId(request.getPatientId());
-					patientRegistrationRequest.setLocationId(request.getLocationId());
-					patientRegistrationRequest.setHospitalId(request.getHospitalId());
-					RegisteredPatientDetails patientDetails = registrationService
-							.registerExistingPatient(patientRegistrationRequest, null);
-					transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
-					esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
-				} else {
-					List<ObjectId> consultantDoctorIds = patient.getConsultantDoctorIds();
-					if (consultantDoctorIds == null)
-						consultantDoctorIds = new ArrayList<ObjectId>();
-					if (!consultantDoctorIds.contains(doctorId))
-						consultantDoctorIds.add(doctorId);
-					patient.setConsultantDoctorIds(consultantDoctorIds);
-					patient.setUpdatedTime(new Date());
-					patientRepository.save(patient);
-				}
-			}
+			
+			ObjectId doctorId = new ObjectId(request.getDoctorId()), locationId = new ObjectId(request.getLocationId()),hospitalId = new ObjectId(request.getHospitalId()), patientId = null;
+			
+			patientId = registerPatientIfNotRegistered(request, doctorId, locationId, hospitalId);
 
 			UserCollection userCollection = userRepository.findOne(doctorId);
 			LocationCollection locationCollection = locationRepository.findOne(locationId);
@@ -844,7 +796,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorId, locationId);
 
-				// if (appointmentCollection == null) {
 				appointmentCollection = new AppointmentCollection();
 				BeanUtil.map(request, appointmentCollection);
 				appointmentCollection.setCreatedTime(new Date());
@@ -892,8 +843,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setState(AppointmentState.NEW);
 					}
 
-					userFavouriteService.addRemoveFavourites(request.getPatientId(), request.getDoctorId(),
-							Resource.DOCTOR.getType(), request.getLocationId(), false);
+					userFavouriteService.addRemoveFavourites(request.getPatientId(), request.getDoctorId(), Resource.DOCTOR.getType(), request.getLocationId(), false);
 				}
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
 
@@ -915,58 +865,107 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (appointmentCollection != null) {
 					response = new Appointment();
 					BeanUtil.map(appointmentCollection, response);
-					patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
-					patientCard.getUser().setLocationId(patientCard.getLocationId());
-					patientCard.getUser().setHospitalId(patientCard.getHospitalId());
-					BeanUtil.map(patientCard.getUser(), patientCard);
-					patientCard.setUserId(patientCard.getUserId());
-					patientCard.setId(patientCard.getUserId());
-					patientCard.setColorCode(patientCard.getUser().getColorCode());
-					patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
-					patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
-					response.setPatient(patientCard);
-					if (userCollection != null)
-						response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
-					if (locationCollection != null) {
-						response.setLocationName(locationCollection.getLocationName());
-						response.setClinicNumber(locationCollection.getClinicNumber());
+					
+					if(isFormattedResponseRequired) {
+						patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
+						patientCard.getUser().setLocationId(patientCard.getLocationId());
+						patientCard.getUser().setHospitalId(patientCard.getHospitalId());
+						BeanUtil.map(patientCard.getUser(), patientCard);
+						patientCard.setUserId(patientCard.getUserId());
+						patientCard.setId(patientCard.getUserId());
+						patientCard.setColorCode(patientCard.getUser().getColorCode());
+						patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+						patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+						response.setPatient(patientCard);
+						if (userCollection != null)
+							response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
+						if (locationCollection != null) {
+							response.setLocationName(locationCollection.getLocationName());
+							response.setClinicNumber(locationCollection.getClinicNumber());
 
-						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+							String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+									? locationCollection.getStreetAddress() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+											? locationCollection.getLandmarkDetails() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+											? locationCollection.getLocality() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+											? locationCollection.getCity() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+											? locationCollection.getState() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+											? locationCollection.getCountry() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+											? locationCollection.getPostalCode() : "");
 
-						if (address.charAt(address.length() - 2) == ',') {
-							address = address.substring(0, address.length() - 2);
+							if (address.charAt(address.length() - 2) == ',') {
+								address = address.substring(0, address.length() - 2);
+							}
+
+							response.setClinicAddress(address);
+							response.setLatitude(locationCollection.getLatitude());
+							response.setLongitude(locationCollection.getLongitude());
 						}
-
-						response.setClinicAddress(address);
-						response.setLatitude(locationCollection.getLatitude());
-						response.setLongitude(locationCollection.getLongitude());
 					}
 				}
-
-				// } else {
-				// logger.error(timeSlotIsBooked);
-				// throw new BusinessException(ServiceError.NotAcceptable,
-				// timeSlotIsBooked);
-				// }
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	private ObjectId registerPatientIfNotRegistered(AppointmentRequest request, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId) {
+		ObjectId patientId = null;
+		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
+			if (request.getLocalPatientName() == null || request.getMobileNumber() == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
+			}
+			PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+			patientRegistrationRequest.setFirstName(request.getLocalPatientName());
+			patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
+			patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
+			patientRegistrationRequest.setDoctorId(request.getDoctorId());
+			patientRegistrationRequest.setLocationId(request.getLocationId());
+			patientRegistrationRequest.setHospitalId(request.getHospitalId());
+			RegisteredPatientDetails patientDetails = null;
+			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
+			if (patientDetails != null) {
+				request.setPatientId(patientDetails.getUserId());
+			}
+			transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
+			esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
+			patientId = new ObjectId(request.getPatientId());
+		} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+
+			patientId = new ObjectId(request.getPatientId());
+			PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(patientId, locationId,
+					hospitalId);
+			if (patient == null) {
+				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setDoctorId(request.getDoctorId());
+				patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
+				patientRegistrationRequest.setFirstName(request.getLocalPatientName());
+				patientRegistrationRequest.setUserId(request.getPatientId());
+				patientRegistrationRequest.setLocationId(request.getLocationId());
+				patientRegistrationRequest.setHospitalId(request.getHospitalId());
+				RegisteredPatientDetails patientDetails = registrationService.registerExistingPatient(patientRegistrationRequest, null);
+				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
+				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
+			} else {
+				List<ObjectId> consultantDoctorIds = patient.getConsultantDoctorIds();
+				if (consultantDoctorIds == null)
+					consultantDoctorIds = new ArrayList<ObjectId>();
+				if (!consultantDoctorIds.contains(doctorId))
+					consultantDoctorIds.add(doctorId);
+				patient.setConsultantDoctorIds(consultantDoctorIds);
+				patient.setUpdatedTime(new Date());
+				patientRepository.save(patient);
+			}
+		}
+		
+		return patientId;
 	}
 
 	private void sendAppointmentEmailSmsNotification(Boolean isAddAppointment, AppointmentRequest request,
