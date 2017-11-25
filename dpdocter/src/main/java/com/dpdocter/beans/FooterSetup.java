@@ -13,7 +13,7 @@ public class FooterSetup {
 
 	private Boolean showPoweredBy = true;
 
-	private Boolean showBottomSignText = false;
+	private Boolean showBottomSignText = true;
 
 	private String bottomSignText = "";
 

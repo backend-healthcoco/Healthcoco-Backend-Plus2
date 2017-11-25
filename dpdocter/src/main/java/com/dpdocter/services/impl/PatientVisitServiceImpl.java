@@ -538,18 +538,22 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			BeanUtil.map(request, response);
 			if (request.getClinicalNote() != null) {
-				addClinicalNotes(request, response, patientVisitCollection, visitId, appointment, patientVisitCollection.getCreatedBy());
+				addClinicalNotes(request, response, patientVisitCollection, visitId, appointment,
+						patientVisitCollection.getCreatedBy());
 			}
 
 			if (request.getPrescription() != null) {
-				addPrescription(request, response, patientVisitCollection, visitId, appointment, patientVisitCollection.getCreatedBy());
+				addPrescription(request, response, patientVisitCollection, visitId, appointment,
+						patientVisitCollection.getCreatedBy());
 			}
 
 			if (request.getRecord() != null) {
-				addRecords(request, response, patientVisitCollection, visitId, appointment, patientVisitCollection.getCreatedBy());
+				addRecords(request, response, patientVisitCollection, visitId, appointment,
+						patientVisitCollection.getCreatedBy());
 			}
 			if (request.getTreatmentRequest() != null) {
-				addTreatments(request, response, patientVisitCollection, visitId, appointment, patientVisitCollection.getCreatedBy());
+				addTreatments(request, response, patientVisitCollection, visitId, appointment,
+						patientVisitCollection.getCreatedBy());
 			}
 			patientVisitCollection.setVisitedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
@@ -586,7 +590,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private void addTreatments(AddMultipleDataRequest request, PatientVisitResponse response,
 			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
 
-		PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices.addEditPatientTreatment(request.getTreatmentRequest(), false, createdBy, appointment);
+		PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
+				.addEditPatientTreatment(request.getTreatmentRequest(), false, createdBy, appointment);
 
 		PatientTreatment patientTreatment = new PatientTreatment();
 		BeanUtil.map(patientTreatmentResponse, patientTreatment);
@@ -646,7 +651,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private void addPrescription(AddMultipleDataRequest request, PatientVisitResponse response,
 			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
 
-		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription(), false, createdBy, appointment);
+		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices
+				.addPrescription(request.getPrescription(), false, createdBy, appointment);
 		Prescription prescription = new Prescription();
 
 		List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getDiagnosticTests();
@@ -679,8 +685,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	private void addClinicalNotes(AddMultipleDataRequest request, PatientVisitResponse response,
 			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
-		
-		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false, createdBy, appointment);
+
+		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false, createdBy,
+				appointment);
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 			clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 		}
@@ -1448,6 +1455,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
 				} else {
 					parameters.put("poweredBy", "");
+				}
+				if (printSettings.getFooterSetup().getShowBottomSignText()
+						&& printSettings.getFooterSetup().getShowBottomSignText()) {
+					parameters.put("bottomSignText", printSettings.getFooterSetup().getShowBottomSignText());
+				} else {
+					parameters.put("bottomSignText", "");
 				}
 			} else {
 				parameters.put("poweredBy", "");
