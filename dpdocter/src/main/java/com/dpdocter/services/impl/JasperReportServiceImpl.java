@@ -1533,8 +1533,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
 			jrDesignTextField.setFontSize(new Float(9));
 			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(3);
-			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setY(2);
+			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(175);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 			jrDesignTextField.setMarkup("html");
@@ -1549,8 +1549,22 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
 			jrDesignTextField.setX(176);
-			jrDesignTextField.setY(3);
-			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setY(2);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(columnWidth - 176);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{bottomSignText}.isEmpty() &&!$P{bottomSignText}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}"));
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setFontSize(new Float(contentFontSize ));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(23);
+			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(columnWidth - 176);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
