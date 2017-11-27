@@ -19,6 +19,8 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -512,30 +514,46 @@ public class ContactsServiceImpl implements ContactsService {
 			if (discarded) {
 				discards[1] = true;
 			}
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-			{
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-			{
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-			{
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
-			criteria.and("updatedTime").gte(createdTimeStamp);
+			if (createdTimeStamp > 0) {
+				criteria.and("updatedTime").gte(new Date(createdTimeStamp));
+			}
 			criteria.and("discarded").in(discards);
-			
-			if (size > 0)
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("name", "$name"), Fields.field("explanation", "$explanation"),
+					Fields.field("doctorId", "$doctorId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("discarded", "$discarded"),
+					Fields.field("packageType", "$doctorClinic.packageType"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("createdBy", "$createdBy")));
+			if (size > 0) {
+
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			else
+						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
+						Aggregation.unwind("doctorClinic"),
+						Aggregation.match(new Criteria("doctorClinic.doctorId").is(new ObjectId(doctorId))),
+						projectList, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+
+			} else {
+
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation,
-					GroupCollection.class, Group.class);
+						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
+						Aggregation.unwind("doctorClinic"),
+						Aggregation.match(new Criteria("doctorClinic.doctorId").is(new ObjectId(doctorId))),
+						projectList, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			}
+			AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation, GroupCollection.class,
+					Group.class);
 			groups = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -588,7 +606,7 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 		return response;
 	}
- 
+
 	@Override
 	@Transactional
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,

@@ -25,6 +25,7 @@ import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.enums.ContactsSearchType;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.BulkSMSRequest;
@@ -268,13 +269,16 @@ public class ContactsApi {
 		}
 		List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
 				discarded);
-		
+
 		if (groups != null) {
 			for (Group group : groups) {
 				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
 				getDoctorContactsRequest.setDoctorId(doctorId);
 				List<String> groupList = new ArrayList<String>();
 				groupList.add(group.getId());
+				if (DPDoctorUtils.anyStringEmpty(group.getPackageType())) {
+					group.setPackageType(PackageType.ADVANCE.getType());
+				}
 				getDoctorContactsRequest.setGroups(groupList);
 				int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
 				group.setCount(ttlCount);
