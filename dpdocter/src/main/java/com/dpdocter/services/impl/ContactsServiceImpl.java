@@ -505,15 +505,12 @@ public class ContactsServiceImpl implements ContactsService {
 			String updatedTime, boolean discarded) {
 		List<Group> groups = null;
 		List<GroupCollection> groupCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
-			if (discarded) {
-				discards[1] = true;
-			}
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -526,7 +523,9 @@ public class ContactsServiceImpl implements ContactsService {
 			if (createdTimeStamp > 0) {
 				criteria.and("updatedTime").gte(new Date(createdTimeStamp));
 			}
-			criteria.and("discarded").in(discards);
+			if (!discarded) {
+				criteria.and("discarded").is(discarded);
+			}
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("name", "$name"), Fields.field("explanation", "$explanation"),
 					Fields.field("doctorId", "$doctorId"), Fields.field("locationId", "$locationId"),
