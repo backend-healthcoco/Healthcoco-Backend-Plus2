@@ -751,7 +751,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			if (esDoctorDocuments != null) {
 				
-				List<String> specialities = null;
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 
 					if (!DPDoctorUtils.anyStringEmpty(doctorDocument.getFirstName())) {
