@@ -1520,13 +1520,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 	private JRBand createPageFooter(int columnWidth, Map<String, Object> parameter, Integer contentFontSize)
 			throws JRException {
 		band = new JRDesignBand();
-		int bandHeight = 0;
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
-			bandHeight = 85;
-		} else {
-			bandHeight = 25;
-		}
-		band.setHeight(bandHeight);
+		int textFieldHeight = 0;
+		band.setHeight(1);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
@@ -1556,21 +1551,24 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
+
 		}
+		textFieldHeight = textFieldHeight + 20;
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(
-					new JRDesignExpression("!$P{bottomSignText}.isEmpty() &&!$P{bottomSignText}.isEmpty()"));
+					new JRDesignExpression("!$P{bottomSignText}.isEmpty() && !$P{bottomSignText}.isEmpty()"));
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}"));
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setFontSize(new Float(contentFontSize));
 			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(23);
+			jrDesignTextField.setY(textFieldHeight + 1);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(columnWidth - 176);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
+			textFieldHeight = textFieldHeight + 19;
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
 			jrDesignLine = new JRDesignLine();
@@ -1580,12 +1578,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setHeight(1);
 			jrDesignLine.setWidth(columnWidth);
 			band.addElement(jrDesignLine);
-
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
 			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(27);
+			jrDesignTextField.setY(textFieldHeight);
 			jrDesignTextField.setHeight(40);
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setMarkup("html");
