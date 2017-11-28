@@ -1930,7 +1930,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : "--",
+													? prescriptionItem.getInstructions() : "",
 											genericName);
 
 									prescriptionItems.add(prescriptionJasperDetails);

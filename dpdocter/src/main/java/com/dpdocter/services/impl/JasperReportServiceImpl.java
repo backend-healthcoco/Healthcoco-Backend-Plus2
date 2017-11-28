@@ -1403,9 +1403,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		if (showIntructions) {
 			band = new JRDesignBand();
-			band.setPrintWhenExpression(new JRDesignExpression(
-					"!$F{instruction}.equals( null ) && !$F{instruction}.isEmpty()&& !$F{instruction}.equals(" + "--"
-							+ ")"));
+			band.setPrintWhenExpression(
+					new JRDesignExpression("!$F{instruction}.equals( null ) && !$F{instruction}.isEmpty()"));
 			band.setSplitType(SplitTypeEnum.STRETCH);
 			if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
 				band.setHeight(22);
