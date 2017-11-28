@@ -1520,7 +1520,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		int bandHeight = 0;
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString(),
 				parameter.get("footerBottomText").toString())) {
-			bandHeight = 80;
+			bandHeight = 85;
 		} else {
 			bandHeight = 25;
 		}
