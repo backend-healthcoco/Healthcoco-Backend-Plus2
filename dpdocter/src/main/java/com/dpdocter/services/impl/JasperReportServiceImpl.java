@@ -1404,7 +1404,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (showIntructions) {
 			band = new JRDesignBand();
 			band.setPrintWhenExpression(new JRDesignExpression(
-					"!$P{instruction}.equals( null ) && !$P{instruction}.isEmpty()&& !$P{instruction}.equals(" + "--"
+					"!$F{instruction}.equals( null ) && !$F{instruction}.isEmpty()&& !$F{instruction}.equals(" + "--"
 							+ ")"));
 			band.setSplitType(SplitTypeEnum.STRETCH);
 			if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
