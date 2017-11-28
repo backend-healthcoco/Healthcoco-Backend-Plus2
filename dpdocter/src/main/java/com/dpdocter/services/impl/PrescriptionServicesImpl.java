@@ -3739,12 +3739,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 							}
 							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
-								prescriptionItem
-										.setInstructions(
-												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-														? "<font size='1'><b>Instruction : </b>"
-																+ prescriptionItem.getInstructions() + "</font>"
-														: null);
+								prescriptionItem.setInstructions(
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+												? "<b>Instruction : </b>" + prescriptionItem.getInstructions() : null);
 								showIntructions = true;
 							}
 							String duration = "";
