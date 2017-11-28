@@ -980,6 +980,8 @@ public interface PathProxy {
 	public interface SolrCityUrls {
 
 		public static final String SEARCH_LOCATION = "searchLocation";
+
+		public static final String SEARCH_LOCATION_WEB = "searchLocation/web";
 	}
 
 	public static final String SMS_BASE_URL = BASE_URL + "/sms";
@@ -1334,6 +1336,10 @@ public interface PathProxy {
 		public static final String GET_REPORTS_FOR_SAMPLES = "/getReportsForSample";
 		public static final String UPDATE_REQUEST_STATUS = "/updateRequestStatus/{id}";
 		public static final String EDIT_LAB_REPORTS = "/editLabReports";
+		public static final String GET_GROUPED_LAB_TEST = "/getGroupedLabTest";
+		public static final String GET_LAB_REPORTS_FOR_DOCTOR = "/getLabReportsForDoctor";
+		public static final String GET_LAB_REPORTS_FOR_LAB = "/getLabReportsForLab";
+		public static final String UPLOAD_REPORTS_TO_DOCTOR = "/uploadReportsToDoctor";
 
 	}
 
@@ -1386,7 +1392,7 @@ public interface PathProxy {
 
 	}
 
-	public static final String RANKING_BASE_URL = BASE_URL + "/ranking"; 
+	public static final String RANKING_BASE_URL = BASE_URL + "/ranking";
 
 	public interface RankingUrls {
 
@@ -1436,19 +1442,19 @@ public interface PathProxy {
 	public interface UploadDataUrls {
 
 		public static final String PATIENTS = "/patients/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String PRESCRIPTIONS = "/prescriptions/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String APPOINTMENTS = "/appointments/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String TREATMENT_PLANS = "/treatments/plans/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String TREATMENTS = "/treatments/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String GET_LAB_ORDERS = "/orders/lab/{locationId}";
 	}
 

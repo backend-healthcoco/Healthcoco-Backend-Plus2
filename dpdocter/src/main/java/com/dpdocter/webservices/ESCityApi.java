@@ -27,28 +27,43 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SOLR_CITY_BASE_URL, description = "Endpoint for solr city")
 public class ESCityApi {
 
-    @Autowired
-    private ESCityService esCityService;
+	@Autowired
+	private ESCityService esCityService;
 
-    @Path(value = PathProxy.SolrCityUrls.SEARCH_LOCATION)
-    @GET
-    @ApiOperation(value = PathProxy.SolrCityUrls.SEARCH_LOCATION, notes = PathProxy.SolrCityUrls.SEARCH_LOCATION)
-    public Response<ESCityLandmarkLocalityResponse> searchLocation(@QueryParam(value = "searchTerm") String searchTerm,
-	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude) {
+	@Path(value = PathProxy.SolrCityUrls.SEARCH_LOCATION)
+	@GET
+	@ApiOperation(value = PathProxy.SolrCityUrls.SEARCH_LOCATION, notes = PathProxy.SolrCityUrls.SEARCH_LOCATION)
+	public Response<ESCityLandmarkLocalityResponse> searchLocation(@QueryParam(value = "searchTerm") String searchTerm,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude) {
 
-	List<ESCityLandmarkLocalityResponse> searchResonse = esCityService.searchCityLandmarkLocality(searchTerm, latitude, longitude);
-	Response<ESCityLandmarkLocalityResponse> response = new Response<ESCityLandmarkLocalityResponse>();
-	response.setDataList(searchResonse);
-	return response;
-    }
+		List<ESCityLandmarkLocalityResponse> searchResonse = esCityService.searchCityLandmarkLocality(searchTerm,
+				latitude, longitude);
+		Response<ESCityLandmarkLocalityResponse> response = new Response<ESCityLandmarkLocalityResponse>();
+		response.setDataList(searchResonse);
+		return response;
+	}
 
-    @GET
-    @ApiOperation(value = "SEARCH_CITY", notes = "SEARCH_CITY")
-    public Response<City> searchCity(@QueryParam(value = "searchTerm") String searchTerm) {
+	@Path(value = PathProxy.SolrCityUrls.SEARCH_LOCATION_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.SolrCityUrls.SEARCH_LOCATION_WEB, notes = PathProxy.SolrCityUrls.SEARCH_LOCATION_WEB)
+	public Response<ESCityLandmarkLocalityResponse> searchLocationForWeb(
+			@QueryParam(value = "searchTerm") String searchTerm, @QueryParam(value = "latitude") String latitude,
+			@QueryParam(value = "longitude") String longitude) {
 
-	List<City> searchResonse = esCityService.searchCity(searchTerm);
-	Response<City> response = new Response<City>();
-	response.setDataList(searchResonse);
-	return response;
-    }
+		List<ESCityLandmarkLocalityResponse> searchResonse = esCityService.searchCityLandmarkLocalityForWeb(searchTerm,
+				latitude, longitude);
+		Response<ESCityLandmarkLocalityResponse> response = new Response<ESCityLandmarkLocalityResponse>();
+		response.setDataList(searchResonse);
+		return response;
+	}
+
+	@GET
+	@ApiOperation(value = "SEARCH_CITY", notes = "SEARCH_CITY")
+	public Response<City> searchCity(@QueryParam(value = "searchTerm") String searchTerm) {
+
+		List<City> searchResonse = esCityService.searchCity(searchTerm);
+		Response<City> response = new Response<City>();
+		response.setDataList(searchResonse);
+		return response;
+	}
 }
