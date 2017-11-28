@@ -3,12 +3,11 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.elasticsearch.common.collect.HppcMaps.Object;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.LabTestSample;
+import com.dpdocter.beans.PatientLabTestItem;
 import com.dpdocter.beans.PatientLabTestSample;
 
 @Document(collection = "lab_test_pickup_cl")
@@ -31,7 +30,7 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Field
 	private Long deliveryTime;
 	@Field
-	private PatientLabTestSample patientLabTestSample;
+	private List<PatientLabTestItem> patientLabTestSamples;
 	@Field
 	private String status;
 	@Field
@@ -207,19 +206,19 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.mobileNumber = mobileNumber;
 	}
 
-	public PatientLabTestSample getPatientLabTestSample() {
-		return patientLabTestSample;
+	public List<PatientLabTestItem> getPatientLabTestSamples() {
+		return patientLabTestSamples;
 	}
 
-	public void setPatientLabTestSample(PatientLabTestSample patientLabTestSample) {
-		this.patientLabTestSample = patientLabTestSample;
+	public void setPatientLabTestSamples(List<PatientLabTestItem> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
 	}
 
 	@Override
 	public String toString() {
 		return "LabTestPickupCollection [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender="
 				+ gender + ", mobileNumber=" + mobileNumber + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime="
-				+ pickupTime + ", deliveryTime=" + deliveryTime + ", patientLabTestSample=" + patientLabTestSample
+				+ pickupTime + ", deliveryTime=" + deliveryTime + ", patientLabTestSamples=" + patientLabTestSamples
 				+ ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
 				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
