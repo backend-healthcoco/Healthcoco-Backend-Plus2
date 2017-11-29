@@ -1458,7 +1458,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 				if (printSettings.getFooterSetup().getShowBottomSignText()
 						&& printSettings.getFooterSetup().getShowBottomSignText()) {
-					parameters.put("bottomSignText", printSettings.getFooterSetup().getShowBottomSignText());
+					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
 				} else {
 					parameters.put("bottomSignText", "");
 				}
@@ -1914,8 +1914,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										showIntructions = true;
 										prescriptionItem.setInstructions(
 												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-														? "<font size='1'><b>Instruction : </b>"
-																+ prescriptionItem.getInstructions() + "</font>"
+														? "<b>Instruction : </b>" + prescriptionItem.getInstructions()
 														: null);
 									}
 									String duration = "";

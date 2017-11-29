@@ -1403,9 +1403,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		if (showIntructions) {
 			band = new JRDesignBand();
-			band.setPrintWhenExpression(new JRDesignExpression(
-					"!$P{instruction}.equals( null ) && !$P{instruction}.isEmpty()&& !$P{instruction}.equals(" + "--"
-							+ ")"));
 			band.setSplitType(SplitTypeEnum.STRETCH);
 			if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
 				band.setHeight(22);
@@ -1523,18 +1520,21 @@ public class JasperReportServiceImpl implements JasperReportService {
 		int bandHeight = 0;
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString(),
 				parameter.get("footerBottomText").toString())) {
-			bandHeight = 80;
+			bandHeight = 85;
 		} else {
 			bandHeight = 25;
 		}
+		int Startwith = 2;
+
 		band.setHeight(bandHeight);
+		band.setSplitType(SplitTypeEnum.STRETCH);
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
 			jrDesignTextField.setFontSize(new Float(9));
 			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(2);
+			jrDesignTextField.setY(Startwith);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(175);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
@@ -1545,31 +1545,31 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerSignature}.isEmpty()"));
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
 			jrDesignTextField.setX(176);
-			jrDesignTextField.setY(2);
+			jrDesignTextField.setY(Startwith);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(columnWidth - 176);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
+		Startwith = Startwith + 20;
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{bottomSignText}.isEmpty() &&!$P{bottomSignText}.isEmpty()"));
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}."));
 			jrDesignTextField.setBold(true);
-			jrDesignTextField.setFontSize(new Float(contentFontSize ));
+			jrDesignTextField.setFontSize(new Float(contentFontSize));
 			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(23);
+			jrDesignTextField.setY(Startwith);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(columnWidth - 176);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
+			Startwith = Startwith + 20;
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
 			jrDesignLine = new JRDesignLine();
@@ -1579,12 +1579,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setHeight(1);
 			jrDesignLine.setWidth(columnWidth);
 			band.addElement(jrDesignLine);
-
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
 			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(27);
+			jrDesignTextField.setY(Startwith);
 			jrDesignTextField.setHeight(40);
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setMarkup("html");
