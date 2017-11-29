@@ -207,7 +207,7 @@ public class AppointmentApi {
 			logger.warn("Invalid Time");
 			mailService.sendExceptionMail("Invalid input :: Time");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Time");
-		}else if ((request.getTime().getToTime() - request.getTime().getFromTime()) > 120) {
+		}else if (request.getTime() != null && ((request.getTime().getToTime() - request.getTime().getFromTime()) > 120)) {
 			logger.warn("Invalid Time");
 			mailService.sendExceptionMail("Invalid input : Appointment duration cannot be greater than 120 mins");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Time : Appointment duration cannot be greater than 120 mins");
