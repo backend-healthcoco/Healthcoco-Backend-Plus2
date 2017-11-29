@@ -2,18 +2,29 @@ package com.dpdocter.beans;
 
 public class WalkReminder {
 
-	private Boolean remindAtNine = false;
+	private Boolean remind = false;
+	
+	private long remindAt;
 
-	public Boolean getRemindAtNine() {
-		return remindAtNine;
+	public Boolean getRemind() {
+		return remind;
 	}
 
-	public void setRemindAtNine(Boolean remindAtNine) {
-		this.remindAtNine = remindAtNine;
+	public void setRemind(Boolean remind) {
+		this.remind = remind;
+	}
+
+	public long getRemindAt() {
+		return remindAt;
+	}
+
+	public void setRemindAt(long remindAt) {
+		this.remindAt = remindAt;
 	}
 
 	@Override
 	public String toString() {
-		return "WalkReminder [remindAtNine=" + remindAtNine + "]";
+		return "WalkReminder [remind=" + remind + ", remindAt=" + remindAt + "]";
 	}
+	
 }
