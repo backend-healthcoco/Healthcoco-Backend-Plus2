@@ -192,7 +192,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private ESPatientRepository esPatientRepository;
-	
+
 	@Autowired
 	private GenerateUniqueUserNameService generateUniqueUserNameService;
 
@@ -430,7 +430,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			else
 				patientCollection.setRegistrationDate(new Date().getTime());
 
-			System.out.println("registerNewPatient"+request.getRegistrationDate()+".."+patientCollection.getRegistrationDate());
+			System.out.println("registerNewPatient" + request.getRegistrationDate() + ".."
+					+ patientCollection.getRegistrationDate());
 			patientCollection.setCreatedTime(createdTime);
 			patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
 					patientCollection.getRegistrationDate()));
@@ -702,12 +703,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCollection.setEmailAddress(request.getEmailAddress());
 					if (request.getDob() != null)
 						patientCollection.setDob(request.getDob());
-					if(request.getAddress() != null)patientCollection.setAddress(request.getAddress());
-					
-					if(request.getAddress() != null)patientCollection.setAddress(request.getAddress());
-					
-					if(infoType != null && !infoType.isEmpty()) {
-						if(infoType.contains("PERSONALINFO"))
+					if (request.getAddress() != null)
+						patientCollection.setAddress(request.getAddress());
+
+					if (request.getAddress() != null)
+						patientCollection.setAddress(request.getAddress());
+
+					if (infoType != null && !infoType.isEmpty()) {
+						if (infoType.contains("PERSONALINFO"))
 							patientCollection.setPersonalInformation(request.getPersonalInformation());
 						if (infoType.contains("LIFESTYLE"))
 							patientCollection.setLifestyleQuestionAnswers(request.getLifestyleQuestionAnswers());
@@ -1360,7 +1363,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Long endTimeinMillis = end.getMillis();
 			Integer patientSize = patientRepository.findTodaysRegisteredPatient(locationObjectId, hospitalObjectId,
 					startTimeinMillis, endTimeinMillis);
-			
+
 			if (patientCount == null)
 				patientSize = 0;
 			LocationCollection location = locationRepository.findOne(locationObjectId);
@@ -1375,8 +1378,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
 					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
 					+ DPDoctorUtils.getPrefixedNumber(patientCounter);
-			
-			System.out.println(locationId +".."+patientSize+".."+patientCounter);  
+
+			System.out.println(locationId + ".." + patientSize + ".." + patientCounter);
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			throw e;
@@ -1856,7 +1859,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			userCollection.setUserName(request.getEmailAddress());
 			userCollection.setCreatedTime(new Date());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
-			if(DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
+			if (DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
 				userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			}
 			userCollection.setUserState(UserState.NOTVERIFIED);
@@ -2070,13 +2073,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 
 			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
-			
-			if(!DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
 				userCollection.setColorCode(request.getColorCode());
 				userCollection.setUpdatedTime(new Date());
 				userRepository.save(userCollection);
 			}
-			
+
 			if (doctorRole != null) {
 
 				UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationIdHospitalId(
@@ -3418,79 +3421,96 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public Integer updateRegisterPID(long createdTime) {
 		try {
 
-		List<PatientCollection> patientCollections = mongoTemplate.aggregate(
-				Aggregation.newAggregation(Aggregation.match(new Criteria("PID").ne(null)),
-						Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", 
-								new BasicDBObject("locationId", "$locationId").append("PID","$PID")).append("count", new BasicDBObject("$sum", 1)))),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("locationId", "$locationId").append("PID", "$PID")
-								.append("keep", new BasicDBObject(
-								        "$cond", new BasicDBObject(
-										          "if", new BasicDBObject("$gt", Arrays.asList("$count", 1)))
-										        .append("then", "$count")
-										        .append("else", 0))))),
-				Aggregation.match(new Criteria("keep").gt(1))), PatientCollection.class, PatientCollection.class).getMappedResults();
+			List<PatientCollection> patientCollections = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(Aggregation.match(new Criteria("PID").ne(null)),
+									Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
+									new CustomAggregationOperation(new BasicDBObject("$group",
+											new BasicDBObject("_id",
+													new BasicDBObject("locationId", "$locationId").append("PID",
+															"$PID")).append("count", new BasicDBObject("$sum", 1)))),
+									new CustomAggregationOperation(
+											new BasicDBObject("$project",
+													new BasicDBObject("locationId", "$locationId").append("PID", "$PID")
+															.append("keep", new BasicDBObject("$cond",
+																	new BasicDBObject("if",
+																			new BasicDBObject("$gt",
+																					Arrays.asList("$count", 1)))
+																							.append("then", "$count")
+																							.append("else", 0))))),
+									Aggregation.match(new Criteria("keep").gt(1))),
+							PatientCollection.class, PatientCollection.class)
+					.getMappedResults();
 
-		if(patientCollections != null)
-		for (PatientCollection patientCollection : patientCollections) {
-			List<PatientCollection> samePIDPatientCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(new Criteria("locationId").is(patientCollection.getLocationId()).and("PID").is(patientCollection.getPID())), Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), PatientCollection.class, PatientCollection.class).getMappedResults();
-			
-			if(samePIDPatientCollections != null) {
-				for (int i=0; i<samePIDPatientCollections.size(); i++) {
-					PatientCollection patient = samePIDPatientCollections.get(i);
-					
-					if(patient.getRegistrationDate() == null) {
-						patient.setRegistrationDate(patient.getCreatedTime().getTime());
-					}
-					if(i > 0) {
-						Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-						localCalendar.setTime(new Date(patient.getRegistrationDate()));
-						int currentDay = localCalendar.get(Calendar.DATE);
-						int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-						int currentYear = localCalendar.get(Calendar.YEAR);
+			if (patientCollections != null)
+				for (PatientCollection patientCollection : patientCollections) {
+					List<PatientCollection> samePIDPatientCollections = mongoTemplate.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.match(new Criteria("locationId").is(patientCollection.getLocationId())
+											.and("PID").is(patientCollection.getPID())),
+									Aggregation.sort(new Sort(Direction.ASC, "createdTime"))),
+							PatientCollection.class, PatientCollection.class).getMappedResults();
 
-						DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-								DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-						Long startTimeinMillis = start.getMillis();
-						DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-								DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-						Long endTimeinMillis = end.getMillis();
-						List<PatientCollection> lastPatients = patientRepository.findTodaysRegisteredPatient(patient.getLocationId(), patient.getHospitalId(), startTimeinMillis, endTimeinMillis, new PageRequest(0, 1, Direction.DESC, "PID"));
-						 
-						Integer patientSize = 0;
-						if(lastPatients != null && !lastPatients.isEmpty()) {
-							PatientCollection lastPatient = lastPatients.get(0);
-							patientSize = Integer.parseInt(lastPatient.getPID().substring(lastPatient.getPID().length()-2, lastPatient.getPID().length()));
+					if (samePIDPatientCollections != null) {
+						for (int i = 0; i < samePIDPatientCollections.size(); i++) {
+							PatientCollection patient = samePIDPatientCollections.get(i);
+
+							if (patient.getRegistrationDate() == null) {
+								patient.setRegistrationDate(patient.getCreatedTime().getTime());
+							}
+							if (i > 0) {
+								Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+								localCalendar.setTime(new Date(patient.getRegistrationDate()));
+								int currentDay = localCalendar.get(Calendar.DATE);
+								int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+								int currentYear = localCalendar.get(Calendar.YEAR);
+
+								DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+										DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+								Long startTimeinMillis = start.getMillis();
+								DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+										DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+								Long endTimeinMillis = end.getMillis();
+								List<PatientCollection> lastPatients = patientRepository.findTodaysRegisteredPatient(
+										patient.getLocationId(), patient.getHospitalId(), startTimeinMillis,
+										endTimeinMillis, new PageRequest(0, 1, Direction.DESC, "PID"));
+
+								Integer patientSize = 0;
+								if (lastPatients != null && !lastPatients.isEmpty()) {
+									PatientCollection lastPatient = lastPatients.get(0);
+									patientSize = Integer.parseInt(lastPatient.getPID().substring(
+											lastPatient.getPID().length() - 2, lastPatient.getPID().length()));
+								}
+
+								LocationCollection location = locationRepository.findOne(patient.getLocationId());
+								if (location == null) {
+									logger.warn("Invalid Location Id");
+									throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+								}
+								String patientInitial = location.getPatientInitial();
+								int patientCounter = location.getPatientCounter();
+								if (patientCounter <= patientSize)
+									patientCounter = patientCounter + patientSize;
+								String generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
+										+ DPDoctorUtils.getPrefixedNumber(currentMonth)
+										+ DPDoctorUtils.getPrefixedNumber(currentYear % 100)
+										+ DPDoctorUtils.getPrefixedNumber(patientCounter);
+
+								patient.setPID(generatedId);
+							}
+							patient = patientRepository.save(patient);
+							ESPatientDocument esPatientDocument = esPatientRepository
+									.findOne(patient.getId().toString());
+							if (esPatientDocument != null) {
+								esPatientDocument.setPID(patient.getPID());
+								esPatientDocument.setRegistrationDate(patient.getRegistrationDate());
+								esPatientDocument = esPatientRepository.save(esPatientDocument);
+							}
+
 						}
-						 
-						LocationCollection location = locationRepository.findOne(patient.getLocationId());
-						if (location == null) {
-							logger.warn("Invalid Location Id");
-							throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
-						}
-						String patientInitial = location.getPatientInitial();
-						int patientCounter = location.getPatientCounter();
-						if (patientCounter <= patientSize)
-							patientCounter = patientCounter + patientSize;
-						String generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
-								+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
-								+ DPDoctorUtils.getPrefixedNumber(patientCounter);
-						
-						patient.setPID(generatedId);
 					}
-					patient = patientRepository.save(patient);
-					ESPatientDocument esPatientDocument = esPatientRepository.findOne(patient.getId().toString());
-					if(esPatientDocument != null) {
-						esPatientDocument.setPID(patient.getPID());
-						esPatientDocument.setRegistrationDate(patient.getRegistrationDate());
-						esPatientDocument = esPatientRepository.save(esPatientDocument);
-					}
-					
 				}
-			}
-		}
-		
+
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -3728,33 +3748,33 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(request, userAddressCollection);
 				List<UserCollection> users = null;
 				if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-					users = mongoTemplate
-							.aggregate(
-									Aggregation.newAggregation(
-											Aggregation
-													.match(new Criteria("mobileNumber").is(request.getMobileNumber())),
-													
-													new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-															new BasicDBObject("if", new BasicDBObject("$neq", Arrays.asList("$emailAddress", "$userName")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-											Aggregation.project("id")),
-									UserCollection.class, UserCollection.class)
-							.getMappedResults();
+					users = mongoTemplate.aggregate(Aggregation.newAggregation(
+							Aggregation.match(new Criteria("mobileNumber").is(request.getMobileNumber())),
+
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$ne",
+															Arrays.asList("$emailAddress", "$userName")))
+																	.append("then", "$$KEEP")
+																	.append("else", "$$PRUNE")))),
+							Aggregation.project("id")), UserCollection.class, UserCollection.class).getMappedResults();
 				} else {
-					users = mongoTemplate
-							.aggregate(
-									Aggregation.newAggregation(
-											Aggregation.match(new Criteria("id").in(request.getUserIds())),
-											Aggregation.limit(1),
-											Aggregation.lookup("user_cl", "mobileNumber", "mobileNumber", "user"),
-											Aggregation.unwind("user"),
-											new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-													new BasicDBObject("if", new BasicDBObject("$neq", Arrays.asList("$user.emailAddress", "$user.userName")))
-													.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-											new CustomAggregationOperation(
-													new BasicDBObject("$project", new BasicDBObject("id", "user.id")))),
-									UserCollection.class, UserCollection.class)
-							.getMappedResults();
+					users = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(request.getUserIds())),
+									Aggregation.limit(1),
+									Aggregation.lookup("user_cl", "mobileNumber", "mobileNumber", "user"),
+									Aggregation.unwind("user"),
+									new CustomAggregationOperation(new BasicDBObject("$redact",
+											new BasicDBObject("$cond",
+													new BasicDBObject("if",
+															new BasicDBObject("$neq",
+																	Arrays.asList("$user.emailAddress",
+																			"$user.userName"))).append("then", "$$KEEP")
+																					.append("else", "$$PRUNE")))),
+									new CustomAggregationOperation(
+											new BasicDBObject("$project", new BasicDBObject("id", "user.id")))),
+							UserCollection.class, UserCollection.class).getMappedResults();
 				}
 				if (users == null || users.isEmpty()) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid mobileNumber or userID");
@@ -3787,27 +3807,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 			userAddressCollection = userAddressRepository.save(userAddressCollection);
 			response = new UserAddress();
 			BeanUtil.map(userAddressCollection, response);
-			
-			String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
-						? address.getStreetAddress() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
-								? address.getLandmarkDetails() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
-								? address.getLocality() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
-								? address.getCity() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(address.getState())
-								? address.getState() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
-								? address.getCountry() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
-								? address.getPostalCode() : "");
 
-				if (formattedAddress.charAt(formattedAddress.length() - 2) == ',') {
-					formattedAddress = formattedAddress.substring(0, formattedAddress.length() - 2);
-				}
-				response.setFormattedAddress(formattedAddress);
-		}catch (Exception e) {
+			String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
+					? address.getStreetAddress() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails()) ? address.getLandmarkDetails() + ", "
+							: "")
+					+ (!DPDoctorUtils.anyStringEmpty(address.getLocality()) ? address.getLocality() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(address.getCity()) ? address.getCity() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(address.getState()) ? address.getState() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(address.getCountry()) ? address.getCountry() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode()) ? address.getPostalCode() : "");
+
+			if (formattedAddress.charAt(formattedAddress.length() - 2) == ',') {
+				formattedAddress = formattedAddress.substring(0, formattedAddress.length() - 2);
+			}
+			response.setFormattedAddress(formattedAddress);
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error while adding user address");
