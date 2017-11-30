@@ -16,14 +16,6 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String patientName;
-	@Field
-	private Integer age;
-	@Field
-	private String gender;
-	@Field
-	private String mobileNumber;
-	@Field
 	private String daughterLabCRN;
 	@Field
 	private Long pickupTime;
