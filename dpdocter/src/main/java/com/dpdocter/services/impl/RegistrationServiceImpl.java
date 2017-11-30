@@ -3768,7 +3768,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 									new CustomAggregationOperation(new BasicDBObject("$redact",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if",
-															new BasicDBObject("$neq",
+															new BasicDBObject("$ne",
 																	Arrays.asList("$user.emailAddress",
 																			"$user.userName"))).append("then", "$$KEEP")
 																					.append("else", "$$PRUNE")))),
