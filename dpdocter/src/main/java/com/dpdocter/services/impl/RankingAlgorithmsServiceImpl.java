@@ -270,7 +270,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 					Aggregation.unwind("doctor"),
 					
-					Aggregation.match(new Criteria("user.isActive").is(true).and("user.isVerified").is(true)),
+					Aggregation.match(new Criteria("isDoctorListed").is(true)),
 					
 					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "prescription"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
