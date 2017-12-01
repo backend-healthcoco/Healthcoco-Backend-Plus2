@@ -12,11 +12,13 @@ public class InventoryItem extends GenericCollection {
 	private Long reOrderLevel;
 	private String manufacturer;
 	private Boolean saveManufacturer;
+	private String doctorId;
 	private String resourceId;
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
 	private Long retailPrice;
+	private String itemType;
 
 	public String getId() {
 		return id;
@@ -122,12 +124,29 @@ public class InventoryItem extends GenericCollection {
 		this.retailPrice = retailPrice;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getItemType() {
+		return itemType;
+	}
+
+	public void setItemType(String itemType) {
+		this.itemType = itemType;
+	}
+
 	@Override
 	public String toString() {
 		return "InventoryItem [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code + ", stockingUnit="
-				+ stockingUnit + ", manufacturer=" + manufacturer + ", saveManufacturer=" + saveManufacturer
-				+ ", resourceId=" + resourceId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + "]";
+				+ stockingUnit + ", reOrderLevel=" + reOrderLevel + ", manufacturer=" + manufacturer
+				+ ", saveManufacturer=" + saveManufacturer + ", doctorId=" + doctorId + ", resourceId=" + resourceId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", retailPrice=" + retailPrice + ", itemType=" + itemType + "]";
 	}
 
 }

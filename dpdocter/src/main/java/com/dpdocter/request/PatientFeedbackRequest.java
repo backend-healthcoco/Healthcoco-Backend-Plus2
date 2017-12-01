@@ -11,6 +11,8 @@ public class PatientFeedbackRequest {
 	private String patientId;
 	private String hospitalId;
 	private String localeId;
+	private String appointmentId;
+	private String prescriptionId;
 	private Boolean isRecommended;
 	private Boolean isAppointmentStartedOnTime;
 	private String howLateWasAppointment;
@@ -18,7 +20,7 @@ public class PatientFeedbackRequest {
 	private String reasonOfVisit;
 	private String experience;
 	private String reply;
-	private Boolean isAnonymous;
+	private Boolean isAnonymous = false;
 	private Boolean isApproved = false;
 	private String adminUpdatedExperience;
 	private Boolean isDiscarded = false;
@@ -185,6 +187,22 @@ public class PatientFeedbackRequest {
 
 	public void setFeedbackType(FeedbackType feedbackType) {
 		this.feedbackType = feedbackType;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 
 	@Override
