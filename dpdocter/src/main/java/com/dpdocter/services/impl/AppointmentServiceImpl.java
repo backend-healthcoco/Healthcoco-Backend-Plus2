@@ -607,10 +607,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (patientCards != null && !patientCards.isEmpty())
 					patientCard = patientCards.get(0);
 
-				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-						.findByDoctorIdLocationId(new ObjectId(appointmentLookupResponse.getDoctorId()),
-								new ObjectId(appointmentLookupResponse.getLocationId()));
-
 				AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 				BeanUtil.map(appointmentLookupResponse, appointmentWorkFlowCollection);
 				appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
@@ -639,6 +635,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
 								.findByAppointmentId(request.getAppointmentId());
 						if (bookedSlotCollection != null) {
+							bookedSlotCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 							bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
 							bookedSlotCollection.setToDate(appointmentCollection.getToDate());
 							bookedSlotCollection.setTime(request.getTime());
@@ -647,6 +644,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 				}
+				
+				if(!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
+					appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					User drCollection = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(appointmentCollection.getDoctorId()))), UserCollection.class, User.class).getUniqueMappedResult();
+					appointmentLookupResponse.setDoctor(drCollection);
+				}
+				
+				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdLocationId(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId());
+				
 				appointmentCollection.setCategory(request.getCategory());
 				appointmentCollection.setExplanation(request.getExplanation());
 				appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
