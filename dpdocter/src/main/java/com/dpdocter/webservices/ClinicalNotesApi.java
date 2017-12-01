@@ -1057,7 +1057,7 @@ public class ClinicalNotesApi {
 
 		PresentingComplaintOralCavity presentingComplaintOralCavity = clinicalNotesService.addEditPCOralCavity(request);
 
-		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_NOSE, false);
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_ORAL_CAVITY, false);
 		ESPresentingComplaintOralCavityDocument esPresentingComplaintOralCavity = new ESPresentingComplaintOralCavityDocument();
 		BeanUtil.map(presentingComplaintOralCavity, esPresentingComplaintOralCavity);
 		esClinicalNotesService.addPCOralCavity(esPresentingComplaintOralCavity);
@@ -1505,7 +1505,7 @@ public class ClinicalNotesApi {
 		ECGDetails ecgDetails = clinicalNotesService.deleteECGDetails(id, doctorId, locationId, hospitalId, discarded);
 
 		if (ecgDetails != null) {
-			transactionalManagementService.addResource(new ObjectId(ecgDetails.getId()), Resource.XRAY, false);
+			transactionalManagementService.addResource(new ObjectId(ecgDetails.getId()), Resource.ECG, false);
 			ESECGDetailsDocument esecgDetails = new ESECGDetailsDocument();
 			BeanUtil.map(ecgDetails, esecgDetails);
 			esClinicalNotesService.addECGDetails(esecgDetails);
@@ -1712,7 +1712,7 @@ public class ClinicalNotesApi {
 
 		if (presentingComplaintOralCavity != null) {
 			transactionalManagementService.addResource(new ObjectId(presentingComplaintOralCavity.getId()),
-					Resource.PC_EARS, false);
+					Resource.PC_ORAL_CAVITY, false);
 			ESPresentingComplaintOralCavityDocument esPresentingComplaintOralCavityDocument = new ESPresentingComplaintOralCavityDocument();
 			BeanUtil.map(presentingComplaintOralCavity, esPresentingComplaintOralCavityDocument);
 			esClinicalNotesService.addPCOralCavity(esPresentingComplaintOralCavityDocument);
@@ -1868,7 +1868,7 @@ public class ClinicalNotesApi {
 				locationId, hospitalId, discarded);
 		if (presentingComplaintThroat != null) {
 			transactionalManagementService.addResource(new ObjectId(presentingComplaintThroat.getId()),
-					Resource.PC_EARS, false);
+					Resource.PC_THROAT, false);
 			ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 			BeanUtil.map(presentingComplaintThroat, esPresentingComplaintThroatDocument);
 			esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
