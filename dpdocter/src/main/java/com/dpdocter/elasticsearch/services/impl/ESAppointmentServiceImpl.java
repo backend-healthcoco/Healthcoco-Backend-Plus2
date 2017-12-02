@@ -1254,7 +1254,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							: null;
 				}
 			}
-			if (DPDoctorUtils.allStringsEmpty(speciality) && speciality.equalsIgnoreCase("undefined")) {
+			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
 				speciality = null;
 			}
 			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,
@@ -1273,10 +1273,16 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-				doctorResponse.setMetaData(speciality + " in " + city);
+
+				doctorResponse.setMetaData(speciality + " in ");
 			} else {
-				doctorResponse.setMetaData("doctor in " + city);
+				doctorResponse.setMetaData("doctor in ");
 			}
+			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
+				doctorResponse.setMetaData(doctorResponse.getMetaData() + locality + ",");
+			}
+			doctorResponse.setMetaData(doctorResponse.getMetaData() + city);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
