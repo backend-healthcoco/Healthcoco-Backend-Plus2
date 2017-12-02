@@ -530,6 +530,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					longitude = esCityDocument.getLongitude() + "";
 				}
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(service)) {
 				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
 						.findByName(service);
@@ -1253,7 +1254,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							: null;
 				}
 			}
-
+			if (DPDoctorUtils.allStringsEmpty(speciality) && !speciality.equalsIgnoreCase("undefined")) {
+				speciality = null;
+			}
 			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,
 					symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
 					maxExperience, service);
