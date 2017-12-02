@@ -57,6 +57,7 @@ public class ESCityApi {
 		return response;
 	}
 
+
 	@GET
 	@ApiOperation(value = "SEARCH_CITY", notes = "SEARCH_CITY")
 	public Response<City> searchCity(@QueryParam(value = "searchTerm") String searchTerm) {

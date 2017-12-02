@@ -102,6 +102,8 @@ public class DoctorClinicProfile {
 
 	private String packageType = PackageType.ADVANCE.getType();
 
+	private String doctorSlugURL;
+
 	public String getId() {
 		return id;
 	}
@@ -489,5 +491,13 @@ public class DoctorClinicProfile {
 				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isFavourite=" + isFavourite + ", isAutoSMS="
 				+ isAutoSMS + ", isActivate=" + isActivate + ", isSendRegularCheckupSMS=" + isSendRegularCheckupSMS
 				+ ", regularCheckupMonth=" + regularCheckupMonth + ", checkUpTypeEnum=" + checkUpTypeEnum + "]";
+	}
+
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		this.doctorSlugURL = doctorSlugURL;
 	}
 }

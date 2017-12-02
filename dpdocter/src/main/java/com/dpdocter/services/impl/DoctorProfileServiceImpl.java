@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1420,6 +1419,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional

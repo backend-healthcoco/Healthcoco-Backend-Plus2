@@ -65,7 +65,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection{
 	
 	private UserCollection user;
 	
-	private String packageType = PackageType.ADVANCE.getType();
+	private String packageType;
 	
 	public ObjectId getId() {
 		return id;

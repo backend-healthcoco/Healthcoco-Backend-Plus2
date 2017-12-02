@@ -752,6 +752,7 @@ public class DoctorProfileApi {
 		return response;
 	}
 
+
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS, notes = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)

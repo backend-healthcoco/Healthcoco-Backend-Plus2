@@ -130,6 +130,17 @@ public class ESLocationDocument {
 	// @Field(type = FieldType.String)
 	// private String receiptInitial = "RC";
 
+	@Field(type = FieldType.String)
+	private String locationSlugUrl;
+
+	public String getLocationSlugUrl() {
+		return locationSlugUrl;
+	}
+
+	public void setLocationSlugUrl(String locationSlugUrl) {
+		this.locationSlugUrl = locationSlugUrl;
+	}
+
 	public Boolean getIsActivate() {
 		return isActivate;
 	}

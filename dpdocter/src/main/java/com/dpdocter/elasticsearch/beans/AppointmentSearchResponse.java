@@ -3,39 +3,50 @@ package com.dpdocter.elasticsearch.beans;
 import com.dpdocter.enums.AppointmentResponseType;
 
 public class AppointmentSearchResponse {
-    private String id;
+	private String id;
 
-    private Object response;
+	private Object response;
 
-    private AppointmentResponseType responseType;
+	private AppointmentResponseType responseType;
 
-    public String getId() {
-	return id;
-    }
+	private String slugUrl;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public Object getResponse() {
-	return response;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setResponse(Object response) {
-	this.response = response;
-    }
+	public Object getResponse() {
+		return response;
+	}
 
-    public AppointmentResponseType getResponseType() {
-	return responseType;
-    }
+	public void setResponse(Object response) {
+		this.response = response;
+	}
 
-    public void setResponseType(AppointmentResponseType responseType) {
-	this.responseType = responseType;
-    }
+	public AppointmentResponseType getResponseType() {
+		return responseType;
+	}
 
-    @Override
-    public String toString() {
-	return "AppointmentSearchResponse [id=" + id + ", response=" + response + ", responseType=" + responseType + "]";
-    }
+	public void setResponseType(AppointmentResponseType responseType) {
+		this.responseType = responseType;
+	}
+
+	@Override
+	public String toString() {
+		return "AppointmentSearchResponse [id=" + id + ", response=" + response + ", responseType=" + responseType
+				+ "]";
+	}
+
+	public String getSlugUrl() {
+		return slugUrl;
+	}
+
+	public void setSlugUrl(String slugUrl) {
+		this.slugUrl = slugUrl;
+	}
 
 }

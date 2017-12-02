@@ -643,16 +643,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 				}
-				
-				if(!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
+
+				if (!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
 					appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-					User drCollection = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(appointmentCollection.getDoctorId()))), UserCollection.class, User.class).getUniqueMappedResult();
+					User drCollection = mongoTemplate.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.match(new Criteria("id").is(appointmentCollection.getDoctorId()))),
+							UserCollection.class, User.class).getUniqueMappedResult();
 					appointmentLookupResponse.setDoctor(drCollection);
 				}
-				
+
 				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-						.findByDoctorIdLocationId(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId());
-				
+						.findByDoctorIdLocationId(appointmentCollection.getDoctorId(),
+								appointmentCollection.getLocationId());
+
 				appointmentCollection.setCategory(request.getCategory());
 				appointmentCollection.setExplanation(request.getExplanation());
 				appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
@@ -3250,6 +3254,234 @@ public class AppointmentServiceImpl implements AppointmentService {
 			logger.error("Error while getting patient last appointment", e);
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting patient last appointment");
+		}
+		return response;
+	}
+
+	@Override
+	public Clinic getClinic(String slugUrl) {
+		Clinic response = new Clinic();
+		Location location = null;
+		List<Doctor> doctors = new ArrayList<Doctor>();
+		try {
+			Criteria criteria = new Criteria().andOperator(
+					new Criteria("locationSlugUrl").regex("^" + slugUrl + "*", "i"), new Criteria("isClinic").is(true));
+			location = mongoTemplate
+					.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+							Aggregation.unwind("hospital")), LocationCollection.class, Location.class)
+					.getUniqueMappedResult();
+			if (location == null) {
+				return null;
+			} else {
+				if (!DPDoctorUtils.anyStringEmpty(location.getLogoUrl()))
+					location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
+				if (!DPDoctorUtils.anyStringEmpty(location.getLogoThumbnailUrl()))
+					location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
+				if (location.getImages() != null && !location.getImages().isEmpty()) {
+					for (ClinicImage clinicImage : location.getImages()) {
+						if (!DPDoctorUtils.anyStringEmpty(clinicImage.getImageUrl()))
+							clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+						if (!DPDoctorUtils.anyStringEmpty(clinicImage.getThumbnailUrl()))
+							clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+					}
+				}
+				String address = (!DPDoctorUtils.anyStringEmpty(location.getStreetAddress())
+						? location.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getLandmarkDetails())
+								? location.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getLocality()) ? location.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? location.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? location.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getCountry()) ? location.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getPostalCode()) ? location.getPostalCode() : "");
+
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				location.setClinicAddress(address);
+				response.setLocation(location);
+				if (location.getHospital() != null) {
+					response.setHospital(location.getHospital());
+				}
+
+				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
+
+				Criteria criteriaForActive = new Criteria();
+
+				Aggregation aggregation = null;
+
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria2),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.match(criteriaForActive),
+						Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"), Aggregation.unwind("doctor"));
+
+				List<UserLocationWithDoctorClinicProfile> userWithDoctorProfile = mongoTemplate.aggregate(aggregation,
+						DoctorClinicProfileCollection.class, UserLocationWithDoctorClinicProfile.class)
+						.getMappedResults();
+
+				for (Iterator<UserLocationWithDoctorClinicProfile> iterator = userWithDoctorProfile.iterator(); iterator
+						.hasNext();) {
+					UserLocationWithDoctorClinicProfile doctorClinicProfileCollection = iterator.next();
+
+					DoctorCollection doctorCollection = doctorClinicProfileCollection.getDoctor();
+					UserCollection userCollection = doctorClinicProfileCollection.getUser();
+					if (doctorCollection != null) {
+						Doctor doctor = new Doctor();
+						BeanUtil.map(doctorCollection, doctor);
+						if (userCollection != null) {
+							BeanUtil.map(userCollection, doctor);
+						}
+
+						DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
+						BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
+						doctorClinicProfile.setLocationId(doctorClinicProfileCollection.getLocationId());
+						doctorClinicProfile.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+						doctor.setDoctorClinicProfile(doctorClinicProfile);
+
+						if (doctorCollection.getSpecialities() != null
+								&& !doctorCollection.getSpecialities().isEmpty()) {
+							@SuppressWarnings("unchecked")
+							List<String> specialities = (List<String>) CollectionUtils.collect(
+									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									new BeanToPropertyValueTransformer("superSpeciality"));
+							doctor.setSpecialities(specialities);
+						}
+						if (!DPDoctorUtils.anyStringEmpty(doctor.getImageUrl()))
+							doctor.setImageUrl(getFinalImageURL(doctor.getImageUrl()));
+						if (!DPDoctorUtils.anyStringEmpty(doctor.getThumbnailUrl()))
+							doctor.setThumbnailUrl(getFinalImageURL(doctor.getThumbnailUrl()));
+						if (!DPDoctorUtils.anyStringEmpty(doctor.getCoverImageUrl()))
+							doctor.setCoverImageUrl(getFinalImageURL(doctor.getCoverImageUrl()));
+						if (!DPDoctorUtils.anyStringEmpty(doctor.getCoverThumbnailImageUrl()))
+							doctor.setCoverThumbnailImageUrl(getFinalImageURL(doctor.getCoverThumbnailImageUrl()));
+						doctors.add(doctor);
+					}
+				}
+			}
+			response.setDoctors(doctors);
+			if (location != null)
+				response.setId(location.getId().toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Lab getLab(String slugUrl) {
+		Lab response = new Lab();
+		Location location = new Location();
+
+		List<Doctor> doctors = new ArrayList<Doctor>();
+		try {
+
+			Criteria criteria = new Criteria().andOperator(
+					new Criteria("locationSlugUrl").regex("^" + slugUrl + "*", "i"), new Criteria("isLab").is(true));
+			location = mongoTemplate
+					.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+							Aggregation.unwind("hospital")), LocationCollection.class, Location.class)
+					.getUniqueMappedResult();
+
+			if (location == null) {
+				return null;
+			} else {
+
+				location.setClinicAddress((!DPDoctorUtils.anyStringEmpty(location.getStreetAddress())
+						? location.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getLandmarkDetails())
+								? location.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getLocality()) ? location.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? location.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? location.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getCountry()) ? location.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getPostalCode()) ? location.getPostalCode() : ""));
+
+				location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
+				location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
+				if (location.getImages() != null && !location.getImages().isEmpty()) {
+					for (ClinicImage image : location.getImages()) {
+						image.setImageUrl(getFinalImageURL(image.getImageUrl()));
+						image.setThumbnailUrl(getFinalImageURL(image.getThumbnailUrl()));
+
+					}
+				}
+				response.setLocation(location);
+				response.setHospital(location.getHospital());
+
+				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
+
+				Criteria criteriaForActive = new Criteria();
+
+				List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
+						.aggregate(Aggregation.newAggregation(Aggregation.match(criteria2),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.match(criteriaForActive),
+								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+								Aggregation.unwind("doctor")),
+
+								DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
+						.getMappedResults();
+
+				for (Iterator<DoctorClinicProfileLookupResponse> iterator = doctorClinicProfileLookupResponses
+						.iterator(); iterator.hasNext();) {
+					DoctorClinicProfileLookupResponse doctorClinicProfileCollection = iterator.next();
+					DoctorCollection doctorCollection = doctorClinicProfileCollection.getDoctor();
+					UserCollection userCollection = doctorClinicProfileCollection.getUser();
+
+					if (doctorCollection != null) {
+						Doctor doctor = new Doctor();
+						BeanUtil.map(doctorCollection, doctor);
+						if (userCollection != null) {
+							BeanUtil.map(userCollection, doctor);
+						}
+
+						if (doctorClinicProfileCollection != null) {
+							DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
+							BeanUtil.map(location, doctorClinicProfile);
+							BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
+							doctorClinicProfile.setLocationId(doctorClinicProfileCollection.getLocationId().toString());
+							doctorClinicProfile.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+							doctor.setDoctorClinicProfile(doctorClinicProfile);
+						}
+						if (doctorCollection.getSpecialities() != null
+								&& !doctorCollection.getSpecialities().isEmpty()) {
+							@SuppressWarnings("unchecked")
+							List<String> specialities = (List<String>) CollectionUtils.collect(
+									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									new BeanToPropertyValueTransformer("speciality"));
+							doctor.setSpecialities(specialities);
+						}
+						doctor.setCoverImageUrl(getFinalImageURL(doctor.getCoverImageUrl()));
+						doctor.setCoverThumbnailImageUrl(getFinalImageURL(doctor.getCoverImageUrl()));
+						doctor.setThumbnailUrl(getFinalImageURL(doctor.getThumbnailUrl()));
+						doctor.setImageUrl(getFinalImageURL(doctor.getImageUrl()));
+
+						doctors.add(doctor);
+					}
+				}
+				response.setDoctors(doctors);
+				response.setNoOfLabTest(
+						(int) mongoTemplate.count(
+								new Query(new Criteria("locationId").is(new ObjectId(location.getId()))
+										.and("hospitalId").is(new ObjectId(location.getHospitalId()))),
+								LabTestCollection.class));
+				if (response.getNoOfLabTest() != null && response.getNoOfLabTest() > 0) {
+					List<LabTest> labTests = mongoTemplate.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.match(new Criteria("locationId").is(new ObjectId(location.getId()))
+											.and("hospitalId").is(new ObjectId(location.getHospitalId()))),
+									Aggregation.lookup("diagnostic_test_cl", "testId", "_id", "test"),
+									Aggregation.unwind("test"), Aggregation.limit(5)),
+							LabTestCollection.class, LabTest.class).getMappedResults();
+					response.setLabTests(labTests);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}

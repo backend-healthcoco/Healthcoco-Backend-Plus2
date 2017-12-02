@@ -195,6 +195,41 @@ public class AppointmentApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.AppointmentUrls.GET_CLINIC_BY_SLUG_URL)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.GET_CLINIC_BY_SLUG_URL, notes = PathProxy.AppointmentUrls.GET_CLINIC_BY_SLUG_URL)
+	public Response<Clinic> getClinic(@PathParam(value = "slugUrl") String slugUrl) throws MessagingException {
+
+		if (DPDoctorUtils.anyStringEmpty(slugUrl)) {
+			logger.warn("slugUrl cannot be empty");
+			mailService.sendExceptionMail("Invalid input :: slugUrl cannot be empty");
+			throw new BusinessException(ServiceError.InvalidInput, "slugUrl cannot be empty");
+		}
+		Clinic clinic = appointmentService.getClinic(slugUrl);
+		clinic.setSlugUrl(slugUrl);
+		Response<Clinic> response = new Response<Clinic>();
+		response.setData(clinic);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.AppointmentUrls.GET_LAB_BY_SLUG_URL)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.GET_LAB_BY_SLUG_URL, notes = PathProxy.AppointmentUrls.GET_LAB_BY_SLUG_URL)
+	public Response<Lab> getLabs(@PathParam("slugUrl") String slugUrl) throws MessagingException {
+		if (DPDoctorUtils.anyStringEmpty(slugUrl)) {
+			logger.warn("slugUrl cannot be empty");
+			mailService.sendExceptionMail("Invalid input :: slugUrl cannot be empty");
+			throw new BusinessException(ServiceError.InvalidInput, "slugUrl cannot be empty");
+		}
+
+		Lab lab = appointmentService.getLab(slugUrl);
+		lab.setSlugUrl(slugUrl);
+		Response<Lab> response = new Response<Lab>();
+		response.setData(lab);
+		return response;
+	}
+
 	@POST
 	@ApiOperation(value = "ADD_APPOINTMENT", notes = "ADD_APPOINTMENT")
 	public Response<Appointment> BookAppoinment(AppointmentRequest request) throws MessagingException {
@@ -207,13 +242,14 @@ public class AppointmentApi {
 			logger.warn("Invalid Time");
 			mailService.sendExceptionMail("Invalid input :: Time");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Time");
-		}else if (request.getTime() != null && ((request.getTime().getToTime() - request.getTime().getFromTime()) > 120)) {
+		} else if (request.getTime() != null
+				&& ((request.getTime().getToTime() - request.getTime().getFromTime()) > 120)) {
 			logger.warn("Invalid Time");
 			mailService.sendExceptionMail("Invalid input : Appointment duration cannot be greater than 120 mins");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Time : Appointment duration cannot be greater than 120 mins");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Time : Appointment duration cannot be greater than 120 mins");
 		}
-		
-		
+
 		Appointment appointment = null;
 		if (request.getAppointmentId() == null) {
 			appointment = appointmentService.addAppointment(request, true);
@@ -233,7 +269,7 @@ public class AppointmentApi {
 			@MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, 
+			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
 			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime) {
 
@@ -264,8 +300,9 @@ public class AppointmentApi {
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_TIME_SLOTS, notes = PathProxy.AppointmentUrls.GET_TIME_SLOTS)
 	public Response<SlotDataResponse> getTimeSlots(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("date") String date, 
-			@DefaultValue(value="true") @QueryParam(value = "isPatient") Boolean isPatient) throws MessagingException {
+			@PathParam("locationId") String locationId, @PathParam("date") String date,
+			@DefaultValue(value = "true") @QueryParam(value = "isPatient") Boolean isPatient)
+			throws MessagingException {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
@@ -434,9 +471,8 @@ public class AppointmentApi {
 	@ApiOperation(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_APPOINTMENT, notes = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_APPOINTMENT)
 	public Response<Boolean> changeStatusInAppointment(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId, @PathParam(value = "appointmentId") String appointmentId, 
-			@PathParam(value = "status") String status)
-			throws MessagingException {
+			@PathParam(value = "patientId") String patientId, @PathParam(value = "appointmentId") String appointmentId,
+			@PathParam(value = "status") String status) throws MessagingException {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId, appointmentId, status)) {
 			logger.warn("DoctorId, Location Id, Hospital Id, Patient Id, AppointmentId, status cannot be empty");
@@ -445,8 +481,8 @@ public class AppointmentApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"DoctorId, Location Id, Hospital Id, Patient Id, AppointmentId, status cannot be empty");
 		}
-		Boolean changeStatus = appointmentService.changeStatusInAppointment(doctorId, locationId, hospitalId, patientId, appointmentId,
-				status);
+		Boolean changeStatus = appointmentService.changeStatusInAppointment(doctorId, locationId, hospitalId, patientId,
+				appointmentId, status);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(changeStatus);
 		return response;
@@ -484,7 +520,8 @@ public class AppointmentApi {
 			throw new BusinessException(ServiceError.InvalidInput, "invalidInput");
 		}
 
-		CustomAppointment customAppointment = appointmentService.deleteCustomAppointment(appointmentId, locationId, hospitalId, doctorId, discarded);
+		CustomAppointment customAppointment = appointmentService.deleteCustomAppointment(appointmentId, locationId,
+				hospitalId, doctorId, discarded);
 
 		Response<CustomAppointment> response = new Response<CustomAppointment>();
 		response.setData(customAppointment);
@@ -511,7 +548,8 @@ public class AppointmentApi {
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST, notes = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST)
 	public Response<CustomAppointment> getCustomAppointments(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("doctorId") String doctorId, @DefaultValue(value = "0") @QueryParam("updatedTime") String updatedTime,
+			@QueryParam("doctorId") String doctorId,
+			@DefaultValue(value = "0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, doctorId)) {
 			logger.warn("invalidInput");
@@ -545,8 +583,8 @@ public class AppointmentApi {
 	@Path(value = PathProxy.AppointmentUrls.GET_PATIENT_LAST_APPOINTMENT)
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_PATIENT_LAST_APPOINTMENT, notes = PathProxy.AppointmentUrls.GET_PATIENT_LAST_APPOINTMENT)
-	public Response<Appointment> getPatientLastAppointment(@PathParam(value = "patientId") String patientId,  @PathParam(value = "locationId") String locationId,
-			@QueryParam(value = "doctorId") String doctorId) {
+	public Response<Appointment> getPatientLastAppointment(@PathParam(value = "patientId") String patientId,
+			@PathParam(value = "locationId") String locationId, @QueryParam(value = "doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(patientId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

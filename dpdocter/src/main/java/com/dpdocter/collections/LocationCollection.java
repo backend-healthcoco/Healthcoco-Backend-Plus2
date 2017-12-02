@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LocationType;
 
 @Document(collection = "location_cl")
@@ -137,12 +138,22 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private List<ObjectId> associatedLabs;
 
+	@Field
+	private String locationSlugUrl;
 	/*
 	 * @Field private ObjectId defaultParentLabId;
 	 */
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
+	}
+
+	public String getLocationSlugUrl() {
+		return locationSlugUrl;
+	}
+
+	public void setLocationSlugUrl(String locationSlugUrl) {
+		this.locationSlugUrl = locationSlugUrl;
 	}
 
 	public void setNoOfClinicReview(Integer noOfClinicReview) {
