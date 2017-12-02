@@ -68,7 +68,7 @@ public interface AppointmentService {
 
 	Appointment getAppointmentById(ObjectId appointmentId);
 
-	LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId);
+	LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId, String from, String to);
 
 	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
 			String from, String to);
