@@ -281,7 +281,6 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
-
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
