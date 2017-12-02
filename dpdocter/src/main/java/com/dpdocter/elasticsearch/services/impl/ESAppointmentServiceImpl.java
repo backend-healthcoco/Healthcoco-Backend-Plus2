@@ -1274,14 +1274,15 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 
-				doctorResponse.setMetaData(speciality + " in ");
+				doctorResponse.setMetaData(speciality + "s in ");
 			} else {
-				doctorResponse.setMetaData("doctor in ");
+				doctorResponse.setMetaData("doctors in ");
 			}
 			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
-				doctorResponse.setMetaData(doctorResponse.getMetaData() + locality + ",");
+				doctorResponse.setMetaData(doctorResponse.getMetaData() + locality + ", ");
 			}
 			doctorResponse.setMetaData(doctorResponse.getMetaData() + city);
+			doctorResponse.setSpeciality(speciality);
 
 		} catch (Exception e) {
 			e.printStackTrace();

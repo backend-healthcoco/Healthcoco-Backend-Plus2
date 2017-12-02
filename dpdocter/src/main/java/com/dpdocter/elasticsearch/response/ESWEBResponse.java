@@ -10,6 +10,7 @@ public class ESWEBResponse {
 	private List<ESUserLocaleDocument> pharmacies;
 	private List<LabResponse> labs;
 	private String metaData;
+	private String Speciality;
 
 	public List<ESDoctorWEbSearch> getDoctors() {
 		return doctors;
@@ -41,6 +42,14 @@ public class ESWEBResponse {
 
 	public void setLabs(List<LabResponse> labs) {
 		this.labs = labs;
+	}
+
+	public String getSpeciality() {
+		return Speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		Speciality = speciality;
 	}
 
 }
