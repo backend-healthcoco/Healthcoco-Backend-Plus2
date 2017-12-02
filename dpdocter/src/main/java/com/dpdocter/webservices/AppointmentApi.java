@@ -429,7 +429,7 @@ public class AppointmentApi {
 	@GET
 	@ApiOperation(value = "PATIENT_COUNT", notes = "PATIENT_COUNT")
 	public Response<LocationWithPatientQueueDetails> getNoOfPatientInQueue(
-			@PathParam(value = "locationId") String locationId, @MatrixParam(value = "doctorId") List<String> doctorId)
+			@PathParam(value = "locationId") String locationId, @MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "from") String from, @QueryParam(value = "to") String to)
 			throws MessagingException {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn("Invalid Input");
@@ -437,7 +437,7 @@ public class AppointmentApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		LocationWithPatientQueueDetails locationWithPatientQueueDetails = appointmentService
-				.getNoOfPatientInQueue(locationId, doctorId);
+				.getNoOfPatientInQueue(locationId, doctorId, from, to);
 		Response<LocationWithPatientQueueDetails> response = new Response<LocationWithPatientQueueDetails>();
 		response.setData(locationWithPatientQueueDetails);
 		return response;
