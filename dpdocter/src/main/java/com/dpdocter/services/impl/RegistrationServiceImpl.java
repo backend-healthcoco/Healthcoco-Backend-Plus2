@@ -3756,7 +3756,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 													.match(new Criteria("mobileNumber").is(request.getMobileNumber())),
 													
 													new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-															new BasicDBObject("if", new BasicDBObject("$neq", Arrays.asList("$emailAddress", "$userName")))
+															new BasicDBObject("if", new BasicDBObject("$ne", Arrays.asList("$emailAddress", "$userName")))
 															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 											Aggregation.project("id")),
 									UserCollection.class, UserCollection.class)
@@ -3770,7 +3770,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 											Aggregation.lookup("user_cl", "mobileNumber", "mobileNumber", "user"),
 											Aggregation.unwind("user"),
 											new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-													new BasicDBObject("if", new BasicDBObject("$neq", Arrays.asList("$user.emailAddress", "$user.userName")))
+													new BasicDBObject("if", new BasicDBObject("$ne", Arrays.asList("$user.emailAddress", "$user.userName")))
 													.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 											new CustomAggregationOperation(
 													new BasicDBObject("$project", new BasicDBObject("id", "user.id")))),

@@ -14,6 +14,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -169,6 +170,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			else {
 				SearchQuery searchQuery = null;
 
+				System.out.println("Create Query :"+new DateTime().getMillisOfSecond());
 				if (searchByGenericName) {
 					searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null,
@@ -177,8 +179,11 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 				}
+				System.out.println("Query Completed:"+new DateTime().getMillisOfSecond());
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
 						ESDrugDocument.class);
+				
+				System.out.println("Fetch Data:"+new DateTime().getMillisOfSecond());
 				if (esDrugDocuments != null) {
 					esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
 				}
@@ -194,6 +199,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drugDocument.setDrugType(drugType);
 					response.add(drugDocument);
 				}
+				System.out.println("Modify Data:"+new DateTime().getMillisOfSecond());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -214,6 +220,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				response = new ArrayList<DrugDocument>();
 			else {
 				SearchQuery searchQuery = null;
+				System.out.println("Create Query :"+new DateTime().getMillisOfSecond());
 				if (searchByGenericName) {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
@@ -221,9 +228,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
+				System.out.println("Query completed:"+new DateTime().getMillisOfSecond());
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
 						ESDrugDocument.class);
-
+				System.out.println("Fetch Data:"+new DateTime().getMillisOfSecond());
 				response = new ArrayList<DrugDocument>();
 				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
 					String drugTypeStr = esDrugDocument.getDrugType();
@@ -236,6 +244,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drugDocument.setDrugType(drugType);
 					response.add(drugDocument);
 				}
+				System.out.println("Modify Data:"+new DateTime().getMillisOfSecond());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -251,6 +260,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<ESDrugDocument> response = null;
 		try {
 			SearchQuery searchQuery = null;
+			System.out.println("Create Query :"+new DateTime().getMillisOfSecond());
 			if (searchByGenericName) {
 				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null,
@@ -259,8 +269,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			}
-
+			System.out.println("Query Completed:"+new DateTime().getMillisOfSecond());
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			System.out.println("Fetch Data:"+new DateTime().getMillisOfSecond());
 			if (response != null)
 				response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
 		} catch (Exception e) {
@@ -276,6 +287,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<ESDrugDocument> response = null;
 		try {
 			SearchQuery searchQuery = null;
+			System.out.println("Create Query :"+new DateTime().getMillisOfSecond());
 			if (searchByGenericName) {
 				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null,
 						searchTerm, null, category, null, "genericNames.name");
@@ -283,7 +295,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null,
 						searchTerm, null, category, null, "drugName");
 			}
+			System.out.println("Query Completed:"+new DateTime().getMillisOfSecond());
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			System.out.println("Fetch Data:"+new DateTime().getMillisOfSecond());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -302,6 +316,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			if (doctorId == null)
 				response = new ArrayList<ESDrugDocument>();
 			else {
+				System.out.println("Create Query :"+new DateTime().getMillisOfSecond());
 				SearchQuery searchQuery = null;
 				if (searchByGenericName) {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
@@ -310,7 +325,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
+				System.out.println("Query Completed:"+new DateTime().getMillisOfSecond());
 				response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+				System.out.println("Fetch Data:"+new DateTime().getMillisOfSecond());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

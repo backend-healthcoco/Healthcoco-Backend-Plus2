@@ -84,16 +84,16 @@ public class ESAppointmentApi {
 	public Response<ESDoctorCardResponse> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
-			@QueryParam("speciality") String speciality,@QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("speciality") String speciality, @QueryParam("searchTerm") String searchTerm) {
 
-		List<ESDoctorCardResponse> doctors = solrAppointmentService.getDoctorsShortCard(page, size, city, location, latitude, longitude, speciality,searchTerm);
+		List<ESDoctorCardResponse> doctors = solrAppointmentService.getDoctorsShortCard(page, size, city, location,
+				latitude, longitude, speciality, searchTerm);
 
 		Response<ESDoctorCardResponse> response = new Response<ESDoctorCardResponse>();
 		response.setDataList(doctors);
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES, notes = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
@@ -191,12 +191,12 @@ public class ESAppointmentApi {
 			@QueryParam("maxFee") int maxFee, @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
 			@MatrixParam("days") List<String> days, @QueryParam("gender") String gender,
 			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
-			@QueryParam("service") String service) {
+			@QueryParam("service") String service, @QueryParam("locality") String locality) {
 
 		Response<ESWEBResponse> response = new Response<ESWEBResponse>();
 		response.setData(solrAppointmentService.getDoctorForWeb(page, size, city, location, latitude, longitude,
 				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
-				maxExperience, service));
+				maxExperience, service, locality));
 		return response;
 	}
 
@@ -210,11 +210,12 @@ public class ESAppointmentApi {
 			@QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") long minTime,
 			@QueryParam("maxTime") long maxTime, @MatrixParam("days") List<String> days,
 			@MatrixParam("types") List<String> pharmacyType,
-			@QueryParam("isGenericMedicineAvailable") Boolean isGenericMedicineAvailable) {
+			@QueryParam("isGenericMedicineAvailable") Boolean isGenericMedicineAvailable,
+			@QueryParam("locality") String locality) {
 
 		ESWEBResponse pharmacies = solrAppointmentService.getPharmacyForWeb(page, size, city, localeName, latitude,
 				longitude, paymentType, homeService, isTwentyFourSevenOpen, minTime, maxTime, days, pharmacyType,
-				isGenericMedicineAvailable);
+				isGenericMedicineAvailable, locality);
 		Response<ESWEBResponse> response = new Response<ESWEBResponse>();
 		response.setData(pharmacies);
 		return response;
@@ -230,10 +231,10 @@ public class ESAppointmentApi {
 			@QueryParam("calling") Boolean calling, @QueryParam("minTime") int minTime,
 			@QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
 			@QueryParam("onlineReports") Boolean onlineReports, @QueryParam("homeService") Boolean homeService,
-			@QueryParam("nabl") Boolean nabl) {
+			@QueryParam("nabl") Boolean nabl, @QueryParam("locality") String locality) {
 
 		ESWEBResponse labs = solrAppointmentService.getLabForWeb(page, size, city, location, latitude, longitude, test,
-				booking, calling, minTime, maxTime, days, onlineReports, homeService, nabl);
+				booking, calling, minTime, maxTime, days, onlineReports, homeService, nabl, locality);
 
 		Response<ESWEBResponse> response = new Response<ESWEBResponse>();
 		response.setData(labs);

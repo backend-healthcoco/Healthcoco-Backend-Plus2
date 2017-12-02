@@ -2,8 +2,10 @@ package com.dpdocter.response;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
@@ -22,6 +24,8 @@ public class PatientFeedbackResponse extends GenericCollection {
 	private String hospitalName;
 	private String localeId;
 	private String localeName;
+	private Prescription prescription;
+	private Appointment appointment;
 	private Boolean isRecommended;
 	private Boolean isAppointmentStartedOnTime;
 	private String howLateWasAppointment;
@@ -236,6 +240,22 @@ public class PatientFeedbackResponse extends GenericCollection {
 
 	public void setFeedbackType(FeedbackType feedbackType) {
 		this.feedbackType = feedbackType;
+	}
+
+	public Prescription getPrescription() {
+		return prescription;
+	}
+
+	public void setPrescription(Prescription prescription) {
+		this.prescription = prescription;
+	}
+
+	public Appointment getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
 	}
 
 	@Override

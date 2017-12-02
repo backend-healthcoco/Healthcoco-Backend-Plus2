@@ -27,6 +27,8 @@ public class PatientFeedback extends GenericCollection {
 	private MedicationEffectType medicationEffectType; // how patient feeling
 	// after taking medicine
 	private FeedbackType feedbackType;
+	private String appointmentId;
+	private String prescriptionId;
 
 	public String getId() {
 		return id;
@@ -186,6 +188,22 @@ public class PatientFeedback extends GenericCollection {
 
 	public void setFeedbackType(FeedbackType feedbackType) {
 		this.feedbackType = feedbackType;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 
 	@Override

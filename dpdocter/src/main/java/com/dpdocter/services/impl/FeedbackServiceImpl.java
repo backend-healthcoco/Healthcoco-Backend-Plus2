@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.AppointmentGeneralFeedback;
 import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.DailyPatientFeedback;
@@ -21,7 +22,9 @@ import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.PharmacyFeedback;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionFeedback;
+import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
 import com.dpdocter.collections.DailyImprovementFeedbackCollection;
 import com.dpdocter.collections.HospitalCollection;
@@ -30,6 +33,7 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFeedbackCollection;
 import com.dpdocter.collections.PharmacyFeedbackCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrescriptionFeedbackCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DurationUnitEnum;
@@ -37,6 +41,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AppointmentGeneralFeedbackRepository;
+import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.DailyImprovementFeedbackRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocaleRepository;
@@ -44,6 +49,7 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientFeedbackRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PharmacyFeedbackRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrescritptionFeedbackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DailyImprovementFeedbackRequest;
@@ -93,6 +99,13 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Autowired
 	private PatientRepository patientRepository;
+	
+	@Autowired
+	private AppointmentRepository appointmentRepository;
+	
+	@Autowired
+	private PrescriptionRepository prescriptionRepository;
+	
 	@Override
 	@Transactional
 	public AppointmentGeneralFeedback addEditAppointmentGeneralFeedback(AppointmentGeneralFeedback feedback) {
@@ -487,6 +500,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 		LocationCollection locationCollection = null;
 		HospitalCollection hospitalCollection = null;
 		UserCollection userCollection = null;
+		AppointmentCollection appointmentCollection = null;
+		PrescriptionCollection prescriptionCollection = null;
 		try {
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(type))
@@ -498,8 +513,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 				criteria.and("localeId").is(new ObjectId(request.getLocaleId()));
 				localeCollection = localeRepository.findOne(new ObjectId(request.getLocaleId()));
 			}
-			
-			
 			
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 			{
@@ -517,6 +530,18 @@ public class FeedbackServiceImpl implements FeedbackService {
 			{
 				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
 				locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(request.getAppointmentId()))
+			{
+				criteria.and("appointmentId").is(new ObjectId(request.getAppointmentId()));
+				appointmentCollection = appointmentRepository.findOne(new ObjectId(request.getLocationId()));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId()))
+			{
+				criteria.and("prescriptionId").is(new ObjectId(request.getPrescriptionId()));
+				prescriptionCollection = prescriptionRepository.findOne(new ObjectId(request.getLocationId()));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
@@ -557,6 +582,18 @@ public class FeedbackServiceImpl implements FeedbackService {
 				if(hospitalCollection != null)
 				{
 					patientFeedbackResponse.setHospitalName(hospitalCollection.getHospitalName());
+				}
+				if(prescriptionCollection != null)
+				{
+					Prescription prescription = new Prescription();
+					BeanUtil.map(prescriptionCollection, prescription);
+					patientFeedbackResponse.setPrescription(prescription);
+				}
+				if(appointmentCollection != null)
+				{
+					Appointment appointment = new Appointment();
+					BeanUtil.map(appointmentCollection, appointment);
+					patientFeedbackResponse.setAppointment(appointment);
 				}
 			}
 			

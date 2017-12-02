@@ -570,6 +570,14 @@ public interface PathProxy {
 		public static final String DELETE_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
 
 		public static final String GET_CUSTOM_DRUGS = "/getCustomDrugs";
+		
+		public static final String ADD_EDIT_INSTRUCTIONS = "/addEditInstructions";
+		
+		public static final String GET_INSTRUCTIONS = "/getInstructions";
+		
+		public static final String DELETE_INSTRUCTIONS = "/deleteInstructions";
+		
+		
 
 	}
 
