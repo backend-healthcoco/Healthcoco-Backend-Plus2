@@ -1254,7 +1254,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							: null;
 				}
 			}
-			if (DPDoctorUtils.allStringsEmpty(speciality) && !speciality.equalsIgnoreCase("undefined")) {
+			if (DPDoctorUtils.allStringsEmpty(speciality) && speciality.equalsIgnoreCase("undefined")) {
 				speciality = null;
 			}
 			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,
