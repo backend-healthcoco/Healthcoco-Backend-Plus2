@@ -523,7 +523,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
 					.must(QueryBuilders.matchQuery("isClinic", true));
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
-				city.trim().replace("-", " ");
+				city = city.trim().replace("-", " ");
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
 					latitude = esCityDocument.getLatitude() + "";
@@ -1243,6 +1243,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		ESWEBResponse doctorResponse = null;
 		try {
 			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
+				locality = locality.trim().replace("-", " ");
 				List<ESLandmarkLocalityDocument> localities = esLandmarkLocalityRepository.findByLocality(locality,
 						new PageRequest(0, 1));
 				if (localities != null && !localities.isEmpty()) {
@@ -1279,6 +1280,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				doctorResponse.setMetaData("doctors in ");
 			}
 			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
+
 				doctorResponse.setMetaData(doctorResponse.getMetaData() + locality + ", ");
 			}
 			doctorResponse.setMetaData(doctorResponse.getMetaData() + city);
