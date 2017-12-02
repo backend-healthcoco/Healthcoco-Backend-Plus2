@@ -1457,7 +1457,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					parameters.put("poweredBy", "");
 				}
 				if (printSettings.getFooterSetup().getShowBottomSignText()
-						&& printSettings.getFooterSetup().getShowBottomSignText()) {
+						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
 					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
 				} else {
 					parameters.put("bottomSignText", "");

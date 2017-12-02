@@ -60,6 +60,7 @@ import net.sf.jasperreports.engine.type.PrintOrderEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.SplitTypeEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
+import net.sf.jasperreports.engine.type.VerticalAlignEnum;
 import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -1404,19 +1405,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (showIntructions) {
 			band = new JRDesignBand();
 			band.setSplitType(SplitTypeEnum.STRETCH);
-			if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
-				band.setHeight(22);
-			else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.MEDIUM.name()))
-				band.setHeight(27);
-			else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.LARGE.name()))
-				band.setHeight(32);
+			band.setHeight(20);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
 			jrDesignTextField.setX(35);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.TOP);
 			jrDesignTextField.setWidth(columnWidth - 40);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setStretchWithOverflow(true);
@@ -1556,7 +1552,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-		Startwith = Startwith + 20;
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())
+				|| !DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			Startwith = Startwith + 20;
+		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}."));
@@ -2549,10 +2548,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 
 		int xSpace = 0;
-
-		Integer titleFontSize = contentFontSize;
-		if (contentFontSize > 13)
-			titleFontSize = 13;
 
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
