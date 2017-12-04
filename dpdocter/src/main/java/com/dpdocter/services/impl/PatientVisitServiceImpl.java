@@ -80,6 +80,7 @@ import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
+import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -1372,6 +1373,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (printSettings.getContentSetup() != null) {
 				contentFontSize = !DPDoctorUtils.anyStringEmpty(printSettings.getContentSetup().getFontSize())
 						? Integer.parseInt(printSettings.getContentSetup().getFontSize().replaceAll("pt", "")) : 10;
+				if (printSettings.getContentSetup().getInstructionAlign() != null) {
+					parameters.put("instructionAlign",
+							printSettings.getContentSetup().getInstructionAlign().getAlign());
+				} else {
+					parameters.put("instructionAlign", FieldAlign.HORIZONTAL.getAlign());
+				}
 			}
 			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()) {
 				parameters.put("headerHtml", printSettings.getHeaderSetup().getHeaderHtml());
