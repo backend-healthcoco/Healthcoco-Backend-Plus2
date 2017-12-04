@@ -1627,7 +1627,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}R"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}"));
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setFontSize(new Float(contentFontSize));
 			jrDesignTextField.setX(0);
