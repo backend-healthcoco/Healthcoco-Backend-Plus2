@@ -118,6 +118,7 @@ import com.dpdocter.elasticsearch.document.ESGenericCodesAndReactions;
 import com.dpdocter.elasticsearch.repository.ESGenericCodesAndReactionsRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.enums.Range;
@@ -282,7 +283,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private EyePrescriptionRepository eyePrescriptionRepository;
-	
+
 	@Autowired
 	private InstructionsRepository instructionsRepository;
 
@@ -3649,9 +3650,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 							}
 							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
-								prescriptionItem.setInstructions(
-										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-												? "<b>Instruction : " + prescriptionItem.getInstructions() : null);
+								if (printSettings.getContentSetup() != null) {
+									if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
+											.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
+										prescriptionItem.setInstructions(
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? "<b>Instruction </b>: " + prescriptionItem.getInstructions()
+														: null);
+									} else {
+										prescriptionItem.setInstructions(
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? prescriptionItem.getInstructions() : null);
+									}
+								} else {
+									prescriptionItem.setInstructions(
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : null);
+								}
+
 								showIntructions = true;
 							}
 							String duration = "";
@@ -3661,14 +3677,36 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								duration = durationValue + " " + durationUnit;
 							no = no + 1;
 
-							PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
-									drugName,
-									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-											? prescriptionItem.getDosage() : "--",
-									duration, directions.isEmpty() ? "--" : directions,
-									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-											? prescriptionItem.getInstructions() : "--",
-									genericName);
+							PrescriptionJasperDetails prescriptionJasperDetails = null;
+							if (printSettings.getContentSetup() != null) {
+								if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
+										.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
+
+									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+													? prescriptionItem.getDosage() : "--",
+											duration, directions.isEmpty() ? "--" : directions,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : "--",
+											genericName);
+								} else {
+									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+													? prescriptionItem.getDosage() : "--",
+											duration, directions.isEmpty() ? "--" : directions,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : null,
+											genericName);
+								}
+							} else {
+								prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+												? prescriptionItem.getDosage() : "--",
+										duration, directions.isEmpty() ? "--" : directions,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+												? prescriptionItem.getInstructions() : null,
+										genericName);
+							}
 							prescriptionItems.add(prescriptionJasperDetails);
 						}
 					}
@@ -5487,7 +5525,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		response = aggregationResults.getMappedResults();
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public Instructions addEditInstructions(Instructions instruction) {
@@ -5507,7 +5545,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					instructionsCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				InstructionsCollection oldInstructionsCollection = instructionsRepository.findOne(instructionsCollection.getId());
+				InstructionsCollection oldInstructionsCollection = instructionsRepository
+						.findOne(instructionsCollection.getId());
 				instructionsCollection.setCreatedBy(oldInstructionsCollection.getCreatedBy());
 				instructionsCollection.setCreatedTime(oldInstructionsCollection.getCreatedTime());
 				instructionsCollection.setDiscarded(oldInstructionsCollection.getDiscarded());
@@ -5536,9 +5575,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String updatedTime, Boolean discarded) {
 		List<Instructions> response = null;
 		try {
-			AggregationResults<Instructions> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
-					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), InstructionsCollection.class,
-					Instructions.class);
+			AggregationResults<Instructions> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							InstructionsCollection.class, Instructions.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5547,7 +5588,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,

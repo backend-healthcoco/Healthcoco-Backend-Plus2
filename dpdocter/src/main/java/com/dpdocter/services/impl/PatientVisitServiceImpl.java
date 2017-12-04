@@ -1377,7 +1377,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					parameters.put("instructionAlign",
 							printSettings.getContentSetup().getInstructionAlign().getAlign());
 				} else {
-					parameters.put("instructionAlign", FieldAlign.HORIZONTAL.getAlign());
+					parameters.put("instructionAlign", FieldAlign.VERTICAL.getAlign());
 				}
 			}
 			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()) {
@@ -1919,26 +1919,62 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									}
 									if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
 										showIntructions = true;
-										prescriptionItem.setInstructions(
-												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-														? "<b>Instruction : </b>" + prescriptionItem.getInstructions()
-														: null);
+										if (printSettings.getContentSetup() != null) {
+											if (printSettings.getContentSetup().getInstructionAlign() != null
+													&& printSettings.getContentSetup().getInstructionAlign()
+															.equals(FieldAlign.HORIZONTAL)) {
+												prescriptionItem.setInstructions(!DPDoctorUtils
+														.anyStringEmpty(prescriptionItem.getInstructions())
+																? "<b>Instruction </b> : "
+																		+ prescriptionItem.getInstructions()
+																: null);
+											} else {
+												prescriptionItem.setInstructions(!DPDoctorUtils
+														.anyStringEmpty(prescriptionItem.getInstructions())
+																? prescriptionItem.getInstructions() : null);
+											}
+										} else {
+											prescriptionItem.setInstructions(
+													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+															? prescriptionItem.getInstructions() : null);
+										}
 									}
 									String duration = "";
 									if (durationValue == "" && durationValue == "")
 										duration = "--";
 									else
 										duration = durationValue + " " + durationUnit;
+									PrescriptionJasperDetails prescriptionJasperDetails = null;
+									if (printSettings.getContentSetup() != null) {
+										if (printSettings.getContentSetup().getInstructionAlign() != null
+												&& printSettings.getContentSetup().getInstructionAlign()
+														.equals(FieldAlign.HORIZONTAL)) {
 
-									PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(
-											++no, drugName,
-											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-													? prescriptionItem.getDosage() : "--",
-											duration, directions.isEmpty() ? "--" : directions,
-											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : "--",
-											genericName);
-
+											prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+															? prescriptionItem.getDosage() : "--",
+													duration, directions.isEmpty() ? "--" : directions,
+													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+															? prescriptionItem.getInstructions() : "--",
+													genericName);
+										} else {
+											prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+															? prescriptionItem.getDosage() : "--",
+													duration, directions.isEmpty() ? "--" : directions,
+													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+															? prescriptionItem.getInstructions() : null,
+													genericName);
+										}
+									} else {
+										prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+														? prescriptionItem.getDosage() : "--",
+												duration, directions.isEmpty() ? "--" : directions,
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? prescriptionItem.getInstructions() : null,
+												genericName);
+									}
 									prescriptionItems.add(prescriptionJasperDetails);
 								}
 							}

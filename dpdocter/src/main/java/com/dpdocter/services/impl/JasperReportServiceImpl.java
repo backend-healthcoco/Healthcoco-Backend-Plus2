@@ -1311,7 +1311,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
 			band.addElement(jrDesignTextField);
 		}
-		if (showDirection && showIntructions && instructionAlign.equalsIgnoreCase("HORIZONTAL")) {
+		if (showDirection && showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Duration}"));
 			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
@@ -1345,7 +1345,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
 			band.addElement(jrDesignTextField);
-			if (showIntructions && instructionAlign.equalsIgnoreCase("HORIZONTAL")) {
+			if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 				jrDesignTextField = new JRDesignTextField();
 				jrDesignTextField.setExpression(new JRDesignExpression("$P{Instruction}"));
 				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth);
@@ -1427,7 +1427,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 		}
 
-		if (showDirection && showIntructions && instructionAlign.equalsIgnoreCase("HORIZONTAL")) {
+		if (showDirection && showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{duration}"));
 			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
@@ -1437,7 +1437,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 
-			if (showIntructions && instructionAlign.equalsIgnoreCase("HORIZONTAL")) {
+			if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 				jrDesignTextField = new JRDesignTextField();
 				jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
 				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
@@ -1457,7 +1457,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 
-			if (showIntructions && instructionAlign.equalsIgnoreCase("HORIZONTAL")) {
+			if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 				jrDesignTextField = new JRDesignTextField();
 				jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
 				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth);
@@ -1471,12 +1471,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
+		if (showIntructions && instructionAlign.equalsIgnoreCase("HORIZONTAL")) {
 			band = new JRDesignBand();
+			band.setPrintWhenExpression(
+					new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
 			band.setSplitType(SplitTypeEnum.STRETCH);
 			band.setHeight(18);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(
+					new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
 			jrDesignTextField.setX(35);
 			jrDesignTextField.setY(0);
@@ -1628,12 +1632,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}"));
-			jrDesignTextField.setBold(true);
 			jrDesignTextField.setFontSize(new Float(contentFontSize));
 			jrDesignTextField.setX(0);
 			jrDesignTextField.setY(Startwith);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(columnWidth - 176);
+			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
@@ -1643,7 +1646,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
 			jrDesignLine.setX(0);
-			jrDesignLine.setY(25);
+			jrDesignLine.setY(Startwith);
 			jrDesignLine.setHeight(1);
 			jrDesignLine.setWidth(columnWidth);
 			band.addElement(jrDesignLine);
@@ -1651,7 +1654,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
 			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setY(Startwith + 2);
 			jrDesignTextField.setHeight(40);
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setMarkup("html");
