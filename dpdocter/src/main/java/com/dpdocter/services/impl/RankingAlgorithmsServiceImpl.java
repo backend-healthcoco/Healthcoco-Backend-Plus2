@@ -48,6 +48,8 @@ import com.dpdocter.response.PharmacyWithRankingDetailResponse;
 import com.dpdocter.services.RankingAlgorithmsServices;
 import com.mongodb.BasicDBObject;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 
@@ -278,8 +280,8 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					new CustomAggregationOperation(new BasicDBObject("$project",
 						    new BasicDBObject("doctor.experience.experience", new BasicDBObject(
 						        "$cond", new BasicDBObject(
-						          "if", new BasicDBObject("$eq", Arrays.asList("$experience.period", DoctorExperienceUnit.YEAR.name())))
-						        .append("then", new BasicDBObject("$multiply", Arrays.asList(12, "$doctor.experience.experience")))
+						          "if", new BasicDBObject("$eq", Arrays.asList("$experience.period", DoctorExperienceUnit.MONTH.name())))
+						        .append("then", new BasicDBObject("$divide", Arrays.asList("$doctor.experience.experience", 12)))
 						        .append("else", "$doctor.experience.experience")))
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
@@ -292,7 +294,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					
 					new CustomAggregationOperation(new BasicDBObject("$group",
 						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
-						    .append("experienceInMonth", new BasicDBObject("$first","$doctor.experience.experience"))
+						    .append("experienceInYear", new BasicDBObject("$first","$doctor.experience.experience"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
@@ -302,7 +304,20 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 					
 					new CustomAggregationOperation(new BasicDBObject("$project",
-						    new BasicDBObject("experienceInMonth", "$experienceInMonth")
+						    new BasicDBObject("experienceInYear", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$gte", Arrays.asList("$experienceInYear", 20)))
+									        .append("then", 0.2)
+									        .append("else",  new BasicDBObject("$cond", new BasicDBObject(
+													          "if", new BasicDBObject("$gte", Arrays.asList("$experienceInYear", 10)))
+									        					  .append("then", 0.175)
+									        					  .append("else", new BasicDBObject("$cond", new BasicDBObject(
+									        								      "if", new BasicDBObject("$gte", Arrays.asList("$experienceInYear", 5)))
+																			   .append("then", 0.15)
+																			   .append("else",new BasicDBObject("$cond", new BasicDBObject(
+																							  "if", new BasicDBObject("$gte", Arrays.asList("$experienceInYear", 0)))
+																							  .append("then", 0.1)
+																							  .append("else",0)))))))))
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
@@ -315,7 +330,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					
 					new CustomAggregationOperation(new BasicDBObject("$group",
 						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
-						    .append("experienceInMonth", new BasicDBObject("$first","$experienceInMonth"))
+						    .append("experienceInYear", new BasicDBObject("$first","$experienceInYear"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
@@ -326,12 +341,17 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$likes").append("preserveNullAndEmptyArrays", true))),
 					
 					new CustomAggregationOperation(new BasicDBObject("$project",
-						    new BasicDBObject("experienceInMonth", "$experienceInMonth")
+						    new BasicDBObject("experienceInYear", "$experienceInYear")
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", "$patientCount")
+						    .append("patientCountAdditionalIncrement", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$gte", Arrays.asList("$patientCount", 50)))
+									        .append("then", 0.1)
+									        .append("else", 0)))
 						    .append("noOfLikes", new BasicDBObject(
 							        "$cond", new BasicDBObject(
 									          "if", new BasicDBObject("$eq", Arrays.asList("$likes.discarded", false)))
@@ -340,30 +360,27 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					
 					new CustomAggregationOperation(new BasicDBObject("$group",
 						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
-						    .append("experienceInMonth", new BasicDBObject("$first","$experienceInMonth"))
+						    .append("experienceInYear", new BasicDBObject("$first","$experienceInYear"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
+						    .append("patientCountAdditionalIncrement", new BasicDBObject("$first","$patientCountAdditionalIncrement"))
 						    .append("noOfLikes", new BasicDBObject("$sum","$noOfLikes")))),				
 					
 					new CustomAggregationOperation(new BasicDBObject("$project",
-						    new BasicDBObject("experienceInMonth", new BasicDBObject(
-						        "$cond", new BasicDBObject(
-						          "if", new BasicDBObject("$eq", Arrays.asList("$experienceInMonth", null)))
-						        .append("then", 0)
-						        .append("else", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$experienceInMonth", 100)), doctorExperienceWeightageInPercentage)))))
-						    .append("doctorId", "$doctorId")
+						    new BasicDBObject("experienceInYear", "$experienceInYear")
+						    	.append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
 						    .append("rxCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$rxCount", rxCount)), noOfRxByDoctorWeightageInPercentage)))
-						    .append("patientCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$patientCount", patientCount)), noOfPatientsOfDoctorWeightageInPercentage)))
+						    .append("patientCount", new BasicDBObject("$add", Arrays.asList("$patientCountAdditionalIncrement", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$patientCount", patientCount)), noOfPatientsOfDoctorWeightageInPercentage)))))
 						    .append("noOfLikes", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$noOfLikes", likesCount)), noOfLikesToDoctorWeightageInPercentage))))),
 					
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
-						    .append("experienceInMonth", new BasicDBObject("$first","$experienceInMonth"))
+						    .append("experienceInYear", new BasicDBObject("$first","$experienceInYear"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
@@ -372,20 +389,21 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes")))),
 					
 					new CustomAggregationOperation(new BasicDBObject("$project",
-						    new BasicDBObject("experienceInMonth", "$experienceInMonth")
+						    new BasicDBObject("experienceInYear", "$experienceInYear")
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", "$patientCount")
 						    .append("noOfLikes", "$noOfLikes")
-						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInMonth", "$rxCount", "$patientCount", "$noOfLikes"))))),
+						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInYear", "$rxCount", "$patientCount", "$noOfLikes"))))),
 					
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
-						    .append("experienceInMonth", new BasicDBObject("$first","$experienceInMonth"))
+						    .append("experienceInYear", new BasicDBObject("$first","$experienceInYear"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
+						    .append("resourceName",  new BasicDBObject("$first","$resourceName"))
 						    .append("rankingCountResponse", new BasicDBObject("$first","$rankingCountResponse"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
@@ -398,39 +416,41 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 			int i = 1;
 			for(DoctorWithRankingDetailResponse detailResponse : doctorWithRankingDetailResponses) {
 				
-				RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationId(new ObjectId(detailResponse.getDoctorId()), new ObjectId(detailResponse.getLocationId()), Resource.DOCTOR.getType());
-				if(rankingCountCollection == null) {
-					rankingCountCollection = new RankingCountCollection();
-					rankingCountCollection.setCreatedTime(new Date());
+				if(!DPDoctorUtils.anyStringEmpty(detailResponse.getDoctorId(), detailResponse.getLocationId())) {
+					RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationId(new ObjectId(detailResponse.getDoctorId()), new ObjectId(detailResponse.getLocationId()), Resource.DOCTOR.getType());
+					if(rankingCountCollection == null) {
+						rankingCountCollection = new RankingCountCollection();
+						rankingCountCollection.setCreatedTime(new Date());
+					}
+					rankingCountCollection.setRankingCount(i++);
+					rankingCountCollection.setResourceType(Resource.DOCTOR);
+					rankingCountCollection.setUpdatedTime(new Date());
+					rankingCountCollection.setResourceId(new ObjectId(detailResponse.getDoctorId()));
+					rankingCountCollection.setLocationId(new ObjectId(detailResponse.getLocationId()));
+					rankingCountCollection.setTotalCountInPercentage(detailResponse.getTotalCount());
+					rankingCountCollection.setResourceName(detailResponse.getResourceName());
+					List<RankingCountParametersWithValueInPercentage> parameters = new ArrayList<RankingCountParametersWithValueInPercentage>();
+					
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.APPOINTMENT, 0));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.EXPERIENCE, detailResponse.getExperienceInYear()));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.FEEDBACK, 0));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_LIKES, detailResponse.getNoOfLikes()));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_PATIENTS, detailResponse.getPatientCount()));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_RX, detailResponse.getRxCount()));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.RECOMMENDATIONS, 0));
+					rankingCountCollection.setParameters(parameters);
+					
+					rankingCountCollection = rankingCountRepository.save(rankingCountCollection);
+					
+					DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(rankingCountCollection.getResourceId(), rankingCountCollection.getLocationId());
+					clinicProfileCollection.setRankingCount(rankingCountCollection.getRankingCount());
+					clinicProfileCollection.setUpdatedTime(new Date());
+					clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
+					
+					ESDoctorDocument doctorDocument = esDoctorRepository.findByUserIdAndLocationId(detailResponse.getDoctorId(), detailResponse.getLocationId());
+					doctorDocument.setRankingCount(clinicProfileCollection.getRankingCount());
+					esDoctorRepository.save(doctorDocument);
 				}
-				rankingCountCollection.setRankingCount(i++);
-				rankingCountCollection.setResourceType(Resource.DOCTOR);
-				rankingCountCollection.setUpdatedTime(new Date());
-				rankingCountCollection.setResourceId(new ObjectId(detailResponse.getDoctorId()));
-				rankingCountCollection.setLocationId(new ObjectId(detailResponse.getLocationId()));
-				rankingCountCollection.setTotalCountInPercentage(detailResponse.getTotalCount());
-				rankingCountCollection.setResourceName(detailResponse.getResourceName());
-				List<RankingCountParametersWithValueInPercentage> parameters = new ArrayList<RankingCountParametersWithValueInPercentage>();
-				
-				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.APPOINTMENT, 0));
-				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.EXPERIENCE, detailResponse.getExperienceInMonth()));
-				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.FEEDBACK, 0));
-				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_LIKES, detailResponse.getNoOfLikes()));
-				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_PATIENTS, detailResponse.getPatientCount()));
-				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_RX, detailResponse.getRxCount()));
-				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.RECOMMENDATIONS, 0));
-				rankingCountCollection.setParameters(parameters);
-				
-				rankingCountCollection = rankingCountRepository.save(rankingCountCollection);
-				
-				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(rankingCountCollection.getResourceId(), rankingCountCollection.getLocationId());
-				clinicProfileCollection.setRankingCount(rankingCountCollection.getRankingCount());
-				clinicProfileCollection.setUpdatedTime(new Date());
-				clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
-				
-				ESDoctorDocument doctorDocument = esDoctorRepository.findByUserIdAndLocationId(detailResponse.getDoctorId(), detailResponse.getLocationId());
-				doctorDocument.setRankingCount(clinicProfileCollection.getRankingCount());
-				esDoctorRepository.save(doctorDocument);
 			}		
 		} catch (Exception e) {
 			e.printStackTrace();
