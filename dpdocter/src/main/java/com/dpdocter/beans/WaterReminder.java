@@ -2,7 +2,9 @@ package com.dpdocter.beans;
 
 public class WaterReminder {
 
-	private Boolean remindAtNine = false;
+	private Boolean remind = false;
+	
+	private long remindAt;
 	
 	private long startTime;
 	
@@ -12,12 +14,20 @@ public class WaterReminder {
 	
 	private String repeatType;
 
-	public Boolean getRemindAtNine() {
-		return remindAtNine;
+	public Boolean getRemind() {
+		return remind;
 	}
 
-	public void setRemindAtNine(Boolean remindAtNine) {
-		this.remindAtNine = remindAtNine;
+	public void setRemind(Boolean remind) {
+		this.remind = remind;
+	}
+
+	public long getRemindAt() {
+		return remindAt;
+	}
+
+	public void setRemindAt(long remindAt) {
+		this.remindAt = remindAt;
 	}
 
 	public long getStartTime() {
@@ -54,7 +64,8 @@ public class WaterReminder {
 
 	@Override
 	public String toString() {
-		return "WaterReminder [remindAtNine=" + remindAtNine + ", startTime=" + startTime + ", endTime=" + endTime
-				+ ", repeatValue=" + repeatValue + ", repeatType=" + repeatType + "]";
+		return "WaterReminder [remind=" + remind + ", remindAt=" + remindAt + ", startTime=" + startTime + ", endTime="
+				+ endTime + ", repeatValue=" + repeatValue + ", repeatType=" + repeatType + "]";
 	}
+
 }
