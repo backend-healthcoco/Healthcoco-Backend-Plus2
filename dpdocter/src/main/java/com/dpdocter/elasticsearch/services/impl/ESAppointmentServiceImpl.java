@@ -582,7 +582,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.must(QueryBuilders.matchQuery("isDoctorListed", true))
 						.must(QueryBuilders.matchQuery("isClinic", true));
-				if (specialityIdSet != null) {
+				if (specialityIdSet != null && !specialityIdSet.isEmpty()) {
 					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
 				}
 
@@ -646,7 +646,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							.build();
 
 				response = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-System.out.println(response);
+
 				if (response != null && esDoctorDocuments == null)
 					esDoctorDocuments = new ArrayList<ESDoctorDocument>();
 				if (esDoctorDocuments != null) {
@@ -659,7 +659,7 @@ System.out.println(response);
 				}
 
 			} while (citylatitude == null && citylongitude == null && distance <= 30 && response.size() < 10);
-			System.out.println(esDoctorDocuments);
+			
 			if (esDoctorDocuments != null) {
 
 				List<String> specialities = null;

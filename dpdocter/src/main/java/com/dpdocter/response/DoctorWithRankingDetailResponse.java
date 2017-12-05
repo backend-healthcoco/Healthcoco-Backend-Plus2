@@ -1,7 +1,5 @@
 package com.dpdocter.response;
 
-import com.dpdocter.collections.RankingCountCollection;
-
 public class DoctorWithRankingDetailResponse {
 
 	private String doctorId;
@@ -10,7 +8,7 @@ public class DoctorWithRankingDetailResponse {
 	
 	private String resourceName;
 	
-	private Double experienceInMonth = 0.0;
+	private Double experienceInYear = 0.0;
 	
 	private Double rxCount = 0.0;
 	
@@ -36,14 +34,6 @@ public class DoctorWithRankingDetailResponse {
 
 	public void setResourceName(String resourceName) {
 		this.resourceName = resourceName;
-	}
-
-	public Double getExperienceInMonth() {
-		return experienceInMonth;
-	}
-
-	public void setExperienceInMonth(Double experienceInMonth) {
-		this.experienceInMonth = experienceInMonth;
 	}
 
 	public Double getRxCount() {
@@ -94,13 +84,20 @@ public class DoctorWithRankingDetailResponse {
 		this.locationId = locationId;
 	}
 
+	public Double getExperienceInYear() {
+		return experienceInYear;
+	}
+
+	public void setExperienceInYear(Double experienceInYear) {
+		this.experienceInYear = experienceInYear;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorWithRankingDetailResponse [doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", resourceName=" + resourceName + ", experienceInMonth=" + experienceInMonth
-			    + ", rxCount=" + rxCount + ", patientCount="
-				+ patientCount + ", totalCount=" + totalCount + ", noOfLikes=" + noOfLikes + ", rankingCount="
-				+ rankingCount + "]";
+				+ ", resourceName=" + resourceName + ", experienceInYear=" + experienceInYear + ", rxCount=" + rxCount
+				+ ", patientCount=" + patientCount + ", totalCount=" + totalCount + ", noOfLikes=" + noOfLikes
+				+ ", rankingCount=" + rankingCount + "]";
 	}
 
 }
