@@ -2819,7 +2819,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId, String from, String to) {
 		LocationWithPatientQueueDetails response = null;
 		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId));
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state").ne(AppointmentState.CANCEL.getState());
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			
 			
