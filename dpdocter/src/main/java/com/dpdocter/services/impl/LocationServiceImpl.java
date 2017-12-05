@@ -873,10 +873,10 @@ public class LocationServiceImpl implements LocationServices {
 							.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
 					pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
 							RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
-					;
 
 					// pushNotificationServices.notifyPharmacy(id, requestId,
 					// responseId, role, message);
+
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
 				labTestPickupCollection.setIsCompleted(false);

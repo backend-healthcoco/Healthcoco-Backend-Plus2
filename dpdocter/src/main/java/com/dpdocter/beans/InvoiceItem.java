@@ -10,27 +10,29 @@ import com.dpdocter.enums.PatientTreatmentStatus;
 public class InvoiceItem {
 
 	private ObjectId itemId;
-	
+
 	private ObjectId doctorId;
-	
+
 	private String doctorName;
-	
+
 	private String name;
-	
-	private InvoiceItemType type;// = [SERVICE || PRODUCT] 
-	
+
+	private InvoiceItemType type;// = [SERVICE || PRODUCT]
+
 	private Quantity quantity;
-	
+
 	private PatientTreatmentStatus status;
-	
+
 	private Double cost = 0.0;
 
 	private Discount discount;
-	
+
 	private Tax tax;
 
 	private Double finalCost = 0.0;
-	
+
+	private String batchId;
+
 	public List<TreatmentFields> getTreatmentFields() {
 		return treatmentFields;
 	}
@@ -40,7 +42,6 @@ public class InvoiceItem {
 	}
 
 	private List<TreatmentFields> treatmentFields;
-	
 
 	public ObjectId getItemId() {
 		return itemId;
@@ -128,6 +129,14 @@ public class InvoiceItem {
 
 	public void setFinalCost(Double finalCost) {
 		this.finalCost = finalCost;
+	}
+
+	public String getBatchId() {
+		return batchId;
+	}
+
+	public void setBatchId(String batchId) {
+		this.batchId = batchId;
 	}
 
 	@Override

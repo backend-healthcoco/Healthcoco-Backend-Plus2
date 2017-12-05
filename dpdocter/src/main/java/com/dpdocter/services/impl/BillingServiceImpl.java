@@ -28,6 +28,7 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
@@ -41,6 +42,7 @@ import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.InventoryStockCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -57,6 +59,8 @@ import com.dpdocter.repository.DoctorPatientDueAmountRepository;
 import com.dpdocter.repository.DoctorPatientInvoiceRepository;
 import com.dpdocter.repository.DoctorPatientLedgerRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
+import com.dpdocter.repository.InventoryItemRepository;
+import com.dpdocter.repository.InventoryStockRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -118,6 +122,9 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private MailService mailService;
+
+	@Autowired
+	private InventoryServiceImpl inventoryServiceImpl;
 
 	@Value(value = "${jasper.print.receipt.a4.fileName}")
 	private String receiptA4FileName;
@@ -280,6 +287,9 @@ public class BillingServiceImpl implements BillingService {
 										+ doctor.getFirstName());
 					}
 				}
+
+				createInventoryStock(invoiceItemResponse.getItemId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+								
 				InvoiceItem invoiceItem = new InvoiceItem();
 
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
@@ -956,7 +966,7 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
-
+				createInventoryStock(invoiceItemResponse.getItemId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
@@ -1814,6 +1824,28 @@ public class BillingServiceImpl implements BillingService {
 			throw new BusinessException(ServiceError.Unknown, "Error while getting invoices" + e);
 		}
 		return response;
+	}
+
+	/*
+	 * private void updateInventoryItem(String itemId, String locationId ,
+	 * String hospitalId , Quantity quantity) { InventoryStockCollection
+	 * inventoryStockCollection =
+	 * inventoryStockRepository.getByResourceIdLocationIdHospitalId(itemId,
+	 * locationId, hospitalId); if(inventoryStockCollection != null) { Long
+	 * stockCount = inventoryStockCollection.g } }
+	 */
+
+	private void createInventoryStock(String itemId, String batchId, String patientId, String doctorId,
+			String locationId, String hospitalId) {
+		InventoryStock inventoryStock = new InventoryStock();
+		inventoryStock.setBatchId(batchId);
+		inventoryStock.setItemId(itemId);
+		inventoryStock.setPatientId(patientId);
+		inventoryStock.setDoctorId(doctorId);
+		inventoryStock.setLocationId(locationId);
+		inventoryStock.setHospitalId(hospitalId);
+		inventoryStock.setStockType("CONSUMED");
+		inventoryStock = inventoryServiceImpl.addInventoryStock(inventoryStock);
 	}
 
 }

@@ -7,4 +7,6 @@ import com.dpdocter.collections.InventoryStockCollection;
 
 public interface InventoryStockRepository extends MongoRepository<InventoryStockCollection, ObjectId>{
 
+	public InventoryStockCollection getByResourceIdLocationIdHospitalId(String resourceId,String locationId,String hospitalId);
+	
 }
