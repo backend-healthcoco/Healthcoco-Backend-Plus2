@@ -80,7 +80,6 @@ import com.dpdocter.beans.TemplateAddItem;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.beans.TestAndRecordData;
-import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.collections.AdviceCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -102,7 +101,6 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TemplateCollection;
-import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
@@ -111,6 +109,7 @@ import com.dpdocter.elasticsearch.document.ESGenericCodesAndReactions;
 import com.dpdocter.elasticsearch.repository.ESGenericCodesAndReactionsRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.enums.Range;
@@ -3739,9 +3738,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 							}
 							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
-								prescriptionItem.setInstructions(
-										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-												? "<b>Instruction : </b>" + prescriptionItem.getInstructions() : null);
+								if (printSettings.getContentSetup() != null) {
+									if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
+											.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
+										prescriptionItem.setInstructions(
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? "<b>Instruction </b>: " + prescriptionItem.getInstructions()
+														: null);
+									} else {
+										prescriptionItem.setInstructions(
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? prescriptionItem.getInstructions() : null);
+									}
+								} else {
+									prescriptionItem.setInstructions(
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : null);
+								}
+
 								showIntructions = true;
 							}
 							String duration = "";
@@ -3751,14 +3765,36 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								duration = durationValue + " " + durationUnit;
 							no = no + 1;
 
-							PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
-									drugName,
-									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-											? prescriptionItem.getDosage() : "--",
-									duration, directions.isEmpty() ? "--" : directions,
-									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-											? prescriptionItem.getInstructions() : "",
-									genericName);
+							PrescriptionJasperDetails prescriptionJasperDetails = null;
+							if (printSettings.getContentSetup() != null) {
+								if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
+										.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
+
+									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+													? prescriptionItem.getDosage() : "--",
+											duration, directions.isEmpty() ? "--" : directions,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : "--",
+											genericName);
+								} else {
+									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+													? prescriptionItem.getDosage() : "--",
+											duration, directions.isEmpty() ? "--" : directions,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : null,
+											genericName);
+								}
+							} else {
+								prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+												? prescriptionItem.getDosage() : "--",
+										duration, directions.isEmpty() ? "--" : directions,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+												? prescriptionItem.getInstructions() : null,
+										genericName);
+							}
 							prescriptionItems.add(prescriptionJasperDetails);
 						}
 					}
