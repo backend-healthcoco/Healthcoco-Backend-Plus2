@@ -31,6 +31,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.beans.SMS;
@@ -1274,17 +1275,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				doctorResponse.setSpeciality(StringUtils.capitalize(speciality));
 
-				doctorResponse.setMetaData(speciality + "s in ");
+				doctorResponse.setMetaData(StringUtils.capitalize(speciality) + "s in ");
 			} else {
-				doctorResponse.setMetaData("doctors in ");
+				doctorResponse.setMetaData("Doctors in ");
+
+				doctorResponse.setSpeciality("ALL Specialities");
+
 			}
 			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
 
-				doctorResponse.setMetaData(doctorResponse.getMetaData() + locality + ", ");
+				doctorResponse.setMetaData(doctorResponse.getMetaData() + StringUtils.capitalize(locality) + ", ");
 			}
-			doctorResponse.setMetaData(doctorResponse.getMetaData() + city);
-			doctorResponse.setSpeciality(speciality);
+			if (DPDoctorUtils.anyStringEmpty(city)) {
+				city = "Nagpur";
+			}
+			doctorResponse.setMetaData(doctorResponse.getMetaData() + StringUtils.capitalize(city));
 
 		} catch (Exception e) {
 			e.printStackTrace();
