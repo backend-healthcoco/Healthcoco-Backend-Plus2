@@ -1366,7 +1366,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			ObjectId doctorId) {
 		parameters.put("printSettingsId",
 				(printSettings != null && printSettings.getId() != null) ? printSettings.getId().toString() : "");
-		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
+		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "", footerSignature = "",
+				poweredBy = "", bottomSignText = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
 		Integer contentFontSize = 10;
 		if (printSettings != null) {
@@ -1453,27 +1454,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
 				if (doctorUser != null)
-					parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
-			} else {
-				parameters.put("footerSignature", "");
+					footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
 			}
 			if (printSettings.getFooterSetup() != null) {
 				if (printSettings.getFooterSetup().getShowPoweredBy()) {
-					parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
-				} else {
-					parameters.put("poweredBy", "");
+					poweredBy = "<font color='#9d9fa0'>" + footerText + "</font>";
 				}
 				if (printSettings.getFooterSetup().getShowBottomSignText()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
-					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
-				} else {
-					parameters.put("bottomSignText", "");
+					bottomSignText = printSettings.getFooterSetup().getBottomSignText();
 				}
-			} else {
-				parameters.put("poweredBy", "");
-				parameters.put("bottomSignText", "");
 			}
 		}
+		parameters.put("footerSignature", footerSignature);
+		parameters.put("poweredBy", poweredBy);
+		parameters.put("bottomSignText", bottomSignText);
 		parameters.put("contentFontSize", contentFontSize);
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
