@@ -76,6 +76,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.services.BillingService;
 import com.dpdocter.services.EmailTackService;
+import com.dpdocter.services.InventoryService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -124,7 +125,7 @@ public class BillingServiceImpl implements BillingService {
 	private MailService mailService;
 
 	@Autowired
-	private InventoryServiceImpl inventoryServiceImpl;
+	private InventoryService inventoryService;
 
 	@Value(value = "${jasper.print.receipt.a4.fileName}")
 	private String receiptA4FileName;
@@ -1845,7 +1846,7 @@ public class BillingServiceImpl implements BillingService {
 		inventoryStock.setLocationId(locationId);
 		inventoryStock.setHospitalId(hospitalId);
 		inventoryStock.setStockType("CONSUMED");
-		inventoryStock = inventoryServiceImpl.addInventoryStock(inventoryStock);
+		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
 
 }
