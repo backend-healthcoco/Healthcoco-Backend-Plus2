@@ -257,7 +257,7 @@ public class ContactsApi {
 	@Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
 	@GET
 	@ApiOperation(value = PathProxy.ContactsUrls.GET_ALL_GROUPS, notes = PathProxy.ContactsUrls.GET_ALL_GROUPS)
-	public Response<Group> getAllGroups(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Object> getAllGroups(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
@@ -269,22 +269,27 @@ public class ContactsApi {
 		}
 		List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
 				discarded);
-
+		Response<Object> response = new Response<Object>();
 		if (groups != null) {
 			for (Group group : groups) {
 				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
 				getDoctorContactsRequest.setDoctorId(doctorId);
 				List<String> groupList = new ArrayList<String>();
 				groupList.add(group.getId());
+
 				if (DPDoctorUtils.anyStringEmpty(group.getPackageType())) {
-					group.setPackageType(PackageType.ADVANCE.getType());
+					response.setData(PackageType.ADVANCE.getType());
+				} else {
+					response.setData(group.getPackageType());
 				}
 				getDoctorContactsRequest.setGroups(groupList);
 				int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
 				group.setCount(ttlCount);
 			}
+		} else {
+			response.setData(PackageType.ADVANCE.getType());
 		}
-		Response<Group> response = new Response<Group>();
+
 		response.setDataList(groups);
 		return response;
 	}
