@@ -7,7 +7,7 @@ import com.dpdocter.collections.GenericCollection;
 public class LabTestPickup extends GenericCollection {
 
 	private String id;
-	private PatientLabTestSample patientLabTestSample;
+	private List<PatientLabTestSample> patientLabTestSamples;
 	private String daughterLabCRN;
 	private String parentLabCRN;
 	private Long pickupTime;
@@ -62,14 +62,6 @@ public class LabTestPickup extends GenericCollection {
 
 	public void setDeliveryTime(Long deliveryTime) {
 		this.deliveryTime = deliveryTime;
-	}
-
-	public PatientLabTestSample getPatientLabTestSample() {
-		return patientLabTestSample;
-	}
-
-	public void setPatientLabTestSample(PatientLabTestSample patientLabTestSample) {
-		this.patientLabTestSample = patientLabTestSample;
 	}
 
 	public String getStatus() {
@@ -162,13 +154,21 @@ public class LabTestPickup extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "LabTestPickup [id=" + id + ", patientLabTestSample=" + patientLabTestSample + ", daughterLabCRN="
+		return "LabTestPickup [id=" + id + ", patientLabTestSamples=" + patientLabTestSamples + ", daughterLabCRN="
 				+ daughterLabCRN + ", parentLabCRN=" + parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime="
 				+ deliveryTime + ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId="
 				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
 				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted
 				+ ", collectionBoyId=" + collectionBoyId + ", serialNumber=" + serialNumber + "]";
+	}
+
+	public List<PatientLabTestSample> getPatientLabTestSamples() {
+		return patientLabTestSamples;
+	}
+
+	public void setPatientLabTestSamples(List<PatientLabTestSample> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
 	}
 
 }

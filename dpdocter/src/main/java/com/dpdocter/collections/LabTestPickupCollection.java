@@ -3,12 +3,11 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.elasticsearch.common.collect.HppcMaps.Object;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.LabTestSample;
+import com.dpdocter.beans.PatientLabTestItem;
 import com.dpdocter.beans.PatientLabTestSample;
 
 @Document(collection = "lab_test_pickup_cl")
@@ -17,21 +16,13 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String patientName;
-	@Field
-	private Integer age;
-	@Field
-	private String gender;
-	@Field
-	private String mobileNumber;
-	@Field
 	private String daughterLabCRN;
 	@Field
 	private Long pickupTime;
 	@Field
 	private Long deliveryTime;
 	@Field
-	private PatientLabTestSample patientLabTestSample;
+	private List<PatientLabTestItem> patientLabTestSamples;
 	@Field
 	private String status;
 	@Field
@@ -175,52 +166,19 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.serialNumber = serialNumber;
 	}
 
-	public String getPatientName() {
-		return patientName;
+	public List<PatientLabTestItem> getPatientLabTestSamples() {
+		return patientLabTestSamples;
 	}
 
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
-
-	public Integer getAge() {
-		return age;
-	}
-
-	public void setAge(Integer age) {
-		this.age = age;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
-	public PatientLabTestSample getPatientLabTestSample() {
-		return patientLabTestSample;
-	}
-
-	public void setPatientLabTestSample(PatientLabTestSample patientLabTestSample) {
-		this.patientLabTestSample = patientLabTestSample;
+	public void setPatientLabTestSamples(List<PatientLabTestItem> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
 	}
 
 	@Override
 	public String toString() {
-		return "LabTestPickupCollection [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender="
-				+ gender + ", mobileNumber=" + mobileNumber + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime="
-				+ pickupTime + ", deliveryTime=" + deliveryTime + ", patientLabTestSample=" + patientLabTestSample
-				+ ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
+		return "LabTestPickupCollection [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime=" + pickupTime
+				+ ", deliveryTime=" + deliveryTime + ", patientLabTestSamples=" + patientLabTestSamples + ", status="
+				+ status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
 				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
 				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted

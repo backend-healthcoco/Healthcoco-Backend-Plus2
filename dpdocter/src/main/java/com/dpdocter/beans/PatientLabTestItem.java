@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-public class PatientLabTestSample {
+public class PatientLabTestItem {
 
 	private String patientName;
 	private String mobileNumber;
 	private Integer age;
 	private String gender;
-	private List<LabTestSample> labTestSamples;
+	private List<ObjectId> labTestSampleIds;
 
 	public String getPatientName() {
 		return patientName;
@@ -44,18 +44,18 @@ public class PatientLabTestSample {
 		this.gender = gender;
 	}
 
-	public List<LabTestSample> getLabTestSamples() {
-		return labTestSamples;
+	public List<ObjectId> getLabTestSampleIds() {
+		return labTestSampleIds;
 	}
 
-	public void setLabTestSamples(List<LabTestSample> labTestSamples) {
-		this.labTestSamples = labTestSamples;
+	public void setLabTestSampleIds(List<ObjectId> labTestSampleIds) {
+		this.labTestSampleIds = labTestSampleIds;
 	}
 
 	@Override
 	public String toString() {
-		return "PatientLabTestSample [patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age=" + age
-				+ ", gender=" + gender + ", labTestSamples=" + labTestSamples + "]";
+		return "PatientLabTestItem [patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age=" + age
+				+ ", gender=" + gender + ", labTestSampleIds=" + labTestSampleIds + "]";
 	}
 
 }

@@ -1,11 +1,12 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
 import java.util.List;
 
 import org.bson.types.ObjectId;
 
-public class PatientLabTestSample {
+import com.dpdocter.beans.LabTestSample;
 
+public class PatientLabTestsampleRequest {
 	private String patientName;
 	private String mobileNumber;
 	private Integer age;
@@ -54,8 +55,12 @@ public class PatientLabTestSample {
 
 	@Override
 	public String toString() {
-		return "PatientLabTestSample [patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age=" + age
-				+ ", gender=" + gender + ", labTestSamples=" + labTestSamples + "]";
+		return "PatientLabTestsampleRequest [patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
+				+ age + ", gender=" + gender + ", labTestSamples=" + labTestSamples + "]";
 	}
+
+	
+
+	
 
 }

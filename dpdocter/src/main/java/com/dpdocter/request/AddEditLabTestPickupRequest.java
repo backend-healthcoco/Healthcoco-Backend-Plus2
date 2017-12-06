@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
 import com.dpdocter.beans.PatientLabTestSample;
 
 public class AddEditLabTestPickupRequest {
@@ -8,7 +10,7 @@ public class AddEditLabTestPickupRequest {
 	private String daughterLabCRN;
 	private Long pickupTime;
 	private Long deliveryTime;
-	private PatientLabTestSample patientLabTestSample;
+	private List<PatientLabTestsampleRequest> patientLabTestSamples;
 	private String status;
 	private String doctorId;
 	private String daughterLabLocationId;
@@ -123,18 +125,18 @@ public class AddEditLabTestPickupRequest {
 		this.isCompleted = isCompleted;
 	}
 
-	public PatientLabTestSample getPatientLabTestSample() {
-		return patientLabTestSample;
+	public List<PatientLabTestsampleRequest> getPatientLabTestSamples() {
+		return patientLabTestSamples;
 	}
 
-	public void setPatientLabTestSample(PatientLabTestSample patientLabTestSample) {
-		this.patientLabTestSample = patientLabTestSample;
+	public void setPatientLabTestSamples(List<PatientLabTestsampleRequest> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
 	}
 
 	@Override
 	public String toString() {
 		return "AddEditLabTestPickupRequest [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime="
-				+ pickupTime + ", deliveryTime=" + deliveryTime + ", patientLabTestSample=" + patientLabTestSample
+				+ pickupTime + ", deliveryTime=" + deliveryTime + ", patientLabTestSamples=" + patientLabTestSamples
 				+ ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
 				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="

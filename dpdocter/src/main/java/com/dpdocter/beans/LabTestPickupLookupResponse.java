@@ -11,7 +11,7 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 	private String parentLabCRN;
 	private Long pickupTime;
 	private Long deliveryTime;
-	private PatientLabTestSample patientLabTestSample;
+	private List<PatientLabTestSample> patientLabTestSamples;
 	private String status;
 	private String doctorId;
 	private String daughterLabLocationId;
@@ -25,6 +25,14 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 	private Location parentLab;
 	private Location daughterLab;
 	private CollectionBoy collectionBoy;
+
+	public List<PatientLabTestSample> getPatientLabTestSamples() {
+		return patientLabTestSamples;
+	}
+
+	public void setPatientLabTestSamples(List<PatientLabTestSample> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
+	}
 
 	public String getId() {
 		return id;
@@ -64,14 +72,6 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 
 	public void setDeliveryTime(Long deliveryTime) {
 		this.deliveryTime = deliveryTime;
-	}
-
-	public PatientLabTestSample getPatientLabTestSample() {
-		return patientLabTestSample;
-	}
-
-	public void setPatientLabTestSample(PatientLabTestSample patientLabTestSample) {
-		this.patientLabTestSample = patientLabTestSample;
 	}
 
 	public String getStatus() {
@@ -182,7 +182,7 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 	public String toString() {
 		return "LabTestPickupLookupResponse [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN="
 				+ parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime
-				+ ", patientLabTestSample=" + patientLabTestSample + ", status=" + status + ", doctorId=" + doctorId
+				+ ", patientLabTestSamples=" + patientLabTestSamples + ", status=" + status + ", doctorId=" + doctorId
 				+ ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId
 				+ ", discarded=" + discarded + ", numberOfSamplesRequested=" + numberOfSamplesRequested
 				+ ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted="
