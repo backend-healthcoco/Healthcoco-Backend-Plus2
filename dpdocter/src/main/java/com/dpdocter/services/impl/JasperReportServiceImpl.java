@@ -1227,7 +1227,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 				? (Boolean) parameters.get("showIntructions") : false;
 		Boolean showDirection = (Boolean) parameters.get("showDirection") != null
 				? (Boolean) parameters.get("showDirection") : false;
-		String instructionAlign = (String) parameters.get("instructionAlign");
+		String instructionAlign = parameters.get("instructionAlign") != null
+				? (String) parameters.get("instructionAlign") : "HORIZONTAL";
 		int drugWidth = 0, dosageWidth = 0, directionWidth = 0, durationWidth = 0, instructionWidth = 0;
 		if (showDirection != null && showIntructions != null) {
 			if (showDirection && showIntructions) {
@@ -1547,7 +1548,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jSubreport);
 
 		return band;
-}
+	}
 
 	private void addItems(JasperDesign jasperDesign, int columnWidth, String key, String value, Integer fieldWidth,
 			boolean isHTML, Integer xSpaceForTitle) {
