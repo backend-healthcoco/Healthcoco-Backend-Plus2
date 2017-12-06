@@ -1589,7 +1589,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				parameter.get("footerBottomText").toString())) {
 			bandHeight = 85;
 		} else {
-			bandHeight = 25;
+			bandHeight = 45;
 		}
 		int Startwith = 2;
 
