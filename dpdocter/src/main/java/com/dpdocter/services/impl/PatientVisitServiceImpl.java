@@ -1471,6 +1471,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			} else {
 				parameters.put("poweredBy", "");
+				parameters.put("bottomSignText", "");
 			}
 		}
 		parameters.put("contentFontSize", contentFontSize);
