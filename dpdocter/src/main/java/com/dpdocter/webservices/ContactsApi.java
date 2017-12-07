@@ -262,14 +262,14 @@ public class ContactsApi {
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-
+		String packageType = "ADVANCE";
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
+		Response<Object> response = new Response<Object>();
 		List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
 				discarded);
-		Response<Object> response = new Response<Object>();
 		if (groups != null) {
 			for (Group group : groups) {
 				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
@@ -277,10 +277,9 @@ public class ContactsApi {
 				List<String> groupList = new ArrayList<String>();
 				groupList.add(group.getId());
 
-				if (DPDoctorUtils.anyStringEmpty(group.getPackageType())) {
-					response.setData(PackageType.ADVANCE.getType());
-				} else {
-					response.setData(group.getPackageType());
+				if (!DPDoctorUtils.anyStringEmpty(group.getPackageType())) {
+					packageType = group.getPackageType();
+
 				}
 				getDoctorContactsRequest.setGroups(groupList);
 				int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
@@ -289,6 +288,8 @@ public class ContactsApi {
 		} else {
 			response.setData(PackageType.ADVANCE.getType());
 		}
+
+		response.setData(packageType);
 
 		response.setDataList(groups);
 		return response;

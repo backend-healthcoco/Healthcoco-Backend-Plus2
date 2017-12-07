@@ -34,6 +34,8 @@ public class InvoiceItemResponse {
 	private Double finalCost = 0.0;
 
 	private List<TreatmentFields> treatmentFields;
+	
+	private String batchId;
 
 	public String getItemId() {
 		return itemId;
@@ -129,6 +131,15 @@ public class InvoiceItemResponse {
 
 	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
+	}
+	
+
+	public String getBatchId() {
+		return batchId;
+	}
+
+	public void setBatchId(String batchId) {
+		this.batchId = batchId;
 	}
 
 	@Override

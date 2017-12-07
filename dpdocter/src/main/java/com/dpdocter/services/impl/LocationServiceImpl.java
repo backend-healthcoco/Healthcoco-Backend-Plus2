@@ -1064,6 +1064,7 @@ public class LocationServiceImpl implements LocationServices {
 
 					// pushNotificationServices.notifyPharmacy(id, requestId,
 					// responseId, role, message);
+
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
 				labTestPickupCollection.setIsCompleted(false);

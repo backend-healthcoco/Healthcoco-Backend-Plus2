@@ -535,14 +535,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 			if (!DPDoctorUtils.anyStringEmpty(request.getAppointmentId()))
 			{
 				criteria.and("appointmentId").is(new ObjectId(request.getAppointmentId()));
-				appointmentCollection = appointmentRepository.findOne(new ObjectId(request.getLocationId()));
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId()))
 			{
 				criteria.and("prescriptionId").is(new ObjectId(request.getPrescriptionId()));
-				prescriptionCollection = prescriptionRepository.findOne(new ObjectId(request.getLocationId()));
-			}
+				}
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
@@ -583,14 +581,16 @@ public class FeedbackServiceImpl implements FeedbackService {
 				{
 					patientFeedbackResponse.setHospitalName(hospitalCollection.getHospitalName());
 				}
-				if(prescriptionCollection != null)
+				if(patientFeedbackResponse.getPrescriptionId() != null)
 				{
+					prescriptionCollection = prescriptionRepository.findOne(new ObjectId(patientFeedbackResponse.getPrescriptionId()));
 					Prescription prescription = new Prescription();
 					BeanUtil.map(prescriptionCollection, prescription);
 					patientFeedbackResponse.setPrescription(prescription);
 				}
-				if(appointmentCollection != null)
+				if(patientFeedbackResponse.getAppointmentId() != null)
 				{
+					appointmentCollection = appointmentRepository.findOne(new ObjectId(patientFeedbackResponse.getAppointmentId()));
 					Appointment appointment = new Appointment();
 					BeanUtil.map(appointmentCollection, appointment);
 					patientFeedbackResponse.setAppointment(appointment);
