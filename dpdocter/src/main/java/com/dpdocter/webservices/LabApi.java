@@ -93,7 +93,7 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR, notes = PathProxy.LabUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR)
-	public Response<List<Records>> getReports(@PathParam(value = "doctorId") String doctorId,
+	public Response<Records> getReports(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "prescribedByDoctorId") String prescribedByDoctorId,
 			@QueryParam(value = "prescribedByLocationId") String prescribedByLocationId,
@@ -104,7 +104,7 @@ public class LabApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<List<Records>> response = new Response<List<Records>>();
+		Response<Records> response = new Response<Records>();
 		response.setDataList(labService.getReports(doctorId, locationId, hospitalId, prescribedByDoctorId,
 				prescribedByLocationId, prescribedByHospitalId, size, page));
 
@@ -636,46 +636,51 @@ public class LabApi {
 		}
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR, notes = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR)
-	public Response<DoctorLabReportResponseWithCount> getLabReportsForDoctor(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,@QueryParam("patientId") String patientId,@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+	public Response<DoctorLabReportResponseWithCount> getLabReportsForDoctor(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		DoctorLabReportResponseWithCount doctorLabReportResponseWithCount = new DoctorLabReportResponseWithCount();
-		List<LabReportsResponse> labReportsResponses = labReportsService.getLabReportsForDoctor(doctorId, locationId, hospitalId,patientId, searchTerm, page, size);
-		
+		List<LabReportsResponse> labReportsResponses = labReportsService.getLabReportsForDoctor(doctorId, locationId,
+				hospitalId, patientId, searchTerm, page, size);
+
 		Response<DoctorLabReportResponseWithCount> response = new Response<DoctorLabReportResponseWithCount>();
 		doctorLabReportResponseWithCount.setLabReportsResponses(labReportsResponses);
 		doctorLabReportResponseWithCount.setCount(labReportsResponses.size());
 		response.setData(doctorLabReportResponseWithCount);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB, notes = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB)
-	public Response<DoctorLabReportResponseWithCount> getLabReportsForLab(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,@QueryParam("patientId") String patientId,@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+	public Response<DoctorLabReportResponseWithCount> getLabReportsForLab(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		DoctorLabReportResponseWithCount doctorLabReportResponseWithCount = new DoctorLabReportResponseWithCount();
-		List<LabReportsResponse> labReportsResponses = labReportsService.getLabReportsForLab(doctorId, locationId, hospitalId,patientId, searchTerm, page, size);
-		
+		List<LabReportsResponse> labReportsResponses = labReportsService.getLabReportsForLab(doctorId, locationId,
+				hospitalId, patientId, searchTerm, page, size);
+
 		Response<DoctorLabReportResponseWithCount> response = new Response<DoctorLabReportResponseWithCount>();
 		doctorLabReportResponseWithCount.setLabReportsResponses(labReportsResponses);
 		doctorLabReportResponseWithCount.setCount(labReportsResponses.size());
-		response.setData(doctorLabReportResponseWithCount);		
+		response.setData(doctorLabReportResponseWithCount);
 		return response;
 	}
-	
+
 	@POST
 	@Path(value = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR)
 	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR, notes = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR)
@@ -684,18 +689,19 @@ public class LabApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		LabReports labReports = labReportsService.addLabReportBase64(request.getFileDetails(), request.getLabReportsAddRequest());
+		LabReports labReports = labReportsService.addLabReportBase64(request.getFileDetails(),
+				request.getLabReportsAddRequest());
 
 		Response<LabReports> response = new Response<LabReports>();
 		response.setData(labReports);
 		return response;
 	}
-	
 
 	@POST
 	@Path(value = PathProxy.LabUrls.CHANGE_PATIENT_SHARE_STATUS)
 	@ApiOperation(value = PathProxy.LabUrls.CHANGE_PATIENT_SHARE_STATUS, notes = PathProxy.LabUrls.CHANGE_PATIENT_SHARE_STATUS)
-	public Response<LabReportsResponse> changePatientShareStatus(@QueryParam("id") String id,@QueryParam("status") Boolean status) {
+	public Response<LabReportsResponse> changePatientShareStatus(@QueryParam("id") String id,
+			@QueryParam("status") Boolean status) {
 		if (id == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -706,7 +712,5 @@ public class LabApi {
 		response.setData(labReports);
 		return response;
 	}
-	
-	
 
 }
