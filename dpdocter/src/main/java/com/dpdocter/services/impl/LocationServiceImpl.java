@@ -519,7 +519,7 @@ public class LocationServiceImpl implements LocationServices {
 					Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
 					Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
 							"labTestSamples"),
-					Aggregation.unwind("labTestSamples"), aggregationOperation1, projectList, aggregationOperation2,
+					Aggregation.unwind("labTestSamples"),
 					Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 					Aggregation.unwind("daughterLab"),
 					Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
@@ -638,7 +638,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
 								"labTestSamples"),
-						Aggregation.unwind("labTestSamples"), aggregationOperation1, projectList, aggregationOperation2,
+						Aggregation.unwind("labTestSamples"),
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
@@ -650,7 +650,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
 								"labTestSamples"),
-						Aggregation.unwind("labTestSamples"), aggregationOperation1, projectList, aggregationOperation2,
+						Aggregation.unwind("labTestSamples"),
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
@@ -778,7 +778,6 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
 						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
-						aggregationOperation1, projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
@@ -791,7 +790,6 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
 						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
-						aggregationOperation1, projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			}
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -883,7 +881,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
 					new BasicDBObject("$group",
-							new BasicDBObject("__id","$id")
+							new BasicDBObject("__id", "$id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
 									.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
@@ -917,8 +915,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
 						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria), aggregationOperation1,
-						projectList, aggregationOperation2,
+						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria),
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
@@ -931,8 +928,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
 						Aggregation.unwind("parentLab"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria), aggregationOperation1,
-						projectList, aggregationOperation2,
+						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria),
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			// System.out.println(aggregation);

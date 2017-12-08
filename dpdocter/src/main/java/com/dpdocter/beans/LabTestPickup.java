@@ -152,17 +152,6 @@ public class LabTestPickup extends GenericCollection {
 		this.collectionBoyId = collectionBoyId;
 	}
 
-	@Override
-	public String toString() {
-		return "LabTestPickup [id=" + id + ", patientLabTestSamples=" + patientLabTestSamples + ", daughterLabCRN="
-				+ daughterLabCRN + ", parentLabCRN=" + parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime="
-				+ deliveryTime + ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId="
-				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
-				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
-				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted
-				+ ", collectionBoyId=" + collectionBoyId + ", serialNumber=" + serialNumber + "]";
-	}
-
 	public List<PatientLabTestSample> getPatientLabTestSamples() {
 		return patientLabTestSamples;
 	}

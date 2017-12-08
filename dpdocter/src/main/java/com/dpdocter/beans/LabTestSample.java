@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class LabTestSample extends GenericCollection {
@@ -10,7 +8,7 @@ public class LabTestSample extends GenericCollection {
 	private String sampleType;
 	private String daughterLabLocationId;
 	private String parentLabLocationId;
-	private List<RateCardTestAssociation> rateCardTestAssociation;
+	private RateCardTestAssociation rateCardTestAssociation;
 	private Boolean isUrgent;
 	private Long urgentTime;
 	private Boolean isCollected = false;
@@ -28,11 +26,13 @@ public class LabTestSample extends GenericCollection {
 		this.id = id;
 	}
 
-	public List<RateCardTestAssociation> getRateCardTestAssociation() {
+	
+
+	public RateCardTestAssociation getRateCardTestAssociation() {
 		return rateCardTestAssociation;
 	}
 
-	public void setRateCardTestAssociation(List<RateCardTestAssociation> rateCardTestAssociation) {
+	public void setRateCardTestAssociation(RateCardTestAssociation rateCardTestAssociation) {
 		this.rateCardTestAssociation = rateCardTestAssociation;
 	}
 

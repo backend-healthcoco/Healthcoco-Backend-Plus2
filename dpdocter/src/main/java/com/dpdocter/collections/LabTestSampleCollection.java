@@ -1,7 +1,5 @@
 package com.dpdocter.collections;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,7 +15,7 @@ public class LabTestSampleCollection extends GenericCollection {
 	@Field
 	private String sampleType;
 	@Field
-	private List<RateCardTestAssociation> rateCardTestAssociation;
+	private RateCardTestAssociation rateCardTestAssociation;
 	@Field
 	private Boolean isUrgent;
 	@Field
@@ -50,9 +48,8 @@ public class LabTestSampleCollection extends GenericCollection {
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-	
-	public String getSampleType()
-	{
+
+	public String getSampleType() {
 		return sampleType;
 	}
 
@@ -60,11 +57,11 @@ public class LabTestSampleCollection extends GenericCollection {
 		this.sampleType = sampleType;
 	}
 
-	public List<RateCardTestAssociation> getRateCardTestAssociation() {
+	public RateCardTestAssociation getRateCardTestAssociation() {
 		return rateCardTestAssociation;
 	}
 
-	public void setRateCardTestAssociation(List<RateCardTestAssociation> rateCardTestAssociation) {
+	public void setRateCardTestAssociation(RateCardTestAssociation rateCardTestAssociation) {
 		this.rateCardTestAssociation = rateCardTestAssociation;
 	}
 
