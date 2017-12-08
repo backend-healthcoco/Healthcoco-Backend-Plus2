@@ -1613,7 +1613,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 								Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
 								Aggregation.unwind("patientCard.user"), sortOperation, Aggregation.skip((page) * size),
-								Aggregation.limit(size)), AppointmentCollection.class, AppointmentLookupResponse.class)
+								Aggregation.limit(size))
+								.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+								AppointmentCollection.class, AppointmentLookupResponse.class)
 						.getMappedResults();
 
 			} else {
@@ -1636,8 +1638,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 																				.append("else", "$$PRUNE")))),
 
 								Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-								Aggregation.unwind("patientCard.user"), sortOperation), AppointmentCollection.class,
-								AppointmentLookupResponse.class)
+								Aggregation.unwind("patientCard.user"), sortOperation)
+								.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+								AppointmentCollection.class, AppointmentLookupResponse.class)
 						.getMappedResults();
 			}
 
@@ -2816,13 +2819,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId, String from, String to) {
+	public LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId, String from,
+			String to) {
 		LocationWithPatientQueueDetails response = null;
 		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state").ne(AppointmentState.CANCEL.getState());
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state")
+					.ne(AppointmentState.CANCEL.getState());
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
 				localCalendar.setTime(new Date(Long.parseLong(from)));
 				int currentDay = localCalendar.get(Calendar.DATE);
@@ -2845,7 +2849,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				criteria.and("toDate").lte(toDateTime);
 			}
-			if(DPDoctorUtils.allStringsEmpty(from, to)) {
+			if (DPDoctorUtils.allStringsEmpty(from, to)) {
 				localCalendar.setTime(new Date());
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
@@ -2858,7 +2862,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				criteria.and("fromDate").gte(start).and("toDate").lte(end);
 			}
-			
+
 			if (doctorId != null && !doctorId.isEmpty()) {
 				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
 				for (String id : doctorId)
