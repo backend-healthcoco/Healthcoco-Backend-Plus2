@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -72,5 +73,8 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
 
     @Query("{'doctorId' : ?0}")
 	List<PrescriptionCollection> findByDoctorId(ObjectId doctorObjectId);
+
+    @Query("{'createdTime' : {'$gte' : ?0, '$lte' : ?1}}")
+	List<PrescriptionCollection> findByCreatedTime(DateTime start, DateTime end);
 
 }

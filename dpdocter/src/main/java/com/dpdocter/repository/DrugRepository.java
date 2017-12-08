@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -103,5 +104,8 @@ public interface DrugRepository extends MongoRepository<DrugCollection, ObjectId
 
 	@Query("{'locationId': ?0}")
 	List<DrugCollection> findByLocationId(ObjectId locationObjectId);
+
+	@Query("{'id': ?0, 'createdTime': {'$lt': ?0}}")
+	DrugCollection findByIdAndTime(ObjectId drugId, DateTime start);
 
 }
