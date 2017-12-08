@@ -238,7 +238,7 @@ public class DPDoctorUtils {
 		SearchQuery searchQuery = null;
 		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 50))
+					.withPageable(new PageRequest(0, 15))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
@@ -304,7 +304,7 @@ public class DPDoctorUtils {
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 				}else{
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(new PageRequest(0, 50))
+							.withPageable(new PageRequest(0, 15))
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 				}
 				
@@ -389,7 +389,7 @@ public class DPDoctorUtils {
 		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())
 				|| resource.getType().equalsIgnoreCase(Resource.TREATMENTSERVICE.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 80))
+					.withPageable(new PageRequest(0, 15))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)

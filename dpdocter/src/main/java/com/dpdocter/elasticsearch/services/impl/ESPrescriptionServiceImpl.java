@@ -215,6 +215,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				response = new ArrayList<DrugDocument>();
 			else {
 				SearchQuery searchQuery = null;
+
 				if (searchByGenericName) {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
@@ -222,6 +223,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
+
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
 						ESDrugDocument.class);
 				
@@ -252,6 +254,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<ESDrugDocument> response = null;
 		try {
 			SearchQuery searchQuery = null;
+
 			if (searchByGenericName) {
 				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null,
@@ -260,7 +263,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			}
+
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			
 			if (response != null)
 				response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
 		} catch (Exception e) {
@@ -284,6 +289,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 						searchTerm, null, category, null, "drugName");
 			}
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
