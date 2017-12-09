@@ -386,7 +386,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
 					new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
+							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
 									.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
@@ -489,7 +489,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
 					new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
+							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
 									.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
@@ -560,22 +560,22 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
 						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
 			}
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
-							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
-							Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
-							Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
-							Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
-							Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
-							Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
-							Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
-							Fields.field("parentLab", "$parentLab"), Fields.field("collectionBoy", "$collectionBoy"),
-							Fields.field("daughterLab", "$daughterLab"), Fields.field("discarded", "$discarded"),
-							Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
-							Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
-							Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
-							Fields.field("serialNumber", "$serialNumber"), Fields.field("createdTime", "$createdTime"),
-							Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("daughterLabCRN", "$daughterLabCRN"), Fields.field("pickupTime", "$pickupTime"),
+					Fields.field("deliveryTime", "$deliveryTime"),
+					Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
+					Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
+					Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
+					Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
+					Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
+					Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("parentLab", "$parentLab"), Fields.field("collectionBoyId", "$collectionBoyId"),
+					Fields.field("daughterLab", "$daughterLab"), Fields.field("discarded", "$discarded"),
+					Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
+					Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
+					Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
+					Fields.field("serialNumber", "$serialNumber"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
 
 			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
 					"$group",
@@ -589,8 +589,8 @@ public class LocationServiceImpl implements LocationServices {
 													new BasicDBObject("$first", "$patientLabTestSamples"))
 											.append("status", new BasicDBObject("$first", "$status"))
 											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-											.append("parentLab", new BasicDBObject("$first", "$parentLabLocationId"))
-											.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
+											.append("parentLab", new BasicDBObject("$first", "$parentLab"))
+											.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
 											.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 											.append("discarded", new BasicDBObject("$first", "$discarded"))
 											.append("numberOfSamplesRequested",
@@ -606,7 +606,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
 					new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
+							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
 									.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
@@ -614,8 +614,8 @@ public class LocationServiceImpl implements LocationServices {
 											new BasicDBObject("$push", "$patientLabTestSamples"))
 									.append("status", new BasicDBObject("$first", "$status"))
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("parentLab", new BasicDBObject("$first", "$parentLabLocationId"))
-									.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
+									.append("parentLab", new BasicDBObject("$first", "$parentLab"))
+									.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
 									.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
 									.append("numberOfSamplesRequested",
@@ -690,25 +690,25 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm),
-						new Criteria("patientLabTestSample.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientLabTestSample.patientName").regex("^" + searchTerm));
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
 			}
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
-							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
-							Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
-							Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
-							Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
-							Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
-							Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
-							Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
-							Fields.field("parentLab", "$parentLab"), Fields.field("collectionBoy", "$collectionBoy"),
-							Fields.field("daughterLab", "$daughterLab"), Fields.field("discarded", "$discarded"),
-							Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
-							Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
-							Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
-							Fields.field("serialNumber", "$serialNumber"), Fields.field("createdTime", "$createdTime"),
-							Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("daughterLabCRN", "$daughterLabCRN"), Fields.field("pickupTime", "$pickupTime"),
+					Fields.field("deliveryTime", "$deliveryTime"),
+					Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
+					Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
+					Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
+					Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
+					Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
+					Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("parentLab", "$parentLab"), Fields.field("collectionBoyId", "$collectionBoyId"),
+					Fields.field("daughterLab", "$daughterLab"), Fields.field("discarded", "$discarded"),
+					Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
+					Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
+					Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
+					Fields.field("serialNumber", "$serialNumber"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
 
 			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
 					"$group",
@@ -722,8 +722,8 @@ public class LocationServiceImpl implements LocationServices {
 													new BasicDBObject("$first", "$patientLabTestSamples"))
 											.append("status", new BasicDBObject("$first", "$status"))
 											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-											.append("parentLab", new BasicDBObject("$first", "$parentLabLocationId"))
-											.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
+											.append("parentLab", new BasicDBObject("$first", "$parentLab"))
+											.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
 											.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 											.append("discarded", new BasicDBObject("$first", "$discarded"))
 											.append("numberOfSamplesRequested",
@@ -739,7 +739,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
 					new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
+							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
 									.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
@@ -747,8 +747,8 @@ public class LocationServiceImpl implements LocationServices {
 											new BasicDBObject("$push", "$patientLabTestSamples"))
 									.append("status", new BasicDBObject("$first", "$status"))
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("parentLab", new BasicDBObject("$first", "$parentLabLocationId"))
-									.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
+									.append("parentLab", new BasicDBObject("$first", "$parentLab"))
+									.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
 									.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
 									.append("numberOfSamplesRequested",
@@ -859,7 +859,7 @@ public class LocationServiceImpl implements LocationServices {
 													new BasicDBObject("$first", "$patientLabTestSamples"))
 											.append("status", new BasicDBObject("$first", "$status"))
 											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-											.append("parentLab", new BasicDBObject("$first", "$parentLabLocationId"))
+											.append("parentLab", new BasicDBObject("$first", "$parentLab"))
 											.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
 											.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 											.append("discarded", new BasicDBObject("$first", "$discarded"))
@@ -876,7 +876,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
 					new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
+							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
 									.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
@@ -884,7 +884,7 @@ public class LocationServiceImpl implements LocationServices {
 											new BasicDBObject("$push", "$patientLabTestSamples"))
 									.append("status", new BasicDBObject("$first", "$status"))
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("parentLab", new BasicDBObject("$first", "$parentLabLocationId"))
+									.append("parentLab", new BasicDBObject("$first", "$parentLab"))
 									.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
 									.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
