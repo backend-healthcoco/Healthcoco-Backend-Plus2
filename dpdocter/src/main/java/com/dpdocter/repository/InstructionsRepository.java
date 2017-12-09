@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.dpdocter.collections.InstructionsCollection;
 
+
 public interface InstructionsRepository extends MongoRepository<InstructionsCollection, ObjectId>{
 
 }

@@ -149,6 +149,8 @@ public interface PrescriptionServices {
 			Boolean discarded);
 
 	// Boolean makeCustomDrugFavourite();
+	
+	
 
 	Drug addFavouriteDrug(DrugAddEditRequest request, DrugCollection originalDrug, String createdBy);
 

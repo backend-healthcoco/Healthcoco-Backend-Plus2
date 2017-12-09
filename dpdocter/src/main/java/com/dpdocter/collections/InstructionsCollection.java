@@ -1,7 +1,10 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+
+@Document(collection = "instruction_cl")
 public class InstructionsCollection extends GenericCollection {
 
 	private ObjectId id;
