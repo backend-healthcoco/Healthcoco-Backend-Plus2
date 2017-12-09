@@ -1951,7 +1951,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 															? prescriptionItem.getDosage() : "--",
 													duration, directions.isEmpty() ? "--" : directions,
 													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-															? prescriptionItem.getInstructions() : "--",
+															? prescriptionItem.getInstructions() : null,
 													genericName);
 										} else {
 											prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
@@ -1959,7 +1959,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 															? prescriptionItem.getDosage() : "--",
 													duration, directions.isEmpty() ? "--" : directions,
 													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-															? prescriptionItem.getInstructions() : null,
+															? prescriptionItem.getInstructions() : "--",
 													genericName);
 										}
 									} else {
@@ -1968,7 +1968,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 														? prescriptionItem.getDosage() : "--",
 												duration, directions.isEmpty() ? "--" : directions,
 												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-														? prescriptionItem.getInstructions() : null,
+														? prescriptionItem.getInstructions() : "--",
 												genericName);
 									}
 									prescriptionItems.add(prescriptionJasperDetails);

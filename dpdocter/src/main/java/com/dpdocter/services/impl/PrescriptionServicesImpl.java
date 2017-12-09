@@ -278,7 +278,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private EyePrescriptionRepository eyePrescriptionRepository;
-	
+
 	@Autowired
 	private InstructionsRepository instructionsRepository;
 
@@ -1001,7 +1001,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (prescriptionTest != null && !prescriptionTest.isEmpty()) {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
-					tests = mongoTemplate.aggregate(
+				tests = mongoTemplate.aggregate(
 						Aggregation.newAggregation(
 								Aggregation.match(new Criteria("id").is(prescriptionCollection.getId())),
 								Aggregation.unwind("diagnosticTests"),
@@ -1015,29 +1015,31 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setDiagnosticTests(tests);
 			}
 			response.setItems(itemDetails);
-			
-			final String id = request.getId(); 
+
+			final String id = request.getId();
 			Executors.newSingleThreadExecutor().execute(new Runnable() {
-				    @Override
-				    public void run() {
-				    	
-				   	OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
-								String.valueOf(prescriptionCollection.getId()),
-								String.valueOf(prescriptionCollection.getDoctorId()),
-								String.valueOf(prescriptionCollection.getLocationId()),
-								String.valueOf(prescriptionCollection.getHospitalId()),
-								prescriptionCollection.getCreatedTime());
-		
-						opdReports = reportsService.submitOPDReport(opdReports);
-				    	
-				    	pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
-								"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
-								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
-				    	
-				    	if (sendSMS && DPDoctorUtils.allStringsEmpty(id)) sendMessage(prescriptionCollection);
-				    }
-				});
-				
+				@Override
+				public void run() {
+
+					OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+							String.valueOf(prescriptionCollection.getId()),
+							String.valueOf(prescriptionCollection.getDoctorId()),
+							String.valueOf(prescriptionCollection.getLocationId()),
+							String.valueOf(prescriptionCollection.getHospitalId()),
+							prescriptionCollection.getCreatedTime());
+
+					opdReports = reportsService.submitOPDReport(opdReports);
+
+					pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
+							"Your prescription by " + prescriptionCollection.getCreatedBy()
+									+ " is here - Tap to view it!",
+							ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+
+					if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
+						sendMessage(prescriptionCollection);
+				}
+			});
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Prescription");
@@ -1051,17 +1053,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getDoctorId())) {
 			doctorCollection = doctorRepository.findByUserId(prescriptionCollection.getDoctorId());
 		}
-		if(doctorCollection.getIsPrescriptionSMS()) {
+		if (doctorCollection.getIsPrescriptionSMS()) {
 			sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 					prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
 					prescriptionCollection.getCreatedBy());
-			sendDownloadAppMessageInHindi(prescriptionCollection.getPatientId(),
-					prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
-					prescriptionCollection.getHospitalId(), prescriptionCollection.getCreatedBy());
+			sendDownloadAppMessageInHindi(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
+					prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
+					prescriptionCollection.getCreatedBy());
 		}
 	}
-	
-	private Drug addDrugWhileAddingRX(DrugCollection drugCollection, PrescriptionAddEditRequest request, PrescriptionItem item) {
+
+	private Drug addDrugWhileAddingRX(DrugCollection drugCollection, PrescriptionAddEditRequest request,
+			PrescriptionItem item) {
 		Drug drug = null;
 		drugCollection.setLocationId(new ObjectId(request.getLocationId()));
 		drugCollection.setHospitalId(new ObjectId(request.getHospitalId()));
@@ -1073,7 +1076,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugCollection.setDosage(item.getDosage());
 		drugCollection.setDosageTime(item.getDosageTime());
 		drugCollection.setDirection(item.getDirection());
-		
+
 		if (drugCollection.getDrugType() != null) {
 			if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 				drugCollection.setDrugType(null);
@@ -1088,7 +1091,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		}
 		drugCollection = drugRepository.save(drugCollection);
-		
+
 		transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
 		if (drugCollection != null) {
 			ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -1099,13 +1102,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			esPrescriptionService.addDrug(esDrugDocument);
 		}
-		if(drugCollection != null) {
+		if (drugCollection != null) {
 			drug = new Drug();
 			BeanUtil.map(drugCollection, drug);
 		}
 		return drug;
 	}
-	
 
 	private void sendDownloadAppMessage(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 			String doctorName) {
@@ -3818,7 +3820,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : "--",
+													? prescriptionItem.getInstructions() : null,
 											genericName);
 								} else {
 									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
@@ -3826,7 +3828,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : null,
+													? prescriptionItem.getInstructions() : "--",
 											genericName);
 								}
 							} else {
@@ -3835,7 +3837,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 												? prescriptionItem.getDosage() : "--",
 										duration, directions.isEmpty() ? "--" : directions,
 										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-												? prescriptionItem.getInstructions() : null,
+												? prescriptionItem.getInstructions() : "--",
 										genericName);
 							}
 							prescriptionItems.add(prescriptionJasperDetails);
@@ -4177,14 +4179,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					logger.error("Invalid drug Id");
 					throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 				}
-				
-				if(originalDrug.getDoctorId() != null && request.getDoctorId().equalsIgnoreCase(originalDrug.getDoctorId().toString())) {
+
+				if (originalDrug.getDoctorId() != null
+						&& request.getDoctorId().equalsIgnoreCase(originalDrug.getDoctorId().toString())) {
 					drugCollection = originalDrug;
-				}else {
+				} else {
 					drugCollection = drugRepository.findByCodeAndDoctorId(originalDrug.getDrugCode(),
 							new ObjectId(request.getDoctorId()));
 				}
-				
+
 				if (drugCollection == null) {
 					drugCollection = originalDrug;
 
@@ -5662,7 +5665,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		response = aggregationResults.getMappedResults();
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public Instructions addEditInstructions(Instructions instruction) {
@@ -5682,7 +5685,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					instructionsCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				InstructionsCollection oldInstructionsCollection = instructionsRepository.findOne(instructionsCollection.getId());
+				InstructionsCollection oldInstructionsCollection = instructionsRepository
+						.findOne(instructionsCollection.getId());
 				instructionsCollection.setCreatedBy(oldInstructionsCollection.getCreatedBy());
 				instructionsCollection.setCreatedTime(oldInstructionsCollection.getCreatedTime());
 				instructionsCollection.setDiscarded(oldInstructionsCollection.getDiscarded());
@@ -5711,9 +5715,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String updatedTime, Boolean discarded) {
 		List<Instructions> response = null;
 		try {
-			AggregationResults<Instructions> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
-					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), InstructionsCollection.class,
-					Instructions.class);
+			AggregationResults<Instructions> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							InstructionsCollection.class, Instructions.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5722,7 +5728,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,

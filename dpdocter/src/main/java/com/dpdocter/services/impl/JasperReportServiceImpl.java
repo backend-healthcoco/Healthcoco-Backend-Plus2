@@ -1439,6 +1439,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 				jrDesignTextField = new JRDesignTextField();
+				jrDesignTextField.setPrintWhenExpression(
+						new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
 				jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
 				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
 				jrDesignTextField.setY(0);
@@ -1459,6 +1461,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 				jrDesignTextField = new JRDesignTextField();
+				jrDesignTextField.setPrintWhenExpression(
+						new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
 				jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
 				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth);
 				jrDesignTextField.setY(0);
