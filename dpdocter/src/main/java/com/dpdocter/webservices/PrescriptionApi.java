@@ -24,6 +24,7 @@ import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.EyePrescription;
+import com.dpdocter.beans.Instructions;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
@@ -1151,6 +1152,60 @@ public class PrescriptionApi {
 		response.setDataList(drugs);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_INSTRUCTIONS)
+	@POST
+	public Response<Instructions> addEditInstruction( Instructions request) {
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} 
+		Instructions instructions = prescriptionServices.addEditInstructions(request);
+
+		Response<Instructions> response = new Response<Instructions>();
+		response.setData(instructions);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_INSTRUCTIONS)
+	@GET
+	public Response<Instructions> getInstructions(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+
+		if ( DPDoctorUtils.anyStringEmpty(doctorId,locationId,hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} 
+		List<Instructions> instructions = prescriptionServices.getInstructions(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+
+		Response<Instructions> response = new Response<Instructions>();
+		response.setDataList(instructions);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS)
+	@DELETE
+	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS, notes = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS)
+	public Response<Instructions> deleteInstructions(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		Instructions instruction = prescriptionServices.deleteInstructions(id, doctorId, locationId, hospitalId, discarded);
+		Response<Instructions> response = new Response<Instructions>();
+		response.setData(instruction);
+		return response;
+	}
+
 
 	
 

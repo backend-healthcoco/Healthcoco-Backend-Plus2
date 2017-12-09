@@ -556,9 +556,13 @@ public interface PathProxy {
 		public static final String UPLOAD_GENERIC_CODE_WITH_REACTION = "/genericCodeWithReaction/upload";
 
 		public static final String DELETE_GENERIC_CODE_WITH_REACTION = "/genericCodeWithReaction/delete";
+		
 		public static final String ADD_EYE_PRESCRPTION = "eyePrescription/add";
+		
 		public static final String EDIT_EYE_PRESCRPTION = "eyePrescription/edit";
+		
 		public static final String GET_EYE_PRESCRPTION_BY_ID = "eyePrescription/{id}/get";
+		
 		public static final String GET_EYE_PRESCRPTIONS = "eyePrescription/getAll";
 
 		public static final String EMAIL_EYE_PRESCRIPTION = "/eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
@@ -570,6 +574,12 @@ public interface PathProxy {
 		public static final String DELETE_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
 
 		public static final String GET_CUSTOM_DRUGS = "/getCustomDrugs";
+		
+		public static final String ADD_EDIT_INSTRUCTIONS = "/addEditInstructions";
+		
+		public static final String GET_INSTRUCTIONS = "/getInstructions";
+		
+		public static final String DELETE_INSTRUCTIONS = "/deleteInstructions";
 
 	}
 

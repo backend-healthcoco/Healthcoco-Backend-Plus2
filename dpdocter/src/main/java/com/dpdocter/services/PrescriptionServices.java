@@ -10,6 +10,7 @@ import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCodesAndReaction;
+import com.dpdocter.beans.Instructions;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -148,6 +149,8 @@ public interface PrescriptionServices {
 			Boolean discarded);
 
 	// Boolean makeCustomDrugFavourite();
+	
+	
 
 	Drug addFavouriteDrug(DrugAddEditRequest request, DrugCollection originalDrug, String createdBy);
 
@@ -193,6 +196,16 @@ public interface PrescriptionServices {
 			String mobileNumber, String type);
 
 	List<Drug> getAllCustomDrug();
+	
+	Instructions addEditInstructions(Instructions instruction);
+
+	List<Instructions> getInstructions(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded);
+
+	Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+	
+
 
 
 }

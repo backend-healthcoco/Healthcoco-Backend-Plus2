@@ -35,8 +35,6 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -52,7 +50,6 @@ import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +67,7 @@ import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.GenericCodesAndReaction;
+import com.dpdocter.beans.Instructions;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OPDReports;
@@ -97,6 +95,7 @@ import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.GenericCodesAndReactionsCollection;
 import com.dpdocter.collections.HistoryCollection;
+import com.dpdocter.collections.InstructionsCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -136,6 +135,7 @@ import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.repository.GenericCodeRepository;
 import com.dpdocter.repository.GenericCodesAndReactionsRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.InstructionsRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -278,6 +278,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private EyePrescriptionRepository eyePrescriptionRepository;
+	
+	@Autowired
+	private InstructionsRepository instructionsRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -5657,6 +5660,115 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		AggregationResults<Drug> aggregationResults = mongoTemplate.aggregate(aggregation, DrugCollection.class,
 				Drug.class);
 		response = aggregationResults.getMappedResults();
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public Instructions addEditInstructions(Instructions instruction) {
+		try {
+			InstructionsCollection instructionsCollection = new InstructionsCollection();
+			BeanUtil.map(instruction, instructionsCollection);
+			if (DPDoctorUtils.anyStringEmpty(instructionsCollection.getId())) {
+				instructionsCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(instructionsCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(instructionsCollection.getDoctorId());
+					if (userCollection != null) {
+						instructionsCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					instructionsCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				InstructionsCollection oldInstructionsCollection = instructionsRepository.findOne(instructionsCollection.getId());
+				instructionsCollection.setCreatedBy(oldInstructionsCollection.getCreatedBy());
+				instructionsCollection.setCreatedTime(oldInstructionsCollection.getCreatedTime());
+				instructionsCollection.setDiscarded(oldInstructionsCollection.getDiscarded());
+			}
+			instructionsCollection = instructionsRepository.save(instructionsCollection);
+
+			BeanUtil.map(instructionsCollection, instruction);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing instruction",
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return instruction;
+	}
+
+	@Override
+	@Transactional
+	public List<Instructions> getInstructions(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Instructions> response = null;
+		try {
+			AggregationResults<Instructions> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), InstructionsCollection.class,
+					Instructions.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Instructions");
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		Instructions response = null;
+		try {
+			InstructionsCollection instructionsCollection = instructionsRepository.findOne(new ObjectId(id));
+			if (instructionsCollection != null) {
+				if (DPDoctorUtils.anyStringEmpty(instructionsCollection.getDoctorId(),
+						instructionsCollection.getHospitalId(), instructionsCollection.getLocationId())) {
+					if (instructionsCollection.getDoctorId().toString().equals(doctorId)
+							&& instructionsCollection.getHospitalId().toString().equals(hospitalId)
+							&& instructionsCollection.getLocationId().toString().equals(locationId)) {
+						instructionsCollection.setDiscarded(discarded);
+						instructionsCollection.setUpdatedTime(new Date());
+						instructionsCollection = instructionsRepository.save(instructionsCollection);
+						response = new Instructions();
+						BeanUtil.map(instructionsCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					instructionsCollection.setDiscarded(discarded);
+					instructionsCollection.setUpdatedTime(new Date());
+					instructionsRepository.save(instructionsCollection);
+					response = new Instructions();
+					BeanUtil.map(instructionsCollection, response);
+				}
+			} else {
+				logger.warn("Instructions not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Instructions not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting instruction",
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
 		return response;
 	}
 
