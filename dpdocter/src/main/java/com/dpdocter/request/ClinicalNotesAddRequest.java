@@ -244,7 +244,10 @@ public class ClinicalNotesAddRequest {
 	private int noOfFemaleChildren;
 
 	private int noOfMaleChildren;
-	
+
+	private String pastHistory;
+
+	private String familyHistory;
 
 	public String getPcNose() {
 		return pcNose;
@@ -317,8 +320,6 @@ public class ClinicalNotesAddRequest {
 	public void setEarsExam(String earsExam) {
 		this.earsExam = earsExam;
 	}
-
-	
 
 	public String getGlobalPCNose() {
 		return globalPCNose;
@@ -1091,7 +1092,22 @@ public class ClinicalNotesAddRequest {
 		this.earsExaminations = earsExaminations;
 	}
 
-	
+	public String getPastHistory() {
+		return pastHistory;
+	}
+
+	public void setPastHistory(String pastHistory) {
+		this.pastHistory = pastHistory;
+	}
+
+	public String getFamilyHistory() {
+		return familyHistory;
+	}
+
+	public void setFamilyHistory(String familyHistory) {
+		this.familyHistory = familyHistory;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", observation=" + observation
@@ -1137,7 +1153,8 @@ public class ClinicalNotesAddRequest {
 				+ ", globalOralCavityThroatExam=" + globalOralCavityThroatExam + ", globalIndirectLarygoscopyExam="
 				+ globalIndirectLarygoscopyExam + ", globalNeckExam=" + globalNeckExam + ", globalEarsExam="
 				+ globalEarsExam + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren
-				+ ", noOfMaleChildren=" + noOfMaleChildren + "]";
+				+ ", noOfMaleChildren=" + noOfMaleChildren + ", pastHistory=" + pastHistory + ", familyHistory="
+				+ familyHistory + "]";
 	}
 
 }

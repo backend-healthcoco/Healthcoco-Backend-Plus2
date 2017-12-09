@@ -84,6 +84,10 @@ public class ClinicalNotes extends GenericCollection {
 
 	private String hospitalId;
 
+	private String pastHistory;
+
+	private String familyHistory;
+
 	private boolean inHistory = false;
 
 	private Boolean discarded = false;
@@ -510,6 +514,22 @@ public class ClinicalNotes extends GenericCollection {
 		this.procedureNote = procedureNote;
 	}
 
+	public String getPastHistory() {
+		return pastHistory;
+	}
+
+	public void setPastHistory(String pastHistory) {
+		this.pastHistory = pastHistory;
+	}
+
+	public String getFamilyHistory() {
+		return familyHistory;
+	}
+
+	public void setFamilyHistory(String familyHistory) {
+		this.familyHistory = familyHistory;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses + ", diagrams="
@@ -524,11 +544,11 @@ public class ClinicalNotes extends GenericCollection {
 				+ ", pcEars=" + pcEars + ", noseExam=" + noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam
 				+ ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam="
 				+ earsExam + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId=" + visitId + ", patientId="
-				+ patientId + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId
-				+ ", appointmentRequest=" + appointmentRequest + ", time=" + time + ", fromDate=" + fromDate + ", lmp="
-				+ lmp + ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren="
-				+ noOfMaleChildren + "]";
+				+ ", pastHistory=" + pastHistory + ", familyHistory=" + familyHistory + ", inHistory=" + inHistory
+				+ ", discarded=" + discarded + ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns="
+				+ vitalSigns + ", appointmentId=" + appointmentId + ", appointmentRequest=" + appointmentRequest
+				+ ", time=" + time + ", fromDate=" + fromDate + ", lmp=" + lmp + ", edd=" + edd
+				+ ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
 	}
 
 }

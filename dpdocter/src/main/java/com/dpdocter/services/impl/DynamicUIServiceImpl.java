@@ -392,6 +392,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		uiPermissions.setVitalSignPermissions(vitalSignPermission);
 		uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 		uiPermissions.setAdmitCardPermissions(admitCardPermission);
+		uiPermissions.setLandingPagePermissions("CONTACTS");
 		return uiPermissions;
 	}
 

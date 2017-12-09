@@ -16,6 +16,7 @@ public class UIPermissions {
 	private List<String> vitalSignPermissions = new ArrayList<String>();
 	private List<String> dischargeSummaryPermissions = new ArrayList<String>();
 	private List<String> admitCardPermissions = new ArrayList<String>();
+	private String landingPagePermissions = "CONTACTS";
 
 	public List<String> getTabPermissions() {
 		return tabPermissions;
@@ -81,6 +82,14 @@ public class UIPermissions {
 		this.admitCardPermissions = admitCardPermissions;
 	}
 
+	public String getLandingPagePermissions() {
+		return landingPagePermissions;
+	}
+
+	public void setLandingPagePermissions(String landingPagePermissions) {
+		this.landingPagePermissions = landingPagePermissions;
+	}
+
 	@Override
 	public String toString() {
 		return "UIPermissions [tabPermissions=" + tabPermissions + ", patientVisitPermissions="
@@ -90,6 +99,4 @@ public class UIPermissions {
 				+ dischargeSummaryPermissions + ", admitCardPermissions=" + admitCardPermissions + "]";
 	}
 
-	
-	
 }
