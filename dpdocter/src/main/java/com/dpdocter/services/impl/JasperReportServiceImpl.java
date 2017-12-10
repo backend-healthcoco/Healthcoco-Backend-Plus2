@@ -1324,6 +1324,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 
 			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(
+					new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
+
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Instruction}"));
 			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
 			jrDesignTextField.setY(4);
@@ -1347,6 +1350,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 				jrDesignTextField = new JRDesignTextField();
+				jrDesignTextField.setPrintWhenExpression(
+						new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
+
 				jrDesignTextField.setExpression(new JRDesignExpression("$P{Instruction}"));
 				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth);
 				jrDesignTextField.setY(4);

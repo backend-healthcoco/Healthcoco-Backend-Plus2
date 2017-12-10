@@ -35,6 +35,8 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -1016,6 +1018,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			response.setItems(itemDetails);
 
+
 			final String id = request.getId();
 			Executors.newSingleThreadExecutor().execute(new Runnable() {
 				@Override
@@ -1037,6 +1040,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
 						sendMessage(prescriptionCollection);
+
 				}
 			});
 
@@ -5778,4 +5782,75 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
+	// @Scheduled(cron = "0 0 2 * * *", zone = "IST")
+	// @Scheduled(fixedDelay = 1800000)
+	@Transactional
+	public void updateDrugAndAddOPDForYesterdaysAddedRX() {
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			localCalendar.setTime(new Date());
+
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			start.minusDays(1);
+
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			end.minusDays(1);
+
+			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findByCreatedTime(start, end);
+			if (prescriptionCollections != null) {
+				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+
+					OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+							String.valueOf(prescriptionCollection.getId()),
+							String.valueOf(prescriptionCollection.getDoctorId()),
+							String.valueOf(prescriptionCollection.getLocationId()),
+							String.valueOf(prescriptionCollection.getHospitalId()),
+							prescriptionCollection.getCreatedTime());
+
+					opdReports = reportsService.submitOPDReport(opdReports);
+
+					if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
+						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+							DrugCollection drugCollection = drugRepository.findByIdAndTime(prescriptionItem.getDrugId(),
+									start);
+							if (drugCollection != null) {
+								drugCollection.setLocationId(prescriptionCollection.getLocationId());
+								drugCollection.setHospitalId(prescriptionCollection.getHospitalId());
+								drugCollection.setRankingCount(drugCollection.getRankingCount() + 1);
+								drugCollection.setUpdatedTime(new Date());
+
+								drugCollection.setUpdatedTime(new Date());
+								drugCollection.setDuration(prescriptionItem.getDuration());
+								drugCollection.setDosage(prescriptionItem.getDosage());
+								drugCollection.setDosageTime(prescriptionItem.getDosageTime());
+								drugCollection.setDirection(prescriptionItem.getDirection());
+
+								drugCollection = drugRepository.save(drugCollection);
+								transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+								ESDrugDocument esDrugDocument = new ESDrugDocument();
+								BeanUtil.map(drugCollection, esDrugDocument);
+								if (drugCollection.getDrugType() != null) {
+									esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+									esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+								}
+								esPrescriptionService.addDrug(esDrugDocument);
+							}
+
+						}
+
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
 }
