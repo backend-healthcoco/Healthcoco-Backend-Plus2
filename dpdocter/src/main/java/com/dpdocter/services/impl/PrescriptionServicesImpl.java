@@ -903,7 +903,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (prescriptionTest != null && !prescriptionTest.isEmpty()) {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
-					tests = mongoTemplate.aggregate(
+				tests = mongoTemplate.aggregate(
 						Aggregation.newAggregation(
 								Aggregation.match(new Criteria("id").is(prescriptionCollection.getId())),
 								Aggregation.unwind("diagnosticTests"),
@@ -917,43 +917,45 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setDiagnosticTests(tests);
 			}
 			response.setItems(itemDetails);
-			
-//			if (prescriptionCollection != null) {
-//				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
-//						String.valueOf(prescriptionCollection.getId()),
-//						String.valueOf(prescriptionCollection.getDoctorId()),
-//						String.valueOf(prescriptionCollection.getLocationId()),
-//						String.valueOf(prescriptionCollection.getHospitalId()),
-//						prescriptionCollection.getCreatedTime());
-//
-//				opdReports = reportsService.submitOPDReport(opdReports);
-//			}
-			
-			final String id = request.getId(); 
+
+			// if (prescriptionCollection != null) {
+			// OPDReports opdReports = new
+			// OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+			// String.valueOf(prescriptionCollection.getId()),
+			// String.valueOf(prescriptionCollection.getDoctorId()),
+			// String.valueOf(prescriptionCollection.getLocationId()),
+			// String.valueOf(prescriptionCollection.getHospitalId()),
+			// prescriptionCollection.getCreatedTime());
+			//
+			// opdReports = reportsService.submitOPDReport(opdReports);
+			// }
+
+			final String id = request.getId();
 			Executors.newSingleThreadExecutor().execute(new Runnable() {
-				    @Override
-				    public void run() {
-				    	
-				    	System.out.println("in run");
-				    	OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
-								String.valueOf(prescriptionCollection.getId()),
-								String.valueOf(prescriptionCollection.getDoctorId()),
-								String.valueOf(prescriptionCollection.getLocationId()),
-								String.valueOf(prescriptionCollection.getHospitalId()),
-								prescriptionCollection.getCreatedTime());
-		
-						opdReports = reportsService.submitOPDReport(opdReports);
-				    	
-				    	pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
-								"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
-								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
-				    	
-				    	if (sendSMS && DPDoctorUtils.allStringsEmpty(id)) sendMessage(prescriptionCollection);
-				    	System.out.println("out of run");
-				    }
-				});
-				
-			
+				@Override
+				public void run() {
+
+					System.out.println("in run");
+					OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+							String.valueOf(prescriptionCollection.getId()),
+							String.valueOf(prescriptionCollection.getDoctorId()),
+							String.valueOf(prescriptionCollection.getLocationId()),
+							String.valueOf(prescriptionCollection.getHospitalId()),
+							prescriptionCollection.getCreatedTime());
+
+					opdReports = reportsService.submitOPDReport(opdReports);
+
+					pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
+							"Your prescription by " + prescriptionCollection.getCreatedBy()
+									+ " is here - Tap to view it!",
+							ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+
+					if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
+						sendMessage(prescriptionCollection);
+					System.out.println("out of run");
+				}
+			});
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Prescription");
@@ -967,17 +969,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getDoctorId())) {
 			doctorCollection = doctorRepository.findByUserId(prescriptionCollection.getDoctorId());
 		}
-		if(doctorCollection.getIsPrescriptionSMS()) {
+		if (doctorCollection.getIsPrescriptionSMS()) {
 			sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 					prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
 					prescriptionCollection.getCreatedBy());
-			sendDownloadAppMessageInHindi(prescriptionCollection.getPatientId(),
-					prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
-					prescriptionCollection.getHospitalId(), prescriptionCollection.getCreatedBy());
+			sendDownloadAppMessageInHindi(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
+					prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
+					prescriptionCollection.getCreatedBy());
 		}
 	}
-	
-	private Drug addDrugWhileAddingRX(DrugCollection drugCollection, PrescriptionAddEditRequest request, PrescriptionItem item) {
+
+	private Drug addDrugWhileAddingRX(DrugCollection drugCollection, PrescriptionAddEditRequest request,
+			PrescriptionItem item) {
 		Drug drug = null;
 		drugCollection.setLocationId(new ObjectId(request.getLocationId()));
 		drugCollection.setHospitalId(new ObjectId(request.getHospitalId()));
@@ -989,7 +992,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugCollection.setDosage(item.getDosage());
 		drugCollection.setDosageTime(item.getDosageTime());
 		drugCollection.setDirection(item.getDirection());
-		
+
 		if (drugCollection.getDrugType() != null) {
 			if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 				drugCollection.setDrugType(null);
@@ -1004,7 +1007,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		}
 		drugCollection = drugRepository.save(drugCollection);
-		
+
 		transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
 		if (drugCollection != null) {
 			ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -1015,13 +1018,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			esPrescriptionService.addDrug(esDrugDocument);
 		}
-		if(drugCollection != null) {
+		if (drugCollection != null) {
 			drug = new Drug();
 			BeanUtil.map(drugCollection, drug);
 		}
 		return drug;
 	}
-	
 
 	private void sendDownloadAppMessage(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 			String doctorName) {
@@ -3734,7 +3736,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : "--",
+													? prescriptionItem.getInstructions() : null,
 											genericName);
 								} else {
 									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
@@ -3742,7 +3744,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : null,
+													? prescriptionItem.getInstructions() : "--",
 											genericName);
 								}
 							} else {
@@ -3751,7 +3753,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 												? prescriptionItem.getDosage() : "--",
 										duration, directions.isEmpty() ? "--" : directions,
 										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-												? prescriptionItem.getInstructions() : null,
+												? prescriptionItem.getInstructions() : "--",
 										genericName);
 							}
 							prescriptionItems.add(prescriptionJasperDetails);
@@ -4093,14 +4095,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					logger.error("Invalid drug Id");
 					throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 				}
-				
-				if(originalDrug.getDoctorId() != null && request.getDoctorId().equalsIgnoreCase(originalDrug.getDoctorId().toString())) {
+
+				if (originalDrug.getDoctorId() != null
+						&& request.getDoctorId().equalsIgnoreCase(originalDrug.getDoctorId().toString())) {
 					drugCollection = originalDrug;
-				}else {
+				} else {
 					drugCollection = drugRepository.findByCodeAndDoctorId(originalDrug.getDrugCode(),
 							new ObjectId(request.getDoctorId()));
 				}
-				
+
 				if (drugCollection == null) {
 					drugCollection = originalDrug;
 
@@ -5690,15 +5693,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-	
-//	@Scheduled(cron = "0 0 2 * * *", zone = "IST")
-//	@Scheduled(fixedDelay = 1800000)
+
+	// @Scheduled(cron = "0 0 2 * * *", zone = "IST")
+	// @Scheduled(fixedDelay = 1800000)
 	@Transactional
 	public void updateDrugAndAddOPDForYesterdaysAddedRX() {
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			localCalendar.setTime(new Date());
-			
+
 			int currentDay = localCalendar.get(Calendar.DATE);
 			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 			int currentYear = localCalendar.get(Calendar.YEAR);
@@ -5706,39 +5709,40 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			start.minusDays(1);
-			
+
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			end.minusDays(1);
-			
+
 			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findByCreatedTime(start, end);
-			if(prescriptionCollections != null) {
-				for(PrescriptionCollection prescriptionCollection : prescriptionCollections) {
-					
+			if (prescriptionCollections != null) {
+				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+
 					OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
 							String.valueOf(prescriptionCollection.getId()),
 							String.valueOf(prescriptionCollection.getDoctorId()),
 							String.valueOf(prescriptionCollection.getLocationId()),
 							String.valueOf(prescriptionCollection.getHospitalId()),
 							prescriptionCollection.getCreatedTime());
-	
+
 					opdReports = reportsService.submitOPDReport(opdReports);
-				
-					if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
-						for(PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-							DrugCollection drugCollection = drugRepository.findByIdAndTime(prescriptionItem.getDrugId(), start);
-							if(drugCollection != null) {
+
+					if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
+						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+							DrugCollection drugCollection = drugRepository.findByIdAndTime(prescriptionItem.getDrugId(),
+									start);
+							if (drugCollection != null) {
 								drugCollection.setLocationId(prescriptionCollection.getLocationId());
 								drugCollection.setHospitalId(prescriptionCollection.getHospitalId());
 								drugCollection.setRankingCount(drugCollection.getRankingCount() + 1);
 								drugCollection.setUpdatedTime(new Date());
-								
+
 								drugCollection.setUpdatedTime(new Date());
 								drugCollection.setDuration(prescriptionItem.getDuration());
 								drugCollection.setDosage(prescriptionItem.getDosage());
 								drugCollection.setDosageTime(prescriptionItem.getDosageTime());
 								drugCollection.setDirection(prescriptionItem.getDirection());
-								
+
 								drugCollection = drugRepository.save(drugCollection);
 								transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
 								ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -5749,13 +5753,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 								esPrescriptionService.addDrug(esDrugDocument);
 							}
-								
+
 						}
-						
+
 					}
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
