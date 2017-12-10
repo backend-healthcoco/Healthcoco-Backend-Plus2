@@ -1,121 +1,124 @@
 package com.dpdocter.beans;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.jfree.ui.Align;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrintSettings extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String componentType = ComponentType.ALL.getType();
+	private String componentType = ComponentType.ALL.getType();
 
-    private PageSetup pageSetup;
+	private PageSetup pageSetup;
 
-    private HeaderSetup headerSetup;
+	private HeaderSetup headerSetup;
 
-    private FooterSetup footerSetup;
+	private FooterSetup footerSetup;
 
-    private PrintSettingsText contentSetup;
-    
-    private Boolean discarded = false;
+	private PrintSettingsText contentSetup;
 
-    private String clinicLogoUrl;
+	private Boolean discarded = false;
 
-    private String contentLineSpace = LineSpace.SMALL.name();
-    
-    private String contentLineStyle = LineStyle.INLINE.getStyle();
-    
-    private boolean showDrugGenericNames = false;
-    
-    public String getId() {
-	return id;
-    }
+	private String clinicLogoUrl;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private String contentLineSpace = LineSpace.SMALL.name();
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	private String contentLineStyle = LineStyle.INLINE.getStyle();
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	private boolean showDrugGenericNames = false;
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getComponentType() {
-	return componentType;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setComponentType(String componentType) {
-	this.componentType = componentType;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public PageSetup getPageSetup() {
-	return pageSetup;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setPageSetup(PageSetup pageSetup) {
-	this.pageSetup = pageSetup;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public HeaderSetup getHeaderSetup() {
-	return headerSetup;
-    }
+	public String getComponentType() {
+		return componentType;
+	}
 
-    public void setHeaderSetup(HeaderSetup headerSetup) {
-	this.headerSetup = headerSetup;
-    }
+	public void setComponentType(String componentType) {
+		this.componentType = componentType;
+	}
 
-    public FooterSetup getFooterSetup() {
-	return footerSetup;
-    }
+	public PageSetup getPageSetup() {
+		return pageSetup;
+	}
 
-    public void setFooterSetup(FooterSetup footerSetup) {
-	this.footerSetup = footerSetup;
-    }
+	public void setPageSetup(PageSetup pageSetup) {
+		this.pageSetup = pageSetup;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public HeaderSetup getHeaderSetup() {
+		return headerSetup;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setHeaderSetup(HeaderSetup headerSetup) {
+		this.headerSetup = headerSetup;
+	}
 
-    public String getClinicLogoUrl() {
-	return clinicLogoUrl;
-    }
+	public FooterSetup getFooterSetup() {
+		return footerSetup;
+	}
 
-    public void setClinicLogoUrl(String clinicLogoUrl) {
-	this.clinicLogoUrl = clinicLogoUrl;
-    }
+	public void setFooterSetup(FooterSetup footerSetup) {
+		this.footerSetup = footerSetup;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public String getClinicLogoUrl() {
+		return clinicLogoUrl;
+	}
+
+	public void setClinicLogoUrl(String clinicLogoUrl) {
+		this.clinicLogoUrl = clinicLogoUrl;
+	}
 
 	public PrintSettingsText getContentSetup() {
 		return contentSetup;
@@ -157,4 +160,5 @@ public class PrintSettings extends GenericCollection {
 				+ discarded + ", clinicLogoUrl=" + clinicLogoUrl + ", contentLineSpace=" + contentLineSpace
 				+ ", contentLineStyle=" + contentLineStyle + ", showDrugGenericNames=" + showDrugGenericNames + "]";
 	}
+
 }

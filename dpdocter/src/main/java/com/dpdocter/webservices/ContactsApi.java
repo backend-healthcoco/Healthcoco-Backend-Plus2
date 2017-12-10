@@ -270,22 +270,27 @@ public class ContactsApi {
 		Response<Object> response = new Response<Object>();
 		List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
 				discarded);
-
 		if (groups != null) {
 			for (Group group : groups) {
 				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
 				getDoctorContactsRequest.setDoctorId(doctorId);
 				List<String> groupList = new ArrayList<String>();
 				groupList.add(group.getId());
+
 				if (!DPDoctorUtils.anyStringEmpty(group.getPackageType())) {
 					packageType = group.getPackageType();
+
 				}
 				getDoctorContactsRequest.setGroups(groupList);
 				int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
 				group.setCount(ttlCount);
 			}
+		} else {
+			response.setData(PackageType.ADVANCE.getType());
 		}
+
 		response.setData(packageType);
+
 		response.setDataList(groups);
 		return response;
 	}

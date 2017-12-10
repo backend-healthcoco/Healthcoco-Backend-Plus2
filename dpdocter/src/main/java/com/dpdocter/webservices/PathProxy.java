@@ -403,7 +403,7 @@ public interface PathProxy {
 
 		public static final String CHANGE_LABEL_AND_DESCRIPTION_RECORD = "/changeLabelAndDescription";
 
-		public static final String ADD_RECORDS_MULTIPART = "/add";
+		public static final String ADD_RECORDS_MULTIPART = "/addMultipart";
 
 		public static final String SAVE_RECORDS_IMAGE = "/saveImage";
 
@@ -574,14 +574,12 @@ public interface PathProxy {
 		public static final String DELETE_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
 
 		public static final String GET_CUSTOM_DRUGS = "/getCustomDrugs";
-		
+
 		public static final String ADD_EDIT_INSTRUCTIONS = "/addEditInstructions";
-		
+
 		public static final String GET_INSTRUCTIONS = "/getInstructions";
-		
+
 		public static final String DELETE_INSTRUCTIONS = "/deleteInstructions";
-		
-		
 
 	}
 
@@ -1073,7 +1071,7 @@ public interface PathProxy {
 		public static final String GET_PHARMACIES_WEB = "/pharmacies/web";
 
 		public static final String GET_LABS_WEB = "/labs/web";
-		
+
 		public static final String GET_DOCTORS_CARD = "/doctorsCard";
 	}
 
