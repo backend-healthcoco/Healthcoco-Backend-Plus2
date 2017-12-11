@@ -92,7 +92,7 @@ public class DischargeSummaryAPI {
 		Response<DischargeSummaryResponse> response = null;
 		List<DischargeSummaryResponse> dischargeSummaries = null;
 
-		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId,locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Doctor or patient id or locationId or hospitalId is null");
 		}
