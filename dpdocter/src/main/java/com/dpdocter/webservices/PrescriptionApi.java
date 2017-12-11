@@ -483,7 +483,7 @@ public class PrescriptionApi {
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		List<Prescription> prescriptions = null;

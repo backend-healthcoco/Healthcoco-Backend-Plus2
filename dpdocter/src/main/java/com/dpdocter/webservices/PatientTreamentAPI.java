@@ -302,7 +302,7 @@ public class PatientTreamentAPI {
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "status") String status) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
