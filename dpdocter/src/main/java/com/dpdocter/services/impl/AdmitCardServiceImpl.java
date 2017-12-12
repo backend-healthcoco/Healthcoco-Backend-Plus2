@@ -117,9 +117,13 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid DoctorId");
 			}
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+			/*PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 					new ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()),
+					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));*/
+			
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId( new ObjectId(request.getDoctorId()),
 					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+			
 			if (patientCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient");
 			}
