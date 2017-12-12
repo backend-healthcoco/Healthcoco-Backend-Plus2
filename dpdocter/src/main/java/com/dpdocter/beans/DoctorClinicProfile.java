@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.PackageType;
@@ -59,6 +60,8 @@ public class DoctorClinicProfile {
 	private Boolean isClinic = true;
 
 	private Boolean isLab = false;
+
+	private Boolean isParent = false;
 
 	private Boolean isOnlineReportsAvailable = false;
 
@@ -500,4 +503,13 @@ public class DoctorClinicProfile {
 	public void setDoctorSlugURL(String doctorSlugURL) {
 		this.doctorSlugURL = doctorSlugURL;
 	}
+
+	public Boolean getIsParent() {
+		return isParent;
+	}
+
+	public void setIsParent(Boolean isParent) {
+		this.isParent = isParent;
+	}
+
 }
