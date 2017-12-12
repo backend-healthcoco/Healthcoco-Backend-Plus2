@@ -70,6 +70,9 @@ public class MailServiceImpl implements MailService {
 
 	@Value(value = "${is.env.production}")
 	private String PROD_ENV;
+	
+	@Value(value = "${is.qa}")
+	private String QA_ENV;
 
 	@Autowired
 	private EmailSubscriptionRepository emailSubscriptionRepository;
@@ -208,7 +211,10 @@ public class MailServiceImpl implements MailService {
 	public Boolean sendExceptionMail(String subject, String body) throws MessagingException {
 		Boolean status = false;
 		if (PROD_ENV.equalsIgnoreCase("true")) {
-			status = sendEmail(TO, subject, body, null);
+			status = sendEmail(TO,"Prod - " + subject, body, null);
+		}
+		else if (QA_ENV.equalsIgnoreCase("true")) {
+			status = sendEmail(TO,"QA - " + subject, body, null);
 		}
 		return status;
 	}
