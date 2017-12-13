@@ -13,8 +13,6 @@ public class PrescriptionItemDetail {
     
     private DrugType drugType;
     
-    private Quantity quantity;
-
     private String drugName;
     
     private String explanation;

@@ -52,6 +52,9 @@ public class ESDrugDocument {
     @Field(type = FieldType.String)
     private String companyName;
 
+    @Field(type = FieldType.Long)
+	private long companyRankingCount = 0;
+    
     @Field(type = FieldType.String)
     private String packSize;
 
@@ -246,18 +249,15 @@ public class ESDrugDocument {
 	public void setRankingCount(long rankingCount) {
 		this.rankingCount = rankingCount;
 	}
-
-	@Override
-	public String toString() {
-		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
-				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
-				+ MRP + ", duration=" + duration + ", dosage=" + dosage
-				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
-				+ ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
-	}
 	
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+
 	@Override
 	 public boolean equals(Object obj) {
 	   ESDrugDocument drugDocument = (ESDrugDocument) obj;
@@ -268,4 +268,15 @@ public class ESDrugDocument {
 	 public int hashCode() {
 		 return this.drugCode.hashCode();
 	 }
+
+	@Override
+	public String toString() {
+		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
+				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", companyRankingCount="
+				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
+				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
+				+ categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
+	}
 }

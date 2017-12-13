@@ -5765,4 +5765,48 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			logger.error(e);
 		}
 	}
+
+	@Override
+	public Boolean removeDuplicateDrugs() {
+		Boolean response = false;
+		try {
+			List<DrugCollection> drugCollections = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(null).and("locationId").is(null)),
+							Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
+							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", 
+									new BasicDBObject("drugName", "$drugName").append("drugType","$drugType.id")).append("count", new BasicDBObject("$sum", 1)))),
+							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("drugName", "$drugName").append("drugType", "$drugType")
+									.append("keep", new BasicDBObject(
+									        "$cond", new BasicDBObject(
+											          "if", new BasicDBObject("$gt", Arrays.asList("$count", 1)))
+											        .append("then", "$count")
+											        .append("else", 0))))),
+					Aggregation.match(new Criteria("keep").gt(1))), DrugCollection.class, DrugCollection.class).getMappedResults();
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return response;
+	}
+
+	@Override
+	public List<Drug> getDrugSubstitutes(String drugId) {
+		List<Drug> response = null;
+		try {
+			DrugCollection drugCollection = drugRepository.findOne(new ObjectId(drugId));
+			if(drugCollection != null) {
+				if(drugCollection.getGenericNames() != null && !drugCollection.getGenericNames().isEmpty())
+					response = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(new Criteria("genericNames").all(drugCollection.getGenericNames()))), 
+							DrugCollection.class, Drug.class).getMappedResults();
+			}else {
+				throw new BusinessException(ServiceError.InvalidInput, "Drug not found. Please check Drug Id");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug Substitutes");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Substitutes");
+		}
+		return response;
+	}
 }

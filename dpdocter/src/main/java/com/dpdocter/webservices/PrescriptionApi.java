@@ -1207,4 +1207,29 @@ public class PrescriptionApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.PrescriptionUrls.REMOVE_DUPLICATE_DRUGS)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.REMOVE_DUPLICATE_DRUGS, notes = PathProxy.PrescriptionUrls.REMOVE_DUPLICATE_DRUGS)
+	public Response<Boolean> removeDuplicateDrugs() {
+		
+		Boolean removeDuplicateDrugs = prescriptionServices.removeDuplicateDrugs();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(removeDuplicateDrugs);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_DRUG_SUBSTITUTES)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_DRUG_SUBSTITUTES, notes = PathProxy.PrescriptionUrls.GET_DRUG_SUBSTITUTES)
+	public Response<List<Drug>> getDrugSubstitues(@PathParam("drugId") String drugId) {
+		if (drugId == null) {
+			logger.error("DrugId Is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "DrugId Is NULL");
+		}
+		List<Drug> drugs = prescriptionServices.getDrugSubstitutes(drugId);
+		Response<List<Drug>> response = new Response<List<Drug>>();
+		response.setDataList(drugs);
+		return response;
+	}
+
 }

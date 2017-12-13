@@ -55,6 +55,9 @@ public class DrugCollection extends GenericCollection {
 	private String companyName;
 
 	@Field
+	private long companyRankingCount = 0;
+	
+	@Field
 	private String packSize;
 
 	@Field
@@ -252,14 +255,23 @@ public class DrugCollection extends GenericCollection {
 		this.gcStrengthIds = gcStrengthIds;
 	}
 
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId
 				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
-				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
-				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
-				+ direction + ", categories=" + categories + ", rankingCount=" + rankingCount + "]";
+				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", companyRankingCount="
+				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
+				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
+				+ categories + ", rankingCount=" + rankingCount + ", gcStrengthIds=" + gcStrengthIds + "]";
 	}
 
 }

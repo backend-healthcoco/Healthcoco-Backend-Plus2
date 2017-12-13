@@ -204,6 +204,10 @@ public interface PrescriptionServices {
 
 	Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
+
+	Boolean removeDuplicateDrugs();
+
+	List<Drug> getDrugSubstitutes(String drugId);
 	
 
 

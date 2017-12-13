@@ -581,6 +581,9 @@ public interface PathProxy {
 
 		public static final String DELETE_INSTRUCTIONS = "/deleteInstructions";
 
+		public static final String REMOVE_DUPLICATE_DRUGS = "/drugs/removeDuplicate";
+
+		public static final String GET_DRUG_SUBSTITUTES = "/drugs/getSubstitutes";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
