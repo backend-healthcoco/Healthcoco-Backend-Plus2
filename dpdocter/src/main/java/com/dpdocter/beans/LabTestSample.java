@@ -1,6 +1,9 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.response.ImageURLResponse;
 
 public class LabTestSample extends GenericCollection {
 
@@ -17,6 +20,33 @@ public class LabTestSample extends GenericCollection {
 	private Boolean isHardCopyGiven;
 	private String status;
 	private String sampleId;
+	private String serialNumber;
+	private Boolean isCompleted = false;
+	private List<ImageURLResponse> labReports;
+
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+
+	public Boolean getIsCompleted() {
+		return isCompleted;
+	}
+
+	public void setIsCompleted(Boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
+
+	public List<ImageURLResponse> getLabReports() {
+		return labReports;
+	}
+
+	public void setLabReports(List<ImageURLResponse> labReports) {
+		this.labReports = labReports;
+	}
 
 	public String getId() {
 		return id;
@@ -25,8 +55,6 @@ public class LabTestSample extends GenericCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	
 
 	public RateCardTestAssociation getRateCardTestAssociation() {
 		return rateCardTestAssociation;

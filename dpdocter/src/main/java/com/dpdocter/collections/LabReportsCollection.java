@@ -12,6 +12,14 @@ import com.dpdocter.response.ImageURLResponse;
 @Document(collection = "lab_reports_cl")
 public class LabReportsCollection extends GenericCollection {
 
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+
 	@Id
 	private ObjectId id;
 
@@ -62,6 +70,9 @@ public class LabReportsCollection extends GenericCollection {
 
 	@Field
 	private Boolean isSharedToPatient = false;
+	
+	@Field
+	private String serialNumber;
 
 	public ObjectId getId() {
 		return id;

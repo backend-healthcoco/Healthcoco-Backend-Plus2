@@ -5,7 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 public class PatientLabTestSample {
-
+	private String id;
 	private String patientName;
 	private String mobileNumber;
 	private Integer age;
@@ -56,6 +56,14 @@ public class PatientLabTestSample {
 	public String toString() {
 		return "PatientLabTestSample [patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age=" + age
 				+ ", gender=" + gender + ", labTestSamples=" + labTestSamples + "]";
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 }

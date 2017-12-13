@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.collections.GenericCollection;
 
 import common.util.web.JacksonUtil;
@@ -25,6 +27,16 @@ public class LabReportsAddRequest extends GenericCollection {
 	private String labTestSampleId;
 
 	private String recordsState;
+
+	private String serialNumber;
+
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
 
 	public String getPatientName() {
 		return patientName;

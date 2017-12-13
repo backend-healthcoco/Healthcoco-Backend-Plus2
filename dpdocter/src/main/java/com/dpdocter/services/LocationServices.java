@@ -8,6 +8,7 @@ import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.PatientLabTestSample;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
@@ -35,22 +36,24 @@ public interface LocationServices {
 
 	List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm);
 
-	//List<Location> getAssociatedLabs(String locationId, Boolean isParent);
+	// List<Location> getAssociatedLabs(String locationId, Boolean isParent);
 
 	RateCardTestAssociation addEditRateCardTestAssociation(RateCardTestAssociation request);
 
 	List<Location> addCollectionBoyAssociatedLabs(List<CollectionBoyLabAssociation> collectionBoyLabAssociations);
 
-	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm, String rateCardId,
-			String labId);
+	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
+			String rateCardId, String labId);
 
 	RateCard addEditRateCard(RateCard request);
 
 	List<RateCard> getRateCards(int page, int size, String searchTerm, String locationId);
 
-	List<Location> getCBAssociatedLabs(String parentLabId, String daughterLabId, String collectionBoyId, int size, int page);
+	List<Location> getCBAssociatedLabs(String parentLabId, String daughterLabId, String collectionBoyId, int size,
+			int page);
 
-	//List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId, int size, int page);
+	// List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId,
+	// int size, int page);
 
 	LabTestPickupLookupResponse getLabTestPickupByRequestId(String requestId);
 
@@ -67,36 +70,44 @@ public interface LocationServices {
 	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
 			String searchTerm);
 
-	//Integer getCBCount(int size, int page, String locationId, String searchTerm);
+	// Integer getCBCount(int size, int page, String locationId, String
+	// searchTerm);
 
 	List<Specimen> getSpecimenList(int page, int size, String searchTerm);
 
 	Integer getRateCardCount(String searchTerm, String locationId);
 
-	//List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm);
+	// List<Location> getAssociatedLabs(String locationId, Boolean isParent,
+	// String searchTerm);
 
 	CollectionBoy editCollectionBoy(CollectionBoy collectionBoy);
 
 	Boolean addEditRateCardTestAssociation(List<RateCardTestAssociation> request);
 
-/*	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
-			String daughterLabId, String parentLabId, String labId);
-*/
-	//List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId, int size, int page);
+	/*
+	 * List<RateCardTestAssociationLookupResponse> getRateCardTests(int page,
+	 * int size, String searchTerm, String daughterLabId, String parentLabId,
+	 * String labId);
+	 */
+	// List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId,
+	// int size, int page);
 
 	List<RateCardTestAssociationByLBResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId, String specimen);
 
 	RateCard getDLRateCard(String daughterLabId, String parentLabId);
 
-	//List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int size, int page);
+	// List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int
+	// size, int page);
 
 	Integer getCBCount(String locationId, String searchTerm);
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm, int page, int size);
 
-	List<LabTestSampleLookUpResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
-			String searchTerm, int page, int size);
+	List<PatientLabTestSample> getLabReports(String locationId, Boolean isParent, Long from, Long to, String searchTerm,
+			int page, int size);
+
+	Integer countLabReports(String locationId, Boolean isParent, Long from, Long to, String searchTerm);
 
 	List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId, Long from, Long to, String searchTerm,
 			int size, int page);

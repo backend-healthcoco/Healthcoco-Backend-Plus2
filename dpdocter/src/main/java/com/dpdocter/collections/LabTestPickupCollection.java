@@ -43,8 +43,6 @@ public class LabTestPickupCollection extends GenericCollection {
 	private Boolean isCompleted;
 	@Field
 	private ObjectId collectionBoyId;
-	@Field
-	private String serialNumber;
 
 	public ObjectId getId() {
 		return id;
@@ -158,14 +156,6 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.collectionBoyId = collectionBoyId;
 	}
 
-	public String getSerialNumber() {
-		return serialNumber;
-	}
-
-	public void setSerialNumber(String serialNumber) {
-		this.serialNumber = serialNumber;
-	}
-
 	public List<PatientLabTestItem> getPatientLabTestSamples() {
 		return patientLabTestSamples;
 	}
@@ -182,7 +172,7 @@ public class LabTestPickupCollection extends GenericCollection {
 				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
 				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted
-				+ ", collectionBoyId=" + collectionBoyId + ", serialNumber=" + serialNumber + "]";
+				+ ", collectionBoyId=" + collectionBoyId + "]";
 	}
 
 }

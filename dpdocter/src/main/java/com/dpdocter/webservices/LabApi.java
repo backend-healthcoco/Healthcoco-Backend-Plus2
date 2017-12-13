@@ -25,6 +25,7 @@ import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.PatientLabTestSample;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
@@ -594,11 +595,11 @@ public class LabApi {
 	@GET
 	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS)
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS, notes = PathProxy.LabUrls.GET_LAB_REPORTS)
-	public Response<LabTestSampleLookUpResponse> getLabReports(@QueryParam("locationId") String locationId,
+	public Response<Object> getLabReports(@QueryParam("locationId") String locationId,
 			@QueryParam("isParent") Boolean isParent, @QueryParam("from") Long from, @QueryParam("to") Long to,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 
-		List<LabTestSampleLookUpResponse> labTestSamples = null;
+		List<PatientLabTestSample> labTestSamples = null;
 		try {
 
 			if (DPDoctorUtils.anyStringEmpty(locationId)) {
@@ -612,7 +613,8 @@ public class LabApi {
 			logger.error("error while getting lab reports");
 		}
 
-		Response<LabTestSampleLookUpResponse> response = new Response<LabTestSampleLookUpResponse>();
+		Response<Object> response = new Response<Object>();
+		response.setData(locationServices.countLabReports(locationId, isParent, from, to, searchTerm));
 		response.setDataList(labTestSamples);
 		return response;
 	}

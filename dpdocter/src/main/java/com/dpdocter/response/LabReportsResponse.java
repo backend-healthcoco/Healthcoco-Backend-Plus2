@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PatientLabTestSample;
 import com.dpdocter.collections.GenericCollection;
 
 public class LabReportsResponse extends GenericCollection {
@@ -16,6 +17,8 @@ public class LabReportsResponse extends GenericCollection {
 	private String testName;
 
 	private PatientCard patient;
+
+	private List<PatientLabTestSample> patientLabTestSamples;
 
 	private String doctorId;
 
@@ -40,6 +43,14 @@ public class LabReportsResponse extends GenericCollection {
 	private String recordsState;
 
 	private Boolean isSharedToPatient = false;
+
+	public List<PatientLabTestSample> getPatientLabTestSamples() {
+		return patientLabTestSamples;
+	}
+
+	public void setPatientLabTestSamples(List<PatientLabTestSample> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
+	}
 
 	public String getId() {
 		return id;

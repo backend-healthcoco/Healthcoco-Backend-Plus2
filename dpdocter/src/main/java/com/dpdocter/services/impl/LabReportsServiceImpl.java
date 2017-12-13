@@ -2,12 +2,16 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -53,42 +57,40 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class LabReportsServiceImpl implements LabReportsService{
-
+public class LabReportsServiceImpl implements LabReportsService {
 
 	public static final Logger LOGGER = Logger.getLogger(LabReportsServiceImpl.class);
-	
+
 	@Autowired
 	LabReportsRepository labReportsRepository;
-	
+
 	@Autowired
 	LabTestSampleRepository labTestSampleRepository;
-	
+
 	@Autowired
 	LabTestPickupRepository labTestPickupRepository;
-	
+
 	@Autowired
 	LocationRepository locationRepository;
-	
+
 	@Autowired
 	SMSServices smsServices;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
-	
+
 	@Autowired
 	FileManager fileManager;
-	
+
 	@Autowired
 	MongoTemplate mongoTemplate;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
-	
+
 	@Value(value = "${lab.reports.upload}")
 	private String labReportUploadMessage;
-	
+
 	@Override
 	@Transactional
 	public LabReports addLabReports(FormDataBodyPart file, LabReportsAddRequest request) {
@@ -104,8 +106,8 @@ public class LabReportsServiceImpl implements LabReportsService{
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 			}
-			labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(
-					new ObjectId(request.getLabTestSampleId()));
+			labReportsCollection = labReportsRepository
+					.getByRequestIdandSAmpleId(new ObjectId(request.getLabTestSampleId()));
 			if (labReportsCollection == null) {
 				labReportsCollection = new LabReportsCollection();
 			}
@@ -126,8 +128,7 @@ public class LabReportsServiceImpl implements LabReportsService{
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public LabReports addLabReportBase64(FileDetails fileDetails, LabReportsAddRequest request) {
@@ -136,24 +137,22 @@ public class LabReportsServiceImpl implements LabReportsService{
 		ImageURLResponse imageURLResponse = null;
 		try {
 			Date createdTime = new Date();
-			
+
 			if (fileDetails != null) {
-				//String path = "lab-reports";
-				//String recordLabel = fileDetails.getFileName();
+				// String path = "lab-reports";
+				// String recordLabel = fileDetails.getFileName();
 				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
-				
+
 				String path = "lab-reports" + File.separator + request.getPatientName();
 
-				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails,
-						path, true);
-				if(imageURLResponse != null)
-				{
+				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
+				if (imageURLResponse != null) {
 					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
 					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
 				}
 			}
-			labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(
-					new ObjectId(request.getLabTestSampleId()));
+			labReportsCollection = labReportsRepository
+					.getByRequestIdandSAmpleId(new ObjectId(request.getLabTestSampleId()));
 			if (labReportsCollection == null) {
 				labReportsCollection = new LabReportsCollection();
 			}
@@ -166,31 +165,40 @@ public class LabReportsServiceImpl implements LabReportsService{
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
 			response = new LabReports();
 			BeanUtil.map(labReportsCollection, response);
-			
-			
-			LabTestPickupCollection labTestPickupCollection = labTestPickupRepository.getByLabTestSampleId(new ObjectId(request.getLabTestSampleId()));
-			if(labTestPickupCollection != null)
-			{
+
+			LabTestPickupCollection labTestPickupCollection = labTestPickupRepository
+					.getByLabTestSampleId(new ObjectId(request.getLabTestSampleId()));
+			if (labTestPickupCollection != null) {
 				labTestPickupCollection.setStatus("REPORTS UPLOADED");
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 			}
-			
-			LabTestSampleCollection labTestSampleCollection = labTestSampleRepository.findOne(new ObjectId(request.getLabTestSampleId()));
-			if(labTestSampleCollection != null)
-			{
+
+			LabTestSampleCollection labTestSampleCollection = labTestSampleRepository
+					.findOne(new ObjectId(request.getLabTestSampleId()));
+			if (labTestSampleCollection != null) {
+				if (labTestSampleCollection.getIsCompleted() == true
+						&& !DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getParentLabLocationId())
+						&& DPDoctorUtils.anyStringEmpty(labReportsCollection.getSerialNumber())) {
+					String serialNumber = reportSerialNumberGenerator(
+							labTestSampleCollection.getParentLabLocationId().toString());
+					labReportsCollection.setSerialNumber(serialNumber);
+				}
 				labTestSampleCollection.setStatus("REPORTS UPLOADED");
 				labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
-				LocationCollection daughterlocationCollection = locationRepository.findOne(labReportsCollection.getLocationId());
-				LocationCollection parentLocationCollection = locationRepository.findOne(labReportsCollection.getUploadedByLocationId());
+				LocationCollection daughterlocationCollection = locationRepository
+						.findOne(labReportsCollection.getLocationId());
+				LocationCollection parentLocationCollection = locationRepository
+						.findOne(labReportsCollection.getUploadedByLocationId());
 				String message = labReportUploadMessage;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				
+
 				smsTrackDetail.setType("LAB REPORT UPLOAD");
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(daughterlocationCollection.getId());
 				SMS sms = new SMS();
 				smsDetail.setUserName(daughterlocationCollection.getLocationName());
-				//message = message.replace("{patientName}", labTestSampleCollection.getPatientName());
+				// message = message.replace("{patientName}",
+				// labTestSampleCollection.getPatientName());
 				message = message.replace("{specimenName}", labTestSampleCollection.getSampleType());
 				message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
 				System.out.println(message);
@@ -213,7 +221,45 @@ public class LabReportsServiceImpl implements LabReportsService{
 		}
 		return response;
 	}
-	
+
+	private String reportSerialNumberGenerator(String locationId) {
+		String generatedId = null;
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+
+			ObjectId locationObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+
+			LocationCollection location = locationRepository.findOne(locationObjectId);
+			if (location == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+			}
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Long startTimeinMillis = start.getMillis();
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Long endTimeinMillis = end.getMillis();
+			int reportSize = labReportsRepository.findTodaysCompletedReport(locationObjectId, true, startTimeinMillis,
+					endTimeinMillis);
+
+			generatedId = String.valueOf((reportSize + 1));
+		} catch (BusinessException e) {
+			e.printStackTrace();
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return generatedId;
+	}
+
 	@Override
 	@Transactional
 	public LabReports addLabReportBase64(FileDetails fileDetails, DoctorLabReportsAddRequest request) {
@@ -222,23 +268,21 @@ public class LabReportsServiceImpl implements LabReportsService{
 		ImageURLResponse imageURLResponse = null;
 		try {
 			Date createdTime = new Date();
-			
+
 			if (fileDetails != null) {
-				//String path = "lab-reports";
-				//String recordLabel = fileDetails.getFileName();
+				// String path = "lab-reports";
+				// String recordLabel = fileDetails.getFileName();
 				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
-				
+
 				String path = "lab-reports" + File.separator + request.getPatientId();
 
-				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails,
-						path, true);
-				if(imageURLResponse != null)
-				{
+				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
+				if (imageURLResponse != null) {
 					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
 					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
 				}
 			}
-			
+
 			if (labReportsCollection == null) {
 				labReportsCollection = new LabReportsCollection();
 			}
@@ -251,15 +295,11 @@ public class LabReportsServiceImpl implements LabReportsService{
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
 			response = new LabReports();
 			BeanUtil.map(labReportsCollection, response);
-			
-			
-		
-			
-			if(labReportsCollection != null)
-			{
-				
+
+			if (labReportsCollection != null) {
+
 				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
-			
+
 				if (request.getMobileNumber() != null) {
 					LocationCollection daughterlocationCollection = locationRepository
 							.findOne(labReportsCollection.getLocationId());
@@ -296,11 +336,10 @@ public class LabReportsServiceImpl implements LabReportsService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<LabReports> getLabReports(String labTestSampleId,
-			String searchTerm, int page, int size) {
+	public List<LabReports> getLabReports(String labTestSampleId, String searchTerm, int page, int size) {
 		List<LabReports> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -329,11 +368,11 @@ public class LabReportsServiceImpl implements LabReportsService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<LabReportsResponse> getLabReportsForDoctor(String doctorId,String locationId,String hospitalId,
-			String patientId,String searchTerm, int page, int size) {
+	public List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String locationId, String hospitalId,
+			String patientId, String searchTerm, int page, int size) {
 		List<LabReportsResponse> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -350,7 +389,7 @@ public class LabReportsServiceImpl implements LabReportsService{
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
-						Aggregation.unwind("patient"),Aggregation.match(criteria),
+						Aggregation.unwind("patient"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
@@ -366,11 +405,11 @@ public class LabReportsServiceImpl implements LabReportsService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<LabReportsResponse> getLabReportsForLab(String doctorId,String locationId,String hospitalId,
-			String patientId,String searchTerm, int page, int size) {
+	public List<LabReportsResponse> getLabReportsForLab(String doctorId, String locationId, String hospitalId,
+			String patientId, String searchTerm, int page, int size) {
 		List<LabReportsResponse> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -387,7 +426,7 @@ public class LabReportsServiceImpl implements LabReportsService{
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
-						Aggregation.unwind("patient"),Aggregation.match(criteria),
+						Aggregation.unwind("patient"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
@@ -403,23 +442,22 @@ public class LabReportsServiceImpl implements LabReportsService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public LabReports editLabReports(EditLabReportsRequest request) {
 
 		LabReports labReports = null;
-	
+
 		try {
 			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(request.getId()));
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
-			if(request.getLabReports() != null && request.getLabReports().isEmpty())
-			{
-				LabTestPickupCollection labTestPickupCollection = labTestPickupRepository.getByLabTestSampleId(labReportsCollection.getLabTestSampleId());
-				if(labTestPickupCollection != null)
-				{
+			if (request.getLabReports() != null && request.getLabReports().isEmpty()) {
+				LabTestPickupCollection labTestPickupCollection = labTestPickupRepository
+						.getByLabTestSampleId(labReportsCollection.getLabTestSampleId());
+				if (labTestPickupCollection != null) {
 					labTestPickupCollection.setStatus("REPORTS PENDING");
 					labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 				}
@@ -432,18 +470,16 @@ public class LabReportsServiceImpl implements LabReportsService{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
+
 		return labReports;
-		
+
 	}
-	
+
 	@Override
 	@Transactional
-	public LabReportsResponse changePatientShareStatus(String id , Boolean status)
-	{
+	public LabReportsResponse changePatientShareStatus(String id, Boolean status) {
 		LabReportsResponse LabReportsResponse = null;
-		try
-		{
+		try {
 			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(id));
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -452,14 +488,10 @@ public class LabReportsServiceImpl implements LabReportsService{
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
 			LabReportsResponse = new LabReportsResponse();
 			BeanUtil.map(labReportsCollection, LabReportsResponse);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return LabReportsResponse;
 	}
-	
-	
-	
+
 }
