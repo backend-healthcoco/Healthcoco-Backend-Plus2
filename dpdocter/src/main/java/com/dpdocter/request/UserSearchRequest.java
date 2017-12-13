@@ -136,5 +136,5 @@ public class UserSearchRequest {
 				+ wayOfOrder + ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate + ", pickUpAddress="
 				+ pickUpAddress + "]";
 	}
-
+	
 }
