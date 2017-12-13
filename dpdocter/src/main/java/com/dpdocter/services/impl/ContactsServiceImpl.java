@@ -509,22 +509,24 @@ public class ContactsServiceImpl implements ContactsService {
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
-			Criteria criteria = new Criteria();
-
+			Criteria criteriafirst = new Criteria();
+			Criteria criteriasecond = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").is(new ObjectId(doctorId));
+				criteriafirst.and("doctorId").is(new ObjectId(doctorId));
+				criteriasecond = criteriasecond.and("doctorClinic.doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
+				criteriafirst.and("locationId").is(new ObjectId(locationId));
+				criteriasecond = criteriasecond.and("doctorClinic.locationId").is(new ObjectId(locationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				criteriafirst.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (createdTimeStamp > 0) {
-				criteria.and("updatedTime").gte(new Date(createdTimeStamp));
+				criteriafirst.and("updatedTime").gte(new Date(createdTimeStamp));
 			}
 			if (!discarded) {
-				criteria.and("discarded").is(discarded);
+				criteriafirst.and("discarded").is(discarded);
 			}
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("name", "$name"), Fields.field("explanation", "$explanation"),
@@ -534,21 +536,18 @@ public class ContactsServiceImpl implements ContactsService {
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 			if (size > 0) {
-
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
 						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
-						Aggregation.unwind("doctorClinic"),
-						Aggregation.match(new Criteria("doctorClinic.doctorId").is(new ObjectId(doctorId))),
-						projectList, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 
 			} else {
 
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
 						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
-						Aggregation.unwind("doctorClinic"),
-						Aggregation.match(new Criteria("doctorClinic.doctorId").is(new ObjectId(doctorId))),
-						projectList, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+						Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			}
 			AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation, GroupCollection.class,
