@@ -246,6 +246,21 @@ public class ClinicalNotesAddRequest {
 	private int noOfMaleChildren;
 	
 
+	private String pastHistory;
+
+	private String familyHistory;
+
+
+	private String personalHistoryTobacco;
+	private String personalHistoryAlcohol;
+	private String personalHistorySmoking;
+	private String personalHistoryDiet;
+	private String personalHistoryOccupation;
+	private String generalHistoryDrugs;
+	private String generalHistoryMedicine;
+	private String generalHistoryAllergies;
+	private String generalHistorySurgical;
+
 	public String getPcNose() {
 		return pcNose;
 	}
@@ -1091,7 +1106,95 @@ public class ClinicalNotesAddRequest {
 		this.earsExaminations = earsExaminations;
 	}
 
-	
+
+	public String getPastHistory() {
+		return pastHistory;
+	}
+
+	public void setPastHistory(String pastHistory) {
+		this.pastHistory = pastHistory;
+	}
+
+	public String getFamilyHistory() {
+		return familyHistory;
+	}
+
+	public void setFamilyHistory(String familyHistory) {
+		this.familyHistory = familyHistory;
+	}
+
+	public String getPersonalHistoryTobacco() {
+		return personalHistoryTobacco;
+	}
+
+	public void setPersonalHistoryTobacco(String personalHistoryTobacco) {
+		this.personalHistoryTobacco = personalHistoryTobacco;
+	}
+
+	public String getPersonalHistoryAlcohol() {
+		return personalHistoryAlcohol;
+	}
+
+	public void setPersonalHistoryAlcohol(String personalHistoryAlcohol) {
+		this.personalHistoryAlcohol = personalHistoryAlcohol;
+	}
+
+	public String getPersonalHistorySmoking() {
+		return personalHistorySmoking;
+	}
+
+	public void setPersonalHistorySmoking(String personalHistorySmoking) {
+		this.personalHistorySmoking = personalHistorySmoking;
+	}
+
+	public String getPersonalHistoryDiet() {
+		return personalHistoryDiet;
+	}
+
+	public void setPersonalHistoryDiet(String personalHistoryDiet) {
+		this.personalHistoryDiet = personalHistoryDiet;
+	}
+
+	public String getPersonalHistoryOccupation() {
+		return personalHistoryOccupation;
+	}
+
+	public void setPersonalHistoryOccupation(String personalHistoryOccupation) {
+		this.personalHistoryOccupation = personalHistoryOccupation;
+	}
+
+	public String getGeneralHistoryDrugs() {
+		return generalHistoryDrugs;
+	}
+
+	public void setGeneralHistoryDrugs(String generalHistoryDrugs) {
+		this.generalHistoryDrugs = generalHistoryDrugs;
+	}
+
+	public String getGeneralHistoryMedicine() {
+		return generalHistoryMedicine;
+	}
+
+	public void setGeneralHistoryMedicine(String generalHistoryMedicine) {
+		this.generalHistoryMedicine = generalHistoryMedicine;
+	}
+
+	public String getGeneralHistoryAllergies() {
+		return generalHistoryAllergies;
+	}
+
+	public void setGeneralHistoryAllergies(String generalHistoryAllergies) {
+		this.generalHistoryAllergies = generalHistoryAllergies;
+	}
+
+	public String getGeneralHistorySurgical() {
+		return generalHistorySurgical;
+	}
+
+	public void setGeneralHistorySurgical(String generalHistorySurgical) {
+		this.generalHistorySurgical = generalHistorySurgical;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", observation=" + observation

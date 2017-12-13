@@ -177,6 +177,29 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private String procedureNote;
 
+	@Field
+	private String pastHistory;
+	@Field
+	private String familyHistory;
+	@Field
+	private String personalHistoryTobacco;
+	@Field
+	private String personalHistoryAlcohol;
+	@Field
+	private String personalHistorySmoking;
+	@Field
+	private String personalHistoryDiet;
+	@Field
+	private String personalHistoryOccupation;
+	@Field
+	private String generalHistoryDrugs;
+	@Field
+	private String generalHistoryMedicine;
+	@Field
+	private String generalHistoryAllergies;
+	@Field
+	private String generalHistorySurgical;
+
 	public String getProcedureNote() {
 		return procedureNote;
 	}
