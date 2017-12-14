@@ -226,8 +226,12 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			Patient patient = null;
 
 			for (AdmitCardResponse admitCardResponse : response) {
-				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+				/*patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 						new ObjectId(admitCardResponse.getPatientId()), new ObjectId(admitCardResponse.getDoctorId()),
+						new ObjectId(admitCardResponse.getLocationId()),
+						new ObjectId(admitCardResponse.getHospitalId()));*/
+				
+				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(admitCardResponse.getPatientId()),
 						new ObjectId(admitCardResponse.getLocationId()),
 						new ObjectId(admitCardResponse.getHospitalId()));
 				patient = new Patient();

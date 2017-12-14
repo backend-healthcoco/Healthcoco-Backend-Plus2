@@ -722,6 +722,14 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.generalHistorySurgical = generalHistorySurgical;
 	}
 
+	public Integer getPainScale() {
+		return painScale;
+	}
+
+	public void setPainScale(Integer painScale) {
+		this.painScale = painScale;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
