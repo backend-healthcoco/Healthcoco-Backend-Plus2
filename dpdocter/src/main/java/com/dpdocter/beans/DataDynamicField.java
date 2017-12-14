@@ -11,6 +11,7 @@ public class DataDynamicField {
 	
 	private TreatmentDynamicFields treatmentDynamicFields;
 
+
 	public PrescriptionDynamicField getPrescriptionDynamicField() {
 		return prescriptionDynamicField;
 	}
@@ -44,11 +45,13 @@ public class DataDynamicField {
 		this.treatmentDynamicFields = treatmentDynamicFields;
 	}
 
+
 	@Override
 	public String toString() {
 		return "DataDynamicField [prescriptionDynamicField=" + prescriptionDynamicField + ", clinicalNotesDynamicField="
 				+ clinicalNotesDynamicField + ", dischargeSummaryDynamicFields=" + dischargeSummaryDynamicFields
 				+ ", treatmentDynamicFields=" + treatmentDynamicFields + "]";
+
 	}
 
 }

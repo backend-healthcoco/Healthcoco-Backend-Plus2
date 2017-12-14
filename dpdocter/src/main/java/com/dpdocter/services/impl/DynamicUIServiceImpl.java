@@ -14,11 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicalNotesDynamicField;
 import com.dpdocter.beans.DataDynamicField;
+<<<<<<< HEAD
 import com.dpdocter.beans.DischargeSummaryDynamicFields;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.PrescriptionDynamicField;
 import com.dpdocter.beans.TreatmentDynamicFields;
+=======
+import com.dpdocter.beans.DataDynamicUI;
+import com.dpdocter.beans.DynamicUI;
+import com.dpdocter.beans.PrescriptionDynamicField;
+>>>>>>> 1f17733... dynamic ui for data range
 import com.dpdocter.beans.UIPermissions;
+import com.dpdocter.collections.DataDynamicUICollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.SpecialityCollection;
@@ -40,6 +47,7 @@ import com.dpdocter.enums.VitalSignPermissions;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DataDynamicUIRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.SpecialityRepository;
@@ -62,6 +70,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 	@Autowired
 	SpecialityRepository specialityRepository;
+	
+	@Autowired
+	DataDynamicUIRepository dataDynamicUIRepository;
 
 	@Override
 	@Transactional
@@ -458,6 +469,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	private String[] orthoPermission() {
 		return Arrays.toString(OrthoPermissionType.values()).replaceAll("^.|.$", "").split(", ");
 	}
+	
 
 	@Override
 	@Transactional
@@ -472,7 +484,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return uiResponse;
 	}
 
-	/*
 	@Override
 	@Transactional
 	public DataDynamicUI getDynamicDataPermissionForDoctor(String doctorId) {
@@ -494,6 +505,12 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
 				dataDynamicField.setDischargeSummaryDynamicFields(new DischargeSummaryDynamicFields());
 				dataDynamicField.setTreatmentDynamicFields(new TreatmentDynamicFields());
+				//ClinicalNotesDynamicField clinicalNotesDynamicField = new ClinicalNotesDynamicField();
+				//System.out.println(clinicalNotesDynamicField);
+				dataDynamicField.setClinicalNotesDynamicField(new ClinicalNotesDynamicField());
+				//PrescriptionDynamicField prescriptionDynamicField = new PrescriptionDynamicField();
+				//System.out.println(prescriptionDynamicField);
+				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
 				dataDynamicUI.setDataDynamicField(dataDynamicField);
 			}
 		}else
@@ -524,6 +541,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		}
 		return dataDynamicUI;
 	}
-*/
+
 	
 }

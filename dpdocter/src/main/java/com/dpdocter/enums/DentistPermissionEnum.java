@@ -1,7 +1,8 @@
 package com.dpdocter.enums;
 
 public enum DentistPermissionEnum {
-	PROCEDURE_NOTE("PROCEDURE_NOTE")  , PAIN_SCALE("PAIN_SCALE");
+
+	PROCEDURE_NOTE("PROCEDURE_NOTE") , PAIN_SCALE("PAIN_SCALE");
 	private String permissions;
 
 	private DentistPermissionEnum(String permissions) {

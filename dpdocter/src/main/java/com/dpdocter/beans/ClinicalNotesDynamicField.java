@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import com.dpdocter.enums.Range;
 
+import common.util.web.JacksonUtil;
+
 public class ClinicalNotesDynamicField {
 
 	private String note = Range.BOTH.getRange();
@@ -63,6 +65,41 @@ public class ClinicalNotesDynamicField {
 	private String neckExam = Range.BOTH.getRange();
 
 	private String earsExam = Range.BOTH.getRange();
+	
+	
+
+	public ClinicalNotesDynamicField() {
+		this.note = Range.BOTH.getRange();
+		this.observation = Range.BOTH.getRange();
+		this.investigation = Range.BOTH.getRange();
+		this.diagnosis = Range.BOTH.getRange();
+		this.provisionalDiagnosis = Range.BOTH.getRange();
+		this.generalExam = Range.BOTH.getRange();
+		this.systemExam = Range.BOTH.getRange();
+		this.complaint = Range.BOTH.getRange();
+		this.presentComplaint = Range.BOTH.getRange();
+		this.procedureNote = Range.BOTH.getRange();
+		this.presentComplaintHistory = Range.BOTH.getRange();
+		this.menstrualHistory = Range.BOTH.getRange();
+		this.obstetricHistory = Range.BOTH.getRange();
+		this.indicationOfUSG = Range.BOTH.getRange();
+		this.pv = Range.BOTH.getRange();
+		this.pa = Range.BOTH.getRange();
+		this.ps = Range.BOTH.getRange();
+		this.ecgDetails = Range.BOTH.getRange();
+		this.xRayDetails = Range.BOTH.getRange();
+		this.echo = Range.BOTH.getRange();
+		this.holter = Range.BOTH.getRange();
+		this.pcNose = Range.BOTH.getRange();
+		this.pcOralCavity = Range.BOTH.getRange();
+		this.pcThroat = Range.BOTH.getRange();
+		this.pcEars = Range.BOTH.getRange();
+		this.noseExam = Range.BOTH.getRange();
+		this.oralCavityThroatExam = Range.BOTH.getRange();
+		this.indirectLarygoscopyExam = Range.BOTH.getRange();
+		this.neckExam = Range.BOTH.getRange();
+		this.earsExam = Range.BOTH.getRange();
+	}
 
 	public String getNote() {
 		return note;
@@ -317,6 +354,10 @@ public class ClinicalNotesDynamicField {
 				+ ", pcThroat=" + pcThroat + ", pcEars=" + pcEars + ", noseExam=" + noseExam + ", oralCavityThroatExam="
 				+ oralCavityThroatExam + ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam="
 				+ neckExam + ", earsExam=" + earsExam + "]";
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(JacksonUtil.obj2Json(new ClinicalNotesDynamicField()));
 	}
 
 }
