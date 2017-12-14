@@ -18,6 +18,14 @@ import com.dpdocter.beans.WorkingHours;
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class ClinicalNotesCollection extends GenericCollection {
 
+	public Integer getPainScale() {
+		return painScale;
+	}
+
+	public void setPainScale(Integer painScale) {
+		this.painScale = painScale;
+	}
+
 	@Id
 	private ObjectId id;
 
@@ -200,7 +208,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private String generalHistorySurgical;
 	@Field
-	private Integer painScale;
+	private Integer painScale = 0;
 
 	public String getProcedureNote() {
 		return procedureNote;

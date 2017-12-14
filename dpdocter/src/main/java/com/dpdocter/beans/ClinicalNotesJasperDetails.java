@@ -5,134 +5,246 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.mongodb.DBObject;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotesJasperDetails {
 
-    private String complaints;
+	private String complaints;
 
-    private String observations;
+	private String observations;
 
-    private String investigations;
+	private String investigations;
 
-    private String diagnosis;
+	private String diagnosis;
 
-    private String notes;
+	private String notes;
 
-    private List<DBObject> diagrams;
+	private List<DBObject> diagrams;
 
-    private String vitalSigns;
+	private String vitalSigns;
 
-    private String presentComplaint;
-    
+	private String presentComplaint;
+
 	private String provisionalDiagnosis;
 
 	private String generalExam;
 
 	private String systemExam;
-	
+
 	private String noseExam;
-	
+
 	private String oralCavityThroatExam;
-	
+
 	private String indirectLarygoscopyExam;
-	
+
 	private String neckExam;
-	
+
 	private String earsExam;
-	
+
 	private String pcNose;
-	
+
 	private String pcOralCavity;
-	
+
 	private String pcThroat;
-		
+
 	private String pcEars;
 
 	private String presentComplaintHistory;
 
 	private String menstrualHistory;
-	
+
 	private String obstetricHistory;
 
 	private String indicationOfUSG;
-	
+
 	private String pv;
-	
+
 	private String pa;
-	
+
 	private String ps;
-	
+
 	private String ecgDetails;
-	
+
 	private String xRayDetails;
-	
+
 	private String echo;
-	
+
 	private String holter;
 
-    private String lmp;
-	
+	private String lmp;
+
 	private String edd;
-	
+
 	private String noOfChildren;
-	
+
 	private String procedureNote;
 	
-    public String getComplaints() {
-	return complaints;
-    }
+	private String pastHistory;
 
-    public void setComplaints(String complaints) {
-	this.complaints = complaints;
-    }
+	private String familyHistory;
 
-    public String getObservations() {
-	return observations;
-    }
+	private String personalHistoryTobacco;
+	private String personalHistoryAlcohol;
+	private String personalHistorySmoking;
+	private String personalHistoryDiet;
+	private String personalHistoryOccupation;
+	private String generalHistoryDrugs;
+	private String generalHistoryMedicine;
+	private String generalHistoryAllergies;
+	private String generalHistorySurgical;
+	private Integer painScale;
 
-    public void setObservations(String observations) {
-	this.observations = observations;
-    }
+	public String getPastHistory() {
+		return pastHistory;
+	}
 
-    public String getInvestigations() {
-	return investigations;
-    }
+	public void setPastHistory(String pastHistory) {
+		this.pastHistory = pastHistory;
+	}
 
-    public void setInvestigations(String investigations) {
-	this.investigations = investigations;
-    }
+	public String getFamilyHistory() {
+		return familyHistory;
+	}
 
-    public String getDiagnosis() {
-	return diagnosis;
-    }
+	public void setFamilyHistory(String familyHistory) {
+		this.familyHistory = familyHistory;
+	}
 
-    public void setDiagnosis(String diagnosis) {
-	this.diagnosis = diagnosis;
-    }
+	public String getPersonalHistoryTobacco() {
+		return personalHistoryTobacco;
+	}
 
-    public List<DBObject> getDiagrams() {
-	return diagrams;
-    }
+	public void setPersonalHistoryTobacco(String personalHistoryTobacco) {
+		this.personalHistoryTobacco = personalHistoryTobacco;
+	}
 
-    public void setDiagrams(List<DBObject> list) {
-	this.diagrams = list;
-    }
+	public String getPersonalHistoryAlcohol() {
+		return personalHistoryAlcohol;
+	}
 
-    public String getNotes() {
-	return notes;
-    }
+	public void setPersonalHistoryAlcohol(String personalHistoryAlcohol) {
+		this.personalHistoryAlcohol = personalHistoryAlcohol;
+	}
 
-    public void setNotes(String notes) {
-	this.notes = notes;
-    }
+	public String getPersonalHistorySmoking() {
+		return personalHistorySmoking;
+	}
 
-    public String getVitalSigns() {
-	return vitalSigns;
-    }
+	public void setPersonalHistorySmoking(String personalHistorySmoking) {
+		this.personalHistorySmoking = personalHistorySmoking;
+	}
 
-    public void setVitalSigns(String vitalSigns) {
-	this.vitalSigns = vitalSigns;
-    }
+	public String getPersonalHistoryDiet() {
+		return personalHistoryDiet;
+	}
+
+	public void setPersonalHistoryDiet(String personalHistoryDiet) {
+		this.personalHistoryDiet = personalHistoryDiet;
+	}
+
+	public String getPersonalHistoryOccupation() {
+		return personalHistoryOccupation;
+	}
+
+	public void setPersonalHistoryOccupation(String personalHistoryOccupation) {
+		this.personalHistoryOccupation = personalHistoryOccupation;
+	}
+
+	public String getGeneralHistoryDrugs() {
+		return generalHistoryDrugs;
+	}
+
+	public void setGeneralHistoryDrugs(String generalHistoryDrugs) {
+		this.generalHistoryDrugs = generalHistoryDrugs;
+	}
+
+	public String getGeneralHistoryMedicine() {
+		return generalHistoryMedicine;
+	}
+
+	public void setGeneralHistoryMedicine(String generalHistoryMedicine) {
+		this.generalHistoryMedicine = generalHistoryMedicine;
+	}
+
+	public String getGeneralHistoryAllergies() {
+		return generalHistoryAllergies;
+	}
+
+	public void setGeneralHistoryAllergies(String generalHistoryAllergies) {
+		this.generalHistoryAllergies = generalHistoryAllergies;
+	}
+
+	public String getGeneralHistorySurgical() {
+		return generalHistorySurgical;
+	}
+
+	public void setGeneralHistorySurgical(String generalHistorySurgical) {
+		this.generalHistorySurgical = generalHistorySurgical;
+	}
+
+	public Integer getPainScale() {
+		return painScale;
+	}
+
+	public void setPainScale(Integer painScale) {
+		this.painScale = painScale;
+	}
+
+	public String getComplaints() {
+		return complaints;
+	}
+
+	public void setComplaints(String complaints) {
+		this.complaints = complaints;
+	}
+
+	public String getObservations() {
+		return observations;
+	}
+
+	public void setObservations(String observations) {
+		this.observations = observations;
+	}
+
+	public String getInvestigations() {
+		return investigations;
+	}
+
+	public void setInvestigations(String investigations) {
+		this.investigations = investigations;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public List<DBObject> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<DBObject> list) {
+		this.diagrams = list;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public String getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(String vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
 
 	public String getPresentComplaint() {
 		return presentComplaint;

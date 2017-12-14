@@ -342,7 +342,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd, String createdBy, Appointment appointment) {
+	public ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd, String createdBy,
+			Appointment appointment) {
 		ClinicalNotes clinicalNotes = null;
 		List<ObjectId> diagramIds = null;
 		Date createdTime = new Date();
@@ -352,7 +353,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					appointment = addNotesAppointment(request.getAppointmentRequest());
 				}
 			}
-			
+
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			if (appointment != null) {
 				request.setAppointmentId(appointment.getAppointmentId());
@@ -360,7 +361,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				request.setFromDate(appointment.getFromDate());
 			}
 			BeanUtil.map(request, clinicalNotesCollection);
-			if(DPDoctorUtils.anyStringEmpty(createdBy)) {
+			if (DPDoctorUtils.anyStringEmpty(createdBy)) {
 				UserCollection userCollection = userRepository.findOne(clinicalNotesCollection.getDoctorId());
 				if (userCollection != null) {
 					createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -4195,6 +4196,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
+
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
@@ -4223,6 +4225,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			parameters.put("ComplaintsTitle", "Complaints :");
 			showTitle = true;
 		}
+
 		parameters.put("showPCTitle", showTitle);
 		showTitle = false;
 		if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
@@ -4234,9 +4237,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			showTitle = true;
 		}
 		parameters.put("showExamTitle", showTitle);
-
-		if (!isCustomPDF || showUSG)
+		showTitle = false;
+		if (!isCustomPDF || showUSG) {
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
+		}
 		parameters.put("pv", clinicalNotesCollection.getPv());
 		parameters.put("pa", clinicalNotesCollection.getPa());
 		parameters.put("ps", clinicalNotesCollection.getPs());
@@ -4245,7 +4249,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("echo", clinicalNotesCollection.getEcho());
 		parameters.put("holter", clinicalNotesCollection.getHolter());
 		parameters.put("procedureNote", clinicalNotesCollection.getProcedureNote());
-
+		parameters.put("personalHistoryTobacco", clinicalNotesCollection.getPersonalHistoryTobacco());
+		parameters.put("personalHistoryAlcohol", clinicalNotesCollection.getPersonalHistoryAlcohol());
+		parameters.put("personalHistorySmoking", clinicalNotesCollection.getPersonalHistorySmoking());
+		parameters.put("personalHistoryDiet", clinicalNotesCollection.getPersonalHistoryDiet());
+		parameters.put("personalHistoryOccupation", clinicalNotesCollection.getPersonalHistoryOccupation());
+		parameters.put("generalHistoryDrugs", clinicalNotesCollection.getGeneralHistoryDrugs());
+		parameters.put("generalHistoryMedicine", clinicalNotesCollection.getGeneralHistoryMedicine());
+		parameters.put("generalHistoryAllergies", clinicalNotesCollection.getGeneralHistoryAllergies());
+		parameters.put("generalHistorySurgical", clinicalNotesCollection.getGeneralHistorySurgical());
+		parameters.put("pastHistory", clinicalNotesCollection.getPastHistory());
+		parameters.put("familyHistory", clinicalNotesCollection.getFamilyHistory());
+		parameters.put("painScale",
+				clinicalNotesCollection.getPainScale() > 0 ? clinicalNotesCollection.getPainScale() : null);
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
 		if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
@@ -7616,18 +7632,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	}
 
-/*	private Set<String> compareGlobalElements(Set<String> editedElements, Set<String> globalElements) {
-		editedElements.removeAll(globalElements);
-		return editedElements;
-
-	}
-
-	private List<String> splitCSV(String value) {
-		List<String> list = new ArrayList<String>(Arrays.asList(value.trim().split("\\s*,\\s*")));
-		return list;
-
-	}
-*/
+	/*
+	 * private Set<String> compareGlobalElements(Set<String> editedElements,
+	 * Set<String> globalElements) { editedElements.removeAll(globalElements);
+	 * return editedElements;
+	 * 
+	 * }
+	 * 
+	 * private List<String> splitCSV(String value) { List<String> list = new
+	 * ArrayList<String>(Arrays.asList(value.trim().split("\\s*,\\s*"))); return
+	 * list;
+	 * 
+	 * }
+	 */
 	@SuppressWarnings("unchecked")
 	private List<PresentingComplaintNose> getCustomGlobalPCNOse(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
@@ -8390,13 +8407,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public List<Diagnoses> getDiagnosesListBySpeciality(String speciality , String searchTerm) {
+	public List<Diagnoses> getDiagnosesListBySpeciality(String speciality, String searchTerm) {
 		List<Diagnoses> response = null;
 		Aggregation aggregation = null;
 		Criteria criteria = new Criteria().and("speciality").in(speciality);
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			criteria = criteria.orOperator(new Criteria("diagnosis").regex("^" + searchTerm, "i"),
-					new Criteria("diagnosis").regex("^" + searchTerm),new Criteria("category").regex("^" + searchTerm, "i"),
+					new Criteria("diagnosis").regex("^" + searchTerm),
+					new Criteria("category").regex("^" + searchTerm, "i"),
 					new Criteria("category").regex("^" + searchTerm));
 		}
 		criteria.and("category").exists(true);
