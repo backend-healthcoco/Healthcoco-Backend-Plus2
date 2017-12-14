@@ -122,6 +122,7 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private String generalHistoryMedicine;
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
+	private Integer painScale;
 
 	public ObjectId getId() {
 		return id;
@@ -609,6 +610,14 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 
 	public void setGeneralHistorySurgical(String generalHistorySurgical) {
 		this.generalHistorySurgical = generalHistorySurgical;
+	}
+
+	public Integer getPainScale() {
+		return painScale;
+	}
+
+	public void setPainScale(Integer painScale) {
+		this.painScale = painScale;
 	}
 
 }

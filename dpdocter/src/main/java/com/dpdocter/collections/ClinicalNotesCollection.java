@@ -199,6 +199,8 @@ public class ClinicalNotesCollection extends GenericCollection {
 	private String generalHistoryAllergies;
 	@Field
 	private String generalHistorySurgical;
+	@Field
+	private Integer painScale;
 
 	public String getProcedureNote() {
 		return procedureNote;
