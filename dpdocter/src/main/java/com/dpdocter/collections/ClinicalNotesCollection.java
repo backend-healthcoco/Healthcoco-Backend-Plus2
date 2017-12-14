@@ -640,6 +640,78 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.familyHistory = familyHistory;
 	}
 
+	public String getPersonalHistoryTobacco() {
+		return personalHistoryTobacco;
+	}
+
+	public void setPersonalHistoryTobacco(String personalHistoryTobacco) {
+		this.personalHistoryTobacco = personalHistoryTobacco;
+	}
+
+	public String getPersonalHistoryAlcohol() {
+		return personalHistoryAlcohol;
+	}
+
+	public void setPersonalHistoryAlcohol(String personalHistoryAlcohol) {
+		this.personalHistoryAlcohol = personalHistoryAlcohol;
+	}
+
+	public String getPersonalHistorySmoking() {
+		return personalHistorySmoking;
+	}
+
+	public void setPersonalHistorySmoking(String personalHistorySmoking) {
+		this.personalHistorySmoking = personalHistorySmoking;
+	}
+
+	public String getPersonalHistoryDiet() {
+		return personalHistoryDiet;
+	}
+
+	public void setPersonalHistoryDiet(String personalHistoryDiet) {
+		this.personalHistoryDiet = personalHistoryDiet;
+	}
+
+	public String getPersonalHistoryOccupation() {
+		return personalHistoryOccupation;
+	}
+
+	public void setPersonalHistoryOccupation(String personalHistoryOccupation) {
+		this.personalHistoryOccupation = personalHistoryOccupation;
+	}
+
+	public String getGeneralHistoryDrugs() {
+		return generalHistoryDrugs;
+	}
+
+	public void setGeneralHistoryDrugs(String generalHistoryDrugs) {
+		this.generalHistoryDrugs = generalHistoryDrugs;
+	}
+
+	public String getGeneralHistoryMedicine() {
+		return generalHistoryMedicine;
+	}
+
+	public void setGeneralHistoryMedicine(String generalHistoryMedicine) {
+		this.generalHistoryMedicine = generalHistoryMedicine;
+	}
+
+	public String getGeneralHistoryAllergies() {
+		return generalHistoryAllergies;
+	}
+
+	public void setGeneralHistoryAllergies(String generalHistoryAllergies) {
+		this.generalHistoryAllergies = generalHistoryAllergies;
+	}
+
+	public String getGeneralHistorySurgical() {
+		return generalHistorySurgical;
+	}
+
+	public void setGeneralHistorySurgical(String generalHistorySurgical) {
+		this.generalHistorySurgical = generalHistorySurgical;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
