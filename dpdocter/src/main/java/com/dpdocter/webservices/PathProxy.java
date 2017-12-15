@@ -1184,6 +1184,9 @@ public interface PathProxy {
 		public static final String GET_PERMISSIONS_FOR_DOCTOR = "/getPermissionsForDoctor/{doctorId}";
 		public static final String GET_BOTH_PERMISSION_FOR_DOCTOR = "/getBothPermissionsForDoctor/{doctorId}";
 		public static final String POST_PERMISSIONS = "/postPermissions";
+		public static final String GET_DATA_PERMISSION_FOR_DOCTOR = "/getDataPermissionForDoctor/{doctorId}";
+		public static final String POST_DATA_PERMISSIONS = "/postDataPermissions";
+		
 	}
 
 	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
