@@ -1750,6 +1750,30 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setPcOralCavity(clinicalNotesCollection.getPcOralCavity());
 					clinicalNotesJasperDetails.setPcThroat(clinicalNotesCollection.getPcThroat());
 					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails
+							.setPersonalHistoryTobacco(clinicalNotesCollection.getPersonalHistoryTobacco());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails
+							.setPersonalHistoryAlcohol(clinicalNotesCollection.getPersonalHistoryAlcohol());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails
+							.setPersonalHistorySmoking(clinicalNotesCollection.getPersonalHistorySmoking());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails.setPersonalHistoryDiet(clinicalNotesCollection.getPersonalHistoryDiet());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails
+							.setPersonalHistoryOccupation(clinicalNotesCollection.getPersonalHistoryOccupation());
+					clinicalNotesJasperDetails.setGeneralHistoryDrugs(clinicalNotesCollection.getGeneralHistoryDrugs());
+					clinicalNotesJasperDetails
+							.setGeneralHistoryMedicine(clinicalNotesCollection.getGeneralHistoryMedicine());
+					clinicalNotesJasperDetails
+							.setGeneralHistoryAllergies(clinicalNotesCollection.getGeneralHistoryAllergies());
+					clinicalNotesJasperDetails
+							.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
+					clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
+					clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
+					clinicalNotesJasperDetails.setPainScale(
+							clinicalNotesCollection.getPainScale() > 0 ? clinicalNotesCollection.getPainScale() : null);
 					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
