@@ -4261,7 +4261,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("pastHistory", clinicalNotesCollection.getPastHistory());
 		parameters.put("familyHistory", clinicalNotesCollection.getFamilyHistory());
 		parameters.put("painScale",
-				clinicalNotesCollection.getPainScale() > 0 ? clinicalNotesCollection.getPainScale() : null);
+				 clinicalNotesCollection.getPainScale());
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
 		if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))

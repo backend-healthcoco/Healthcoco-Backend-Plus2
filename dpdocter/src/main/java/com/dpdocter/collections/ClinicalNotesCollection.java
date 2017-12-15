@@ -200,7 +200,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private String generalHistorySurgical;
 	@Field
-	private String painScale = 0;
+	private String painScale;
 
 	public String getProcedureNote() {
 		return procedureNote;
