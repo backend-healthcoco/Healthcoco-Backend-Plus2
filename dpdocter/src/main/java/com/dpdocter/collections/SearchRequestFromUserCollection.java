@@ -7,6 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.LocaleWorkingHours;
+import com.dpdocter.beans.UserAddress;
+import com.dpdocter.enums.WayOfOrder;
 import com.dpdocter.request.PrescriptionRequest;
 
 @Document(collection = "search_request_from_user_cl")
@@ -38,9 +41,21 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 
 	@Field
 	private List<String> pharmacyType;
-	
+
 	@Field
 	private Boolean isCancelled = false;
+
+	@Field
+	private WayOfOrder wayOfOrder;
+
+	@Field
+	private LocaleWorkingHours pickUpTime;
+
+	@Field
+	private Long pickUpDate;
+
+	@Field
+	private UserAddress pickUpAddress;
 
 	public ObjectId getId() {
 		return id;
@@ -113,13 +128,45 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 	public void setPharmacyType(List<String> pharmacyType) {
 		this.pharmacyType = pharmacyType;
 	}
-	
+
 	public Boolean getIsCancelled() {
 		return isCancelled;
 	}
 
 	public void setIsCancelled(Boolean isCancelled) {
 		this.isCancelled = isCancelled;
+	}
+
+	public WayOfOrder getWayOfOrder() {
+		return wayOfOrder;
+	}
+
+	public void setWayOfOrder(WayOfOrder wayOfOrder) {
+		this.wayOfOrder = wayOfOrder;
+	}
+
+	public LocaleWorkingHours getPickUpTime() {
+		return pickUpTime;
+	}
+
+	public void setPickUpTime(LocaleWorkingHours pickUpTime) {
+		this.pickUpTime = pickUpTime;
+	}
+
+	public Long getPickUpDate() {
+		return pickUpDate;
+	}
+
+	public void setPickUpDate(Long pickUpDate) {
+		this.pickUpDate = pickUpDate;
+	}
+
+	public UserAddress getPickUpAddress() {
+		return pickUpAddress;
+	}
+
+	public void setPickUpAddress(UserAddress pickUpAddress) {
+		this.pickUpAddress = pickUpAddress;
 	}
 
 	@Override
