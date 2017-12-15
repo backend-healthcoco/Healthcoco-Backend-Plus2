@@ -4245,7 +4245,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("echo", clinicalNotesCollection.getEcho());
 		parameters.put("holter", clinicalNotesCollection.getHolter());
 		parameters.put("procedureNote", clinicalNotesCollection.getProcedureNote());
-
+		parameters.put("personalHistoryTobacco", clinicalNotesCollection.getPersonalHistoryTobacco());
+		parameters.put("personalHistoryAlcohol", clinicalNotesCollection.getPersonalHistoryAlcohol());
+		parameters.put("personalHistorySmoking", clinicalNotesCollection.getPersonalHistorySmoking());
+		parameters.put("personalHistoryDiet", clinicalNotesCollection.getPersonalHistoryDiet());
+		parameters.put("personalHistoryOccupation", clinicalNotesCollection.getPersonalHistoryOccupation());
+		parameters.put("generalHistoryDrugs", clinicalNotesCollection.getGeneralHistoryDrugs());
+		parameters.put("generalHistoryMedicine", clinicalNotesCollection.getGeneralHistoryMedicine());
+		parameters.put("generalHistoryAllergies", clinicalNotesCollection.getGeneralHistoryAllergies());
+		parameters.put("generalHistorySurgical", clinicalNotesCollection.getGeneralHistorySurgical());
+		parameters.put("pastHistory", clinicalNotesCollection.getPastHistory());
+		parameters.put("familyHistory", clinicalNotesCollection.getFamilyHistory());
+		parameters.put("painScale",
+				 clinicalNotesCollection.getPainScale());
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
 		if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
