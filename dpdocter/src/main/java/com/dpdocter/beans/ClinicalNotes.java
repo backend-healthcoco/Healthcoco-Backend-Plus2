@@ -98,7 +98,7 @@ public class ClinicalNotes extends GenericCollection {
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
 
-	private Integer painScale;
+	private String painScale;
 
 	private boolean inHistory = false;
 
@@ -614,11 +614,11 @@ public class ClinicalNotes extends GenericCollection {
 		this.generalHistorySurgical = generalHistorySurgical;
 	}
 
-	public Integer getPainScale() {
+	public String getPainScale() {
 		return painScale;
 	}
 
-	public void setPainScale(Integer painScale) {
+	public void setPainScale(String painScale) {
 		this.painScale = painScale;
 	}
 

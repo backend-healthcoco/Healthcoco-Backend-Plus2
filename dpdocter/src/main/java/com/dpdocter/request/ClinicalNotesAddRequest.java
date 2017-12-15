@@ -258,7 +258,7 @@ public class ClinicalNotesAddRequest {
 	private String generalHistoryMedicine;
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
-	private Integer painScale;
+	private String painScale;
 
 	public String getPcNose() {
 		return pcNose;
@@ -1191,11 +1191,11 @@ public class ClinicalNotesAddRequest {
 		this.generalHistorySurgical = generalHistorySurgical;
 	}
 
-	public Integer getPainScale() {
+	public String getPainScale() {
 		return painScale;
 	}
 
-	public void setPainScale(Integer painScale) {
+	public void setPainScale(String painScale) {
 		this.painScale = painScale;
 	}
 

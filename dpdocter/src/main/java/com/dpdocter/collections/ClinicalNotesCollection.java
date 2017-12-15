@@ -200,7 +200,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private String generalHistorySurgical;
 	@Field
-	private Integer painScale = 0;
+	private String painScale = 0;
 
 	public String getProcedureNote() {
 		return procedureNote;
@@ -714,11 +714,11 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.generalHistorySurgical = generalHistorySurgical;
 	}
 
-	public Integer getPainScale() {
+	public String getPainScale() {
 		return painScale;
 	}
 
-	public void setPainScale(Integer painScale) {
+	public void setPainScale(String painScale) {
 		this.painScale = painScale;
 	}
 

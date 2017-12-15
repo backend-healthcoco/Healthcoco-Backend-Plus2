@@ -171,7 +171,7 @@ public class ClinicalNotesEditRequest {
 	private String generalHistoryMedicine;
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
-	private Integer painScale;
+	private String painScale;
 
 	public Date getLmp() {
 		return lmp;
@@ -1125,11 +1125,11 @@ public class ClinicalNotesEditRequest {
 	}
 	
 
-	public Integer getPainScale() {
+	public String getPainScale() {
 		return painScale;
 	}
 
-	public void setPainScale(Integer painScale) {
+	public void setPainScale(String painScale) {
 		this.painScale = painScale;
 	}
 
