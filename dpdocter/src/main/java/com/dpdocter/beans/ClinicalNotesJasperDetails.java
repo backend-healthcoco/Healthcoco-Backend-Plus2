@@ -92,7 +92,7 @@ public class ClinicalNotesJasperDetails {
 	private String generalHistoryMedicine;
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
-	private Integer painScale;
+	private String painScale;
 
 	public String getPastHistory() {
 		return pastHistory;
@@ -182,11 +182,11 @@ public class ClinicalNotesJasperDetails {
 		this.generalHistorySurgical = generalHistorySurgical;
 	}
 
-	public Integer getPainScale() {
+	public String getPainScale() {
 		return painScale;
 	}
 
-	public void setPainScale(Integer painScale) {
+	public void setPainScale(String painScale) {
 		this.painScale = painScale;
 	}
 
