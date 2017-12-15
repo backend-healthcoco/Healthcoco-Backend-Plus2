@@ -5,134 +5,150 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.mongodb.DBObject;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotesJasperDetails {
 
-    private String complaints;
+	private String complaints;
 
-    private String observations;
+	private String observations;
 
-    private String investigations;
+	private String investigations;
 
-    private String diagnosis;
+	private String diagnosis;
 
-    private String notes;
+	private String notes;
 
-    private List<DBObject> diagrams;
+	private List<DBObject> diagrams;
 
-    private String vitalSigns;
+	private String vitalSigns;
 
-    private String presentComplaint;
-    
+	private String presentComplaint;
+
 	private String provisionalDiagnosis;
 
 	private String generalExam;
 
 	private String systemExam;
-	
+
 	private String noseExam;
-	
+
 	private String oralCavityThroatExam;
-	
+
 	private String indirectLarygoscopyExam;
-	
+
 	private String neckExam;
-	
+
 	private String earsExam;
-	
+
 	private String pcNose;
-	
+
 	private String pcOralCavity;
-	
+
 	private String pcThroat;
-		
+
 	private String pcEars;
 
 	private String presentComplaintHistory;
 
 	private String menstrualHistory;
-	
+
 	private String obstetricHistory;
 
 	private String indicationOfUSG;
-	
+
 	private String pv;
-	
+
 	private String pa;
-	
+
 	private String ps;
-	
+
 	private String ecgDetails;
-	
+
 	private String xRayDetails;
-	
+
 	private String echo;
-	
+
 	private String holter;
 
-    private String lmp;
-	
+	private String lmp;
+
 	private String edd;
-	
+
 	private String noOfChildren;
-	
+
 	private String procedureNote;
-	
-    public String getComplaints() {
-	return complaints;
-    }
 
-    public void setComplaints(String complaints) {
-	this.complaints = complaints;
-    }
+	private String pastHistory;
 
-    public String getObservations() {
-	return observations;
-    }
+	private String familyHistory;
 
-    public void setObservations(String observations) {
-	this.observations = observations;
-    }
+	private String personalHistoryTobacco;
+	private String personalHistoryAlcohol;
+	private String personalHistorySmoking;
+	private String personalHistoryDiet;
+	private String personalHistoryOccupation;
+	private String generalHistoryDrugs;
+	private String generalHistoryMedicine;
+	private String generalHistoryAllergies;
+	private String generalHistorySurgical;
+	private String painScale;
 
-    public String getInvestigations() {
-	return investigations;
-    }
+	public String getComplaints() {
+		return complaints;
+	}
 
-    public void setInvestigations(String investigations) {
-	this.investigations = investigations;
-    }
+	public void setComplaints(String complaints) {
+		this.complaints = complaints;
+	}
 
-    public String getDiagnosis() {
-	return diagnosis;
-    }
+	public String getObservations() {
+		return observations;
+	}
 
-    public void setDiagnosis(String diagnosis) {
-	this.diagnosis = diagnosis;
-    }
+	public void setObservations(String observations) {
+		this.observations = observations;
+	}
 
-    public List<DBObject> getDiagrams() {
-	return diagrams;
-    }
+	public String getInvestigations() {
+		return investigations;
+	}
 
-    public void setDiagrams(List<DBObject> list) {
-	this.diagrams = list;
-    }
+	public void setInvestigations(String investigations) {
+		this.investigations = investigations;
+	}
 
-    public String getNotes() {
-	return notes;
-    }
+	public String getDiagnosis() {
+		return diagnosis;
+	}
 
-    public void setNotes(String notes) {
-	this.notes = notes;
-    }
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
 
-    public String getVitalSigns() {
-	return vitalSigns;
-    }
+	public String getNotes() {
+		return notes;
+	}
 
-    public void setVitalSigns(String vitalSigns) {
-	this.vitalSigns = vitalSigns;
-    }
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public List<DBObject> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<DBObject> diagrams) {
+		this.diagrams = diagrams;
+	}
+
+	public String getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(String vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
 
 	public String getPresentComplaint() {
 		return presentComplaint;
@@ -164,6 +180,78 @@ public class ClinicalNotesJasperDetails {
 
 	public void setSystemExam(String systemExam) {
 		this.systemExam = systemExam;
+	}
+
+	public String getNoseExam() {
+		return noseExam;
+	}
+
+	public void setNoseExam(String noseExam) {
+		this.noseExam = noseExam;
+	}
+
+	public String getOralCavityThroatExam() {
+		return oralCavityThroatExam;
+	}
+
+	public void setOralCavityThroatExam(String oralCavityThroatExam) {
+		this.oralCavityThroatExam = oralCavityThroatExam;
+	}
+
+	public String getIndirectLarygoscopyExam() {
+		return indirectLarygoscopyExam;
+	}
+
+	public void setIndirectLarygoscopyExam(String indirectLarygoscopyExam) {
+		this.indirectLarygoscopyExam = indirectLarygoscopyExam;
+	}
+
+	public String getNeckExam() {
+		return neckExam;
+	}
+
+	public void setNeckExam(String neckExam) {
+		this.neckExam = neckExam;
+	}
+
+	public String getEarsExam() {
+		return earsExam;
+	}
+
+	public void setEarsExam(String earsExam) {
+		this.earsExam = earsExam;
+	}
+
+	public String getPcNose() {
+		return pcNose;
+	}
+
+	public void setPcNose(String pcNose) {
+		this.pcNose = pcNose;
+	}
+
+	public String getPcOralCavity() {
+		return pcOralCavity;
+	}
+
+	public void setPcOralCavity(String pcOralCavity) {
+		this.pcOralCavity = pcOralCavity;
+	}
+
+	public String getPcThroat() {
+		return pcThroat;
+	}
+
+	public void setPcThroat(String pcThroat) {
+		this.pcThroat = pcThroat;
+	}
+
+	public String getPcEars() {
+		return pcEars;
+	}
+
+	public void setPcEars(String pcEars) {
+		this.pcEars = pcEars;
 	}
 
 	public String getPresentComplaintHistory() {
@@ -278,91 +366,6 @@ public class ClinicalNotesJasperDetails {
 		this.noOfChildren = noOfChildren;
 	}
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
-				+ ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams="
-				+ diagrams + ", vitalSigns=" + vitalSigns + ", presentComplaint=" + presentComplaint
-				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
-				+ systemExam + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
-				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
-				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
-				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", lmp=" + lmp + ", edd=" + edd
-				+ ", noOfChildren=" + noOfChildren + "]";
-	}
-
-	public String getNoseExam() {
-		return noseExam;
-	}
-
-	public String getOralCavityThroatExam() {
-		return oralCavityThroatExam;
-	}
-
-	public String getIndirectLarygoscopyExam() {
-		return indirectLarygoscopyExam;
-	}
-
-	public String getNeckExam() {
-		return neckExam;
-	}
-
-	public String getEarsExam() {
-		return earsExam;
-	}
-
-	public String getPcNose() {
-		return pcNose;
-	}
-
-	public String getPcOralCavity() {
-		return pcOralCavity;
-	}
-
-	public String getPcThroat() {
-		return pcThroat;
-	}
-
-	public String getPcEars() {
-		return pcEars;
-	}
-
-	public void setNoseExam(String noseExam) {
-		this.noseExam = noseExam;
-	}
-
-	public void setOralCavityThroatExam(String oralCavityThroatExam) {
-		this.oralCavityThroatExam = oralCavityThroatExam;
-	}
-
-	public void setIndirectLarygoscopyExam(String indirectLarygoscopyExam) {
-		this.indirectLarygoscopyExam = indirectLarygoscopyExam;
-	}
-
-	public void setNeckExam(String neckExam) {
-		this.neckExam = neckExam;
-	}
-
-	public void setEarsExam(String earsExam) {
-		this.earsExam = earsExam;
-	}
-
-	public void setPcNose(String pcNose) {
-		this.pcNose = pcNose;
-	}
-
-	public void setPcOralCavity(String pcOralCavity) {
-		this.pcOralCavity = pcOralCavity;
-	}
-
-	public void setPcThroat(String pcThroat) {
-		this.pcThroat = pcThroat;
-	}
-
-	public void setPcEars(String pcEars) {
-		this.pcEars = pcEars;
-	}
-
 	public String getProcedureNote() {
 		return procedureNote;
 	}
@@ -370,4 +373,124 @@ public class ClinicalNotesJasperDetails {
 	public void setProcedureNote(String procedureNote) {
 		this.procedureNote = procedureNote;
 	}
+
+	public String getPastHistory() {
+		return pastHistory;
+	}
+
+	public void setPastHistory(String pastHistory) {
+		this.pastHistory = pastHistory;
+	}
+
+	public String getFamilyHistory() {
+		return familyHistory;
+	}
+
+	public void setFamilyHistory(String familyHistory) {
+		this.familyHistory = familyHistory;
+	}
+
+	public String getPersonalHistoryTobacco() {
+		return personalHistoryTobacco;
+	}
+
+	public void setPersonalHistoryTobacco(String personalHistoryTobacco) {
+		this.personalHistoryTobacco = personalHistoryTobacco;
+	}
+
+	public String getPersonalHistoryAlcohol() {
+		return personalHistoryAlcohol;
+	}
+
+	public void setPersonalHistoryAlcohol(String personalHistoryAlcohol) {
+		this.personalHistoryAlcohol = personalHistoryAlcohol;
+	}
+
+	public String getPersonalHistorySmoking() {
+		return personalHistorySmoking;
+	}
+
+	public void setPersonalHistorySmoking(String personalHistorySmoking) {
+		this.personalHistorySmoking = personalHistorySmoking;
+	}
+
+	public String getPersonalHistoryDiet() {
+		return personalHistoryDiet;
+	}
+
+	public void setPersonalHistoryDiet(String personalHistoryDiet) {
+		this.personalHistoryDiet = personalHistoryDiet;
+	}
+
+	public String getPersonalHistoryOccupation() {
+		return personalHistoryOccupation;
+	}
+
+	public void setPersonalHistoryOccupation(String personalHistoryOccupation) {
+		this.personalHistoryOccupation = personalHistoryOccupation;
+	}
+
+	public String getGeneralHistoryDrugs() {
+		return generalHistoryDrugs;
+	}
+
+	public void setGeneralHistoryDrugs(String generalHistoryDrugs) {
+		this.generalHistoryDrugs = generalHistoryDrugs;
+	}
+
+	public String getGeneralHistoryMedicine() {
+		return generalHistoryMedicine;
+	}
+
+	public void setGeneralHistoryMedicine(String generalHistoryMedicine) {
+		this.generalHistoryMedicine = generalHistoryMedicine;
+	}
+
+	public String getGeneralHistoryAllergies() {
+		return generalHistoryAllergies;
+	}
+
+	public void setGeneralHistoryAllergies(String generalHistoryAllergies) {
+		this.generalHistoryAllergies = generalHistoryAllergies;
+	}
+
+	public String getGeneralHistorySurgical() {
+		return generalHistorySurgical;
+	}
+
+	public void setGeneralHistorySurgical(String generalHistorySurgical) {
+		this.generalHistorySurgical = generalHistorySurgical;
+	}
+
+	public String getPainScale() {
+		return painScale;
+	}
+
+	public void setPainScale(String painScale) {
+		this.painScale = painScale;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
+				+ ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams="
+				+ diagrams + ", vitalSigns=" + vitalSigns + ", presentComplaint=" + presentComplaint
+				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
+				+ systemExam + ", noseExam=" + noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam
+				+ ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam="
+				+ earsExam + ", pcNose=" + pcNose + ", pcOralCavity=" + pcOralCavity + ", pcThroat=" + pcThroat
+				+ ", pcEars=" + pcEars + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
+				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
+				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
+				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", lmp=" + lmp + ", edd=" + edd
+				+ ", noOfChildren=" + noOfChildren + ", procedureNote=" + procedureNote + ", pastHistory=" + pastHistory
+				+ ", familyHistory=" + familyHistory + ", personalHistoryTobacco=" + personalHistoryTobacco
+				+ ", personalHistoryAlcohol=" + personalHistoryAlcohol + ", personalHistorySmoking="
+				+ personalHistorySmoking + ", personalHistoryDiet=" + personalHistoryDiet
+				+ ", personalHistoryOccupation=" + personalHistoryOccupation + ", generalHistoryDrugs="
+				+ generalHistoryDrugs + ", generalHistoryMedicine=" + generalHistoryMedicine
+				+ ", generalHistoryAllergies=" + generalHistoryAllergies + ", generalHistorySurgical="
+				+ generalHistorySurgical + ", painScale=" + painScale + "]";
+	}
+
 }

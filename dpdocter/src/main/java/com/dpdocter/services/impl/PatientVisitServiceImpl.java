@@ -1772,8 +1772,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
 					clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
 					clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
-					clinicalNotesJasperDetails.setPainScale(
-							clinicalNotesCollection.getPainScale() > 0 ? clinicalNotesCollection.getPainScale() : null);
+					clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
 					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
