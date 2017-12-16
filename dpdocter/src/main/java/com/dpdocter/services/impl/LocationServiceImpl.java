@@ -339,6 +339,7 @@ public class LocationServiceImpl implements LocationServices {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
 							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
+							Fields.field("patientLabTestSamples.id", "$patientLabTestSamples.id"),
 							Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
 							Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
 							Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
@@ -440,6 +441,7 @@ public class LocationServiceImpl implements LocationServices {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
 							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
+							Fields.field("patientLabTestSamples.id", "$patientLabTestSamples.id"),
 							Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
 							Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
 							Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
@@ -559,6 +561,7 @@ public class LocationServiceImpl implements LocationServices {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("daughterLabCRN", "$daughterLabCRN"), Fields.field("pickupTime", "$pickupTime"),
 					Fields.field("deliveryTime", "$deliveryTime"),
+					Fields.field("patientLabTestSamples.id", "$patientLabTestSamples.id"),
 					Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
 					Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
 					Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
@@ -690,6 +693,7 @@ public class LocationServiceImpl implements LocationServices {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("daughterLabCRN", "$daughterLabCRN"), Fields.field("pickupTime", "$pickupTime"),
 					Fields.field("deliveryTime", "$deliveryTime"),
+					Fields.field("patientLabTestSamples.id", "$patientLabTestSamples.id"),
 					Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
 					Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
 					Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
@@ -826,6 +830,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
 							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
 							Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
+							Fields.field("patientLabTestSamples.id", "$patientLabTestSamples.id"),
 							Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
 							Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
 							Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
@@ -1003,6 +1008,7 @@ public class LocationServiceImpl implements LocationServices {
 				requestId = UniqueIdInitial.LAB_PICKUP_REQUEST.getInitial() + DPDoctorUtils.generateRandomId();
 				request.setDaughterLabCRN(saveCRN(request.getDaughterLabLocationId(), requestId, 5));
 				for (PatientLabTestsampleRequest patientLabTestsampleRequest : request.getPatientLabTestSamples()) {
+					patientLabTestsampleRequest.setId("PLT" + DPDoctorUtils.generateRandomId());
 					item = new PatientLabTestItem();
 					patientLabTestSample = new PatientLabTestSample();
 					labTestSamples = new ArrayList<LabTestSample>();

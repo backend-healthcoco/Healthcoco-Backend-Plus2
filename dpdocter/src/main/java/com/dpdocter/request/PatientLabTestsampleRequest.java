@@ -7,11 +7,23 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.LabTestSample;
 
 public class PatientLabTestsampleRequest {
+
+	private String id;
 	private String patientName;
 	private String mobileNumber;
 	private Integer age;
 	private String gender;
 	private List<LabTestSample> labTestSamples;
+	
+	
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getPatientName() {
 		return patientName;
@@ -58,9 +70,5 @@ public class PatientLabTestsampleRequest {
 		return "PatientLabTestsampleRequest [patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
 				+ age + ", gender=" + gender + ", labTestSamples=" + labTestSamples + "]";
 	}
-
-	
-
-	
 
 }
