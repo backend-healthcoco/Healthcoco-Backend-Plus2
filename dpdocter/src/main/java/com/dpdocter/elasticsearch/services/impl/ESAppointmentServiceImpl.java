@@ -1302,6 +1302,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			}
 			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
 				speciality = null;
+			} else {
+				speciality = speciality.replace("-", "");
 			}
 			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,
 					symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
@@ -1319,7 +1321,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-				doctorResponse.setSpeciality(StringUtils.capitalize(speciality));
+				doctorResponse.setSpeciality(StringUtils.capitalize(speciality).replace(" ", "-"));
 
 				doctorResponse.setMetaData(StringUtils.capitalize(speciality) + "s in ");
 			} else {
