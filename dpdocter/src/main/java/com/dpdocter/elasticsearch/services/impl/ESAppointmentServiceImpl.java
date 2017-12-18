@@ -1303,7 +1303,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
 				speciality = null;
 			} else {
-				speciality = speciality.replace("-", "");
+				speciality = speciality.replace("-", " ");
 			}
 			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,
 					symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
