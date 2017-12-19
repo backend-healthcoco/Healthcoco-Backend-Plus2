@@ -8419,4 +8419,84 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = aggregationResults.getMappedResults();
 		return response;
 	}
+	
+	private MailResponse createMailDataForWeb(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
+		MailResponse response = null;
+		ClinicalNotesCollection clinicalNotesCollection = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
+			if (clinicalNotesCollection != null) {
+						user = userRepository.findOne(clinicalNotesCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getLocationId(),
+								clinicalNotesCollection.getHospitalId());
+
+						emailTrackCollection.setDoctorId(clinicalNotesCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(clinicalNotesCollection.getHospitalId());
+						emailTrackCollection.setLocationId(clinicalNotesCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
+						emailTrackCollection.setSubject("Clinical Notes");
+						if (user != null) {
+							emailTrackCollection.setPatientName(user.getFirstName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+						JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
+								null, false, false, false, false, false, false, false, false, false);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(clinicalNotesCollection.getDoctorId());
+						LocationCollection locationCollection = locationRepository.findOne(clinicalNotesCollection.getLocationId());
+
+						response = new MailResponse();
+						response.setMailAttachment(mailAttachment);
+						response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						response.setClinicAddress(address);
+						response.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						response.setMailRecordCreatedDate(sdf.format(clinicalNotesCollection.getCreatedTime()));
+						response.setPatientName(user.getFirstName());
+
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} 
+			 else {
+				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
+				throw new BusinessException(ServiceError.NotFound,
+						"Clinical Notes not found. Please check clinicalNotesId.");
+			}
+		} catch (BusinessException e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
+		return response;
+	}
 }

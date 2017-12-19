@@ -2124,10 +2124,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		try {
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 			if (patientVisitCollection != null) {
-				if (patientVisitCollection.getPrescriptionId() != null) {
-					for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
-						response = prescriptionServices.smsPrescription(prescriptionId.toString(), doctorId, locationId,
-								hospitalId, mobileNumber, "VISITS");
+				if (doctorId != null && hospitalId != null && locationId != null) {
+					if (patientVisitCollection.getPrescriptionId() != null) {
+						for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
+							response = prescriptionServices.smsPrescription(prescriptionId.toString(), doctorId,
+									locationId, hospitalId, mobileNumber, "VISITS");
+						}
+					}
+				}
+				else
+				{
+					if (patientVisitCollection.getPrescriptionId() != null) {
+						for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
+							response = prescriptionServices.smsPrescriptionforWeb(prescriptionId.toString(), doctorId, locationId, hospitalId, mobileNumber, "VISITS");
+						}
 					}
 				}
 			} else {

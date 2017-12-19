@@ -507,11 +507,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		try {
 			admitCardCollection = admitCardRepository.findOne(new ObjectId(admitcardId));
 			if (admitCardCollection != null) {
-				if (admitCardCollection.getDoctorId() != null && admitCardCollection.getHospitalId() != null
-						&& admitCardCollection.getLocationId() != null) {
-					if (admitCardCollection.getDoctorId().equals(doctorId)
-							&& admitCardCollection.getHospitalId().equals(hospitalId)
-							&& admitCardCollection.getLocationId().equals(locationId)) {
+				
 
 						user = userRepository.findOne(admitCardCollection.getPatientId());
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
@@ -532,8 +528,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findOne(admitCardCollection.getDoctorId());
+						LocationCollection locationCollection = locationRepository.findOne(admitCardCollection.getLocationId());
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
@@ -564,14 +560,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						mailResponse.setPatientName(user.getFirstName());
 						emailTackService.saveEmailTrack(emailTrackCollection);
 
-					} else {
-						logger.warn("Admit Card Id, doctorId, location Id, hospital Id does not match");
-						throw new BusinessException(ServiceError.NotFound,
-								" Admit Card  Id, doctorId, location Id, hospital Id does not match");
-					}
-				}
-
-			} else {
+					}  else {
 				logger.warn("Discharge Summary  not found.Please check Admit Card Id.");
 				throw new BusinessException(ServiceError.NoRecord,
 						"Discharge Summary not found.Please check Admit Card Id.");

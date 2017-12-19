@@ -204,8 +204,20 @@ public interface PrescriptionServices {
 
 	Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
-	
 
+
+	Boolean removeDuplicateDrugs();
+
+	List<Drug> getDrugSubstitutes(String drugId);
+
+	Boolean smsPrescriptionforWeb(String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String mobileNumber, String type);
+
+	Boolean smsEyePrescriptionForWeb(String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String mobileNumber, String type);
+
+	void emailEyePrescriptionForWeb(String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 
 
 }
