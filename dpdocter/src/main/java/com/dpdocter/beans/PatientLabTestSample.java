@@ -2,14 +2,22 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 public class PatientLabTestSample {
 	private String id;
+	private String uid;
 	private String patientName;
 	private String mobileNumber;
 	private Integer age;
 	private String gender;
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
 	private List<LabTestSample> labTestSamples;
 
 	public String getPatientName() {

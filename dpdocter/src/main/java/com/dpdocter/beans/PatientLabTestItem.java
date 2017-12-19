@@ -5,23 +5,23 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 public class PatientLabTestItem {
-	private String id;
+	private String uid;;
 	private String patientName;
 	private String mobileNumber;
 	private Integer age;
 	private String gender;
 	private List<ObjectId> labTestSampleIds;
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getPatientName() {
 		return patientName;
+	}
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
 	}
 
 	public void setPatientName(String patientName) {

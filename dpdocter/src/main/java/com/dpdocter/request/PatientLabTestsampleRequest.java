@@ -9,13 +9,20 @@ import com.dpdocter.beans.LabTestSample;
 public class PatientLabTestsampleRequest {
 
 	private String id;
+	private String uid;
 	private String patientName;
 	private String mobileNumber;
 	private Integer age;
 	private String gender;
 	private List<LabTestSample> labTestSamples;
-	
-	
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
 
 	public String getId() {
 		return id;
