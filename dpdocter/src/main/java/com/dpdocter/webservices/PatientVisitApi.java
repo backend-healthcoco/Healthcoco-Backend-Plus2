@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -188,6 +189,25 @@ public class PatientVisitApi {
 	public Response<Boolean> smsPrescription(@PathParam(value = "visitId") String visitId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "mobileNumber") String mobileNumber) {
+
+		if (DPDoctorUtils.anyStringEmpty(visitId, doctorId, locationId, hospitalId, mobileNumber)) {
+			logger.warn("Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(patientVisitService.smsVisit(visitId, doctorId, locationId, hospitalId, mobileNumber));
+		return response;
+	}
+	
+	@Path(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB, notes = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
+	public Response<Boolean> smsPrescription(@PathParam(value = "visitId") String visitId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "mobileNumber") String mobileNumber) {
 
 		if (DPDoctorUtils.anyStringEmpty(visitId, doctorId, locationId, hospitalId, mobileNumber)) {

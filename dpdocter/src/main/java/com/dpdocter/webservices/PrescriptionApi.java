@@ -754,6 +754,27 @@ public class PrescriptionApi {
 		response.setData(true);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB)
+	public Response<Boolean> emailPrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, emailAddress)) {
+			logger.warn(
+					"Invalid Input. Prescription Id, EmailAddress Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Prescription Id, EmailAddress Cannot Be Empty");
+		}
+		prescriptionServices.emailPrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
 
 	@Path(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION)
 	@GET
@@ -772,6 +793,27 @@ public class PrescriptionApi {
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(prescriptionServices.smsPrescription(prescriptionId, doctorId, locationId, hospitalId,
+				mobileNumber, "PRESCRIPTION"));
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB)
+	public Response<Boolean> smsPrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "mobileNumber") String mobileNumber) {
+
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, mobileNumber)) {
+			logger.warn(
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(prescriptionServices.smsPrescriptionforWeb(prescriptionId, doctorId, locationId, hospitalId,
 				mobileNumber, "PRESCRIPTION"));
 		return response;
 	}
@@ -1105,6 +1147,27 @@ public class PrescriptionApi {
 		return response;
 	}
 	
+	@Path(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB)
+	public Response<Boolean> emailEyePrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, emailAddress)) {
+			logger.warn(
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+		}
+		prescriptionServices.emailEyePrescriptionForWeb(prescriptionId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+	
 	@Path(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
@@ -1122,6 +1185,26 @@ public class PrescriptionApi {
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(prescriptionServices.smsEyePrescription(prescriptionId, doctorId, locationId, hospitalId, mobileNumber, "EYE_PRESCRIPTION"));
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB)
+	public Response<Boolean> smsEyePrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "mobileNumber") String mobileNumber) {
+
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, mobileNumber)) {
+			logger.warn(
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(prescriptionServices.smsEyePrescriptionForWeb(prescriptionId, doctorId, locationId, hospitalId, mobileNumber, "EYE_PRESCRIPTION"));
 		return response;
 	}
 	

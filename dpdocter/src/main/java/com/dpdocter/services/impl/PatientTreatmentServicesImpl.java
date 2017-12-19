@@ -1696,4 +1696,80 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		response = aggregationResults.getMappedResults();
 		return response;
 	}
+	
+	private MailResponse createMailDataForWeb(String treatmentId, String doctorId, String locationId, String hospitalId) {
+		MailResponse response = null;
+		PatientTreatmentCollection patientTreatmentCollection = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			if (patientTreatmentCollection != null) {
+
+						user = userRepository.findOne(patientTreatmentCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
+								patientTreatmentCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(patientTreatmentCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(patientTreatmentCollection.getHospitalId());
+						emailTrackCollection.setLocationId(patientTreatmentCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.TREATMENT.getType());
+						emailTrackCollection.setSubject("Treatment");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient,
+								user, null, false, false, false, false);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(patientTreatmentCollection.getDoctorId());
+						LocationCollection locationCollection = locationRepository.findOne(patientTreatmentCollection.getLocationId());
+
+						response = new MailResponse();
+						response.setMailAttachment(mailAttachment);
+						response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						response.setClinicAddress(address);
+						response.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						response.setMailRecordCreatedDate(sdf.format(patientTreatmentCollection.getCreatedTime()));
+						response.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					}  else {
+				logger.warn("Treatment not found.Please check treatmentId.");
+				throw new BusinessException(ServiceError.NoRecord,
+						"Treatment not found.Please check treatmentId.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
 }

@@ -1070,13 +1070,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		try {
 			dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummeryId));
 			if (dischargeSummaryCollection != null) {
-				if (dischargeSummaryCollection.getDoctorId() != null
-						&& dischargeSummaryCollection.getHospitalId() != null
-						&& dischargeSummaryCollection.getLocationId() != null) {
-					if (dischargeSummaryCollection.getDoctorId().equals(doctorId)
-							&& dischargeSummaryCollection.getHospitalId().equals(hospitalId)
-							&& dischargeSummaryCollection.getLocationId().equals(locationId)) {
-
+				
 						user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 								dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
@@ -1097,8 +1091,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
+						LocationCollection locationCollection = locationRepository.findOne(dischargeSummaryCollection.getLocationId());
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
@@ -1129,14 +1123,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						mailResponse.setPatientName(user.getFirstName());
 						emailTackService.saveEmailTrack(emailTrackCollection);
 
-					} else {
-						logger.warn("DischargeSummary Id, doctorId, location Id, hospital Id does not match");
-						throw new BusinessException(ServiceError.NotFound,
-								" DischargeSummary  Id, doctorId, location Id, hospital Id does not match");
-					}
-				}
-
-			} else {
+					} 
+			else {
 				logger.warn("Discharge Summary  not found.Please check summaryId.");
 				throw new BusinessException(ServiceError.NoRecord,
 						"Discharge Summary not found.Please check summaryId.");
