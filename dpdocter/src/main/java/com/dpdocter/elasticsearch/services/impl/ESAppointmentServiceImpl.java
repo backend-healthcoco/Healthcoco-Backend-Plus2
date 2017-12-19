@@ -1321,7 +1321,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-				doctorResponse.setSpeciality(StringUtils.capitalize(speciality).replace(" ", "-"));
+				doctorResponse.setSpeciality(speciality.replace(" ", "-"));
 
 				doctorResponse.setMetaData(StringUtils.capitalize(speciality) + "s in ");
 			} else {
