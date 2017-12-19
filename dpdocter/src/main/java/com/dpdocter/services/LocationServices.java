@@ -13,6 +13,7 @@ import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Specimen;
+import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.LabTestGroupResponse;
@@ -20,6 +21,7 @@ import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
+import com.dpdocter.beans.CustomWork;
 
 public interface LocationServices {
 	public List<GeocodedLocation> geocodeLocation(String address);
@@ -122,4 +124,8 @@ public interface LocationServices {
 
 	List<LabTestGroupResponse> getGroupedLabTests(int page, int size, String searchTerm, String daughterLabId,
 			String parentLabId, String labId);
+
+	List<CustomWork> getCustomWorks(int page, int size, String searchTerm);
+
+	CustomWork addEditCustomWork(AddEditCustomWorkRequest request);
 }
