@@ -145,5 +145,18 @@ public class AdmitCardAPI {
 		response.setData(true);
 		return response;
 	}
+	
+	@Path(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB, notes = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB)
+	public Response<Boolean> emailAdmitCardForWeb(@PathParam(value = "admitCardId") String admitCardId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+		admitCardService.emailAdmitCardForWeb(admitCardId, doctorId, locationId, hospitalId, emailAddress);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
 
 }

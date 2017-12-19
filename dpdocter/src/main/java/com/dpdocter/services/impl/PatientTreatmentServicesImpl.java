@@ -1220,7 +1220,15 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public void emailPatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
 			String emailAddress) {
 		try {
-			MailResponse mailResponse = createMailData(treatmentId, doctorId, locationId, hospitalId);
+			MailResponse mailResponse = null;
+			if(doctorId != null && locationId != null && hospitalId != null)
+			{
+				 mailResponse = createMailData(treatmentId, doctorId, locationId, hospitalId);
+			}
+			else
+			{
+				 mailResponse = createMailDataForWeb(treatmentId, doctorId, locationId, hospitalId);
+			}
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Treatment", "emrMailTemplate.vm");

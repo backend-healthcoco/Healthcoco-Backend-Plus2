@@ -28,4 +28,7 @@ public interface AdmitCardService {
 	void emailAdmitCard(String admitcardId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
 
+	void emailAdmitCardForWeb(String admitcardId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
+
 }

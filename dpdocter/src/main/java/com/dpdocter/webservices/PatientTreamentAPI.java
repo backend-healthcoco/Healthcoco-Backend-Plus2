@@ -336,6 +336,27 @@ public class PatientTreamentAPI {
 		response.setData(true);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB, notes = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB)
+	public Response<Boolean> emailPatientTreatmentForWeb(@PathParam(value = "treatmentId") String treatmentId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		if (DPDoctorUtils.anyStringEmpty(treatmentId, emailAddress)) {
+			logger.warn(
+					"Invalid Input. Patient Treatment Id, EmailAddress Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Patient Treatment Id, EmailAddress Cannot Be Empty");
+		}
+		patientTreatmentServices.emailPatientTreatment(treatmentId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
 
 	@Path(value = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT)
 	@GET
