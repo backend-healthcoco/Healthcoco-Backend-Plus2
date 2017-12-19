@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.CustomWork;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
@@ -40,6 +41,7 @@ import com.dpdocter.beans.Specimen;
 import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
+import com.dpdocter.collections.CustomWorkCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.LabAssociationCollection;
 import com.dpdocter.collections.LabReportsCollection;
@@ -60,6 +62,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
+import com.dpdocter.repository.CustomWorkRepository;
 import com.dpdocter.repository.LabAssociationRepository;
 import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
@@ -70,6 +73,7 @@ import com.dpdocter.repository.RateCardRepository;
 import com.dpdocter.repository.RateCardTestAssociationRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.PatientLabTestsampleRequest;
 import com.dpdocter.response.CBLabAssociationLookupResponse;
@@ -136,6 +140,9 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private CustomWorkRepository customWorkRepository;
 
 	@Value("${geocoding.services.api.key}")
 	private String GEOCODING_SERVICES_API_KEY;
@@ -2224,6 +2231,63 @@ public class LocationServiceImpl implements LocationServices {
 		return testGroupResponses;
 
 	}
+	
+	@Override
+	@Transactional
+	public CustomWork addEditCustomWork(AddEditCustomWorkRequest request) {
+		CustomWork response = null;
+		CustomWorkCollection customWorkCollection = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				customWorkCollection = customWorkRepository.findOne(new ObjectId(request.getId()));
+			}
+			if (customWorkCollection != null) {
+				BeanUtil.map(request, customWorkCollection);
+				customWorkCollection = customWorkRepository.save(customWorkCollection);
+			} else {
+				customWorkCollection = new CustomWorkCollection();
+				BeanUtil.map(request, customWorkCollection);
+				customWorkCollection = customWorkRepository.save(customWorkCollection);
+			}
+			response = new CustomWork();
+			BeanUtil.map(customWorkCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<CustomWork> getCustomWorks(int page, int size, String searchTerm) {
+		List<CustomWork> customWorks = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("workName").regex("^" + searchTerm, "i"),
+						new Criteria("workName").regex("^" + searchTerm));
+			}
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<CustomWork> aggregationResults = mongoTemplate.aggregate(aggregation,
+					CustomWorkCollection.class, CustomWork.class);
+			customWorks = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting rate cards");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting custom works");
+		}
+		return customWorks;
+	}
+
 
 	private String reportSerialNumberGenerator(String locationId) {
 		String generatedId = null;
