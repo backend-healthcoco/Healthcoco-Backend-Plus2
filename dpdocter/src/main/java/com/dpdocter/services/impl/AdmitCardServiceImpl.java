@@ -507,7 +507,11 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		try {
 			admitCardCollection = admitCardRepository.findOne(new ObjectId(admitcardId));
 			if (admitCardCollection != null) {
-				
+				if (admitCardCollection.getDoctorId() != null && admitCardCollection.getHospitalId() != null
+						&& admitCardCollection.getLocationId() != null) {
+					if (admitCardCollection.getDoctorId().equals(doctorId)
+							&& admitCardCollection.getHospitalId().equals(hospitalId)
+							&& admitCardCollection.getLocationId().equals(locationId)) {
 
 						user = userRepository.findOne(admitCardCollection.getPatientId());
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
@@ -528,8 +532,101 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(admitCardCollection.getDoctorId());
-						LocationCollection locationCollection = locationRepository.findOne(admitCardCollection.getLocationId());
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+
+						mailResponse = new MailResponse();
+						mailResponse.setMailAttachment(mailAttachment);
+						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						mailResponse.setClinicAddress(address);
+						mailResponse.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						mailResponse.setMailRecordCreatedDate(sdf.format(admitCardCollection.getCreatedTime()));
+						mailResponse.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} else {
+						logger.warn("Admit Card Id, doctorId, location Id, hospital Id does not match");
+						throw new BusinessException(ServiceError.NotFound,
+								" Admit Card  Id, doctorId, location Id, hospital Id does not match");
+					}
+				}
+
+			} else {
+				logger.warn("Discharge Summary  not found.Please check Admit Card Id.");
+				throw new BusinessException(ServiceError.NoRecord,
+						"Discharge Summary not found.Please check Admit Card Id.");
+			}
+
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Admit Card", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Admit Card", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
+	}
+	
+	@Override
+	public void emailAdmitCardForWeb(String admitcardId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
+		MailResponse mailResponse = null;
+		AdmitCardCollection admitCardCollection = null;
+		MailAttachment mailAttachment = null;
+		UserCollection user = null;
+		PatientCollection patient = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			admitCardCollection = admitCardRepository.findOne(new ObjectId(admitcardId));
+			if (admitCardCollection != null) {
+						user = userRepository.findOne(admitCardCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
+								admitCardCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(admitCardCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(admitCardCollection.getHospitalId());
+						emailTrackCollection.setLocationId(admitCardCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.ADMIT_CARD.getType());
+						emailTrackCollection.setSubject("ADMIT CARD");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);

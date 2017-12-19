@@ -62,4 +62,7 @@ public interface DischargeSummaryService {
 	public Cement addEditCement(Cement cement);
 
 	public Cement deleteCement(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	void emailDischargeSummaryForWeb(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 }
