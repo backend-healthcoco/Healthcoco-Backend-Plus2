@@ -205,7 +205,7 @@ public class PatientVisitApi {
 	@Path(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB, notes = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
-	public Response<Boolean> smsPrescription(@PathParam(value = "visitId") String visitId,
+	public Response<Boolean> smsPrescriptionForWeb(@PathParam(value = "visitId") String visitId,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "mobileNumber") String mobileNumber) {
