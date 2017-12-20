@@ -81,7 +81,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -101,7 +101,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -121,7 +121,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -141,7 +141,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -181,7 +181,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -201,7 +201,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -237,7 +237,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -257,7 +257,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -278,7 +278,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -298,7 +298,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -318,7 +318,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -338,7 +338,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -358,7 +358,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -378,7 +378,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -398,7 +398,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -418,7 +418,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -438,7 +438,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -458,7 +458,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -477,7 +477,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -496,7 +496,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -515,7 +515,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -534,7 +534,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -553,7 +553,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -572,7 +572,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -591,7 +591,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -610,7 +610,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -629,7 +629,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -648,7 +648,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -667,7 +667,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -687,7 +687,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -706,7 +706,7 @@ public class ESClinicalNotesApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
