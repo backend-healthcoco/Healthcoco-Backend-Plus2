@@ -9,6 +9,7 @@ public class PatientLabTestSample {
 	private String mobileNumber;
 	private Integer age;
 	private String gender;
+	private List<LabTestSample> labTestSamples;
 
 	public String getUid() {
 		return uid;
@@ -17,8 +18,6 @@ public class PatientLabTestSample {
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
-
-	private List<LabTestSample> labTestSamples;
 
 	public String getPatientName() {
 		return patientName;

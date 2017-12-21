@@ -39,7 +39,17 @@ public class LabTestSampleCollection extends GenericCollection {
 	@Field
 	private Boolean isCompleted = false;
 	@Field
+	private String serialNumber;
+	@Field
 	private Boolean isCollectedAtLab = false;
+
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
 
 	public ObjectId getId() {
 		return id;

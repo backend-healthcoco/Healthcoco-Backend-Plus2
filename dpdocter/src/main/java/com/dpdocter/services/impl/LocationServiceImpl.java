@@ -10,10 +10,8 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -29,7 +27,6 @@ import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GeocodedLocation;
-import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.LabTestSample;
@@ -80,7 +77,6 @@ import com.dpdocter.response.CollectionBoyLabAssociationLookupResponse;
 import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.LabAssociationLookupResponse;
 import com.dpdocter.response.LabTestGroupResponse;
-import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LocationServices;
@@ -336,25 +332,24 @@ public class LocationServiceImpl implements LocationServices {
 		LabTestPickupLookupResponse response = null;
 		Aggregation aggregation = null;
 		try {
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
-							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
-							Fields.field("patientLabTestSamples.uid", "$patientLabTestSamples.uid"),
-							Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
-							Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
-							Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
-							Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
-							Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
-							Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
-							Fields.field("parentLabLocationId", "$parentLabLocationId"),
-							Fields.field("collectionBoyId", "$collectionBoyId"),
-							Fields.field("daughterLabLocationId", "$daughterLabLocationId"),
-							Fields.field("discarded", "$discarded"),
-							Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
-							Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
-							Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
-							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-							Fields.field("createdBy", "$createdBy")));
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("daughterLabCRN", "$daughterLabCRN"), Fields.field("pickupTime", "$pickupTime"),
+					Fields.field("deliveryTime", "$deliveryTime"),
+					Fields.field("patientLabTestSamples.uid", "$patientLabTestSamples.uid"),
+					Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
+					Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
+					Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
+					Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
+					Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
+					Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("parentLabLocationId", "$parentLabLocationId"),
+					Fields.field("daughterLabLocationId", "$daughterLabLocationId"),
+					Fields.field("collectionBoyId", "$collectionBoyId"), Fields.field("discarded", "$discarded"),
+					Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
+					Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
+					Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("createdBy", "$createdBy")));
 
 			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
 					"$group",
@@ -571,6 +566,8 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("parentLab", "$parentLab"), Fields.field("collectionBoyId", "$collectionBoyId"),
 					Fields.field("daughterLab", "$daughterLab"), Fields.field("discarded", "$discarded"),
 					Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
+					Fields.field("parentLabLocationId", "$parentLabLocationId"),
+					Fields.field("daughterLabLocationId", "$daughterLabLocationId"),
 					Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
 					Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
@@ -592,6 +589,10 @@ public class LocationServiceImpl implements LocationServices {
 											.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
 											.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("parentLabLocationId",
+													new BasicDBObject("$first", "$parentLabLocationId"))
+											.append("daughterLabLocationId",
+													new BasicDBObject("$first", "$daughterLabLocationId"))
 											.append("numberOfSamplesRequested",
 													new BasicDBObject("$first", "$numberOfSamplesRequested"))
 											.append("numberOfSamplesPicked",
@@ -615,6 +616,9 @@ public class LocationServiceImpl implements LocationServices {
 									.append("parentLab", new BasicDBObject("$first", "$parentLab"))
 									.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
 									.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
+									.append("parentLabLocationId", new BasicDBObject("$first", "$parentLabLocationId"))
+									.append("daughterLabLocationId",
+											new BasicDBObject("$first", "$daughterLabLocationId"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
 									.append("numberOfSamplesRequested",
 											new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -700,6 +704,8 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
 					Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
 					Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("parentLabLocationId", "$parentLabLocationId"),
+					Fields.field("daughterLabLocationId", "$daughterLabLocationId"),
 					Fields.field("parentLab", "$parentLab"), Fields.field("collectionBoyId", "$collectionBoyId"),
 					Fields.field("daughterLab", "$daughterLab"), Fields.field("discarded", "$discarded"),
 					Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
@@ -721,6 +727,10 @@ public class LocationServiceImpl implements LocationServices {
 											.append("status", new BasicDBObject("$first", "$status"))
 											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 											.append("parentLab", new BasicDBObject("$first", "$parentLab"))
+											.append("parentLabLocationId",
+													new BasicDBObject("$first", "$parentLabLocationId"))
+											.append("daughterLabLocationId",
+													new BasicDBObject("$first", "$daughterLabLocationId"))
 											.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
 											.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 											.append("discarded", new BasicDBObject("$first", "$discarded"))
@@ -746,6 +756,9 @@ public class LocationServiceImpl implements LocationServices {
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 									.append("parentLab", new BasicDBObject("$first", "$parentLab"))
 									.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
+									.append("parentLabLocationId", new BasicDBObject("$first", "$parentLabLocationId"))
+									.append("daughterLabLocationId",
+											new BasicDBObject("$first", "$daughterLabLocationId"))
 									.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
 									.append("numberOfSamplesRequested",
@@ -836,7 +849,10 @@ public class LocationServiceImpl implements LocationServices {
 							Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
 							Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
 							Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
+							Fields.field("parentLabLocationId", "$parentLabLocationId"),
+							Fields.field("daughterLabLocationId", "$daughterLabLocationId"),
 							Fields.field("parentLab", "$parentLab"), Fields.field("collectionBoy", "$collectionBoy"),
+							Fields.field("collectionBoyId", "$collectionBoyId"),
 							Fields.field("daughterLab", "$daughterLab"), Fields.field("discarded", "$discarded"),
 							Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
 							Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
@@ -862,6 +878,8 @@ public class LocationServiceImpl implements LocationServices {
 													.append("parentLab", new BasicDBObject("$first", "$parentLab"))
 													.append("collectionBoy",
 															new BasicDBObject("$first", "$collectionBoy"))
+													.append("collectionBoyId",
+															new BasicDBObject("$first", "$collectionBoyId"))
 													.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 													.append("discarded", new BasicDBObject("$first", "$discarded"))
 													.append("numberOfSamplesRequested",
@@ -869,6 +887,10 @@ public class LocationServiceImpl implements LocationServices {
 													.append("numberOfSamplesPicked",
 															new BasicDBObject("$first", "$numberOfSamplesPicked"))
 													.append("requestId", new BasicDBObject("$first", "$requestId"))
+													.append("parentLabLocationId",
+															new BasicDBObject("$first", "$parentLabLocationId"))
+													.append("daughterLabLocationId",
+															new BasicDBObject("$first", "$daughterLabLocationId"))
 													.append("isCompleted", new BasicDBObject("$first", "$isCompleted"))
 													.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 													.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
@@ -887,6 +909,7 @@ public class LocationServiceImpl implements LocationServices {
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 									.append("parentLab", new BasicDBObject("$first", "$parentLab"))
 									.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
+									.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
 									.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
 									.append("numberOfSamplesRequested",
@@ -894,6 +917,9 @@ public class LocationServiceImpl implements LocationServices {
 									.append("numberOfSamplesPicked",
 											new BasicDBObject("$first", "$numberOfSamplesPicked"))
 									.append("requestId", new BasicDBObject("$first", "$requestId"))
+									.append("parentLabLocationId", new BasicDBObject("$first", "$parentLabLocationId"))
+									.append("daughterLabLocationId",
+											new BasicDBObject("$first", "$daughterLabLocationId"))
 									.append("isCompleted", new BasicDBObject("$first", "$isCompleted"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
@@ -1026,9 +1052,17 @@ public class LocationServiceImpl implements LocationServices {
 								UniqueIdInitial.LAB_PICKUP_SAMPLE.getInitial() + DPDoctorUtils.generateRandomId());
 						LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
 						BeanUtil.map(labTestSample, labTestSampleCollection);
+
 						labTestSampleCollection.setIsCollected(request.getIsCompleted());
 						labTestSampleCollection.setCreatedTime(new Date());
 						labTestSampleCollection.setUpdatedTime(new Date());
+						if (labTestSampleCollection.getIsCompleted() && labTestSampleCollection.getIsCollectedAtLab()
+								&& !DPDoctorUtils.allStringsEmpty(labTestSampleCollection.getParentLabLocationId())
+								&& DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getSerialNumber())) {
+							String serialNumber = reportSerialNumberGenerator(
+									labTestSampleCollection.getParentLabLocationId().toString());
+							labTestSampleCollection.setSerialNumber(serialNumber);
+						}
 						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 						BeanUtil.map(labTestSampleCollection, labTestSample);
 						labTestSampleIds.add(labTestSampleCollection.getId());
@@ -1889,53 +1923,79 @@ public class LocationServiceImpl implements LocationServices {
 				criteria.and("labTestSamples.daughterLabLocationId").is(locationObjectId);
 
 			}
-			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$patientId"),
-					Fields.field("patientName", "$patient.firstName"),
-					Fields.field("mobileNumber", "$patient.mobileNumber"), Fields.field("age", "$patient.age"),
-					Fields.field("gender", "$patient.gender"), Fields.field("labTestSamples.id", "$labTestSamples.id"),
-					Fields.field("labTestSamples.sampleType", "$labTestSamples.sampleType"),
-					Fields.field("labTestSamples.daughterLabLocationId", "$labTestSamples.daughterLabLocationId"),
-					Fields.field("labTestSamples.parentLabLocationId", "$labTestSamples.parentLabLocationId"),
-					Fields.field("labTestSamples.rateCardTestAssociation", "$labTestSamples.rateCardTestAssociation"),
-					Fields.field("labTestSamples.isUrgent", "$labTestSamples.isUrgent"),
-					Fields.field("labTestSamples.urgentTime", "$labTestSamples.urgentTime"),
-					Fields.field("labTestSamples.isCollectedAtLab", "$labTestSamples.isCollectedAtLab"),
-					Fields.field("labTestSamples.isCollected", "$labTestSamples.isCollected"),
-					Fields.field("labTestSamples.status", "$labTestSamples.status"),
-					Fields.field("labTestSamples.isHardCopyRequired", "$labTestSamples.isHardCopyRequired"),
-					Fields.field("labTestSamples.isHardCopyGiven", "$labTestSamples.isHardCopyGiven"),
-					Fields.field("labTestSamples.sampleId", "$labTestSamples.sampleId"),
-					Fields.field("labTestSamples.labReports", "$labReports"),
-					Fields.field("labTestSamples.serialNumber", "$serialNumber"),
-					Fields.field("labTestSamples.isCompleted", "$labTestSamples.isCompleted"),
-					Fields.field("labTestSamples.createdTime", "$labTestSamples.createdTime"),
-					Fields.field("labTestSamples.updatedTime", "$labTestSamples.updatedTime"),
-					Fields.field("labTestSamples.createdBy", "$labTestSamples.createdBy")));
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id",
-							new BasicDBObject("id", "$id").append("patientName", "$patientName").append("mobileNumber",
-									"$mobileNumber")).append("patientName", new BasicDBObject("$first", "$patientName"))
-											.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-											.append("age", new BasicDBObject("$first", "$age"))
-											.append("gender", new BasicDBObject("$first", "$gender"))
-											.append("labTestSamples", new BasicDBObject("$first", "$labTestSamples"))));
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("uid", "$patientLabTestSamples.uid"),
+							Fields.field("patientName", "$patientLabTestSamples.patientName"),
+							Fields.field("mobileNumber", "$patientLabTestSamples.mobileNumber"),
+							Fields.field("age", "$patientLabTestSamples.age"),
+							Fields.field("gender", "$patientLabTestSamples.gender"),
+							Fields.field("labTestSamples.id", "$labTestSamples.id"),
+							Fields.field("labTestSamples.sampleType", "$labTestSamples.sampleType"),
+							Fields.field("labTestSamples.daughterLabLocationId",
+									"$labTestSamples.daughterLabLocationId"),
+							Fields.field("labTestSamples.parentLabLocationId", "$labTestSamples.parentLabLocationId"),
+							Fields.field("labTestSamples.rateCardTestAssociation",
+									"$labTestSamples.rateCardTestAssociation"),
+							Fields.field("labTestSamples.isUrgent", "$labTestSamples.isUrgent"),
+							Fields.field("labTestSamples.urgentTime", "$labTestSamples.urgentTime"),
+							Fields.field("labTestSamples.isCollectedAtLab", "$labTestSamples.isCollectedAtLab"),
+							Fields.field("labTestSamples.isCollected", "$labTestSamples.isCollected"),
+							Fields.field("labTestSamples.status", "$labTestSamples.status"),
+							Fields.field("labTestSamples.isHardCopyRequired", "$labTestSamples.isHardCopyRequired"),
+							Fields.field("labTestSamples.isHardCopyGiven", "$labTestSamples.isHardCopyGiven"),
+							Fields.field("labTestSamples.sampleId", "$labTestSamples.sampleId"),
+							Fields.field("labTestSamples.labReports", "$labReport.labReports"),
+							Fields.field("labTestSamples.serialNumber", "$labTestSamples.serialNumber"),
+							Fields.field("labTestSamples.isCompleted", "$labTestSamples.isCompleted"),
+							Fields.field("labTestSamples.createdTime", "$labTestSamples.createdTime"),
+							Fields.field("labTestSamples.updatedTime", "$labTestSamples.updatedTime"),
+							Fields.field("labTestSamples.createdBy", "$labTestSamples.createdBy"),
+							Fields.field("createdTime", "$createdTime")));
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(
+					new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("uid", "$uid").append("patientName", "$patientName")
+											.append("mobileNumber", "$mobileNumber"))
+													.append("patientName", new BasicDBObject("$first", "$patientName"))
+													.append("mobileNumber",
+															new BasicDBObject("$first", "$mobileNumber"))
+													.append("age", new BasicDBObject("$first", "$age"))
+													.append("gender", new BasicDBObject("$first", "$gender"))
+													.append("labTestSamples",
+															new BasicDBObject("$push", "$labTestSamples"))
+													.append("createdTime",
+															new BasicDBObject("$first", "$createdTime"))));
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
-						Aggregation.unwind("patient"),
-						Aggregation.lookup("lab_test_sample_cl", "labTestSampleId", "_id", "labTestSamples"),
-						Aggregation.unwind("labTestSamples"), projectList, Aggregation.match(criteria),
-						aggregationOperation, Aggregation.sort(Sort.Direction.ASC, "patientName"),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
+						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
+								"labTestSamples"),
+						Aggregation.unwind("labTestSamples"),
+						Aggregation.lookup("lab_reports_cl", "patientLabTestSamples.labTestSampleIds",
+								"labTestSampleId",
+								"labReport"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$labReport").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.match(criteria), projectList, aggregationOperation,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
-						Aggregation.unwind("patient"),
-						Aggregation.lookup("lab_test_sample_cl", "labTestSampleId", "_id", "labTestSamples"),
-						Aggregation.unwind("labTestSamples"), projectList, Aggregation.match(criteria),
-						aggregationOperation, Aggregation.sort(Sort.Direction.ASC, "patientName"));
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
+						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
+								"labTestSamples"),
+						Aggregation.unwind("labTestSamples"),
+						Aggregation.lookup("lab_reports_cl", "patientLabTestSamples.labTestSampleIds",
+								"labTestSampleId",
+								"labReport"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$labReport").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.match(criteria), projectList, aggregationOperation,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			}
-
+			System.out.println(aggregation.toString());
 			AggregationResults<PatientLabTestSample> aggregationResults = mongoTemplate.aggregate(aggregation,
-					LabReportsCollection.class, PatientLabTestSample.class);
+					LabTestPickupCollection.class, PatientLabTestSample.class);
 			// System.out.println(aggregation);
 			response = aggregationResults.getMappedResults();
 
@@ -2095,6 +2155,44 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return testGroupResponses;
 
+	}
+
+	private String reportSerialNumberGenerator(String locationId) {
+		String generatedId = null;
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+
+			ObjectId locationObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+
+			LocationCollection location = locationRepository.findOne(locationObjectId);
+			if (location == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+			}
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Long startTimeinMillis = start.getMillis();
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Long endTimeinMillis = end.getMillis();
+			int reportSize = labReportsRepository.findTodaysCompletedReport(locationObjectId, true, startTimeinMillis,
+					endTimeinMillis);
+
+			generatedId = String.valueOf((reportSize + 1));
+		} catch (BusinessException e) {
+			e.printStackTrace();
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return generatedId;
 	}
 
 }
