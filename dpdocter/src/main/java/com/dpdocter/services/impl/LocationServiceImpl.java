@@ -1006,9 +1006,17 @@ public class LocationServiceImpl implements LocationServices {
 							BeanUtil.map(labTestSample, labTestSampleCollection);
 							labTestSampleCollection
 									.setRateCardTestAssociation(labTestSample.getRateCardTestAssociation());
+							
 							labTestSampleCollection.setLabTestPickUpId(new ObjectId(request.getId()));
 							labTestSampleCollection.setIsCompleted(request.getIsCompleted());
 							labTestSampleCollection.setUpdatedTime(new Date());
+							if (labTestSampleCollection.getIsCompleted() && labTestSampleCollection.getIsCollectedAtLab()
+									&& !DPDoctorUtils.allStringsEmpty(labTestSampleCollection.getParentLabLocationId())
+									&& DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getSerialNumber())) {
+								String serialNumber = reportSerialNumberGenerator(
+										labTestSampleCollection.getParentLabLocationId().toString());
+								labTestSampleCollection.setSerialNumber(serialNumber);
+							}
 							labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 							labTestSampleIds.add(labTestSampleCollection.getId());
 							BeanUtil.map(labTestSampleCollection, labTestSample);
@@ -1021,6 +1029,13 @@ public class LocationServiceImpl implements LocationServices {
 							labTestSampleCollection.setCreatedTime(new Date());
 							labTestSampleCollection.setUpdatedTime(new Date());
 							labTestSampleCollection.setIsCompleted(request.getIsCompleted());
+							if (labTestSampleCollection.getIsCompleted() && labTestSampleCollection.getIsCollectedAtLab()
+									&& !DPDoctorUtils.allStringsEmpty(labTestSampleCollection.getParentLabLocationId())
+									&& DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getSerialNumber())) {
+								String serialNumber = reportSerialNumberGenerator(
+										labTestSampleCollection.getParentLabLocationId().toString());
+								labTestSampleCollection.setSerialNumber(serialNumber);
+							}
 							labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 							labTestSampleIds.add(labTestSampleCollection.getId());
 							BeanUtil.map(labTestSampleCollection, labTestSample);
