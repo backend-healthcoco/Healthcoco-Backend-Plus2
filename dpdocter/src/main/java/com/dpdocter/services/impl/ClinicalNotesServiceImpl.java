@@ -3939,8 +3939,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Transactional
 	public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId,
 			String emailAddress) {
+		
+		MailResponse mailResponse = null;
 		try {
-			MailResponse mailResponse = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
+			if(doctorId != null && locationId != null && hospitalId != null)
+			{
+				mailResponse = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
+				
+			}
+			else
+			{
+				mailResponse = createMailDataForWeb(clinicalNotesId, doctorId, locationId, hospitalId);
+			}
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Clinical Notes", "emrMailTemplate.vm");

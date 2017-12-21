@@ -210,7 +210,7 @@ public class PatientVisitApi {
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "mobileNumber") String mobileNumber) {
 
-		if (DPDoctorUtils.anyStringEmpty(visitId, doctorId, locationId, hospitalId, mobileNumber)) {
+		if (DPDoctorUtils.anyStringEmpty(visitId, mobileNumber)) {
 			logger.warn("Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
