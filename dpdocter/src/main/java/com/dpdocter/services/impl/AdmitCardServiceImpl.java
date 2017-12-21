@@ -629,8 +629,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findOne(admitCardCollection.getDoctorId());
+						LocationCollection locationCollection = locationRepository.findOne(admitCardCollection.getLocationId());
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);

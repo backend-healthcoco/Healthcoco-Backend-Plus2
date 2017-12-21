@@ -1176,7 +1176,7 @@ public class PrescriptionApi {
 			@PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "mobileNumber") String mobileNumber) {
 
-		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, mobileNumber)) {
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, mobileNumber)) {
 			logger.warn(
 					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1196,7 +1196,7 @@ public class PrescriptionApi {
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "mobileNumber") String mobileNumber) {
 
-		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, mobileNumber)) {
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, mobileNumber)) {
 			logger.warn(
 					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,

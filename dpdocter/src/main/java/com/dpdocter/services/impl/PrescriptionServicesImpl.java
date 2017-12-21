@@ -6056,8 +6056,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findOne(prescriptionCollection.getDoctorId());
+						LocationCollection locationCollection = locationRepository.findOne(prescriptionCollection.getLocationId());
 
 						response = new MailResponse();
 						response.setMailAttachment(mailAttachment);

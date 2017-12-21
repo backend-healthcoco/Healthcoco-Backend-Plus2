@@ -186,7 +186,7 @@ public class DischargeSummaryAPI {
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "emailAddress") String emailAddress) {
 
-		if (DPDoctorUtils.anyStringEmpty(dischargeSummeryId, doctorId, locationId, hospitalId, emailAddress)) {
+		if (DPDoctorUtils.anyStringEmpty(dischargeSummeryId, emailAddress)) {
 			logger.warn(
 					"Invalid Input. dischargeSummeryId , Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
