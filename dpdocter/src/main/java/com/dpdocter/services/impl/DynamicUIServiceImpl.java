@@ -15,8 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.ClinicalNotesDynamicField;
 import com.dpdocter.beans.DataDynamicField;
 import com.dpdocter.beans.DataDynamicUI;
+import com.dpdocter.beans.DischargeSummaryDynamicFields;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.PrescriptionDynamicField;
+import com.dpdocter.beans.TreatmentDynamicFields;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.collections.DataDynamicUICollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -496,12 +498,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				dataDynamicUI  = new DataDynamicUI();
 				dataDynamicUI.setDoctorId(doctorId);
 				DataDynamicField dataDynamicField = new DataDynamicField();
-				//ClinicalNotesDynamicField clinicalNotesDynamicField = new ClinicalNotesDynamicField();
-				//System.out.println(clinicalNotesDynamicField);
 				dataDynamicField.setClinicalNotesDynamicField(new ClinicalNotesDynamicField());
-				//PrescriptionDynamicField prescriptionDynamicField = new PrescriptionDynamicField();
-				//System.out.println(prescriptionDynamicField);
 				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
+				dataDynamicField.setDischargeSummaryDynamicFields(new DischargeSummaryDynamicFields());
+				dataDynamicField.setTreatmentDynamicFields(new TreatmentDynamicFields());
 				dataDynamicUI.setDataDynamicField(dataDynamicField);
 			}
 		}else

@@ -6187,4 +6187,84 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 	}
 
+	
+	@Override
+	@Transactional
+	public Prescription deletePrescriptionForWeb(String prescriptionId,String doctorId, String hospitalId, String locationId,
+			String patientId,  Boolean discarded) {
+		Prescription response = null;
+		PrescriptionCollection prescriptionCollection = null;
+		LocationCollection locationCollection = null;
+		try {
+
+			prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
+			locationCollection = locationRepository.findOne(prescriptionCollection.getLocationId());
+			if (prescriptionCollection != null) {
+				prescriptionCollection.setDiscarded(discarded);
+				prescriptionCollection.setUpdatedTime(new Date());
+				prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
+				response = new Prescription();
+				List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
+				prescriptionCollection.setDiagnosticTests(null);
+				BeanUtil.map(prescriptionCollection, response);
+				if (prescriptionCollection.getItems() != null) {
+					List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
+					for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+						PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
+						BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+						if (prescriptionItem.getDrugId() != null) {
+							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+							Drug drug = new Drug();
+							if (drugCollection != null)
+								BeanUtil.map(drugCollection, drug);
+							prescriptionItemDetails.setDrug(drug);
+						}
+						prescriptionItemDetailsList.add(prescriptionItemDetails);
+					}
+					response.setItems(prescriptionItemDetailsList);
+				}
+				PatientVisitCollection patientVisitCollection = patientVisitRepository
+						.findByPrescriptionId(prescriptionCollection.getId());
+				if (patientVisitCollection != null)
+					response.setVisitId(patientVisitCollection.getId().toString());
+
+				if (tests != null && !tests.isEmpty()) {
+					List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
+					for (TestAndRecordData data : tests) {
+						if (data.getTestId() != null) {
+							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
+									.findOne(data.getTestId());
+							DiagnosticTest diagnosticTest = new DiagnosticTest();
+							if (diagnosticTestCollection != null) {
+								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+							}
+							if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
+								diagnosticTests.add(
+										new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+							} else {
+								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, null));
+							}
+
+						}
+					}
+					response.setDiagnosticTests(diagnosticTests);
+				}
+
+				pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
+						"Please discontinue " + prescriptionCollection.getUniqueEmrId() + " prescribed by "
+								+ prescriptionCollection.getCreatedBy() + ", for further details please contact "
+								+ locationCollection.getLocationName(),
+						ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+			} else {
+				logger.warn("Prescription Not Found");
+				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error Occurred While Deleting Prescription");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Prescription");
+		}
+		return response;
+	}
+
 }

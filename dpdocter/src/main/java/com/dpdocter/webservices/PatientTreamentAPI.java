@@ -257,6 +257,24 @@ public class PatientTreamentAPI {
 		response.setData(deletePatientTreatmentResponse);
 		return response;
 	}
+	
+	@Path(PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB)
+	@DELETE
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB, notes = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB)
+	public Response<PatientTreatmentResponse> deletePatientTreatmentForWeb(@PathParam("treatmentId") String treatmentId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("doctorId") String doctorId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(treatmentId, locationId, hospitalId, doctorId)) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+
+		PatientTreatmentResponse deletePatientTreatmentResponse = patientTreatmentServices
+				.deletePatientTreatmentForWeb(treatmentId, discarded);
+		Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
+		response.setData(deletePatientTreatmentResponse);
+		return response;
+	}
 
 	@Path(PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENT_BY_ID)
 	@GET

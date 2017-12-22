@@ -476,6 +476,34 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public PatientTreatmentResponse deletePatientTreatmentForWeb(String treatmentId, Boolean discarded) {
+		PatientTreatmentResponse response = null;
+		try {
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(
+					new ObjectId(treatmentId));
+
+			if (patientTreatmentCollection != null) {
+				patientTreatmentCollection.setDiscarded(discarded);
+				patientTreatmentCollection.setUpdatedTime(new Date());
+				patientTreamentRepository.save(patientTreatmentCollection);
+				response = getPatientTreatmentById(treatmentId);
+
+			}
+
+			else {
+				logger.warn("No treatment found for the given id");
+				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
+			}
+		} catch (Exception e) {
+			logger.error("Error while deleting treatment", e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while deleting treatment");
+		}
+		return response;
+	}
 
 	private Appointment addTreatmentAppointment(AppointmentRequest appointment) {
 		Appointment response = null;

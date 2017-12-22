@@ -805,7 +805,7 @@ public class PrescriptionApi {
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "mobileNumber") String mobileNumber) {
 
-		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, mobileNumber)) {
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, mobileNumber)) {
 			logger.warn(
 					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1314,5 +1314,22 @@ public class PrescriptionApi {
 		response.setDataList(drugs);
 		return response;
 	}
-
+	
+	@Path(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB)
+	@DELETE
+	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB)
+	public Response<Prescription> deletePrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, hospitalId, locationId)) {
+			logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		Prescription prescriptionDeleteResponse = prescriptionServices.deletePrescriptionForWeb(prescriptionId, doctorId, hospitalId, locationId, patientId, discarded);
+		Response<Prescription> response = new Response<Prescription>();
+		response.setData(prescriptionDeleteResponse);
+		return response;
+	}
 }
