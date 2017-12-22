@@ -219,5 +219,9 @@ public interface PrescriptionServices {
 	void emailEyePrescriptionForWeb(String prescriptionId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
 
+	Prescription deletePrescriptionForWeb(String prescriptionId, String doctorId, String hospitalId, String locationId,
+			String patientId, Boolean discarded);
+	
+
 
 }

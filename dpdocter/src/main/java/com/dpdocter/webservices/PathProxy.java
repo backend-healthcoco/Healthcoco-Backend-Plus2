@@ -594,6 +594,9 @@ public interface PathProxy {
 		public static final String EMAIL_EYE_PRESCRIPTION_WEB = "/eye/{prescriptionId}/{emailAddress}/mail";
 
 		public static final String SMS_EYE_PRESCRIPTION_WEB = "eye/{prescriptionId}/{mobileNumber}/sms";
+		
+		public static final String DELETE_PRESCRIPTION_WEB = "/{prescriptionId}/delete";
+
 
 	}
 
@@ -1004,8 +1007,8 @@ public interface PathProxy {
 		public static final String GET_TREATMENT_SERVICES_BY_SPECIALITY = "/getServicesBySpeciality";
 		
 		public static final String EMAIL_PATIENT_TREATMENT_WEB = "/{treatmentId}/{emailAddress}/mail";
-
 		
+		public static final String DELETE_PATIENT_TREATMENT_WEB = "/{treatmentId}/delete";
 
 	}
 

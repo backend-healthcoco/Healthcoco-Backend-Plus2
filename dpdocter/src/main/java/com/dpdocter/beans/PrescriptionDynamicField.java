@@ -7,10 +7,12 @@ public class PrescriptionDynamicField {
 	private String drug = Range.BOTH.getRange();
 
 	private String dosage = Range.BOTH.getRange();
-	
+
 	private String duration = Range.BOTH.getRange();
-	
+
 	private String direction = Range.BOTH.getRange();
+
+	private String diagnosticTest = Range.BOTH.getRange();
 
 	public String getDrug() {
 		return drug;
@@ -34,7 +36,7 @@ public class PrescriptionDynamicField {
 
 	public void setDuration(String duration) {
 		this.duration = duration;
-	}
+	}Rc
 
 	public String getDirection() {
 		return direction;
@@ -42,6 +44,14 @@ public class PrescriptionDynamicField {
 
 	public void setDirection(String direction) {
 		this.direction = direction;
+	}
+
+	public String getDiagnosticTest() {
+		return diagnosticTest;
+	}
+
+	public void setDiagnosticTest(String diagnosticTest) {
+		this.diagnosticTest = diagnosticTest;
 	}
 
 	@Override

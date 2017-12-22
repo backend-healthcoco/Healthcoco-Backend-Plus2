@@ -1903,7 +1903,7 @@ public class ClinicalNotesApi {
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "emailAddress") String emailAddress) {
 
-		if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress)) {
+		if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, emailAddress)) {
 			logger.warn(
 					"Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,

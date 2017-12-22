@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.ClinicalNotesDynamicField;
+import com.dpdocter.beans.DataDynamicField;
+import com.dpdocter.beans.DischargeSummaryDynamicFields;
 import com.dpdocter.beans.DynamicUI;
+import com.dpdocter.beans.PrescriptionDynamicField;
+import com.dpdocter.beans.TreatmentDynamicFields;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DynamicUICollection;
@@ -31,6 +37,8 @@ import com.dpdocter.enums.ProfilePermissionEnum;
 import com.dpdocter.enums.SpecialityTypeEnum;
 import com.dpdocter.enums.TabPermissionsEnum;
 import com.dpdocter.enums.VitalSignPermissions;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
@@ -462,4 +470,59 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		}
 		return uiResponse;
 	}
+
+	/*
+	@Override
+	@Transactional
+	public DataDynamicUI getDynamicDataPermissionForDoctor(String doctorId) {
+		DataDynamicUI dataDynamicUI = null;
+		DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+		if (doctorCollection != null) {
+			dataDynamicUI = new DataDynamicUI();
+			DataDynamicUICollection dataDynamicUICollection = dataDynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+			if(dataDynamicUICollection != null)
+			{
+				BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
+			}
+			else
+			{
+				dataDynamicUI  = new DataDynamicUI();
+				dataDynamicUI.setDoctorId(doctorId);
+				DataDynamicField dataDynamicField = new DataDynamicField();
+				dataDynamicField.setClinicalNotesDynamicField(new ClinicalNotesDynamicField());
+				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
+				dataDynamicField.setDischargeSummaryDynamicFields(new DischargeSummaryDynamicFields());
+				dataDynamicField.setTreatmentDynamicFields(new TreatmentDynamicFields());
+				dataDynamicUI.setDataDynamicField(dataDynamicField);
+			}
+		}else
+		{
+			throw new BusinessException(ServiceError.InvalidInput , "Doctor not present");
+		}
+		return dataDynamicUI;
+	}
+
+	@Override
+	@Transactional
+	public DataDynamicUI postDataPermissions(DataDynamicUI dynamicUIRequest) {
+		DataDynamicUI dataDynamicUI = null;
+		DataDynamicUICollection dataDynamicUICollection = dataDynamicUIRepository
+				.findByDoctorId(new ObjectId(dynamicUIRequest.getDoctorId()));
+		if (dataDynamicUICollection != null) {
+			dataDynamicUICollection.setDataDynamicField(dynamicUIRequest.getDataDynamicField());
+			dataDynamicUICollection = dataDynamicUIRepository.save(dataDynamicUICollection);
+			dataDynamicUI = new DataDynamicUI();
+			BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
+		} else {
+			dataDynamicUICollection = new DataDynamicUICollection();
+			BeanUtil.map(dynamicUIRequest, dataDynamicUICollection);
+			dataDynamicUICollection.setCreatedTime(new Date());
+			dataDynamicUICollection = dataDynamicUIRepository.save(dataDynamicUICollection);
+			dataDynamicUI = new DataDynamicUI();
+			BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
+		}
+		return dataDynamicUI;
+	}
+*/
+	
 }

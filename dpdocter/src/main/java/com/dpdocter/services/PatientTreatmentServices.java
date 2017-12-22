@@ -63,4 +63,6 @@ public interface PatientTreatmentServices {
 	TreatmentService makeServiceFavourite(String serviceId, String doctorId, String locationId, String hospitalId);
 
 	List<TreatmentService> getListBySpeciality(String speciality);
+
+	PatientTreatmentResponse deletePatientTreatmentForWeb(String treatmentId, Boolean discarded);
 }
