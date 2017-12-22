@@ -1001,20 +1001,32 @@ public class LocationServiceImpl implements LocationServices {
 					BeanUtil.map(patientLabTestsampleRequest, patientLabTestSample);
 					for (LabTestSample labTestSample : patientLabTestsampleRequest.getLabTestSamples()) {
 						if (labTestSample.getId() != null) {
-							LabTestSampleCollection labTestSampleCollection = labTestSampleRepository
+							LabTestSampleCollection OldlabTestSampleCollection = labTestSampleRepository
 									.findOne(new ObjectId(labTestSample.getId()));
+							if (OldlabTestSampleCollection == null) {
+								throw new BusinessException(ServiceError.InvalidInput, "invalid lab Test sample Id");
+							}
+							;
+							LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
+
 							BeanUtil.map(labTestSample, labTestSampleCollection);
+							labTestSampleCollection.setCreatedBy(OldlabTestSampleCollection.getCreatedBy());
+							labTestSampleCollection.setCreatedTime(OldlabTestSampleCollection.getCreatedTime());
 							labTestSampleCollection
 									.setRateCardTestAssociation(labTestSample.getRateCardTestAssociation());
-							
+
 							labTestSampleCollection.setLabTestPickUpId(new ObjectId(request.getId()));
 							labTestSampleCollection.setIsCompleted(request.getIsCompleted());
 							labTestSampleCollection.setUpdatedTime(new Date());
-							if (labTestSampleCollection.getIsCompleted() && labTestSampleCollection.getIsCollectedAtLab()
+
+							if (labTestSampleCollection.getIsCompleted()
+									&& labTestSampleCollection.getIsCollectedAtLab()
 									&& !DPDoctorUtils.allStringsEmpty(labTestSampleCollection.getParentLabLocationId())
-									&& DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getSerialNumber())) {
+									&& DPDoctorUtils.anyStringEmpty(OldlabTestSampleCollection.getSerialNumber())) {
 								String serialNumber = reportSerialNumberGenerator(
 										labTestSampleCollection.getParentLabLocationId().toString());
+								System.out.println("/////////Serial No. is" + serialNumber
+										+ "///////////////////////////////////////////////////");
 								labTestSampleCollection.setSerialNumber(serialNumber);
 							}
 							labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
@@ -1029,7 +1041,8 @@ public class LocationServiceImpl implements LocationServices {
 							labTestSampleCollection.setCreatedTime(new Date());
 							labTestSampleCollection.setUpdatedTime(new Date());
 							labTestSampleCollection.setIsCompleted(request.getIsCompleted());
-							if (labTestSampleCollection.getIsCompleted() && labTestSampleCollection.getIsCollectedAtLab()
+							if (labTestSampleCollection.getIsCompleted()
+									&& labTestSampleCollection.getIsCollectedAtLab()
 									&& !DPDoctorUtils.allStringsEmpty(labTestSampleCollection.getParentLabLocationId())
 									&& DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getSerialNumber())) {
 								String serialNumber = reportSerialNumberGenerator(
@@ -1944,7 +1957,7 @@ public class LocationServiceImpl implements LocationServices {
 							Fields.field("mobileNumber", "$patientLabTestSamples.mobileNumber"),
 							Fields.field("age", "$patientLabTestSamples.age"),
 							Fields.field("gender", "$patientLabTestSamples.gender"),
-							Fields.field("labTestSamples.id", "$labTestSamples.id"),
+							Fields.field("labTestSamples._id", "$labTestSamples._id"),
 							Fields.field("labTestSamples.sampleType", "$labTestSamples.sampleType"),
 							Fields.field("labTestSamples.daughterLabLocationId",
 									"$labTestSamples.daughterLabLocationId"),
@@ -2008,10 +2021,9 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			}
-			System.out.println(aggregation.toString());
+
 			AggregationResults<PatientLabTestSample> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, PatientLabTestSample.class);
-			// System.out.println(aggregation);
 			response = aggregationResults.getMappedResults();
 
 		} catch (Exception e) {
@@ -2195,8 +2207,8 @@ public class LocationServiceImpl implements LocationServices {
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			Long endTimeinMillis = end.getMillis();
-			int reportSize = labReportsRepository.findTodaysCompletedReport(locationObjectId, true, startTimeinMillis,
-					endTimeinMillis);
+			int reportSize = labTestSampleRepository.findTodaysCompletedReport(locationObjectId, true,
+					new Date(startTimeinMillis), new Date(endTimeinMillis));
 
 			generatedId = String.valueOf((reportSize + 1));
 		} catch (BusinessException e) {
