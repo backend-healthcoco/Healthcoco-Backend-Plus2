@@ -36,7 +36,7 @@ public class PrescriptionDynamicField {
 
 	public void setDuration(String duration) {
 		this.duration = duration;
-	}Rc
+	}
 
 	public String getDirection() {
 		return direction;
