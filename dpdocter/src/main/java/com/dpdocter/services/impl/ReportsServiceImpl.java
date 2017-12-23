@@ -258,7 +258,7 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -340,7 +340,7 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(ipdReports);
 				}
 			}
-			int count = ipdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			int count = response.size();
 			ipdReportsResponse = new IPDReportsResponse();
 			ipdReportsResponse.setIpdReports(response);
 			ipdReportsResponse.setCount(count);
@@ -368,7 +368,7 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -515,7 +515,7 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(opdReports);
 				}
 			}
-			int count = opdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			int count = response.size();
 			opdReportsResponse = new OPDReportsResponse();
 			opdReportsResponse.setOpdReports(response);
 			opdReportsResponse.setCount(count);
@@ -543,7 +543,7 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -642,7 +642,7 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(otReports);
 				}
 			}
-			int count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			int count = response.size();
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
 			otReportsResponse.setCount(count);
@@ -670,7 +670,7 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -756,8 +756,7 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(deliveryReports);
 				}
 			}
-			int count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId),
-					new ObjectId(doctorId));
+			int count = response.size();
 			deliveryReportsResponse = new DeliveryReportsResponse();
 			deliveryReportsResponse.setDeliveryReports(response);
 			deliveryReportsResponse.setCount(count);
