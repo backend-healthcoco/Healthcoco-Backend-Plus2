@@ -25,4 +25,7 @@ public interface AppointmentRepository extends MongoRepository<AppointmentCollec
 	@Query("{'fromDate': {'$gte': ?0}, 'toDate': {'$lte': ?1}, 'state': {'$eq' : 'CONFIRM'}}")
 	List<AppointmentCollection> findConfirmAppointments(DateTime start, DateTime end, Sort sort);
 
+	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'appointmentId': ?4}")
+	AppointmentCollection find(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, String appointmentId);
+
 }

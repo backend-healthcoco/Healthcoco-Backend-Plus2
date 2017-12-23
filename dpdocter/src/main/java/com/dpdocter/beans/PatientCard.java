@@ -86,6 +86,8 @@ public class PatientCard extends GenericCollection {
 
 	private PersonalInformation personalInformation;
 
+	private String PNUM;
+
 	public String getPatientId() {
 		return patientId;
 	}
@@ -470,6 +472,14 @@ public class PatientCard extends GenericCollection {
 		this.personalInformation = personalInformation;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -485,9 +495,9 @@ public class PatientCard extends GenericCollection {
 				+ reference + ", patientId=" + patientId + ", profession=" + profession + ", relations=" + relations
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", registrationDate=" + registrationDate
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
-				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", addressId=" + addressId
-				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
-				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
-				+ insuranceName + ", notes=" + notes + "]";
+				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", PNUM=" + PNUM
+				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
+				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + "]";
 	}
 }

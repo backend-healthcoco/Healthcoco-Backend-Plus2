@@ -16,7 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
-import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
+import com.dpdocter.elasticsearch.document.ESCementDocument;
+import com.dpdocter.elasticsearch.document.ESImplantDocument;
 import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
 import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
@@ -49,7 +50,7 @@ public class ESDischargeSummaryAPI {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -59,44 +60,85 @@ public class ESDischargeSummaryAPI {
 		response.setDataList(esLabourNoteDocuments);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.SolrDischargeSummaryUrls.SEARCH_BABY_NOTES)
 	@GET
 	@ApiOperation(value = PathProxy.SolrDischargeSummaryUrls.SEARCH_BABY_NOTES, notes = PathProxy.SolrDischargeSummaryUrls.SEARCH_BABY_NOTES)
-	public Response<ESBabyNoteDocument> searchBabyNotes(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+	public Response<ESBabyNoteDocument> searchBabyNotes(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESBabyNoteDocument> esBabyNoteDocuments = esDischargeSummaryService.searchBabyNotes(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		List<ESBabyNoteDocument> esBabyNoteDocuments = esDischargeSummaryService.searchBabyNotes(range, page, size,
+				doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		Response<ESBabyNoteDocument> response = new Response<ESBabyNoteDocument>();
 		response.setDataList(esBabyNoteDocuments);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.SolrDischargeSummaryUrls.SEARCH_OPERATION_NOTES)
 	@GET
 	@ApiOperation(value = PathProxy.SolrDischargeSummaryUrls.SEARCH_OPERATION_NOTES, notes = PathProxy.SolrDischargeSummaryUrls.SEARCH_OPERATION_NOTES)
-	public Response<ESOperationNoteDocument> searchNotes(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+	public Response<ESOperationNoteDocument> searchNotes(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESOperationNoteDocument> esOperationNoteDocuments = esDischargeSummaryService.searchOperationNotes(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		List<ESOperationNoteDocument> esOperationNoteDocuments = esDischargeSummaryService.searchOperationNotes(range,
+				page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		Response<ESOperationNoteDocument> response = new Response<ESOperationNoteDocument>();
 		response.setDataList(esOperationNoteDocuments);
 		return response;
 	}
 
+	@Path(value = PathProxy.SolrDischargeSummaryUrls.SEARCH_CEMENT)
+	@GET
+	@ApiOperation(value = PathProxy.SolrDischargeSummaryUrls.SEARCH_CEMENT, notes = PathProxy.SolrDischargeSummaryUrls.SEARCH_CEMENT)
+	public Response<ESCementDocument> searchCement(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESCementDocument> esCementDocuments = esDischargeSummaryService.searchCement(range, page, size, doctorId,
+				locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<ESCementDocument> response = new Response<ESCementDocument>();
+		response.setDataList(esCementDocuments);
+		return response;
+	}
+
+	@Path(value = PathProxy.SolrDischargeSummaryUrls.SEARCH_IMPLANT)
+	@GET
+	@ApiOperation(value = PathProxy.SolrDischargeSummaryUrls.SEARCH_IMPLANT, notes = PathProxy.SolrDischargeSummaryUrls.SEARCH_IMPLANT)
+	public Response<ESImplantDocument> searchImplant(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESImplantDocument> esImplantDocuments = esDischargeSummaryService.searchImplant(range, page, size,
+				doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<ESImplantDocument> response = new Response<ESImplantDocument>();
+		response.setDataList(esImplantDocuments);
+		return response;
+	}
 
 }

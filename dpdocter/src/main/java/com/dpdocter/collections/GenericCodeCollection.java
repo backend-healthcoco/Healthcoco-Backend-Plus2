@@ -19,9 +19,6 @@ public class GenericCodeCollection extends GenericCollection {
 	@Field
 	private String name;
 
-	@Field
-	private String strength;
-
 	public ObjectId getId() {
 		return id;
 	}
@@ -44,14 +41,6 @@ public class GenericCodeCollection extends GenericCollection {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getStrength() {
-		return strength;
-	}
-
-	public void setStrength(String strength) {
-		this.strength = strength;
 	}
 
 	@Override

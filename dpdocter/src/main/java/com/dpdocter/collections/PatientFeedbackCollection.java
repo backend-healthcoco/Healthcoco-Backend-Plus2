@@ -30,6 +30,8 @@ public class PatientFeedbackCollection extends GenericCollection {
 	private MedicationEffectType medicationEffectType; // how patient feeling
 	// after taking medicine
 	private FeedbackType feedbackType;
+	private ObjectId appointmentId;
+	private ObjectId prescriptionId;
 
 	public ObjectId getId() {
 		return id;
@@ -191,6 +193,22 @@ public class PatientFeedbackCollection extends GenericCollection {
 		this.feedbackType = feedbackType;
 	}
 
+	public ObjectId getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(ObjectId appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public ObjectId getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(ObjectId prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedbackCollection [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
@@ -200,7 +218,8 @@ public class PatientFeedbackCollection extends GenericCollection {
 				+ ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply=" + reply
 				+ ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
-				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType + "]";
+				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType
+				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + "]";
 	}
 
 }

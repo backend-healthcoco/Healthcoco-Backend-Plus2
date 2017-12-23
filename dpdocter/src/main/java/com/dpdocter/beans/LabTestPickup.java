@@ -2,19 +2,16 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class LabTestPickup extends GenericCollection {
 
 	private String id;
+	private List<PatientLabTestSample> patientLabTestSamples;
 	private String daughterLabCRN;
 	private String parentLabCRN;
 	private Long pickupTime;
 	private Long deliveryTime;
-	private List<String> labTestSampleIds;
-	private List<LabTestSample> labTestSamples;
 	private String status;
 	private String doctorId;
 	private String daughterLabLocationId;
@@ -67,14 +64,6 @@ public class LabTestPickup extends GenericCollection {
 		this.deliveryTime = deliveryTime;
 	}
 
-	public List<LabTestSample> getLabTestSamples() {
-		return labTestSamples;
-	}
-
-	public void setLabTestSamples(List<LabTestSample> labTestSamples) {
-		this.labTestSamples = labTestSamples;
-	}
-
 	public String getStatus() {
 		return status;
 	}
@@ -93,18 +82,6 @@ public class LabTestPickup extends GenericCollection {
 
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
-	}
-
-	@Override
-	public String toString() {
-		return "LabTestPickup [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN=" + parentLabCRN
-				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSampleIds="
-				+ labTestSampleIds + ", labTestSamples=" + labTestSamples + ", status=" + status + ", doctorId="
-				+ doctorId + ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId="
-				+ parentLabLocationId + ", discarded=" + discarded + ", numberOfSamplesRequested="
-				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
-				+ requestId + ", isCompleted=" + isCompleted + ", collectionBoyId=" + collectionBoyId
-				+ ", serialNumber=" + serialNumber + "]";
 	}
 
 	public void setDoctorId(String doctorId) {
@@ -175,12 +152,12 @@ public class LabTestPickup extends GenericCollection {
 		this.collectionBoyId = collectionBoyId;
 	}
 
-	public List<String> getLabTestSampleIds() {
-		return labTestSampleIds;
+	public List<PatientLabTestSample> getPatientLabTestSamples() {
+		return patientLabTestSamples;
 	}
 
-	public void setLabTestSampleIds(List<String> labTestSampleIds) {
-		this.labTestSampleIds = labTestSampleIds;
+	public void setPatientLabTestSamples(List<PatientLabTestSample> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
 	}
 
 }

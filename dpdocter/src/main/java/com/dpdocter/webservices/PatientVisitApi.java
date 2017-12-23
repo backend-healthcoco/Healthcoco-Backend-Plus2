@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -120,6 +121,29 @@ public class PatientVisitApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB, notes = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
+	public Response<PatientVisitResponse> getVisitForWEB(@QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
+			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@QueryParam("visitFor") String visitFor) {
+
+		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId)) {
+			logger.warn("Patient Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Patient Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId,
+				patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
+				updatedTime, visitFor);
+
+		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+		response.setDataList(patienVisitResponse);
+		return response;
+	}
+
 	@Path(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
 	@GET
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD, notes = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
@@ -168,6 +192,25 @@ public class PatientVisitApi {
 			@PathParam(value = "mobileNumber") String mobileNumber) {
 
 		if (DPDoctorUtils.anyStringEmpty(visitId, doctorId, locationId, hospitalId, mobileNumber)) {
+			logger.warn("Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(patientVisitService.smsVisit(visitId, doctorId, locationId, hospitalId, mobileNumber));
+		return response;
+	}
+	
+	@Path(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB, notes = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
+	public Response<Boolean> smsPrescriptionForWeb(@PathParam(value = "visitId") String visitId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "mobileNumber") String mobileNumber) {
+
+		if (DPDoctorUtils.anyStringEmpty(visitId, mobileNumber)) {
 			logger.warn("Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");

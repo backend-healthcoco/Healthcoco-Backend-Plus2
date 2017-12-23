@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -12,18 +13,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.DoctorInfo;
-import com.dpdocter.beans.Locale;
 import com.dpdocter.beans.LocaleImage;
-import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserResourceFavouriteCollection;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -94,115 +95,85 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 	}
 
 	@Override
-	public List<DoctorInfo> getFavouriteDoctors(int page, int size, String userId) {
-		List<DoctorInfo> response = null;
+	public List<ESDoctorDocument> getFavouriteDoctors(int page, int size, String userId) {
+		List<ESDoctorDocument> response = null;
 		try {
 			Aggregation aggregation = null;
 			
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("resourceId", "$resourceId"), Fields.field("title", "$user.title"),
-							Fields.field("firstName", "$user.firstName"), Fields.field("countryCode", "$user.countryCode"),
-							Fields.field("mobileNumber", "$user.mobileNumber"), Fields.field("emailAddress", "$user.emailAddress"),
-							Fields.field("imageUrl", "$user.imageUrl"), Fields.field("thumbnailUrl", "$user.thumbnailUrl"),
-							Fields.field("coverImageUrl", "$user.coverImageUrl"), Fields.field("coverThumbnailImageUrl", "$user.coverThumbnailImageUrl"),
-							Fields.field("locationId", "$locationId"), Fields.field("locationName", "$location.locationName"),
-							Fields.field("latitude", "$location.latitude"), Fields.field("longitude", "$location.longitude"),
-							Fields.field("updatedTime", "$updatedTime"),
-							Fields.field("experience", "$doctor.experience"),
-							Fields.field("colorCode", "$user.colorCode"),
-							Fields.field("images", "$location.images"),
-							Fields.field("country", "$location.country"),
-							Fields.field("state", "$location.state"),
-							Fields.field("city", "$location.city"),
-							Fields.field("postalCode", "$location.postalCode"),
-							Fields.field("streetAddress", "$location.streetAddress"),
-							Fields.field("locality", "$location.locality"),
-							Fields.field("landmarkDetails", "$location.landmarkDetails")));
-			
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$resourceId")
-					.append("title", new BasicDBObject("$first", "$title"))
-					.append("firstName", new BasicDBObject("$first", "$firstName"))
-					.append("countryCode", new BasicDBObject("$first", "$countryCode"))
-					.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-					.append("emailAddress", new BasicDBObject("$first", "$emailAddress"))
-					.append("imageUrl", new BasicDBObject("$first", "$imageUrl"))
-					.append("thumbnailUrl", new BasicDBObject("$first", "$thumbnailUrl"))
-					.append("coverImageUrl", new BasicDBObject("$first", "$coverImageUrl"))
-					.append("coverThumbnailImageUrl", new BasicDBObject("$first", "$coverThumbnailImageUrl"))
-					.append("locationId", new BasicDBObject("$first", "$locationId"))
-					.append("locationName", new BasicDBObject("$first", "$locationName"))
-					.append("latitude", new BasicDBObject("$first", "$latitude"))
-					.append("longitude", new BasicDBObject("$first", "$longitude"))
-					.append("experience", new BasicDBObject("$first", "$experience"))
-					.append("colorCode", new BasicDBObject("$first", "$colorCode"))
-					.append("images", new BasicDBObject("$first", "$images"))
-					.append("country", new BasicDBObject("$first", "$country"))
-					.append("state", new BasicDBObject("$first", "$state"))
-					.append("city", new BasicDBObject("$first", "$city"))
-					.append("postalCode", new BasicDBObject("$first", "$postalCode"))
-					.append("streetAddress", new BasicDBObject("$first", "$streetAddress"))
-					.append("locality", new BasicDBObject("$first", "$locality")).append("landmarkDetails", new BasicDBObject("$first", "$landmarkDetails"))
-					.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
 					
 			if(size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(userId)).and("resourceType").is(Resource.DOCTOR.name()).and("discarded").is(false)),
 					Aggregation.lookup("docter_cl", "resourceId", "userId", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("user_cl", "resourceId", "_id", "user"), Aggregation.unwind("user"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-					projectList, groupOperation,
+					Aggregation.lookup("location_cl", "locationId", "_id", "lab"), Aggregation.unwind("lab"),
+					Aggregation.lookup("doctor_clinic_profile_cl", "resourceId", "doctorId", "clinicProfileCollection"),
+					Aggregation.unwind("clinicProfileCollection"),
+					new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+							new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$clinicProfileCollection.locationId", "$locationId")))
+							.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 					Aggregation.sort(new Sort(Direction.DESC, "updatedTime")),
 					Aggregation.skip(page * size), Aggregation.limit(size));
 			}else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(userId)).and("resourceType").is(Resource.DOCTOR.name()).and("discarded").is(false)),
 						Aggregation.lookup("docter_cl", "resourceId", "userId", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("user_cl", "resourceId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-						projectList, groupOperation,
+						Aggregation.lookup("location_cl", "locationId", "_id", "lab"), Aggregation.unwind("lab"),
+						Aggregation.lookup("doctor_clinic_profile_cl", "resourceId", "doctorId", "clinicProfileCollection"), Aggregation.unwind("clinicProfileCollection"),
+						new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+								new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$clinicProfileCollection.locationId", "$locationId")))
+								.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")));
 			}
 			
-			response = mongoTemplate.aggregate(aggregation, UserResourceFavouriteCollection.class, DoctorInfo.class).getMappedResults();
+			List<FavouriteLookupResponse> doctors = mongoTemplate.aggregate(aggregation, UserResourceFavouriteCollection.class, FavouriteLookupResponse.class).getMappedResults();
 			
-			if(response != null) {
-				for(DoctorInfo doctorInfo : response) {
-					DoctorClinicProfileCollection clinicProfileCollection = mongoTemplate.aggregate(
-							Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorInfo.getId())).and("locationId").is(new ObjectId(doctorInfo.getLocationId()))),
-									Aggregation.project(Fields.fields("consultationFee","facility"))),                              
-							DoctorClinicProfileCollection.class, DoctorClinicProfileCollection.class).getUniqueMappedResult();
+			if(doctors != null) {
+				response = new ArrayList<ESDoctorDocument>();
+				for(FavouriteLookupResponse favouriteLookupResponse : doctors) {
+					DoctorCollection doctor = favouriteLookupResponse.getDoctor();
+					UserCollection user = favouriteLookupResponse.getUser();
+					LocationCollection location = favouriteLookupResponse.getLab();
 					
-					doctorInfo.setConsultationFee(clinicProfileCollection.getConsultationFee());
-					doctorInfo.setFacility(clinicProfileCollection.getFacility());
-					String address = (!DPDoctorUtils.anyStringEmpty(doctorInfo.getStreetAddress())
-							? doctorInfo.getStreetAddress() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(doctorInfo.getLandmarkDetails())
-									? doctorInfo.getLandmarkDetails() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(doctorInfo.getLocality())
-									? doctorInfo.getLocality() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(doctorInfo.getCity())
-									? doctorInfo.getCity() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(doctorInfo.getState())
-									? doctorInfo.getState() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(doctorInfo.getCountry())
-									? doctorInfo.getCountry() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(doctorInfo.getPostalCode())
-									? doctorInfo.getPostalCode() : "");
+					
+					
+					ESDoctorDocument doctorDocument = new ESDoctorDocument();
+					BeanUtil.map(location, doctorDocument);
+					BeanUtil.map(favouriteLookupResponse.getClinicProfileCollection(), doctorDocument);
+					BeanUtil.map(doctor, doctorDocument);
+					BeanUtil.map(user, doctorDocument);
+					
+					String address = (!DPDoctorUtils.anyStringEmpty(location.getStreetAddress())
+							? location.getStreetAddress() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(location.getLandmarkDetails())
+									? location.getLandmarkDetails() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(location.getLocality())
+									? location.getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(location.getCity())
+									? location.getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(location.getState())
+									? location.getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(location.getCountry())
+									? location.getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(location.getPostalCode())
+									? location.getPostalCode() : "");
 
 					if (!DPDoctorUtils.anyStringEmpty(address) && address.charAt(address.length() - 2) == ',') {
 						address = address.substring(0, address.length() - 2);
 					}
-					doctorInfo.setAddress(address);
+					doctorDocument.setClinicAddress(address);
 
-					doctorInfo.setImageUrl(getFinalImageURL(doctorInfo.getImageUrl()));
-					doctorInfo.setThumbnailUrl(getFinalImageURL(doctorInfo.getThumbnailUrl()));
-					doctorInfo.setCoverImageUrl(getFinalImageURL(doctorInfo.getCoverImageUrl()));
-					doctorInfo.setCoverThumbnailImageUrl(getFinalImageURL(doctorInfo.getCoverThumbnailImageUrl()));
+					doctorDocument.setImageUrl(getFinalImageURL(user.getImageUrl()));
+					doctorDocument.setCoverImageUrl(getFinalImageURL(user.getCoverImageUrl()));
+					doctorDocument.setCoverThumbnailImageUrl(getFinalImageURL(user.getCoverThumbnailImageUrl()));
 					
-					if (doctorInfo.getImages() != null) {
-						for (ClinicImage clinicImage : doctorInfo.getImages()) {
-							clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
-							clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-							}
+					if (location.getImages() != null) {
+						List<String> images = new ArrayList<String>();
+						for (ClinicImage clinicImage : location.getImages()) {
+							images.add(getFinalImageURL(clinicImage.getImageUrl()));
+						}
+						doctorDocument.setImages(images);
 					}
+					response.add(doctorDocument);
 				}
 			}
 				
@@ -215,27 +186,32 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 	}
 
 	@Override
-	public List<Locale> getFavouritePharmacies(int page, int size, String userId) {
-		List<Locale> response = null;
+	public List<ESUserLocaleDocument> getFavouritePharmacies(int page, int size, String userId) {
+		List<ESUserLocaleDocument> response = null;
 		try {
 			Aggregation aggregation = null;
 			if(size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(userId)).and("resourceType").is(Resource.PHARMACY.name()).and("discarded").is(false)),
 					Aggregation.lookup("locale_cl", "resourceId", "_id", "pharmacy"), Aggregation.unwind("pharmacy"),
+					Aggregation.lookup("user_cl", "$pharmacy.contactNumber", "mobileNumber", "user"), Aggregation.unwind("user"),
+					Aggregation.match(new Criteria("user.userState").is(Resource.PHARMACY.getType())),
 					Aggregation.sort(new Sort(Direction.DESC, "updatedTime")),
 					Aggregation.skip(page * size), Aggregation.limit(size));
 			}else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(userId)).and("resourceType").is(Resource.PHARMACY.name()).and("discarded").is(false)),
 						Aggregation.lookup("locale_cl", "resourceId", "_id", "pharmacy"), Aggregation.unwind("pharmacy"),
+						Aggregation.lookup("user_cl", "$pharmacy.contactNumber", "mobileNumber", "user"), Aggregation.unwind("user"),
+						Aggregation.match(new Criteria("user.userState").is(Resource.PHARMACY.getType())),
 						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")));
 			}
-			
 			List<FavouriteLookupResponse> favouriteLookupResponses = mongoTemplate.aggregate(aggregation, UserResourceFavouriteCollection.class, FavouriteLookupResponse.class).getMappedResults();
 			if(favouriteLookupResponses != null) {
-				response = new ArrayList<Locale>();
+				response = new ArrayList<ESUserLocaleDocument>();
 				for(FavouriteLookupResponse favouriteLookupResponse : favouriteLookupResponses) {
-					Locale locale = new Locale();
+					ESUserLocaleDocument locale = new ESUserLocaleDocument();
+					BeanUtil.map(favouriteLookupResponse.getUser(), locale);
 					BeanUtil.map(favouriteLookupResponse.getPharmacy(), locale);
+					locale.setLocaleId(favouriteLookupResponse.getPharmacy().getId().toString());
 					if (locale.getLocaleImages() != null) {
 						for (LocaleImage localImage : locale.getLocaleImages()) {
 							localImage.setImageUrl(getFinalImageURL(localImage.getImageUrl()));
@@ -275,6 +251,7 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 				for(FavouriteLookupResponse favouriteLookupResponse : favouriteLookupResponses) {
 					LabResponse labResponse = new LabResponse();
 					BeanUtil.map(favouriteLookupResponse.getLab(), labResponse);
+					labResponse.setLocationId(favouriteLookupResponse.getLab().getId().toString());
 					List<String> images = new ArrayList<String>();
 					
 					if (favouriteLookupResponse.getLab().getImages() != null)

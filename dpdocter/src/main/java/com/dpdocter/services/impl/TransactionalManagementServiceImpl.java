@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -40,6 +41,7 @@ import com.dpdocter.collections.AdviceCollection;
 import com.dpdocter.collections.AppLinkDetailsCollection;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.BabyNoteCollection;
+import com.dpdocter.collections.CementCollection;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
@@ -55,6 +57,7 @@ import com.dpdocter.collections.EarsExaminationCollection;
 import com.dpdocter.collections.EchoCollection;
 import com.dpdocter.collections.GeneralExamCollection;
 import com.dpdocter.collections.HolterCollection;
+import com.dpdocter.collections.ImplantCollection;
 import com.dpdocter.collections.IndicationOfUSGCollection;
 import com.dpdocter.collections.IndirectLarygoscopyExaminationCollection;
 import com.dpdocter.collections.InvestigationCollection;
@@ -96,6 +99,7 @@ import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
+import com.dpdocter.elasticsearch.document.ESCementDocument;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
@@ -110,6 +114,7 @@ import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
+import com.dpdocter.elasticsearch.document.ESImplantDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESIndirectLarygoscopyExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
@@ -163,6 +168,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AdviceRepository;
 import com.dpdocter.repository.AppLinkDetailsRepository;
 import com.dpdocter.repository.BabyNoteRepository;
+import com.dpdocter.repository.CementRepository;
 import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
@@ -178,6 +184,7 @@ import com.dpdocter.repository.EarsExaminationRepository;
 import com.dpdocter.repository.EchoRepository;
 import com.dpdocter.repository.GeneralExamRepository;
 import com.dpdocter.repository.HolterRepository;
+import com.dpdocter.repository.ImplantRepository;
 import com.dpdocter.repository.IndicationOfUSGRepository;
 import com.dpdocter.repository.IndirectLarygoscopyExaminationRepository;
 import com.dpdocter.repository.InvestigationRepository;
@@ -248,6 +255,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private OperationNoteRepository operationNoteRepository;
+
+	@Autowired
+	private ImplantRepository implantRepository;
+
+	@Autowired
+	private CementRepository cementRepository;
 
 	@Autowired
 	private PatientRepository patientRepository;
@@ -451,7 +464,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
-	@Scheduled(fixedDelay = 1800000)
+//	@Scheduled(fixedDelay = 1800000)
 	@Override
 	@Transactional
 	public void checkResources() {
@@ -614,14 +627,20 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						case OBSTETRIC_HISTORY:
 							checkObstresrticHistory(transactionalCollection.getResourceId());
 							break;
-						case STATE:
-							break;
+
 						case OPERATION_NOTES:
 							checkOperationNote(transactionalCollection.getResourceId());
 							break;
+						case CEMENT:
+							checkCement(transactionalCollection.getResourceId());
+							break;
+						case IMPLANT:
+							checkImplant(transactionalCollection.getResourceId());
+							break;
 						case COLLECTION_BOY:
 							break;
-
+						case STATE:
+							break;
 						default:
 							break;
 						}
@@ -1875,6 +1894,36 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESOperationNoteDocument noteDocument = new ESOperationNoteDocument();
 				BeanUtil.map(noteCollection, noteDocument);
 				esDischargeSummaryService.addOperationNote(noteDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkImplant(ObjectId resourceId) {
+		try {
+
+			ImplantCollection implantCollection = implantRepository.findOne(resourceId);
+			if (implantCollection != null) {
+				ESImplantDocument esImplantDocument = new ESImplantDocument();
+				BeanUtil.map(implantCollection, esImplantDocument);
+				esDischargeSummaryService.addImplant(esImplantDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkCement(ObjectId resourceId) {
+		try {
+
+			CementCollection cementCollection = cementRepository.findOne(resourceId);
+			if (cementCollection != null) {
+				ESCementDocument cementDocument = new ESCementDocument();
+				BeanUtil.map(cementCollection, cementDocument);
+				esDischargeSummaryService.addCement(cementDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

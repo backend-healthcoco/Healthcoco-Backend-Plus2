@@ -14,6 +14,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -177,8 +178,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 				}
+				
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
 						ESDrugDocument.class);
+				
 				if (esDrugDocuments != null) {
 					esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
 				}
@@ -194,6 +197,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drugDocument.setDrugType(drugType);
 					response.add(drugDocument);
 				}
+				System.out.println("Modify Data:"+new DateTime().getMillisOfSecond());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -214,6 +218,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				response = new ArrayList<DrugDocument>();
 			else {
 				SearchQuery searchQuery = null;
+				
 				if (searchByGenericName) {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
@@ -221,9 +226,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
+				
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
 						ESDrugDocument.class);
-
+				
 				response = new ArrayList<DrugDocument>();
 				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
 					String drugTypeStr = esDrugDocument.getDrugType();
@@ -251,6 +257,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<ESDrugDocument> response = null;
 		try {
 			SearchQuery searchQuery = null;
+			
 			if (searchByGenericName) {
 				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null,
@@ -259,8 +266,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			}
-
+			
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			
 			if (response != null)
 				response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
 		} catch (Exception e) {
@@ -284,6 +292,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 						searchTerm, null, category, null, "drugName");
 			}
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -479,12 +488,43 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			response = getCustomGlobalDiagnosticTests(page, size, locationId, hospitalId, updatedTime, discarded,
 					searchTerm);
 			break;
+		case PATIIENT:
+			response = getDiagnosticTestsForPatients(page, size, updatedTime, discarded, searchTerm);
+			break;	
 		default:
 			break;
 		}
 		return response;
 	}
 	
+	private List<ESDiagnosticTestDocument> getDiagnosticTestsForPatients(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESDiagnosticTestDocument> response = null;
+		try{
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("testName", searchTerm));
+			if (!discarded)
+				boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+			
+			SearchQuery searchQuery = null;
+			
+			if (size > 0) searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withPageable(new PageRequest(page, size))
+							.withSort(SortBuilders.fieldSort("testName").order(SortOrder.ASC)).build();
+			
+			else  searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withSort(SortBuilders.fieldSort("testName").order(SortOrder.ASC)).build();
+			
+			response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosticTestDocument.class);
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Diagnostic Tests For Patient");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests For Patient");
+		}
+		return response;
+	}
+
 	@Override
 	public Integer getDiagnosticTestCount(String range, int page, int size, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm)

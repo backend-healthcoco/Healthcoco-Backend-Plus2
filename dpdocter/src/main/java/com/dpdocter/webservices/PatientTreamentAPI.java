@@ -19,11 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
-import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
@@ -207,7 +205,7 @@ public class PatientTreamentAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Treament request cannot be empty");
 		}
 		PatientTreatmentResponse addEditPatientTreatmentResponse = patientTreatmentServices
-				.addEditPatientTreatment(request, true);
+				.addEditPatientTreatment(request, true, null, null);
 		if (addEditPatientTreatmentResponse != null) {
 			String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
 					request.getVisitId());
@@ -259,6 +257,24 @@ public class PatientTreamentAPI {
 		response.setData(deletePatientTreatmentResponse);
 		return response;
 	}
+	
+	@Path(PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB)
+	@DELETE
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB, notes = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT_WEB)
+	public Response<PatientTreatmentResponse> deletePatientTreatmentForWeb(@PathParam("treatmentId") String treatmentId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("doctorId") String doctorId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(treatmentId, locationId, hospitalId, doctorId)) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+
+		PatientTreatmentResponse deletePatientTreatmentResponse = patientTreatmentServices
+				.deletePatientTreatmentForWeb(treatmentId, discarded);
+		Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
+		response.setData(deletePatientTreatmentResponse);
+		return response;
+	}
 
 	@Path(PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENT_BY_ID)
 	@GET
@@ -304,7 +320,7 @@ public class PatientTreamentAPI {
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "status") String status) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
@@ -331,6 +347,27 @@ public class PatientTreamentAPI {
 					"Invalid Input. Patient Treatment Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. Patient Treatment Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+		}
+		patientTreatmentServices.emailPatientTreatment(treatmentId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB, notes = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT_WEB)
+	public Response<Boolean> emailPatientTreatmentForWeb(@PathParam(value = "treatmentId") String treatmentId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		if (DPDoctorUtils.anyStringEmpty(treatmentId, emailAddress)) {
+			logger.warn(
+					"Invalid Input. Patient Treatment Id, EmailAddress Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Patient Treatment Id, EmailAddress Cannot Be Empty");
 		}
 		patientTreatmentServices.emailPatientTreatment(treatmentId, doctorId, locationId, hospitalId, emailAddress);
 
@@ -373,7 +410,7 @@ public class PatientTreamentAPI {
 	public Response<TreatmentService> addFevourateToTreatmentService(TreatmentService request) {
 
 		Response<TreatmentService> response = new Response<TreatmentService>();
-		response.setData(patientTreatmentServices.addFavouritesToService(request));
+		response.setData(patientTreatmentServices.addFavouritesToService(request, null));
 		return response;
 	}
 

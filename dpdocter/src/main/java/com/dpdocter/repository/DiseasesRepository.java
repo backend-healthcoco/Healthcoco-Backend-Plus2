@@ -89,4 +89,7 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
     @Query("{'id': {'$in': ?0}}")    
 	List<DiseasesCollection> findAll(List<String> diseasesIds);
 
+    @Query("{'$or': [{'disease' : {$regex : '^?0', $options : 'i'}, 'doctorId': ?1,  'locationId': ?2, 'hospitalId': ?3, 'discarded': ?4},{'disease' : {$regex : '^?0', $options : 'i'}, 'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?4}]}")
+    DiseasesCollection find(String disease, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, Boolean discarded);
+
 }

@@ -11,7 +11,7 @@ public class LabReports extends GenericCollection {
 
 	private String requestId;
 
-	private String patientName;
+	private String patientId;
 
 	private String doctorId;
 
@@ -34,6 +34,8 @@ public class LabReports extends GenericCollection {
 	private String labTestSampleId;
 
 	private String recordsState;
+
+	private Boolean isSharedToPatient = false;
 
 	public String getId() {
 		return id;
@@ -139,12 +141,30 @@ public class LabReports extends GenericCollection {
 		this.recordsState = recordsState;
 	}
 
-	public String getPatientName() {
-		return patientName;
+	public String getPatientId() {
+		return patientId;
 	}
 
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public Boolean getIsSharedToPatient() {
+		return isSharedToPatient;
+	}
+
+	public void setIsSharedToPatient(Boolean isSharedToPatient) {
+		this.isSharedToPatient = isSharedToPatient;
+	}
+
+	@Override
+	public String toString() {
+		return "LabReports [id=" + id + ", requestId=" + requestId + ", patientId=" + patientId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", labReports=" + labReports
+				+ ", explanation=" + explanation + ", discarded=" + discarded + ", uploadedByDoctorId="
+				+ uploadedByDoctorId + ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId="
+				+ uploadedByHospitalId + ", labTestSampleId=" + labTestSampleId + ", recordsState=" + recordsState
+				+ "]";
 	}
 
 }

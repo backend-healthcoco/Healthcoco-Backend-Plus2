@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
@@ -41,7 +42,7 @@ import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.response.MailResponse;
 
 public interface ClinicalNotesService {
-	ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd);
+	ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd, String createdBy, Appointment appointment);
 
 	ClinicalNotes getNotesById(String id, ObjectId visitId);
 
@@ -211,6 +212,8 @@ public interface ClinicalNotesService {
 	IndirectLarygoscopyExamination deleteIndirectLarygoscopyExam(String id, String doctorId, String locationId,
 			String hospitalId, Boolean discarded);
 
-	List<Diagnoses> getDiagnosesListBySpeciality(String speciality);
+	//List<Diagnoses> getDiagnosesListBySpeciality(String speciality);
+
+	List<Diagnoses> getDiagnosesListBySpeciality(String speciality, String searchTerm);
 
 }

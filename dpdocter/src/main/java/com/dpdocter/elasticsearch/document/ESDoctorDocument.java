@@ -19,7 +19,7 @@ import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 
 @Document(indexName = "doctors_in", type = "doctors")
-public class ESDoctorDocument extends DoctorLocation {
+public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoctorDocument>{
 
 	@Id
 	private String id;
@@ -114,9 +114,8 @@ public class ESDoctorDocument extends DoctorLocation {
 	@Field(type = FieldType.Integer)
 	private Integer noOfRecommenations = 0;
 
+	@Field(type = FieldType.String)
 	private String doctorSlugURL;
-	
-	
 
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
@@ -397,5 +396,12 @@ public class ESDoctorDocument extends DoctorLocation {
 				+ ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber
 				+ ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId + ", isDoctorListed="
 				+ isDoctorListed + ", timeZone=" + timeZone + ", rankingCount=" + rankingCount + "]";
+	}
+
+	@Override
+	public int compareTo(ESDoctorDocument o) {
+		if(this.rankingCount < o.rankingCount)return 0;
+		else if(this.rankingCount < o.rankingCount)return -1;
+		else return 1;
 	}
 }

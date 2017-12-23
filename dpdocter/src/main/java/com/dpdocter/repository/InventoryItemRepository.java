@@ -7,4 +7,5 @@ import com.dpdocter.collections.InventoryItemCollection;
 
 public interface InventoryItemRepository extends MongoRepository<InventoryItemCollection, ObjectId>{
 
+	
 }

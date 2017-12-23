@@ -3,20 +3,23 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Clinic {
 
-    private String id;
+	private String id;
 
-    private Hospital hospital;
+	private Hospital hospital;
 
-    private Location location;
+	private Location location;
 
-    private List<Doctor> doctors;
-  
-    private Integer reportCount=0;
+	private List<Doctor> doctors;
 
-    public Integer getReportCount() {
+	private Integer reportCount = 0;
+
+	private String slugUrl;
+
+	public Integer getReportCount() {
 		return reportCount;
 	}
 
@@ -25,40 +28,48 @@ public class Clinic {
 	}
 
 	public String getId() {
-	return id;
-    }
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public Hospital getHospital() {
-	return hospital;
-    }
+	public Hospital getHospital() {
+		return hospital;
+	}
 
-    public void setHospital(Hospital hospital) {
-	this.hospital = hospital;
-    }
+	public void setHospital(Hospital hospital) {
+		this.hospital = hospital;
+	}
 
-    public Location getLocation() {
-	return location;
-    }
+	public Location getLocation() {
+		return location;
+	}
 
-    public void setLocation(Location location) {
-	this.location = location;
-    }
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 
-    public List<Doctor> getDoctors() {
-	return doctors;
-    }
+	public List<Doctor> getDoctors() {
+		return doctors;
+	}
 
-    public void setDoctors(List<Doctor> doctors) {
-	this.doctors = doctors;
-    }
+	public void setDoctors(List<Doctor> doctors) {
+		this.doctors = doctors;
+	}
 
-    @Override
-    public String toString() {
-	return "Clinic [id=" + id + ", hospital=" + hospital + ", location=" + location + ", doctors=" + doctors + "]";
-    }
+	@Override
+	public String toString() {
+		return "Clinic [id=" + id + ", hospital=" + hospital + ", location=" + location + ", doctors=" + doctors + "]";
+	}
+
+	public String getSlugUrl() {
+		return slugUrl;
+	}
+
+	public void setSlugUrl(String slugUrl) {
+		this.slugUrl = slugUrl;
+	}
 
 }

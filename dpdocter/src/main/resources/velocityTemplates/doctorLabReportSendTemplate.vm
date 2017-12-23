@@ -1,0 +1,52 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,400italic' rel='stylesheet' type='text/css'>
+  <style type="text/css">
+  
+  </style>
+  </head>
+
+  <body data-pinterest-extension-installed="cr1.39.1" cz-shortcut-listen="true" style="font-family: 'Roboto Condensed', sans-serif">
+    <div>
+
+      <div style="">
+        <div style="background-color:#ffffff;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px">
+
+          <div class="log" align="center">
+          <img src="images/logo1.png" style="height: 47px;">
+          </div>
+
+          <div class="top" style="background-color: #faf8f8">
+
+          <div class="t_image" align="center" style="margin-top: 10px">
+          <img src="images/app_reminder.png" style="margin-top: 5px">
+          </div>
+
+            <div class="middle" style="">
+
+             <p style="color:#2c3335;font-size:17px;padding:18px;">Hello {doctorName},<br><br>Lab Report for {patientName} with specimen {specimenName} has been uploaded by {parentLab}<br><br>For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >usersfirst@healthcoco.com</a>
+
+               <br><br>Stay Healthy and Happy,<br>Team Healthcoco.</p>
+          </div>
+          
+
+    </div>
+
+    <div class="footer" >
+    
+    p style="color:#2c3335;font-size:17px;padding:18px;"><br><br>Please follow us at<br></p>
+
+   <p class="pager" style="font-size:14px;padding:0px 25px;">This message was sent to you by Healthcoco.</p>
+       
+         <p style="display:inline;float: right; margin-top: -5px;">
+              <a style="color: #0077b5;text-decoration:none;"href="${fbLink}" target="_blank"><img src="${imageURL}/f_icn.png" style=""></a>
+              <a style="color: #0077b5;text-decoration:none;"href="${twitterLink}" target="_blank"><img src="${imageURL}/t_icn.png" style=""></a>
+              <a style="color: #0077b5;text-decoration:none;"href="${linkedInLink}" target="_blank"><img src="${imageURL}/l_icn.png" style=""></a>
+              <a style="color: #0077b5;text-decoration:none;"href="${googlePlusLink}" target="_blank"><img src="${imageURL}/g_icn.png" style=""></a>
+   
+          </p>
+
+      </div>     
+          
+  </body></html>

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
@@ -18,7 +18,7 @@ public interface PatientTreatmentServices {
 
 	TreatmentServiceCost addEditServiceCost(TreatmentServiceCost request);
 
-	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, Boolean isAppointmentAdd);
+	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, Boolean isAppointmentAdd, String createdBy, Appointment appointment);
 
 	PatientTreatmentResponse deletePatientTreatment(String treatmentId, String doctorId, String locationId,
 			String hospitalId, Boolean discarded);
@@ -58,9 +58,11 @@ public interface PatientTreatmentServices {
 
 	public Integer genrateTreatmentCode();
 
-	public TreatmentService addFavouritesToService(TreatmentService request);
+	public TreatmentService addFavouritesToService(TreatmentService request, String createdBy);
 	
 	TreatmentService makeServiceFavourite(String serviceId, String doctorId, String locationId, String hospitalId);
 
 	List<TreatmentService> getListBySpeciality(String speciality);
+
+	PatientTreatmentResponse deletePatientTreatmentForWeb(String treatmentId, Boolean discarded);
 }

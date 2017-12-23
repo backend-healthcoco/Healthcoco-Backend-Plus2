@@ -28,9 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.BabyNote;
+import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.GenericCode;
+import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OperationNote;
@@ -40,10 +42,12 @@ import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.BabyNoteCollection;
+import com.dpdocter.collections.CementCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.ImplantCollection;
 import com.dpdocter.collections.LabourNoteCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.OperationNoteCollection;
@@ -54,6 +58,7 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DischargeSummaryItem;
+import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -63,9 +68,11 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BabyNoteRepository;
+import com.dpdocter.repository.CementRepository;
 import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.ImplantRepository;
 import com.dpdocter.repository.LabourNoteRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.OperationNoteRepository;
@@ -123,6 +130,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private PrescriptionRepository prescriptionRepository;
 
 	@Autowired
+	private CementRepository cementRepository;
+	@Autowired
 	private EmailTackService emailTackService;
 
 	@Autowired
@@ -145,6 +154,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private OperationNoteRepository operationNoteRepository;
+
+	@Autowired
+	private ImplantRepository implantRepository;
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
@@ -486,13 +498,124 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
+		if (dischargeSummaryCollection.getVitalSigns() != null) {
+			String vitalSigns = "";
 
+			String pulse = dischargeSummaryCollection.getVitalSigns().getPulse();
+			pulse = (pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse.trim() + " " + VitalSignsUnit.PULSE.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(pulse))
+				vitalSigns = pulse;
+
+			String temp = dischargeSummaryCollection.getVitalSigns().getTemperature();
+			temp = (temp != null && !temp.isEmpty()
+					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + temp;
+				else
+					vitalSigns = temp;
+			}
+
+			String breathing = dischargeSummaryCollection.getVitalSigns().getBreathing();
+			breathing = (breathing != null && !breathing.isEmpty()
+					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit() : "");
+
+			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + breathing;
+				else
+					vitalSigns = breathing;
+			}
+
+			String weight = dischargeSummaryCollection.getVitalSigns().getWeight();
+			weight = (weight != null && !weight.isEmpty()
+					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(weight)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + weight;
+				else
+					vitalSigns = weight;
+			}
+
+			String bloodPressure = "";
+			if (dischargeSummaryCollection.getVitalSigns().getBloodPressure() != null) {
+				String systolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getSystolic();
+				systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
+
+				String diastolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getDiastolic();
+				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
+
+				if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
+					bloodPressure = "B.P: " + systolic + "/" + diastolic + " " + VitalSignsUnit.BLOODPRESSURE.getUnit();
+				if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + bloodPressure;
+					else
+						vitalSigns = bloodPressure;
+				}
+			}
+			String spo2 = dischargeSummaryCollection.getVitalSigns().getSpo2();
+			spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + spo2;
+				else
+					vitalSigns = spo2;
+			}
+			String height = dischargeSummaryCollection.getVitalSigns().getHeight();
+			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(height)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + height;
+				else
+					vitalSigns = height;
+			}
+
+			String bmi = dischargeSummaryCollection.getVitalSigns().getBmi();
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				if (bmi.equalsIgnoreCase("nan"))
+					bmi = "";
+
+			} else {
+				bmi = "";
+			}
+
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
+				if (!DPDoctorUtils.allStringsEmpty(bmi))
+					vitalSigns = vitalSigns + ",  " + bmi;
+				else
+					vitalSigns = bmi;
+			}
+
+			String bsa = dischargeSummaryCollection.getVitalSigns().getBsa();
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				if (bsa.equalsIgnoreCase("nan"))
+					bsa = "";
+
+			} else {
+				bsa = "";
+			}
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + bsa;
+				else
+					vitalSigns = bsa;
+			}
+			parameters.put("vitalSigns", vitalSigns);
+
+		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
 			PrescriptionCollection prescription = prescriptionRepository
 					.findOne(dischargeSummaryCollection.getPrescriptionId());
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
+
 			if (prescription.getItems() != null && !prescription.getItems().isEmpty())
+
 				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
 
 					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
@@ -543,6 +666,24 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 								}
 							}
 							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
+								if (printSettings.getContentSetup() != null) {
+									if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
+											.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
+										prescriptionItem.setInstructions(
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? "<b>Instruction </b>: " + prescriptionItem.getInstructions()
+														: null);
+									} else {
+										prescriptionItem.setInstructions(
+												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+														? prescriptionItem.getInstructions() : null);
+									}
+								} else {
+									prescriptionItem.setInstructions(
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : null);
+								}
+
 								showIntructions = true;
 							}
 							String duration = "";
@@ -552,14 +693,36 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 								duration = durationValue + " " + durationUnit;
 							no = no + 1;
 
-							PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
-									drugName,
-									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-											? prescriptionItem.getDosage() : "--",
-									duration, directions.isEmpty() ? "--" : directions,
-									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-											? prescriptionItem.getInstructions() : "--",
-									genericName);
+							PrescriptionJasperDetails prescriptionJasperDetails = null;
+							if (printSettings.getContentSetup() != null) {
+								if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
+										.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
+
+									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+													? prescriptionItem.getDosage() : "--",
+											duration, directions.isEmpty() ? "--" : directions,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : null,
+											genericName);
+								} else {
+									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+													? prescriptionItem.getDosage() : "--",
+											duration, directions.isEmpty() ? "--" : directions,
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions() : "--",
+											genericName);
+								}
+							} else {
+								prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+												? prescriptionItem.getDosage() : "--",
+										duration, directions.isEmpty() ? "--" : directions,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+												? prescriptionItem.getInstructions() : "--",
+										genericName);
+							}
 							prescriptionItems.add(prescriptionJasperDetails);
 						}
 					}
@@ -578,113 +741,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			show = true;
 
 		}
-		if (dischargeSummaryCollection.getVitalSigns() != null) {
-			String vitalSigns = "";
 
-			String pulse = dischargeSummaryCollection.getVitalSigns().getPulse();
-			pulse = (pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse.trim() + " " + VitalSignsUnit.PULSE.getUnit()
-					: "");
-			if (!DPDoctorUtils.allStringsEmpty(pulse))
-				vitalSigns = pulse;
-
-			String temp = dischargeSummaryCollection.getVitalSigns().getTemperature();
-			temp = (temp != null && !temp.isEmpty()
-					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
-			if (!DPDoctorUtils.allStringsEmpty(temp)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + temp;
-				else
-					vitalSigns = temp;
-			}
-
-			String breathing = dischargeSummaryCollection.getVitalSigns().getBreathing();
-			breathing = (breathing != null && !breathing.isEmpty()
-					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit() : "");
-
-			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + breathing;
-				else
-					vitalSigns = breathing;
-			}
-
-			String weight = dischargeSummaryCollection.getVitalSigns().getWeight();
-			weight = (weight != null && !weight.isEmpty()
-					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
-			if (!DPDoctorUtils.allStringsEmpty(temp)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + weight;
-				else
-					vitalSigns = weight;
-			}
-
-			String bloodPressure = "";
-			if (dischargeSummaryCollection.getVitalSigns().getBloodPressure() != null) {
-				String systolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getSystolic();
-				systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
-
-				String diastolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getDiastolic();
-				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
-
-				if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-					bloodPressure = "B.P: " + systolic + "/" + diastolic + " " + VitalSignsUnit.BLOODPRESSURE.getUnit();
-				if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
-					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-						vitalSigns = vitalSigns + ",  " + bloodPressure;
-					else
-						vitalSigns = bloodPressure;
-				}
-			}
-			String spo2 = dischargeSummaryCollection.getVitalSigns().getSpo2();
-			spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
-			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + spo2;
-				else
-					vitalSigns = spo2;
-			}
-			String height = dischargeSummaryCollection.getVitalSigns().getHeight();
-			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
-					: "");
-			if (!DPDoctorUtils.allStringsEmpty(height)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + height;
-				else
-					vitalSigns = height;
-			}
-
-			String bmi = dischargeSummaryCollection.getVitalSigns().getBmi();
-
-			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-
-				bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
-			} else {
-				bmi = "";
-			}
-			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-				if (!DPDoctorUtils.allStringsEmpty(bmi))
-					vitalSigns = vitalSigns + ",  " + bmi;
-				else
-					vitalSigns = bmi;
-			}
-
-			String bsa = dischargeSummaryCollection.getVitalSigns().getBsa();
-
-			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-
-				bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
-			} else {
-				bsa = "";
-			}
-			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + bsa;
-				else
-					vitalSigns = bsa;
-			}
-			parameters.put("vitalSigns", vitalSigns);
-
-		}
 		parameters.put("showPrescription", show);
 		show = false;
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
@@ -701,10 +758,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showDOD", show);
 		show = false;
+		if (dischargeSummaryCollection.getOperationDate() != null) {
+			show = true;
+			parameters.put("operationDate", "<b>Date of Operation:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
+		}
+		parameters.put("showDtOfOp", show);
+		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
 			show = true;
 			parameters.put("babyNotes", dischargeSummaryCollection.getBabyNotes());
 		}
+
 		parameters.put("showBabyNotes", show);
 		show = false;
 
@@ -829,6 +894,31 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showPH", show);
 		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getImplant())) {
+			show = true;
+			parameters.put("implant", dischargeSummaryCollection.getImplant());
+		}
+		parameters.put("showIMPL", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getCement())) {
+			show = true;
+			parameters.put("cement", dischargeSummaryCollection.getCement());
+		}
+		parameters.put("showCMT", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSurgeon())) {
+			show = true;
+			parameters.put("surgeon", dischargeSummaryCollection.getSurgeon());
+		}
+		parameters.put("showSGN", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getAnesthetist())) {
+			show = true;
+			parameters.put("anesthetist", dischargeSummaryCollection.getAnesthetist());
+		}
+		parameters.put("showANST", show);
+		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationNotes())) {
 			show = true;
@@ -899,6 +989,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showProcedureNote", show);
 		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationName())) {
+			show = true;
+			parameters.put("operationName", dischargeSummaryCollection.getOperationName());
+		}
+		parameters.put("showOpName", show);
+		show = false;
 
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
@@ -924,7 +1020,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				patient,
 				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
 						? dischargeSummaryCollection.getUniqueEmrId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				dischargeSummaryCollection.getUpdatedTime());
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
 				+ dischargeSummaryCollection.getUniqueEmrId() + new Date().getTime();
@@ -1065,7 +1162,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private Appointment addDischageSummaryAppointment(AppointmentRequest appointment) {
 		Appointment response = null;
 		if (appointment.getAppointmentId() == null) {
-			response = appointmentService.addAppointment(appointment);
+			response = appointmentService.addAppointment(appointment, false);
 		} else {
 			response = new Appointment();
 			BeanUtil.map(appointment, response);
@@ -1652,6 +1749,40 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			}
 			break;
 		}
+		case IMPLANT: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalImplant(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomImplant(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalImplant(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		case CEMENT: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalCement(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomCement(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalCement(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
 		}
 
 		return response;
@@ -1907,6 +2038,406 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Labour Note");
 		}
 		return response;
+	}
+
+	@Override
+	@Transactional
+	public Implant addEditImplant(Implant implant) {
+		try {
+			ImplantCollection implantCollection = new ImplantCollection();
+			BeanUtil.map(implant, implantCollection);
+			if (DPDoctorUtils.anyStringEmpty(implant.getId())) {
+				implantCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(implantCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(implantCollection.getDoctorId());
+					if (userCollection != null) {
+						implantCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					implantCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				ImplantCollection oldImplantCollection = implantRepository.findOne(implantCollection.getId());
+				implantCollection.setCreatedBy(oldImplantCollection.getCreatedBy());
+				implantCollection.setCreatedTime(oldImplantCollection.getCreatedTime());
+				implantCollection.setDiscarded(oldImplantCollection.getDiscarded());
+			}
+			implantCollection = implantRepository.save(implantCollection);
+			BeanUtil.map(implantCollection, implant);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Adding Implant");
+		}
+		return implant;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Implant> getCustomGlobalImplant(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<Implant> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<Implant> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					ImplantCollection.class, Implant.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Implant");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Implant> getGlobalImplant(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<Implant> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<Implant> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), ImplantCollection.class,
+					Implant.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Implant");
+		}
+		return response;
+	}
+
+	private List<Implant> getCustomImplant(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Implant> response = null;
+		try {
+			AggregationResults<Implant> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
+					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null),
+					ImplantCollection.class, Implant.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Implant");
+		}
+		return response;
+	}
+
+	@Override
+	public Implant deleteImplant(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		Implant response = null;
+		try {
+			ImplantCollection implantCollection = implantRepository.findOne(new ObjectId(id));
+			if (implantCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(implantCollection.getDoctorId(), implantCollection.getHospitalId(),
+						implantCollection.getLocationId())) {
+					if (implantCollection.getDoctorId().toString().equals(doctorId)
+							&& implantCollection.getHospitalId().toString().equals(hospitalId)
+							&& implantCollection.getLocationId().toString().equals(locationId)) {
+
+						implantCollection.setDiscarded(discarded);
+						implantCollection.setUpdatedTime(new Date());
+						implantRepository.save(implantCollection);
+						response = new Implant();
+						BeanUtil.map(implantCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					implantCollection.setDiscarded(discarded);
+					implantCollection.setUpdatedTime(new Date());
+					implantRepository.save(implantCollection);
+					response = new Implant();
+					BeanUtil.map(implantCollection, response);
+				}
+			} else {
+				logger.warn("Implant  not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Implant not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Cement addEditCement(Cement cement) {
+		try {
+			CementCollection cementCollection = new CementCollection();
+			BeanUtil.map(cement, cementCollection);
+			if (DPDoctorUtils.anyStringEmpty(cement.getId())) {
+				cementCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(cementCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(cementCollection.getDoctorId());
+					if (userCollection != null) {
+						cementCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					cementCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				CementCollection oldCementCollection = cementRepository.findOne(cementCollection.getId());
+				cementCollection.setCreatedBy(oldCementCollection.getCreatedBy());
+				cementCollection.setCreatedTime(oldCementCollection.getCreatedTime());
+				cementCollection.setDiscarded(oldCementCollection.getDiscarded());
+			}
+			cementCollection = cementRepository.save(cementCollection);
+			BeanUtil.map(cementCollection, cement);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Adding Cement");
+		}
+		return cement;
+	}
+
+	@Override
+	public Cement deleteCement(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		Cement response = null;
+		try {
+			CementCollection cementCollection = cementRepository.findOne(new ObjectId(id));
+			if (cementCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(cementCollection.getDoctorId(), cementCollection.getHospitalId(),
+						cementCollection.getLocationId())) {
+					if (cementCollection.getDoctorId().toString().equals(doctorId)
+							&& cementCollection.getHospitalId().toString().equals(hospitalId)
+							&& cementCollection.getLocationId().toString().equals(locationId)) {
+
+						cementCollection.setDiscarded(discarded);
+						cementCollection.setUpdatedTime(new Date());
+						cementRepository.save(cementCollection);
+						response = new Cement();
+						BeanUtil.map(cementCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					cementCollection.setDiscarded(discarded);
+					cementCollection.setUpdatedTime(new Date());
+					cementRepository.save(cementCollection);
+					response = new Cement();
+					BeanUtil.map(cementCollection, response);
+				}
+			} else {
+				logger.warn("Cement not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Cement not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Cement> getCustomGlobalCement(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<Cement> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<Cement> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					CementCollection.class, Cement.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Cement");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Cement> getGlobalCement(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<Cement> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<Cement> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), CementCollection.class,
+					Cement.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Cement");
+		}
+		return response;
+	}
+
+	private List<Cement> getCustomCement(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Cement> response = null;
+		try {
+			AggregationResults<Cement> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
+					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null),
+					CementCollection.class, Cement.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Cement");
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public void emailDischargeSummaryForWeb(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
+		MailResponse mailResponse = null;
+		DischargeSummaryCollection dischargeSummaryCollection = null;
+		MailAttachment mailAttachment = null;
+		UserCollection user = null;
+		PatientCollection patient = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummeryId));
+			if (dischargeSummaryCollection != null) {
+
+						user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
+								dischargeSummaryCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(dischargeSummaryCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(dischargeSummaryCollection.getHospitalId());
+						emailTrackCollection.setLocationId(dischargeSummaryCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.DISCHARGE_SUMMARY.getType());
+						emailTrackCollection.setSubject("Discharge Summary");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasper(dischargeSummaryCollection, patient,
+								user);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
+						LocationCollection locationCollection = locationRepository.findOne(dischargeSummaryCollection.getLocationId());
+
+						mailResponse = new MailResponse();
+						mailResponse.setMailAttachment(mailAttachment);
+						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						mailResponse.setClinicAddress(address);
+						mailResponse.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						mailResponse.setMailRecordCreatedDate(sdf.format(dischargeSummaryCollection.getCreatedTime()));
+						mailResponse.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} else {
+				logger.warn("Discharge Summary  not found.Please check summaryId.");
+				throw new BusinessException(ServiceError.NoRecord,
+						"Discharge Summary not found.Please check summaryId.");
+			}
+
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Discharge Summary", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Discharge Summary", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
 	}
 
 }

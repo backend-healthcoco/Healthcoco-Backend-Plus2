@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -18,9 +19,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.BrokenAppointment;
+import com.dpdocter.beans.ClinicalIndicator;
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.EquipmentLogAMCAndServicingRegister;
 import com.dpdocter.beans.IPDReports;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
@@ -28,11 +32,15 @@ import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
+import com.dpdocter.beans.RepairRecordsOrComplianceBook;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.TimeDuration;
+import com.dpdocter.collections.BroakenAppointmentCollection;
+import com.dpdocter.collections.ClinicalIndicatorCollection;
 import com.dpdocter.collections.DeliveryReportsCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.EquipmentLogAMCAndServicingRegisterCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.IPDReportsCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -41,13 +49,17 @@ import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.RepairRecordsOrComplianceBookCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BrokenAppointmentRepository;
+import com.dpdocter.repository.ClinicalIndicatorRepository;
 import com.dpdocter.repository.DeliveryReportsRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.EquipmentLogAMCAndServicingRegisterRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.IPDReportsRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -56,6 +68,7 @@ import com.dpdocter.repository.OTReportsRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.RepairRecordsOrComplianceBookRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DeliveryReportsLookupResponse;
 import com.dpdocter.response.DeliveryReportsResponse;
@@ -75,6 +88,14 @@ import common.util.web.DPDoctorUtils;
 public class ReportsServiceImpl implements ReportsService {
 
 	private static Logger logger = Logger.getLogger(ReportsServiceImpl.class.getName());
+
+	@Autowired
+	RepairRecordsOrComplianceBookRepository repairRecordsOrComplianceBookRepository;
+	@Autowired
+	private ClinicalIndicatorRepository clinicalIndicatorRepository;
+
+	@Autowired
+	EquipmentLogAMCAndServicingRegisterRepository equipmentLogAMCAndServicingRegisterRepository;
 
 	@Autowired
 	IPDReportsRepository ipdReportsRepository;
@@ -118,6 +139,9 @@ public class ReportsServiceImpl implements ReportsService {
 	@Autowired
 	private DiagnosticTestRepository diagnosticTestRepository;
 
+	@Autowired
+	private BrokenAppointmentRepository brokenAppointmentRepository;
+
 	@Override
 	@Transactional
 	public IPDReports submitIPDReport(IPDReports ipdReports) {
@@ -129,7 +153,7 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(ipdReports, ipdReportsCollection);
 			try {
 				ipdReportsCollection.setCreatedTime(new Date());
-				ipdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
+				ipdReportsCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				ipdReportsCollection = ipdReportsRepository.save(ipdReportsCollection);
 
 				if (ipdReportsCollection != null) {
@@ -150,30 +174,33 @@ public class ReportsServiceImpl implements ReportsService {
 	@Transactional
 	public OPDReports submitOPDReport(OPDReports opdReports) {
 		OPDReports response = null;
-		OPDReportsCollection opdReportsCollection = new OPDReportsCollection();
-		
+		OPDReportsCollection opdReportsCollection = null;
+
 		if (opdReports != null) {
 			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
 					.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
 			if (opdReportsCollectionOld != null) {
-				BeanUtil.map(opdReportsCollectionOld, opdReportsCollection);
-				opdReportsCollection.setAmountReceived(opdReports.getAmountReceived());
-				if(opdReports.getReceiptDate() != null){
-					opdReportsCollection.setReceiptDate(new Date(opdReports.getReceiptDate()));	
-				}else{
-					opdReportsCollection.setReceiptDate(new Date());
+				
+				opdReportsCollectionOld.setAmountReceived(opdReports.getAmountReceived());
+				if (opdReports.getReceiptDate() != null) {
+					opdReportsCollectionOld.setReceiptDate(new Date(opdReports.getReceiptDate()));
+				} else {
+					opdReportsCollectionOld.setReceiptDate(new Date());
 				}
-				opdReportsCollection.setReceiptNo(opdReports.getReceiptNo());
-				opdReportsCollection.setRemarks(opdReports.getRemarks());
-				opdReportsCollection.setUpdatedTime(new Date());
+				opdReportsCollectionOld.setReceiptNo(opdReports.getReceiptNo());
+				opdReportsCollectionOld.setRemarks(opdReports.getRemarks());
+				opdReportsCollectionOld.setUpdatedTime(new Date());
+				opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
 			} else {
+				opdReportsCollection = new OPDReportsCollection();
 				UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
 				BeanUtil.map(opdReports, opdReportsCollection);
 				opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 				opdReportsCollection.setCreatedTime(new Date());
+				opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 			}
+
 			
-			opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 			try {
 
 				if (opdReportsCollection != null) {
@@ -199,7 +226,7 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(otReports, otReportsCollection);
 			try {
 				otReportsCollection.setCreatedTime(new Date());
-				otReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
+				otReportsCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				otReportsCollection = otReportsRepository.save(otReportsCollection);
 
 				if (otReportsCollection != null) {
@@ -226,7 +253,7 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
 				deliveryReportsCollection.setCreatedTime(new Date());
-				deliveryReports.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
+				deliveryReports.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				deliveryReportsCollection = deliveryReportsRepository.save(deliveryReportsCollection);
 				if (deliveryReportsCollection != null) {
 					BeanUtil.map(deliveryReportsCollection, deliveryReports);
@@ -249,6 +276,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<IPDReports> response = null;
 		IPDReportsResponse ipdReportsResponse = null;
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -258,8 +286,9 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -340,7 +369,13 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(ipdReports);
 				}
 			}
-			int count = ipdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				count = ipdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			} else {
+				count = ipdReportsRepository.getReportsCount(new ObjectId(locationId));
+			}
+
 			ipdReportsResponse = new IPDReportsResponse();
 			ipdReportsResponse.setIpdReports(response);
 			ipdReportsResponse.setCount(count);
@@ -534,6 +569,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<OTReports> response = null;
 		OTReportsResponse otReportsResponse = null;
 		List<OTReportsLookupResponse> otReportsLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -543,7 +579,7 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -642,7 +678,11 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(otReports);
 				}
 			}
-			int count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			else
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId));
+
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
 			otReportsResponse.setCount(count);
@@ -661,6 +701,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<DeliveryReports> response = null;
 		DeliveryReportsResponse deliveryReportsResponse = null;
 		List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -670,7 +711,7 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -756,8 +797,11 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(deliveryReports);
 				}
 			}
-			int count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId),
-					new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			} else {
+				count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId));
+			}
 			deliveryReportsResponse = new DeliveryReportsResponse();
 			deliveryReportsResponse.setDeliveryReports(response);
 			deliveryReportsResponse.setCount(count);
@@ -788,18 +832,438 @@ public class ReportsServiceImpl implements ReportsService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public OPDReports getOPDReportByVisitId(String visitId)
-	{
+	public OPDReports getOPDReportByVisitId(String visitId) {
 		OPDReports response = null;
 		OPDReportsCollection opdReportsCollection = opdReportsRepository.getOPDReportByVisitId(new ObjectId(visitId));
-		if(opdReportsCollection != null)
-		{
+		if (opdReportsCollection != null) {
 			response = new OPDReports();
 			BeanUtil.map(opdReportsCollection, response);
 		}
 		return response;
 	}
+
+	@Override
+	@Transactional
+	public ClinicalIndicator addClinicalIndicator(ClinicalIndicator request) {
+		ClinicalIndicator response = null;
+		try {
+			ClinicalIndicatorCollection clinicalIndicatorCollection = null;
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
+				}
+				request.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+				request.setCreatedTime(new Date());
+				request.setUpdatedTime(new Date());
+
+			} else {
+				ClinicalIndicatorCollection oldclinicalIndicatorCollection = clinicalIndicatorRepository
+						.findOne(new ObjectId(request.getId()));
+				request.setCreatedBy(oldclinicalIndicatorCollection.getCreatedBy());
+				request.setCreatedTime(oldclinicalIndicatorCollection.getCreatedTime());
+				request.setUpdatedTime(new Date());
+			}
+			clinicalIndicatorCollection = new ClinicalIndicatorCollection();
+			response = new ClinicalIndicator();
+			BeanUtil.map(request, clinicalIndicatorCollection);
+			clinicalIndicatorRepository.save(clinicalIndicatorCollection);
+			BeanUtil.map(clinicalIndicatorCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Exception occure while adding clinical Indicator ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public ClinicalIndicator getClinicalIndicatorById(String indicatorId) {
+		ClinicalIndicator response = null;
+		try {
+			ClinicalIndicatorCollection clinicalIndicatorCollection = clinicalIndicatorRepository
+					.findOne(new ObjectId(indicatorId));
+			response = new ClinicalIndicator();
+			BeanUtil.map(clinicalIndicatorCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Exception occure while getting by Id clinical Indicator ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<ClinicalIndicator> getClinicalIndicators(int size, int page, String doctorId, String locationId,
+			String hospitalId, boolean discarded, String type) {
+		List<ClinicalIndicator> response = null;
+		try {
+			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(locationId)
+					.and(hospitalId).is(new ObjectId(hospitalId));
+			criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("indicatortype").is(type.toUpperCase());
+			}
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip(page * size),
+						Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, ClinicalIndicatorCollection.class, ClinicalIndicator.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Exception occure while getting clinical Indicators ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public ClinicalIndicator discardClinicalIndicators(String indicatorId, boolean discarded) {
+		ClinicalIndicator response = null;
+		try {
+			ClinicalIndicatorCollection clinicalIndicatorCollection = clinicalIndicatorRepository
+					.findOne(new ObjectId(indicatorId));
+			if (clinicalIndicatorCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord,
+						"No any ClinicalIndicator record found for given indicatorId ");
+			}
+			clinicalIndicatorCollection.setDiscarded(discarded);
+			clinicalIndicatorCollection.setUpdatedTime(new Date());
+			clinicalIndicatorRepository.save(clinicalIndicatorCollection);
+			response = new ClinicalIndicator();
+			BeanUtil.map(clinicalIndicatorCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Exception occure while discarding clinical Indicator ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public EquipmentLogAMCAndServicingRegister addEquipmentLogAMCAndServicingRegister(
+			EquipmentLogAMCAndServicingRegister request) {
+		EquipmentLogAMCAndServicingRegister response = null;
+		try {
+			EquipmentLogAMCAndServicingRegisterCollection equipmentLogAMCAndServicingRegisterCollection = null;
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
+				}
+				request.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+				request.setCreatedTime(new Date());
+				request.setUpdatedTime(new Date());
+
+			} else {
+				EquipmentLogAMCAndServicingRegisterCollection oldequipmentLogAMCAndServicingRegisterCollection = equipmentLogAMCAndServicingRegisterRepository
+						.findOne(new ObjectId(request.getId()));
+				request.setCreatedBy(oldequipmentLogAMCAndServicingRegisterCollection.getCreatedBy());
+				request.setCreatedTime(oldequipmentLogAMCAndServicingRegisterCollection.getCreatedTime());
+				request.setUpdatedTime(new Date());
+			}
+			equipmentLogAMCAndServicingRegisterCollection = new EquipmentLogAMCAndServicingRegisterCollection();
+			response = new EquipmentLogAMCAndServicingRegister();
+			BeanUtil.map(request, equipmentLogAMCAndServicingRegisterCollection);
+			equipmentLogAMCAndServicingRegisterRepository.save(equipmentLogAMCAndServicingRegisterCollection);
+			BeanUtil.map(equipmentLogAMCAndServicingRegisterCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Exception occure while adding Equipment Log AMC And Servicing Register ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public EquipmentLogAMCAndServicingRegister getEquipmentLogAMCAndServicingRegisterById(String registerid) {
+		EquipmentLogAMCAndServicingRegister response = null;
+		try {
+			EquipmentLogAMCAndServicingRegisterCollection equipmentLogAMCAndServicingRegisterCollection = equipmentLogAMCAndServicingRegisterRepository
+					.findOne(new ObjectId(registerid));
+			response = new EquipmentLogAMCAndServicingRegister();
+			BeanUtil.map(equipmentLogAMCAndServicingRegisterCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Exception occure while getting by Id clinical Indicator ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<EquipmentLogAMCAndServicingRegister> getEquipmentLogAMCAndServicingRegisters(int size, int page,
+			String docterId, String locationId, String hospitalId, boolean discarded) {
+		List<EquipmentLogAMCAndServicingRegister> response = null;
+		try {
+			Criteria criteria = new Criteria("docterId").is(new ObjectId(docterId)).and("locationId").is(locationId)
+					.and(hospitalId).is(new ObjectId(hospitalId));
+			criteria.and("discarded").is(discarded);
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip(page * size),
+						Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, EquipmentLogAMCAndServicingRegisterCollection.class,
+					EquipmentLogAMCAndServicingRegister.class).getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Exception occure while getting clinical Indicators ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public EquipmentLogAMCAndServicingRegister discardEquipmentLogAMCAndServicingRegister(String registerId,
+			boolean discarded) {
+		EquipmentLogAMCAndServicingRegister response = null;
+		try {
+			EquipmentLogAMCAndServicingRegisterCollection equipmentLogAMCAndServicingRegisterCollection = equipmentLogAMCAndServicingRegisterRepository
+					.findOne(new ObjectId(registerId));
+			if (equipmentLogAMCAndServicingRegisterCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord,
+						"No any Equipment Log AMC And Servicing Register found for given registerId ");
+			}
+			equipmentLogAMCAndServicingRegisterCollection.setDiscarded(discarded);
+			equipmentLogAMCAndServicingRegisterCollection.setUpdatedTime(new Date());
+			response = new EquipmentLogAMCAndServicingRegister();
+			equipmentLogAMCAndServicingRegisterRepository.save(equipmentLogAMCAndServicingRegisterCollection);
+			BeanUtil.map(equipmentLogAMCAndServicingRegisterCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Exception occure while discarding clinical Indicator ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public RepairRecordsOrComplianceBook addRepairRecordsOrComplianceBook(RepairRecordsOrComplianceBook request) {
+		RepairRecordsOrComplianceBook response = null;
+		try {
+			RepairRecordsOrComplianceBookCollection bookCollection = null;
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
+				}
+				request.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+				request.setCreatedTime(new Date());
+				request.setUpdatedTime(new Date());
+
+			} else {
+				RepairRecordsOrComplianceBookCollection oldComplianceBookCollection = repairRecordsOrComplianceBookRepository
+						.findOne(new ObjectId(request.getId()));
+				request.setCreatedBy(oldComplianceBookCollection.getCreatedBy());
+				request.setCreatedTime(oldComplianceBookCollection.getCreatedTime());
+				request.setUpdatedTime(new Date());
+			}
+			bookCollection = new RepairRecordsOrComplianceBookCollection();
+			response = new RepairRecordsOrComplianceBook();
+			BeanUtil.map(request, bookCollection);
+			repairRecordsOrComplianceBookRepository.save(bookCollection);
+			BeanUtil.map(bookCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Exception occure while adding Repair Records Or Compliance Book");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public RepairRecordsOrComplianceBook getRepairRecordsOrComplianceBookById(String bookid) {
+		RepairRecordsOrComplianceBook response = null;
+		try {
+			RepairRecordsOrComplianceBookCollection bookCollection = repairRecordsOrComplianceBookRepository
+					.findOne(new ObjectId(bookid));
+			response = new RepairRecordsOrComplianceBook();
+			BeanUtil.map(bookCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Exception occure while getting by Id Repair Records Or Compliance Book ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<RepairRecordsOrComplianceBook> getRepairRecordsOrComplianceBooks(int size, int page, String docterId,
+			String locationId, String hospitalId, boolean discarded) {
+		List<RepairRecordsOrComplianceBook> response = null;
+		try {
+			Criteria criteria = new Criteria("docterId").is(new ObjectId(docterId)).and("locationId").is(locationId)
+					.and(hospitalId).is(new ObjectId(hospitalId));
+			criteria.and("discarded").is(discarded);
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip(page * size),
+						Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, RepairRecordsOrComplianceBookCollection.class,
+					RepairRecordsOrComplianceBook.class).getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Exception occure while getting Repair Records Or Compliance Books ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public RepairRecordsOrComplianceBook discardrepairRecordsOrComplianceBook(String bookId, boolean discarded) {
+		RepairRecordsOrComplianceBook response = null;
+		try {
+			RepairRecordsOrComplianceBookCollection repairRecordsOrComplianceBookCollection = repairRecordsOrComplianceBookRepository
+					.findOne(new ObjectId(bookId));
+			if (repairRecordsOrComplianceBookCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord,
+						"No any Repair Records Or Compliance Book found for given registerId ");
+			}
+			response = new RepairRecordsOrComplianceBook();
+			repairRecordsOrComplianceBookCollection.setDiscarded(discarded);
+			repairRecordsOrComplianceBookCollection.setUpdatedTime(new Date());
+			repairRecordsOrComplianceBookRepository.save(repairRecordsOrComplianceBookCollection);
+			BeanUtil.map(repairRecordsOrComplianceBookCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Exception occure while discarding Repair Records Or Compliance Book");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public BrokenAppointment addBrokenAppointment(BrokenAppointment request) {
+		BrokenAppointment response = null;
+		try {
+			BroakenAppointmentCollection appointmentCollection = null;
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
+				}
+				request.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+				request.setCreatedTime(new Date());
+				request.setUpdatedTime(new Date());
+
+			} else {
+				BroakenAppointmentCollection oldroakenAppointmentCollection = brokenAppointmentRepository
+						.findOne(new ObjectId(request.getId()));
+				request.setCreatedBy(oldroakenAppointmentCollection.getCreatedBy());
+				request.setCreatedTime(oldroakenAppointmentCollection.getCreatedTime());
+				request.setUpdatedTime(new Date());
+			}
+			appointmentCollection = new BroakenAppointmentCollection();
+			response = new BrokenAppointment();
+			BeanUtil.map(request, appointmentCollection);
+			brokenAppointmentRepository.save(appointmentCollection);
+			BeanUtil.map(appointmentCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Exception occure while adding Broken Appointment");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public BrokenAppointment getBrokenAppointment(String appointmentId) {
+		BrokenAppointment response = null;
+		try {
+			BroakenAppointmentCollection appointmentCollection = brokenAppointmentRepository
+					.findOne(new ObjectId(appointmentId));
+			response = new BrokenAppointment();
+			BeanUtil.map(appointmentCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Exception occure while getting by Id Broken Appointment ");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<BrokenAppointment> getBrokenAppointments(int size, int page, String docterId, String locationId,
+			String hospitalId, boolean discarded) {
+		List<BrokenAppointment> response = null;
+		try {
+			Criteria criteria = new Criteria("docterId").is(new ObjectId(docterId)).and("locationId").is(locationId)
+					.and(hospitalId).is(new ObjectId(hospitalId));
+			criteria.and("discarded").is(discarded);
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip(page * size),
+						Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, BroakenAppointmentCollection.class, BrokenAppointment.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Exception occure while getting Broken Appointment List");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public BrokenAppointment discardBrokenAppointment(String appointmentId, boolean discarded) {
+		BrokenAppointment response = null;
+		try {
+			BroakenAppointmentCollection appointmentCollection = brokenAppointmentRepository
+					.findOne(new ObjectId(appointmentId));
+			if (appointmentCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord,
+						"No any Broken Appointment found for given appointmentId ");
+			}
+			response = new BrokenAppointment();
+			appointmentCollection.setDiscarded(discarded);
+			appointmentCollection.setUpdatedTime(new Date());
+			brokenAppointmentRepository.save(appointmentCollection);
+			BeanUtil.map(appointmentCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Exception occure while discarding  Broken Appointment");
+		}
+		return response;
+	}
+
 }

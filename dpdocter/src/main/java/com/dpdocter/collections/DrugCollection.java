@@ -16,94 +16,102 @@ import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.Strength;
 
 @Document(collection = "drug_cl")
-@CompoundIndexes({ @CompoundIndex(def = "{'drugCode' : 1, 'doctorId': 1}", unique= true) })
+@CompoundIndexes({ @CompoundIndex(def = "{'drugCode' : 1, 'doctorId': 1}", unique = true) })
 public class DrugCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private DrugType drugType;
+	@Field
+	private DrugType drugType;
 
-    @Field
-    private String drugName;
+	@Field
+	private String drugName;
 
-    @Field
-    private String explanation;
+	@Field
+	private String explanation;
 
-    @Field
-    private Strength strength;
+	@Field
+	private Strength strength;
 
-    @Field
-    private List<GenericCode> genericNames;
+	@Field
+	private List<GenericCode> genericNames;
 
-    @Field
-    private ObjectId doctorId;
+	@Field
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
-    @Field
-    private String drugCode;
+	@Field
+	private String drugCode;
 
-    @Field
-    private String companyName;
+	@Field
+	private String companyName;
 
-    @Field
-    private String packSize;
+	@Field
+	private long companyRankingCount = 0;
+	
+	@Field
+	private String packSize;
 
-    @Field
-    private String MRP;
+	@Field
+	private String MRP;
 
-    @Field
-    private Duration duration;
+	@Field
+	private Duration duration;
 
-    @Field
-    private String dosage;
+	@Field
+	private String dosage;
 
-    @Field
-    private List<Long> dosageTime;
-    
-    @Field
-    private List<DrugDirection> direction;
+	@Field
+	private List<Long> dosageTime;
 
-    @Field
-    private List<String> categories;
-    
-    @Field
-    private long rankingCount = 0;
+	@Field
+	private List<DrugDirection> direction;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private List<String> categories;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private long rankingCount = 0;
 
-    public DrugType getDrugType() {
-	return drugType;
-    }
+	@Field
+	private List<ObjectId> gcStrengthIds;
 
-    public void setDrugType(DrugType drugType) {
-	this.drugType = drugType;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public String getDrugName() {
-	return drugName;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setDrugName(String drugName) {
-    	if(drugName != null)this.drugName = drugName.toUpperCase();
-    	else this.drugName = drugName;
-    }
+	public DrugType getDrugType() {
+		return drugType;
+	}
 
-    public String getExplanation() {
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		if (drugName != null)
+			this.drugName = drugName.toUpperCase();
+		else
+			this.drugName = drugName;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -112,76 +120,76 @@ public class DrugCollection extends GenericCollection {
 	}
 
 	public Strength getStrength() {
-	return strength;
-    }
+		return strength;
+	}
 
-    public void setStrength(Strength strength) {
-	this.strength = strength;
-    }
+	public void setStrength(Strength strength) {
+		this.strength = strength;
+	}
 
 	public ObjectId getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public String getDrugCode() {
-	return drugCode;
-    }
+	public String getDrugCode() {
+		return drugCode;
+	}
 
-    public void setDrugCode(String drugCode) {
-	this.drugCode = drugCode;
-    }
+	public void setDrugCode(String drugCode) {
+		this.drugCode = drugCode;
+	}
 
-    public String getCompanyName() {
-	return companyName;
-    }
+	public String getCompanyName() {
+		return companyName;
+	}
 
-    public void setCompanyName(String companyName) {
-	this.companyName = companyName;
-    }
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
 
-    public String getPackSize() {
-	return packSize;
-    }
+	public String getPackSize() {
+		return packSize;
+	}
 
-    public void setPackSize(String packSize) {
-	this.packSize = packSize;
-    }
+	public void setPackSize(String packSize) {
+		this.packSize = packSize;
+	}
 
-    public String getMRP() {
-	return MRP;
-    }
+	public String getMRP() {
+		return MRP;
+	}
 
-    public void setMRP(String mRP) {
-	MRP = mRP;
-    }
+	public void setMRP(String mRP) {
+		MRP = mRP;
+	}
 
 	public Duration getDuration() {
 		return duration;
@@ -239,14 +247,31 @@ public class DrugCollection extends GenericCollection {
 		this.rankingCount = rankingCount;
 	}
 
+	public List<ObjectId> getGcStrengthIds() {
+		return gcStrengthIds;
+	}
+
+	public void setGcStrengthIds(List<ObjectId> gcStrengthIds) {
+		this.gcStrengthIds = gcStrengthIds;
+	}
+
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId
 				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
-				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
-				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
-				+ direction + ", categories=" + categories + ", rankingCount=" + rankingCount + "]";
+				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", companyRankingCount="
+				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
+				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
+				+ categories + ", rankingCount=" + rankingCount + ", gcStrengthIds=" + gcStrengthIds + "]";
 	}
 
 }

@@ -21,9 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.BabyNote;
+import com.dpdocter.beans.Cement;
+import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
+import com.dpdocter.elasticsearch.document.ESCementDocument;
+import com.dpdocter.elasticsearch.document.ESImplantDocument;
 import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
 import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
@@ -88,7 +92,7 @@ public class DischargeSummaryAPI {
 		Response<DischargeSummaryResponse> response = null;
 		List<DischargeSummaryResponse> dischargeSummaries = null;
 
-		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId,locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Doctor or patient id or locationId or hospitalId is null");
 		}
@@ -174,6 +178,28 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB, notes = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB)
+	public Response<Boolean> emailDischargeSummaryForWeb(@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		if (DPDoctorUtils.anyStringEmpty(dischargeSummeryId, emailAddress)) {
+			logger.warn(
+					"Invalid Input. dischargeSummeryId , Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. dischargeSummeryId, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+		}
+		dischargeSummaryService.emailDischargeSummaryForWeb(dischargeSummeryId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
+	
 	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
@@ -270,9 +296,9 @@ public class DischargeSummaryAPI {
 			@PathParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
-			logger.warn("Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			logger.warn("Baby Notes Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+					"Baby Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
 		BabyNote babyNote = dischargeSummaryService.deleteBabyNote(id, doctorId, locationId, hospitalId, discarded);
 		if (babyNote != null) {
@@ -294,9 +320,9 @@ public class DischargeSummaryAPI {
 			@PathParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
-			logger.warn("Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			logger.warn("Labour Notes Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+					"Labour Notes Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
 		LabourNote labourNote = dischargeSummaryService.deleteLabourNote(id, doctorId, locationId, hospitalId,
 				discarded);
@@ -337,6 +363,94 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.DischargeSummaryUrls.ADD_CEMENT)
+	@POST
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_CEMENT, notes = PathProxy.DischargeSummaryUrls.ADD_CEMENT)
+	public Response<Cement> addCement(Cement request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getCement())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Cement cement = dischargeSummaryService.addEditCement(request);
+		transactionalManagementService.addResource(new ObjectId(cement.getId()), Resource.CEMENT, false);
+		ESCementDocument esCementDocument = new ESCementDocument();
+		BeanUtil.map(cement, esCementDocument);
+		esDischargeSummaryService.addCement(esCementDocument);
+		Response<Cement> response = new Response<Cement>();
+		response.setData(cement);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_CEMENT)
+	@DELETE
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_CEMENT, notes = PathProxy.DischargeSummaryUrls.DELETE_CEMENT)
+	public Response<Cement> deleteCement(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Cement Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Cement Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		Cement cement = dischargeSummaryService.deleteCement(id, doctorId, locationId, hospitalId, discarded);
+		if (cement != null) {
+			transactionalManagementService.addResource(new ObjectId(cement.getId()), Resource.CEMENT, false);
+			ESCementDocument esCementDocument = new ESCementDocument();
+			BeanUtil.map(cement, esCementDocument);
+			esDischargeSummaryService.addCement(esCementDocument);
+		}
+		Response<Cement> response = new Response<Cement>();
+		response.setData(cement);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.ADD_IMPLANT)
+	@POST
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_IMPLANT, notes = PathProxy.DischargeSummaryUrls.ADD_IMPLANT)
+	public Response<Implant> addImplant(Implant request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getImplant())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Implant implant = dischargeSummaryService.addEditImplant(request);
+		transactionalManagementService.addResource(new ObjectId(implant.getId()), Resource.IMPLANT, false);
+		ESImplantDocument esImplantDocument = new ESImplantDocument();
+		BeanUtil.map(implant, esImplantDocument);
+		esDischargeSummaryService.addImplant(esImplantDocument);
+		Response<Implant> response = new Response<Implant>();
+		response.setData(implant);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_IMPLANT)
+	@DELETE
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_IMPLANT, notes = PathProxy.DischargeSummaryUrls.DELETE_IMPLANT)
+	public Response<Implant> deleteImplant(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("implant Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"implant Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		Implant implant = dischargeSummaryService.deleteImplant(id, doctorId, locationId, hospitalId, discarded);
+		if (implant != null) {
+			transactionalManagementService.addResource(new ObjectId(implant.getId()), Resource.IMPLANT, false);
+			ESImplantDocument esImplantDocument = new ESImplantDocument();
+			BeanUtil.map(implant, esImplantDocument);
+			esDischargeSummaryService.addImplant(esImplantDocument);
+		}
+		Response<Implant> response = new Response<Implant>();
+		response.setData(implant);
+		return response;
+	}
+
 	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS)
@@ -357,6 +471,5 @@ public class DischargeSummaryAPI {
 		response.setDataList(items);
 		return response;
 	}
-	
 
 }

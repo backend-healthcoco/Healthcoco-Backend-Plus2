@@ -5,6 +5,8 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.BabyNote;
+import com.dpdocter.beans.Cement;
+import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
 import com.dpdocter.request.DischargeSummaryRequest;
@@ -53,4 +55,14 @@ public interface DischargeSummaryService {
 	public List<?> getDischargeSummaryItems(String type, String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
+	public Implant addEditImplant(Implant implant);
+
+	public Implant deleteImplant(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	public Cement addEditCement(Cement cement);
+
+	public Cement deleteCement(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	void emailDischargeSummaryForWeb(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 }

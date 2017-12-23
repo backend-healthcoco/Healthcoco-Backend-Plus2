@@ -21,7 +21,7 @@ import com.dpdocter.response.MailResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface RecordsService {
-	Records addRecord(RecordsAddRequest request);
+	Records addRecord(RecordsAddRequest request, String createdBy);
 
 	void tagRecord(TagRecordRequest request);
 
@@ -85,4 +85,6 @@ public interface RecordsService {
 	UserRecords shareUserRecordsFile(String recordId, String patientId);
 
 	RecordsFile uploadUserRecord(FormDataBodyPart file, MyFiileRequest request);
+
+	List<Records> getRecordsByDoctorId(String doctorId, int page, int size, String updatedTime, Boolean discarded);
 }

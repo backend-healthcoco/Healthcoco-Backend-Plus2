@@ -16,35 +16,45 @@ import com.dpdocter.request.PatientGroupAddEditRequest;
 
 public interface ContactsService {
 
-    DoctorContactsResponse getDoctorContacts(GetDoctorContactsRequest request);
+	DoctorContactsResponse getDoctorContacts(GetDoctorContactsRequest request);
 
-    void blockPatient(String patientId, String docterId);
+	void blockPatient(String patientId, String docterId);
 
-    Group addEditGroup(Group group);
+	Group addEditGroup(Group group);
 
-    Group deleteGroup(String groupId, Boolean discarded);
+	Group deleteGroup(String groupId, Boolean discarded);
 
-    int getContactsTotalSize(GetDoctorContactsRequest request);
+	int getContactsTotalSize(GetDoctorContactsRequest request);
 
-    Boolean importContacts(ImportContactsRequest request);
+	Boolean importContacts(ImportContactsRequest request);
 
-    Boolean exportContacts(ExportContactsRequest request);
+	Boolean exportContacts(ExportContactsRequest request);
 
-    DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, int page, int size, String role);
+	DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime,
+			boolean discarded, int page, int size, String role);
 
-    List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, String role);
+	// List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId,
+	// String locationId, String hospitalId, String updatedTime, boolean
+	// discarded, String role);
 
-    PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
+	PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
-    List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
+	List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded);
 
-    DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, int page,
-	    int size, String role);
+	DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, int page, int size, String role);
 
 	DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId, String locationId,
-			String hospitalId, int page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName, String role)
-			throws Exception;
+			String hospitalId, int page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName,
+			String role) throws Exception;
 
 	Boolean sendSMSToGroup(BulkSMSRequest request);
+
+	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm);
+
+	Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId, boolean discarded,
+			String role, String searchTerm);
 
 }

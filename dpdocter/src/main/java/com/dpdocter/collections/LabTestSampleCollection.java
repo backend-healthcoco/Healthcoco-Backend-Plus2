@@ -1,7 +1,5 @@
 package com.dpdocter.collections;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,17 +13,9 @@ public class LabTestSampleCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String patientName;
-	@Field
-	private Integer age;
-	@Field
-	private String gender;
-	@Field
-	private String mobileNumber;
-	@Field
 	private String sampleType;
 	@Field
-	private List<RateCardTestAssociation> rateCardTestAssociation;
+	private RateCardTestAssociation rateCardTestAssociation;
 	@Field
 	private Boolean isUrgent;
 	@Field
@@ -41,13 +31,25 @@ public class LabTestSampleCollection extends GenericCollection {
 	@Field
 	private String sampleId;
 	@Field
+	private ObjectId labTestPickUpId;
+	@Field
 	private ObjectId daughterLabLocationId;
 	@Field
 	private ObjectId parentLabLocationId;
 	@Field
 	private Boolean isCompleted = false;
 	@Field
+	private String serialNumber;
+	@Field
 	private Boolean isCollectedAtLab = false;
+
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -55,30 +57,6 @@ public class LabTestSampleCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public String getPatientName() {
-		return patientName;
-	}
-
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
-
-	public Integer getAge() {
-		return age;
-	}
-
-	public void setAge(Integer age) {
-		this.age = age;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
 	}
 
 	public String getSampleType() {
@@ -89,11 +67,11 @@ public class LabTestSampleCollection extends GenericCollection {
 		this.sampleType = sampleType;
 	}
 
-	public List<RateCardTestAssociation> getRateCardTestAssociation() {
+	public RateCardTestAssociation getRateCardTestAssociation() {
 		return rateCardTestAssociation;
 	}
 
-	public void setRateCardTestAssociation(List<RateCardTestAssociation> rateCardTestAssociation) {
+	public void setRateCardTestAssociation(RateCardTestAssociation rateCardTestAssociation) {
 		this.rateCardTestAssociation = rateCardTestAssociation;
 	}
 
@@ -185,21 +163,20 @@ public class LabTestSampleCollection extends GenericCollection {
 		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
-	public String getMobileNumber() {
-		return mobileNumber;
+	public ObjectId getLabTestPickUpId() {
+		return labTestPickUpId;
 	}
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
+	public void setLabTestPickUpId(ObjectId labTestPickUpId) {
+		this.labTestPickUpId = labTestPickUpId;
 	}
 
 	@Override
 	public String toString() {
-		return "LabTestSampleCollection [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender="
-				+ gender + ", mobileNumber=" + mobileNumber + ", sampleType=" + sampleType
-				+ ", rateCardTestAssociation=" + rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime="
-				+ urgentTime + ", isCollected=" + isCollected + ", isHardCopyRequired=" + isHardCopyRequired
-				+ ", isHardCopyGiven=" + isHardCopyGiven + ", status=" + status + ", sampleId=" + sampleId
+		return "LabTestSampleCollection [id=" + id + ", sampleType=" + sampleType + ", rateCardTestAssociation="
+				+ rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected="
+				+ isCollected + ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven
+				+ ", status=" + status + ", sampleId=" + sampleId + ", labTestPickUpId=" + labTestPickUpId
 				+ ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId
 				+ ", isCompleted=" + isCompleted + ", isCollectedAtLab=" + isCollectedAtLab + "]";
 	}

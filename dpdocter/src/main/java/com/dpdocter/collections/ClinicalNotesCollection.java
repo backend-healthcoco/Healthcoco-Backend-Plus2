@@ -177,6 +177,31 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private String procedureNote;
 
+	@Field
+	private String pastHistory;
+	@Field
+	private String familyHistory;
+	@Field
+	private String personalHistoryTobacco;
+	@Field
+	private String personalHistoryAlcohol;
+	@Field
+	private String personalHistorySmoking;
+	@Field
+	private String personalHistoryDiet;
+	@Field
+	private String personalHistoryOccupation;
+	@Field
+	private String generalHistoryDrugs;
+	@Field
+	private String generalHistoryMedicine;
+	@Field
+	private String generalHistoryAllergies;
+	@Field
+	private String generalHistorySurgical;
+	@Field
+	private String painScale;
+
 	public String getProcedureNote() {
 		return procedureNote;
 	}
@@ -529,8 +554,6 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.noOfMaleChildren = noOfMaleChildren;
 	}
 
-	
-
 	public String getPcNose() {
 		return pcNose;
 	}
@@ -603,6 +626,102 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.earsExam = earsExam;
 	}
 
+	public String getPastHistory() {
+		return pastHistory;
+	}
+
+	public void setPastHistory(String pastHistory) {
+		this.pastHistory = pastHistory;
+	}
+
+	public String getFamilyHistory() {
+		return familyHistory;
+	}
+
+	public void setFamilyHistory(String familyHistory) {
+		this.familyHistory = familyHistory;
+	}
+
+	public String getPersonalHistoryTobacco() {
+		return personalHistoryTobacco;
+	}
+
+	public void setPersonalHistoryTobacco(String personalHistoryTobacco) {
+		this.personalHistoryTobacco = personalHistoryTobacco;
+	}
+
+	public String getPersonalHistoryAlcohol() {
+		return personalHistoryAlcohol;
+	}
+
+	public void setPersonalHistoryAlcohol(String personalHistoryAlcohol) {
+		this.personalHistoryAlcohol = personalHistoryAlcohol;
+	}
+
+	public String getPersonalHistorySmoking() {
+		return personalHistorySmoking;
+	}
+
+	public void setPersonalHistorySmoking(String personalHistorySmoking) {
+		this.personalHistorySmoking = personalHistorySmoking;
+	}
+
+	public String getPersonalHistoryDiet() {
+		return personalHistoryDiet;
+	}
+
+	public void setPersonalHistoryDiet(String personalHistoryDiet) {
+		this.personalHistoryDiet = personalHistoryDiet;
+	}
+
+	public String getPersonalHistoryOccupation() {
+		return personalHistoryOccupation;
+	}
+
+	public void setPersonalHistoryOccupation(String personalHistoryOccupation) {
+		this.personalHistoryOccupation = personalHistoryOccupation;
+	}
+
+	public String getGeneralHistoryDrugs() {
+		return generalHistoryDrugs;
+	}
+
+	public void setGeneralHistoryDrugs(String generalHistoryDrugs) {
+		this.generalHistoryDrugs = generalHistoryDrugs;
+	}
+
+	public String getGeneralHistoryMedicine() {
+		return generalHistoryMedicine;
+	}
+
+	public void setGeneralHistoryMedicine(String generalHistoryMedicine) {
+		this.generalHistoryMedicine = generalHistoryMedicine;
+	}
+
+	public String getGeneralHistoryAllergies() {
+		return generalHistoryAllergies;
+	}
+
+	public void setGeneralHistoryAllergies(String generalHistoryAllergies) {
+		this.generalHistoryAllergies = generalHistoryAllergies;
+	}
+
+	public String getGeneralHistorySurgical() {
+		return generalHistorySurgical;
+	}
+
+	public void setGeneralHistorySurgical(String generalHistorySurgical) {
+		this.generalHistorySurgical = generalHistorySurgical;
+	}
+
+	public String getPainScale() {
+		return painScale;
+	}
+
+	public void setPainScale(String painScale) {
+		this.painScale = painScale;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
@@ -614,12 +733,16 @@ public class ClinicalNotesCollection extends GenericCollection {
 				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
 				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
 				+ ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails=" + xRayDetails
-				+ ", echo=" + echo + ", holter=" + holter + ", comments=" + comments + ", doctorId=" + doctorId
+				+ ", echo=" + echo + ", holter=" + holter + ", pcNose=" + pcNose + ", pcOralCavity=" + pcOralCavity
+				+ ", pcThroat=" + pcThroat + ", pcEars=" + pcEars + ", noseExam=" + noseExam + ", oralCavityThroatExam="
+				+ oralCavityThroatExam + ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam="
+				+ neckExam + ", earsExam=" + earsExam + ", comments=" + comments + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
 				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns
 				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", lmp=" + lmp
 				+ ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren="
-				+ noOfMaleChildren + "]";
+				+ noOfMaleChildren + ", procedureNote=" + procedureNote + ", pastHistory=" + pastHistory
+				+ ", familyHistory=" + familyHistory + "]";
 	}
 
 }

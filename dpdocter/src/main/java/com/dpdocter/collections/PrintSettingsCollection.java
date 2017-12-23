@@ -64,7 +64,19 @@ public class PrintSettingsCollection extends GenericCollection {
     @Field
     private boolean showDrugGenericNames = false;
     
-    public ObjectId getId() {
+    @Field
+    private Boolean showPoweredBy=true;
+    
+    
+    public Boolean getShowPoweredBy() {
+		return showPoweredBy;
+	}
+
+	public void setShowPoweredBy(Boolean showPoweredBy) {
+		this.showPoweredBy = showPoweredBy;
+	}
+
+	public ObjectId getId() {
 	return id;
     }
 

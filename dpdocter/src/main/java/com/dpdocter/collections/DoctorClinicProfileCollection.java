@@ -68,7 +68,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private Boolean isDoctorListed = false;
 
 	@Field
-	private long rankingCount = 0;
+	private long rankingCount = 1000;
 
 	@Field
 	private Boolean isSendBirthdaySMS = true;
@@ -84,6 +84,12 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private RegularCheckUpTypeEnum checkUpTypeEnum;
+
+	@Field
+	private String packageType;
+
+	@Field
+	private String doctorSlugURL;
 
 	public ObjectId getId() {
 		return id;
@@ -267,6 +273,22 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setCheckUpTypeEnum(RegularCheckUpTypeEnum checkUpTypeEnum) {
 		this.checkUpTypeEnum = checkUpTypeEnum;
+	}
+
+	public String getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
+	}
+
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		this.doctorSlugURL = doctorSlugURL;
 	}
 
 	@Override

@@ -11,8 +11,7 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 	private String parentLabCRN;
 	private Long pickupTime;
 	private Long deliveryTime;
-	private List<String> labTestSampleIds;
-	private List<LabTestSample> labTestSamples;
+	private List<PatientLabTestSample> patientLabTestSamples;
 	private String status;
 	private String doctorId;
 	private String daughterLabLocationId;
@@ -26,6 +25,14 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 	private Location parentLab;
 	private Location daughterLab;
 	private CollectionBoy collectionBoy;
+
+	public List<PatientLabTestSample> getPatientLabTestSamples() {
+		return patientLabTestSamples;
+	}
+
+	public void setPatientLabTestSamples(List<PatientLabTestSample> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
+	}
 
 	public String getId() {
 		return id;
@@ -65,22 +72,6 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 
 	public void setDeliveryTime(Long deliveryTime) {
 		this.deliveryTime = deliveryTime;
-	}
-
-	public List<String> getLabTestSampleIds() {
-		return labTestSampleIds;
-	}
-
-	public void setLabTestSampleIds(List<String> labTestSampleIds) {
-		this.labTestSampleIds = labTestSampleIds;
-	}
-
-	public List<LabTestSample> getLabTestSamples() {
-		return labTestSamples;
-	}
-
-	public void setLabTestSamples(List<LabTestSample> labTestSamples) {
-		this.labTestSamples = labTestSamples;
 	}
 
 	public String getStatus() {
@@ -190,13 +181,13 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 	@Override
 	public String toString() {
 		return "LabTestPickupLookupResponse [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN="
-				+ parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSampleIds="
-				+ labTestSampleIds + ", labTestSamples=" + labTestSamples + ", status=" + status + ", doctorId="
-				+ doctorId + ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId="
-				+ parentLabLocationId + ", discarded=" + discarded + ", numberOfSamplesRequested="
-				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
-				+ requestId + ", isCompleted=" + isCompleted + ", collectionBoyId=" + collectionBoyId + ", parentLab="
-				+ parentLab + ", daughterLab=" + daughterLab + "]";
+				+ parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime
+				+ ", patientLabTestSamples=" + patientLabTestSamples + ", status=" + status + ", doctorId=" + doctorId
+				+ ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId
+				+ ", discarded=" + discarded + ", numberOfSamplesRequested=" + numberOfSamplesRequested
+				+ ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted="
+				+ isCompleted + ", collectionBoyId=" + collectionBoyId + ", parentLab=" + parentLab + ", daughterLab="
+				+ daughterLab + ", collectionBoy=" + collectionBoy + "]";
 	}
 
 }

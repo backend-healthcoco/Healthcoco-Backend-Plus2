@@ -1,5 +1,6 @@
 package com.dpdocter.services;
 
+import com.dpdocter.beans.DataDynamicUI;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.request.DynamicUIRequest;
@@ -16,5 +17,9 @@ public interface DynamicUIService {
 	DynamicUIResponse getBothPermissions(String doctorId);
 
 	UIPermissions getDefaultPermissions();
+
+	DataDynamicUI getDynamicDataPermissionForDoctor(String doctorId);
+
+	DataDynamicUI postDataPermissions(DataDynamicUI dynamicUIRequest);
 
 }

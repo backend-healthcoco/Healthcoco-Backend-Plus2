@@ -81,7 +81,7 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		Records records = recordsService.addRecord(request);
+		Records records = recordsService.addRecord(request, null);
 
 		// patient track
 		if (records != null) {
@@ -161,6 +161,26 @@ public class RecordsApi {
 
 		List<Records> records = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded,
 				isDoctorApp);
+
+		Response<Records> response = new Response<Records>();
+		response.setDataList(records);
+		return response;
+
+	}
+	
+	@Path(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
+	@GET
+	@ApiOperation(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID, notes = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
+	public Response<Records> getRecordsByDoctorId(@PathParam("doctorId") String doctorId,
+			@QueryParam("page") int page, @QueryParam("size") int size,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Doctor Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+		}
+
+		List<Records> records = recordsService.getRecordsByDoctorId(doctorId, page, size, updatedTime, discarded);
 
 		Response<Records> response = new Response<Records>();
 		response.setDataList(records);

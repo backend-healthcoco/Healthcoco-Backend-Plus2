@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,8 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.ClinicalNotesDynamicField;
+import com.dpdocter.beans.DataDynamicField;
+import com.dpdocter.beans.DataDynamicUI;
+import com.dpdocter.beans.DischargeSummaryDynamicFields;
 import com.dpdocter.beans.DynamicUI;
+import com.dpdocter.beans.PrescriptionDynamicField;
+import com.dpdocter.beans.TreatmentDynamicFields;
 import com.dpdocter.beans.UIPermissions;
+import com.dpdocter.collections.DataDynamicUICollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.SpecialityCollection;
@@ -24,13 +32,17 @@ import com.dpdocter.enums.DischargeSummaryPermissions;
 import com.dpdocter.enums.ENTPermissionType;
 import com.dpdocter.enums.GynacPermissionsEnum;
 import com.dpdocter.enums.OpthoPermissionEnums;
+import com.dpdocter.enums.OrthoPermissionType;
 import com.dpdocter.enums.PatientVisitPermissionEnum;
 import com.dpdocter.enums.PrescriptionPermissionEnum;
 import com.dpdocter.enums.ProfilePermissionEnum;
 import com.dpdocter.enums.SpecialityTypeEnum;
 import com.dpdocter.enums.TabPermissionsEnum;
 import com.dpdocter.enums.VitalSignPermissions;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DataDynamicUIRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.SpecialityRepository;
@@ -53,6 +65,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 	@Autowired
 	SpecialityRepository specialityRepository;
+	
+	@Autowired
+	DataDynamicUIRepository dataDynamicUIRepository;
 
 	@Override
 	@Transactional
@@ -250,6 +265,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
 			clinicalNotesPermission.add(DentistPermissionEnum.PROCEDURE_NOTE.getPermissions());
+			clinicalNotesPermission.add(DentistPermissionEnum.PAIN_SCALE.getPermissions());
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
 			tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
@@ -288,6 +304,31 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
+			
+		case "ORTHOPEDIST":
+			uiPermissions = new UIPermissions();
+			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
+			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
+			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
+			tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
+			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
+			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
+			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			List<String> orthoPermission = new ArrayList<String>(Arrays.asList(orthoPermission()));
+			dischargeSummaryPermission.addAll(orthoPermission);
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
+			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
+			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
+			uiPermissions.setProfilePermissions(profilePermission);
+			uiPermissions.setTabPermissions(tabPermission);
+			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
+			uiPermissions.setVitalSignPermissions(vitalSignPermission);
+			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
+			break;
+			
+			
 		case "EMPTY":
 			uiPermissions = new UIPermissions();
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
@@ -366,6 +407,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		uiPermissions.setVitalSignPermissions(vitalSignPermission);
 		uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 		uiPermissions.setAdmitCardPermissions(admitCardPermission);
+		uiPermissions.setLandingPagePermissions("CONTACTS");
 		return uiPermissions;
 	}
 
@@ -419,6 +461,11 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	private String[] entPermission() {
 		return Arrays.toString(ENTPermissionType.values()).replaceAll("^.|.$", "").split(", ");
 	}
+	
+	private String[] orthoPermission() {
+		return Arrays.toString(OrthoPermissionType.values()).replaceAll("^.|.$", "").split(", ");
+	}
+	
 
 	@Override
 	@Transactional
@@ -432,4 +479,59 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		}
 		return uiResponse;
 	}
+	
+	
+	@Override
+	@Transactional
+	public DataDynamicUI getDynamicDataPermissionForDoctor(String doctorId) {
+		DataDynamicUI dataDynamicUI = null;
+		DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+		if (doctorCollection != null) {
+			dataDynamicUI = new DataDynamicUI();
+			DataDynamicUICollection dataDynamicUICollection = dataDynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+			if(dataDynamicUICollection != null)
+			{
+				BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
+			}
+			else
+			{
+				dataDynamicUI  = new DataDynamicUI();
+				dataDynamicUI.setDoctorId(doctorId);
+				DataDynamicField dataDynamicField = new DataDynamicField();
+				dataDynamicField.setClinicalNotesDynamicField(new ClinicalNotesDynamicField());
+				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
+				dataDynamicField.setDischargeSummaryDynamicFields(new DischargeSummaryDynamicFields());
+				dataDynamicField.setTreatmentDynamicFields(new TreatmentDynamicFields());
+				dataDynamicUI.setDataDynamicField(dataDynamicField);
+			}
+		}else
+		{
+			throw new BusinessException(ServiceError.InvalidInput , "Doctor not present");
+		}
+		return dataDynamicUI;
+	}
+
+	@Override
+	@Transactional
+	public DataDynamicUI postDataPermissions(DataDynamicUI dynamicUIRequest) {
+		DataDynamicUI dataDynamicUI = null;
+		DataDynamicUICollection dataDynamicUICollection = dataDynamicUIRepository
+				.findByDoctorId(new ObjectId(dynamicUIRequest.getDoctorId()));
+		if (dataDynamicUICollection != null) {
+			dataDynamicUICollection.setDataDynamicField(dynamicUIRequest.getDataDynamicField());
+			dataDynamicUICollection = dataDynamicUIRepository.save(dataDynamicUICollection);
+			dataDynamicUI = new DataDynamicUI();
+			BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
+		} else {
+			dataDynamicUICollection = new DataDynamicUICollection();
+			BeanUtil.map(dynamicUIRequest, dataDynamicUICollection);
+			dataDynamicUICollection.setCreatedTime(new Date());
+			dataDynamicUICollection = dataDynamicUIRepository.save(dataDynamicUICollection);
+			dataDynamicUI = new DataDynamicUI();
+			BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
+		}
+		return dataDynamicUI;
+	}
+
+	
 }

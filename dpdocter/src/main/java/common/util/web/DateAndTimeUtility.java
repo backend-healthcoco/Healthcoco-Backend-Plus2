@@ -7,13 +7,13 @@ import com.dpdocter.beans.Slot;
 
 public class DateAndTimeUtility {
 
-    public static List<Slot> sliceTime(int begin, int end, int interval) {
+    public static List<Slot> sliceTime(int begin, int end, int interval, Boolean isAvailable) {
 	List<Slot> slots = null;
 	for (int time = begin; time < end; time += interval) {
 	    if (slots == null)
 		slots = new ArrayList<Slot>();
 	    Slot slot = new Slot();
-//	    slot.setIsAvailable(isAvailable);
+	    slot.setIsAvailable(isAvailable);
 	    slot.setMinutesOfDay(time);
 	    slot.setTime(String.format("%02d:%02d", time / 60, time % 60));
 	    slots.add(slot);

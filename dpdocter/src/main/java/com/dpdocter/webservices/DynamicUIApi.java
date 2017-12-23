@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DataDynamicUI;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.exceptions.BusinessException;
@@ -80,6 +81,26 @@ public class DynamicUIApi {
 
 	}
 
+	@Path(value = PathProxy.DynamicUIUrls.POST_DATA_PERMISSIONS)
+	@POST
+	@ApiOperation(value = "SUBMIT_DATA_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DATA_DYNAMIC_UI_PERMISSION")
+	public Response<DataDynamicUI> postDataPermissions(DataDynamicUI dynamicUIRequest) {
+		if (dynamicUIRequest == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
+		} else if (dynamicUIRequest.getDataDynamicField() == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Data permissions are null");
+		}
+		if (dynamicUIRequest.getDoctorId() == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null");
+		}
+
+		DataDynamicUI dynamicUI = dynamicUIService.postDataPermissions(dynamicUIRequest);
+		Response<DataDynamicUI> response = new Response<DataDynamicUI>();
+		response.setData(dynamicUI);
+		return response;
+
+	}
+	
 	@Path(value = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR, notes = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR)
@@ -93,5 +114,20 @@ public class DynamicUIApi {
 		response.setData(dynamicUIResponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR, notes = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR)
+	public Response<DataDynamicUI> getDataPermissionForDoctor(@PathParam("doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null");
+		}
+		DataDynamicUI dynamicUIResponse = new DataDynamicUI();
+		dynamicUIResponse = dynamicUIService.getDynamicDataPermissionForDoctor(doctorId);
+		Response<DataDynamicUI> response = new Response<DataDynamicUI>();
+		response.setData(dynamicUIResponse);
+		return response;
+	}
+
 
 }

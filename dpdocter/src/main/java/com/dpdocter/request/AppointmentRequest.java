@@ -5,8 +5,7 @@ import java.util.Date;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
-
-import common.util.web.JacksonUtil;
+import com.dpdocter.enums.QueueStatus;
 
 public class AppointmentRequest {
 
@@ -48,6 +47,20 @@ public class AppointmentRequest {
 
 	private String visitId;
 	
+	private QueueStatus status = QueueStatus.SCHEDULED;
+    
+    private long waitedFor = 0;
+    
+    private long engagedFor = 0;
+    
+    private long engagedAt = 0;
+    
+    private long checkedInAt = 0;
+    
+    private long checkedOutAt = 0;
+    
+    private String category;
+    
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -200,6 +213,62 @@ public class AppointmentRequest {
 		this.visitId = visitId;
 	}
 
+	public QueueStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueueStatus status) {
+		this.status = status;
+	}
+
+	public long getWaitedFor() {
+		return waitedFor;
+	}
+
+	public void setWaitedFor(long waitedFor) {
+		this.waitedFor = waitedFor;
+	}
+
+	public long getEngagedFor() {
+		return engagedFor;
+	}
+
+	public void setEngagedFor(long engagedFor) {
+		this.engagedFor = engagedFor;
+	}
+
+	public long getEngagedAt() {
+		return engagedAt;
+	}
+
+	public void setEngagedAt(long engagedAt) {
+		this.engagedAt = engagedAt;
+	}
+
+	public long getCheckedInAt() {
+		return checkedInAt;
+	}
+
+	public void setCheckedInAt(long checkedInAt) {
+		this.checkedInAt = checkedInAt;
+	}
+
+	public long getCheckedOutAt() {
+		return checkedOutAt;
+	}
+
+	public void setCheckedOutAt(long checkedOutAt) {
+		this.checkedOutAt = checkedOutAt;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -208,6 +277,9 @@ public class AppointmentRequest {
 				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
 				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
 				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
-				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + "]";
+				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + ", status=" + status + ", waitedFor="
+				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
+				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + "]";
 	}
+
 }

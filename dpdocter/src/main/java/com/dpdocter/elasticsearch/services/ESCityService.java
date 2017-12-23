@@ -14,6 +14,8 @@ public interface ESCityService {
     boolean addLocalityLandmark(ESLandmarkLocalityDocument esLandmarkLocalityDocument);
 
     List<ESCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude);
+    
+    List<ESCityLandmarkLocalityResponse> searchCityLandmarkLocalityForWeb(String searchTerm, String latitude, String longitude);
 
     boolean activateDeactivateCity(String cityId, Boolean activate);
 

@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -111,7 +112,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
 	@POST
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_REGISTER, notes = PathProxy.RegistrationUrls.PATIENT_REGISTER, response = Response.class)
-	public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request) {
+	public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request, @MatrixParam(value = "infoType") List<String> infoType) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -136,10 +137,10 @@ public class RegistrationApi {
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
 		} else {
-			registeredPatientDetails = registrationService.registerExistingPatient(request);
-//			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
-//					false);
-//			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
+			registeredPatientDetails = registrationService.registerExistingPatient(request, infoType);
+			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
+					false);
+			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 		}
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
@@ -151,7 +152,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
 	@PUT
 	@ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, response = Response.class)
-	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
+	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request, @MatrixParam(value = "infoType") List<String> infoType) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -169,7 +170,7 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
 		}
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
-		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
+		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request, infoType);
 		transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
 		esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
@@ -207,7 +208,8 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, response = Response.class)
-	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false")  @QueryParam("getAddress") Boolean getAddress) {
+	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false")  @QueryParam("getAddress") Boolean getAddress, 
+			@DefaultValue("true")  @QueryParam("discardedAddress") Boolean discardedAddress) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
@@ -221,7 +223,7 @@ public class RegistrationApi {
 				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 			}
 			if(getAddress) {
-				List<UserAddress> userAddress = registrationService.getUserAddress(null, mobileNumber, true);
+				List<UserAddress> userAddress = registrationService.getUserAddress(null, mobileNumber, discardedAddress);
 				if(userAddress != null && !userAddress.isEmpty()) {
 					UserAddressResponse userAddressResponse = new UserAddressResponse();
 					userAddressResponse.setUserAddress(userAddress);
@@ -843,20 +845,6 @@ public class RegistrationApi {
 		}
 		Boolean changePatientNumberResponse = registrationService.changePatientNumber(oldMobileNumber, newMobileNumber,
 				otpNumber);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(changePatientNumberResponse);
-		return response;
-	}
-
-	@Path(value = PathProxy.RegistrationUrls.REGISTER_PATIENTS_IN_BULK)
-	@GET
-	public Response<Boolean> registerPatients(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-			logger.warn(invalidInput);
-			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		}
-		Boolean changePatientNumberResponse = registrationService.registerPatients(doctorId, locationId, hospitalId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(changePatientNumberResponse);
 		return response;

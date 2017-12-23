@@ -704,17 +704,12 @@ public class DoctorProfileApi {
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
 	public Response<DoctorProfile> getDoctorProfile(@PathParam("slugURL") String slugURL,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,
-			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
-			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			@PathParam("userUId") String userUId) {
+		if (DPDoctorUtils.anyStringEmpty(userUId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
-		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, patientId,
-				isMobileApp, isSearched);
+		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(userUId);
 		if (doctorProfile != null) {
 			if (doctorProfile.getImageUrl() != null) {
 				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
@@ -748,12 +743,27 @@ public class DoctorProfileApi {
 				}
 			}
 
-			if (patientId != null || isSearched == true) {
-				doctorProfileService.updateDoctorProfileViews(doctorId);
-			}
+			doctorProfile.setDoctorSlugURL(slugURL);
+			doctorProfileService.updateDoctorProfileViews(doctorProfile.getDoctorId());
+
 		}
 		Response<DoctorProfile> response = new Response<DoctorProfile>();
 		response.setData(doctorProfile);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS, notes = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
+	public Response<Boolean> updatePresccriptionSMS(@PathParam("doctorId") String doctorId,
+			@QueryParam("isSendSMS") boolean isSendSMS) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(doctorProfileService.updatePrescriptionSMS(doctorId, isSendSMS));
 		return response;
 	}
 

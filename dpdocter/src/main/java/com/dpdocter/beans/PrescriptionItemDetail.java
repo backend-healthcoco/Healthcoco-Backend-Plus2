@@ -12,7 +12,7 @@ public class PrescriptionItemDetail {
     private String dosage;
     
     private DrugType drugType;
-
+    
     private String drugName;
     
     private String explanation;

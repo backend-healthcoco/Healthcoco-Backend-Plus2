@@ -2,6 +2,9 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LocaleType;
 import com.dpdocter.enums.UserState;
@@ -43,7 +46,8 @@ public class Locale extends GenericCollection {
 	private Boolean isAcceptRequest = true;
 	private Double minimumAmountForDelivery = 0.0;
 	private Boolean isFavourite = false;
-	
+	private String pharmacySlugUrl;
+
 	public List<String> getPaymentInfos() {
 		return paymentInfos;
 	}
@@ -342,4 +346,13 @@ public class Locale extends GenericCollection {
 				+ ", isLocaleRecommended=" + isLocaleRecommended + ", isAcceptRequest=" + isAcceptRequest
 				+ ", minimumAmountForDelivery=" + minimumAmountForDelivery + ", isFavourite=" + isFavourite + "]";
 	}
+
+	public String getPharmacySlugUrl() {
+		return pharmacySlugUrl;
+	}
+
+	public void setPharmacySlugUrl(String pharmacySlugUrl) {
+		this.pharmacySlugUrl = pharmacySlugUrl;
+	}
+
 }

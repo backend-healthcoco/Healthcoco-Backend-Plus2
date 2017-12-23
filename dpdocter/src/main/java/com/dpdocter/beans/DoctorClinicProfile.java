@@ -3,8 +3,10 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -59,6 +61,8 @@ public class DoctorClinicProfile {
 
 	private Boolean isLab = false;
 
+	private Boolean isParent = false;
+
 	private Boolean isOnlineReportsAvailable = false;
 
 	private Boolean isNABLAccredited = false;
@@ -85,9 +89,9 @@ public class DoctorClinicProfile {
 
 	private Boolean isSendBirthdaySMS = true;
 
-	private Boolean isDoctorRecommended = false;//is recommended by patient
-	
-	private Boolean isFavourite = false; //is patient's Favourite Dr
+	private Boolean isDoctorRecommended = false;// is recommended by patient
+
+	private Boolean isFavourite = false; // is patient's Favourite Dr
 
 	private Boolean isAutoSMS = false;
 
@@ -98,6 +102,10 @@ public class DoctorClinicProfile {
 	private Integer regularCheckupMonth;
 
 	private RegularCheckUpTypeEnum checkUpTypeEnum;
+
+	private String packageType = PackageType.ADVANCE.getType();
+
+	private String doctorSlugURL;
 
 	public String getId() {
 		return id;
@@ -459,6 +467,14 @@ public class DoctorClinicProfile {
 		this.isFavourite = isFavourite;
 	}
 
+	public String getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -475,9 +491,25 @@ public class DoctorClinicProfile {
 				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", feedbacks="
 				+ feedbacks + ", noOfFeedbacks=" + noOfFeedbacks + ", roles=" + roles + ", isDoctorListed="
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isFavourite=" + isFavourite
-				+ ", isAutoSMS=" + isAutoSMS + ", isActivate=" + isActivate + ", isSendRegularCheckupSMS="
-				+ isSendRegularCheckupSMS + ", regularCheckupMonth=" + regularCheckupMonth + ", checkUpTypeEnum="
-				+ checkUpTypeEnum + "]";
+				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isFavourite=" + isFavourite + ", isAutoSMS="
+				+ isAutoSMS + ", isActivate=" + isActivate + ", isSendRegularCheckupSMS=" + isSendRegularCheckupSMS
+				+ ", regularCheckupMonth=" + regularCheckupMonth + ", checkUpTypeEnum=" + checkUpTypeEnum + "]";
 	}
+
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		this.doctorSlugURL = doctorSlugURL;
+	}
+
+	public Boolean getIsParent() {
+		return isParent;
+	}
+
+	public void setIsParent(Boolean isParent) {
+		this.isParent = isParent;
+	}
+
 }

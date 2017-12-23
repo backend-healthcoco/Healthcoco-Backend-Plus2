@@ -1,6 +1,7 @@
 package com.dpdocter.request;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -55,6 +56,53 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private String procedureNote;
 	private String doctorIncharge;
 	private VitalSigns vitalSigns;
+	private Date operationDate;
+	private String surgeon;
+	private String anesthetist;
+	private String implant;
+	private String cement;
+	private String operationName;
+	
+
+	public Date getOperationDate() {
+		return operationDate;
+	}
+
+	public void setOperationDate(Date operationDate) {
+		this.operationDate = operationDate;
+	}
+
+	public String getSurgeon() {
+		return surgeon;
+	}
+
+	public void setSurgeon(String surgeon) {
+		this.surgeon = surgeon;
+	}
+
+	public String getAnesthetist() {
+		return anesthetist;
+	}
+
+	public void setAnesthetist(String anesthetist) {
+		this.anesthetist = anesthetist;
+	}
+
+	public String getImplant() {
+		return implant;
+	}
+
+	public void setImplant(String implant) {
+		this.implant = implant;
+	}
+
+	public String getCement() {
+		return cement;
+	}
+
+	public void setCement(String cement) {
+		this.cement = cement;
+	}
 
 	public VitalSigns getVitalSigns() {
 		return vitalSigns;
@@ -424,6 +472,14 @@ public class DischargeSummaryRequest extends GenericCollection {
 
 	public void setDoctorIncharge(String doctorIncharge) {
 		this.doctorIncharge = doctorIncharge;
+	}
+
+	public String getOperationName() {
+		return operationName;
+	}
+
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
 	}
 
 }

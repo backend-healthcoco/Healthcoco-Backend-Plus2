@@ -40,7 +40,7 @@ public interface RegistrationService {
 
 	RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request);
 
-	RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request);
+	RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request, List<String> infoType);
 
 	List<RegisteredPatientDetails> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId,
 			String hospitalId, String role);
@@ -123,8 +123,6 @@ public interface RegistrationService {
 	List<RegisteredPatientDetails> getPatientsByPhoneNumber(String mobileNumber);
 
 	RegisterDoctorResponse editUserInClinic(DoctorRegisterRequest request);
-
-	Boolean registerPatients(String doctorId, String locationId, String hospitalId);
 
 	Boolean updateDoctorClinicProfile();
 

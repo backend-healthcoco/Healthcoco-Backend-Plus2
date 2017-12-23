@@ -20,6 +20,9 @@ public class UserDeviceCollection extends GenericCollection{
     private List<ObjectId> userIds;
 
     @Field
+    private ObjectId localeId;
+
+    @Field
     private DeviceType deviceType;
 
     @Field
@@ -90,9 +93,18 @@ public class UserDeviceCollection extends GenericCollection{
 		this.batchCount = batchCount;
 	}
 
+	public ObjectId getLocaleId() {
+		return localeId;
+	}
+
+	public void setLocaleId(ObjectId localeId) {
+		this.localeId = localeId;
+	}
+
 	@Override
 	public String toString() {
-		return "UserDeviceCollection [id=" + id + ", userIds=" + userIds + ", deviceType=" + deviceType + ", deviceId="
-				+ deviceId + ", pushToken=" + pushToken + ", role=" + role + ", batchCount=" + batchCount + "]";
+		return "UserDeviceCollection [id=" + id + ", userIds=" + userIds + ", localeId=" + localeId + ", deviceType="
+				+ deviceType + ", deviceId=" + deviceId + ", pushToken=" + pushToken + ", role=" + role
+				+ ", batchCount=" + batchCount + "]";
 	}
 }

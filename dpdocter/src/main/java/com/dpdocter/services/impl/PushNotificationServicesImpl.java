@@ -188,7 +188,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			} else {
 				userDeviceCollections = userDevices;
 			}
-
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
 				for (UserDeviceCollection userDeviceCollection : userDeviceCollections) {
 					if (userDeviceCollection.getDeviceType() != null) {

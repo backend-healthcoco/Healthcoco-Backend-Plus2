@@ -1,5 +1,6 @@
 package com.dpdocter.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -25,4 +26,7 @@ public interface PatientTreamentRepository extends MongoRepository<PatientTreatm
 
 	@Query(value = "{'patientId' : ?0,'discarded' : false}", count = true)
 	Integer countByPatientId(ObjectId patientId);
+
+	@Query("{'doctorId' : ?0, 'locationId' : ?1, 'hospitalId' : ?2, 'patientId' : ?3, 'fromDate' : ?4}")
+	public PatientTreatmentCollection find(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId userId, Date fromDate);
 }
