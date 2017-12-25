@@ -245,12 +245,10 @@ public class LabReportsServiceImpl implements LabReportsService {
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			Long endTimeinMillis = end.getMillis();
-			// int reportSize =
-			// labReportsRepository.findTodaysCompletedReport(locationObjectId,
-			// true, startTimeinMillis,
-			// endTimeinMillis);
+			int reportSize = labReportsRepository.findTodaysCompletedReport(locationObjectId, true,
+					new Date(startTimeinMillis), new Date(endTimeinMillis));
 
-			// generatedId = String.valueOf((reportSize + 1));
+			generatedId = String.valueOf((reportSize + 1));
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			throw e;

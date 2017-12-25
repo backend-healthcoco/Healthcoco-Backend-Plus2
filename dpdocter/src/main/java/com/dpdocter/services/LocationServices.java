@@ -17,6 +17,7 @@ import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
+import com.dpdocter.response.PatientLabTestSampleReportResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
@@ -104,8 +105,8 @@ public interface LocationServices {
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm, int page, int size);
 
-	List<PatientLabTestSample> getLabReports(String locationId, Boolean isParent, Long from, Long to, String searchTerm,
-			int page, int size);
+	public List<PatientLabTestSampleReportResponse> getLabReports(String locationId, Boolean isParent, Long from,
+			Long to, String searchTerm, int page, int size);
 
 	Integer countLabReports(String locationId, Boolean isParent, Long from, Long to, String searchTerm);
 

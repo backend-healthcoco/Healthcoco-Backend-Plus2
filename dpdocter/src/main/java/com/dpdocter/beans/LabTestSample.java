@@ -11,6 +11,7 @@ public class LabTestSample extends GenericCollection {
 	private String sampleType;
 	private String daughterLabLocationId;
 	private String parentLabLocationId;
+	private String doctorId;
 	private RateCardTestAssociation rateCardTestAssociation;
 	private Boolean isUrgent;
 	private Long urgentTime;
@@ -22,7 +23,6 @@ public class LabTestSample extends GenericCollection {
 	private String sampleId;
 	private String serialNumber;
 	private Boolean isCompleted = false;
-	private List<ImageURLResponse> labReports;
 
 	public String getSerialNumber() {
 		return serialNumber;
@@ -38,14 +38,6 @@ public class LabTestSample extends GenericCollection {
 
 	public void setIsCompleted(Boolean isCompleted) {
 		this.isCompleted = isCompleted;
-	}
-
-	public List<ImageURLResponse> getLabReports() {
-		return labReports;
-	}
-
-	public void setLabReports(List<ImageURLResponse> labReports) {
-		this.labReports = labReports;
 	}
 
 	public String getId() {

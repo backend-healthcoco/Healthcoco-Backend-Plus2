@@ -40,6 +40,7 @@ import com.dpdocter.response.DoctorLabReportResponseWithCount;
 import com.dpdocter.response.LabReportsResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
+import com.dpdocter.response.PatientLabTestSampleReportResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LabReportsService;
@@ -594,7 +595,7 @@ public class LabApi {
 			@QueryParam("isParent") Boolean isParent, @QueryParam("from") Long from, @QueryParam("to") Long to,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 
-		List<PatientLabTestSample> labTestSamples = null;
+		List<PatientLabTestSampleReportResponse> labTestSamples = null;
 		try {
 
 			if (DPDoctorUtils.anyStringEmpty(locationId)) {
