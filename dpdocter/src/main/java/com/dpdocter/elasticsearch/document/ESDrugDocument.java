@@ -49,27 +49,42 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-    @Field(type = FieldType.String)
-    private String companyName;
- 
-    @Field(type = FieldType.String)
-    private String packSize;
-
-    @Field(type = FieldType.String)
+	@Field(type = FieldType.String)
 	private String packForm;
-	
-    @Field(type = FieldType.String)
-	private String prizePerPack;
-	
-    @Field(type = FieldType.String)
-    private String MRP;
 
-    @Field(type = FieldType.Nested)
+	@Field(type = FieldType.String)
+	private String prizePerPack;
+
+	@Field(type = FieldType.Long)
+	private Long totalStock;
+
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialities;
+
+	@Field(type = FieldType.String)
+	private String rxRequired;
+
+	@Field(type = FieldType.String)
+	private String unsafeWith;
+
+	@Field(type = FieldType.String)
+	private String companyName;
+
+	@Field(type = FieldType.Long)
+	private long companyRankingCount = 0;
+
+	@Field(type = FieldType.String)
+	private String packSize;
+
+	@Field(type = FieldType.String)
+	private String MRP;
+
+	@Field(type = FieldType.Nested)
 	private Duration duration;
 
-    @Field(type = FieldType.String)
+	@Field(type = FieldType.String)
 	private String dosage;
-	
+
 	@MultiField(mainField = @Field(type = FieldType.Long))
 	private List<Long> dosageTime;
 
@@ -85,30 +100,8 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private long rankingCount = 0;
 
-	@Field(type = FieldType.Long)
+	@Field
 	private Long inventoryQuantity;
-
-	@Field(type = FieldType.Long)
-	private Long totalStock;
-
-    @MultiField(mainField = @Field(type = FieldType.String))
-	private List<String> specialities;
-	 
-    @Field(type = FieldType.String)
-	private String rxRequired;
-	
-    @Field(type = FieldType.String)
-	private String unsafeWith;
-	
-	@Override
-	public int hashCode() {
-		return this.drugCode.hashCode();
-	}
-
-	public boolean equals(Object obj) {
-		ESDrugDocument drugDocument = (ESDrugDocument) obj;
-		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
-	}
 
 	public String getId() {
 		return id;
@@ -140,62 +133,6 @@ public class ESDrugDocument {
 
 	public void setDrugCode(String drugCode) {
 		this.drugCode = drugCode;
-	}
-
-	public String getDrugTypeId() {
-		return drugTypeId;
-	}
-
-	public void setDrugTypeId(String drugTypeId) {
-		this.drugTypeId = drugTypeId;
-	}
-
-	public String getDrugType() {
-		return drugType;
-	}
-
-	public void setDrugType(String drugType) {
-		this.drugType = drugType;
-	}
-
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
-
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
-
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
-
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
 	}
 
 	public String getCompanyName() {
@@ -294,14 +231,6 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
-
 	public Long getTotalStock() {
 		return totalStock;
 	}
@@ -332,6 +261,89 @@ public class ESDrugDocument {
 
 	public void setUnsafeWith(String unsafeWith) {
 		this.unsafeWith = unsafeWith;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		ESDrugDocument drugDocument = (ESDrugDocument) obj;
+		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.drugCode.hashCode();
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public String getDrugTypeId() {
+		return drugTypeId;
+	}
+
+	public void setDrugTypeId(String drugTypeId) {
+		this.drugTypeId = drugTypeId;
+	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
 	}
 
 	@Override

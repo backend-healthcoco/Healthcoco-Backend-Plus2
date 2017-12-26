@@ -756,6 +756,12 @@ public interface PathProxy {
 		public static final String UPDATE_PRESCRIPTION_SMS = "/{doctorId}/prescriptionSMS";
 
 		public static final String ADD_EDIT_SEO = "/addEditSEO";
+		
+		public static final String UPDATE_SAVE_TO_INVENTORY = "/{doctorId}/saveToInventory";
+		
+		public static final String UPDATE_SHOW_INVENTORY = "/{doctorId}/showInventory";
+		
+		public static final String UPDATE_SHOW_INVENTORY_COUNT = "/{doctorId}/showInventoryCount";
 
 		public static final String UPDATE_SAVE_TO_INVENTORY = "/{doctorId}/saveToInventory";
 

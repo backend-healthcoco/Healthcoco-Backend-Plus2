@@ -110,7 +110,6 @@ public interface DoctorProfileService {
 
 	DoctorProfile getDoctorProfile(String userUId);
 
-
 	Boolean updateShowInventoryCount(String doctorId, String locationId, Boolean showInventoryCount);
 
 	Boolean updateShowInventory(String doctorId, String locationId, Boolean showInventory);
