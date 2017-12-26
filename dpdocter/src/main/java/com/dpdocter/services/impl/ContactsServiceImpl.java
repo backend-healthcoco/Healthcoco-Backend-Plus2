@@ -18,6 +18,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -279,7 +281,8 @@ public class ContactsServiceImpl implements ContactsService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						projectOperations, groupOperations,
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -491,49 +494,51 @@ public class ContactsServiceImpl implements ContactsService {
 	public List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
 		List<Group> groups = null;
-		List<GroupCollection> groupCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
 		try {
-			if (discarded) {
-				discards[1] = true;
-			}
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
 			long createdTimeStamp = Long.parseLong(updatedTime);
+			Aggregation aggregation = null;
+			Criteria criteriafirst = new Criteria();
+			Criteria criteriasecond = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteriafirst.and("doctorId").is(new ObjectId(doctorId));
+				criteriasecond = criteriasecond.and("doctorClinic.doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteriafirst.and("locationId").is(new ObjectId(locationId));
+				criteriasecond = criteriasecond.and("doctorClinic.locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteriafirst.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (createdTimeStamp > 0) {
+				criteriafirst.and("updatedTime").gte(new Date(createdTimeStamp));
+			}
+			if (!discarded) {
+				criteriafirst.and("discarded").is(discarded);
+			}
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("name", "$name"), Fields.field("explanation", "$explanation"),
+					Fields.field("doctorId", "$doctorId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("discarded", "$discarded"),
+					Fields.field("packageType", "$doctorClinic.packageType"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("createdBy", "$createdBy")));
 			if (size > 0) {
-				if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-					groupCollections = groupRepository.findAll(doctorObjectId, discards, new Date(createdTimeStamp),
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				} else {
-					groupCollections = groupRepository.findAll(doctorObjectId, locationObjectId, hospitalObjectId,
-							discards, new Date(createdTimeStamp),
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				}
-			} else {
-				if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-					groupCollections = groupRepository.findAll(doctorObjectId, discards, new Date(createdTimeStamp),
-							new Sort(Sort.Direction.DESC, "createdTime"));
-				} else {
-					groupCollections = groupRepository.findAll(doctorObjectId, locationObjectId, hospitalObjectId,
-							discards, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-				}
-			}
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
+						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
+						Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 
-			if (groupCollections != null && !groupCollections.isEmpty()) {
-				groups = new ArrayList<Group>();
-				for (GroupCollection groupCollection : groupCollections) {
-					Group group = new Group();
-					BeanUtil.map(groupCollection, group);
-					groups.add(group);
-				}
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
+						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
+						Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			}
+			AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation, GroupCollection.class,
+					Group.class);
+			groups = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
