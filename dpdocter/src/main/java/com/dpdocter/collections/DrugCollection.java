@@ -56,6 +56,8 @@ public class DrugCollection extends GenericCollection {
 
     @Field
     private String packSize;
+	@Field
+	private long companyRankingCount = 0;
 
     @Field
     private String MRP;
@@ -77,6 +79,9 @@ public class DrugCollection extends GenericCollection {
     
     @Field
     private long rankingCount = 0;
+    
+    @Field
+	private Long inventoryQuantity;
 
     public ObjectId getId() {
 	return id;
@@ -90,9 +95,9 @@ public class DrugCollection extends GenericCollection {
 	return drugType;
     }
 
-    public void setDrugType(DrugType drugType) {
-	this.drugType = drugType;
-    }
+
+	
+
 
     public String getDrugName() {
 	return drugName;
@@ -237,6 +242,22 @@ public class DrugCollection extends GenericCollection {
 
 	public void setRankingCount(long rankingCount) {
 		this.rankingCount = rankingCount;
+	}
+
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	@Override

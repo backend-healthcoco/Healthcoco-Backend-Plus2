@@ -106,6 +106,12 @@ public class DoctorClinicProfile {
 	private String packageType = PackageType.ADVANCE.getType();
 
 	private String doctorSlugURL;
+	
+	private boolean showInventoryCount = false;
+	
+	private boolean showInventory = true;
+	
+	private boolean saveToInventory = false;
 
 	public String getId() {
 		return id;
@@ -512,5 +518,31 @@ public class DoctorClinicProfile {
 	public void setIsParent(Boolean isParent) {
 		this.isParent = isParent;
 	}
+
+	public boolean isShowInventoryCount() {
+		return showInventoryCount;
+	}
+
+	public void setShowInventoryCount(boolean showInventoryCount) {
+		this.showInventoryCount = showInventoryCount;
+	}
+
+	public boolean isShowInventory() {
+		return showInventory;
+	}
+
+	public void setShowInventory(boolean showInventory) {
+		this.showInventory = showInventory;
+	}
+
+	public boolean isSaveToInventory() {
+		return saveToInventory;
+	}
+
+	public void setSaveToInventory(boolean saveToInventory) {
+		this.saveToInventory = saveToInventory;
+	}
+	
+	
 
 }

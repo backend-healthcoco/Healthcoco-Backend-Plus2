@@ -109,4 +109,12 @@ public interface DoctorProfileService {
 	AddEditSEORequest addEditSEO(AddEditSEORequest request);
 
 	DoctorProfile getDoctorProfile(String userUId);
+
+
+	Boolean updateShowInventoryCount(String doctorId, String locationId, Boolean showInventoryCount);
+
+	Boolean updateShowInventory(String doctorId, String locationId, Boolean showInventory);
+
+	Boolean updateSavetoInventory(String doctorId, String locationId, Boolean saveToInventory);
+
 }

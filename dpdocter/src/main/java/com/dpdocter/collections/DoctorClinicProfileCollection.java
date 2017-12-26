@@ -91,6 +91,15 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private String doctorSlugURL;
 
+	@Field
+	private boolean showInventoryCount = false;
+
+	@Field
+	private boolean showInventory = true;
+
+	@Field
+	private boolean saveToInventory = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -289,6 +298,30 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setDoctorSlugURL(String doctorSlugURL) {
 		this.doctorSlugURL = doctorSlugURL;
+	}
+
+	public boolean isShowInventoryCount() {
+		return showInventoryCount;
+	}
+
+	public void setShowInventoryCount(boolean showInventoryCount) {
+		this.showInventoryCount = showInventoryCount;
+	}
+
+	public boolean isShowInventory() {
+		return showInventory;
+	}
+
+	public void setShowInventory(boolean showInventory) {
+		this.showInventory = showInventory;
+	}
+
+	public boolean isSaveToInventory() {
+		return saveToInventory;
+	}
+
+	public void setSaveToInventory(boolean saveToInventory) {
+		this.saveToInventory = saveToInventory;
 	}
 
 	@Override

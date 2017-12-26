@@ -14,88 +14,95 @@ import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
 
-@Document(indexName = "drugs_in", type ="drugs")
+@Document(indexName = "drugs_in", type = "drugs")
 public class ESDrugDocument {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
-    private String drugName;
+	@Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+	private String drugName;
 
-    @Field(type = FieldType.String)
-    private String explanation;
+	@Field(type = FieldType.String)
+	private String explanation;
 
-    @Field(type = FieldType.String)
-    private String drugCode;
+	@Field(type = FieldType.String)
+	private String drugCode;
 
-    @Field(type = FieldType.String)
-    private String drugTypeId;
+	@Field(type = FieldType.String)
+	private String drugTypeId;
 
-    @Field(type = FieldType.String)
-    private String drugType;
+	@Field(type = FieldType.String)
+	private String drugType;
 
-    @Field(type = FieldType.String)
-    private String doctorId;
+	@Field(type = FieldType.String)
+	private String doctorId;
 
-    @Field(type = FieldType.String)
-    private String locationId;
+	@Field(type = FieldType.String)
+	private String locationId;
 
-    @Field(type = FieldType.String)
-    private String hospitalId;
+	@Field(type = FieldType.String)
+	private String hospitalId;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    @Field(type = FieldType.String)
-    private String companyName;
+	@Field(type = FieldType.String)
+	private String companyName;
 
     @Field(type = FieldType.String)
     private String packSize;
-
-    @Field(type = FieldType.String)
-    private String MRP;
-
-    @Field(type = FieldType.Nested)
-    private Duration duration;
-
-    @Field(type = FieldType.String)
-    private String dosage;
-
-    @MultiField(mainField = @Field(type = FieldType.Long))
-    private List<Long> dosageTime;
     
-    @Field(type = FieldType.Nested)
-    private List<DrugDirection> direction;
+	@Field(type = FieldType.Long)
+	private long companyRankingCount = 0;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> categories;
 
-    @Field(type = FieldType.Nested)
-    private List<GenericCode> genericNames;
+	@Field(type = FieldType.String)
+	private String MRP;
 
-    @Field(type = FieldType.Long)
-    private long rankingCount = 0;
+	@Field(type = FieldType.Nested)
+	private Duration duration;
 
-    public String getId() {
-	return id;
-    }
+	@Field(type = FieldType.String)
+	private String dosage;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	@MultiField(mainField = @Field(type = FieldType.Long))
+	private List<Long> dosageTime;
 
-    public String getDrugName() {
-	return drugName;
-    }
+	@Field(type = FieldType.Nested)
+	private List<DrugDirection> direction;
 
-    public void setDrugName(String drugName) {
-	this.drugName = drugName;
-    }
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> categories;
 
-    public String getExplanation() {
+	@Field(type = FieldType.Nested)
+	private List<GenericCode> genericNames;
+
+	@Field(type = FieldType.Long)
+	private long rankingCount = 0;
+
+	@Field
+	private Long inventoryQuantity;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -104,68 +111,68 @@ public class ESDrugDocument {
 	}
 
 	public String getDrugCode() {
-	return drugCode;
-    }
-
-    public void setDrugCode(String drugCode) {
-	this.drugCode = drugCode;
-    }
-
-    public String getDoctorId() {
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	    this.doctorId = doctorId;
+		return drugCode;
 	}
 
-    public String getLocationId() {
-	return locationId;
-    }
-
-    public void setLocationId(String locationId) {
-	    this.locationId = locationId;
+	public void setDrugCode(String drugCode) {
+		this.drugCode = drugCode;
 	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
-
-    public void setHospitalId(String hospitalId) {
-	    this.hospitalId = hospitalId;
+	public String getDoctorId() {
+		return doctorId;
 	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public String getDrugTypeId() {
-	return drugTypeId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setDrugTypeId(String drugTypeId) {
-	this.drugTypeId = drugTypeId;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public String getDrugType() {
-	return drugType;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public void setDrugType(String drugType) {
-	this.drugType = drugType;
-    }
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public String getDrugTypeId() {
+		return drugTypeId;
+	}
+
+	public void setDrugTypeId(String drugTypeId) {
+		this.drugTypeId = drugTypeId;
+	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
+	}
 
 	public String getCompanyName() {
 		return companyName;
@@ -247,25 +254,37 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
+
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public boolean equals(Object obj) {
+		ESDrugDocument drugDocument = (ESDrugDocument) obj;
+		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.drugCode.hashCode();
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
 				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
-				+ MRP + ", duration=" + duration + ", dosage=" + dosage
-				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
-				+ ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
+				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", companyRankingCount="
+				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
+				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
+				+ categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
 	}
-	
-	@Override
-	 public boolean equals(Object obj) {
-	   ESDrugDocument drugDocument = (ESDrugDocument) obj;
-	   return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
-	 }
-
-	 @Override
-	 public int hashCode() {
-		 return this.drugCode.hashCode();
-	 }
 }
