@@ -1039,16 +1039,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (eyePrescriptionCollection.getLeftEyeTest() != null) {
 
 					BeanUtil.map(eyePrescriptionCollection.getLeftEyeTest(), eyResponse);
-					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH())
-							|| eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
-							|| eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
-						eyResponse.setDistanceSPH(String.format("%.2f",
-								Double.parseDouble(eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH())));
-					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getLeftEyeTest().getNearSPH())
-							|| eyePrescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase("plain")
-							|| eyePrescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
-						eyResponse.setNearSPH(String.format("%.2f",
-								Double.parseDouble(eyePrescriptionCollection.getLeftEyeTest().getNearSPH())));
+					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH())) {
+						if (eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+								|| eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH()
+										.equalsIgnoreCase(" plain"))
+							eyResponse.setDistanceSPH(String.format("%.2f",
+									Double.parseDouble(eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH())));
+					}
+					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getLeftEyeTest().getNearSPH())) {
+						if (eyePrescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase("plain")
+								|| eyePrescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+							eyResponse.setNearSPH(String.format("%.2f",
+									Double.parseDouble(eyePrescriptionCollection.getLeftEyeTest().getNearSPH())));
+					}
 					eyResponse.setDistanceCylinder(
 							String.format("%.2f", eyePrescriptionCollection.getLeftEyeTest().getDistanceCylinder()));
 					eyResponse.setDistanceBaseCurve(
@@ -1066,16 +1069,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				eyResponse = new EyeTestJasperResponse();
 				if (eyePrescriptionCollection.getRightEyeTest() != null) {
 					BeanUtil.map(eyePrescriptionCollection.getRightEyeTest(), eyResponse);
-					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getRightEyeTest().getDistanceSPH())
-							|| eyePrescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
-							|| eyePrescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
-						eyResponse.setDistanceSPH(String.format("%.2f",
-								Double.parseDouble(eyePrescriptionCollection.getRightEyeTest().getDistanceSPH())));
-					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getRightEyeTest().getNearSPH())
-							|| eyePrescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase("plain")
-							|| eyePrescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
-						eyResponse.setNearSPH(String.format("%.2f",
-								Double.parseDouble(eyePrescriptionCollection.getRightEyeTest().getNearSPH())));
+					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getRightEyeTest().getDistanceSPH())) {
+						if (eyePrescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+								|| eyePrescriptionCollection.getRightEyeTest().getDistanceSPH()
+										.equalsIgnoreCase(" plain"))
+							eyResponse.setDistanceSPH(String.format("%.2f",
+									Double.parseDouble(eyePrescriptionCollection.getRightEyeTest().getDistanceSPH())));
+					}
+					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getRightEyeTest().getNearSPH())) {
+						if (eyePrescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase("plain")
+								|| eyePrescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+							eyResponse.setNearSPH(String.format("%.2f",
+									Double.parseDouble(eyePrescriptionCollection.getRightEyeTest().getNearSPH())));
+					}
 					eyResponse.setDistanceCylinder(
 							String.format("%.2f", eyePrescriptionCollection.getRightEyeTest().getDistanceCylinder()));
 					eyResponse.setDistanceBaseCurve(
@@ -2131,12 +2137,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									locationId, hospitalId, mobileNumber, "VISITS");
 						}
 					}
-				}
-				else
-				{
+				} else {
 					if (patientVisitCollection.getPrescriptionId() != null) {
 						for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
-							response = prescriptionServices.smsPrescriptionforWeb(prescriptionId.toString(), doctorId, locationId, hospitalId, mobileNumber, "VISITS");
+							response = prescriptionServices.smsPrescriptionforWeb(prescriptionId.toString(), doctorId,
+									locationId, hospitalId, mobileNumber, "VISITS");
 						}
 					}
 				}
