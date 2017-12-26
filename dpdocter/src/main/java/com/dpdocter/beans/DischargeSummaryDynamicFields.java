@@ -8,6 +8,7 @@ public class DischargeSummaryDynamicFields {
 	private String labourNotes = Range.BOTH.getRange();
 	private String babyNotes = Range.BOTH.getRange();
 	private String cement = Range.BOTH.getRange();
+	private String implant = Range.BOTH.getRange();
 	private String operationName = Range.BOTH.getRange();
 
 	public String getOperationNotes() {
@@ -48,6 +49,14 @@ public class DischargeSummaryDynamicFields {
 
 	public void setOperationName(String operationName) {
 		this.operationName = operationName;
+	}
+
+	public String getImplant() {
+		return implant;
+	}
+
+	public void setImplant(String implant) {
+		this.implant = implant;
 	}
 
 }
