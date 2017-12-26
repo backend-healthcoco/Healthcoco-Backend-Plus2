@@ -45,6 +45,8 @@ public class Drug extends GenericCollection {
 
 	private long count;
 
+	private Long inventoryQuantity;
+
 	public String getId() {
 		return id;
 	}
@@ -187,6 +189,14 @@ public class Drug extends GenericCollection {
 
 	public void setGcStrengthIds(List<String> gcStrengthIds) {
 		this.gcStrengthIds = gcStrengthIds;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	@Override
