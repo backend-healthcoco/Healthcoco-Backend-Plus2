@@ -51,13 +51,16 @@ public class ESDrugDocument {
 
     @Field(type = FieldType.String)
     private String companyName;
-
-    @Field(type = FieldType.Long)
-	private long companyRankingCount = 0;
-    
+ 
     @Field(type = FieldType.String)
     private String packSize;
 
+    @Field(type = FieldType.String)
+	private String packForm;
+	
+    @Field(type = FieldType.String)
+	private String prizePerPack;
+	
     @Field(type = FieldType.String)
     private String MRP;
 
@@ -82,6 +85,15 @@ public class ESDrugDocument {
     @Field(type = FieldType.Long)
     private long rankingCount = 0;
 
+    @MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialities;
+	 
+    @Field(type = FieldType.String)
+	private String rxRequired;
+	
+    @Field(type = FieldType.String)
+	private String unsafeWith;
+	
     public String getId() {
 	return id;
     }
@@ -250,12 +262,56 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 	
-	public long getCompanyRankingCount() {
-		return companyRankingCount;
+	public String getPackForm() {
+		return packForm;
 	}
 
-	public void setCompanyRankingCount(long companyRankingCount) {
-		this.companyRankingCount = companyRankingCount;
+	public void setPackForm(String packForm) {
+		this.packForm = packForm;
+	}
+
+	public String getPrizePerPack() {
+		return prizePerPack;
+	}
+
+	public void setPrizePerPack(String prizePerPack) {
+		this.prizePerPack = prizePerPack;
+	}
+
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public String getRxRequired() {
+		return rxRequired;
+	}
+
+	public void setRxRequired(String rxRequired) {
+		this.rxRequired = rxRequired;
+	}
+
+	public String getUnsafeWith() {
+		return unsafeWith;
+	}
+
+	public void setUnsafeWith(String unsafeWith) {
+		this.unsafeWith = unsafeWith;
+	}
+
+	@Override
+	public String toString() {
+		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
+				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize
+				+ ", packForm=" + packForm + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP + ", duration="
+				+ duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction
+				+ ", categories=" + categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount
+				+ ", specialities=" + specialities + ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
 	}
 
 	@Override
@@ -269,14 +325,4 @@ public class ESDrugDocument {
 		 return this.drugCode.hashCode();
 	 }
 
-	@Override
-	public String toString() {
-		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
-				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", companyRankingCount="
-				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
-				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
-				+ categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
-	}
 }
