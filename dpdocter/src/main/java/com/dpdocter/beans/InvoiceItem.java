@@ -21,6 +21,8 @@ public class InvoiceItem {
 
 	private Quantity quantity;
 
+	private Long inventoryQuantity;
+
 	private PatientTreatmentStatus status;
 
 	private Double cost = 0.0;
@@ -137,6 +139,14 @@ public class InvoiceItem {
 
 	public void setBatchId(String batchId) {
 		this.batchId = batchId;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	@Override

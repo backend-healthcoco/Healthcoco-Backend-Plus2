@@ -12,29 +12,31 @@ import com.dpdocter.enums.PatientTreatmentStatus;
 public class InvoiceItemResponse {
 
 	private String itemId;
-	
+
 	private String doctorId;
-	
+
 	private String doctorName;
-	
+
 	private String name;
-	
-	private InvoiceItemType type; 
-	
+
+	private InvoiceItemType type;
+
 	private Quantity quantity;
-	
+
 	private PatientTreatmentStatus status;
-	
+
+	private Long inventoryQuantity;
+
 	private Double cost = 0.0;
 
 	private Discount discount;
-	
+
 	private Tax tax;
 
 	private Double finalCost = 0.0;
 
 	private List<TreatmentFields> treatmentFields;
-	
+
 	private String batchId;
 
 	public String getItemId() {
@@ -116,7 +118,7 @@ public class InvoiceItemResponse {
 	public void setTax(Tax tax) {
 		this.tax = tax;
 	}
-
+	
 	public Double getFinalCost() {
 		return finalCost;
 	}
@@ -132,7 +134,6 @@ public class InvoiceItemResponse {
 	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
 	}
-	
 
 	public String getBatchId() {
 		return batchId;
@@ -140,6 +141,14 @@ public class InvoiceItemResponse {
 
 	public void setBatchId(String batchId) {
 		this.batchId = batchId;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	@Override
