@@ -144,20 +144,20 @@ public class InvoiceItem {
 		this.inventoryBatch = inventoryBatch;
 	}
 
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
-
 	public boolean isSaveToInventory() {
 		return saveToInventory;
 	}
 
 	public void setSaveToInventory(boolean saveToInventory) {
 		this.saveToInventory = saveToInventory;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	@Override
