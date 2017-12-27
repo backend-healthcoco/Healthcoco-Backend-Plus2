@@ -674,9 +674,6 @@ public class LocationServiceImpl implements LocationServices {
 			String searchTerm, int size, int page) {
 
 		List<LabTestPickupLookupResponse> response = null;
-		List<LabTestSample> labTestSamples = null;
-		Date fromDate = null;
-		Date toDate = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -684,7 +681,10 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
 			criteria.and("isCompleted").is(false);
 			if (from != null) {
-				criteria.andOperator(Criteria.where("updatedTime").gte(new Date(from)));
+				criteria.and("updatedTime").gte(new Date(from));
+			}
+			if (to != null) {
+				criteria.and("updatedTime").lte(new Date(to));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -829,7 +829,10 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("parentLabLocationId").is(new ObjectId(parentLabId));
 			criteria.and("isCompleted").is(false);
 			if (from != null) {
-				criteria.andOperator(Criteria.where("updatedTime").gte(new Date(from)));
+				criteria.and("updatedTime").gte(new Date(from));
+			}
+			if (to != null) {
+				criteria.and("updatedTime").lte(new Date(to));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -1932,7 +1935,10 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (from != null) {
-				criteria.andOperator(Criteria.where("labTestSamples.updatedTime").gte(new Date(from)));
+				criteria.and("labTestSamples.updatedTime").gte(new Date(from));
+			}
+			if (to != null) {
+				criteria.and("labTestSamples.updatedTime").lte(new Date(to));
 			}
 
 			ObjectId locationObjectId = new ObjectId(locationId);
