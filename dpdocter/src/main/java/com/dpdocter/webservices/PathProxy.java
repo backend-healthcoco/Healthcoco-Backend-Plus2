@@ -782,6 +782,8 @@ public interface PathProxy {
 		
 		public static final String SMS_VISITS_WEB = "/{visitId}/{mobileNumber}/sms";
 
+		public static final String GET_PATIENT_LAST_VISIT = "/last/{doctorId}/{locationId}/{hospitalId}/{patientId}";
+
 
 	}
 
