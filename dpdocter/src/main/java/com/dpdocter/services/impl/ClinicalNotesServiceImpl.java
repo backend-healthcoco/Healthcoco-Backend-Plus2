@@ -4205,6 +4205,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
+
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
@@ -4233,6 +4234,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			parameters.put("ComplaintsTitle", "Complaints :");
 			showTitle = true;
 		}
+
 		parameters.put("showPCTitle", showTitle);
 		showTitle = false;
 		if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
@@ -4244,9 +4246,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			showTitle = true;
 		}
 		parameters.put("showExamTitle", showTitle);
-
-		if (!isCustomPDF || showUSG)
+		showTitle = false;
+		if (!isCustomPDF || showUSG) {
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
+		}
 		parameters.put("pv", clinicalNotesCollection.getPv());
 		parameters.put("pa", clinicalNotesCollection.getPa());
 		parameters.put("ps", clinicalNotesCollection.getPs());
@@ -4328,7 +4331,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
 			weight = (weight != null && !weight.isEmpty()
 					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
-			if (!DPDoctorUtils.allStringsEmpty(weight)) {
+			if (!DPDoctorUtils.allStringsEmpty(temp)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + weight;
 				else
@@ -4367,7 +4370,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + height;
 				else
-					vitalSigns = height;
+					vitalSigns = spo2;
 			}
 
 			String bmi = clinicalNotesCollection.getVitalSigns().getBmi();

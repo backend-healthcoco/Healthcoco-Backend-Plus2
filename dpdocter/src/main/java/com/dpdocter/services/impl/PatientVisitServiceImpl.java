@@ -1678,7 +1678,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + height;
 							else
-								vitalSigns = height;
+								vitalSigns = spo2;
 						}
 
 						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
@@ -1858,6 +1858,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		return clinicalNotesJasperDetails;
 	}
+		
 
 	private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId,
 			DBObject prescriptionItemsObj, Map<String, Object> parameters, Boolean isLabPrint,
