@@ -763,12 +763,6 @@ public interface PathProxy {
 		
 		public static final String UPDATE_SHOW_INVENTORY_COUNT = "/{doctorId}/showInventoryCount";
 
-		public static final String UPDATE_SAVE_TO_INVENTORY = "/{doctorId}/saveToInventory";
-
-		public static final String UPDATE_SHOW_INVENTORY = "/{doctorId}/showInventory";
-
-		public static final String UPDATE_SHOW_INVENTORY_COUNT = "/{doctorId}/showInventoryCount";
-
 	}
 
 	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
@@ -1416,6 +1410,10 @@ public interface PathProxy {
 		public static final String GET_LAB_REPORTS_FOR_LAB = "/getLabReportsForLab";
 		public static final String UPLOAD_REPORTS_TO_DOCTOR = "/uploadReportsToDoctor";
 		public static final String CHANGE_PATIENT_SHARE_STATUS = "/changePatientShareStatus";
+		public static final String ADD_EDIT_DENTAL_WORKS = "/addEditDentalWorks";
+		public static final String GET_DENTAL_WORKS = "/getDentalWorks";
+		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
+
 	}
 
 	public static final String INVENTORY_BASE_URL = BASE_URL + "/inventory";

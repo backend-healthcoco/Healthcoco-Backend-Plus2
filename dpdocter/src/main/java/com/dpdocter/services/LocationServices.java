@@ -21,7 +21,7 @@ import com.dpdocter.response.PatientLabTestSampleReportResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
-import com.dpdocter.beans.CustomWork;
+import com.dpdocter.beans.DentalWork;
 
 public interface LocationServices {
 	public List<GeocodedLocation> geocodeLocation(String address);
@@ -125,7 +125,9 @@ public interface LocationServices {
 	List<LabTestGroupResponse> getGroupedLabTests(int page, int size, String searchTerm, String daughterLabId,
 			String parentLabId, String labId);
 
-	List<CustomWork> getCustomWorks(int page, int size, String searchTerm);
+	List<DentalWork> getCustomWorks(int page, int size, String searchTerm);
 
-	CustomWork addEditCustomWork(AddEditCustomWorkRequest request);
+	DentalWork addEditCustomWork(AddEditCustomWorkRequest request);
+
+	DentalWork deleteCustomWork(String id, boolean discarded);
 }

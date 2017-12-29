@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "custom_work_cl")
-public class CustomWorkCollection extends GenericCollection {
+public class DentalWorkCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
@@ -16,6 +16,12 @@ public class CustomWorkCollection extends GenericCollection {
 	private Boolean isShadeRequired = false;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private ObjectId doctorId;
+	@Field
+	private ObjectId locationId;
+	@Field
+	private ObjectId hospitalId;
 
 	public ObjectId getId() {
 		return id;
@@ -47,6 +53,30 @@ public class CustomWorkCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	@Override
