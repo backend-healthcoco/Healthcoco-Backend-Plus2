@@ -2,9 +2,12 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class CustomWork extends GenericCollection {
+public class DentalWork extends GenericCollection {
 
 	private String id;
+	private String doctorId;
+	private String locationId;
+	private String hospitalId;
 	private String workName;
 	private Boolean isShadeRequired = false;
 	private Boolean discarded = false;
@@ -39,6 +42,30 @@ public class CustomWork extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+s	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	@Override

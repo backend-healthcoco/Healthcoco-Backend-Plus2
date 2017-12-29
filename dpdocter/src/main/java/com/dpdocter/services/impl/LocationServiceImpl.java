@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.CustomWork;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
@@ -44,7 +44,7 @@ import com.dpdocter.beans.Specimen;
 import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
-import com.dpdocter.collections.CustomWorkCollection;
+import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.LabAssociationCollection;
 import com.dpdocter.collections.LabReportsCollection;
@@ -65,7 +65,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
-import com.dpdocter.repository.CustomWorkRepository;
+import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.LabAssociationRepository;
 import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
@@ -145,7 +145,7 @@ public class LocationServiceImpl implements LocationServices {
 	private PushNotificationServices pushNotificationServices;
 
 	@Autowired
-	private CustomWorkRepository customWorkRepository;
+	private DentalWorkRepository dentalWorkRepository;
 
 	@Value("${geocoding.services.api.key}")
 	private String GEOCODING_SERVICES_API_KEY;
@@ -2093,22 +2093,22 @@ public class LocationServiceImpl implements LocationServices {
 	
 	@Override
 	@Transactional
-	public CustomWork addEditCustomWork(AddEditCustomWorkRequest request) {
-		CustomWork response = null;
-		CustomWorkCollection customWorkCollection = null;
+	public DentalWork addEditCustomWork(AddEditCustomWorkRequest request) {
+		DentalWork response = null;
+		DentalWorkCollection customWorkCollection = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				customWorkCollection = customWorkRepository.findOne(new ObjectId(request.getId()));
+				customWorkCollection = dentalWorkRepository.findOne(new ObjectId(request.getId()));
 			}
 			if (customWorkCollection != null) {
 				BeanUtil.map(request, customWorkCollection);
-				customWorkCollection = customWorkRepository.save(customWorkCollection);
+				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
 			} else {
-				customWorkCollection = new CustomWorkCollection();
+				customWorkCollection = new DentalWorkCollection();
 				BeanUtil.map(request, customWorkCollection);
-				customWorkCollection = customWorkRepository.save(customWorkCollection);
+				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
 			}
-			response = new CustomWork();
+			response = new DentalWork();
 			BeanUtil.map(customWorkCollection, response);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -2119,8 +2119,8 @@ public class LocationServiceImpl implements LocationServices {
 	
 	@Override
 	@Transactional
-	public List<CustomWork> getCustomWorks(int page, int size, String searchTerm) {
-		List<CustomWork> customWorks = null;
+	public List<DentalWork> getCustomWorks(int page, int size, String searchTerm) {
+		List<DentalWork> customWorks = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -2136,8 +2136,8 @@ public class LocationServiceImpl implements LocationServices {
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<CustomWork> aggregationResults = mongoTemplate.aggregate(aggregation,
-					CustomWorkCollection.class, CustomWork.class);
+			AggregationResults<DentalWork> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalWorkCollection.class, DentalWork.class);
 			customWorks = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2146,6 +2146,32 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return customWorks;
 	}
+	
+	@Override
+	@Transactional
+	public DentalWork deleteCustomWork(String id, boolean discarded) {
+		DentalWork response = null;
+		DentalWorkCollection customWorkCollection = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(id)) {
+				customWorkCollection = dentalWorkRepository.findOne(new ObjectId(id));
+			}
+			if (customWorkCollection != null) {
+				customWorkCollection.setDiscarded(discarded);
+				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput , "Record not found");
+			}
+			response = new DentalWork();
+			BeanUtil.map(customWorkCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new Exception(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 
 
 }
