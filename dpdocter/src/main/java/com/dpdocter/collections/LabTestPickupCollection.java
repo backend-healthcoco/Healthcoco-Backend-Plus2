@@ -3,12 +3,11 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.elasticsearch.common.collect.HppcMaps.Object;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.LabTestSample;
+import com.dpdocter.beans.PatientLabTestItem;
 
 @Document(collection = "lab_test_pickup_cl")
 public class LabTestPickupCollection extends GenericCollection {
@@ -22,7 +21,7 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Field
 	private Long deliveryTime;
 	@Field
-	private List<ObjectId> labTestSampleIds;
+	private List<PatientLabTestItem> patientLabTestSamples;
 	@Field
 	private String status;
 	@Field
@@ -43,8 +42,6 @@ public class LabTestPickupCollection extends GenericCollection {
 	private Boolean isCompleted;
 	@Field
 	private ObjectId collectionBoyId;
-	@Field
-	private String serialNumber;
 
 	public ObjectId getId() {
 		return id;
@@ -110,14 +107,6 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.parentLabLocationId = parentLabLocationId;
 	}
 
-	public List<ObjectId> getLabTestSampleIds() {
-		return labTestSampleIds;
-	}
-
-	public void setLabTestSampleIds(List<ObjectId> labTestSampleIds) {
-		this.labTestSampleIds = labTestSampleIds;
-	}
-
 	public String getRequestId() {
 		return requestId;
 	}
@@ -166,23 +155,23 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.collectionBoyId = collectionBoyId;
 	}
 
-	public String getSerialNumber() {
-		return serialNumber;
+	public List<PatientLabTestItem> getPatientLabTestSamples() {
+		return patientLabTestSamples;
 	}
 
-	public void setSerialNumber(String serialNumber) {
-		this.serialNumber = serialNumber;
+	public void setPatientLabTestSamples(List<PatientLabTestItem> patientLabTestSamples) {
+		this.patientLabTestSamples = patientLabTestSamples;
 	}
 
 	@Override
 	public String toString() {
 		return "LabTestPickupCollection [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime=" + pickupTime
-				+ ", deliveryTime=" + deliveryTime + ", labTestSampleIds=" + labTestSampleIds + ", status=" + status
-				+ ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
+				+ ", deliveryTime=" + deliveryTime + ", patientLabTestSamples=" + patientLabTestSamples + ", status="
+				+ status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
 				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
 				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted
-				+ ", collectionBoyId=" + collectionBoyId + ", serialNumber=" + serialNumber + "]";
+				+ ", collectionBoyId=" + collectionBoyId + "]";
 	}
 
 }

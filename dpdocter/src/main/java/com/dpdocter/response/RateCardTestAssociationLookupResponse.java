@@ -1,7 +1,8 @@
 package com.dpdocter.response;
 
+
+
 import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.Specimen;
 
 /**
  * @author healthcoco

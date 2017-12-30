@@ -1,21 +1,13 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.TestSampleType;
 
 public class LabTestSample extends GenericCollection {
-
 	private String id;
-	private String patientName;
-	private String mobileNumber;
-	private Integer age;
-	private String gender;
 	private String sampleType;
 	private String daughterLabLocationId;
 	private String parentLabLocationId;
-	private List<RateCardTestAssociation> rateCardTestAssociation;
+	private RateCardTestAssociation rateCardTestAssociation;
 	private Boolean isUrgent;
 	private Long urgentTime;
 	private Boolean isCollected = false;
@@ -24,6 +16,24 @@ public class LabTestSample extends GenericCollection {
 	private Boolean isHardCopyGiven;
 	private String status;
 	private String sampleId;
+	private String serialNumber;
+	private Boolean isCompleted = false;
+
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+
+	public Boolean getIsCompleted() {
+		return isCompleted;
+	}
+
+	public void setIsCompleted(Boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
 
 	public String getId() {
 		return id;
@@ -33,36 +43,12 @@ public class LabTestSample extends GenericCollection {
 		this.id = id;
 	}
 
-	public List<RateCardTestAssociation> getRateCardTestAssociation() {
+	public RateCardTestAssociation getRateCardTestAssociation() {
 		return rateCardTestAssociation;
 	}
 
-	public void setRateCardTestAssociation(List<RateCardTestAssociation> rateCardTestAssociation) {
+	public void setRateCardTestAssociation(RateCardTestAssociation rateCardTestAssociation) {
 		this.rateCardTestAssociation = rateCardTestAssociation;
-	}
-
-	public String getPatientName() {
-		return patientName;
-	}
-
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
-
-	public Integer getAge() {
-		return age;
-	}
-
-	public void setAge(Integer age) {
-		this.age = age;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
 	}
 
 	public String getSampleType() {
@@ -153,22 +139,12 @@ public class LabTestSample extends GenericCollection {
 		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
 	@Override
 	public String toString() {
-		return "LabTestSample [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
-				+ age + ", gender=" + gender + ", sampleType=" + sampleType + ", daughterLabLocationId="
+		return "LabTestSample [id=" + id + ", sampleType=" + sampleType + ", daughterLabLocationId="
 				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", rateCardTestAssociation="
 				+ rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected="
 				+ isCollected + ", isCollectedAtLab=" + isCollectedAtLab + ", isHardCopyRequired=" + isHardCopyRequired
 				+ ", isHardCopyGiven=" + isHardCopyGiven + ", status=" + status + ", sampleId=" + sampleId + "]";
 	}
-
 }

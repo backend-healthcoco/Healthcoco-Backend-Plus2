@@ -1,5 +1,4 @@
 package com.dpdocter.beans;
-
 public class RateCardTestAssociation {
 
 	private String id;

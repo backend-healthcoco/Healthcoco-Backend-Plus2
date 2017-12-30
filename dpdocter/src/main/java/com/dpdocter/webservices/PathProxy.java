@@ -345,7 +345,7 @@ public interface PathProxy {
 		public static final String GET_EYE_OBSERVATIONS = "/eyeObservations";
 
 		public static final String GET_DIAGNOSES_BY_SPECIALITY = "/getDiagnosesBySpeciality";
-		
+
 		public static final String EMAIL_CLINICAL_NOTES_WEB = "/{clinicalNotesId}/{emailAddress}/mail";
 
 	}
@@ -558,13 +558,13 @@ public interface PathProxy {
 		public static final String UPLOAD_GENERIC_CODE_WITH_REACTION = "/genericCodeWithReaction/upload";
 
 		public static final String DELETE_GENERIC_CODE_WITH_REACTION = "/genericCodeWithReaction/delete";
-		
+
 		public static final String ADD_EYE_PRESCRPTION = "eyePrescription/add";
-		
+
 		public static final String EDIT_EYE_PRESCRPTION = "eyePrescription/edit";
-		
+
 		public static final String GET_EYE_PRESCRPTION_BY_ID = "eyePrescription/{id}/get";
-		
+
 		public static final String GET_EYE_PRESCRPTIONS = "eyePrescription/getAll";
 
 		public static final String EMAIL_EYE_PRESCRIPTION = "/eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
@@ -576,27 +576,26 @@ public interface PathProxy {
 		public static final String DELETE_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
 
 		public static final String GET_CUSTOM_DRUGS = "/getCustomDrugs";
-		
+
 		public static final String ADD_EDIT_INSTRUCTIONS = "/addEditInstructions";
-		
+
 		public static final String GET_INSTRUCTIONS = "/getInstructions";
-		
+
 		public static final String DELETE_INSTRUCTIONS = "/deleteInstructions";
 
 		public static final String REMOVE_DUPLICATE_DRUGS = "/drugs/removeDuplicate";
 
 		public static final String GET_DRUG_SUBSTITUTES = "/drugs/getSubstitutes";
-		
+
 		public static final String EMAIL_PRESCRIPTION_WEB = "/{prescriptionId}/{emailAddress}/mail";
 
 		public static final String SMS_PRESCRIPTION_WEB = "/{prescriptionId}/{mobileNumber}/sms";
-		
+
 		public static final String EMAIL_EYE_PRESCRIPTION_WEB = "/eye/{prescriptionId}/{emailAddress}/mail";
 
 		public static final String SMS_EYE_PRESCRIPTION_WEB = "eye/{prescriptionId}/{mobileNumber}/sms";
-		
-		public static final String DELETE_PRESCRIPTION_WEB = "/{prescriptionId}/delete";
 
+		public static final String DELETE_PRESCRIPTION_WEB = "/{prescriptionId}/delete";
 
 	}
 
@@ -774,9 +773,8 @@ public interface PathProxy {
 		public static final String SMS_VISITS = "/{visitId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
 		public static final String DOWNLOAD_PATIENT_VISIT = "/download/{visitId}";
-		
-		public static final String SMS_VISITS_WEB = "/{visitId}/{mobileNumber}/sms";
 
+		public static final String SMS_VISITS_WEB = "/{visitId}/{mobileNumber}/sms";
 
 	}
 
@@ -1005,9 +1003,9 @@ public interface PathProxy {
 		public static final String ADD_TREATMENT_SERVICES_TO_DOCTOR = "/service/{serviceId}/{doctorId}/{locationId}/{hospitalId}/makeFavourite";
 
 		public static final String GET_TREATMENT_SERVICES_BY_SPECIALITY = "/getServicesBySpeciality";
-		
+
 		public static final String EMAIL_PATIENT_TREATMENT_WEB = "/{treatmentId}/{emailAddress}/mail";
-		
+
 		public static final String DELETE_PATIENT_TREATMENT_WEB = "/{treatmentId}/delete";
 
 	}
@@ -1317,7 +1315,7 @@ public interface PathProxy {
 		public static final String DELETE_IMPLANT = "/implant/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_DISCHARGE_SUMMARY_ITEMS = "/{type}/{range}";
 		public static final String EMAIL_DISCHARGE_SUMMARY_WEB = "/{dischargeSummeryId}/{emailAddress}/mail";
-		
+
 	}
 
 	public static final String SOLR_DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/solr/dischargeSummary";
@@ -1384,7 +1382,7 @@ public interface PathProxy {
 		public static final String GET_LAB_REPORTS_FOR_DOCTOR = "/getLabReportsForDoctor";
 		public static final String GET_LAB_REPORTS_FOR_LAB = "/getLabReportsForLab";
 		public static final String UPLOAD_REPORTS_TO_DOCTOR = "/uploadReportsToDoctor";
-
+		public static final String CHANGE_PATIENT_SHARE_STATUS = "/changePatientShareStatus";
 	}
 
 	public static final String INVENTORY_BASE_URL = BASE_URL + "/inventory";
