@@ -296,9 +296,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 						if (oldSpecialities != null && !oldSpecialities.isEmpty())
 							removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
-					} else
+					} else {
 						doctorCollection.setSpecialities(null);
-					assignDefaultUIPermissions(request.getDoctorId());
+						assignDefaultUIPermissions(request.getDoctorId());
+					}
 				} else {
 					doctorCollection.setSpecialities(null);
 					assignDefaultUIPermissions(request.getDoctorId());
