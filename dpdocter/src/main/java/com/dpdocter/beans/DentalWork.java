@@ -44,7 +44,7 @@ public class DentalWork extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-s	public String getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
