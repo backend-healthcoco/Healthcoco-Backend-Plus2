@@ -115,6 +115,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
+					.must(QueryBuilders.termQuery("isPatientDiscarded", false))
 					.should(QueryBuilders
 							.regexpQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), searchTerm+".*")
 							.boost(4))
@@ -220,7 +221,8 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.termQuery("locationId", locationId))
-				.must(QueryBuilders.termQuery("hospitalId", hospitalId));
+				.must(QueryBuilders.termQuery("hospitalId", hospitalId))
+				.must(QueryBuilders.termQuery("isPatientDiscarded", false));
 
 		if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
 			boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", request.getDoctorId()));

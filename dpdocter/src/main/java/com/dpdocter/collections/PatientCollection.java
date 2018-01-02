@@ -95,6 +95,9 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = false;
+	
+	@Field
+	private Boolean isPatientDiscarded = false;
 
 	@Field
 	private Long dateOfVisit;
@@ -325,6 +328,14 @@ public class PatientCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	public Long getDateOfVisit() {
 		return dateOfVisit;
 	}
@@ -399,10 +410,10 @@ public class PatientCollection extends GenericCollection {
 				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
 				+ insuranceName + ", userId=" + userId + ", notes=" + notes + ", PID=" + PID + ", registrationDate="
 				+ registrationDate + ", gender=" + gender + ", dob=" + dob + ", discarded=" + discarded
-				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address
-				+ ", consultantDoctorIds=" + consultantDoctorIds + ", personalInformation=" + personalInformation
-				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
-				+ lifestyleQuestionAnswers + ", PNUM=" + PNUM + "]";
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", dateOfVisit=" + dateOfVisit + ", referredBy="
+				+ referredBy + ", address=" + address + ", consultantDoctorIds=" + consultantDoctorIds
+				+ ", personalInformation=" + personalInformation + ", medicalQuestionAnswers=" + medicalQuestionAnswers
+				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", PNUM=" + PNUM + "]";
 	}
 
 }

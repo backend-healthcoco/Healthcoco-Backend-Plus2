@@ -1712,6 +1712,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection.setInHistory(oldClinicalNotesCollection.isInHistory());
 			clinicalNotesCollection.setUpdatedTime(new Date());
 			clinicalNotesCollection.setUniqueEmrId(oldClinicalNotesCollection.getUniqueEmrId());
+			clinicalNotesCollection.setIsPatientDiscarded(oldClinicalNotesCollection.getIsPatientDiscarded());
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
 			clinicalNotes = new ClinicalNotes();
@@ -1793,7 +1794,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-					.is(patientObjectId);
+					.is(patientObjectId).and("isPatientDiscarded").is(false);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
@@ -2783,7 +2784,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer clinicalNotesCount = 0;
 		try {
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").is(false);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -4103,7 +4104,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("discarded").in(discards).and("updatedTime").gt(createdTimestamp)
-					.and("inHistory").in(inHistorys);
+					.and("inHistory").in(inHistorys).and("isPatientDiscarded").is(false);
 			ObjectId patientObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				patientObjectId = new ObjectId(patientId);

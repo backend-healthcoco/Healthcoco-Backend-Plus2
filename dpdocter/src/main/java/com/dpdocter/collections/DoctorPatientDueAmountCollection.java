@@ -31,6 +31,9 @@ public class DoctorPatientDueAmountCollection extends GenericCollection{
 	@Field
 	private Double dueAmount = 0.0;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -79,9 +82,19 @@ public class DoctorPatientDueAmountCollection extends GenericCollection{
 		this.dueAmount = dueAmount;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientDueAmountCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", dueAmount=" + dueAmount + "]";
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", dueAmount=" + dueAmount
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
 }

@@ -70,6 +70,9 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	@Field
 	private Date invoiceDate;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -206,6 +209,14 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 		this.invoiceDate = invoiceDate;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -213,6 +224,8 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 				+ ", receiptIds=" + receiptIds + ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount
 				+ ", totalCost=" + totalCost + ", totalTax=" + totalTax + ", grandTotal=" + grandTotal
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
-				+ balanceAmount + ", discarded=" + discarded + ", invoiceDate=" + invoiceDate + "]";
+				+ balanceAmount + ", discarded=" + discarded + ", invoiceDate=" + invoiceDate + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
+
 }

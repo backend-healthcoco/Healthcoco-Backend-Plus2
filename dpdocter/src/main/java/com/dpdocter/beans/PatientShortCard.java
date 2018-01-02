@@ -26,6 +26,8 @@ public class PatientShortCard {
 
 	private DOB dob;
 
+	private String userId;
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -122,12 +124,21 @@ public class PatientShortCard {
 		this.dob = dob;
 	}
 
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientShortCard [firstName=" + firstName + ", localPatientName=" + localPatientName + ", userName="
 				+ userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl="
 				+ thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender
-				+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + "]";
+				+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", userId="
+				+ userId + "]";
 	}
 
 }

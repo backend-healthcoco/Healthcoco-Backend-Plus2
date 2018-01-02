@@ -39,6 +39,9 @@ public class IPDReportsCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -159,6 +162,14 @@ public class IPDReportsCollection extends GenericCollection {
 		this.timeOfAdmission = timeOfAdmission;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "IPDReportsCollection [id=" + id + ", patientId=" + patientId + ", admissionTime=" + admissionTime
@@ -166,7 +177,8 @@ public class IPDReportsCollection extends GenericCollection {
 				+ doctorIncharge + ", diagnosis=" + diagnosis + ", natureOfProfessionalServiceRendered="
 				+ natureOfProfessionalServiceRendered + ", amountReceived=" + amountReceived + ", receiptNo="
 				+ receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
 
 }

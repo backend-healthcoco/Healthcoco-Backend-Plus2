@@ -82,6 +82,9 @@ public class RecordsCollection extends GenericCollection {
 	@Field
 	private List<String> messages;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -258,6 +261,14 @@ public class RecordsCollection extends GenericCollection {
 		this.messages = messages;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsUrl=" + recordsUrl
@@ -268,7 +279,8 @@ public class RecordsCollection extends GenericCollection {
 				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
 				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId="
 				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", recordsState=" + recordsState
-				+ ", messages=" + messages + "]";
+				+ ", messages=" + messages + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
 
 }

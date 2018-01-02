@@ -49,8 +49,8 @@ public class AdmitCardCollection extends GenericCollection {
 	@Field
 	private String examination;
 	
-	
-
+	@Field
+	private Boolean isPatientDiscarded = false;
 	
 
 	public String getExamination() {
@@ -207,8 +207,6 @@ public class AdmitCardCollection extends GenericCollection {
 		this.diagnosis = diagnosis;
 	}
 
-	
-
 	public String getUniqueEmrId() {
 		return uniqueEmrId;
 	}
@@ -217,5 +215,23 @@ public class AdmitCardCollection extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "AdmitCardCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", admissionDate=" + admissionDate + ", dischargeDate="
+				+ dischargeDate + ", operationDate=" + operationDate + ", uniqueEmrId=" + uniqueEmrId
+				+ ", natureOfOperation=" + natureOfOperation + ", pastHistory=" + pastHistory + ", familyHistory="
+				+ familyHistory + ", personalHistory=" + personalHistory + ", complaint=" + complaint + ", xRayDetails="
+				+ xRayDetails + ", jointInvolvement=" + jointInvolvement + ", treatmentsPlan=" + treatmentsPlan
+				+ ", diagnosis=" + diagnosis + ", discarded=" + discarded + ", examination=" + examination
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
+	}	
 }

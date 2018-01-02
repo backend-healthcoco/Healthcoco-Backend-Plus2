@@ -45,6 +45,9 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
     @Field
     private Boolean isAllDayEvent = false;
 
+    @Field
+	private Boolean isPatientDiscarded = false;
+    
 	public ObjectId getId() {
 		return id;
 	}
@@ -117,10 +120,20 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
 		this.isAllDayEvent = isAllDayEvent;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentBookedSlotCollection [id=" + id + ", appointmentId=" + appointmentId + ", doctorId="
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time
-				+ ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent=" + isAllDayEvent + "]";
+				+ ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent=" + isAllDayEvent
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
 }

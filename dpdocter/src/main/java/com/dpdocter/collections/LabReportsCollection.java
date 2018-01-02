@@ -66,6 +66,9 @@ public class LabReportsCollection extends GenericCollection {
 	@Field
 	private String serialNumber;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public String getSerialNumber() {
 		return serialNumber;
 	}
@@ -210,15 +213,24 @@ public class LabReportsCollection extends GenericCollection {
 		this.testName = testName;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
-		return "LabReportsCollection [id=" + id + ", requestId=" + requestId + ", patientId=" + patientId
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+		return "LabReportsCollection [id=" + id + ", testName=" + testName + ", requestId=" + requestId + ", patientId="
+				+ patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", labReports=" + labReports + ", explanation=" + explanation + ", discarded=" + discarded
 				+ ", uploadedByDoctorId=" + uploadedByDoctorId + ", uploadedByLocationId=" + uploadedByLocationId
 				+ ", uploadedByHospitalId=" + uploadedByHospitalId + ", labTestSampleId=" + labTestSampleId
 				+ ", recordsState=" + recordsState + ", uploadCounts=" + uploadCounts + ", isSharedToPatient="
-				+ isSharedToPatient + "]";
+				+ isSharedToPatient + ", serialNumber=" + serialNumber + ", isPatientDiscarded=" + isPatientDiscarded
+				+ "]";
 	}
 
 }

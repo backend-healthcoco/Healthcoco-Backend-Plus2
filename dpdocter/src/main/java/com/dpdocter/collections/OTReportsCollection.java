@@ -49,6 +49,9 @@ public class OTReportsCollection extends GenericCollection {
 	@Field
 	private String operationalNotes;
 	
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -185,6 +188,14 @@ public class OTReportsCollection extends GenericCollection {
 		this.operationalNotes = operationalNotes;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReportsCollection [id=" + id + ", patientId=" + patientId + ", operationDate=" + operationDate
@@ -193,7 +204,7 @@ public class OTReportsCollection extends GenericCollection {
 				+ operatingSurgeon + ", anaesthetist=" + anaesthetist + ", assitingDoctors=" + assitingDoctors
 				+ ", assitingNurses=" + assitingNurses + ", materialForHPE=" + materialForHPE + ", remarks=" + remarks
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", operationalNotes=" + operationalNotes + "]";
+				+ ", operationalNotes=" + operationalNotes + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

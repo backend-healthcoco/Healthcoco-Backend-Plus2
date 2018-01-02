@@ -67,6 +67,9 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 	@Field
 	private Double usedAdvanceAmount = 0.0;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -203,6 +206,14 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientReceiptCollection [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType="
@@ -211,6 +222,6 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 				+ advanceReceiptIdWithAmounts + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
 				+ ", amountPaid=" + amountPaid + ", remainingAdvanceAmount=" + remainingAdvanceAmount
 				+ ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate + ", discarded=" + discarded
-				+ ", usedAdvanceAmount=" + usedAdvanceAmount + "]";
+				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 }

@@ -14,6 +14,7 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -160,4 +161,9 @@ public interface RegistrationService {
 	List<UserAddress> getUserAddress(String userId, String mobileNumber, Boolean discarded);
 
 	UserAddress deleteUserAddress(String addressId, String userId, String mobileNumber, Boolean discarded);
+
+	Boolean deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
+			Boolean discarded);
+
+	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId);
 }

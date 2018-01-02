@@ -11,8 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Executors;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 
@@ -28,7 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
@@ -1542,7 +1541,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -1734,7 +1733,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -2404,7 +2403,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
-					.and("hospitalId").is(hospitalObjectId).and("date").gt(start).lte(end).and("discarded").is(false);
+					.and("hospitalId").is(hospitalObjectId).and("date").gt(start).lte(end).and("discarded").is(false).and("isPatientDiscarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("status").is(status.toUpperCase());
@@ -2850,7 +2849,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId, String from, String to) {
 		LocationWithPatientQueueDetails response = null;
 		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state").ne(AppointmentState.CANCEL.getState());
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state").ne(AppointmentState.CANCEL.getState()).and("isPatientDiscarded").is(false);
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			
 			
@@ -2989,7 +2988,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 					Criteria criteria2 = new Criteria("doctorId").is(userCollection.getId()).and("locationId")
-							.is(new ObjectId(locationId));
+							.is(new ObjectId(locationId)).and("isPatientDiscarded").is(false);
 					if (!DPDoctorUtils.anyStringEmpty(from)) {
 						localCalendar.setTime(new Date(Long.parseLong(from)));
 						int currentDay = localCalendar.get(Calendar.DATE);

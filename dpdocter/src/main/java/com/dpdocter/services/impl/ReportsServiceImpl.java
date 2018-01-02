@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -282,7 +281,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -399,7 +398,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -575,7 +574,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -707,7 +706,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 

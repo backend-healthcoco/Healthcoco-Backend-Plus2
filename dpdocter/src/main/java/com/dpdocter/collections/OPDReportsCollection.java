@@ -33,6 +33,9 @@ public class OPDReportsCollection extends GenericCollection {
 	@Field
 	private ObjectId visitId;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -121,12 +124,20 @@ public class OPDReportsCollection extends GenericCollection {
 		this.visitId = visitId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "OPDReportsCollection [id=" + id + ", patientId=" + patientId + ", prescriptionId=" + prescriptionId
 				+ ", amountReceived=" + amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate
 				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", visitId=" + visitId + "]";
+				+ hospitalId + ", visitId=" + visitId + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

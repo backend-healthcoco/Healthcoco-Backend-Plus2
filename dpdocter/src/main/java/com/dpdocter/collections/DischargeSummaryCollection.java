@@ -1,7 +1,6 @@
 package com.dpdocter.collections;
 
 import java.util.Date;
-import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -129,7 +128,8 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private String operationName;
 	
-	
+	@Field
+	private Boolean isPatientDiscarded = false;
 
 	public String getOperationName() {
 		return operationName;
@@ -589,6 +589,39 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public String getDischargeId() {
 		return dischargeId;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DischargeSummaryCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", prescriptionId=" + prescriptionId
+				+ ", complaints=" + complaints + ", presentComplaints=" + presentComplaints + ", prescriptions="
+				+ prescriptions + ", historyOfPresentComplaints=" + historyOfPresentComplaints + ", generalExamination="
+				+ generalExamination + ", systemicExamination=" + systemicExamination + ", dischargeId=" + dischargeId
+				+ ", appointmentId=" + appointmentId + ", complaint=" + complaint + ", presentComplaint="
+				+ presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory + ", generalExam="
+				+ generalExam + ", systemExam=" + systemExam + ", uniqueEmrId=" + uniqueEmrId + ", diagnosis="
+				+ diagnosis + ", pastHistory=" + pastHistory + ", familyHistory=" + familyHistory + ", personalHistory="
+				+ personalHistory + ", menstrualHistory=" + menstrualHistory + ", obstetricHistory=" + obstetricHistory
+				+ ", observation=" + observation + ", investigation=" + investigation + ", pa=" + pa + ", ps=" + ps
+				+ ", pv=" + pv + ", echo=" + echo + ", xRayDetails=" + xRayDetails + ", operationNotes="
+				+ operationNotes + ", treatmentsGiven=" + treatmentsGiven + ", time=" + time + ", fromDate=" + fromDate
+				+ ", admissionDate=" + admissionDate + ", dischargeDate=" + dischargeDate + ", labourNotes="
+				+ labourNotes + ", babyWeight=" + babyWeight + ", babyNotes=" + babyNotes + ", conditionsAtDischarge="
+				+ conditionsAtDischarge + ", summary=" + summary + ", discarded=" + discarded + ", indicationOfUSG="
+				+ indicationOfUSG + ", ecgDetails=" + ecgDetails + ", holter=" + holter + ", procedureNote="
+				+ procedureNote + ", doctorIncharge=" + doctorIncharge + ", vitalSigns=" + vitalSigns
+				+ ", operationDate=" + operationDate + ", surgeon=" + surgeon + ", anesthetist=" + anesthetist
+				+ ", implant=" + implant + ", cement=" + cement + ", operationName=" + operationName
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }
