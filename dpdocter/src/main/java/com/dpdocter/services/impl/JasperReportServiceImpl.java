@@ -417,7 +417,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{ObstetricHistory}", "$P{obstetricHistory}", fieldWidth, false, 0);
 		showTitle = (Boolean) parameters.get("showExamTitle");
 		if (showTitle) {
-
 			band = new JRDesignBand();
 			band.setHeight(20);
 			jrDesignTextField = new JRDesignTextField();
@@ -441,9 +440,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{IndirectLarygoscopyExam}", "$P{indirectLarygoscopyExam}", fieldWidth,
 				false, 0);
 		addItems(jasperDesign, columnWidth, "$P{NeckExam}", "$P{neckExam}", fieldWidth, false, 0);
-
 		addItems(jasperDesign, columnWidth, "$P{EarsExam}", "$P{earsExam}", fieldWidth, false, 0);
-
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$P{systemExam}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{pastHistory}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{FamilyHistoryTitle}", "$P{familyHistory}", fieldWidth, false, 0);
@@ -521,13 +518,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$P{procedureNote}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0);
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
 		dsr.setDatasetName("dataset1");
 		dsr.setDataSourceExpression(new JRDesignExpression(
 				"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{diagrams})"));
-
 		band = new JRDesignBand();
 		band.setPrintWhenExpression(new JRDesignExpression("!$P{diagrams}.isEmpty()"));
 		band.setHeight(158);
@@ -583,7 +580,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(reportElement);
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		}
+	}
 
 	private void addLMPAndEDD(JasperDesign jasperDesign, int columnWidth, int fieldWidth, int xSpaceForTitle,
 			String lmpKey, String lmpValue, String eddKey, String eddValue) {
@@ -1044,8 +1041,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$F{provisionalDiagnosis}", fieldWidth, false,
 				0);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$F{diagnosis}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$F{procedureNote}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0);
-
 		JasperCompileManager.compileReportToFile(jasperDesign,
 				JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_subreport-A4.jasper");
 
