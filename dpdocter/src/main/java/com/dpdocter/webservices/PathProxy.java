@@ -583,7 +583,7 @@ public interface PathProxy {
 
 		public static final String DELETE_INSTRUCTIONS = "/deleteInstructions";
 
-		public static final String REMOVE_DUPLICATE_DRUGS = "/drugs/removeDuplicate";
+		public static final String UPDATE_GENERIC_CODES = "/genericCodes/Update";
 
 		public static final String GET_DRUG_SUBSTITUTES = "/drugs/getSubstitutes";
 		
@@ -598,6 +598,9 @@ public interface PathProxy {
 		public static final String DELETE_PRESCRIPTION_WEB = "/{prescriptionId}/delete";
 
 
+		public static final String UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING = "drugs/updateRanking";
+
+		public static final String UPLOAD_DRUGS = "drugs/upload";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
@@ -784,6 +787,8 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PATIENT_VISIT = "/download/{visitId}";
 		
 		public static final String SMS_VISITS_WEB = "/{visitId}/{mobileNumber}/sms";
+
+		public static final String GET_PATIENT_LAST_VISIT = "/last/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
 
 	}

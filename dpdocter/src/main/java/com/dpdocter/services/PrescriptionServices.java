@@ -205,7 +205,7 @@ public interface PrescriptionServices {
 	Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
 
-	Boolean removeDuplicateDrugs();
+	Boolean updateGenericCodes();
 
 	List<Drug> getDrugSubstitutes(String drugId);
 
@@ -220,7 +220,9 @@ public interface PrescriptionServices {
 
 	Prescription deletePrescriptionForWeb(String prescriptionId, String doctorId, String hospitalId, String locationId,
 			String patientId, Boolean discarded);
-	
 
+	Boolean updateDrugRankingOnBasisOfRanking();
+
+	Boolean uploadDrugs();
 
 }

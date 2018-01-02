@@ -115,4 +115,7 @@ public interface DrugRepository
 	@Query("{'id': ?0, 'createdTime': {'$lt': ?0}}")
 	DrugCollection findByIdAndTime(ObjectId drugId, DateTime start);
 
+	@Query("{'drugCode': {$regex : '^?0.*', $options : 'i'}, 'doctorId': ?1,  'locationId': ?2, 'hospitalId': ?3}")
+	DrugCollection findByStartWithDrugCode(String drugCode, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, Sort sort);
+
 }

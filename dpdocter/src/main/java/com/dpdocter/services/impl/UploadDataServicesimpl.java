@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -99,8 +98,6 @@ import common.util.web.PrescriptionUtils;
 @Service
 public class UploadDataServicesimpl implements UploadDateService {
 
-	private static Logger logger = Logger.getLogger(UploadDataServicesimpl.class.getName());
-
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
@@ -142,9 +139,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 	
 	@Autowired
 	private PatientTreamentRepository patientTreamentRepository;
-
-	@Autowired
-	private ESTreatmentServiceRepository esTreatmentServiceRepository;
 
 	@Autowired
 	private DrugRepository drugRepository;
@@ -206,49 +200,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
 			
-//			List<DrugCollection> drugCollections = drugRepository.findByLocationId(locationObjectId);
-//			if(drugCollections != null)
-//			for(DrugCollection drugCollection : drugCollections) {
-//				
-//				ESDrugDocument document = esDrugRepository.findOne(drugCollection.getId().toString());
-//				if(document != null)esDrugRepository.delete(document);
-//				drugRepository.delete(drugCollection);
-//			}
-//			
-//			BoolQueryBuilder booleanQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.termQuery("locationId", locationId));
-//			
-//			
-//			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(booleanQueryBuilder).withPageable(new PageRequest(0, 3267)).build();
-//			List<ESDrugDocument> drugDocuments = elasticsearchTemplate.queryForList(searchQuery,
-//					ESDrugDocument.class);
-//			if(drugDocuments != null) {
-//				System.out.println(drugDocuments.size());
-//				for(ESDrugDocument esDrugDocument : drugDocuments) {
-//					esDrugRepository.delete(esDrugDocument.getId());
-//				}
-//			}
-//			
-//			List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findByLocationId(locationObjectId);
-//			if(treatmentServicesCollections != null)
-//			for(TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
-//				
-//				ESTreatmentServiceDocument document = esTreatmentServiceRepository.findOne(treatmentServicesCollection.getId().toString());
-//				if(document != null)esTreatmentServiceRepository.delete(document.getId());
-//				treatmentServicesRepository.delete(treatmentServicesCollection);
-//			}
-//			
-//			
-//			searchQuery = new NativeSearchQueryBuilder().withQuery(booleanQueryBuilder).build();
-//			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = elasticsearchTemplate.queryForList(searchQuery,
-//					ESTreatmentServiceDocument.class);
-//			if(esTreatmentServiceDocuments != null) {
-//				System.out.println(esTreatmentServiceDocuments.size());
-//				for(ESTreatmentServiceDocument esTreatmentServiceDocument : esTreatmentServiceDocuments) {
-//					esTreatmentServiceRepository.delete(esTreatmentServiceDocument.getId());
-//				}
-//			}
-//			
-//			
 			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId, new Date(Long.parseLong("0")), 
 					new Sort(Direction.ASC, "createdTime"));
 			for(PatientCollection patientCollection : patientCollections) {
