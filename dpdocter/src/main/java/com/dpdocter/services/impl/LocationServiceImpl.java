@@ -2307,7 +2307,6 @@ public class LocationServiceImpl implements LocationServices {
 			BeanUtil.map(customWorkCollection, response);
 		} catch (Exception e) {
 			// TODO: handle exception
-			throw new Exception(e);
 			e.printStackTrace();
 		}
 		return response;

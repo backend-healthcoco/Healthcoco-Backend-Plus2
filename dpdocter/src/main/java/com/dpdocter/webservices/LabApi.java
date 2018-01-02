@@ -730,7 +730,7 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_DENTAL_WORKS)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_DENTAL_WORKS, notes = PathProxy.LabUrls.GET_DENTAL_WORKS)
-	public Response<Object> getCBListByParentLab(@QueryParam("locationId") String locationId,
+	public Response<Object> getDentalWorks(@QueryParam("locationId") String locationId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
