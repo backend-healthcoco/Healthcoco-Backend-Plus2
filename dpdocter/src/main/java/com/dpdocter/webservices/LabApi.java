@@ -451,8 +451,8 @@ public class LabApi {
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_CB, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
 	public Response<LabTestPickupLookupResponse> getPickUpForCB(@QueryParam("collectionBoyId") String collectionBoyId,
-			@QueryParam("from") Long from, @QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("from") @DefaultValue("0") Long from, @QueryParam("to") @DefaultValue("0") Long to,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 
@@ -472,11 +472,10 @@ public class LabApi {
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_DL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
 	public Response<LabTestPickupLookupResponse> getPickUpForDL(@QueryParam("daughterLabId") String daughterLabId,
-			@QueryParam("from") Long from, @QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("from") @DefaultValue("0") Long from, @QueryParam("to") @DefaultValue("0") Long to,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
-
 		try {
 			labTestPickups = locationServices.getRequestForDL(daughterLabId, from, to, searchTerm, size, page);
 			response = new Response<LabTestPickupLookupResponse>();
@@ -493,8 +492,9 @@ public class LabApi {
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_PL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
 	public Response<LabTestPickupLookupResponse> getPickUpForPL(@QueryParam("parentLabId") String parentLabId,
-			@QueryParam("daughterLabId") String daughterLabId, @QueryParam("from") Long from, @QueryParam("to") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("daughterLabId") String daughterLabId, @QueryParam("from") @DefaultValue("0") Long from,
+			@QueryParam("to") @DefaultValue("0") Long to, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("size") int size, @QueryParam("page") int page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 
@@ -592,7 +592,8 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS)
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS, notes = PathProxy.LabUrls.GET_LAB_REPORTS)
 	public Response<Object> getLabReports(@QueryParam("locationId") String locationId,
-			@QueryParam("isParent") Boolean isParent, @QueryParam("from") Long from, @QueryParam("to") Long to,
+			@QueryParam("isParent") @DefaultValue("true") Boolean isParent,
+			@QueryParam("from") @DefaultValue("0") Long from, @QueryParam("to") @DefaultValue("0") Long to,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 
 		List<PatientLabTestSampleReportResponse> labTestSamples = null;
