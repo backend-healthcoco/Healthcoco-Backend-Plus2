@@ -160,6 +160,14 @@ public class InvoiceItem {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public boolean isSaveToInventory() {
+		return saveToInventory;
+	}
+
+	public void setSaveToInventory(boolean saveToInventory) {
+		this.saveToInventory = saveToInventory;
+	}
+
 	@Override
 	public String toString() {
 		return "InvoiceItems [itemId=" + itemId + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", name="
