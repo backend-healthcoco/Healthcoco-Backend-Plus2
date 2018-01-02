@@ -183,14 +183,6 @@ public class Drug extends GenericCollection {
 		this.count = count;
 	}
 
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
-
 	public Long getTotalStock() {
 		return totalStock;
 	}
@@ -199,6 +191,13 @@ public class Drug extends GenericCollection {
 		this.totalStock = totalStock;
 	}
 
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
 
 	@Override
 	public String toString() {

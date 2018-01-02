@@ -63,10 +63,10 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private String packForm;
-	
+
 	@Field
 	private String prizePerPack;
-	
+
 	@Field
 	private String MRP;
 
@@ -89,20 +89,20 @@ public class DrugCollection extends GenericCollection {
 	private long rankingCount = 0;
 
 	@Field
-	private Long inventoryQuantity;
+	private List<String> specialities;
 
 	@Field
-	private List<String> specialities;
-	 
-	@Field
 	private String rxRequired;
-	
+
 	@Field
 	private String unsafeWith;
 	
 	@Field
 	private Long totalStock;
 	
+
+	private Long inventoryQuantity;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -266,14 +266,6 @@ public class DrugCollection extends GenericCollection {
 		this.rankingCount = rankingCount;
 	}
 
-	public long getCompanyRankingCount() {
-		return companyRankingCount;
-	}
-
-	public void setCompanyRankingCount(long companyRankingCount) {
-		this.companyRankingCount = companyRankingCount;
-	}
-
 	public String getPackForm() {
 		return packForm;
 	}
@@ -288,14 +280,6 @@ public class DrugCollection extends GenericCollection {
 
 	public void setPrizePerPack(String prizePerPack) {
 		this.prizePerPack = prizePerPack;
-	}
-
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	public List<String> getSpecialities() {
@@ -329,7 +313,23 @@ public class DrugCollection extends GenericCollection {
 	public void setTotalStock(Long totalStock) {
 		this.totalStock = totalStock;
 	}
+	
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
 
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+	
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
