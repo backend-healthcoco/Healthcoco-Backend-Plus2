@@ -23,8 +23,8 @@ public class PrescriptionAddItem {
 
     private String instructions;
     
+    private Long inventoryQuantity;
     
-
     public DrugType getDrugType() {
 		return drugType;
 	}
@@ -96,6 +96,14 @@ public class PrescriptionAddItem {
     public void setInstructions(String instructions) {
 	this.instructions = instructions;
     }
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
 
 	@Override
 	public String toString() {

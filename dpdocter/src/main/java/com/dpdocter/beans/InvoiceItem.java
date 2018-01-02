@@ -22,6 +22,8 @@ public class InvoiceItem {
 	private Quantity quantity;
 
 	private Long inventoryQuantity;
+	
+	private boolean saveToInventory = false;
 
 	private PatientTreatmentStatus status;
 
@@ -147,6 +149,14 @@ public class InvoiceItem {
 
 	public void setInventoryQuantity(Long inventoryQuantity) {
 		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public boolean isSaveToInventory() {
+		return saveToInventory;
+	}
+
+	public void setSaveToInventory(boolean saveToInventory) {
+		this.saveToInventory = saveToInventory;
 	}
 
 	@Override
