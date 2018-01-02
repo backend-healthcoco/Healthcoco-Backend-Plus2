@@ -543,11 +543,11 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("collectionBoyId").is(new ObjectId(collectionBoyId));
 			criteria.and("isCompleted").is(false);
 			if (from != 0 && to != 0) {
-				criteria.and("updatedTime").gte(new Date(from)).lte(new Date(to));
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else if (from != 0) {
 				criteria.and("updatedTime").gte(new Date(from));
 			} else if (to != 0) {
-				criteria.and("updatedTime").lte(new Date(to));
+				criteria.and("updatedTime").lte(DPDoctorUtils.getEndTime(new Date(to)));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -685,11 +685,11 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
 			criteria.and("isCompleted").is(false);
 			if (from != 0 && to != 0) {
-				criteria.and("updatedTime").gte(new Date(from)).lte(new Date(to));
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else if (from != 0) {
 				criteria.and("updatedTime").gte(new Date(from));
 			} else if (to != 0) {
-				criteria.and("updatedTime").lt(new Date(to));
+				criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to)));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -833,11 +833,11 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("parentLabLocationId").is(new ObjectId(parentLabId));
 			criteria.and("isCompleted").is(false);
 			if (from != 0 && to != 0) {
-				criteria.and("updatedTime").gte(new Date(from)).lte(new Date(to));
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else if (from != 0) {
 				criteria.and("updatedTime").gte(new Date(from));
 			} else if (to != 0) {
-				criteria.and("updatedTime").lt(new Date(to));
+				criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to)));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -1941,11 +1941,11 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (from != 0 && to != 0) {
-				criteria.and("labTestSamples.updatedTime").gte(new Date(from)).lte(new Date(to));
+				criteria.and("labTestSamples.updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else if (from != 0) {
 				criteria.and("labTestSamples.updatedTime").gte(new Date(from));
 			} else if (to != 0) {
-				criteria.and("labTestSamples.updatedTime").lte(new Date(to));
+				criteria.and("labTestSamples.updatedTime").lte(DPDoctorUtils.getEndTime(new Date(to)));
 			}
 
 			ObjectId locationObjectId = new ObjectId(locationId);
@@ -2071,11 +2071,13 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (from != 0 && to != 0) {
-				criteria.and("labTestSamples.updatedTime").gte(new Date(from)).lte(new Date(to));
+				criteria.and("labTestSamples.updatedTime").gte(new Date(from))
+						.lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else if (from != 0) {
 				criteria.andOperator(Criteria.where("labTestSamples.updatedTime").gte(new Date(from)));
 			} else if (to != 0) {
-				criteria.andOperator(Criteria.where("labTestSamples.updatedTime").lte(new Date(to)));
+				criteria.andOperator(
+						Criteria.where("labTestSamples.updatedTime").lte(DPDoctorUtils.getEndTime(new Date(to))));
 			}
 
 			ObjectId locationObjectId = new ObjectId(locationId);
