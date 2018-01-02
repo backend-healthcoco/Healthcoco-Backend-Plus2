@@ -52,7 +52,6 @@ import com.dpdocter.beans.Tags;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.UserAllowanceDetails;
 import com.dpdocter.beans.UserRecords;
-import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -469,9 +468,7 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsCollection.setPrescriptionId(oldRecord.getPrescriptionId());
 			recordsCollection.setRecordsState(oldRecord.getRecordsState());
 			recordsCollection.setDiagnosticTestId(oldRecord.getDiagnosticTestId());
-
 			recordsCollection.setIsPatientDiscarded(oldRecord.getIsPatientDiscarded());
-
 			recordsCollection = recordsRepository.save(recordsCollection);
 
 			// pushNotificationServices.notifyUser(recordsCollection.getPatientId(),
@@ -555,7 +552,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 				Collection<ObjectId> recordIds = CollectionUtils.collect(recordsTagsCollections,
 						new BeanToPropertyValueTransformer("recordsId"));
-				Criteria criteria = new Criteria("id").in(recordIds);
+				Criteria criteria = new Criteria("id").in(recordIds).and("isPatientDiscarded").is(false);
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 						Aggregation.unwind("patientVisit"));
@@ -578,7 +575,7 @@ public class RecordsServiceImpl implements RecordsService {
 					hospitalObjectId = new ObjectId(request.getHospitalId());
 
 				Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId")
-						.is(patientObjectId);
+						.is(patientObjectId).and("isPatientDiscarded").is(false);
 				if (!request.getDiscarded())
 					criteria.and("discarded").is(request.getDiscarded());
 
@@ -808,7 +805,7 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			// List<RecordsCollection> recordsCollections =
 			// recordsRepository.findAll(recordIds);
-			Criteria criteria = new Criteria("id").in(recordIds);
+			Criteria criteria = new Criteria("id").in(recordIds).and("isPatientDiscarded").is(false);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 					Aggregation.unwind("patientVisit"));
@@ -850,7 +847,7 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 
 			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
-					.and("isPatientDiscarded").is(false);
+					.and("isPatientDiscarded").ne(true);
 
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
@@ -960,7 +957,7 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			// RecordsCollection recordCollection =
 			// recordsRepository.findOne(new ObjectId(recordId));
-			Criteria criteria = new Criteria("id").is(recordId);
+			Criteria criteria = new Criteria("id").is(recordId).and("isPatientDiscarded").is(false);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 					Aggregation.unwind("patientVisit"));
@@ -1138,7 +1135,7 @@ public class RecordsServiceImpl implements RecordsService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId")
-					.is(patientObjectId);
+					.is(patientObjectId).and("isPatientDiscarded").is(false);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
@@ -1231,10 +1228,7 @@ public class RecordsServiceImpl implements RecordsService {
 				 */
 
 				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("patientId")
-
-
-						.is(patientObjectId).and("isPatientDiscarded").is(false);
-
+						.is(patientObjectId).and("isPatientDiscarded").ne(true);
 
 				if (!discarded)
 					criteria.and("discarded").is(discarded);
@@ -1479,6 +1473,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setPrescribedByHospitalId(oldRecord.getHospitalId());
 				recordsCollection.setPrescriptionId(oldRecord.getPrescriptionId());
 				recordsCollection.setDiagnosticTestId(oldRecord.getDiagnosticTestId());
+				recordsCollection.setIsPatientDiscarded(oldRecord.getIsPatientDiscarded());
 			} else {
 				recordsCollection
 						.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());

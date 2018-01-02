@@ -1,9 +1,8 @@
 package com.dpdocter.services.impl;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -1186,6 +1185,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			BeanUtil.map(request, prescriptionCollection);
 			UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 			PrescriptionCollection oldPrescription = prescriptionRepository.findOne(new ObjectId(request.getId()));
+			prescriptionCollection.setIsPatientDiscarded(oldPrescription.getIsPatientDiscarded());
 			prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
 			prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 			Date createdTime = new Date();
@@ -1439,7 +1439,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-					.is(patientObjectId);
+					.is(patientObjectId).and("isPatientDiscarded").is(false);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
@@ -1629,7 +1629,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId) {
 		List<Prescription> prescriptions = null;
 		try {
-			Criteria criteria = new Criteria("_id").in(prescriptionIds);
+			Criteria criteria = new Criteria("_id").in(prescriptionIds).and("isPatientDiscarded").is(false);
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
 					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
@@ -1828,7 +1828,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Integer prescriptionCount = 0;
 		try {
 
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").is(false);
 			;
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
@@ -3298,7 +3298,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria().andOperator(new Criteria("patientId").is(new ObjectId(patientId)),
-					new Criteria("updatedTime").gt(new Date(createdTimestamp)));
+					new Criteria("updatedTime").gt(new Date(createdTimestamp))).and("isPatientDiscarded").is(false);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
@@ -3635,7 +3635,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			if (DPDoctorUtils.anyStringEmpty(patientId)) {
 				Aggregation aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria("uniqueEmrId").is(uniqueEmrId)),
+						Aggregation.match(new Criteria("uniqueEmrId").is(uniqueEmrId.toUpperCase()).and("isPatientDiscarded").ne(true)),
 						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),
@@ -5255,7 +5255,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		long createdTimestamp = Long.parseLong(updatedTime);
 
 		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-				.is(patientObjectId);
+				.is(patientObjectId).and("isPatientDiscarded").is(false);
 		if (!discarded)
 			criteria.and("discarded").is(discarded);
 		// if(inHistory)criteria.and("inHistory").is(inHistory);
@@ -5949,46 +5949,56 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Boolean response = false;
 		BufferedReader br = null;
 		String line = "";
-		String cvsSplitBy = "%";
+		String cvsSplitBy = ",";
 		int lineCount = 0;
+		FileWriter fileWriter = null;
 		try {
+			fileWriter = new FileWriter("/home/ubuntu/editDrugIsPrescribed");
+			fileWriter.append("action,genericCode,Drug,isPrescribed");
+			fileWriter.append("\n");
+			
 			br = new BufferedReader(new FileReader(UPDATE_GENERIC_CODES_DATA_FILE));
-
 			while ((line = br.readLine()) != null) {
 
-				if (lineCount > 0) {
-					String[] fields = line.split(cvsSplitBy);
-					if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
-						String reason = fields[3];
-						System.out.println(fields[0] + fields[3]);
-						if (reason.equalsIgnoreCase("SPELLING MISTAKE")) {
-							updateSpellingOfGenericCodes(fields[0].trim(), fields[2].trim());
-						} else if (reason.equalsIgnoreCase("REPEAT")) {
-							removeRepeatedGenericCodes(fields[0].trim(), fields[2].trim());
-						} else if (reason.equalsIgnoreCase("REMOVE")) {
-							removeGenericCodes(fields[0].trim());
+					if (lineCount > 0) {
+						String[] fields = line.split(cvsSplitBy);
+						if(fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
+							String reason = fields[3];
+							System.out.println(reason);
+							
+							if(reason.equalsIgnoreCase("SPELLING MISTAKE")){
+								updateSpellingOfGenericCodes(fields[0], fields[2]);
+							}else if(reason.equalsIgnoreCase("REPEAT")){
+								removeRepeatedGenericCodes(fields[0], fields[2], fileWriter);
+							}else if(reason.equalsIgnoreCase("REMOVE")){
+								removeGenericCodes(fields[0], fileWriter);
+							}
 						}
 					}
-				}
-				lineCount = lineCount + 1;
+					lineCount = lineCount +1;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-		} finally {
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}finally {
 			if (br != null) {
 				try {
 					br.close();
+					if(fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
+					throw new BusinessException(ServiceError.Unknown, e.getMessage());
 				}
 			}
 		}
 		return response;
 	}
 
-	@SuppressWarnings("unused")
-	private void removeGenericCodes(String code) {
+	private void removeGenericCodes(String code, FileWriter fileWriter) {
 		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByCode(code);
 		if (genericCodeCollection != null) {
 			List<DrugCollection> drugCollections = mongoTemplate.aggregate(
@@ -5998,55 +6008,64 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (drugCollections != null) {
 				for (DrugCollection drugCollection : drugCollections) {
-					for (GenericCode genericCode : drugCollection.getGenericNames()) {
-						if (genericCode.getId().equalsIgnoreCase(genericCodeCollection.getId().toString())) {
-
-							drugCollection.getGenericNames().remove(genericCode);
-							drugCollection = drugRepository.save(drugCollection);
-
-							transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-							if (drugCollection != null) {
-								ESDrugDocument esDrugDocument = new ESDrugDocument();
-								BeanUtil.map(drugCollection, esDrugDocument);
-								if (drugCollection.getDrugType() != null) {
-									esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-									esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-								}
-								esPrescriptionService.addDrug(esDrugDocument);
-							}
-							break;
+					
+					long rxCount = mongoTemplate.count(new Query(new Criteria("items.drugId").is(drugCollection.getId())), PrescriptionCollection.class);
+					if(rxCount >0) {
+						try {
+							fileWriter.append("REMOVE,"+code+","+drugCollection.getId().toString()+","+true);fileWriter.append("\n");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 					}
+//					for(GenericCode genericCode : drugCollection.getGenericNames()) {
+//						if(genericCode.getId().equalsIgnoreCase(genericCodeCollection.getId().toString())) {
+//							
+//							drugCollection.getGenericNames().remove(genericCode);
+//							drugCollection = drugRepository.save(drugCollection);
+//							
+//							transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+//							if (drugCollection != null) {
+//								ESDrugDocument esDrugDocument = new ESDrugDocument();
+//								BeanUtil.map(drugCollection, esDrugDocument);
+//								if (drugCollection.getDrugType() != null) {
+//									esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+//									esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+//								}
+//								esPrescriptionService.addDrug(esDrugDocument);
+//							}
+//							break;
+//						}
+//					}
 				}
-
-				// remove generic code and reaction
-				ESGenericCodesAndReactions codesAndReactions = esGenericCodesAndReactionsRepository.findOne(code);
-				if (codesAndReactions != null) {
-					esGenericCodesAndReactionsRepository.delete(codesAndReactions);
-				}
-
-				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.nestedQuery("codes",
-						boolQuery().must(QueryBuilders.matchQuery("codes.genericCode", code))));
-				SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
-				List<ESGenericCodesAndReactions> codesAndReactions2 = elasticsearchTemplate.queryForList(searchQuery,
-						ESGenericCodesAndReactions.class);
-				if (codesAndReactions2 != null) {
-					for (ESGenericCodesAndReactions reactions : codesAndReactions2) {
-						for (Code codeFromCodesAndReaction : reactions.getCodes()) {
-							if (codeFromCodesAndReaction.getGenericCode().equalsIgnoreCase(code)) {
-								reactions.getCodes().remove(codeFromCodesAndReaction);
-								esGenericCodesAndReactionsRepository.save(reactions);
-								break;
-							}
-						}
-					}
-				}
+				
+				//remove generic code and reaction
+//				ESGenericCodesAndReactions codesAndReactions = esGenericCodesAndReactionsRepository.findOne(code);
+//				if(codesAndReactions != null) {
+//						esGenericCodesAndReactionsRepository.delete(codesAndReactions);
+//				}
+//				
+//				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.nestedQuery("codes",
+//						boolQuery().must(QueryBuilders.matchQuery("codes.genericCode", code))));
+//				SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+//				List<ESGenericCodesAndReactions> codesAndReactions2 = elasticsearchTemplate.queryForList(searchQuery, ESGenericCodesAndReactions.class);
+//				if(codesAndReactions2 != null) {
+//					for(ESGenericCodesAndReactions reactions : codesAndReactions2) {
+//						for(Code codeFromCodesAndReaction : reactions.getCodes()) {
+//							if(codeFromCodesAndReaction.getGenericCode().equalsIgnoreCase(code)) {
+//								reactions.getCodes().remove(codeFromCodesAndReaction);
+//								esGenericCodesAndReactionsRepository.save(reactions);
+//								break;
+//							}
+//						}
+//					}
+//				}
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void removeRepeatedGenericCodes(String code, String similarToCode) {
+	private void removeRepeatedGenericCodes(String code, String similarToCode, FileWriter fileWriter) {
 		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByCode(code);
 		if (genericCodeCollection != null) {
 			GenericCodeCollection similarGenericCodeCollection = genericCodeRepository.findByCode(similarToCode);
@@ -6059,71 +6078,76 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (drugCollections != null) {
 				for (DrugCollection drugCollection : drugCollections) {
-					for (GenericCode genericCode : drugCollection.getGenericNames()) {
-						if (genericCode.getId().equalsIgnoreCase(genericCodeCollection.getId().toString())) {
-							genericCode.setId(similarGenericCodeCollection.getId().toString());
-							genericCode.setCode(similarGenericCodeCollection.getCode());
-							genericCode.setName(similarGenericCodeCollection.getName());
-							drugCollection = drugRepository.save(drugCollection);
-
-							transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-							if (drugCollection != null) {
-								ESDrugDocument esDrugDocument = new ESDrugDocument();
-								BeanUtil.map(drugCollection, esDrugDocument);
-								if (drugCollection.getDrugType() != null) {
-									esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-									esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-								}
-								esPrescriptionService.addDrug(esDrugDocument);
-							}
-							break;
+					long rxCount = mongoTemplate.count(new Query(new Criteria("items.drugId").is(drugCollection.getId())), PrescriptionCollection.class);
+					if(rxCount >0) {
+						try {
+							fileWriter.append("REPEAT,"+code+","+drugCollection.getId().toString()+","+true);fileWriter.append("\n");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 					}
+//					for(GenericCode genericCode : drugCollection.getGenericNames()) {
+//						if(genericCode.getId().equalsIgnoreCase(genericCodeCollection.getId().toString())) {
+//							genericCode.setId(similarGenericCodeCollection.getId().toString());
+//							genericCode.setCode(similarGenericCodeCollection.getCode());
+//							genericCode.setName(similarGenericCodeCollection.getName());
+//							drugCollection = drugRepository.save(drugCollection);
+//							
+//							transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+//							if (drugCollection != null) {
+//								ESDrugDocument esDrugDocument = new ESDrugDocument();
+//								BeanUtil.map(drugCollection, esDrugDocument);
+//								if (drugCollection.getDrugType() != null) {
+//									esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+//									esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+//								}
+//								esPrescriptionService.addDrug(esDrugDocument);
+//							}
+//							break;
+//						}
+//					}
 				}
 			}
 
-			// update generic code and reactions
-
-			ESGenericCodesAndReactions codesAndReactions = esGenericCodesAndReactionsRepository.findOne(code);
-			if (codesAndReactions != null && codesAndReactions.getCodes() != null
-					&& !codesAndReactions.getCodes().isEmpty()) {
-				ESGenericCodesAndReactions similarCodesAndReactions = esGenericCodesAndReactionsRepository
-						.findOne(similarToCode);
-				if (similarCodesAndReactions != null) {
-					if (similarCodesAndReactions.getCodes() != null && !similarCodesAndReactions.getCodes().isEmpty()) {
-						Collection<String> codes = CollectionUtils.collect(similarCodesAndReactions.getCodes(),
-								new BeanToPropertyValueTransformer("genericCode"));
-						for (Code codeFromCodesAndReaction : codesAndReactions.getCodes()) {
-							if (!codes.contains(codeFromCodesAndReaction.getGenericCode())) {
-								similarCodesAndReactions.getCodes().add(codeFromCodesAndReaction);
-							}
-						}
-						esGenericCodesAndReactionsRepository.save(similarCodesAndReactions);
-					} else {
-						similarCodesAndReactions.setCodes(codesAndReactions.getCodes());
-						esGenericCodesAndReactionsRepository.save(similarCodesAndReactions);
-					}
-				} else {
-					esGenericCodesAndReactionsRepository.delete(codesAndReactions);
-				}
-			}
-
-			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.nestedQuery("codes",
-					boolQuery().must(QueryBuilders.matchQuery("codes.genericCode", code))));
-			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
-			List<ESGenericCodesAndReactions> codesAndReactions2 = elasticsearchTemplate.queryForList(searchQuery,
-					ESGenericCodesAndReactions.class);
-			if (codesAndReactions2 != null) {
-				for (ESGenericCodesAndReactions reactions : codesAndReactions2) {
-					for (Code codeFromCodesAndReaction : reactions.getCodes()) {
-						if (codeFromCodesAndReaction.getGenericCode().equalsIgnoreCase(code)) {
-							codeFromCodesAndReaction.setGenericCode(similarToCode);
-							esGenericCodesAndReactionsRepository.save(reactions);
-							break;
-						}
-					}
-				}
-			}
+		 //update generic code and reactions
+			
+//			ESGenericCodesAndReactions codesAndReactions = esGenericCodesAndReactionsRepository.findOne(code);
+//			if(codesAndReactions != null && codesAndReactions.getCodes() != null && !codesAndReactions.getCodes().isEmpty()) {
+//				ESGenericCodesAndReactions similarCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(similarToCode);
+//				if(similarCodesAndReactions != null) {
+//					if(similarCodesAndReactions.getCodes() != null && !similarCodesAndReactions.getCodes().isEmpty()) {
+//						Collection<String> codes = CollectionUtils.collect(similarCodesAndReactions.getCodes(), new BeanToPropertyValueTransformer("genericCode"));
+//						for(Code codeFromCodesAndReaction : codesAndReactions.getCodes()) {
+//							if(!codes.contains(codeFromCodesAndReaction.getGenericCode())) {
+//								similarCodesAndReactions.getCodes().add(codeFromCodesAndReaction);
+//							}
+//						}
+//						esGenericCodesAndReactionsRepository.save(similarCodesAndReactions);
+//					}else {
+//						similarCodesAndReactions.setCodes(codesAndReactions.getCodes());
+//						esGenericCodesAndReactionsRepository.save(similarCodesAndReactions);
+//					}
+//				}else {
+//					esGenericCodesAndReactionsRepository.delete(codesAndReactions);
+//				}
+//			}
+//			
+//			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.nestedQuery("codes",
+//							boolQuery().must(QueryBuilders.matchQuery("codes.genericCode", code))));
+//			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+//			List<ESGenericCodesAndReactions> codesAndReactions2 = elasticsearchTemplate.queryForList(searchQuery, ESGenericCodesAndReactions.class);
+//			if(codesAndReactions2 != null) {
+//				for(ESGenericCodesAndReactions reactions : codesAndReactions2) {
+//					for(Code codeFromCodesAndReaction : reactions.getCodes()) {
+//						if(codeFromCodesAndReaction.getGenericCode().equalsIgnoreCase(code)) {
+//							codeFromCodesAndReaction.setGenericCode(similarToCode);
+//							esGenericCodesAndReactionsRepository.save(reactions);
+//							break;
+//						}
+//					}
+//				}
+//			}
 		}
 
 	}

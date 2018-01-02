@@ -41,6 +41,9 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 	@Field
 	private Boolean discarded = false;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -121,10 +124,20 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 		this.discarded = discarded;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientLedgerCollection [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId
-				+ ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + ", discarded=" + discarded + "]";
+				+ ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + ", discarded=" + discarded
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
 }

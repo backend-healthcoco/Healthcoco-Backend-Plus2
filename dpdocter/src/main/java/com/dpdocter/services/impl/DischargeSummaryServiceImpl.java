@@ -228,6 +228,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.setAdminCreatedTime(oldDischargeSummaryCollection.getAdminCreatedTime());
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
 				dischargeSummaryCollection.setUniqueEmrId(oldDischargeSummaryCollection.getUniqueEmrId());
+				dischargeSummaryCollection.setIsPatientDiscarded(oldDischargeSummaryCollection.getIsPatientDiscarded());
 			}
 			if (dischargeSummary.getPrescriptions() != null) {
 				PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();
@@ -330,7 +331,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(Long.parseLong(updatedTime))).and("patientId")
-					.is(patientObjectId);
+					.is(patientObjectId).and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(locationObjectId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))

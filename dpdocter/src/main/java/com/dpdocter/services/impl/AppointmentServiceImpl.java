@@ -1050,7 +1050,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			ObjectId hospitalId) {
 		ObjectId patientId = null;
 		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
-			if(DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))return null;
 			
 			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
@@ -1654,7 +1653,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -1961,7 +1960,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -2622,7 +2621,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
-					.and("hospitalId").is(hospitalObjectId).and("date").gt(start).lte(end).and("discarded").is(false);
+					.and("hospitalId").is(hospitalObjectId).and("date").gt(start).lte(end).and("discarded").is(false).and("isPatientDiscarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("status").is(status.toUpperCase());
@@ -3069,8 +3068,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String to) {
 		LocationWithPatientQueueDetails response = null;
 		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state")
-					.ne(AppointmentState.CANCEL.getState());
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state").ne(AppointmentState.CANCEL.getState()).and("isPatientDiscarded").ne(true);
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
@@ -3208,7 +3206,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 					Criteria criteria2 = new Criteria("doctorId").is(userCollection.getId()).and("locationId")
-							.is(new ObjectId(locationId));
+							.is(new ObjectId(locationId)).and("isPatientDiscarded").is(false);
 					if (!DPDoctorUtils.anyStringEmpty(from)) {
 						localCalendar.setTime(new Date(Long.parseLong(from)));
 						int currentDay = localCalendar.get(Calendar.DATE);

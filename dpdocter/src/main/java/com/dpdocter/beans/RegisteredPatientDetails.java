@@ -58,6 +58,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 
     private List<String> consultantDoctorIds;
     
+    private Boolean isPatientDiscarded = false;
+    
     public String getUserId() {
 	return userId;
     }
@@ -259,6 +261,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.consultantDoctorIds = consultantDoctorIds;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisteredPatientDetails [firstName=" + firstName + ", localPatientName=" + localPatientName
@@ -269,7 +279,7 @@ public class RegisteredPatientDetails extends GenericCollection {
 				+ locationId + ", hospitalId=" + hospitalId + ", PID=" + PID + ", colorCode=" + colorCode
 				+ ", referredBy=" + referredBy + ", isPartOfClinic=" + isPartOfClinic + ", isPartOfConsultantDoctor="
 				+ isPartOfConsultantDoctor + ", backendPatientId=" + backendPatientId + ", consultantDoctorIds="
-				+ consultantDoctorIds + "]";
+				+ consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

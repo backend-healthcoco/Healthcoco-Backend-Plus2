@@ -394,8 +394,7 @@ public class AppointmentCollection extends GenericCollection {
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
 				+ ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", category="
-				+ category + ", isPatientDiscarded=" + isPatientDiscarded + ", cancelledByProfile=" + cancelledByProfile
-				+ ", localPatientName=" + localPatientName + "]";
+				+ category + ", cancelledByProfile=" + cancelledByProfile + ", localPatientName=" + localPatientName
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

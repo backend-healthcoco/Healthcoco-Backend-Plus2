@@ -594,7 +594,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 		return dischargeId;
 	}
 
-
 	public Boolean getIsPatientDiscarded() {
 		return isPatientDiscarded;
 	}

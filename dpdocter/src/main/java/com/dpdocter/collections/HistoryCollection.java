@@ -55,6 +55,9 @@ public class HistoryCollection extends GenericCollection {
 	@Transient
 	private long count;
 	
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public HistoryCollection(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
 		super();
 		this.doctorId = doctorId;
@@ -159,12 +162,21 @@ public class HistoryCollection extends GenericCollection {
 		this.count = count;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "HistoryCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", patientId=" + patientId + ", generalRecords=" + generalRecords + ", familyhistory="
 				+ familyhistory + ", medicalhistory=" + medicalhistory + ", drugsAndAllergies=" + drugsAndAllergies
-				+ ", personalHistory=" + personalHistory + ", specialNotes=" + specialNotes + ", count=" + count + "]";
+				+ ", personalHistory=" + personalHistory + ", specialNotes=" + specialNotes + ", count=" + count
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

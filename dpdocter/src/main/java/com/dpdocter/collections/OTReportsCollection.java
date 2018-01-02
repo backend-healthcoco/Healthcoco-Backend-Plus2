@@ -265,7 +265,9 @@ public class OTReportsCollection extends GenericCollection {
 				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
 				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", operationalNotes=" + operationalNotes + ", isPatientDiscarded="
-				+ isPatientDiscarded + ", discarded=" + discarded + "]";
+				+ isPatientDiscarded + ", discarded=" + discarded + ", operatingSurgeonAndCost="
+				+ operatingSurgeonAndCost + ", anaesthetistAndCost=" + anaesthetistAndCost + ", assitingDoctorsAndCost="
+				+ assitingDoctorsAndCost + ", assitingNursesAndCost=" + assitingNursesAndCost + "]";
 	}
 
 }

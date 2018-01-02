@@ -202,6 +202,9 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private String painScale;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public String getProcedureNote() {
 		return procedureNote;
 	}
@@ -724,6 +727,14 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.painScale = painScale;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
@@ -740,7 +751,15 @@ public class ClinicalNotesCollection extends GenericCollection {
 				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns
 				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", lmp=" + lmp
 				+ ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren="
-				+ noOfMaleChildren + "]";
+				+ noOfMaleChildren + ", procedureNote=" + procedureNote + ", pastHistory=" + pastHistory
+				+ ", familyHistory=" + familyHistory + ", personalHistoryTobacco=" + personalHistoryTobacco
+				+ ", personalHistoryAlcohol=" + personalHistoryAlcohol + ", personalHistorySmoking="
+				+ personalHistorySmoking + ", personalHistoryDiet=" + personalHistoryDiet
+				+ ", personalHistoryOccupation=" + personalHistoryOccupation + ", generalHistoryDrugs="
+				+ generalHistoryDrugs + ", generalHistoryMedicine=" + generalHistoryMedicine
+				+ ", generalHistoryAllergies=" + generalHistoryAllergies + ", generalHistorySurgical="
+				+ generalHistorySurgical + ", painScale=" + painScale + ", isPatientDiscarded=" + isPatientDiscarded
+				+ "]";
 	}
 
 }

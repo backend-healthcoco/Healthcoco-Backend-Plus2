@@ -161,7 +161,7 @@ public interface RegistrationService {
 	List<UserAddress> getUserAddress(String userId, String mobileNumber, Boolean discarded);
 
 	UserAddress deleteUserAddress(String addressId, String userId, String mobileNumber, Boolean discarded);
-	
+
 	Boolean deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
 			Boolean discarded);
 

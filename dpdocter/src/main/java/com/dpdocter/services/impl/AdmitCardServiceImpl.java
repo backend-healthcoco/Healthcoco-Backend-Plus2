@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,24 +23,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DefaultPrintSettings;
-import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.AdmitCardCollection;
-import com.dpdocter.collections.DischargeSummaryCollection;
-import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.UniqueIdInitial;
-import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -162,6 +154,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				}
 				admitCardCollection.setCreatedBy(oldAdmitCardCollection.getCreatedBy());
 				admitCardCollection.setUniqueEmrId(oldAdmitCardCollection.getUniqueEmrId());
+				admitCardCollection.setIsPatientDiscarded(oldAdmitCardCollection.getIsPatientDiscarded());
 			}
 			admitCardCollection = admitCardRepository.save(admitCardCollection);
 			response = new AdmitCardResponse();
@@ -208,7 +201,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			String patientId, int page, int size, long updatedTime, Boolean discarded) {
 		List<AdmitCardResponse> response = null;
 		try {
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
 			}

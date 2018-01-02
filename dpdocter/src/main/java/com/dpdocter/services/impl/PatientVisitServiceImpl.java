@@ -412,7 +412,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(doctorObjectId);
 
@@ -604,7 +604,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId")
+					.is(hospitalObjectId).and("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(doctorObjectId);
 
@@ -1209,7 +1210,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-					.is(patientObjectId).and("visitedFor").in(visitedFors);
+					.is(patientObjectId).and("visitedFor").in(visitedFors).and("isPatientDiscarded").is(false);
 
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
@@ -3258,7 +3259,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("visitedFor")
-					.in(visitedFors).and("patientId").is(patientObjectId);
+					.in(visitedFors).and("patientId").is(patientObjectId).and("isPatientDiscarded").is(false);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
 					criteria.and("doctorId").is(doctorObjectId);
@@ -3342,7 +3343,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			visitedFors.add(VisitedFor.EYE_PRESCRIPTION);
 
 			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
-					.and("visitedFor").in(visitedFors);
+					.and("visitedFor").in(visitedFors).and("isPatientDiscarded").is(false);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -3485,7 +3486,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("doctorId").is(doctorObjectId)
-					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").is(false);
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),

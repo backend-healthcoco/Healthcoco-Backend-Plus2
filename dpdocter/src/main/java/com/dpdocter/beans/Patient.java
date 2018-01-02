@@ -60,6 +60,8 @@ public class Patient {
 
 	private Long registrationDate;
 	
+	private Boolean isPatientDiscarded = false;
+	
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -276,6 +278,14 @@ public class Patient {
 		this.personalInformation = personalInformation;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
@@ -288,7 +298,7 @@ public class Patient {
 				+ address + ", PID=" + PID + ", gender=" + gender + ", dob=" + dob + ", consultantDoctorIds="
 				+ consultantDoctorIds + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
-				+ personalInformation + ", registrationDate=" + registrationDate + "]";
+				+ personalInformation + ", registrationDate=" + registrationDate + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
-
 }

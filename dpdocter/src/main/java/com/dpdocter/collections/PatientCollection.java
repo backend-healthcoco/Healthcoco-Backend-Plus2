@@ -95,6 +95,9 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = false;
+	
+	@Field
+	private Boolean isPatientDiscarded = false;
 
 	@Field
 	private Long dateOfVisit;
@@ -119,9 +122,6 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private String PNUM;
-
-	@Field
-	private Boolean isPatientDiscarded = false;
 	
 	public ObjectId getId() {
 		return id;
@@ -328,6 +328,14 @@ public class PatientCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	public Long getDateOfVisit() {
 		return dateOfVisit;
 	}
@@ -392,14 +400,6 @@ public class PatientCollection extends GenericCollection {
 		PNUM = pNUM;
 	}
 
-	public Boolean getIsPatientDiscarded() {
-		return isPatientDiscarded;
-	}
-
-	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
-		this.isPatientDiscarded = isPatientDiscarded;
-	}
-
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
@@ -410,10 +410,28 @@ public class PatientCollection extends GenericCollection {
 				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
 				+ insuranceName + ", userId=" + userId + ", notes=" + notes + ", PID=" + PID + ", registrationDate="
 				+ registrationDate + ", gender=" + gender + ", dob=" + dob + ", discarded=" + discarded
-				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address
-				+ ", consultantDoctorIds=" + consultantDoctorIds + ", personalInformation=" + personalInformation
-				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
-				+ lifestyleQuestionAnswers + ", PNUM=" + PNUM + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", dateOfVisit=" + dateOfVisit + ", referredBy="
+				+ referredBy + ", address=" + address + ", consultantDoctorIds=" + consultantDoctorIds
+				+ ", personalInformation=" + personalInformation + ", medicalQuestionAnswers=" + medicalQuestionAnswers
+				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", PNUM=" + PNUM + ", getId()=" + getId()
+				+ ", getBloodGroup()=" + getBloodGroup() + ", getProfession()=" + getProfession() + ", getRelations()="
+				+ getRelations() + ", getEmailAddress()=" + getEmailAddress() + ", getDoctorId()=" + getDoctorId()
+				+ ", getSecMobile()=" + getSecMobile() + ", getAdhaarId()=" + getAdhaarId() + ", getPanCardNumber()="
+				+ getPanCardNumber() + ", getLocalPatientName()=" + getLocalPatientName() + ", getDrivingLicenseId()="
+				+ getDrivingLicenseId() + ", getInsuranceId()=" + getInsuranceId() + ", getInsuranceName()="
+				+ getInsuranceName() + ", getUserId()=" + getUserId() + ", getNotes()=" + getNotes() + ", getPID()="
+				+ getPID() + ", getLocationId()=" + getLocationId() + ", getHospitalId()=" + getHospitalId()
+				+ ", getRegistrationDate()=" + getRegistrationDate() + ", getFirstName()=" + getFirstName()
+				+ ", getGender()=" + getGender() + ", getDob()=" + getDob() + ", getImageUrl()=" + getImageUrl()
+				+ ", getThumbnailUrl()=" + getThumbnailUrl() + ", getDiscarded()=" + getDiscarded()
+				+ ", getIsPatientDiscarded()=" + getIsPatientDiscarded() + ", getDateOfVisit()=" + getDateOfVisit()
+				+ ", getReferredBy()=" + getReferredBy() + ", getAddress()=" + getAddress()
+				+ ", getConsultantDoctorIds()=" + getConsultantDoctorIds() + ", getPersonalInformation()="
+				+ getPersonalInformation() + ", getMedicalQuestionAnswers()=" + getMedicalQuestionAnswers()
+				+ ", getLifestyleQuestionAnswers()=" + getLifestyleQuestionAnswers() + ", getPNUM()=" + getPNUM()
+				+ ", getCreatedTime()=" + getCreatedTime() + ", getUpdatedTime()=" + getUpdatedTime()
+				+ ", getCreatedBy()=" + getCreatedBy() + ", getAdminCreatedTime()=" + getAdminCreatedTime()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+				+ "]";
 	}
-
 }

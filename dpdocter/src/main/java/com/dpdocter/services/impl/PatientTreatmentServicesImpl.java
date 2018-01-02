@@ -361,7 +361,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					patientTreatmentCollection.setUniqueEmrId(oldPatientTreatmentCollection.getUniqueEmrId());
 					patientTreatmentCollection.setDiscarded(oldPatientTreatmentCollection.getDiscarded());
 					patientTreatmentCollection.setInHistory(oldPatientTreatmentCollection.getInHistory());
-
+					patientTreatmentCollection.setIsPatientDiscarded(oldPatientTreatmentCollection.getIsPatientDiscarded());
 				}
 			}
 			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
@@ -558,8 +558,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
-
-							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))),
+							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId)).and("isPatientDiscarded").ne(true)),
 							Aggregation.lookup(
 									"treatment_services_cl", "treatments.treatmentServiceId", "_id",
 									"treatmentService"),
@@ -641,7 +640,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.quantity", "$treatments.quantity")));
 
 			Aggregation aggregation = Aggregation
-					.newAggregation(Aggregation.match(new Criteria("_id").in(treatmentId)),
+					.newAggregation(Aggregation.match(new Criteria("_id").in(treatmentId).and("isPatientDiscarded").is(false)),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
@@ -706,7 +705,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
-					.is(patientObjectId);
+					.is(patientObjectId).and("isPatientDiscarded").is(false);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))
 					criteria.and("doctorId").is(doctorObjectId);
@@ -863,7 +862,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
-					.is(patientObjectId);
+					.is(patientObjectId).and("isPatientDiscarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))

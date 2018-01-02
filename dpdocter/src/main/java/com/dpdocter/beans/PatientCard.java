@@ -100,6 +100,8 @@ public class PatientCard extends GenericCollection {
 		this.patient = patient;
 	}
 
+	private Boolean isPatientDiscarded = false;
+	
 	public String getPatientId() {
 		return patientId;
 	}
@@ -492,6 +494,14 @@ public class PatientCard extends GenericCollection {
 		PNUM = pNUM;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -508,8 +518,10 @@ public class PatientCard extends GenericCollection {
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", registrationDate=" + registrationDate
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
 				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", PNUM=" + PNUM
-				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + "]";
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", addressId=" + addressId + ", secMobile=" + secMobile
+				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
+				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
+				+ notes + "]";
 	}
+
 }

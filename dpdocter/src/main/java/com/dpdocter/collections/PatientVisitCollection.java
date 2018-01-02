@@ -70,6 +70,9 @@ public class PatientVisitCollection extends GenericCollection {
 	@Field
 	private Boolean discarded = false;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -214,6 +217,14 @@ public class PatientVisitCollection extends GenericCollection {
 		this.eyePrescriptionId = eyePrescriptionId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientVisitCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
@@ -222,6 +233,7 @@ public class PatientVisitCollection extends GenericCollection {
 				+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", treatmentId="
 				+ treatmentId + ", recordId=" + recordId + ", eyePrescriptionId=" + eyePrescriptionId
 				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", discarded="
-				+ discarded + "]";
+				+ discarded + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
 }

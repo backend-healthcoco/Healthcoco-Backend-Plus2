@@ -290,7 +290,8 @@ public class RecordsCollection extends GenericCollection {
 				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
 				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId="
 				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", recordsState=" + recordsState
-				+ ", messages=" + messages + "]";
+				+ ", messages=" + messages + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
 
 }

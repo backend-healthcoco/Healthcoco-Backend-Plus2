@@ -76,19 +76,32 @@ import com.dpdocter.beans.UserReminders;
 import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
+<<<<<<< HEAD
+=======
+import com.dpdocter.collections.BirthDetailsCollection;
+import com.dpdocter.collections.BirthHistoryCollection;
+>>>>>>> c371622d... HAPPY-2927 Backend : Dpdocter : Doctor : Delete patient By doctor :
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DeliveryReportsCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+<<<<<<< HEAD
 import com.dpdocter.collections.DoctorLabReportCollection;
+=======
+>>>>>>> c371622d... HAPPY-2927 Backend : Dpdocter : Doctor : Delete patient By doctor :
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
+<<<<<<< HEAD
 import com.dpdocter.collections.DynamicUICollection;
+=======
+>>>>>>> c371622d... HAPPY-2927 Backend : Dpdocter : Doctor : Delete patient By doctor :
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.EyeObservationCollection;
+import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FormContentCollection;
 import com.dpdocter.collections.GroupCollection;
@@ -4000,7 +4013,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Error while adding user address");
+			throw new BusinessException(ServiceError.Unknown, "Error while deleting user address");
 		}
 		return response;
 	}
