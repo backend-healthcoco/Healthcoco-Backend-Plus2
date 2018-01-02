@@ -1533,4 +1533,76 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
+	
+	@Override
+	public Boolean updateShowInventory(String doctorId, String locationId , Boolean showInventory) {
+		Boolean response = false;
+		try {
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			if (doctorClinicProfileCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
+			}
+			doctorClinicProfileCollection.setShowInventory(showInventory);
+			doctorClinicProfileCollection.setUpdatedTime(new Date());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Doctor Clinic Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Clinic Profile");
+		}
+		return response;
+	}
+	
+	@Override
+	public Boolean updateShowInventoryCount(String doctorId, String locationId , Boolean showInventoryCount) {
+		Boolean response = false;
+		try {
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			if (doctorClinicProfileCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
+			}
+			doctorClinicProfileCollection.setShowInventoryCount(showInventoryCount);
+			doctorClinicProfileCollection.setUpdatedTime(new Date());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Doctor Clinic Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Clinic Profile");
+		}
+		return response;
+	}
+	
+	@Override
+	public Boolean updateSavetoInventory(String doctorId, String locationId , Boolean saveToInventory) {
+		Boolean response = false;
+		try {
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			if (doctorClinicProfileCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
+			}
+			doctorClinicProfileCollection.setSaveToInventory(saveToInventory);
+			doctorClinicProfileCollection.setUpdatedTime(new Date());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = true;
+
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Doctor Clinic Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Clinic Profile");
+		}
+		return response;
+	}
 }
