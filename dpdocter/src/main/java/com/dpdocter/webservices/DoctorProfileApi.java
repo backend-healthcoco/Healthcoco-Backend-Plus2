@@ -767,21 +767,6 @@ public class DoctorProfileApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
-	@GET
-	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY, notes = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
-	public Response<Boolean> updatePresccriptionSMS(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("saveToInventory") boolean saveToInventory) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(doctorProfileService.updateSavetoInventory(doctorId, locationId, saveToInventory));
-		return response;
-	}
-	
 	
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
 	@GET
