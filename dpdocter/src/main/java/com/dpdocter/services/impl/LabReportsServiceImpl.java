@@ -418,12 +418,10 @@ public class LabReportsServiceImpl implements LabReportsService {
 				criteria = criteria.orOperator(new Criteria("patient.patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patient.patientName").regex("^" + searchTerm));
 			}
-
 			criteria.and("uploadedByDoctorId").is(new ObjectId(doctorId));
 			criteria.and("uploadedByLocationId").is(new ObjectId(locationId));
 			criteria.and("uploadedByHospitalId").is(new ObjectId(hospitalId));
 			criteria.and("patientId").is(new ObjectId(patientId));
-
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
 						Aggregation.unwind("patient"), Aggregation.match(criteria),
@@ -448,7 +446,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 	public LabReports editLabReports(EditLabReportsRequest request) {
 
 		LabReports labReports = null;
-
 		try {
 			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(request.getId()));
 			if (labReportsCollection == null) {
@@ -478,20 +475,20 @@ public class LabReportsServiceImpl implements LabReportsService {
 	@Override
 	@Transactional
 	public LabReportsResponse changePatientShareStatus(String id, Boolean status) {
-		LabReportsResponse LabReportsResponse = null;
+		LabReportsResponse labReportsResponse = null;
 		try {
 			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(id));
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
-			LabReportsResponse.setIsSharedToPatient(status);
+			labReportsCollection.setIsSharedToPatient(status);
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
-			LabReportsResponse = new LabReportsResponse();
-			BeanUtil.map(labReportsCollection, LabReportsResponse);
+			labReportsResponse = new LabReportsResponse();
+			BeanUtil.map(labReportsCollection, labReportsResponse);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return LabReportsResponse;
+		return labReportsResponse;
 	}
 
 }

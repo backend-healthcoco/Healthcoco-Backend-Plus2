@@ -542,8 +542,12 @@ public class LocationServiceImpl implements LocationServices {
 
 			criteria.and("collectionBoyId").is(new ObjectId(collectionBoyId));
 			criteria.and("isCompleted").is(false);
-			if (from != null) {
-				criteria.andOperator(Criteria.where("updatedTime").gte(new Date(from)));
+			if (from != 0 && to != 0) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(new Date(to));
+			} else if (from != 0) {
+				criteria.and("updatedTime").gte(new Date(from));
+			} else if (to != 0) {
+				criteria.and("updatedTime").lte(new Date(to));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -639,7 +643,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
+						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
 						aggregationOperation1, projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
@@ -652,7 +656,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
+						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
 						aggregationOperation1, projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -680,11 +684,12 @@ public class LocationServiceImpl implements LocationServices {
 
 			criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
 			criteria.and("isCompleted").is(false);
-			if (from != null) {
+			if (from != 0 && to != 0) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(new Date(to));
+			} else if (from != 0) {
 				criteria.and("updatedTime").gte(new Date(from));
-			}
-			if (to != null) {
-				criteria.and("updatedTime").lte(new Date(to));
+			} else if (to != 0) {
+				criteria.and("updatedTime").lt(new Date(to));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -781,7 +786,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
+						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
 						aggregationOperation1, projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
@@ -794,7 +799,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
+						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
 						aggregationOperation1, projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			}
@@ -817,7 +822,6 @@ public class LocationServiceImpl implements LocationServices {
 			Long to, String searchTerm, int size, int page) {
 
 		List<LabTestPickupLookupResponse> response = null;
-		List<LabTestSample> labTestSamples = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -828,11 +832,12 @@ public class LocationServiceImpl implements LocationServices {
 
 			criteria.and("parentLabLocationId").is(new ObjectId(parentLabId));
 			criteria.and("isCompleted").is(false);
-			if (from != null) {
+			if (from != 0 && to != 0) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(new Date(to));
+			} else if (from != 0) {
 				criteria.and("updatedTime").gte(new Date(from));
-			}
-			if (to != null) {
-				criteria.and("updatedTime").lte(new Date(to));
+			} else if (to != 0) {
+				criteria.and("updatedTime").lt(new Date(to));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -1622,9 +1627,10 @@ public class LocationServiceImpl implements LocationServices {
 	@Transactional
 	public List<RateCardTestAssociationByLBResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId, String specimen) {
-		List<RateCardTestAssociationLookupResponse> rateCardTests = null;
-		RateCardTestAssociationLookupResponse rateCardTestAssociation = null;
-		List<RateCardTestAssociationLookupResponse> specialRateCardsTests = null;
+		// List<RateCardTestAssociationLookupResponse> rateCardTests = null;
+		// RateCardTestAssociationLookupResponse rateCardTestAssociation = null;
+		// List<RateCardTestAssociationLookupResponse> specialRateCardsTests =
+		// null;
 		ObjectId rateCardId = null;
 		// List<RateCardTestAssociationLookupResponse> responses = null;
 
@@ -1934,10 +1940,11 @@ public class LocationServiceImpl implements LocationServices {
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
-			if (from != null) {
+			if (from != 0 && to != 0) {
+				criteria.and("labTestSamples.updatedTime").gte(new Date(from)).lte(new Date(to));
+			} else if (from != 0) {
 				criteria.and("labTestSamples.updatedTime").gte(new Date(from));
-			}
-			if (to != null) {
+			} else if (to != 0) {
 				criteria.and("labTestSamples.updatedTime").lte(new Date(to));
 			}
 
@@ -2063,8 +2070,12 @@ public class LocationServiceImpl implements LocationServices {
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
-			if (from != null) {
+			if (from != 0 && to != 0) {
+				criteria.and("labTestSamples.updatedTime").gte(new Date(from)).lte(new Date(to));
+			} else if (from != 0) {
 				criteria.andOperator(Criteria.where("labTestSamples.updatedTime").gte(new Date(from)));
+			} else if (to != 0) {
+				criteria.andOperator(Criteria.where("labTestSamples.updatedTime").lte(new Date(to)));
 			}
 
 			ObjectId locationObjectId = new ObjectId(locationId);
@@ -2242,4 +2253,5 @@ public class LocationServiceImpl implements LocationServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return generatedId;
-	}}
+	}
+}
