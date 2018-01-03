@@ -112,12 +112,12 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		ESPatientResponseDetails patientResponseDetails = null;
 		try {
 			searchTerm = searchTerm.toLowerCase();
-
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
-					.should(QueryBuilders
-							.matchPhraseQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), searchTerm)
+					.should(QueryBuilders.regexpQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(),
+							searchTerm.replaceAll(".,(?=[]\\[+&|!(){}^\"~*?:\\\\-])", "\\\\").replace(" ", "\\s")
+									+ ".*")
 							.boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
