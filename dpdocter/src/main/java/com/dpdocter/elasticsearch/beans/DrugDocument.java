@@ -49,6 +49,8 @@ public class DrugDocument {
     private List<String> categories;
 
     private List<GenericCode> genericNames;
+    
+    private Long inventoryQuantity;
 
 	public String getId() {
 		return id;
@@ -208,6 +210,14 @@ public class DrugDocument {
 
 	public void setGenericNames(List<GenericCode> genericNames) {
 		this.genericNames = genericNames;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	@Override
