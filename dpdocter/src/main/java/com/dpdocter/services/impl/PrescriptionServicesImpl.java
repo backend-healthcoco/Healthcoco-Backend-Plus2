@@ -739,7 +739,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
-					Fields.field("items.inventoryQuantity", "$items.instructions"),
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
 					Fields.field("updatedTime", "$updatedTime")));
 
@@ -1365,7 +1365,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
-					Fields.field("items.inventoryQuantity", "$items.instructions"),
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = null;
@@ -1513,7 +1513,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
-					Fields.field("items.inventoryQuantity", "$items.instructions"),
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
