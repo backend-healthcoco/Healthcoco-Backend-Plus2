@@ -17,10 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
-<<<<<<< HEAD
-=======
-import com.dpdocter.beans.InventorySetting;
->>>>>>> dcb9a41... changes for inventory
 import com.dpdocter.beans.InventorySettings;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
