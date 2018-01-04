@@ -17,6 +17,10 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
+<<<<<<< HEAD
+=======
+import com.dpdocter.beans.InventorySetting;
+>>>>>>> dcb9a41... changes for inventory
 import com.dpdocter.beans.InventorySettings;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
@@ -301,16 +305,18 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_SETTINGS, notes = PathProxy.InventoryUrls.GET_SETTINGS)
 	@Path(PathProxy.InventoryUrls.GET_SETTINGS)
-	public Response<InventorySettings> getInventorySettings(  @QueryParam("id") String id ,  @QueryParam("doctorId") String doctorId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
+
+	public Response<InventorySettings> getInventorySettings(  @QueryParam("doctorId") String doctorId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
 	{
 		Response<InventorySettings> response = new Response<>();
 		InventorySettings inventorySettings = null;
 		try {
-			if(DPDoctorUtils.allStringsEmpty(id,hospitalId,locationId ,doctorId))
+
+			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId ,doctorId))
 			{
 				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
 			}
-			inventorySettings = inventoryService.getInventorySetting(id ,doctorId, locationId, hospitalId);
+			inventorySettings = inventoryService.getInventorySetting(doctorId, locationId, hospitalId);
 			if(inventorySettings != null)
 			{
 				response.setData(inventorySettings);

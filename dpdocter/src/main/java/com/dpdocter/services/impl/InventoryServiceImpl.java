@@ -727,6 +727,7 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
+
 	
 	@Override
 	@Transactional
@@ -743,6 +744,30 @@ public class InventoryServiceImpl implements InventoryService {
 			// TODO: handle exception
 		}
 		return inventoryBatchs;
+	}
+
+
+	@Override
+	@Transactional
+	public InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId) {
+		InventorySettings response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(doctorId));
+			criteria.and("locationId").is(new ObjectId(locationId));
+			criteria.and("hospitalId").is(new ObjectId(hospitalId));
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<InventorySettings> aggregationResults = mongoTemplate.aggregate(aggregation,
+					InventorySettingsCollection.class, InventorySettings.class);
+			response = aggregationResults.getUniqueMappedResult();
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn("Error while getting inventory setting");
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 }

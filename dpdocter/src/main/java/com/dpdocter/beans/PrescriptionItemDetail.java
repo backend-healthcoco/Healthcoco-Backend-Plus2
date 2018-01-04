@@ -18,6 +18,10 @@ public class PrescriptionItemDetail {
 
 	private String drugName;
 
+	private Long totalStock;
+
+	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
+
 	private String explanation;
 
 	private List<Long> dosageTime;
@@ -27,10 +31,6 @@ public class PrescriptionItemDetail {
 	private String instructions;
 
 	private Long inventoryQuantity;
-
-	private Long totalStock;
-
-	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
 	public DrugType getDrugType() {
 		return drugType;
