@@ -370,7 +370,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			Date createdTime = new Date();
 			drugCollection.setCreatedTime(createdTime);
-			if (drugCollection.getDrugType() != null) {
+			/*if (drugCollection.getDrugType() != null) {
 				if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 					drugCollection.setDrugType(null);
 				else {
@@ -382,7 +382,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						drugCollection.setDrugType(drugType);
 					}
 				}
-			}
+			}*/
 
 			drugCollection.setRankingCount(1);
 
@@ -447,7 +447,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				drugCollection.setDosage(request.getDosage());
 				drugCollection.setDosageTime(request.getDosageTime());
 				drugCollection.setDirection(request.getDirection());
-				if (drugCollection.getDrugType() != null) {
+				/*if (drugCollection.getDrugType() != null) {
 					if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 						drugCollection.setDrugType(null);
 					else {
@@ -459,7 +459,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							drugCollection.setDrugType(drugType);
 						}
 					}
-				}
+				}*/
 				drugCollection = drugRepository.save(drugCollection);
 				transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
 				if (drugCollection != null) {
@@ -824,6 +824,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
+
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
 					Fields.field("updatedTime", "$updatedTime")));
 
@@ -1081,7 +1083,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		drugCollection.setDosageTime(item.getDosageTime());
 		drugCollection.setDirection(item.getDirection());
 
-		if (drugCollection.getDrugType() != null) {
+		/*if (drugCollection.getDrugType() != null) {
 			if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 				drugCollection.setDrugType(null);
 			else {
@@ -1093,7 +1095,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					drugCollection.setDrugType(drugType);
 				}
 			}
-		}
+		}*/
 		drugCollection = drugRepository.save(drugCollection);
 
 		transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
@@ -1483,6 +1485,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = null;
@@ -1630,6 +1633,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
+
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -4169,7 +4174,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 				Date createdTime = new Date();
 				drugCollection.setCreatedTime(createdTime);
-				if (drugCollection.getDrugType() != null) {
+				/*if (drugCollection.getDrugType() != null) {
 					if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 						drugCollection.setDrugType(null);
 					else {
@@ -4181,7 +4186,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							drugCollection.setDrugType(drugType);
 						}
 					}
-				}
+				}*/
 				drugCollection = drugRepository.save(drugCollection);
 			} else {
 				if (originalDrug == null)
@@ -4220,7 +4225,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				drugCollection.setDosageTime(request.getDosageTime());
 				drugCollection.setDirection(request.getDirection());
 
-				if (drugCollection.getDrugType() != null) {
+				/*if (drugCollection.getDrugType() != null) {
 					if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 						drugCollection.setDrugType(null);
 					else {
@@ -4232,7 +4237,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							drugCollection.setDrugType(drugType);
 						}
 					}
-				}
+				}*/
 				drugCollection = drugRepository.save(drugCollection);
 			}
 
