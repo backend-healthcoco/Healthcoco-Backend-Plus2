@@ -3,27 +3,29 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionItemDetail {
-    private Drug drug;
+	private Drug drug;
 
-    private Duration duration;
+	private Duration duration;
 
-    private String dosage;
-    
-    private DrugType drugType;
+	private String dosage;
 
-    private String drugName;
-    
-    private String explanation;
+	private DrugType drugType;
 
-    private List<Long> dosageTime;
-    
-    private List<DrugDirection> direction;
+	private String drugName;
 
-    private String instructions;
-    
-    
+	private String explanation;
+
+	private List<Long> dosageTime;
+
+	private List<DrugDirection> direction;
+
+	private String instructions;
+
+	private Long inventoryQuantity;
+
 	public DrugType getDrugType() {
 		return drugType;
 	}
@@ -96,10 +98,17 @@ public class PrescriptionItemDetail {
 		this.instructions = instructions;
 	}
 
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage
-				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions
-				+ "]";
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
 	}
 }

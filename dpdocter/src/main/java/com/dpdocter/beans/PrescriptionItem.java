@@ -24,6 +24,8 @@ public class PrescriptionItem {
 
 	private String instructions;
 
+	private Long inventoryQuantity;
+	 
 	public PrescriptionItem() {
 		super();
 	}
@@ -123,6 +125,14 @@ public class PrescriptionItem {
 
 	public void setArrayIndex1(Long arrayIndex1) {
 		this.arrayIndex1 = arrayIndex1;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	@Override
