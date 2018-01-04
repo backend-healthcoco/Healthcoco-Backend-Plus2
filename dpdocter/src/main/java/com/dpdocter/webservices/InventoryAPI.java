@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
-import com.dpdocter.beans.InventorySetting;
 import com.dpdocter.beans.InventorySettings;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
