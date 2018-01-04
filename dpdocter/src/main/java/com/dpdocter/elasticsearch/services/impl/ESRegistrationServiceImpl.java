@@ -79,10 +79,10 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private ESCollectionBoyRepository esCollectionBoyRepository;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -116,8 +116,11 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 					.must(QueryBuilders.termQuery("isPatientDiscarded", false))
-					.should(QueryBuilders
-							.regexpQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), searchTerm+".*")
+					.should(QueryBuilders.regexpQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(),
+							searchTerm.replaceAll("[^\\w\\s-]", "") + ".*").boost(4))
+					.should(QueryBuilders.matchQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), searchTerm)
+							.boost(4))
+					.should(QueryBuilders.matchQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), searchTerm)
 							.boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
@@ -128,11 +131,11 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
 							.boost(1.0f))
 					.minimumNumberShouldMatch(1);
-						
-			if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+
+			if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 				boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", doctorId));
 			}
-			
+
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -224,7 +227,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 				.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 				.must(QueryBuilders.termQuery("isPatientDiscarded", false));
 
-		if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
+		if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", request.getDoctorId()));
 		}
 		if (request.getSearchParameters() != null && !request.getSearchParameters().isEmpty()) {
@@ -254,9 +257,8 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 						BoolQueryBuilder queryBuilderForReference = new BoolQueryBuilder();
 
 						if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-							queryBuilderForReference
-									.must(QueryBuilders.orQuery(
-											QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
+							queryBuilderForReference.must(QueryBuilders
+									.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
 											QueryBuilders.termQuery("locationId", locationId)))
 									.must(QueryBuilders.orQuery(
 											QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
@@ -337,16 +339,16 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 				String id = doctorDocument.getId();
 				isActivate = doctorDocument.getIsActivate();
 				BeanUtil.map(doctorLocation, doctorDocument);
-				
+
 				doctorDocument.setImages(null);
 				doctorDocument.setImages(doctorLocation.getImages());
-				
+
 				doctorDocument.setClinicWorkingSchedules(null);
 				doctorDocument.setClinicWorkingSchedules(doctorLocation.getClinicWorkingSchedules());
-				
+
 				doctorDocument.setAlternateClinicNumbers(null);
 				doctorDocument.setAlternateClinicNumbers(doctorLocation.getAlternateClinicNumbers());
-				
+
 				doctorDocument.setGeoPoint(geoPoint);
 				doctorDocument.setId(id);
 				doctorDocument.setIsActivate(isActivate);
@@ -388,7 +390,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			logger.error("Error While Saving Doctor Details to ES : " + e.getMessage());
 		}
 	}
-	
+
 	@Override
 	public boolean addCollectionBoy(ESCollectionBoyDocument request) {
 		boolean response = false;
