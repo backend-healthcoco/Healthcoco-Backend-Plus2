@@ -115,10 +115,11 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
-					.should(QueryBuilders.regexpQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(),
-							searchTerm.replaceAll(".,(?=[]\\[+&|!(){}^\"~*?:\\\\-])", "\\\\").replace(" ", "\\s")
-									+ ".*")
+
+					.should(QueryBuilders.matchQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), searchTerm)
 							.boost(4))
+					.should(QueryBuilders.regexpQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(),
+							searchTerm.replaceAll("[^\\w\\s-]", "") + ".*").boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
 							.boost(1.3f))
