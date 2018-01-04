@@ -16,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
+import com.dpdocter.beans.InventorySettings;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
 import com.dpdocter.collections.InventoryBatchCollection;
 import com.dpdocter.collections.InventoryItemCollection;
+import com.dpdocter.collections.InventorySettingsCollection;
 import com.dpdocter.collections.InventoryStockCollection;
 import com.dpdocter.collections.ManufacturerCollection;
 import com.dpdocter.exceptions.BusinessException;
@@ -27,8 +29,10 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.InventoryBatchRepository;
 import com.dpdocter.repository.InventoryItemRepository;
+import com.dpdocter.repository.InventorySettingRepository;
 import com.dpdocter.repository.InventoryStockRepository;
 import com.dpdocter.repository.ManufacturerRepository;
+import com.dpdocter.request.InventorySettingRequest;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 import com.dpdocter.services.InventoryService;
@@ -54,6 +58,9 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Autowired
 	private InventoryBatchRepository inventoryBatchRepository;
+
+	@Autowired
+	private InventorySettingRepository inventorySettingRepository;
 
 	@Override
 	@Transactional
@@ -86,14 +93,14 @@ public class InventoryServiceImpl implements InventoryService {
 		return response;
 
 	}
-	
+
 	@Override
 	@Transactional
 	public Manufacturer addManufacturer(Manufacturer manufacturer) {
 
 		Manufacturer response = null;
 		try {
-			
+
 			ManufacturerCollection manufacturerCollection = new ManufacturerCollection();
 			BeanUtil.map(manufacturer, manufacturerCollection);
 			manufacturerCollection.setCreatedTime(new Date());
@@ -111,7 +118,7 @@ public class InventoryServiceImpl implements InventoryService {
 		return response;
 
 	}
-	
+
 	@Override
 	@Transactional
 	public InventoryItemLookupResposne getInventoryItem(String id) {
@@ -120,31 +127,28 @@ public class InventoryServiceImpl implements InventoryService {
 		Aggregation aggregation = null;
 		try {
 			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findOne(new ObjectId(id));
-			if(inventoryItemCollection == null)
-			{
-				throw new BusinessException(ServiceError.NoRecord , "Record not found");
+			if (inventoryItemCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			response = new InventoryItemLookupResposne();
 			BeanUtil.map(inventoryItemCollection, response);
 			if (response != null) {
-				
-					aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria().and("itemId").is(new ObjectId(response.getId()))),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-					AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
-							InventoryBatchCollection.class, InventoryBatch.class);
-					inventoryBatchs = batchAggregationResults.getMappedResults();
-					if(inventoryBatchs != null)
-					{
-						Long totalStock = 0l;
-						for (InventoryBatch inventoryBatch : inventoryBatchs) {
-							totalStock += inventoryBatch.getNoOfItemsLeft();
-						}
-						response.setTotalStock(totalStock);
+
+				aggregation = Aggregation.newAggregation(
+						Aggregation.match(new Criteria().and("itemId").is(new ObjectId(response.getId()))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+				AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
+						InventoryBatchCollection.class, InventoryBatch.class);
+				inventoryBatchs = batchAggregationResults.getMappedResults();
+				if (inventoryBatchs != null) {
+					Long totalStock = 0l;
+					for (InventoryBatch inventoryBatch : inventoryBatchs) {
+						totalStock += inventoryBatch.getNoOfItemsLeft();
 					}
-					
-					response.setInventoryBatchs(inventoryBatchs);
-			
+					response.setTotalStock(totalStock);
+				}
+
+				response.setInventoryBatchs(inventoryBatchs);
 
 			}
 		} catch (Exception e) {
@@ -154,7 +158,6 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
-
 
 	@Override
 	@Transactional
@@ -197,8 +200,7 @@ public class InventoryServiceImpl implements InventoryService {
 							InventoryBatchCollection.class, InventoryBatch.class);
 					inventoryBatchs = batchAggregationResults.getMappedResults();
 					inventoryItem.setInventoryBatchs(inventoryBatchs);
-					if(inventoryBatchs != null)
-					{
+					if (inventoryBatchs != null) {
 						Long totalStock = 0l;
 						for (InventoryBatch inventoryBatch : inventoryBatchs) {
 							totalStock += inventoryBatch.getNoOfItemsLeft();
@@ -218,8 +220,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	@Transactional
-	public Integer getInventoryItemListCount(String locationId, String hospitalId, String type,
-			String searchTerm) {
+	public Integer getInventoryItemListCount(String locationId, String hospitalId, String type, String searchTerm) {
 		List<InventoryItemLookupResposne> response = null;
 		List<InventoryBatch> inventoryBatchs = null;
 		try {
@@ -237,9 +238,8 @@ public class InventoryServiceImpl implements InventoryService {
 				criteria.and("type").is(type);
 			}
 
-			
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<InventoryItemLookupResposne> aggregationResults = mongoTemplate.aggregate(aggregation,
 					InventoryItemCollection.class, InventoryItemLookupResposne.class);
 			response = aggregationResults.getMappedResults();
@@ -263,7 +263,6 @@ public class InventoryServiceImpl implements InventoryService {
 		return response.size();
 	}
 
-	
 	@Override
 	@Transactional
 	public List<Manufacturer> getManufacturerList(String locationId, String hospitalId, String searchTerm, int page,
@@ -310,7 +309,7 @@ public class InventoryServiceImpl implements InventoryService {
 			if (inventoryStock.getStockType() != null && inventoryStock.getStockType().equalsIgnoreCase("ADDED")) {
 				if (inventoryStock.getInventoryBatch() != null) {
 					if (inventoryStock.getInventoryBatch().getId() != null) {
-						
+
 						inventoryBatchCollection = inventoryBatchRepository
 								.findOne(new ObjectId(inventoryStock.getInventoryBatch().getId()));
 						inventoryBatchCollection
@@ -318,16 +317,13 @@ public class InventoryServiceImpl implements InventoryService {
 						inventoryBatchCollection.setNoOfItemsLeft(
 								inventoryBatchCollection.getNoOfItemsLeft() + inventoryStock.getQuantity());
 						inventoryBatchCollection = inventoryBatchRepository.save(inventoryBatchCollection);
-						
+
 					} else {
 						inventoryBatchCollection = new InventoryBatchCollection();
 						inventoryBatchCollection.setItemId(new ObjectId(inventoryStock.getItemId()));
-						if(inventoryStock.getInventoryBatch().getBatchName() != null)
-						{
+						if (inventoryStock.getInventoryBatch().getBatchName() != null) {
 							inventoryBatchCollection.setBatchName(inventoryStock.getInventoryBatch().getBatchName());
-						}
-						else
-						{
+						} else {
 							inventoryBatchCollection.setBatchName("NO NAME");
 						}
 						inventoryBatchCollection.setCostPrice(inventoryStock.getCostPrice());
@@ -360,17 +356,14 @@ public class InventoryServiceImpl implements InventoryService {
 				if (inventoryStock.getInventoryBatch() == null) {
 					throw new BusinessException(ServiceError.InvalidInput,
 							"Batch cannot be null while consuming items");
-				}
-				else if(inventoryStock.getInventoryBatch().getId() == null)
-				{
+				} else if (inventoryStock.getInventoryBatch().getId() == null) {
 					throw new BusinessException(ServiceError.InvalidInput,
 							"Batch cannot be null while consuming items");
 				}
-				
 
-				inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(inventoryStock.getInventoryBatch().getId()));
-				inventoryBatchCollection
-						.setNoOfItems(inventoryBatchCollection.getNoOfItems());
+				inventoryBatchCollection = inventoryBatchRepository
+						.findOne(new ObjectId(inventoryStock.getInventoryBatch().getId()));
+				inventoryBatchCollection.setNoOfItems(inventoryBatchCollection.getNoOfItems());
 				inventoryBatchCollection
 						.setNoOfItemsLeft(inventoryBatchCollection.getNoOfItemsLeft() - inventoryStock.getQuantity());
 				inventoryBatchCollection = inventoryBatchRepository.save(inventoryBatchCollection);
@@ -391,29 +384,27 @@ public class InventoryServiceImpl implements InventoryService {
 
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<InventoryStockLookupResponse> getInventoryStockList(String locationId, String hospitalId, String itemId, String stockType, String searchTerm, int page,
-			int size) {
+	public List<InventoryStockLookupResponse> getInventoryStockList(String locationId, String hospitalId, String itemId,
+			String stockType, String searchTerm, int page, int size) {
 		List<InventoryStockLookupResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("inventoryItem.name").regex("^" + searchTerm, "i"),
-						new Criteria("inventoryItem.name").regex("^" + searchTerm),new Criteria("inventoryBatch.batchName").regex("^" + searchTerm, "i"),
+						new Criteria("inventoryItem.name").regex("^" + searchTerm),
+						new Criteria("inventoryBatch.batchName").regex("^" + searchTerm, "i"),
 						new Criteria("inventoryBatch.batchName").regex("^" + searchTerm));
 			}
-			
-			if(itemId != null)
-			{
+
+			if (itemId != null) {
 				criteria.and("itemId").is(new ObjectId(itemId));
 			}
 
-			
-			if(stockType != null)
-			{
+			if (stockType != null) {
 				criteria.and("stockType").is(stockType);
 			}
 
@@ -445,30 +436,27 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public Integer getInventoryStockListCount(String locationId, String hospitalId, String itemId,
-			String stockType, String searchTerm)
-	{
+	public Integer getInventoryStockListCount(String locationId, String hospitalId, String itemId, String stockType,
+			String searchTerm) {
 		List<InventoryStockLookupResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("inventoryItem.name").regex("^" + searchTerm, "i"),
-						new Criteria("inventoryItem.name").regex("^" + searchTerm),new Criteria("inventoryBatch.batchName").regex("^" + searchTerm, "i"),
+						new Criteria("inventoryItem.name").regex("^" + searchTerm),
+						new Criteria("inventoryBatch.batchName").regex("^" + searchTerm, "i"),
 						new Criteria("inventoryBatch.batchName").regex("^" + searchTerm));
 			}
-			
-			if(itemId != null)
-			{
+
+			if (itemId != null) {
 				criteria.and("itemId").is(new ObjectId(itemId));
 			}
 
-			
-			if(stockType != null)
-			{
+			if (stockType != null) {
 				criteria.and("stockType").is(stockType);
 			}
 
@@ -476,11 +464,11 @@ public class InventoryServiceImpl implements InventoryService {
 			criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("inventory_item_cl", "itemId", "_id", "inventoryItem"),
-						Aggregation.unwind("inventoryItem"),
-						Aggregation.lookup("inventory_batch_cl", "batchId", "_id", "inventoryBatch"),
-						Aggregation.unwind("inventoryBatch"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					Aggregation.lookup("inventory_item_cl", "itemId", "_id", "inventoryItem"),
+					Aggregation.unwind("inventoryItem"),
+					Aggregation.lookup("inventory_batch_cl", "batchId", "_id", "inventoryBatch"),
+					Aggregation.unwind("inventoryBatch"),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<InventoryStockLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					InventoryStockCollection.class, InventoryStockLookupResponse.class);
 			response = aggregationResults.getMappedResults();
@@ -491,12 +479,10 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response.size();
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public InventoryBatch addInventoryBatch(InventoryBatch inventoryBatch)
-	{
+	public InventoryBatch addInventoryBatch(InventoryBatch inventoryBatch) {
 		InventoryBatch response = null;
 		try {
 			InventoryBatchCollection inventoryBatchCollection = new InventoryBatchCollection();
@@ -510,11 +496,11 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<InventoryBatch> getInventoryBatchList(String locationId, String hospitalId, String itemId , String searchTerm, int page,
-			int size) {
+	public List<InventoryBatch> getInventoryBatchList(String locationId, String hospitalId, String itemId,
+			String searchTerm, int page, int size) {
 		List<InventoryBatch> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -523,7 +509,7 @@ public class InventoryServiceImpl implements InventoryService {
 				criteria = criteria.orOperator(new Criteria("batchName").regex("^" + searchTerm, "i"),
 						new Criteria("batchName").regex("^" + searchTerm));
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(itemId)) {
 				criteria = criteria.and("itemId").is(new ObjectId(itemId));
 			}
@@ -548,81 +534,126 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public InventoryItem discardInventoryItem(String id , Boolean discarded)
-	{
+	public InventoryItem discardInventoryItem(String id, Boolean discarded) {
 		InventoryItem response = null;
-		
+
 		try {
 			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findOne(new ObjectId(id));
-			if(inventoryItemCollection == null)
-			{
-				throw new BusinessException(ServiceError.NoRecord , "No record found");
+			if (inventoryItemCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
 			inventoryItemCollection.setDiscarded(discarded);
 			inventoryItemCollection = inventoryItemRepository.save(inventoryItemCollection);
-			response =  new InventoryItem();
+			response = new InventoryItem();
 			BeanUtil.map(inventoryItemCollection, response);
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while discarding inventory item");
 			e.printStackTrace();
 		}
-		
+
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public InventoryBatch discardInventoryBatch(String id , Boolean discarded)
-	{
+	public InventoryBatch discardInventoryBatch(String id, Boolean discarded) {
 		InventoryBatch response = null;
-		
+
 		try {
 			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
-			if(inventoryBatchCollection == null)
-			{
-				throw new BusinessException(ServiceError.NoRecord , "No record found");
+			if (inventoryBatchCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
 			inventoryBatchCollection.setDiscarded(discarded);
 			inventoryBatchCollection = inventoryBatchRepository.save(inventoryBatchCollection);
-			response =  new InventoryBatch();
+			response = new InventoryBatch();
 			BeanUtil.map(inventoryBatchCollection, response);
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while discarding inventory batch");
 			e.printStackTrace();
 		}
-		
+
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public InventoryStock discardInventoryStock(String id , Boolean discarded)
-	{
+	public InventoryStock discardInventoryStock(String id, Boolean discarded) {
 		InventoryStock response = null;
-		
+
 		try {
 			InventoryStockCollection inventoryStockCollection = inventoryStockRepository.findOne(new ObjectId(id));
-			if(inventoryStockCollection == null)
-			{
-				throw new BusinessException(ServiceError.NoRecord , "No record found");
+			if (inventoryStockCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
 			inventoryStockCollection.setDiscarded(discarded);
 			inventoryStockCollection = inventoryStockRepository.save(inventoryStockCollection);
-			response =  new InventoryStock();
+			response = new InventoryStock();
 			BeanUtil.map(inventoryStockCollection, response);
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while discarding inventory stock");
 			e.printStackTrace();
 		}
-		
+
 		return response;
 	}
+
 	
+
+	@Override
+	@Transactional
+	public InventorySettings addEditInventorySetting(InventorySettingRequest request) {
+		InventorySettings response = null;
+		InventorySettingsCollection inventorySettingsCollection = null;
+		try {
+			if (request.getId() != null) {
+				inventorySettingsCollection = inventorySettingRepository.findOne(new ObjectId(request.getId()));
+			}
+			if (inventorySettingsCollection != null) {
+				BeanUtil.map(request, inventorySettingsCollection);
+			} else {
+				inventorySettingsCollection = new InventorySettingsCollection();
+				BeanUtil.map(request, inventorySettingsCollection);
+			}
+
+			inventorySettingRepository.save(inventorySettingsCollection);
+			response = new InventorySettings();
+			BeanUtil.map(inventorySettingsCollection, response);
+		} catch (Exception e) {
+			logger.warn("Error while adding/editing inventory setting");
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+
+	@Override
+	@Transactional
+	public InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId) {
+		InventorySettings response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(doctorId));
+			criteria.and("locationId").is(new ObjectId(locationId));
+			criteria.and("hospitalId").is(new ObjectId(hospitalId));
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<InventorySettings> aggregationResults = mongoTemplate.aggregate(aggregation,
+					InventorySettingsCollection.class, InventorySettings.class);
+			response = aggregationResults.getUniqueMappedResult();
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn("Error while getting inventory setting");
+			e.printStackTrace();
+		}
+		return response;
+	}
 
 }

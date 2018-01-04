@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
+import com.dpdocter.beans.InventorySettings;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
+import com.dpdocter.request.InventorySettingRequest;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 
@@ -42,5 +44,9 @@ public interface InventoryService {
 
 	List<InventoryStockLookupResponse> getInventoryStockList(String locationId, String hospitalId, String itemId,
 			String stockType, String searchTerm, int page, int size);
+
+	InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId);
+
+	InventorySettings addEditInventorySetting(InventorySettingRequest request);
 
 }

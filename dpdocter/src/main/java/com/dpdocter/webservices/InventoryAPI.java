@@ -17,10 +17,13 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
+import com.dpdocter.beans.InventorySetting;
+import com.dpdocter.beans.InventorySettings;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.InventorySettingRequest;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 import com.dpdocter.services.InventoryService;
@@ -270,4 +273,55 @@ public class InventoryAPI {
 		}
 		return response;
 	}
+	
+	@POST
+	@ApiOperation(value = PathProxy.InventoryUrls.ADD_EDIT_SETTINGS, notes = PathProxy.InventoryUrls.ADD_EDIT_SETTINGS)
+	@Path(PathProxy.InventoryUrls.ADD_EDIT_SETTINGS)
+	public Response<InventorySettings> addEditSettings(InventorySettingRequest request)
+	{
+		Response<InventorySettings> response = new Response<>();
+		InventorySettings inventorySetting = null;
+		try {
+			if(request == null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			inventorySetting = inventoryService.addEditInventorySetting(request);
+			if(inventorySetting != null)
+			{
+				response.setData(inventorySetting);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while adding/editing inventory settings");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@GET
+	@ApiOperation(value = PathProxy.InventoryUrls.GET_SETTINGS, notes = PathProxy.InventoryUrls.GET_SETTINGS)
+	@Path(PathProxy.InventoryUrls.GET_SETTINGS)
+	public Response<InventorySettings> getInventorySettings(  @QueryParam("doctorId") String doctorId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
+	{
+		Response<InventorySettings> response = new Response<>();
+		InventorySettings inventorySettings = null;
+		try {
+			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId ,doctorId))
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			inventorySettings = inventoryService.getInventorySetting(doctorId, locationId, hospitalId);
+			if(inventorySettings != null)
+			{
+				response.setData(inventorySettings);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while getting inventory setting");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 }
