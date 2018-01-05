@@ -1528,8 +1528,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex", "arrayIndex5"))),
-					projectList, Aggregation.match(criteria),
-					new CustomAggregationOperation(
+					projectList, new CustomAggregationOperation(
 							new BasicDBObject("$group",
 									new BasicDBObject("_id", "$_id")
 											.append("name", new BasicDBObject("$first", "$name"))
