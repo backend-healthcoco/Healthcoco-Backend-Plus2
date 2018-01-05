@@ -28,6 +28,8 @@ public class InventoryStockCollection extends GenericCollection {
 	private Boolean discarded = false;
 	@Field
 	private Long totalPrice;
+	@Field
+	private ObjectId resourceId;
 
 	public ObjectId getId() {
 		return id;
@@ -117,11 +119,20 @@ public class InventoryStockCollection extends GenericCollection {
 		this.totalPrice = totalPrice;
 	}
 
+	public ObjectId getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(ObjectId resourceId) {
+		this.resourceId = resourceId;
+	}
+
 	@Override
 	public String toString() {
 		return "InventoryStockCollection [id=" + id + ", itemId=" + itemId + ", quantity=" + quantity + ", batchId="
 				+ batchId + ", costPrice=" + costPrice + ", retailPrice=" + retailPrice + ", stockType=" + stockType
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", totalPrice=" + totalPrice + ", resourceId=" + resourceId + "]";
 	}
 
 }

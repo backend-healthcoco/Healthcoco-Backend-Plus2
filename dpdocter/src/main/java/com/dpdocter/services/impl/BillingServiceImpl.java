@@ -1832,7 +1832,7 @@ public class BillingServiceImpl implements BillingService {
 	 * stockCount = inventoryStockCollection.g } }
 	 */
 
-	private void createInventoryStock(String itemId, String batchId, String patientId, String doctorId,
+	private void createInventoryStock(String itemId,String batchId, String patientId, String doctorId,
 			String locationId, String hospitalId) {
 		InventoryStock inventoryStock = new InventoryStock();
 		inventoryStock.setBatchId(batchId);
