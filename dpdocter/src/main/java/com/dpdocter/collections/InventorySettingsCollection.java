@@ -1,16 +1,24 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "inventory_setting_cl")
-public class InventorySettingsCollection {
+public class InventorySettingsCollection extends GenericCollection{
 
+	@Id
 	private ObjectId id;
+	@Field
 	private ObjectId doctorId;
+	@Field
 	private ObjectId locationId;
+	@Field
 	private ObjectId hospitalId;
+	@Field
 	private Boolean saveToInventory;
+	@Field
 	private Boolean showInventoryCount;
 
 	public ObjectId getId() {

@@ -2216,6 +2216,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("_id").is(new ObjectId(prescriptionId))),
