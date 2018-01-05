@@ -638,6 +638,29 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public InventoryItem getInventoryItemByResourceId(String locationId, String hospitalId, String resourceId)
+	{
+		InventoryItem response = null;
+		InventoryItemCollection inventoryItemCollection = null;
+		try {
+			inventoryItemCollection = inventoryItemRepository.findByLocationIdHospitalIdResourceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId));
+			if (inventoryItemCollection != null) {
+				response = new InventoryItem();
+				BeanUtil.map( inventoryItemCollection, response);
+			} else {
+				throw new BusinessException(ServiceError.NoRecord , "Inventory item not found");
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn("Error while getting inventory setting");
+			e.printStackTrace();
+		}
+		return response;
+	}
 
 
 	@Override

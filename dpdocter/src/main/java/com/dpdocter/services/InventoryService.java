@@ -49,4 +49,6 @@ public interface InventoryService {
 
 	InventorySettings addEditInventorySetting(InventorySettingRequest request);
 
+	InventoryItem getInventoryItemByResourceId(String locationId, String hospitalId, String resourceId);
+
 }
