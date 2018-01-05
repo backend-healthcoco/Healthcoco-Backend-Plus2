@@ -757,6 +757,7 @@ public class InventoryServiceImpl implements InventoryService {
 			criteria.and("locationId").is(new ObjectId(locationId));
 			criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
+			System.out.println("d :: " + doctorId + "h :: " +hospitalId + "l :: " + locationId);
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<InventorySettings> aggregationResults = mongoTemplate.aggregate(aggregation,
