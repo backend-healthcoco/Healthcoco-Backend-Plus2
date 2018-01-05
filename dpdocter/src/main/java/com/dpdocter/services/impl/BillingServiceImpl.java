@@ -28,6 +28,7 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
@@ -72,6 +73,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.services.BillingService;
 import com.dpdocter.services.EmailTackService;
+import com.dpdocter.services.InventoryService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -115,6 +117,9 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private EmailTackService emailTackService;
+	
+	@Autowired
+	private InventoryService inventoryService;
 
 	@Autowired
 	private MailService mailService;
@@ -1814,6 +1819,29 @@ public class BillingServiceImpl implements BillingService {
 			throw new BusinessException(ServiceError.Unknown, "Error while getting invoices" + e);
 		}
 		return response;
+	}
+
+
+	/*
+	 * private void updateInventoryItem(String itemId, String locationId ,
+	 * String hospitalId , Quantity quantity) { InventoryStockCollection
+	 * inventoryStockCollection =
+	 * inventoryStockRepository.getByResourceIdLocationIdHospitalId(itemId,
+	 * locationId, hospitalId); if(inventoryStockCollection != null) { Long
+	 * stockCount = inventoryStockCollection.g } }
+	 */
+
+	private void createInventoryStock(String itemId,String batchId, String patientId, String doctorId,
+			String locationId, String hospitalId) {
+		InventoryStock inventoryStock = new InventoryStock();
+		inventoryStock.setBatchId(batchId);
+		inventoryStock.setItemId(itemId);
+		inventoryStock.setPatientId(patientId);
+		inventoryStock.setDoctorId(doctorId);
+		inventoryStock.setLocationId(locationId);
+		inventoryStock.setHospitalId(hospitalId);
+		inventoryStock.setStockType("CONSUMED");
+		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
 
 }

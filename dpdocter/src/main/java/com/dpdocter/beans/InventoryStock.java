@@ -14,10 +14,13 @@ public class InventoryStock extends GenericCollection {
 	private Long costPrice;
 	private Long retailPrice;
 	private String stockType;
+	private String patientId;
+	private String doctorId;
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
 	private Long totalPrice;
+	private String resourceId;
 
 	public String getId() {
 		return id;
@@ -115,6 +118,31 @@ public class InventoryStock extends GenericCollection {
 		this.totalPrice = totalPrice;
 	}
 
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+	
+
+	public String getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(String resourceId) {
+		this.resourceId = resourceId;
+	}
+
 	@Override
 	public String toString() {
 		return "InventoryStock [id=" + id + ", itemId=" + itemId + ", quantity=" + quantity + ", batchId=" + batchId
@@ -122,12 +150,5 @@ public class InventoryStock extends GenericCollection {
 				+ ", stockType=" + stockType + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
-	
-	public static void main(String[] args) {
-		InventoryStock inventoryStock =  new InventoryStock();
-		InventoryBatch inventoryBatch = new InventoryBatch();
-		inventoryStock.setInventoryBatch(inventoryBatch);
-		System.out.println(JacksonUtil.obj2Json(inventoryStock));
-	}
 	
 }
