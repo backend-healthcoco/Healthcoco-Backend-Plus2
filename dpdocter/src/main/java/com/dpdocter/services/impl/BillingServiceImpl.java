@@ -1872,7 +1872,6 @@ public class BillingServiceImpl implements BillingService {
 
 	private void createInventoryStock(String resourceId, String itemId, InventoryBatch inventoryBatch, String patientId,
 			String doctorId, String locationId, String hospitalId, Long inventoryQuantity) {
-
 		InventoryStock inventoryStock = new InventoryStock();
 		inventoryStock.setInventoryBatch(inventoryBatch);
 		inventoryStock.setItemId(itemId);

@@ -411,7 +411,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 			}
 			
-			
+			//DrugCollection drugCollection =  drugRepository.find(drugId, doctorId, locationId, hospitalId)
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -751,18 +751,21 @@ public class InventoryServiceImpl implements InventoryService {
 	@Transactional
 	public InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId) {
 		InventorySettings response = null;
+		InventorySettingsCollection inventorySettingsCollection = null;
 		try {
-			Aggregation aggregation = null;
-			Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(doctorId));
-			criteria.and("locationId").is(new ObjectId(locationId));
-			criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			inventorySettingsCollection = inventorySettingRepository.findByDoctorIdPatientIdHospitalId(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+			if (inventorySettingsCollection != null) {
+				response = new InventorySettings();
+				BeanUtil.map( inventorySettingsCollection, response);
+			} else {
+				response = new InventorySettings();
+				response.setDoctorId(doctorId);
+				response.setLocationId(locationId);
+				response.setHospitalId(hospitalId);
+				response.setSaveToInventory(false);
+				response.setShowInventoryCount(false);
+			}
 
-			System.out.println("d :: " + doctorId + "h :: " +hospitalId + "l :: " + locationId);
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			AggregationResults<InventorySettings> aggregationResults = mongoTemplate.aggregate(aggregation,
-					InventorySettingsCollection.class, InventorySettings.class);
-			response = aggregationResults.getUniqueMappedResult();
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while getting inventory setting");
