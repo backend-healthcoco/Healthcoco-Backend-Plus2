@@ -57,5 +57,4 @@ public interface InventoryService {
 
 	InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId);
 
-
 }

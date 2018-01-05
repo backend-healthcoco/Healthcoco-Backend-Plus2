@@ -303,7 +303,6 @@ public class BillingServiceImpl implements BillingService {
 							invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(),
 							invoiceItemResponse.getInventoryQuantity());
-
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 
@@ -996,7 +995,7 @@ public class BillingServiceImpl implements BillingService {
 				// invoiceItemResponse.getBatchId(), request.getPatientId(),
 				// request.getDoctorId(), request.getLocationId(),
 				// request.getHospitalId());
-
+				//createInventoryStock(invoiceItemResponse.getItemId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
@@ -1872,6 +1871,7 @@ public class BillingServiceImpl implements BillingService {
 
 	private void createInventoryStock(String resourceId, String itemId, InventoryBatch inventoryBatch, String patientId,
 			String doctorId, String locationId, String hospitalId, Long inventoryQuantity) {
+
 		InventoryStock inventoryStock = new InventoryStock();
 		inventoryStock.setInventoryBatch(inventoryBatch);
 		inventoryStock.setItemId(itemId);
