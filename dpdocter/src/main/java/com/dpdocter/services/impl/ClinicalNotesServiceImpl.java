@@ -4190,7 +4190,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
-
 			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP,
 			Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
 
