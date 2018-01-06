@@ -85,8 +85,9 @@ public class BlogServicesImpl implements BlogService {
 				criteria = criteria.and("category").is(category);
 			}
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
-						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
