@@ -991,6 +991,7 @@ public class BillingServiceImpl implements BillingService {
 							invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(),
 							invoiceItemResponse.getInventoryQuantity());
+
 				}
 				// createInventoryStock(invoiceItemResponse.getItemId(),
 				// invoiceItemResponse.getBatchId(), request.getPatientId(),
