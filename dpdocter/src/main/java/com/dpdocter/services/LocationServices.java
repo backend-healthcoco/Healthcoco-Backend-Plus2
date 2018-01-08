@@ -44,8 +44,8 @@ public interface LocationServices {
 	List<Location> addCollectionBoyAssociatedLabs(List<CollectionBoyLabAssociation> collectionBoyLabAssociations);
 
 	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
-			String rateCardId, String labId);
-
+			String rateCardId, String labId, Boolean discarded);
+	
 	RateCard addEditRateCard(RateCard request);
 
 	List<RateCard> getRateCards(int page, int size, String searchTerm, String locationId);

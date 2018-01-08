@@ -33,6 +33,16 @@ public class RateCardTestAssociationCollection extends GenericCollection {
 	private DiagnosticTest diagnosticTest;
 	@Field
 	private Boolean isAvailable;
+	@Field
+	private Boolean discarded = false;
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public ObjectId getId() {
 		return id;

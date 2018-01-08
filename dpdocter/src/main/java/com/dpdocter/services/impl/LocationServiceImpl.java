@@ -1526,22 +1526,23 @@ public class LocationServiceImpl implements LocationServices {
 	public Boolean addEditRateCardTestAssociation(List<RateCardTestAssociation> request) {
 		boolean response = false;
 		RateCardTestAssociationCollection rateCardTestAssociationCollection = null;
+		List<RateCardTestAssociationCollection> rateCardTestAssociationCollections = null;
 		try {
+			rateCardTestAssociationCollections = new ArrayList<RateCardTestAssociationCollection>();
 			for (RateCardTestAssociation rateCardTestAssociation : request) {
 				if (rateCardTestAssociation.getId() != null) {
 					rateCardTestAssociationCollection = rateCardTestAssociationRepository
 							.findOne(new ObjectId(rateCardTestAssociation.getId()));
-					rateCardTestAssociation.setId(String.valueOf(rateCardTestAssociationCollection.getId()));
+					rateCardTestAssociation.setCreatedTime(new Date());
 				} else {
 					rateCardTestAssociationCollection = new RateCardTestAssociationCollection();
-
+					rateCardTestAssociation.setCreatedTime(new Date());
+					rateCardTestAssociation.setUpdatedTime(new Date());
 				}
 
 				BeanUtil.map(rateCardTestAssociation, rateCardTestAssociationCollection);
-				rateCardTestAssociationCollection = rateCardTestAssociationRepository
-						.save(rateCardTestAssociationCollection);
-				BeanUtil.map(rateCardTestAssociationCollection, response);
 			}
+			rateCardTestAssociationRepository.save(rateCardTestAssociationCollections);
 			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1554,12 +1555,9 @@ public class LocationServiceImpl implements LocationServices {
 	@Override
 	@Transactional
 	public List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
-			String rateCardId, String labId) {
+			String rateCardId, String labId, Boolean discarded) {
 		List<RateCardTestAssociationLookupResponse> rateCardTests = null;
-		RateCardTestAssociationLookupResponse rateCardTestAssociation = null;
-		List<RateCardTestAssociationLookupResponse> specialRateCardsTests = null;
-		// List<RateCardTestAssociationLookupResponse> responses = null;
-		List<RateCardTestAssociationLookupResponse> rateCardTestAssociationLookupResponses = null;
+
 		try {
 			Aggregation aggregation = null;
 
@@ -1570,8 +1568,12 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			criteria.and("rateCardId").is(new ObjectId(rateCardId));
 			criteria.and("isAvailable").is(true);
+			criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(labId)) {
+				criteria.and("labId").is(new ObjectId(labId));
+			}
 
-			if (size > 0)
+			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"),
@@ -1582,39 +1584,16 @@ public class LocationServiceImpl implements LocationServices {
 						 */
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
-			else
+			} else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			}
 			AggregationResults<RateCardTestAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, RateCardTestAssociationCollection.class, RateCardTestAssociationLookupResponse.class);
-			rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
-			if (!DPDoctorUtils.anyStringEmpty(labId)) {
-				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
-						Aggregation.unwind("diagnosticTest"),
-						Aggregation.match(criteria.and("labId").is(new ObjectId(labId))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-				AggregationResults<RateCardTestAssociationLookupResponse> results = mongoTemplate.aggregate(aggregation,
-						RateCardTestAssociationCollection.class, RateCardTestAssociationLookupResponse.class);
-				specialRateCardsTests = results.getMappedResults();
-			}
-			if (rateCardTestAssociationLookupResponses != null) {
-				rateCardTests = new ArrayList<RateCardTestAssociationLookupResponse>();
-				for (RateCardTestAssociationLookupResponse lookupResponse : rateCardTestAssociationLookupResponses) {
-					if (specialRateCardsTests != null) {
-						for (RateCardTestAssociationLookupResponse specialRateCard : specialRateCardsTests) {
-							if (lookupResponse.getDiagnosticTestId().equals(specialRateCard.getDiagnosticTestId())) {
-								BeanUtil.map(specialRateCard, lookupResponse);
-							}
-						}
-					}
-					rateCardTestAssociation = new RateCardTestAssociationLookupResponse();
-					BeanUtil.map(lookupResponse, rateCardTestAssociation);
-					rateCardTests.add(rateCardTestAssociation);
-				}
-			}
+			rateCardTests = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting rate cards");
@@ -1627,16 +1606,9 @@ public class LocationServiceImpl implements LocationServices {
 	@Transactional
 	public List<RateCardTestAssociationByLBResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId, String specimen) {
-		// List<RateCardTestAssociationLookupResponse> rateCardTests = null;
-		// RateCardTestAssociationLookupResponse rateCardTestAssociation = null;
-		// List<RateCardTestAssociationLookupResponse> specialRateCardsTests =
-		// null;
 		ObjectId rateCardId = null;
-		// List<RateCardTestAssociationLookupResponse> responses = null;
-
 		List<RateCardTestAssociationByLBResponse> rateCardTestAssociationLookupResponses = null;
 		try {
-
 			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
 					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
 			if (rateCardLabAssociationCollection == null) {
@@ -1662,6 +1634,7 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("testName").regex("^" + searchTerm));
 			}
 			criteria.and("rateCardTest.rateCardId").is(rateCardId);
+			criteria.and("rateCardTest.discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
 				criteria = criteria
 						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
@@ -1678,6 +1651,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.category", "$rateCardTest.category"),
 					Fields.field("rateCardTest.labId", "$rateCardTest.labId"),
 					Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
+					Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
 					Fields.field("createdTime", "$createdTime")));
 
@@ -1941,7 +1915,8 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (from != 0 && to != 0) {
-				criteria.and("labTestSamples.updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+				criteria.and("labTestSamples.updatedTime").gte(new Date(from))
+						.lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else if (from != 0) {
 				criteria.and("labTestSamples.updatedTime").gte(new Date(from));
 			} else if (to != 0) {

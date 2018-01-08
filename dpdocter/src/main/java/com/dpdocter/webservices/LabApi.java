@@ -23,7 +23,6 @@ import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.PatientLabTestSample;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
@@ -39,7 +38,6 @@ import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.response.DoctorLabReportResponseWithCount;
 import com.dpdocter.response.LabReportsResponse;
 import com.dpdocter.response.LabTestGroupResponse;
-import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.PatientLabTestSampleReportResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
@@ -159,13 +157,14 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARD_TEST, notes = PathProxy.LabUrls.GET_RATE_CARD_TEST)
 	public Response<RateCardTestAssociationLookupResponse> getRateCardTests(@QueryParam("rateCardId") String rateCardId,
 			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("searchTerm") String searchTerm,
+			@QueryParam("discarded") @DefaultValue("false") Boolean discarded) {
 		if (rateCardId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardTestAssociationLookupResponse> response = new Response<RateCardTestAssociationLookupResponse>();
-		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, rateCardId, labId));
+		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, rateCardId, labId, discarded));
 
 		return response;
 	}
