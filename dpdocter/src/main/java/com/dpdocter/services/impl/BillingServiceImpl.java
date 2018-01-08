@@ -288,7 +288,7 @@ public class BillingServiceImpl implements BillingService {
 				}
 
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
-				if(invoiceItemResponse.isSaveToInventory() == true && inventoryItem != null)
+				if(invoiceItemResponse.getBatchId() != null && inventoryItem != null)
 				{
 					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 				}
@@ -968,7 +968,7 @@ public class BillingServiceImpl implements BillingService {
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
-				if(invoiceItemResponse.isSaveToInventory() == true && inventoryItem != null)
+				if(invoiceItemResponse.getBatchId() != null && inventoryItem != null)
 				{
 					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 				}

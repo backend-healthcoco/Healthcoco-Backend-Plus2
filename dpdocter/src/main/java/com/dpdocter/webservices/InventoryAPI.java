@@ -323,4 +323,32 @@ public class InventoryAPI {
 		return response;
 	}
 	
+	
+	@GET
+	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID, notes = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID)
+	@Path(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID)
+	public Response<InventoryBatch> getInventoryBatchesBResourceId( @QueryParam("resourceId") String resourceId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
+	{
+		Response<InventoryBatch> response = new Response<>();
+		List<InventoryBatch> inventoryBatchs = null;
+		try {
+			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId ,resourceId))
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			inventoryBatchs = inventoryService.getInventoryBatchByResourceId(locationId, hospitalId, resourceId);
+			if(inventoryBatchs != null)
+			{
+				response.setDataList(inventoryBatchs);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while getting inventory setting");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
+	
 }
