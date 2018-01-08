@@ -1711,15 +1711,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			throws JRException {
 		band = new JRDesignBand();
 		int bandHeight = 0;
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString(),
-				parameter.get("footerBottomText").toString())) {
-			bandHeight = 85;
-		} else {
-			bandHeight = 45;
-		}
+
 		int Startwith = 2;
 
-		band.setHeight(bandHeight);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
@@ -1754,17 +1748,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 			Startwith = Startwith + 20;
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
+			int count = parameter.get("bottomSignText").toString().split("\r\n|\r|\n").length;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}"));
 			jrDesignTextField.setFontSize(new Float(contentFontSize));
 			jrDesignTextField.setX(0);
 			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setHeight(18 * count);
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			Startwith = Startwith + 20;
+			Startwith = Startwith + (count * 18) + 2;
+
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
 			jrDesignLine = new JRDesignLine();
@@ -1784,8 +1780,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
+			Startwith = Startwith + 42;
 		}
-
+		band.setHeight(Startwith);
 		return band;
 	}
 
