@@ -411,7 +411,6 @@ public class InventoryServiceImpl implements InventoryService {
 
 			}
 			
-			//DrugCollection drugCollection =  drugRepository.find(drugId, doctorId, locationId, hospitalId)
 
 		} catch (Exception e) {
 			// TODO: handle exception
