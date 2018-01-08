@@ -747,11 +747,16 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	@Transactional
-	public InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId) {
+	public InventorySettings getInventorySetting(String id,String doctorId, String locationId, String hospitalId) {
 		InventorySettings response = null;
 		InventorySettingsCollection inventorySettingsCollection = null;
 		try {
-			inventorySettingsCollection = inventorySettingRepository.findByDoctorIdPatientIdHospitalId(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+			if (DPDoctorUtils.anyStringEmpty(id)) {
+				inventorySettingsCollection = inventorySettingRepository.findOne(new ObjectId(id));
+			} else {
+				inventorySettingsCollection = inventorySettingRepository.findByDoctorIdPatientIdHospitalId(
+						new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+			}
 			if (inventorySettingsCollection != null) {
 				response = new InventorySettings();
 				BeanUtil.map( inventorySettingsCollection, response);
