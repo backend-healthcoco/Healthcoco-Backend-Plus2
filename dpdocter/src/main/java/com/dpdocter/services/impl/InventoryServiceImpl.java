@@ -709,6 +709,7 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 			if (inventorySettingsCollection != null) {
 				response = new InventorySettings();
+				System.out.println(inventorySettingsCollection);
 				BeanUtil.map( inventorySettingsCollection, response);
 			} else {
 				response = new InventorySettings();
@@ -725,6 +726,23 @@ public class InventoryServiceImpl implements InventoryService {
 			e.printStackTrace();
 		}
 		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<InventoryBatch> getInventoryBatchByResourceId(String locationId, String hospitalId, String resourceId)
+	{
+		List<InventoryBatch> inventoryBatchs = null;
+		try {
+			InventoryItem inventoryItem = getInventoryItemByResourceId(locationId, hospitalId, resourceId);
+			if(inventoryItem != null)
+			{
+				inventoryBatchs = getInventoryBatchList(locationId, hospitalId, inventoryItem.getId(), null, 0, 0);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return inventoryBatchs;
 	}
 
 }
