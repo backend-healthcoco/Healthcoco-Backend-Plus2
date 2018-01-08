@@ -23,6 +23,8 @@ public class PatientDetails {
 
     private Boolean showResourceId = true;
     
+    private Boolean showHospitalId = true;
+    
     private Boolean showCity = false;
 
     private PrintSettingsText style;
@@ -115,11 +117,20 @@ public class PatientDetails {
 	this.style = style;
     }
 
-    @Override
-    public String toString() {
-	return "PatientDetails [showName=" + showName + ", showPID=" + showPID + ", showMobileNumber=" + showMobileNumber + ", showDOB=" + showDOB
-		+ ", showGender=" + showGender + ", showReferedBy=" + showReferedBy + ", showDate=" + showDate + ", showBloodGroup=" + showBloodGroup
-		+ ", showResourceId=" + showResourceId + ", style=" + style + "]";
-    }
+	public Boolean getShowHospitalId() {
+		return showHospitalId;
+	}
 
+	public void setShowHospitalId(Boolean showHospitalId) {
+		this.showHospitalId = showHospitalId;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientDetails [showName=" + showName + ", showPID=" + showPID + ", showMobileNumber="
+				+ showMobileNumber + ", showDOB=" + showDOB + ", showGender=" + showGender + ", showReferedBy="
+				+ showReferedBy + ", showDate=" + showDate + ", showBloodGroup=" + showBloodGroup + ", showResourceId="
+				+ showResourceId + ", showHospitalId=" + showHospitalId + ", showCity=" + showCity + ", style=" + style
+				+ "]";
+	}
 }

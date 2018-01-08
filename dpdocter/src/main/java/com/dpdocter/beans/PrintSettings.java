@@ -34,6 +34,8 @@ public class PrintSettings extends GenericCollection {
 
 	private String clinicLogoUrl;
 
+	private String hospitalUId;
+	
 	private String contentLineSpace = LineSpace.SMALL.name();
 
 	private String contentLineStyle = LineStyle.INLINE.getStyle();
@@ -152,13 +154,22 @@ public class PrintSettings extends GenericCollection {
 		this.showDrugGenericNames = showDrugGenericNames;
 	}
 
+	public String getHospitalUId() {
+		return hospitalUId;
+	}
+
+	public void setHospitalUId(String hospitalUId) {
+		this.hospitalUId = hospitalUId;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintSettings [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup + ", headerSetup="
 				+ headerSetup + ", footerSetup=" + footerSetup + ", contentSetup=" + contentSetup + ", discarded="
-				+ discarded + ", clinicLogoUrl=" + clinicLogoUrl + ", contentLineSpace=" + contentLineSpace
-				+ ", contentLineStyle=" + contentLineStyle + ", showDrugGenericNames=" + showDrugGenericNames + "]";
+				+ discarded + ", clinicLogoUrl=" + clinicLogoUrl + ", hospitalUId=" + hospitalUId
+				+ ", contentLineSpace=" + contentLineSpace + ", contentLineStyle=" + contentLineStyle
+				+ ", showDrugGenericNames=" + showDrugGenericNames + "]";
 	}
 
 }

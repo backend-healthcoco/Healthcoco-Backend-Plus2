@@ -1459,7 +1459,7 @@ public class BillingServiceImpl implements BillingService {
 					patient,
 					"<b>INVID: </b>" + (doctorPatientInvoiceCollection.getUniqueInvoiceId() != null
 							? doctorPatientInvoiceCollection.getUniqueInvoiceId() : "--"),
-					patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date());
+					patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(), printSettings.getHospitalUId());
 			patientVisitService.generatePrintSetup(parameters, printSettings,
 					doctorPatientInvoiceCollection.getDoctorId());
 			String pdfName = (user != null ? user.getFirstName() : "") + "INVOICE-"

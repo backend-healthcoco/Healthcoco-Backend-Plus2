@@ -1022,7 +1022,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
 						? dischargeSummaryCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				dischargeSummaryCollection.getUpdatedTime());
+				dischargeSummaryCollection.getUpdatedTime(), printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
 				+ dischargeSummaryCollection.getUniqueEmrId() + new Date().getTime();
