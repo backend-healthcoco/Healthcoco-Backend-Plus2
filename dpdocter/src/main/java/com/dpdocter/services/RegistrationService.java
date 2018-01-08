@@ -166,4 +166,7 @@ public interface RegistrationService {
 			Boolean discarded);
 
 	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId);
+
+	Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
+			String newPatientId, String mobileNumber);
 }

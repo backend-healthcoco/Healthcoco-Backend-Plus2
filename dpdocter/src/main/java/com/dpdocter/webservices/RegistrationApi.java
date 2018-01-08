@@ -1170,4 +1170,25 @@ public class RegistrationApi {
 		response.setDataList(registrationService.getDeletedPatient(doctorId, locationId, hospitalId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
+	public Response<Boolean> updatePatientNumber(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId,
+			@QueryParam("newPatientId") String newPatientId, @QueryParam("mobileNumber") String mobileNumber) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
+
+		}
+		
+		if (DPDoctorUtils.allStringsEmpty(newPatientId, mobileNumber)) {
+			throw new BusinessException(ServiceError.InvalidInput, "New PatientId and mobileNumber both cannot be null");
+
+		}
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.updatePatientNumber(doctorId, locationId, hospitalId, patientId, newPatientId, mobileNumber));
+		return response;
+	}
 }

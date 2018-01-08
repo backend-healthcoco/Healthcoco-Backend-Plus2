@@ -4094,8 +4094,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
 					.and("isPatientDiscarded").is(true);
-			Aggregation aggregation = Aggregation
-					.newAggregation(Aggregation.match(criteria));
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
 
 			response = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientShortCard.class).getMappedResults();
 			
@@ -4103,6 +4102,56 @@ public class RegistrationServiceImpl implements RegistrationService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting deleted patient");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
+			String newPatientId, String mobileNumber) {
+		Boolean response = false;
+		try {
+			ObjectId doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId), 
+					hospitalObjectId = new ObjectId(hospitalId), patientObjectId = new ObjectId(patientId);
+			
+			
+			if(!DPDoctorUtils.anyStringEmpty(newPatientId)) {
+				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+				patientCollection.setUserId(new ObjectId(newPatientId));
+				patientCollection.setUpdatedTime(new Date());
+				patientCollection = patientRepository.save(patientCollection);
+				
+				ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
+				esPatientDocument.setUserId(newPatientId);
+				esPatientDocument = esPatientRepository.save(esPatientDocument);
+				response = true;
+			}
+			else if(!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+				UserCollection userCollection = userRepository.findOne(patientObjectId);
+				if(userCollection != null) {
+					userCollection.setMobileNumber(mobileNumber);
+					userCollection.setUpdatedTime(new Date());
+					userCollection = userRepository.save(userCollection);
+					
+					
+					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+					patientCollection.setUpdatedTime(new Date());
+					patientCollection = patientRepository.save(patientCollection);
+					
+					ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
+					esPatientDocument.setMobileNumber(mobileNumber);
+					esPatientDocument = esPatientRepository.save(esPatientDocument);
+					
+					response = true;
+				}
+				
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number");
 		}
 		return response;
 	}
