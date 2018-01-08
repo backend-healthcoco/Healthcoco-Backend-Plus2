@@ -14,12 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.PrintSettings;
+import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.enums.PrintFilter;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.services.PrintSettingsService;
@@ -36,6 +38,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+	
+	@Autowired
+	private HospitalRepository hospitalRepository;
 
 	@Override
 	@Transactional
@@ -61,6 +66,10 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			BeanUtil.map(request, printSettingsCollection);
 			if (request.getId() == null) {
 				printSettingsCollection.setCreatedTime(new Date());
+				HospitalCollection hospitalCollection = hospitalRepository.findOne(new ObjectId(request.getHospitalId()));
+				if (hospitalCollection != null) {
+					printSettingsCollection.setHospitalUId(hospitalCollection.getHospitalUId());
+				}
 			} else {
 				PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository
 						.findOne(new ObjectId(request.getId()));
@@ -68,7 +77,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 					printSettingsCollection.setCreatedTime(oldPrintSettingsCollection.getCreatedTime());
 					printSettingsCollection.setCreatedBy(oldPrintSettingsCollection.getCreatedBy());
 					printSettingsCollection.setDiscarded(oldPrintSettingsCollection.getDiscarded());
-
+					printSettingsCollection.setHospitalUId(oldPrintSettingsCollection.getHospitalUId());
+					
 					if (request.getPageSetup() == null)
 						printSettingsCollection.setPageSetup(oldPrintSettingsCollection.getPageSetup());
 
@@ -85,6 +95,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			if (locationCollection != null) {
 				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 			}
+			
 			printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 			BeanUtil.map(printSettingsCollection, response);
 

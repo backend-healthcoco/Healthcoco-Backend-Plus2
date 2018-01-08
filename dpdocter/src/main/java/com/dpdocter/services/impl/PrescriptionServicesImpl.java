@@ -3953,7 +3953,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
 						? prescriptionCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				prescriptionCollection.getUpdatedTime());
+				prescriptionCollection.getUpdatedTime(), printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PRESCRIPTION-"
 				+ prescriptionCollection.getUniqueEmrId() + new Date().getTime();
@@ -5426,7 +5426,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
 						? prescriptionCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				prescriptionCollection.getUpdatedTime());
+				prescriptionCollection.getUpdatedTime(), printSettings.getHospitalUId());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 

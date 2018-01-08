@@ -53,6 +53,9 @@ public class PrintSettingsCollection extends GenericCollection {
     private String clinicLogoUrl;
 
     @Field
+    private String hospitalUId;
+    
+    @Field
     private PrintSettingsText contentSetup;
     
     @Field
@@ -188,13 +191,22 @@ public class PrintSettingsCollection extends GenericCollection {
 		this.showDrugGenericNames = showDrugGenericNames;
 	}
 
+	public String getHospitalUId() {
+		return hospitalUId;
+	}
+
+	public void setHospitalUId(String hospitalUId) {
+		this.hospitalUId = hospitalUId;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup
 				+ ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
-				+ ", clinicLogoUrl=" + clinicLogoUrl + ", contentSetup=" + contentSetup + ", contentLineSpace="
-				+ contentLineSpace + ", contentLineStyle=" + contentLineStyle + ", showDrugGenericNames="
-				+ showDrugGenericNames + "]";
+				+ ", clinicLogoUrl=" + clinicLogoUrl + ", hospitalUId=" + hospitalUId + ", contentSetup=" + contentSetup
+				+ ", contentLineSpace=" + contentLineSpace + ", contentLineStyle=" + contentLineStyle
+				+ ", showDrugGenericNames=" + showDrugGenericNames + ", showPoweredBy=" + showPoweredBy + "]";
 	}
+
 }

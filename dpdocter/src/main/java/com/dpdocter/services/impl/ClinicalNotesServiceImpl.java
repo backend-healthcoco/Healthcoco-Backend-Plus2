@@ -4435,7 +4435,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				"<b>CID: </b>" + (clinicalNotesCollection.getUniqueEmrId() != null
 						? clinicalNotesCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				clinicalNotesCollection.getUpdatedTime());
+				clinicalNotesCollection.getUpdatedTime(), printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
