@@ -45,10 +45,12 @@ public interface InventoryService {
 	List<InventoryStockLookupResponse> getInventoryStockList(String locationId, String hospitalId, String itemId,
 			String stockType, String searchTerm, int page, int size);
 
-	InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId);
+	//InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId);
 
 	InventorySettings addEditInventorySetting(InventorySettingRequest request);
 
 	InventoryItem getInventoryItemByResourceId(String locationId, String hospitalId, String resourceId);
+
+	InventorySettings getInventorySetting(String id, String doctorId, String locationId, String hospitalId);
 
 }

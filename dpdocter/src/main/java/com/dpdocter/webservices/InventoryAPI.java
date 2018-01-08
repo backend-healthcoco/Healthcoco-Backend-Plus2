@@ -301,16 +301,16 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_SETTINGS, notes = PathProxy.InventoryUrls.GET_SETTINGS)
 	@Path(PathProxy.InventoryUrls.GET_SETTINGS)
-	public Response<InventorySettings> getInventorySettings(  @QueryParam("doctorId") String doctorId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
+	public Response<InventorySettings> getInventorySettings(  @QueryParam("id") String id ,  @QueryParam("doctorId") String doctorId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
 	{
 		Response<InventorySettings> response = new Response<>();
 		InventorySettings inventorySettings = null;
 		try {
-			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId ,doctorId))
+			if(DPDoctorUtils.allStringsEmpty(id,hospitalId,locationId ,doctorId))
 			{
 				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
 			}
-			inventorySettings = inventoryService.getInventorySetting(doctorId, locationId, hospitalId);
+			inventorySettings = inventoryService.getInventorySetting(id ,doctorId, locationId, hospitalId);
 			if(inventorySettings != null)
 			{
 				response.setData(inventorySettings);
