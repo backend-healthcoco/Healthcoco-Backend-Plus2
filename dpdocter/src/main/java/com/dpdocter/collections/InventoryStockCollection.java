@@ -21,6 +21,8 @@ public class InventoryStockCollection extends GenericCollection {
 	@Field
 	private String stockType;
 	@Field
+	private ObjectId doctorId;
+	@Field
 	private ObjectId locationId;
 	@Field
 	private ObjectId hospitalId;
@@ -125,6 +127,14 @@ public class InventoryStockCollection extends GenericCollection {
 
 	public void setResourceId(ObjectId resourceId) {
 		this.resourceId = resourceId;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
 	}
 
 	@Override
