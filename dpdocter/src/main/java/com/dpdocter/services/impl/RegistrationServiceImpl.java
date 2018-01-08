@@ -4549,12 +4549,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
-					.and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
+					.and("isPatientDiscarded").is(true);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
-
-			response = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientShortCard.class)
-					.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4569,42 +4566,41 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String newPatientId, String mobileNumber) {
 		Boolean response = false;
 		try {
-			ObjectId doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId),
+			ObjectId doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId), 
 					hospitalObjectId = new ObjectId(hospitalId), patientObjectId = new ObjectId(patientId);
-
-			if (!DPDoctorUtils.anyStringEmpty(newPatientId)) {
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+			
+			
+			if(!DPDoctorUtils.anyStringEmpty(newPatientId)) {
+				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
 				patientCollection.setUserId(new ObjectId(newPatientId));
 				patientCollection.setUpdatedTime(new Date());
 				patientCollection = patientRepository.save(patientCollection);
-
+				
 				ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
 				esPatientDocument.setUserId(newPatientId);
 				esPatientDocument = esPatientRepository.save(esPatientDocument);
 				response = true;
-			} else if (!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+			}
+			else if(!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 				UserCollection userCollection = userRepository.findOne(patientObjectId);
-				if (userCollection != null) {
+				if(userCollection != null) {
 					userCollection.setMobileNumber(mobileNumber);
 					userCollection.setUpdatedTime(new Date());
 					userCollection = userRepository.save(userCollection);
-
-					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-							patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+					
+					
+					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
 					patientCollection.setUpdatedTime(new Date());
 					patientCollection = patientRepository.save(patientCollection);
-
-					ESPatientDocument esPatientDocument = esPatientRepository
-							.findOne(patientCollection.getId().toString());
+					
+					ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
 					esPatientDocument.setMobileNumber(mobileNumber);
 					esPatientDocument = esPatientRepository.save(esPatientDocument);
-
+					
 					response = true;
 				}
-
+				
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -4831,5 +4827,4 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		vaccineRepository.save(vaccineCollections);
 	}
-
 }

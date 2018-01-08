@@ -104,7 +104,6 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.InstructionsCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.NutritionReferralCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -7327,34 +7326,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					e.printStackTrace();
 				}
 			}
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public NutritionReferral addNutritionReferral(NutritionReferralRequest request) {
-		NutritionReferral response = null;
-
-		try {
-			if (request != null) {
-				NutritionReferralCollection nutritionReferralCollection = new NutritionReferralCollection();
-				BeanUtil.map(request, nutritionReferralCollection);
-				nutritionReferralCollection = nutritionReferralRepository.save(nutritionReferralCollection);
-				if (nutritionReferralCollection != null) {
-					response = new NutritionReferral();
-					BeanUtil.map(nutritionReferralCollection, response);
-					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-							nutritionReferralCollection.getPatientId(), nutritionReferralCollection.getLocationId(),
-							nutritionReferralCollection.getHospitalId());
-					if (patientCollection != null) {
-						patientCollection.setIsNutritionActive(true);
-					}
-				}
-
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return response;
 	}
