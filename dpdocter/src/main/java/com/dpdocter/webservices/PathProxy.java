@@ -405,13 +405,14 @@ public interface PathProxy {
 
 		public static final String CHANGE_LABEL_AND_DESCRIPTION_RECORD = "/changeLabelAndDescription";
 
-		public static final String ADD_RECORDS_MULTIPART = "/add";
+		public static final String ADD_RECORDS_MULTIPART = "/addMultipart";
 
 		public static final String SAVE_RECORDS_IMAGE = "/saveImage";
 
 		public static final String CHANGE_RECORD_STATE = "/{recordId}/{recordsState}/changeState";
 
 		public static final String ADD_USER_RECORDS = "/user/add";
+		
 		public static final String UPLOAD_USER_RECORD_FILE = "/upload/file/";
 
 		public static final String GET_USER_RECORD_BY_ID = "user/{recordId}/view";
@@ -749,11 +750,11 @@ public interface PathProxy {
 		public static final String UPDATE_PRESCRIPTION_SMS = "/{doctorId}/prescriptionSMS";
 
 		public static final String ADD_EDIT_SEO = "/addEditSEO";
-		
+
 		public static final String UPDATE_SAVE_TO_INVENTORY = "/{doctorId}/saveToInventory";
-		
+
 		public static final String UPDATE_SHOW_INVENTORY = "/{doctorId}/showInventory";
-		
+
 		public static final String UPDATE_SHOW_INVENTORY_COUNT = "/{doctorId}/showInventoryCount";
 
 	}
@@ -1185,7 +1186,7 @@ public interface PathProxy {
 		public static final String POST_PERMISSIONS = "/postPermissions";
 		public static final String GET_DATA_PERMISSION_FOR_DOCTOR = "/getDataPermissionForDoctor/{doctorId}";
 		public static final String POST_DATA_PERMISSIONS = "/postDataPermissions";
-		
+
 	}
 
 	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
