@@ -27,14 +27,9 @@ public class InvoiceItemResponse {
 	private PatientTreatmentStatus status;
 
 	private Long inventoryQuantity;
-	
+
 	private boolean saveToInventory = false;
 
-<<<<<<< HEAD
-	private boolean saveToInventory = false;
-
-=======
->>>>>>> f00fbe3... added inventory quantity in response
 	private Double cost = 0.0;
 
 	private Discount discount;
@@ -45,11 +40,7 @@ public class InvoiceItemResponse {
 
 	private List<TreatmentFields> treatmentFields;
 
-<<<<<<< HEAD
 	private InventoryBatch inventoryBatch;
-=======
-	private String batchId;
->>>>>>> f00fbe3... added inventory quantity in response
 
 	public String getItemId() {
 		return itemId;
@@ -130,7 +121,7 @@ public class InvoiceItemResponse {
 	public void setTax(Tax tax) {
 		this.tax = tax;
 	}
-	
+
 	public Double getFinalCost() {
 		return finalCost;
 	}
@@ -147,44 +138,28 @@ public class InvoiceItemResponse {
 		this.treatmentFields = treatmentFields;
 	}
 
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public boolean isSaveToInventory() {
+		return saveToInventory;
+	}
+
+	public void setSaveToInventory(boolean saveToInventory) {
+		this.saveToInventory = saveToInventory;
+	}
+
 	public InventoryBatch getInventoryBatch() {
 		return inventoryBatch;
 	}
 
 	public void setInventoryBatch(InventoryBatch inventoryBatch) {
 		this.inventoryBatch = inventoryBatch;
-	}
-
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
-
-	public boolean isSaveToInventory() {
-		return saveToInventory;
-	}
-
-	public void setSaveToInventory(boolean saveToInventory) {
-		this.saveToInventory = saveToInventory;
-	}
-
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
-
-	public boolean isSaveToInventory() {
-		return saveToInventory;
-	}
-
-	public void setSaveToInventory(boolean saveToInventory) {
-		this.saveToInventory = saveToInventory;
 	}
 
 	@Override

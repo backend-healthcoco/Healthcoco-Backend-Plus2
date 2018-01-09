@@ -305,6 +305,7 @@ public class BillingServiceImpl implements BillingService {
 							invoiceItemResponse.getInventoryQuantity());
 
 
+
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 
@@ -992,6 +993,7 @@ public class BillingServiceImpl implements BillingService {
 							invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(),
 							invoiceItemResponse.getInventoryQuantity());
+
 
 
 				}
