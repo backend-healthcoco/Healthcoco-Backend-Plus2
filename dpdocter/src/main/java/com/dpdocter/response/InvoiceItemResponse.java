@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Tax;
 import com.dpdocter.beans.TreatmentFields;
@@ -26,7 +27,7 @@ public class InvoiceItemResponse {
 	private PatientTreatmentStatus status;
 
 	private Long inventoryQuantity;
-	
+
 	private boolean saveToInventory = false;
 
 	private Double cost = 0.0;
@@ -39,7 +40,7 @@ public class InvoiceItemResponse {
 
 	private List<TreatmentFields> treatmentFields;
 
-	private String batchId;
+	private InventoryBatch inventoryBatch;
 
 	public String getItemId() {
 		return itemId;
@@ -120,7 +121,7 @@ public class InvoiceItemResponse {
 	public void setTax(Tax tax) {
 		this.tax = tax;
 	}
-	
+
 	public Double getFinalCost() {
 		return finalCost;
 	}
@@ -137,12 +138,12 @@ public class InvoiceItemResponse {
 		this.treatmentFields = treatmentFields;
 	}
 
-	public String getBatchId() {
-		return batchId;
+	public InventoryBatch getInventoryBatch() {
+		return inventoryBatch;
 	}
 
-	public void setBatchId(String batchId) {
-		this.batchId = batchId;
+	public void setInventoryBatch(InventoryBatch inventoryBatch) {
+		this.inventoryBatch = inventoryBatch;
 	}
 
 	public Long getInventoryQuantity() {

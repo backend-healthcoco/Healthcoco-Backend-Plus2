@@ -28,6 +28,7 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
@@ -288,9 +289,9 @@ public class BillingServiceImpl implements BillingService {
 				}
 
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
-				if(invoiceItemResponse.getBatchId() != null && inventoryItem != null)
+				if(invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null)
 				{
-					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId() ,invoiceItemResponse.getInventoryQuantity());
+					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId() ,invoiceItemResponse.getInventoryQuantity());
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 
@@ -970,9 +971,9 @@ public class BillingServiceImpl implements BillingService {
 				InvoiceItem invoiceItem = new InvoiceItem();
 
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
-				if(invoiceItemResponse.getBatchId() != null && inventoryItem != null)
+				if(invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null)
 				{
-					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId(),invoiceItemResponse.getInventoryQuantity());
+					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId() ,invoiceItemResponse.getInventoryQuantity());
 				}
 				//createInventoryStock(invoiceItemResponse.getItemId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
@@ -1844,12 +1845,10 @@ public class BillingServiceImpl implements BillingService {
 	 * stockCount = inventoryStockCollection.g } }
 	 */
 
-	private void createInventoryStock(String resourceId, String itemId ,String batchId, String patientId, String doctorId,
+	private void createInventoryStock(String resourceId, String itemId ,InventoryBatch inventoryBatch, String patientId, String doctorId,
 			String locationId, String hospitalId , Long inventoryQuantity) {
-		
-		
 		InventoryStock inventoryStock = new InventoryStock();
-		inventoryStock.setBatchId(batchId);
+		inventoryStock.setInventoryBatch(inventoryBatch);
 		inventoryStock.setItemId(itemId);
 		inventoryStock.setResourceId(resourceId);
 		inventoryStock.setPatientId(patientId);

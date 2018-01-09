@@ -34,7 +34,9 @@ public class InvoiceItem {
 	private Tax tax;
 
 	private Double finalCost = 0.0;
-	
+
+	private InventoryBatch inventoryBatch;
+
 	public List<TreatmentFields> getTreatmentFields() {
 		return treatmentFields;
 	}
@@ -134,7 +136,14 @@ public class InvoiceItem {
 		this.finalCost = finalCost;
 	}
 
-	
+	public InventoryBatch getInventoryBatch() {
+		return inventoryBatch;
+	}
+
+	public void setInventoryBatch(InventoryBatch inventoryBatch) {
+		this.inventoryBatch = inventoryBatch;
+	}
+
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
