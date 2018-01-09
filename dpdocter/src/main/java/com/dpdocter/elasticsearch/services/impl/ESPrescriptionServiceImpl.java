@@ -24,7 +24,9 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugType;
+import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.elasticsearch.beans.DrugDocument;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
@@ -43,6 +45,8 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.response.InventoryItemLookupResposne;
+import com.dpdocter.services.InventoryService;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
@@ -74,6 +78,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	@Autowired
 	TransportClient transportClient;
+	
+	@Autowired
+	InventoryService inventoryService;
 
 	@Override
 	public boolean addDrug(ESDrugDocument request) {
@@ -126,6 +133,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	public List<?> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<?> response = null;
+		List<ESDrugDocument> esDrugDocuments =null;
+		List<DrugDocument> drugDocuments = null;
 		if (page > 0)
 			return response;
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
@@ -133,23 +142,28 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		switch (Range.valueOf(range.toUpperCase())) {
 
 		case GLOBAL:
-			response = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			esDrugDocuments = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			response = addStockToDrug(esDrugDocuments);
 			break;
 		case CUSTOM:
-			response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,
+			esDrugDocuments = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,
 					category, searchByGenericName);
+			response = addStockToDrug(esDrugDocuments);
 			break;
 		case BOTH:
-			response = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+			esDrugDocuments = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
+			response = addStockToDrug(esDrugDocuments);
 			break;
 		case FAVOURITES:
-			response = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+			drugDocuments = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
+			response = addStockToDrugWeb(drugDocuments);
 			break;
 		case WEBBOTH:
-			response = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+			drugDocuments = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
+			response = addStockToDrugWeb(drugDocuments);
 			break;
 		default:
 			break;
@@ -814,5 +828,31 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			logger.error(e + " Error Occurred While Saving Advices");
 		}
 		return response;
+	}
+	
+	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs)
+	{
+		for (ESDrugDocument drug : drugs) {
+			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
+			if(inventoryItem != null)	
+			{
+				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
+				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+			}
+		}
+		return drugs;
+	}
+	
+	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs)
+	{
+		for (DrugDocument drug : drugs) {
+			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
+			if(inventoryItem != null)	
+			{
+				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
+				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+			}
+		}
+		return drugs;
 	}
 }

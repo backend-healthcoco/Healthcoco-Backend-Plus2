@@ -58,14 +58,14 @@ public class ESDrugDocument {
 	@Field(type = FieldType.String)
 	private String prizePerPack;
 
+	@Field(type = FieldType.Long)
+	private long companyRankingCount = 0;
+
 	@Field(type = FieldType.String)
 	private String MRP;
 
 	@Field(type = FieldType.String)
 	private String companyName;
-
-	@Field(type = FieldType.Long)
-	private long companyRankingCount = 0;
 
 	@Field(type = FieldType.Nested)
 	private Duration duration;
@@ -97,8 +97,11 @@ public class ESDrugDocument {
 	@Field
 	private String unsafeWith;
 
-	@Field
+	@Field(type = FieldType.Long)
 	private Long inventoryQuantity;
+
+	@Field(type = FieldType.Long)
+	private Long totalStock;
 
 	public String getId() {
 		return id;
@@ -289,18 +292,6 @@ public class ESDrugDocument {
 	}
 
 	@Override
-	public String toString() {
-		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
-				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize
-				+ ", packForm=" + packForm + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP + ", duration="
-				+ duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction
-				+ ", categories=" + categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount
-				+ ", specialities=" + specialities + ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		ESDrugDocument drugDocument = (ESDrugDocument) obj;
 		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
@@ -319,8 +310,27 @@ public class ESDrugDocument {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
+	}
+
 	public void setCompanyRankingCount(long companyRankingCount) {
 		this.companyRankingCount = companyRankingCount;
+	}
+
+	@Override
+	public String toString() {
+		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
+				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", companyRankingCount="
+				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
+				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
+				+ categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
 	}
 
 	public List<String> getSpecialities() {
