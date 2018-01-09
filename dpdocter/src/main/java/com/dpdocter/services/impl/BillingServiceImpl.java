@@ -304,6 +304,7 @@ public class BillingServiceImpl implements BillingService {
 							request.getLocationId(), request.getHospitalId(),
 							invoiceItemResponse.getInventoryQuantity());
 
+
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 
