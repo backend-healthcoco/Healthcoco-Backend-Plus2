@@ -71,6 +71,7 @@ import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.Instructions;
+import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OPDReports;
@@ -162,6 +163,7 @@ import com.dpdocter.response.DrugDurationUnitAddEditResponse;
 import com.dpdocter.response.DrugInteractionResposne;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.EyeTestJasperResponse;
+import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
@@ -173,6 +175,7 @@ import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.EmailTackService;
+import com.dpdocter.services.InventoryService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -285,6 +288,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private InstructionsRepository instructionsRepository;
+	
+	@Autowired
+	private InventoryService inventoryService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -1482,6 +1488,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						prescription.setTests(null);
 						prescription.setDiagnosticTests(diagnosticTests);
+					}
+					
+					if(prescription.getItems() != null && !prescription.getItems().isEmpty())
+					{
+						for (PrescriptionItemDetail prescriptionItemDetail : prescription.getItems()) {
+							InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(prescription.getLocationId(), prescription.getHospitalId(), prescriptionItemDetail.getDrug().getId());
+							if(inventoryItem != null)	
+							{
+								InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
+								prescriptionItemDetail.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+							}
+						}
 					}
 				}
 			}

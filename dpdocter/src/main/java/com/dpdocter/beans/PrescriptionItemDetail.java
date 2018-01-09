@@ -26,6 +26,8 @@ public class PrescriptionItemDetail {
 
 	private Long inventoryQuantity;
 
+	private Long totalStock;
+
 	public DrugType getDrugType() {
 		return drugType;
 	}
@@ -104,6 +106,14 @@ public class PrescriptionItemDetail {
 
 	public void setInventoryQuantity(Long inventoryQuantity) {
 		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
 	}
 
 	@Override
