@@ -1598,11 +1598,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										.getInventoryItem(inventoryItem.getId());
 								prescriptionItemDetail.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 								List<PrescriptionInventoryBatchResponse> inventoryBatchs = null;
-								if (inventoryItemLookupResposne.getInventoryBatchs() != null) {
+								if(inventoryItemLookupResposne.getInventoryBatchs() != null)
+								{
 									inventoryBatchs = new ArrayList<>();
-									for (InventoryBatch inventoryBatch : inventoryItemLookupResposne
-											.getInventoryBatchs()) {
-										PrescriptionInventoryBatchResponse response = new PrescriptionInventoryBatchResponse();
+									for (InventoryBatch inventoryBatch : inventoryItemLookupResposne.getInventoryBatchs()) {
+										PrescriptionInventoryBatchResponse response =  new PrescriptionInventoryBatchResponse();
 										BeanUtil.map(inventoryBatch, response);
 										inventoryBatchs.add(response);
 									}
@@ -6770,19 +6770,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-
-	private List<Drug> addStockToDrug(List<Drug> drugs) {
+	
+	private List<Drug> addStockToDrug(List<Drug> drugs)
+	{
 		for (Drug drug : drugs) {
-			InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
-					drug.getHospitalId(), drug.getId());
-			if (inventoryItem != null) {
-				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
-						.getInventoryItem(inventoryItem.getId());
+			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
+			if(inventoryItem != null)	
+			{
+				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
 				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 			}
 		}
 		return drugs;
 	}
+
 
 	private String generateDrugCode(String drugName, String drugType) {
 		

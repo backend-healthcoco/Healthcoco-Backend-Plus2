@@ -60,6 +60,9 @@ public class ESDrugDocument {
 
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> specialities;
+	
+	@Field(type = FieldType.Long)
+	private long companyRankingCount = 0;
 
 	@Field(type = FieldType.String)
 	private String rxRequired;
@@ -69,9 +72,6 @@ public class ESDrugDocument {
 
 	@Field(type = FieldType.String)
 	private String companyName;
-
-	@Field(type = FieldType.Long)
-	private long companyRankingCount = 0;
 
 	@Field(type = FieldType.String)
 	private String packSize;
@@ -100,8 +100,9 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private long rankingCount = 0;
 
-	@Field
+	@Field(type = FieldType.Long)
 	private Long inventoryQuantity;
+
 
 	public String getId() {
 		return id;
@@ -223,9 +224,7 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
-	public Long getTotalStock() {
-		return totalStock;
-	}
+	
 
 	public String getDrugCode() {
 		return drugCode;
@@ -235,34 +234,7 @@ public class ESDrugDocument {
 		this.drugCode = drugCode;
 	}
 
-	public void setTotalStock(Long totalStock) {
-		this.totalStock = totalStock;
-	}
-
-	public List<String> getSpecialities() {
-		return specialities;
-	}
-
-	public void setSpecialities(List<String> specialities) {
-		this.specialities = specialities;
-	}
-
-	public String getRxRequired() {
-		return rxRequired;
-	}
-
-	public void setRxRequired(String rxRequired) {
-		this.rxRequired = rxRequired;
-	}
-
-	public String getUnsafeWith() {
-		return unsafeWith;
-	}
-
-	public void setUnsafeWith(String unsafeWith) {
-		this.unsafeWith = unsafeWith;
-	}
-
+	
 	public String getDrugTypeId() {
 		return drugTypeId;
 	}
@@ -324,19 +296,6 @@ public class ESDrugDocument {
 	}
 
 	@Override
-	public String toString() {
-		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
-				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize
-				+ ", packForm=" + packForm + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP + ", duration="
-				+ duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction
-				+ ", categories=" + categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount
-				+ ", inventoryQuantity=" + inventoryQuantity + ", totalStock=" + totalStock + ", specialities="
-				+ specialities + ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		ESDrugDocument drugDocument = (ESDrugDocument) obj;
 		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
@@ -355,8 +314,51 @@ public class ESDrugDocument {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
+	}
+
 	public void setCompanyRankingCount(long companyRankingCount) {
 		this.companyRankingCount = companyRankingCount;
+	}
+
+	@Override
+	public String toString() {
+		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
+				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", companyRankingCount="
+				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
+				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
+				+ categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
+	}
+
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public String getRxRequired() {
+		return rxRequired;
+	}
+
+	public void setRxRequired(String rxRequired) {
+		this.rxRequired = rxRequired;
+	}
+
+	public String getUnsafeWith() {
+		return unsafeWith;
+	}
+
+	public void setUnsafeWith(String unsafeWith) {
+		this.unsafeWith = unsafeWith;
 	}
 
 }

@@ -199,6 +199,14 @@ public class Drug extends GenericCollection {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
+	}
+
 	@Override
 	public String toString() {
 		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
