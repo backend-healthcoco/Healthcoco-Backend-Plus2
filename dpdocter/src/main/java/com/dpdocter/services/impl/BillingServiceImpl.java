@@ -290,7 +290,7 @@ public class BillingServiceImpl implements BillingService {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 				if(invoiceItemResponse.getBatchId() != null && inventoryItem != null)
 				{
-					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId() ,invoiceItemResponse.getInventoryQuantity());
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
@@ -970,7 +970,7 @@ public class BillingServiceImpl implements BillingService {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 				if(invoiceItemResponse.getBatchId() != null && inventoryItem != null)
 				{
-					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId(),invoiceItemResponse.getInventoryQuantity());
 				}
 				//createInventoryStock(invoiceItemResponse.getItemId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
@@ -1842,7 +1842,7 @@ public class BillingServiceImpl implements BillingService {
 	 */
 
 	private void createInventoryStock(String resourceId, String itemId ,String batchId, String patientId, String doctorId,
-			String locationId, String hospitalId) {
+			String locationId, String hospitalId , Long inventoryQuantity) {
 		
 		
 		InventoryStock inventoryStock = new InventoryStock();
@@ -1854,6 +1854,7 @@ public class BillingServiceImpl implements BillingService {
 		inventoryStock.setLocationId(locationId);
 		inventoryStock.setHospitalId(hospitalId);
 		inventoryStock.setStockType("CONSUMED");
+		inventoryStock.setQuantity(inventoryQuantity);
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
 
