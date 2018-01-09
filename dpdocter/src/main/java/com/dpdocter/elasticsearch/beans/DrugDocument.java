@@ -12,45 +12,47 @@ public class DrugDocument {
 
 	private String id;
 
-    private String drugName;
+	private String drugName;
 
-    private String explanation;
+	private String explanation;
 
-    private String drugCode;
+	private String drugCode;
 
-    private DrugType drugType;
+	private DrugType drugType;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private Boolean discarded = false;
+	private Boolean discarded = false;
 
-    private Date updatedTime = new Date();
+	private Date updatedTime = new Date();
 
-    private String companyName;
+	private String companyName;
 
-    private String packSize;
+	private String packSize;
 
-    private String MRP;
+	private String MRP;
 
-    private List<String> genericCodes;
+	private List<String> genericCodes;
 
-    private Duration duration;
+	private Duration duration;
 
-    private String dosage;
+	private String dosage;
 
-    private List<Long> dosageTime;
-    
-    private List<DrugDirection> direction;
+	private List<Long> dosageTime;
 
-    private List<String> categories;
+	private List<DrugDirection> direction;
 
-    private List<GenericCode> genericNames;
-    
-    private Long inventoryQuantity;
+	private List<String> categories;
+
+	private List<GenericCode> genericNames;
+
+	private Long inventoryQuantity;
+
+	private Long totalStock;
 
 	public String getId() {
 		return id;
@@ -220,6 +222,14 @@ public class DrugDocument {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
@@ -229,5 +239,5 @@ public class DrugDocument {
 				+ genericCodes + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime
 				+ ", direction=" + direction + ", categories=" + categories + ", genericNames=" + genericNames + "]";
 	}
-    
+
 }

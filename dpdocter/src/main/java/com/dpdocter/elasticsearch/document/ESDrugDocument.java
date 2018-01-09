@@ -52,12 +52,11 @@ public class ESDrugDocument {
 	@Field(type = FieldType.String)
 	private String companyName;
 
-    @Field(type = FieldType.String)
-    private String packSize;
-    
+	@Field(type = FieldType.String)
+	private String packSize;
+
 	@Field(type = FieldType.Long)
 	private long companyRankingCount = 0;
-
 
 	@Field(type = FieldType.String)
 	private String MRP;
@@ -83,8 +82,11 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private long rankingCount = 0;
 
-	@Field
+	@Field(type = FieldType.Long)
 	private Long inventoryQuantity;
+
+	@Field(type = FieldType.Long)
+	private Long totalStock;
 
 	public String getId() {
 		return id;
@@ -254,7 +256,6 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
-
 	public long getCompanyRankingCount() {
 		return companyRankingCount;
 	}
@@ -275,6 +276,18 @@ public class ESDrugDocument {
 
 	public void setInventoryQuantity(Long inventoryQuantity) {
 		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
 	}
 
 	@Override

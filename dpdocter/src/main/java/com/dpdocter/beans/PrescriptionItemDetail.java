@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.response.PrescriptionInventoryBatchResponse;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionItemDetail {
 	private Drug drug;
@@ -27,6 +29,8 @@ public class PrescriptionItemDetail {
 	private Long inventoryQuantity;
 
 	private Long totalStock;
+
+	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
 	public DrugType getDrugType() {
 		return drugType;
@@ -114,6 +118,14 @@ public class PrescriptionItemDetail {
 
 	public void setTotalStock(Long totalStock) {
 		this.totalStock = totalStock;
+	}
+
+	public List<PrescriptionInventoryBatchResponse> getInventoryBatchs() {
+		return inventoryBatchs;
+	}
+
+	public void setInventoryBatchs(List<PrescriptionInventoryBatchResponse> inventoryBatchs) {
+		this.inventoryBatchs = inventoryBatchs;
 	}
 
 	@Override

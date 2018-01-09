@@ -70,6 +70,7 @@ import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.Instructions;
+import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
@@ -166,6 +167,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
+import com.dpdocter.response.PrescriptionInventoryBatchResponse;
 import com.dpdocter.response.PrescriptionLookupResponse;
 import com.dpdocter.response.PrescriptionTestAndRecord;
 import com.dpdocter.response.TemplateAddEditResponse;
@@ -1618,6 +1620,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							{
 								InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
 								prescriptionItemDetail.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+								List<PrescriptionInventoryBatchResponse> inventoryBatchs = null;
+								if(inventoryItemLookupResposne.getInventoryBatchs() != null)
+								{
+									inventoryBatchs = new ArrayList<>();
+									for (InventoryBatch inventoryBatch : inventoryItemLookupResposne.getInventoryBatchs()) {
+										PrescriptionInventoryBatchResponse response =  new PrescriptionInventoryBatchResponse();
+										BeanUtil.map(inventoryBatch, response);
+										inventoryBatchs.add(response);
+									}
+								}
+								prescriptionItemDetail.setInventoryBatchs(inventoryBatchs);
 							}
 						}
 					}
@@ -2326,12 +2339,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		switch (PrescriptionItems.valueOf(type.toUpperCase())) {
 
 		case DRUGS: {
+			List<Drug> drugs = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				searchTerm = searchTerm.toUpperCase();
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				response = getGlobalDrugs(page, size, updatedTime, discarded);
+				drugs = getGlobalDrugs(page, size, updatedTime, discarded);
+				response = addStockToDrug(drugs);
 				break;
 
 			case CUSTOM:
@@ -6376,6 +6391,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Prescription");
 		}
 		return response;
+	}
+	
+	private List<Drug> addStockToDrug(List<Drug> drugs)
+	{
+		for (Drug drug : drugs) {
+			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
+			if(inventoryItem != null)	
+			{
+				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
+				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+			}
+		}
+		return drugs;
 	}
 
 }
