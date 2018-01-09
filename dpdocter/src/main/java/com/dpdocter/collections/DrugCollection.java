@@ -95,11 +95,11 @@ public class DrugCollection extends GenericCollection {
 	return drugType;
     }
 
+    public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
 
-	
-
-
-    public String getDrugName() {
+	public String getDrugName() {
 	return drugName;
     }
 
