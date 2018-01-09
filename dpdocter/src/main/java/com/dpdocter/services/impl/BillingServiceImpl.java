@@ -1557,7 +1557,7 @@ public class BillingServiceImpl implements BillingService {
 				patient,
 				"<b>RECEIPTID: </b>" + (doctorPatientReceiptCollection.getUniqueReceiptId() != null
 						? doctorPatientReceiptCollection.getUniqueReceiptId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date());
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(), printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, doctorPatientReceiptCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "RECEIPT-"
 				+ doctorPatientReceiptCollection.getUniqueReceiptId() + new Date().getTime();
