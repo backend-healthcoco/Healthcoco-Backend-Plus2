@@ -35,7 +35,7 @@ public class InvoiceItem {
 
 	private Double finalCost = 0.0;
 
-	private String batchId;
+	private InventoryBatch inventoryBatch;
 
 	public List<TreatmentFields> getTreatmentFields() {
 		return treatmentFields;
@@ -135,15 +135,15 @@ public class InvoiceItem {
 		this.finalCost = finalCost;
 	}
 
-	public String getBatchId() {
-		return batchId;
+	public InventoryBatch getInventoryBatch() {
+		return inventoryBatch;
 	}
 
-	public void setBatchId(String batchId) {
-		this.batchId = batchId;
+	public void setInventoryBatch(InventoryBatch inventoryBatch) {
+		this.inventoryBatch = inventoryBatch;
 	}
 
-	public Long getInventoryQuantity() {
+		public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
 
