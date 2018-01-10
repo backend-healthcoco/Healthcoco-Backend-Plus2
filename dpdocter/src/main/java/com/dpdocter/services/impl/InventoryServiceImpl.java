@@ -682,13 +682,13 @@ public class InventoryServiceImpl implements InventoryService {
 			if (inventoryItemCollection != null) {
 				response = new InventoryItem();
 				BeanUtil.map( inventoryItemCollection, response);
-			} else {
+			} /*else {
 				throw new BusinessException(ServiceError.NoRecord , "Inventory item not found");
-			}
+			}*/
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.warn("Error while getting inventory setting");
+			logger.warn("Error while getting inventory item");
 			e.printStackTrace();
 		}
 		return response;
