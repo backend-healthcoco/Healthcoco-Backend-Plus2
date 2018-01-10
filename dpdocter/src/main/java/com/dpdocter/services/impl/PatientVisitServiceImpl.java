@@ -1138,7 +1138,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
 		parameters.put("prescriptions", prescriptions);
 		parameters.put("clinicalNotes", clinicalNotes);
-		parameters.put("treatments", patientTreatments);
+		parameters.put("treatments",
+				patientTreatments != null && !patientTreatments.isEmpty() ? patientTreatments : null);
 		parameters.put("visitId", patientVisitLookupResponse.getId().toString());
 		if (parameters.get("followUpAppointment") == null
 				&& !DPDoctorUtils.anyStringEmpty(patientVisitLookupResponse.getAppointmentId())
@@ -1200,7 +1201,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private DBObject getPatientTreatmentJasperDetails(String treatmentId, Map<String, Object> parameters) {
-		DBObject response = new BasicDBObject();
+		DBObject response = null;
 		PatientTreatmentCollection patientTreatmentCollection = null;
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
 		try {
@@ -1259,17 +1260,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									quantity = quantity + treatment.getQuantity().getType().getDuration();
 								patientTreatments.setQuantity(quantity);
 							}
-							if (treatment.getDiscount() != null && treatment.getDiscount().getValue() > 0)
-								showTreatmentDiscount = true;
+
 							patientTreatments.setNote(treatment.getNote() != null
 									? "<font size='1'><b>Note :</b> " + treatment.getNote() + "</font>" : "");
 							patientTreatments.setCost(treatment.getCost() + "");
-							patientTreatments
-									.setDiscount((treatment.getDiscount() != null) ? treatment.getDiscount().getValue()
-											+ " " + treatment.getDiscount().getUnit().getUnit() : "");
+							if (treatment.getDiscount() != null && treatment.getDiscount().getValue() > 0) {
+								showTreatmentDiscount = true;
+								patientTreatments.setDiscount(
+										(treatment.getDiscount() != null) ? treatment.getDiscount().getValue() + " "
+												+ treatment.getDiscount().getUnit().getUnit() : "");
+							}
 							patientTreatments.setFinalCost(treatment.getFinalCost() + "");
 							patientTreatmentJasperDetails.add(patientTreatments);
 						}
+						response = new BasicDBObject();
 						parameters.put("showTreatmentDiscount", showTreatmentDiscount);
 						parameters.put("showTreatmentQuantity", showTreatmentQuantity);
 						if (parameters.get("followUpAppointment") == null
@@ -1858,7 +1862,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		return clinicalNotesJasperDetails;
 	}
-		
 
 	private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId,
 			DBObject prescriptionItemsObj, Map<String, Object> parameters, Boolean isLabPrint,
