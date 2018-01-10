@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -440,4 +441,16 @@ public class ReportsAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS, notes = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS)
+	public Response<String> downloadOTReports(@PathParam("otId") String otId) {
+		if (DPDoctorUtils.allStringsEmpty(otId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(reportsService.getOTReportsFile(otId));
+		return response;
+	}
 }

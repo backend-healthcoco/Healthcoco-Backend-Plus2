@@ -1,25 +1,34 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.BrokenAppointment;
 import com.dpdocter.beans.ClinicalIndicator;
+import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
@@ -48,8 +57,10 @@ import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RepairRecordsOrComplianceBookCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -67,19 +78,24 @@ import com.dpdocter.repository.OTReportsRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.RepairRecordsOrComplianceBookRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DeliveryReportsLookupResponse;
 import com.dpdocter.response.DeliveryReportsResponse;
 import com.dpdocter.response.IPDReportLookupResponse;
 import com.dpdocter.response.IPDReportsResponse;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.OPDReportsLookupResponse;
 import com.dpdocter.response.OPDReportsResponse;
 import com.dpdocter.response.OTReportsLookupResponse;
 import com.dpdocter.response.OTReportsResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.ReportsService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -141,6 +157,21 @@ public class ReportsServiceImpl implements ReportsService {
 	@Autowired
 	private BrokenAppointmentRepository brokenAppointmentRepository;
 
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+	
+	@Autowired
+	private PatientVisitService patientVisitService;
+	
+	@Autowired
+	private JasperReportService jasperReportService;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
+
+	@Value(value = "${jasper.ot.reports.fileName}")
+	private String OTReportsFileName;
+	
 	@Override
 	@Transactional
 	public IPDReports submitIPDReport(IPDReports ipdReports) {
@@ -1263,6 +1294,155 @@ public class ReportsServiceImpl implements ReportsService {
 			throw new BusinessException(ServiceError.Unknown, "Exception occure while discarding  Broken Appointment");
 		}
 		return response;
+	}
+
+	@Override
+	public String getOTReportsFile(String otId) {
+		String response = null;
+		try {
+			List<OTReportsLookupResponse> otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").is(new ObjectId(otId))),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
+									true))),
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patientCollection.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+					Aggregation.unwind("patientUser")), OTReportsCollection.class, OTReportsLookupResponse.class)
+					.getMappedResults();
+
+			if (otReportsLookupResponses != null) {
+				OTReportsLookupResponse otReportsLookupResponse = otReportsLookupResponses.get(0);
+				PatientCollection patient = otReportsLookupResponse.getPatientCollection();
+				UserCollection user = otReportsLookupResponse.getPatientUser();
+
+				JasperReportResponse jasperReportResponse = createJasper(otReportsLookupResponse, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+		}
+		return response;
+	}
+
+	private JasperReportResponse createJasper(OTReportsLookupResponse otReportsLookupResponse,
+			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				new ObjectId(otReportsLookupResponse.getDoctorId()), new ObjectId(otReportsLookupResponse.getLocationId()),
+				new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+
+		if(otReportsLookupResponse.getOperationDate() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			parameters.put("operationDate", sdf.format(otReportsLookupResponse.getOperationDate()));
+		}
+		
+		parameters.put("anaesthesiaType", (otReportsLookupResponse.getAnaesthesiaType() != null) ? otReportsLookupResponse.getAnaesthesiaType().getAnaesthesiaType() : null);
+		
+		if(otReportsLookupResponse.getSurgery() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			String startTime = "";
+			if(otReportsLookupResponse.getSurgery().getStartTime() != null)
+				startTime = sdf.format(new Date(otReportsLookupResponse.getSurgery().getStartTime()));
+			
+			String endTime = "";
+			if(otReportsLookupResponse.getSurgery().getEndTime() != null)
+				endTime = sdf.format(new Date(otReportsLookupResponse.getSurgery().getEndTime()));
+			
+			if(!DPDoctorUtils.anyStringEmpty(startTime, endTime))parameters.put("dateAndTimeOfSurgery", startTime + " to "+ endTime);
+			else if(!DPDoctorUtils.anyStringEmpty(startTime))parameters.put("dateAndTimeOfSurgery", startTime);
+		}
+		
+		if(otReportsLookupResponse.getTimeDuration() != null) {
+			TimeDuration timeDuration = otReportsLookupResponse.getTimeDuration();
+			String duration = "";
+			if(timeDuration.getDays() != null && timeDuration.getDays() > 0)duration = timeDuration.getDays()+" days";
+			if(timeDuration.getHours() != null && timeDuration.getHours() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration+" " : "")+timeDuration.getHours()+" hrs";
+			}
+			if(timeDuration.getMinutes() != null && timeDuration.getMinutes() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration+" " : "")+timeDuration.getMinutes()+" mins";
+			}
+			if(timeDuration.getSeconds() != null && timeDuration.getSeconds() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration+" " : "")+timeDuration.getSeconds()+" secs";
+			}
+			
+			if(!DPDoctorUtils.anyStringEmpty(duration))parameters.put("durationOfSurgery", duration);
+		}
+		
+		parameters.put("provisionalDiagnosis", otReportsLookupResponse.getProvisionalDiagnosis());
+		parameters.put("finalDiagnosis", otReportsLookupResponse.getFinalDiagnosis());
+		parameters.put("operatingSurgeon", otReportsLookupResponse.getOperatingSurgeon());
+		parameters.put("anaesthetist", otReportsLookupResponse.getAnaesthetist());
+		parameters.put("materialForHPE", otReportsLookupResponse.getMaterialForHPE());
+		parameters.put("remarks", otReportsLookupResponse.getRemarks());
+		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
+		parameters.put("otReportsId", otReportsLookupResponse.getId());
+		
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,null,
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters, null, printSettings.getHospitalUId());
+		
+		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(otReportsLookupResponse.getDoctorId()));
+		String pdfName = (user != null ? user.getFirstName() : "") + "OTREPORTS"+ new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.OT_REPORTS, parameters, OTReportsFileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
 	}
 
 }

@@ -78,4 +78,6 @@ public interface ReportsService {
 	public BrokenAppointment getBrokenAppointment(String appointmentId);
 
 	public BrokenAppointment addBrokenAppointment(BrokenAppointment request);
+
+	public String getOTReportsFile(String otId);
 }
