@@ -264,7 +264,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		case "DENTIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
-			clinicalNotesPermission.add(DentistPermissionEnum.PROCEDURE_NOTE.getPermissions());
+			//clinicalNotesPermission.add(DentistPermissionEnum.PROCEDURE_NOTE.getPermissions());
 			clinicalNotesPermission.add(DentistPermissionEnum.PAIN_SCALE.getPermissions());
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
