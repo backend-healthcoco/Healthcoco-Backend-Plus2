@@ -4,10 +4,12 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
 
@@ -35,7 +37,9 @@ public class OTReportsLookupResponse {
 	private HospitalCollection hospital;
 	private TimeDuration timeDuration;
 	private String operationalNotes;
-
+	private PatientCollection patientCollection;
+	private UserCollection patientUser;
+	
 	public String getId() {
 		return id;
 	}
@@ -212,6 +216,22 @@ public class OTReportsLookupResponse {
 		this.operationalNotes = operationalNotes;
 	}
 
+	public PatientCollection getPatientCollection() {
+		return patientCollection;
+	}
+
+	public void setPatientCollection(PatientCollection patientCollection) {
+		this.patientCollection = patientCollection;
+	}
+
+	public UserCollection getPatientUser() {
+		return patientUser;
+	}
+
+	public void setPatientUser(UserCollection patientUser) {
+		this.patientUser = patientUser;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReportsLookupResponse [id=" + id + ", patientId=" + patientId + ", patient=" + patient
@@ -221,6 +241,8 @@ public class OTReportsLookupResponse {
 				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
 				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctor=" + doctor
 				+ ", locationId=" + locationId + ", location=" + location + ", hospitalId=" + hospitalId + ", hospital="
-				+ hospital + ", timeDuration=" + timeDuration + "]";
+				+ hospital + ", timeDuration=" + timeDuration + ", operationalNotes=" + operationalNotes
+				+ ", patientCollection=" + patientCollection + ", patientUser=" + patientUser + "]";
 	}
+
 }

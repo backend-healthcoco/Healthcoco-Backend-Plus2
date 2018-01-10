@@ -111,7 +111,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			parameters.put("REPORT_CONNECTION", mongoConnection);
 			parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 			JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin + 45, bottonMargin,
-					leftMargin + 28, rightMargin + 28, componentType);
+					leftMargin + 28, rightMargin + 28, componentType, fileName);
 			JasperReport jasperReport = JasperCompileManager.compileReport(design);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
 			JasperExportManager.exportReportToPdfFile(jasperPrint, JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
@@ -139,7 +139,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	public JasperDesign createDesign(Map<String, Object> parameters, String pageSize, Integer contentFontSize,
 			Integer topMargin, Integer bottonMargin, Integer leftMargin, Integer rightMargin,
-			ComponentType componentType) throws JRException {
+			ComponentType componentType, String fileName) throws JRException {
 		JasperDesign jasperDesign = null;
 		if (componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-optho-prescription.jrxml");
@@ -153,7 +153,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-admit-card.jrxml");
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-discharge-summary.jrxml");
-		} else {
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType())) {
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/"+fileName+".jrxml");
+		}else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
 		jasperDesign.setName("sampleDynamicJasperDesign");
@@ -208,54 +210,58 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (parameters.get("showHistory") != null && (boolean) parameters.get("showHistory"))
 			createHistory(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
 
-		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())
-				&& parameters.get("clinicalNotes") != null)
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
+		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())) {
+			if(parameters.get("clinicalNotes") != null)((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
 					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+			
+			if(parameters.get("prescriptions") != null)
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPrescriptionSubreport(parameters,
+						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+			
+			if(parameters.get("clinicalNotes") != null)
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createDiagramsSubreport(parameters, dsr,
+					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+			
+			if(parameters.get("treatments") != null)
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createTreatmentServicesSubreport(parameters,
+					contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle));
+		}
+			
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.CLINICAL_NOTES.getType()))
 			createClinicalNotes(parameters, jasperDesign, columnWidth, contentFontSize);
 
-		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())
-				&& parameters.get("prescriptions") != null)
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPrescriptionSubreport(parameters,
-					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))
 			createPrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
 
-		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())
-				&& parameters.get("clinicalNotes") != null)
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(createDiagramsSubreport(parameters, dsr,
-					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
-
-		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())
-				&& parameters.get("treatments") != null)
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(createTreatmentServicesSubreport(parameters,
-					contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle));
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.TREATMENT.getType()))
 			createTreatmentServices(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
 					normalStyle);
-		if (componentType.getType().equalsIgnoreCase(ComponentType.INVOICE.getType()))
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.INVOICE.getType()))
 			createInvoiceSubreport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
 					normalStyle);
-		if (componentType.getType().equalsIgnoreCase(ComponentType.RECEIPT.getType()))
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.RECEIPT.getType()))
 			createReceipt(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		if (parameters.get("eyePrescriptions") != null
-				|| componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType())) {
-			createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
-					normalStyle);
-		}
-		if (componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())) {
+		
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())) 
 			createConsentForm(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
-		}
-		if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) {
+		
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) 
 			createDischargeSummary(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
-		}
-		if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType())) {
+		
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType())) 
 			createAdmitCard(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		}
+		
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType())) 
+			createOTReports(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
+
+		
+		if (parameters.get("eyePrescriptions") != null || componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType())) 
+			createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
+					normalStyle);
+		
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())) {
 			band = new JRDesignBand();

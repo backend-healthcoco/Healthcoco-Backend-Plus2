@@ -37,4 +37,5 @@ public interface ReportsService {
 
 	OPDReports getOPDReportByVisitId(String visitId);
 
+	public String getOTReportsFile(String otId);
 }

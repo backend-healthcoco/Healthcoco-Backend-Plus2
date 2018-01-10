@@ -4,6 +4,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -24,6 +25,7 @@ import com.dpdocter.response.OPDReportsResponse;
 import com.dpdocter.response.OTReportsResponse;
 import com.dpdocter.services.ReportsService;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -152,6 +154,19 @@ public class ReportsAPI {
 		Boolean save = reportsService.addPrescriptionOPDReports();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(save);
+		return response;
+	}
+
+	@Path(value = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS, notes = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS)
+	public Response<String> downloadOTReports(@PathParam("otId") String otId) {
+		if (DPDoctorUtils.allStringsEmpty(otId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(reportsService.getOTReportsFile(otId));
 		return response;
 	}
 }
