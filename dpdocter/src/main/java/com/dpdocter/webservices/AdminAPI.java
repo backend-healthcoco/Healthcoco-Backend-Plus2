@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -126,4 +127,13 @@ public class AdminAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.AdminUrls.DISCARD_DUPLICATE_CLINICAL_ITEMS)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.DISCARD_DUPLICATE_CLINICAL_ITEMS, notes = PathProxy.AdminUrls.DISCARD_DUPLICATE_CLINICAL_ITEMS)
+	public Response<Boolean> discardDuplicateClinicalItems(@PathParam("doctorId") String doctorId) {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(adminServices.discardDuplicateClinicalItems(doctorId));
+		return response;
+	}
 }

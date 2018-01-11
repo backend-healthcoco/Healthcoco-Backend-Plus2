@@ -4,46 +4,78 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.bson.BSONObject;
+import org.bson.types.ObjectId;
+import org.elasticsearch.bootstrap.Elasticsearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.IndexQuery;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ContactUs;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.collections.AppLinkDetailsCollection;
 import com.dpdocter.collections.CityCollection;
+import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.ContactUsCollection;
+import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
+import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
+import com.dpdocter.collections.ObservationCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
+import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
+import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
 import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
+import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
+import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
+import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
+import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
 import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
+import com.dpdocter.elasticsearch.repository.ESInvestigationsRepository;
 import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
+import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
 import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.enums.AppType;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -61,6 +93,7 @@ import com.dpdocter.repository.MedicalCouncilRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.ClinicalItemsResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.FileManager;
@@ -68,6 +101,8 @@ import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -172,6 +207,24 @@ public class AdminServicesImpl implements AdminServices {
 	@Value(value = "${mail.get.app.link.subject}")
 	private String getAppLinkSubject;
 
+	@Autowired
+	MongoTemplate mongoTemplate;
+	
+	@Autowired
+	ElasticsearchTemplate elasticsearchTemplate;
+	
+	@Autowired
+	ESComplaintsRepository esComplaintsRepository;
+	
+	@Autowired
+	ESObservationsRepository esObservationsRepository;
+	
+	@Autowired
+	ESInvestigationsRepository esInvestigationsRepository;
+	
+	@Autowired
+	ESDiagnosesRepository esDiagnosesRepository;
+	
 	@Override
 	@Transactional
 	public Resume addResumes(Resume request) {
@@ -567,6 +620,92 @@ public class AdminServicesImpl implements AdminServices {
 		}
 		return response;
 
+	}
+
+	@Override
+	public Boolean discardDuplicateClinicalItems(String doctorId) {
+		Boolean response = false;
+		try {
+			discardDuplicateClinicalItemsInDb(doctorId, Resource.COMPLAINT.getType(), "complaint", ComplaintCollection.class);
+			discardDuplicateClinicalItemsInDb(doctorId, Resource.OBSERVATION.getType(), "observation", ObservationCollection.class);
+			discardDuplicateClinicalItemsInDb(doctorId, Resource.INVESTIGATION.getType(), "investigation", InvestigationCollection.class);
+			discardDuplicateClinicalItemsInDb(doctorId, Resource.DIAGNOSIS.getType(), "diagnosis", DiagnosisCollection.class);
+			response = true;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	private void discardDuplicateClinicalItemsInDb(String doctorId, String resource, String fieldName, Class className) {
+		
+		List<ClinicalItemsResponse> items = mongoTemplate.aggregate(Aggregation.newAggregation(
+				Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId)).and("discarded").is(false)),
+				Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
+				new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+						.append("resourceIds", "$_id").append("resourceName", "$"+fieldName).append("resourceIdsForEs", "$_id"))),
+				new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$resourceName")
+								.append("keepResourceId", new BasicDBObject("$first", "$resourceIds"))
+								.append("resourceIds", new BasicDBObject("$addToSet", "$resourceIds"))
+								.append("resourceIdsForEs", new BasicDBObject("$addToSet", "$resourceIdsForEs"))
+								.append("resourceName", new BasicDBObject("$first","$resourceName"))
+								.append("count", new BasicDBObject("$sum", 1)))),
+				new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+						new BasicDBObject("if", new BasicDBObject("$gt", Arrays.asList("$count", 1)))
+						.append("then", "$$KEEP").append("else", "$$PRUNE"))))), 
+				className, ClinicalItemsResponse.class).getMappedResults();
+		
+		if(items != null) {
+			for(ClinicalItemsResponse itemsResponse : items) {
+				Date updatedTime = new Date();
+				itemsResponse.getResourceIds().remove(itemsResponse.getKeepResourceId());
+				itemsResponse.getResourceIdsForEs().remove(itemsResponse.getKeepResourceId().toString());
+				
+				mongoTemplate.updateMulti(new Query(new Criteria("id").in(itemsResponse.getResourceIds())), Update.update("discarded", true).currentDate("updatedTime"), className);
+				
+				if(resource.equalsIgnoreCase(Resource.COMPLAINT.getType())) {
+					List<ESComplaintsDocument> esItems = elasticsearchTemplate.queryForList(
+							new CriteriaQuery(new org.springframework.data.elasticsearch.core.query.Criteria("id").in(itemsResponse.getResourceIdsForEs())), ESComplaintsDocument.class);
+					if(esItems != null) {
+						for(ESComplaintsDocument esComplaintsDocument : esItems) {
+							esComplaintsDocument.setDiscarded(true);esComplaintsDocument.setUpdatedTime(updatedTime);
+							esComplaintsRepository.save(esComplaintsDocument);
+						}
+					}
+				}else if(resource.equalsIgnoreCase(Resource.OBSERVATION.getType())) {
+					List<ESObservationsDocument> esItems = elasticsearchTemplate.queryForList(
+							new CriteriaQuery(new org.springframework.data.elasticsearch.core.query.Criteria("id").in(itemsResponse.getResourceIdsForEs())), ESObservationsDocument.class);
+					if(esItems != null) {
+						for(ESObservationsDocument esDocument : esItems) {
+							esDocument.setDiscarded(true);esDocument.setUpdatedTime(updatedTime);
+							esObservationsRepository.save(esDocument);
+						}
+					}
+				}else if(resource.equalsIgnoreCase(Resource.INVESTIGATION.getType())) {
+					List<ESInvestigationsDocument> esItems = elasticsearchTemplate.queryForList(
+							new CriteriaQuery(new org.springframework.data.elasticsearch.core.query.Criteria("id").in(itemsResponse.getResourceIdsForEs())), ESInvestigationsDocument.class);
+					if(esItems != null) {
+						for(ESInvestigationsDocument esDocument : esItems) {
+							esDocument.setDiscarded(true);esDocument.setUpdatedTime(updatedTime);
+							esInvestigationsRepository.save(esDocument);
+						}
+					}
+				}else if(resource.equalsIgnoreCase(Resource.DIAGNOSIS.getType())) {
+					List<ESDiagnosesDocument> esItems = elasticsearchTemplate.queryForList(
+							new CriteriaQuery(new org.springframework.data.elasticsearch.core.query.Criteria("id").in(itemsResponse.getResourceIdsForEs())), ESDiagnosesDocument.class);
+					if(esItems != null) {
+						for(ESDiagnosesDocument esDocument : esItems) {
+							esDocument.setDiscarded(true);esDocument.setUpdatedTime(updatedTime);
+							esDiagnosesRepository.save(esDocument);
+						}
+					}
+				}
+				
+			}
+		}
 	}
 
 }

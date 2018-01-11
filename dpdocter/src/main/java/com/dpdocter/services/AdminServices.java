@@ -25,4 +25,6 @@ public interface AdminServices {
 	void importMedicalCouncil();
 
 	Boolean sendLink(SendAppLink request);
+
+	Boolean discardDuplicateClinicalItems(String doctorId);
 }

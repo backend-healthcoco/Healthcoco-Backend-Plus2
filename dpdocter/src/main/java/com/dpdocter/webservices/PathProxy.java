@@ -1155,6 +1155,8 @@ public interface PathProxy {
 
 		public static final String SEND_BIRTHDAY_WISH = "/sendwish";
 
+		public static final String DISCARD_DUPLICATE_CLINICAL_ITEMS = "clinicalItems/duplicate/discard/{doctorId}";
+
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";
