@@ -653,11 +653,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentLookupResponse.setDoctor(drCollection);
 					}
 				}
-				if(!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
-					appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-					User drCollection = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(appointmentCollection.getDoctorId()))), UserCollection.class, User.class).getUniqueMappedResult();
-					appointmentLookupResponse.setDoctor(drCollection);
-				}
 				
 				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
 						.findByDoctorIdLocationId(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId());
