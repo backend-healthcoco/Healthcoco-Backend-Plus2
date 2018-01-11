@@ -642,15 +642,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 							appointmentBookedSlotRepository.save(bookedSlotCollection);
 						}
 					}
-				}
-
-				if (!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
-					appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-					User drCollection = mongoTemplate.aggregate(
-							Aggregation.newAggregation(
-									Aggregation.match(new Criteria("id").is(appointmentCollection.getDoctorId()))),
-							UserCollection.class, User.class).getUniqueMappedResult();
-					appointmentLookupResponse.setDoctor(drCollection);
+					
+					if (!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
+						appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						User drCollection = mongoTemplate.aggregate(
+								Aggregation.newAggregation(
+										Aggregation.match(new Criteria("id").is(appointmentCollection.getDoctorId()))),
+								UserCollection.class, User.class).getUniqueMappedResult();
+						appointmentLookupResponse.setDoctor(drCollection);
+					}
 				}
 
 				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
@@ -1543,7 +1543,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("patientId").is(new ObjectId(patientId));
 
 			if (!DPDoctorUtils.anyStringEmpty(status))
-				criteria.and("status").is(status.toUpperCase());
+				criteria.and("status").is(status.toUpperCase()).and("state").ne(AppointmentState.CANCEL.getState());
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
