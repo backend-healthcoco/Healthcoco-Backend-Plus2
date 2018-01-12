@@ -699,7 +699,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 								if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
 										.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
 
-									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+									prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
@@ -707,7 +707,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 													? prescriptionItem.getInstructions() : null,
 											genericName);
 								} else {
-									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+									prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
