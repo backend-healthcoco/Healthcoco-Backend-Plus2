@@ -96,4 +96,6 @@ public interface AppointmentService {
 
 	Appointment getPatientLastAppointment(String locationId, String doctorId, String patientId);
 
+	Appointment updateAppointmentDoctor(String appointmentId, String doctorId);
+
 }
