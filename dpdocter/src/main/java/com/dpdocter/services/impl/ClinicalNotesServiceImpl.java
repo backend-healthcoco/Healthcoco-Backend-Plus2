@@ -3941,16 +3941,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Transactional
 	public void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId,
 			String emailAddress) {
-		
+
 		MailResponse mailResponse = null;
 		try {
-			if(doctorId != null && locationId != null && hospitalId != null)
-			{
+			if (doctorId != null && locationId != null && hospitalId != null) {
 				mailResponse = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
-				
-			}
-			else
-			{
+
+			} else {
 				mailResponse = createMailDataForWeb(clinicalNotesId, doctorId, locationId, hospitalId);
 			}
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
@@ -4210,7 +4207,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
-		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
+		parameters.put("diagnosis", "<b>" + clinicalNotesCollection.getDiagnosis() + "</b>");
 		parameters.put("complaints", clinicalNotesCollection.getComplaint());
 		parameters.put("presentComplaint", clinicalNotesCollection.getPresentComplaint());
 		parameters.put("presentComplaintHistory", clinicalNotesCollection.getPresentComplaintHistory());
@@ -4270,8 +4267,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("generalHistorySurgical", clinicalNotesCollection.getGeneralHistorySurgical());
 		parameters.put("pastHistory", clinicalNotesCollection.getPastHistory());
 		parameters.put("familyHistory", clinicalNotesCollection.getFamilyHistory());
-		parameters.put("painScale",
-				 clinicalNotesCollection.getPainScale());
+		parameters.put("painScale", clinicalNotesCollection.getPainScale());
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
 		if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
@@ -8435,8 +8431,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		response = aggregationResults.getMappedResults();
 		return response;
 	}
-	
-	private MailResponse createMailDataForWeb(String clinicalNotesId, String doctorId, String locationId, String hospitalId) {
+
+	private MailResponse createMailDataForWeb(String clinicalNotesId, String doctorId, String locationId,
+			String hospitalId) {
 		MailResponse response = null;
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		MailAttachment mailAttachment = null;
@@ -8446,60 +8443,59 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		try {
 			clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
 			if (clinicalNotesCollection != null) {
-						user = userRepository.findOne(clinicalNotesCollection.getPatientId());
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getLocationId(),
-								clinicalNotesCollection.getHospitalId());
+				user = userRepository.findOne(clinicalNotesCollection.getPatientId());
+				patient = patientRepository.findByUserIdLocationIdAndHospitalId(clinicalNotesCollection.getPatientId(),
+						clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId());
 
-						emailTrackCollection.setDoctorId(clinicalNotesCollection.getDoctorId());
-						emailTrackCollection.setHospitalId(clinicalNotesCollection.getHospitalId());
-						emailTrackCollection.setLocationId(clinicalNotesCollection.getLocationId());
-						emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
-						emailTrackCollection.setSubject("Clinical Notes");
-						if (user != null) {
-							emailTrackCollection.setPatientName(user.getFirstName());
-							emailTrackCollection.setPatientId(user.getId());
-						}
-						JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
-								null, false, false, false, false, false, false, false, false, false);
-						mailAttachment = new MailAttachment();
-						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
-						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(clinicalNotesCollection.getDoctorId());
-						LocationCollection locationCollection = locationRepository.findOne(clinicalNotesCollection.getLocationId());
+				emailTrackCollection.setDoctorId(clinicalNotesCollection.getDoctorId());
+				emailTrackCollection.setHospitalId(clinicalNotesCollection.getHospitalId());
+				emailTrackCollection.setLocationId(clinicalNotesCollection.getLocationId());
+				emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
+				emailTrackCollection.setSubject("Clinical Notes");
+				if (user != null) {
+					emailTrackCollection.setPatientName(user.getFirstName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
+				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user, null,
+						false, false, false, false, false, false, false, false, false);
+				mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+				UserCollection doctorUser = userRepository.findOne(clinicalNotesCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository
+						.findOne(clinicalNotesCollection.getLocationId());
 
-						response = new MailResponse();
-						response.setMailAttachment(mailAttachment);
-						response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
-						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+				response = new MailResponse();
+				response.setMailAttachment(mailAttachment);
+				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
 
-						if (address.charAt(address.length() - 2) == ',') {
-							address = address.substring(0, address.length() - 2);
-						}
-						response.setClinicAddress(address);
-						response.setClinicName(locationCollection.getLocationName());
-						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-						response.setMailRecordCreatedDate(sdf.format(clinicalNotesCollection.getCreatedTime()));
-						response.setPatientName(user.getFirstName());
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				response.setClinicAddress(address);
+				response.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				response.setMailRecordCreatedDate(sdf.format(clinicalNotesCollection.getCreatedTime()));
+				response.setPatientName(user.getFirstName());
 
-						emailTackService.saveEmailTrack(emailTrackCollection);
+				emailTackService.saveEmailTrack(emailTrackCollection);
 
-					} 
-			 else {
+			} else {
 				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
 				throw new BusinessException(ServiceError.NotFound,
 						"Clinical Notes not found. Please check clinicalNotesId.");

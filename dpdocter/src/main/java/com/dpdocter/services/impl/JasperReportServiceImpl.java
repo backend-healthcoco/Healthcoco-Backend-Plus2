@@ -399,7 +399,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$P{presentComplaintHistory}", fieldWidth,
 				false, 0);
 		if (showTitle) {
-
 			band = new JRDesignBand();
 			band.setHeight(20);
 			jrDesignTextField = new JRDesignTextField();
