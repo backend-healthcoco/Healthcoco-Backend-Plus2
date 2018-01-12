@@ -7,13 +7,14 @@ import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
 
-public class OTReportsLookupResponse {
+public class OTReportsLookupResponse extends GenericCollection {
 
 	private String id;
 	private String patientId;
@@ -39,7 +40,7 @@ public class OTReportsLookupResponse {
 	private String operationalNotes;
 	private PatientCollection patientCollection;
 	private UserCollection patientUser;
-	
+
 	public String getId() {
 		return id;
 	}

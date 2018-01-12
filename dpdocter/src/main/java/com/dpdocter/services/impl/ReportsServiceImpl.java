@@ -1410,7 +1410,7 @@ public class ReportsServiceImpl implements ReportsService {
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,null,
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters, null, printSettings.getHospitalUId());
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters, otReportsLookupResponse.getUpdatedTime(), printSettings.getHospitalUId());
 		
 		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(otReportsLookupResponse.getDoctorId()));
 		String pdfName = (user != null ? user.getFirstName() : "") + "OTREPORTS"+ new Date().getTime();
