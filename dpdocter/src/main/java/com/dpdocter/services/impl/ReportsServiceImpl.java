@@ -169,9 +169,12 @@ public class ReportsServiceImpl implements ReportsService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Value(value = "${jasper.ot.reports.fileName}")
+	@Value(value = "${jasper.print.ot.reports.fileName}")
 	private String OTReportsFileName;
 
+	@Value(value = "${jasper.print.delivery.reports.fileName}")
+	private String deliveryReportsFileName;
+	
 	@Override
 	@Transactional
 	public IPDReports submitIPDReport(IPDReports ipdReports) {
@@ -1326,7 +1329,7 @@ public class ReportsServiceImpl implements ReportsService {
 				PatientCollection patient = otReportsLookupResponse.getPatientCollection();
 				UserCollection user = otReportsLookupResponse.getPatientUser();
 
-				JasperReportResponse jasperReportResponse = createJasper(otReportsLookupResponse, patient, user);
+				JasperReportResponse jasperReportResponse = createOTReportsJasper(otReportsLookupResponse, patient, user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1344,7 +1347,7 @@ public class ReportsServiceImpl implements ReportsService {
 		return response;
 	}
 
-	private JasperReportResponse createJasper(OTReportsLookupResponse otReportsLookupResponse,
+	private JasperReportResponse createOTReportsJasper(OTReportsLookupResponse otReportsLookupResponse,
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
@@ -1456,5 +1459,120 @@ public class ReportsServiceImpl implements ReportsService {
 		} else
 			return null;
 	}
+
+	@Override
+	public String getDeliveryReportsFile(String reportId) {
+		String response = null;
+		try {
+			List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = mongoTemplate
+					.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(reportId))),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
+											true))),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patientCollection.locationId",
+																	"$locationId"))).append("then", "$$KEEP")
+																			.append("else", "$$PRUNE")))),
+
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser")), DeliveryReportsCollection.class,
+							DeliveryReportsLookupResponse.class)
+					.getMappedResults();
+
+			if (deliveryReportsLookupResponses != null) {
+				DeliveryReportsLookupResponse deliveryReportsLookupResponse = deliveryReportsLookupResponses.get(0);
+				PatientCollection patient = deliveryReportsLookupResponse.getPatientCollection();
+				UserCollection user = deliveryReportsLookupResponse.getPatientUser();
+
+				JasperReportResponse jasperReportResponse = createDeliveryReportsJasper(deliveryReportsLookupResponse, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+		}
+		return response;
+	}
+
+	private JasperReportResponse createDeliveryReportsJasper(DeliveryReportsLookupResponse deliveryReportsLookupResponse,
+			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				new ObjectId(deliveryReportsLookupResponse.getDoctorId()),
+				new ObjectId(deliveryReportsLookupResponse.getLocationId()),
+				new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+
+		parameters.put("deliveryReportsId", deliveryReportsLookupResponse.getId());
+		if (deliveryReportsLookupResponse.getDeliveryDate() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			parameters.put("deliveryDate", sdf.format(deliveryReportsLookupResponse.getDeliveryDate()));
+		}
+
+		if(deliveryReportsLookupResponse.getDeliveryTime() != null  && deliveryReportsLookupResponse.getDeliveryTime() != 0) {
+			parameters.put("deliveryTime", String.format("%02d:%02d", deliveryReportsLookupResponse.getDeliveryTime() / 60, deliveryReportsLookupResponse.getDeliveryTime() % 60));
+		}
+		parameters.put("babyGender", deliveryReportsLookupResponse.getBabyGender());
+
+		parameters.put("deliveryType", deliveryReportsLookupResponse.getDeliveryType());
+		parameters.put("formNo", deliveryReportsLookupResponse.getFormNo());
+		parameters.put("remarks", deliveryReportsLookupResponse.getRemarks());
+		
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
+				printSettings.getHospitalUId());
+
+		patientVisitService.generatePrintSetup(parameters, printSettings,
+				new ObjectId(deliveryReportsLookupResponse.getDoctorId()));
+		String pdfName = (user != null ? user.getFirstName() : "") + "DELIVERYREPORTS" + new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.DELIVERY_REPORTS, parameters, deliveryReportsFileName, layout,
+				pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+		return response;
+	}
+
 
 }
