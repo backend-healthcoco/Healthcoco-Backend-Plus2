@@ -1177,6 +1177,7 @@ public interface PathProxy {
 
 		public static final String ADD_PRESCRIPTION_IN_OPD_REPORTS = "/addOPDReports";
 		public static final String DOWNLOAD_OT_REPORTS = "OTReports/download/{otId}";
+		public static final String DOWNLOAD_DELIVERY_REPORT = "deliveryReport/download/{reportId}";
 	}
 
 	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";

@@ -169,4 +169,17 @@ public class ReportsAPI {
 		response.setData(reportsService.getOTReportsFile(otId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT, notes = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT)
+	public Response<String> downloadDeliveryReports(@PathParam("reportId") String reportId) {
+		if (DPDoctorUtils.allStringsEmpty(reportId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(reportsService.getDeliveryReportsFile(reportId));
+		return response;
+	}
 }

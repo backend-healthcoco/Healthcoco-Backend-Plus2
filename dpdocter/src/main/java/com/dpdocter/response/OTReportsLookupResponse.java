@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;
 import com.dpdocter.collections.HospitalCollection;

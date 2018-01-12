@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 
 public class DeliveryReportsLookupResponse {
@@ -23,6 +24,9 @@ public class DeliveryReportsLookupResponse {
 	private LocationCollection location;
 	private String hospitalId;
 	private HospitalCollection hospital;
+	private PatientCollection patientCollection;
+	private UserCollection patientUser;
+	
 	public String getId() {
 		return id;
 	}
@@ -119,12 +123,25 @@ public class DeliveryReportsLookupResponse {
 	public void setHospital(HospitalCollection hospital) {
 		this.hospital = hospital;
 	}
+	public PatientCollection getPatientCollection() {
+		return patientCollection;
+	}
+	public void setPatientCollection(PatientCollection patientCollection) {
+		this.patientCollection = patientCollection;
+	}
+	public UserCollection getPatientUser() {
+		return patientUser;
+	}
+	public void setPatientUser(UserCollection patientUser) {
+		this.patientUser = patientUser;
+	}
 	@Override
 	public String toString() {
 		return "DeliveryReportsLookupResponse [id=" + id + ", deliveryDate=" + deliveryDate + ", deliveryTime="
 				+ deliveryTime + ", patientId=" + patientId + ", patient=" + patient + ", mobileNumber=" + mobileNumber
 				+ ", babyGender=" + babyGender + ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks="
 				+ remarks + ", doctorId=" + doctorId + ", doctor=" + doctor + ", locationId=" + locationId
-				+ ", location=" + location + ", hospitalId=" + hospitalId + ", hospital=" + hospital + "]";
+				+ ", location=" + location + ", hospitalId=" + hospitalId + ", hospital=" + hospital
+				+ ", patientCollection=" + patientCollection + ", patientUser=" + patientUser + "]";
 	}
 }
