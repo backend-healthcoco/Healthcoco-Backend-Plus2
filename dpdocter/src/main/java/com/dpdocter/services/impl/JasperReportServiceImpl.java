@@ -4099,8 +4099,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{OperationDate}", "$P{operationDate}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{AnaesthesiaType}", "$P{anaesthesiaType}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{DateAndTimeOfSurgery}", "$P{dateAndTimeOfSurgery}", fieldWidth, false,
@@ -4140,8 +4139,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{DeliveryDate}", "$P{deliveryDate}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{DeliveryTime}", "$P{deliveryTime}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{BabyGender}", "$P{babyGender}", fieldWidth, false, 0);
