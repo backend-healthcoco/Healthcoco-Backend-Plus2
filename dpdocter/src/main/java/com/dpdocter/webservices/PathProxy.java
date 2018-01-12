@@ -1216,6 +1216,7 @@ public interface PathProxy {
 		public static final String GET_BROKEN_APPOINTMENTS = "/getBrokenAppointment";
 		public static final String DELETE_BROKEN_APPOINTMENT = "/brokenAppointment/{id}/delete";
 		public static final String DOWNLOAD_OT_REPORTS = "OTReports/download/{otId}";
+		public static final String DOWNLOAD_DELIVERY_REPORT = "deliveryReport/download/{reportId}";
 	}
 
 	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";
