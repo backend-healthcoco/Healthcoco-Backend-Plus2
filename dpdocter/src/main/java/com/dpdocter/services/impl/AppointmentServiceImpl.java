@@ -710,7 +710,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				 @Override
 				 public void run() {
 					try {
-						sendAppointmentEmailSmsNotification(true, request, id,
+						sendAppointmentEmailSmsNotification(false, request, id,
 									appointmentId, doctorName, patientName, dateTime, clinicName, clinicContactNum,
 									patientEmailAddress, patientMobileNumber, doctorEmailAddress, doctorMobileNumber, 
 									facility);
