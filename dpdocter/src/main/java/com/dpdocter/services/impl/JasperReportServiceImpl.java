@@ -517,7 +517,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$P{investigations}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0);
-		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, true, 0);
 		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$P{procedureNote}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0);
 
@@ -1041,7 +1041,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$F{investigations}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$F{provisionalDiagnosis}", fieldWidth, false,
 				0);
-		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$F{diagnosis}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$F{diagnosis}", fieldWidth, true, 0);
 		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$F{procedureNote}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0);
 		JasperCompileManager.compileReportToFile(jasperDesign,
