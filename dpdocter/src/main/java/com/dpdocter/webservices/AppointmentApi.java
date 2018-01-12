@@ -594,4 +594,19 @@ public class AppointmentApi {
 		response.setData(appointment);
 		return response;
 	}
+	
+	@Path(value = PathProxy.AppointmentUrls.UPDATE_APPOINTMENT_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.UPDATE_APPOINTMENT_DOCTOR, notes = PathProxy.AppointmentUrls.UPDATE_APPOINTMENT_DOCTOR)
+	public Response<Appointment> updateAppointmentDoctor(@PathParam(value = "appointmentId") String appointmentId,
+			@PathParam(value = "doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(appointmentId, doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Appointment appointment = appointmentService.updateAppointmentDoctor(appointmentId, doctorId);
+		Response<Appointment> response = new Response<Appointment>();
+		response.setData(appointment);
+		return response;
+	}
 }

@@ -96,4 +96,6 @@ public interface AppointmentService {
 
 	Clinic getClinic(String slugUrl);
 
+	Appointment updateAppointmentDoctor(String appointmentId, String doctorId);
+
 }

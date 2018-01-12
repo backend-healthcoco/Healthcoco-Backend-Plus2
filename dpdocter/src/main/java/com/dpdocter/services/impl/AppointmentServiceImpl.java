@@ -3538,7 +3538,34 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Lab");
+		}
+		return response;
+	}
+
+	@Override
+	public Appointment updateAppointmentDoctor(String appointmentId, String doctorId) {
+		Appointment response = null;
+		try {
+			AppointmentCollection appointmentCollection = appointmentRepository.findByAppointmentId(appointmentId);
+			if(appointmentCollection != null) {
+				appointmentCollection.setDoctorId(new ObjectId(doctorId));
+				appointmentCollection.setUpdatedTime(new Date());
+				appointmentCollection = appointmentRepository.save(appointmentCollection);
+				
+				AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentId);
+				if (bookedSlotCollection != null) {
+					bookedSlotCollection.setDoctorId(new ObjectId(doctorId));
+					bookedSlotCollection.setUpdatedTime(new Date());
+					appointmentBookedSlotRepository.save(bookedSlotCollection);
+				}
+				response = new Appointment();
+				BeanUtil.map(appointmentCollection, response);
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while updating appointment doctor");
 		}
 		return response;
 	}
