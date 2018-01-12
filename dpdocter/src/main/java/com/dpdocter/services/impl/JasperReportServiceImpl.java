@@ -155,8 +155,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-discharge-summary.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType())) {
-			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/"+fileName+".jrxml");
-		}else {
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName + ".jrxml");
+		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
 		jasperDesign.setName("sampleDynamicJasperDesign");
@@ -212,22 +212,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 			createHistory(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
 
 		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())) {
-			if(parameters.get("clinicalNotes") != null)((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
-					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
-			
-			if(parameters.get("prescriptions") != null)
+			if (parameters.get("clinicalNotes") != null)
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
+						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+
+			if (parameters.get("prescriptions") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPrescriptionSubreport(parameters,
 						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
-			
-			if(parameters.get("clinicalNotes") != null)
+
+			if (parameters.get("clinicalNotes") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createDiagramsSubreport(parameters, dsr,
-					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
-			
-			if(parameters.get("treatments") != null)
+						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+
+			if (parameters.get("treatments") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createTreatmentServicesSubreport(parameters,
-					contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle));
+						contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle));
 		}
-			
+
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.CLINICAL_NOTES.getType()))
 			createClinicalNotes(parameters, jasperDesign, columnWidth, contentFontSize);
 
@@ -243,26 +244,27 @@ public class JasperReportServiceImpl implements JasperReportService {
 					normalStyle);
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.RECEIPT.getType()))
 			createReceipt(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType()))
 			createConsentForm(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType()))
 			createDischargeSummary(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType()))
 			createAdmitCard(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType()))
 			createOTReports(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
 
-		
-		if (parameters.get("eyePrescriptions") != null || componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType())) 
+		if (parameters.get("eyePrescriptions") != null
+				|| componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType()))
 			createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
-		
+		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType()))
+			addsignature(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())) {
 			band = new JRDesignBand();
@@ -1710,11 +1712,50 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 	}
 
+	private void addsignature(JasperDesign jasperDesign, Map<String, Object> parameter, Integer contentFontSize,
+			JRDesignStyle normalStyle, int columnWidth) {
+
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
+			band = new JRDesignBand();
+			int Startwith = 20;
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
+			jrDesignTextField.setX(176);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(columnWidth - 176);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			Startwith = Startwith + 20;
+			if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
+				int count = parameter.get("bottomSignText").toString().split("\r\n|\r|\n").length;
+				jrDesignTextField = new JRDesignTextField();
+				jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}"));
+				jrDesignTextField.setFontSize(new Float(contentFontSize));
+				jrDesignTextField.setX(0);
+				jrDesignTextField.setY(Startwith);
+				jrDesignTextField.setHeight(18 * count);
+				jrDesignTextField.setWidth(columnWidth);
+				jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
+				jrDesignTextField.setStretchWithOverflow(true);
+				band.addElement(jrDesignTextField);
+				Startwith = Startwith + (count * 18) + 2;
+
+			}
+			band.setHeight(Startwith);
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		}
+
+	}
+
 	private JRBand createPageFooter(int columnWidth, Map<String, Object> parameter, Integer contentFontSize)
 			throws JRException {
 		band = new JRDesignBand();
-		int bandHeight = 0;
-
 		int Startwith = 2;
 
 		band.setSplitType(SplitTypeEnum.STRETCH);
@@ -1733,38 +1774,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
-			jrDesignTextField.setBold(true);
-			jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
-			jrDesignTextField.setX(176);
-			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(columnWidth - 176);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-		}
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())
-				|| !DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			Startwith = Startwith + 20;
 		}
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
-			int count = parameter.get("bottomSignText").toString().split("\r\n|\r|\n").length;
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{bottomSignText}"));
-			jrDesignTextField.setFontSize(new Float(contentFontSize));
-			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18 * count);
-			jrDesignTextField.setWidth(columnWidth);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-			Startwith = Startwith + (count * 18) + 2;
 
-		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
@@ -4078,12 +4092,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{OperationDate}", "$P{operationDate}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{AnaesthesiaType}", "$P{anaesthesiaType}", fieldWidth, false, 0);
-		addItems(jasperDesign, columnWidth, "$P{DateAndTimeOfSurgery}", "$P{dateAndTimeOfSurgery}", fieldWidth, false, 0);
-		addItems(jasperDesign, columnWidth, "$P{DurationOfSurgery}", "$P{durationOfSurgery}", fieldWidth,false, 0);
-		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{DateAndTimeOfSurgery}", "$P{dateAndTimeOfSurgery}", fieldWidth, false,
+				0);
+		addItems(jasperDesign, columnWidth, "$P{DurationOfSurgery}", "$P{durationOfSurgery}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
+				0);
 		addItems(jasperDesign, columnWidth, "$P{FinalDiagnosis}", "$P{finalDiagnosis}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{OperatingSurgeon}", "$P{operatingSurgeon}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Anaesthetist}", "$P{anaesthetist}", fieldWidth, false, 0);
