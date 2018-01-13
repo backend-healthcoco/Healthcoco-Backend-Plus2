@@ -16,7 +16,7 @@ public class OPDReports extends GenericCollection {
 	private Prescription prescription;
 	private String amountReceived;
 	private String receiptNo;
-	private Long receiptDate;
+	private Date receiptDate;
 	private String natureOfProfessionalServiceRendered;
 	private String remarks;
 	private String doctorId;
@@ -107,11 +107,13 @@ public class OPDReports extends GenericCollection {
 		this.receiptNo = receiptNo;
 	}
 
-	public Long getReceiptDate() {
+	
+
+	public Date getReceiptDate() {
 		return receiptDate;
 	}
 
-	public void setReceiptDate(Long receiptDate) {
+	public void setReceiptDate(Date receiptDate) {
 		this.receiptDate = receiptDate;
 	}
 
