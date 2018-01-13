@@ -18,7 +18,7 @@ public class CollectionBoy extends GenericCollection {
 	private String profileImageURL;
 	private Boolean discarded = false;
 	private Boolean isAvailable = false;
-	private LabType labType = LabType.DIAGNOSTIC;
+	private String labType = LabType.DIAGNOSTIC.getType();
 
 	public String getId() {
 		return id;
@@ -124,11 +124,11 @@ public class CollectionBoy extends GenericCollection {
 		this.userId = userId;
 	}
 
-	public LabType getLabType() {
+	public String getLabType() {
 		return labType;
 	}
 
-	public void setLabType(LabType labType) {
+	public void setLabType(String labType) {
 		this.labType = labType;
 	}
 
