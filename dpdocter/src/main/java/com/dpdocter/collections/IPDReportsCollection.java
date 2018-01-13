@@ -38,10 +38,19 @@ public class IPDReportsCollection extends GenericCollection {
 	private ObjectId locationId;
 	@Field
 	private ObjectId hospitalId;
-
+	@Field
+	private Boolean discarded=false;
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

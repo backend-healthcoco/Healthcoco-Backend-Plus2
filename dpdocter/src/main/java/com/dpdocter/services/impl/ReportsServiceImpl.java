@@ -312,7 +312,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -605,7 +605,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -709,9 +709,9 @@ public class ReportsServiceImpl implements ReportsService {
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId), false);
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
 			else
-				count = otReportsRepository.getReportsCount(new ObjectId(locationId), false);
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId));
 
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
