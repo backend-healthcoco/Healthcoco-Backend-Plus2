@@ -1726,7 +1726,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
 					clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
 					clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
-					clinicalNotesJasperDetails.setDiagnosis("<b>" + clinicalNotesCollection.getDiagnosis() + "</b>");
+					clinicalNotesJasperDetails
+							.setDiagnosis(!DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getDiagnosis())
+									? "<b>" + clinicalNotesCollection.getDiagnosis() + "</b>" : null);
 					clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
 					clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
 					clinicalNotesJasperDetails

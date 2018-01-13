@@ -4206,7 +4206,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
-		parameters.put("diagnosis", "<b>" + clinicalNotesCollection.getDiagnosis() + "</b>");
+		parameters.put("diagnosis", !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getDiagnosis())
+				? "<b>" + clinicalNotesCollection.getDiagnosis() + "</b>" : null);
 		parameters.put("complaints", clinicalNotesCollection.getComplaint());
 		parameters.put("presentComplaint", clinicalNotesCollection.getPresentComplaint());
 		parameters.put("presentComplaintHistory", clinicalNotesCollection.getPresentComplaintHistory());
