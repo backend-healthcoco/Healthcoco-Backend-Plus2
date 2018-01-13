@@ -484,12 +484,11 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private JasperReportResponse createJasper(DischargeSummaryCollection dischargeSummaryCollection,
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
 		JasperReportResponse response = null;
-		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
+		List<PrescriptionJasperDetails> prescriptionItems = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		Boolean show = false;
-
+		
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
@@ -620,7 +619,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
 
 					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-						show = true;
 						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
 						if (drug != null) {
 							String drugType = drug.getDrugType() != null
@@ -724,6 +722,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 												? prescriptionItem.getInstructions() : "--",
 										genericName);
 							}
+							if(prescriptionItems == null)prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 							prescriptionItems.add(prescriptionJasperDetails);
 						}
 					}
@@ -732,271 +731,157 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("prescriptionItems", prescriptionItems);
 			parameters.put("showIntructions", showIntructions);
 			parameters.put("showDirection", showDirection);
-			parameters.put("showPrescriptionItems", show);
-			show = false;
 			if (!DPDoctorUtils.allStringsEmpty(prescription.getAdvice())) {
-				show = true;
 				parameters.put("advice", prescription.getAdvice());
 			}
-			parameters.put("showAdvice", show);
-			show = true;
-
 		}
 
-		parameters.put("showPrescription", show);
-		show = false;
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
-			show = true;
 			parameters.put("dOA", "<b>Date of Admission:-</b>"
 					+ simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
 		}
-		parameters.put("showDOA", show);
-		show = false;
 		if (dischargeSummaryCollection.getDischargeDate() != null) {
-			show = true;
 			parameters.put("dOD", "<b>Date of Discharge:-</b>"
 					+ simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
 		}
-		parameters.put("showDOD", show);
-		show = false;
 		if (dischargeSummaryCollection.getOperationDate() != null) {
-			show = true;
 			parameters.put("operationDate", "<b>Date of Operation:-</b>"
 					+ simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
 		}
-		parameters.put("showDtOfOp", show);
-		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
-			show = true;
 			parameters.put("babyNotes", dischargeSummaryCollection.getBabyNotes());
 		}
 
-		parameters.put("showBabyNotes", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyWeight())) {
-			show = true;
 			parameters.put("babyWeight", dischargeSummaryCollection.getBabyWeight());
 		}
-		parameters.put("showBabyWeight", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getComplaint())) {
-			show = true;
 			parameters.put("complaints", dischargeSummaryCollection.getComplaint());
 		}
-		parameters.put("showcompl", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getEcho())) {
-			show = true;
 			parameters.put("echo", dischargeSummaryCollection.getEcho());
 		}
-		parameters.put("showecho", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getConditionsAtDischarge())) {
-			show = true;
 			parameters.put("condition", dischargeSummaryCollection.getConditionsAtDischarge());
 		}
-		parameters.put("showcondition", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getDiagnosis())) {
-			show = true;
 			parameters.put("diagnosis", dischargeSummaryCollection.getDiagnosis());
 		}
-		parameters.put("showDiagnosis", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getFamilyHistory())) {
-			show = true;
 			parameters.put("familyHistory", dischargeSummaryCollection.getFamilyHistory());
 		}
-		parameters.put("showfH", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getHolter())) {
-			show = true;
 			parameters.put("holter", dischargeSummaryCollection.getHolter());
 		}
-		parameters.put("showholter", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getEcgDetails())) {
-			show = true;
 			parameters.put("ecgDetails", dischargeSummaryCollection.getEcgDetails());
 		}
-		parameters.put("showEcg", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getGeneralExam())) {
-			show = true;
 			parameters.put("generalExam", dischargeSummaryCollection.getGeneralExam());
 		}
-		parameters.put("showGExam", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getIndicationOfUSG())) {
-			show = true;
 			parameters.put("indicationOfUSG", dischargeSummaryCollection.getIndicationOfUSG());
 		}
-		parameters.put("showINUSG", show);
-		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getxRayDetails())) {
-			show = true;
 			parameters.put("xRayDetails", dischargeSummaryCollection.getxRayDetails());
 		}
-		parameters.put("showXD", show);
-		show = false;
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaintHistory())) {
-			show = true;
 			parameters.put("historyOfPresentComplaints", dischargeSummaryCollection.getPresentComplaintHistory());
 		}
-		parameters.put("showHPC", show);
-		show = false;
-
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getObservation())) {
-			show = true;
 			parameters.put("observation", dischargeSummaryCollection.getObservation());
 		}
-		parameters.put("showObserv", show);
-		show = false;
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getInvestigation())) {
-			show = true;
 			parameters.put("investigation", dischargeSummaryCollection.getInvestigation());
 		}
-		parameters.put("showINV", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getLabourNotes())) {
-			show = true;
 			parameters.put("labourNotes", dischargeSummaryCollection.getLabourNotes());
 		}
-		parameters.put("showLN", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getMenstrualHistory())) {
-			show = true;
 			parameters.put("menstrualHistory", dischargeSummaryCollection.getMenstrualHistory());
 		}
-		parameters.put("showMH", show);
-		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getObstetricHistory())) {
-			show = true;
 			parameters.put("obstetricHistory", dischargeSummaryCollection.getObstetricHistory());
 		}
-		parameters.put("showOH", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPastHistory())) {
-			show = true;
 			parameters.put("pastHistory", dischargeSummaryCollection.getPastHistory());
 		}
-		parameters.put("showPH", show);
-		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getImplant())) {
-			show = true;
 			parameters.put("implant", dischargeSummaryCollection.getImplant());
 		}
-		parameters.put("showIMPL", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getCement())) {
-			show = true;
 			parameters.put("cement", dischargeSummaryCollection.getCement());
 		}
-		parameters.put("showCMT", show);
-		show = false;
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSurgeon())) {
-			show = true;
 			parameters.put("surgeon", dischargeSummaryCollection.getSurgeon());
 		}
-		parameters.put("showSGN", show);
-		show = false;
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getAnesthetist())) {
-			show = true;
 			parameters.put("anesthetist", dischargeSummaryCollection.getAnesthetist());
 		}
-		parameters.put("showANST", show);
-		show = false;
-
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationNotes())) {
-			show = true;
 			parameters.put("operationNotes", dischargeSummaryCollection.getOperationNotes());
 		}
-		parameters.put("showON", show);
-		show = false;
-
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTreatmentsGiven())) {
-			show = true;
 			parameters.put("treatmentGiven", dischargeSummaryCollection.getTreatmentsGiven());
 		}
-		parameters.put("showTG", show);
-		show = false;
-
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSystemExam())) {
-			show = true;
 			parameters.put("systemExam", dischargeSummaryCollection.getSystemExam());
 		}
-		parameters.put("showSExam", show);
-		show = false;
-
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSummary())) {
-			show = true;
 			parameters.put("summary", dischargeSummaryCollection.getSummary());
 		}
-		parameters.put("showSum", show);
-		show = false;
-
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPa())) {
-			show = true;
 			parameters.put("pa", dischargeSummaryCollection.getPa());
 		}
-		parameters.put("showPA", show);
-		show = false;
-
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPs())) {
-			show = true;
 			parameters.put("ps", dischargeSummaryCollection.getPs());
 		}
 
-		parameters.put("showPS", show);
-		show = false;
-
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPv())) {
-			show = true;
 			parameters.put("pv", dischargeSummaryCollection.getPv());
 		}
-		parameters.put("showPV", show);
-		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPersonalHistory())) {
-			show = true;
 			parameters.put("pesonalHistory", dischargeSummaryCollection.getPersonalHistory());
 		}
-		parameters.put("showPersonalHistory", show);
-		show = false;
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaint())) {
-			show = true;
 			parameters.put("presentComplaints", dischargeSummaryCollection.getPresentComplaint());
 		}
-		parameters.put("showpresentComplaints", show);
-		show = false;
-
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getProcedureNote())) {
-			show = true;
 			parameters.put("procedureNote", dischargeSummaryCollection.getProcedureNote());
 		}
-		parameters.put("showProcedureNote", show);
-		show = false;
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationName())) {
-			show = true;
 			parameters.put("operationName", dischargeSummaryCollection.getOperationName());
 		}
-		parameters.put("showOpName", show);
-		show = false;
-
+		
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 			String _24HourTime = String.format("%02d:%02d", dischargeSummaryCollection.getTime().getFromTime() / 60,
