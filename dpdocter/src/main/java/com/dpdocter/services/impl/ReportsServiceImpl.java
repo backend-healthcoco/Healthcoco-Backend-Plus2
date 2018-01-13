@@ -150,7 +150,7 @@ public class ReportsServiceImpl implements ReportsService {
 
 	@Value(value = "${jasper.print.delivery.reports.fileName}")
 	private String deliveryReportsFileName;
-	
+
 	@Override
 	@Transactional
 	public IPDReports submitIPDReport(IPDReports ipdReports) {
@@ -863,7 +863,8 @@ public class ReportsServiceImpl implements ReportsService {
 				PatientCollection patient = otReportsLookupResponse.getPatientCollection();
 				UserCollection user = otReportsLookupResponse.getPatientUser();
 
-				JasperReportResponse jasperReportResponse = createOTReportsJasper(otReportsLookupResponse, patient, user);
+				JasperReportResponse jasperReportResponse = createOTReportsJasper(otReportsLookupResponse, patient,
+						user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -988,8 +989,8 @@ public class ReportsServiceImpl implements ReportsService {
 	public String getDeliveryReportsFile(String reportId) {
 		String response = null;
 		try {
-			List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = mongoTemplate
-					.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(reportId))),
+			List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(reportId))),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
@@ -1006,16 +1007,16 @@ public class ReportsServiceImpl implements ReportsService {
 																			.append("else", "$$PRUNE")))),
 
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-							Aggregation.unwind("patientUser")), DeliveryReportsCollection.class,
-							DeliveryReportsLookupResponse.class)
-					.getMappedResults();
+							Aggregation.unwind("patientUser")),
+					DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class).getMappedResults();
 
 			if (deliveryReportsLookupResponses != null) {
 				DeliveryReportsLookupResponse deliveryReportsLookupResponse = deliveryReportsLookupResponses.get(0);
 				PatientCollection patient = deliveryReportsLookupResponse.getPatientCollection();
 				UserCollection user = deliveryReportsLookupResponse.getPatientUser();
 
-				JasperReportResponse jasperReportResponse = createDeliveryReportsJasper(deliveryReportsLookupResponse, patient, user);
+				JasperReportResponse jasperReportResponse = createDeliveryReportsJasper(deliveryReportsLookupResponse,
+						patient, user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1033,8 +1034,9 @@ public class ReportsServiceImpl implements ReportsService {
 		return response;
 	}
 
-	private JasperReportResponse createDeliveryReportsJasper(DeliveryReportsLookupResponse deliveryReportsLookupResponse,
-			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
+	private JasperReportResponse createDeliveryReportsJasper(
+			DeliveryReportsLookupResponse deliveryReportsLookupResponse, PatientCollection patient, UserCollection user)
+			throws NumberFormatException, IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 
@@ -1056,15 +1058,18 @@ public class ReportsServiceImpl implements ReportsService {
 			parameters.put("deliveryDate", sdf.format(deliveryReportsLookupResponse.getDeliveryDate()));
 		}
 
-		if(deliveryReportsLookupResponse.getDeliveryTime() != null  && deliveryReportsLookupResponse.getDeliveryTime() != 0) {
-			parameters.put("deliveryTime", String.format("%02d:%02d", deliveryReportsLookupResponse.getDeliveryTime() / 60, deliveryReportsLookupResponse.getDeliveryTime() % 60));
+		if (deliveryReportsLookupResponse.getDeliveryTime() != null
+				&& deliveryReportsLookupResponse.getDeliveryTime() != 0) {
+			parameters.put("deliveryTime",
+					String.format("%02d:%02d", deliveryReportsLookupResponse.getDeliveryTime() / 60,
+							deliveryReportsLookupResponse.getDeliveryTime() % 60));
 		}
 		parameters.put("babyGender", deliveryReportsLookupResponse.getBabyGender());
 
 		parameters.put("deliveryType", deliveryReportsLookupResponse.getDeliveryType());
 		parameters.put("formNo", deliveryReportsLookupResponse.getFormNo());
 		parameters.put("remarks", deliveryReportsLookupResponse.getRemarks());
-		
+
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
@@ -1092,11 +1097,10 @@ public class ReportsServiceImpl implements ReportsService {
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
 						? printSettings.getPageSetup().getRightMargin() : 20)
 				: 20;
-		response = jasperReportService.createPDF(ComponentType.DELIVERY_REPORTS, parameters, deliveryReportsFileName, layout,
-				pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+		response = jasperReportService.createPDF(ComponentType.DELIVERY_REPORTS, parameters, deliveryReportsFileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		return response;
 	}
-
 
 }

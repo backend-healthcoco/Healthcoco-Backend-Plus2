@@ -34,6 +34,16 @@ public class DeliveryReportsCollection extends GenericCollection {
 	private ObjectId locationId;
 	@Field
 	private ObjectId hospitalId;
+	@Field
+	private Boolean discarded = false;
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -147,6 +157,5 @@ public class DeliveryReportsCollection extends GenericCollection {
 				+ remarks + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ "]";
 	}
-	
 
 }

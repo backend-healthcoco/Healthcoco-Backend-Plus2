@@ -3,8 +3,9 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.DeliveryReports;
+import com.dpdocter.collections.GenericCollection;
 
-public class DeliveryReportsResponse {
+public class DeliveryReportsResponse  {
 
 	List<DeliveryReports> deliveryReports;
 	Integer count;
