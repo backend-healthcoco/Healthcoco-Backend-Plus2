@@ -51,9 +51,18 @@ public class OTReportsCollection extends GenericCollection {
 	
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+	@Field
+	private Boolean discarded = false;
 	public ObjectId getId() {
 		return id;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	public void setId(ObjectId id) {

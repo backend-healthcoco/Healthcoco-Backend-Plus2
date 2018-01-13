@@ -30,8 +30,9 @@ public class OTReports extends GenericCollection {
 	private String hospitalId;
 	private String hospitalName;
 	private TimeDuration timeDuration;
-
+	private Boolean discarded = false;
 	private String operationalNotes;
+	
 	public String getId() {
 		return id;
 	}
@@ -218,6 +219,14 @@ public class OTReports extends GenericCollection {
 				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId="
 				+ locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName="
 				+ hospitalName + ", timeDuration=" + timeDuration + ", operationalNotes=" + operationalNotes + "]";
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 }

@@ -208,43 +208,41 @@ public class ReportsServiceImpl implements ReportsService {
 	public OPDReports submitOPDReport(OPDReports opdReports) {
 		OPDReports response = null;
 		OPDReportsCollection opdReportsCollection = null;
-
-		if (opdReports != null) {
-			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
-					.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
-			if (opdReportsCollectionOld != null) {
-
-				opdReportsCollectionOld.setAmountReceived(opdReports.getAmountReceived());
-				if (opdReports.getReceiptDate() != null) {
-					opdReportsCollectionOld.setReceiptDate(new Date(opdReports.getReceiptDate()));
+		try {
+			if (opdReports != null) {
+				OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
+						.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
+				if (opdReportsCollectionOld != null) {
+					opdReportsCollectionOld.setAmountReceived(opdReports.getAmountReceived());
+					if (opdReports.getReceiptDate() != null) {
+						opdReportsCollectionOld.setReceiptDate(new Date(opdReports.getReceiptDate()));
+					} else {
+						opdReportsCollectionOld.setReceiptDate(new Date());
+					}
+					opdReportsCollectionOld.setReceiptNo(opdReports.getReceiptNo());
+					opdReportsCollectionOld.setRemarks(opdReports.getRemarks());
+					opdReportsCollectionOld.setUpdatedTime(new Date());
+					opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
 				} else {
-					opdReportsCollectionOld.setReceiptDate(new Date());
+					opdReportsCollection = new OPDReportsCollection();
+					UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
+					BeanUtil.map(opdReports, opdReportsCollection);
+					opdReportsCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+					opdReportsCollection.setCreatedTime(new Date());
+					opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 				}
-				opdReportsCollectionOld.setReceiptNo(opdReports.getReceiptNo());
-				opdReportsCollectionOld.setRemarks(opdReports.getRemarks());
-				opdReportsCollectionOld.setUpdatedTime(new Date());
-				opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
-			} else {
-				opdReportsCollection = new OPDReportsCollection();
-				UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
-				BeanUtil.map(opdReports, opdReportsCollection);
-				opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
-				opdReportsCollection.setCreatedTime(new Date());
-				opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
-			}
-
-			try {
 
 				if (opdReportsCollection != null) {
 					response = new OPDReports();
 					BeanUtil.map(opdReportsCollection, response);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e + " Error occured while creating OPD Records");
-				throw new BusinessException(ServiceError.Unknown, "Error occured while OPD Records");
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while creating OPD Records");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while OPD Records");
 		}
+
 		return response;
 	}
 
@@ -711,9 +709,9 @@ public class ReportsServiceImpl implements ReportsService {
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId), false);
 			else
-				count = otReportsRepository.getReportsCount(new ObjectId(locationId));
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId), false);
 
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
