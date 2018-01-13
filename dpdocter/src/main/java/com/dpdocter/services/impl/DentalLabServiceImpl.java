@@ -233,6 +233,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return customWorks;
 	}
 */
+	
+	@Override
+	@Transactional
 	public DentalLabPickup addEditDentalLabPickupRequest(DentalLabPickupRequest request)
 	{
 		DentalLabPickup response = null;
