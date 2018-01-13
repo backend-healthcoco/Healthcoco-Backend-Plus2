@@ -13,11 +13,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditCustomWorkRequest;
+import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.webservices.PathProxy;
 
@@ -40,7 +42,7 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
-	public Response<DentalWork> addEditPickupRequest(AddEditCustomWorkRequest request) {
+	public Response<DentalWork> addEditDEntalWorks(AddEditCustomWorkRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -121,5 +123,18 @@ public class DentalLabAPI {
 		return response;
 	}
 */
+	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
+	@POST
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
+	public Response<DentalLabPickup> addEditPickupRequest(DentalLabPickupRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalLabPickup> response = new Response<DentalLabPickup>();
+		response.setData(dentalLabService.addEditDentalLabPickupRequest(request));
+		return response;
+	}
+	
 	
 }
