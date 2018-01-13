@@ -193,7 +193,7 @@ public class ReportsServiceImpl implements ReportsService {
 				if (opdReportsCollectionOld != null) {
 					opdReportsCollectionOld.setAmountReceived(opdReports.getAmountReceived());
 					if (opdReports.getReceiptDate() != null) {
-						opdReportsCollectionOld.setReceiptDate(new Date(opdReports.getReceiptDate()));
+						opdReportsCollectionOld.setReceiptDate(opdReports.getReceiptDate());
 					} else {
 						opdReportsCollectionOld.setReceiptDate(new Date());
 					}
@@ -300,25 +300,15 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(from)) {
-				localCalendar.setTime(new Date(Long.parseLong(from)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			if (!DPDoctorUtils.anyStringEmpty(from) && !DPDoctorUtils.anyStringEmpty(to)) {
 
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))))
+						.lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			} else if (!DPDoctorUtils.anyStringEmpty(from)) {
 
-				criteria.and("createdTime").gte(fromTime);
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
 			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
-				localCalendar.setTime(new Date(Long.parseLong(to)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-
-				criteria.and("createdTime").lte(toTime);
+				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 			if (size > 0)
 				ipdReportLookupResponses = mongoTemplate.aggregate(
@@ -424,25 +414,15 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(from)) {
-				localCalendar.setTime(new Date(Long.parseLong(from)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			if (!DPDoctorUtils.anyStringEmpty(from) && !DPDoctorUtils.anyStringEmpty(to)) {
 
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))))
+						.lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			} else if (!DPDoctorUtils.anyStringEmpty(from)) {
 
-				criteria.and("createdTime").gte(fromTime);
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
 			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
-				localCalendar.setTime(new Date(Long.parseLong(to)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-
-				criteria.and("createdTime").lte(toTime);
+				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 
 			if (size > 0)
@@ -613,25 +593,15 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(from)) {
-				localCalendar.setTime(new Date(Long.parseLong(from)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			if (!DPDoctorUtils.anyStringEmpty(from) && !DPDoctorUtils.anyStringEmpty(to)) {
 
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))))
+						.lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			} else if (!DPDoctorUtils.anyStringEmpty(from)) {
 
-				criteria.and("createdTime").gte(fromTime);
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
 			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
-				localCalendar.setTime(new Date(Long.parseLong(to)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-
-				criteria.and("createdTime").lte(toTime);
+				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 
 			if (size > 0)
@@ -753,25 +723,15 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(from)) {
-				localCalendar.setTime(new Date(Long.parseLong(from)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			if (!DPDoctorUtils.anyStringEmpty(from) && !DPDoctorUtils.anyStringEmpty(to)) {
 
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))))
+						.lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			} else if (!DPDoctorUtils.anyStringEmpty(from)) {
 
-				criteria.and("createdTime").gte(fromTime);
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
 			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
-				localCalendar.setTime(new Date(Long.parseLong(to)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-
-				criteria.and("createdTime").lte(toTime);
+				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 
 			if (size > 0)

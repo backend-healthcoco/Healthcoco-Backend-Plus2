@@ -1,18 +1,20 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class OTReports extends GenericCollection {
 
 	private String id;
 	private String patientId;
 	private Patient patient;
-	private Long operationDate;
+	private Date operationDate;
 	private AnaesthesiaTypeEnum anaesthesiaType;
 	private String provisionalDiagnosis;
 	private Surgery surgery;
@@ -32,7 +34,7 @@ public class OTReports extends GenericCollection {
 	private TimeDuration timeDuration;
 	private Boolean discarded = false;
 	private String operationalNotes;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -40,7 +42,7 @@ public class OTReports extends GenericCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getPatientId() {
 		return patientId;
 	}
@@ -49,11 +51,13 @@ public class OTReports extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public Long getOperationDate() {
+	
+
+	public Date getOperationDate() {
 		return operationDate;
 	}
 
-	public void setOperationDate(Long operationDate) {
+	public void setOperationDate(Date operationDate) {
 		this.operationDate = operationDate;
 	}
 
