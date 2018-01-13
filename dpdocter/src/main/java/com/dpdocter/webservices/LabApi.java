@@ -737,9 +737,9 @@ public class LabApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Object> response = new Response<Object>();
-		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm));
-		response.setData(locationServices.getCBCount(locationId, searchTerm));
-
+		response.setDataList(locationServices.getCustomWorks(page, size, searchTerm));
 		return response;
 	}
+	
+	
 }

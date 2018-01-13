@@ -2236,24 +2236,35 @@ public class LocationServiceImpl implements LocationServices {
 	@Transactional
 	public DentalWork addEditCustomWork(AddEditCustomWorkRequest request) {
 		DentalWork response = null;
-		DentalWorkCollection customWorkCollection = null;
 		try {
-			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				customWorkCollection = dentalWorkRepository.findOne(new ObjectId(request.getId()));
-			}
-			if (customWorkCollection != null) {
-				BeanUtil.map(request, customWorkCollection);
-				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
+			DentalWorkCollection dentalWorkCollection = new DentalWorkCollection();
+			BeanUtil.map(request, dentalWorkCollection);
+			if (DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getId())) {
+				dentalWorkCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(dentalWorkCollection.getDoctorId());
+					if (userCollection != null) {
+						dentalWorkCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					dentalWorkCollection.setCreatedBy("ADMIN");
+				}
 			} else {
-				customWorkCollection = new DentalWorkCollection();
-				BeanUtil.map(request, customWorkCollection);
-				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
+				DentalWorkCollection oldDentalWorkCollection = dentalWorkRepository
+						.findOne(dentalWorkCollection.getId());
+				dentalWorkCollection.setCreatedBy(oldDentalWorkCollection.getCreatedBy());
+				dentalWorkCollection.setCreatedTime(oldDentalWorkCollection.getCreatedTime());
+				dentalWorkCollection.setDiscarded(oldDentalWorkCollection.getDiscarded());
 			}
+			dentalWorkCollection = dentalWorkRepository.save(dentalWorkCollection);
 			response = new DentalWork();
-			BeanUtil.map(customWorkCollection, response);
+			BeanUtil.map(dentalWorkCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}

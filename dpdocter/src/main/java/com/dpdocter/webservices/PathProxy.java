@@ -1537,6 +1537,21 @@ public interface PathProxy {
 
 		public static final String UPDATE_EMR = "/update/EMR";
 	}
+	
+	public static final String DENTAL_LAB_BASE_URL = BASE_URL + "/dentalLab";
+
+	public interface DentalLabUrls {
+		public static final String ADD_EDIT_DENTAL_WORKS = "/addEditDentalWorks";
+		public static final String GET_DENTAL_WORKS = "/getDentalWorks";
+		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
+		public static final String CHANGE_LAB_TYPE = "/changeLabType";
+		public static final String ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION = "/addEditDentalLabDoctorAssociation";
+		public static final String GET_DENTAL_LAB_DOCTOR_ASSOCIATION = "/getDentalLabDoctorAssociation";
+		public static final String ADD_EDIT_DENTAL_WORK_PICKUP = "/addEditDentalWorkPickup";
+		public static final String GET_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
+		public static final String DELETE_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
+		
+	}
 
 	
 

@@ -6,7 +6,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.UserState;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+//@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class User {
 	private String id;
 

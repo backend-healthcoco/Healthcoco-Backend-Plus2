@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "custom_work_cl")
+@Document(collection = "dental_work_cl")
 public class DentalWorkCollection extends GenericCollection {
 
 	@Id
