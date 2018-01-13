@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DeliveryReports extends GenericCollection {
 
@@ -22,6 +23,7 @@ public class DeliveryReports extends GenericCollection {
 	private String locationName;
 	private String hospitalId;
 	private String hospitalName;
+	private Boolean discarded = false;
 
 	public String getDoctorName() {
 		return doctorName;
@@ -159,6 +161,14 @@ public class DeliveryReports extends GenericCollection {
 				+ remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId
 				+ ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
 				+ "]";
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 }
