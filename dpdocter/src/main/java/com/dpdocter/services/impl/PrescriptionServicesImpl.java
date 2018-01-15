@@ -6700,6 +6700,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
 						.getInventoryItem(inventoryItem.getId());
 				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+				drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
 			}
 		}
 		return drugs;

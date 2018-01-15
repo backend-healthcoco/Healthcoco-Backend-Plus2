@@ -49,6 +49,8 @@ public class Drug extends GenericCollection {
 
 	private Long totalStock;
 
+	private Long retailPrice;
+
 	public String getId() {
 		return id;
 	}
@@ -207,6 +209,14 @@ public class Drug extends GenericCollection {
 
 	public void setTotalStock(Long totalStock) {
 		this.totalStock = totalStock;
+	}
+
+	public Long getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Long retailPrice) {
+		this.retailPrice = retailPrice;
 	}
 
 	@Override

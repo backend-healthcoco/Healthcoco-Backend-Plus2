@@ -270,6 +270,7 @@ public class BillingServiceImpl implements BillingService {
 			}
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
+				InventoryStock inventoryStock = null;
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
 					invoiceItemResponse.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
@@ -287,11 +288,23 @@ public class BillingServiceImpl implements BillingService {
 										+ doctor.getFirstName());
 					}
 				}
-
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
-				if(invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null)
+				if (DPDoctorUtils.anyStringEmpty(request.getId()))
 				{
-					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId() ,invoiceItemResponse.getInventoryQuantity());
+					 inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
+				}
+			//	InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
+				
+				if (inventoryStock != null) {
+
+				} else {
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+							request.getHospitalId(), invoiceItemResponse.getItemId());
+					if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+						createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+								invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+								request.getLocationId(), request.getHospitalId(),
+								invoiceItemResponse.getInventoryQuantity());
+					}
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
