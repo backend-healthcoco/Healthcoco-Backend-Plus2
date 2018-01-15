@@ -28,8 +28,6 @@ public class DrugAddEditRequest {
 
 	private String packSize;
 
-	private String instructions;
-
 	private String MRP;
 
 	private Duration duration;
@@ -43,14 +41,6 @@ public class DrugAddEditRequest {
 	private List<String> categories;
 
 	private List<GenericCode> genericNames;
-
-	public String getInstructions() {
-		return instructions;
-	}
-
-	public void setInstructions(String instructions) {
-		this.instructions = instructions;
-	}
 
 	public String getId() {
 		return id;
