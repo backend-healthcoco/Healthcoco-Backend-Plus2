@@ -794,5 +794,23 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return inventoryBatchs;
 	}
+	
+
+	@Override
+	@Transactional
+	public InventoryStock getInventoryStockByInvoiceIdResourceId(String locationId, String hospitalId, String resourceId , String invoiceId)
+	{
+		InventoryStock inventoryStock = null;
+		try {
+			InventoryStockCollection inventoryStockCollection = inventoryStockRepository.findByLocationIdHospitalIdResourceIdInvoiceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId), new ObjectId(invoiceId));
+			if(inventoryStockCollection != null) {
+				inventoryStock = new InventoryStock();
+				BeanUtil.map(inventoryStockCollection, inventoryStock);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return inventoryStock;
+	}
 
 }

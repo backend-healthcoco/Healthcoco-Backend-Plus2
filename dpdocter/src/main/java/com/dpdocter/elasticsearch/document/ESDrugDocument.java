@@ -46,9 +46,6 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean discarded = false;
 
-	@Field(type = FieldType.Long)
-	private Long totalStock;
-
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
@@ -103,6 +100,11 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private Long inventoryQuantity;
 
+	@Field(type = FieldType.Long)
+	private Long totalStock;
+	
+	@Field(type = FieldType.Long)
+	private Long retailPrice;
 
 	public String getId() {
 		return id;
@@ -361,4 +363,14 @@ public class ESDrugDocument {
 		this.unsafeWith = unsafeWith;
 	}
 
+	public Long getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Long retailPrice) {
+		this.retailPrice = retailPrice;
+	}
+
+	
+	
 }

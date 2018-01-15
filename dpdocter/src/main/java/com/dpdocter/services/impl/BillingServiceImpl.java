@@ -278,6 +278,7 @@ public class BillingServiceImpl implements BillingService {
 			}
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
+				InventoryStock inventoryStock = null;
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
 					invoiceItemResponse.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
@@ -306,7 +307,12 @@ public class BillingServiceImpl implements BillingService {
 
 
 
+				if (DPDoctorUtils.anyStringEmpty(request.getId()))
+				{
+					 inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
 				}
+			//	InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
+			
 				InvoiceItem invoiceItem = new InvoiceItem();
 
 				BeanUtil.map(invoiceItemResponse, invoiceItem);

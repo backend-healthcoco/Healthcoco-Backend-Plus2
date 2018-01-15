@@ -32,6 +32,8 @@ public class InventoryItemCollection extends GenericCollection {
 	private Boolean discarded;
 	@Field
 	private Long retailPrice;
+	@Field
+	private String itemType;
 
 	public ObjectId getId() {
 		return id;
@@ -127,6 +129,14 @@ public class InventoryItemCollection extends GenericCollection {
 
 	public void setRetailPrice(Long retailPrice) {
 		this.retailPrice = retailPrice;
+	}
+
+	public String getItemType() {
+		return itemType;
+	}
+
+	public void setItemType(String itemType) {
+		this.itemType = itemType;
 	}
 
 	@Override
