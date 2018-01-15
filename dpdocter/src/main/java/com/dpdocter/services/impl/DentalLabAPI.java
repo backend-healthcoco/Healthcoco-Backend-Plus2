@@ -58,10 +58,6 @@ public class DentalLabAPI {
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_WORKS, notes = PathProxy.DentalLabUrls.GET_DENTAL_WORKS)
 	public Response<DentalWork> getDentalWorks(@QueryParam("locationId") String locationId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
-		if (locationId == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
 		Response<DentalWork> response = new Response<DentalWork>();
 		response.setDataList(dentalLabService.getCustomWorks(page, size, searchTerm));
 		return response;
