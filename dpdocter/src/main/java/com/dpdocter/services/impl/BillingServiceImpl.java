@@ -208,11 +208,12 @@ public class BillingServiceImpl implements BillingService {
 	@Override
 	public DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request) {
 		DoctorPatientInvoice response = null;
+		ObjectId oldDoctorId = null;
 		try {
 			Map<String, UserCollection> doctorsMap = new HashMap<String, UserCollection>();
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
 			ObjectId doctorObjectId = new ObjectId(request.getDoctorId());
-			Double dueAmount = 0.0;
+			Double dueAmount = 0.0, oldDoctorDueAmount = 0.0;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientInvoiceCollection);
 				UserCollection userCollection = userRepository.findOne(doctorObjectId);
@@ -251,6 +252,18 @@ public class BillingServiceImpl implements BillingService {
 						&& paidAmount > request.getGrandTotal()) {
 					throw new BusinessException(ServiceError.Unknown,
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
+				}
+				
+				if (!doctorPatientInvoiceCollection.getDoctorId().toString().equalsIgnoreCase(request.toString())) {
+					if(doctorPatientInvoiceCollection.getReceiptIds() == null || doctorPatientInvoiceCollection.getReceiptIds().isEmpty()) {
+						oldDoctorId = doctorPatientInvoiceCollection.getDoctorId();
+						oldDoctorDueAmount = doctorPatientInvoiceCollection.getBalanceAmount();
+						doctorPatientInvoiceCollection.setDoctorId(new ObjectId(request.getDoctorId()));	
+					}
+					else {
+						throw new BusinessException(ServiceError.Unknown,
+								"Doctor cannot be updated as Receipt is already created.");
+					}
 				}
 				dueAmount = -doctorPatientInvoiceCollection.getBalanceAmount();
 				doctorPatientInvoiceCollection.setUpdatedTime(new Date());
@@ -336,7 +349,20 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
-				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = null;
+				if(oldDoctorId != null) {
+					doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.find(doctorPatientInvoiceCollection.getPatientId(),
+							oldDoctorId,
+							doctorPatientInvoiceCollection.getLocationId(),
+							doctorPatientInvoiceCollection.getHospitalId());
+					if(doctorPatientDueAmountCollection != null) {
+						doctorPatientDueAmountCollection
+						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - oldDoctorDueAmount);
+						doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
+					}
+				}
+				
+				 doctorPatientDueAmountRepository
 						.find(doctorPatientInvoiceCollection.getPatientId(),
 								doctorPatientInvoiceCollection.getDoctorId(),
 								doctorPatientInvoiceCollection.getLocationId(),

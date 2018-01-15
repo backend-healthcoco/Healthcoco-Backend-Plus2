@@ -336,13 +336,24 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				patientTreatmentCollection.setCreatedBy(createdBy);
 			} else {
 				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findOne(
-						new ObjectId(request.getId()), new ObjectId(request.getDoctorId()),
-						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+						new ObjectId(request.getId()));
 				if (oldPatientTreatmentCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
 				} else {
 					
-					createdBy = oldPatientTreatmentCollection.getCreatedBy();
+					if(!oldPatientTreatmentCollection.getDoctorId().toString().equalsIgnoreCase(request.getDoctorId())) {
+						UserCollection userCollection = null;
+						if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+							userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+						}
+						if (userCollection != null)
+							createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+											+ userCollection.getFirstName();
+						else {
+							throw new BusinessException(ServiceError.NotFound, "No Doctor Found");
+						}
+					}
+					else createdBy = oldPatientTreatmentCollection.getCreatedBy();
 							
 					BeanUtil.map(request, patientTreatmentCollection);
 					patientTreatmentCollection.setUpdatedTime(new Date());
