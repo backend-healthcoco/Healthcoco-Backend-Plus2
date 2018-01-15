@@ -955,6 +955,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 					if (!DPDoctorUtils.anyStringEmpty(item.getInstructions())) {
 						drugAddEditRequest.setExplanation(item.getInstructions());
+						drugCollection.setExplanation(item.getInstructions());
 					}
 					drugAddEditRequest.setDirection(item.getDirection());
 					drugAddEditRequest.setDuration(item.getDuration());
