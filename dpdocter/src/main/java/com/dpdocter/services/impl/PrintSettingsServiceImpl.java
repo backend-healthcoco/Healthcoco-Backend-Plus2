@@ -66,10 +66,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			BeanUtil.map(request, printSettingsCollection);
 			if (request.getId() == null) {
 				printSettingsCollection.setCreatedTime(new Date());
-				HospitalCollection hospitalCollection = hospitalRepository.findOne(new ObjectId(request.getHospitalId()));
-				if (hospitalCollection != null) {
-					printSettingsCollection.setHospitalUId(hospitalCollection.getHospitalUId());
-				}
 			} else {
 				PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository
 						.findOne(new ObjectId(request.getId()));
@@ -91,6 +87,13 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 			}
 
+			if(DPDoctorUtils.allStringsEmpty(printSettingsCollection.getHospitalUId())) {
+				HospitalCollection hospitalCollection = hospitalRepository.findOne(new ObjectId(request.getHospitalId()));
+				if (hospitalCollection != null) {
+					printSettingsCollection.setHospitalUId(hospitalCollection.getHospitalUId());
+				}
+			}
+			
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			if (locationCollection != null) {
 				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
