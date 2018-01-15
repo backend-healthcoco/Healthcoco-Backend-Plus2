@@ -2784,7 +2784,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer clinicalNotesCount = 0;
 		try {
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
+					.and("isPatientDiscarded").is(false);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -4207,7 +4208,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
-		parameters.put("diagnosis", "<b>" + clinicalNotesCollection.getDiagnosis() + "</b>");
+		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
 		parameters.put("complaints", clinicalNotesCollection.getComplaint());
 		parameters.put("presentComplaint", clinicalNotesCollection.getPresentComplaint());
 		parameters.put("presentComplaintHistory", clinicalNotesCollection.getPresentComplaintHistory());

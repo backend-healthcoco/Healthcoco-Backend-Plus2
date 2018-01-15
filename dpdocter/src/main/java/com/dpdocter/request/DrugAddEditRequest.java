@@ -8,65 +8,75 @@ import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
 
 public class DrugAddEditRequest {
-    private String id;
+	private String id;
 
-    private DrugType drugType;
+	private DrugType drugType;
 
-    private String drugName;
+	private String drugName;
 
-    private String explanation;
+	private String explanation;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String locationId;
+	private String locationId;
 
-    private String drugCode;
+	private String drugCode;
 
-    private String companyName;
+	private String companyName;
 
-    private String packSize;
+	private String packSize;
 
-    private String MRP;
+	private String instructions;
 
-    private Duration duration;
+	private String MRP;
 
-    private String dosage;
+	private Duration duration;
 
-    private List<Long> dosageTime;
-    
-    private List<DrugDirection> direction;
+	private String dosage;
 
-    private List<String> categories;
-    
-    private List<GenericCode> genericNames;
+	private List<Long> dosageTime;
 
-    public String getId() {
-	return id;
-    }
+	private List<DrugDirection> direction;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private List<String> categories;
 
-    public DrugType getDrugType() {
-	return drugType;
-    }
+	private List<GenericCode> genericNames;
 
-    public void setDrugType(DrugType drugType) {
-	this.drugType = drugType;
-    }
+	public String getInstructions() {
+		return instructions;
+	}
 
-    public String getDrugName() {
-	return drugName;
-    }
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
 
-    public void setDrugName(String drugName) {
-	this.drugName = drugName;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getExplanation() {
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public DrugType getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -75,36 +85,36 @@ public class DrugAddEditRequest {
 	}
 
 	public String getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getDrugCode() {
-	return drugCode;
-    }
+	public String getDrugCode() {
+		return drugCode;
+	}
 
-    public void setDrugCode(String drugCode) {
-	this.drugCode = drugCode;
-    }
+	public void setDrugCode(String drugCode) {
+		this.drugCode = drugCode;
+	}
 
 	public String getCompanyName() {
 		return companyName;

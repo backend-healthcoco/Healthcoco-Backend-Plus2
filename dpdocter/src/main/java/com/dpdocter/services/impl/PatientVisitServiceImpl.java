@@ -412,7 +412,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
+					.and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(doctorObjectId);
 
@@ -1534,13 +1535,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		patientDetailList.add(uniqueEMRId);
 		if (patientDetails.getShowDOB()) {
-			if(patientDetails.getShowDate())patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+			if (patientDetails.getShowDate())
+				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
 		} else {
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-			if(patientDetails.getShowDate())patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+			if (patientDetails.getShowDate())
+				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 		}
 
 		if (patientDetails.getShowBloodGroup() && patientCard != null
@@ -1557,10 +1560,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
 		}
 
-		if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId() && !DPDoctorUtils.anyStringEmpty(hospitalUId)) {
+		if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId()
+				&& !DPDoctorUtils.anyStringEmpty(hospitalUId)) {
 			patientDetailList.add("<b>Hospital Id: </b>" + hospitalUId);
 		}
-		
+
 		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
 				? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
@@ -1724,7 +1728,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
 					clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
 					clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
-					clinicalNotesJasperDetails.setDiagnosis("<b>" + clinicalNotesCollection.getDiagnosis() + "</b>");
+					clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
 					clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
 					clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
 					clinicalNotesJasperDetails
@@ -2139,12 +2143,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									locationId, hospitalId, mobileNumber, "VISITS");
 						}
 					}
-				}
-				else
-				{
+				} else {
 					if (patientVisitCollection.getPrescriptionId() != null) {
 						for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
-							response = prescriptionServices.smsPrescriptionforWeb(prescriptionId.toString(), doctorId, locationId, hospitalId, mobileNumber, "VISITS");
+							response = prescriptionServices.smsPrescriptionforWeb(prescriptionId.toString(), doctorId,
+									locationId, hospitalId, mobileNumber, "VISITS");
 						}
 					}
 				}
@@ -2488,29 +2491,29 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	@Override
-	public PatientVisitResponse getPatientLastVisit(String doctorId, String locationId, String hospitalId, String patientId) {
+	public PatientVisitResponse getPatientLastVisit(String doctorId, String locationId, String hospitalId,
+			String patientId) {
 		PatientVisitResponse response = null;
 		try {
-			
-			ObjectId patientObjectId = new ObjectId(patientId), 
-					doctorObjectId = new ObjectId(doctorId), 
-					locationObjectId = new ObjectId(locationId), 
-					hospitalObjectId = new ObjectId(hospitalId);
-			
+
+			ObjectId patientObjectId = new ObjectId(patientId), doctorObjectId = new ObjectId(doctorId),
+					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+
 			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("doctorId").is(doctorObjectId)
-					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").is(false);
+					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
+					.and("isPatientDiscarded").is(false);
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
-										true))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.limit(1)
-					);
-			
-			List<PatientVisitLookupBean> patientVisitlookupbeans = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisitLookupBean.class).getMappedResults();
-			
+					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+									true))),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
+
+			List<PatientVisitLookupBean> patientVisitlookupbeans = mongoTemplate
+					.aggregate(aggregation, PatientVisitCollection.class, PatientVisitLookupBean.class)
+					.getMappedResults();
+
 			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
 				for (PatientVisitLookupBean patientVisitlookupBean : patientVisitlookupbeans) {
 					response = new PatientVisitResponse();
