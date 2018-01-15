@@ -83,10 +83,20 @@ public class DrugCollection extends GenericCollection {
     @Field
 	private Long inventoryQuantity;
 
-    public ObjectId getId() {
-	return id;
-    }
+    @Field
+	private String instructions;
 
+	public String getInstructions() {
+		return instructions;
+	}
+
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
+
+	public ObjectId getId() {
+		return id;
+	}
     public void setId(ObjectId id) {
 	this.id = id;
     }

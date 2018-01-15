@@ -24,7 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
+import com.dpdocter.enums.Range;
 import javax.mail.MessagingException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -119,7 +119,6 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.PrescriptionItems;
-import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -961,6 +960,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					drugAddEditRequest.setDuration(item.getDuration());
 					drugAddEditRequest.setDosage(item.getDosage());
 					drugAddEditRequest.setDosageTime(item.getDosageTime());
+					drugAddEditRequest.setInstructions(item.getInstructions());
 					drug = addFavouriteDrug(drugAddEditRequest, drugCollection, createdBy);
 					item.setDrugId(new ObjectId(drug.getId()));
 
