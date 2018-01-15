@@ -26,8 +26,7 @@ public class DentalLabPickupRequest {
 	private Boolean isCompleted = false;
 	private String collectionBoyId;
 	private String serialNumber;
-	private String shade;
-	private List<String> material;
+	
 
 	public String getId() {
 		return id;
