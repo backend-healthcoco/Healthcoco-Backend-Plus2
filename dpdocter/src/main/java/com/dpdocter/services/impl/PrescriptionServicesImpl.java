@@ -868,13 +868,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						drugAddEditRequest.setDrugType(item.getDrugType());
 					}
 					if (!DPDoctorUtils.anyStringEmpty(item.getExplanation())) {
-						drugAddEditRequest.setExplanation(item.getExplanation());
+						drugAddEditRequest.setExplanation(item.getInstructions());
 					}
 					drugAddEditRequest.setDirection(item.getDirection());
 					drugAddEditRequest.setDuration(item.getDuration());
 					drugAddEditRequest.setDosage(item.getDosage());
 					drugAddEditRequest.setDosageTime(item.getDosageTime());
-					drugAddEditRequest.setInstructions(item.getInstructions());
+					
 					drug = addFavouriteDrug(drugAddEditRequest, drugCollection, createdBy);
 					item.setDrugId(new ObjectId(drug.getId()));
 
