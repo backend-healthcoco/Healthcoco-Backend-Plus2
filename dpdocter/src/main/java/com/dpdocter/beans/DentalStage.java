@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import common.util.web.JacksonUtil;
+
 public class DentalStage {
 
 	private String stage;
