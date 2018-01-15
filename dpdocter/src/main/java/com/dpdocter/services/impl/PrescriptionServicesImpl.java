@@ -953,7 +953,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (item.getDrugType() != null) {
 						drugAddEditRequest.setDrugType(item.getDrugType());
 					}
-					if (!DPDoctorUtils.anyStringEmpty(item.getExplanation())) {
+					if (!DPDoctorUtils.anyStringEmpty(item.getInstructions())) {
 						drugAddEditRequest.setExplanation(item.getInstructions());
 					}
 					drugAddEditRequest.setDirection(item.getDirection());
