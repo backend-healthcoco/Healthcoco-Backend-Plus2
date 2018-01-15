@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.LabType;
 
 public class CollectionBoy extends GenericCollection {
 
@@ -17,6 +18,7 @@ public class CollectionBoy extends GenericCollection {
 	private String profileImageURL;
 	private Boolean discarded = false;
 	private Boolean isAvailable = false;
+	private String labType = LabType.DIAGNOSTIC.getType();
 
 	public String getId() {
 		return id;
@@ -120,6 +122,14 @@ public class CollectionBoy extends GenericCollection {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getLabType() {
+		return labType;
+	}
+
+	public void setLabType(String labType) {
+		this.labType = labType;
 	}
 
 	@Override

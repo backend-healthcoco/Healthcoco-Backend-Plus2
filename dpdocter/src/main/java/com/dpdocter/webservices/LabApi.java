@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
@@ -30,6 +31,7 @@ import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Specimen;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.DoctorRecordUploadRequest;
 import com.dpdocter.request.EditLabReportsRequest;
@@ -711,4 +713,34 @@ public class LabApi {
 		return response;
 	}
 
+	
+	@Path(value = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS)
+	@POST
+	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS, notes = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS)
+	public Response<DentalWork> addEditPickupRequest(AddEditCustomWorkRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWork> response = new Response<DentalWork>();
+		response.setData(locationServices.addEditCustomWork(request));
+
+		return response;
+	}
+
+	@Path(value = PathProxy.LabUrls.GET_DENTAL_WORKS)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_DENTAL_WORKS, notes = PathProxy.LabUrls.GET_DENTAL_WORKS)
+	public Response<Object> getDentalWorks(@QueryParam("locationId") String locationId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+		if (locationId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Object> response = new Response<Object>();
+		response.setDataList(locationServices.getCustomWorks(page, size, searchTerm));
+		return response;
+	}
+	
+	
 }

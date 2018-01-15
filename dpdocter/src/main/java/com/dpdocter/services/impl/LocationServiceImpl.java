@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
@@ -40,6 +41,7 @@ import com.dpdocter.beans.Specimen;
 import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
+import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.LabAssociationCollection;
 import com.dpdocter.collections.LabReportsCollection;
@@ -60,6 +62,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
+import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.LabAssociationRepository;
 import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
@@ -70,6 +73,7 @@ import com.dpdocter.repository.RateCardRepository;
 import com.dpdocter.repository.RateCardTestAssociationRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.PatientLabTestsampleRequest;
 import com.dpdocter.response.CBLabAssociationLookupResponse;
@@ -136,6 +140,9 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private DentalWorkRepository dentalWorkRepository;
 
 	@Value("${geocoding.services.api.key}")
 	private String GEOCODING_SERVICES_API_KEY;
@@ -2193,6 +2200,99 @@ public class LocationServiceImpl implements LocationServices {
 		return testGroupResponses;
 
 	}
+	
+	@Override
+	@Transactional
+	public DentalWork addEditCustomWork(AddEditCustomWorkRequest request) {
+		DentalWork response = null;
+		try {
+			DentalWorkCollection dentalWorkCollection = new DentalWorkCollection();
+			BeanUtil.map(request, dentalWorkCollection);
+			if (DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getId())) {
+				dentalWorkCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(dentalWorkCollection.getDoctorId());
+					if (userCollection != null) {
+						dentalWorkCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					dentalWorkCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				DentalWorkCollection oldDentalWorkCollection = dentalWorkRepository
+						.findOne(dentalWorkCollection.getId());
+				dentalWorkCollection.setCreatedBy(oldDentalWorkCollection.getCreatedBy());
+				dentalWorkCollection.setCreatedTime(oldDentalWorkCollection.getCreatedTime());
+				dentalWorkCollection.setDiscarded(oldDentalWorkCollection.getDiscarded());
+			}
+			dentalWorkCollection = dentalWorkRepository.save(dentalWorkCollection);
+			response = new DentalWork();
+			BeanUtil.map(dentalWorkCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<DentalWork> getCustomWorks(int page, int size, String searchTerm) {
+		List<DentalWork> customWorks = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("workName").regex("^" + searchTerm, "i"),
+						new Criteria("workName").regex("^" + searchTerm));
+			}
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<DentalWork> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalWorkCollection.class, DentalWork.class);
+			customWorks = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting rate cards");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting custom works");
+		}
+		return customWorks;
+	}
+	
+	@Override
+	@Transactional
+	public DentalWork deleteCustomWork(String id, boolean discarded) {
+		DentalWork response = null;
+		DentalWorkCollection customWorkCollection = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(id)) {
+				customWorkCollection = dentalWorkRepository.findOne(new ObjectId(id));
+			}
+			if (customWorkCollection != null) {
+				customWorkCollection.setDiscarded(discarded);
+				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput , "Record not found");
+			}
+			response = new DentalWork();
+			BeanUtil.map(customWorkCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+
 
 	private String reportSerialNumberGenerator(String locationId) {
 		String generatedId = null;
