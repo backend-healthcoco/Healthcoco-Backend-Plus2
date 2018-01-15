@@ -55,4 +55,7 @@ public interface InventoryService {
 
 	List<InventoryBatch> getInventoryBatchByResourceId(String locationId, String hospitalId, String resourceId);
 
+	InventoryStock getInventoryStockByInvoiceIdResourceId(String locationId, String hospitalId, String resourceId,
+			String invoiceId);
+
 }
