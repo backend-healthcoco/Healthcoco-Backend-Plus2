@@ -27,6 +27,7 @@ public class IPDReportLookupResponse extends GenericCollection{
 	private LocationCollection location;
 	private String hospitalId;
 	private HospitalCollection hospital;
+	private Boolean discarded=false;
 	public String getId() {
 		return id;
 	}
@@ -150,5 +151,11 @@ public class IPDReportLookupResponse extends GenericCollection{
 				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
 				+ ", doctorId=" + doctorId + ", doctor=" + doctor + ", locationId=" + locationId + ", location="
 				+ location + ", hospitalId=" + hospitalId + ", hospital=" + hospital + "]";
+	}
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 }

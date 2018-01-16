@@ -25,6 +25,15 @@ public class IPDReports extends GenericCollection {
 	private String locationName;
 	private String hospitalId;
 	private String hospitalName;
+	private Boolean discarded=false;
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public String getId() {
 		return id;

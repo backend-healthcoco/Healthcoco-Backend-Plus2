@@ -679,9 +679,9 @@ public class ReportsServiceImpl implements ReportsService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId), false);
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
 			else
-				count = otReportsRepository.getReportsCount(new ObjectId(locationId), false);
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId));
 
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
