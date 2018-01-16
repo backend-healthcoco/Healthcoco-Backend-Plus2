@@ -216,10 +216,11 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
 				|| resource.equals(Resource.INDICATION_OF_USG) || resource.equals(Resource.PV)
 				|| resource.equals(Resource.ECG) || resource.equals(Resource.XRAY) || resource.equals(Resource.ECHO)
-				|| resource.equals(Resource.HOLTER) || resource.equals(Resource.TREATMENTSERVICE) || resource.equals(Resource.PC_EARS)
-				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
-				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
-				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM) 
+				|| resource.equals(Resource.HOLTER) || resource.equals(Resource.TREATMENTSERVICE)
+				|| resource.equals(Resource.PC_EARS) || resource.equals(Resource.PC_NOSE)
+				|| resource.equals(Resource.PC_ORAL_CAVITY) || resource.equals(Resource.PC_THROAT)
+				|| resource.equals(Resource.NECK_EXAM) || resource.equals(Resource.NOSE_EXAM)
+				|| resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
 				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
@@ -264,10 +265,13 @@ public class DPDoctorUtils {
 			String disease, String... searchTermFieldName) {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
-				.must(QueryBuilders.termQuery("doctorId", doctorId));
-		if (!DPDoctorUtils.anyStringEmpty(disease))
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			boolQueryBuilder.must(QueryBuilders.termQuery("doctorId", doctorId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(disease)){
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
+		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 			boolQueryBuilder.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId));
@@ -298,16 +302,16 @@ public class DPDoctorUtils {
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		} else {
 			if (sortBy.equalsIgnoreCase("rankingCount")) {
-				if(size > 0){
+				if (size > 0) {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withPageable(new PageRequest(page, size))
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
-				}else{
+				} else {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withPageable(new PageRequest(0, 15))
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 				}
-				
+
 			} else {
 				if (size > 0)
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -317,7 +321,6 @@ public class DPDoctorUtils {
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 			}
 		}
-
 		return searchQuery;
 	}
 
@@ -370,7 +373,7 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.TREATMENTSERVICE) || resource.equals(Resource.PC_EARS)
 				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
 				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
-				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM) 
+				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
 				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
@@ -512,8 +515,7 @@ public class DPDoctorUtils {
 
 		if (specialities != null && !specialities.isEmpty())
 			criteria.and("speciality").in(specialities);
-		
-		
+
 		Aggregation aggregation = null;
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)
@@ -524,11 +526,11 @@ public class DPDoctorUtils {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 		} else {
-			
-			if(sortBy.equalsIgnoreCase("category")){
+
+			if (sortBy.equalsIgnoreCase("category")) {
 				criteria.and("category").exists(true);
 			}
-			
+
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((page) * size),
@@ -712,40 +714,42 @@ public class DPDoctorUtils {
 	private static final byte[] key = "MyDifficultPassw".getBytes();
 	private static final String transformation = "AES/ECB/PKCS5Padding";
 
-	public static void encrypt(Serializable object, OutputStream ostream) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-	    try {
-	        // Length is 16 byte
-	        SecretKeySpec sks = new SecretKeySpec(key, transformation);
+	public static void encrypt(Serializable object, OutputStream ostream)
+			throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+		try {
+			// Length is 16 byte
+			SecretKeySpec sks = new SecretKeySpec(key, transformation);
 
-	        // Create cipher
-	        Cipher cipher = Cipher.getInstance(transformation);
-	        cipher.init(Cipher.ENCRYPT_MODE, sks);
-	        SealedObject sealedObject = new SealedObject(object, cipher);
+			// Create cipher
+			Cipher cipher = Cipher.getInstance(transformation);
+			cipher.init(Cipher.ENCRYPT_MODE, sks);
+			SealedObject sealedObject = new SealedObject(object, cipher);
 
-	        // Wrap the output stream
-	        CipherOutputStream cos = new CipherOutputStream(ostream, cipher);
-	        ObjectOutputStream outputStream = new ObjectOutputStream(cos);
-	        outputStream.writeObject(sealedObject);
-	        outputStream.close();
-	    } catch (IllegalBlockSizeException e) {
-	        e.printStackTrace();
-	    }
+			// Wrap the output stream
+			CipherOutputStream cos = new CipherOutputStream(ostream, cipher);
+			ObjectOutputStream outputStream = new ObjectOutputStream(cos);
+			outputStream.writeObject(sealedObject);
+			outputStream.close();
+		} catch (IllegalBlockSizeException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public static Object decrypt(InputStream istream) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-	    SecretKeySpec sks = new SecretKeySpec(key, transformation);
-	    Cipher cipher = Cipher.getInstance(transformation);
-	    cipher.init(Cipher.DECRYPT_MODE, sks);
+	public static Object decrypt(InputStream istream)
+			throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+		SecretKeySpec sks = new SecretKeySpec(key, transformation);
+		Cipher cipher = Cipher.getInstance(transformation);
+		cipher.init(Cipher.DECRYPT_MODE, sks);
 
-	    CipherInputStream cipherInputStream = new CipherInputStream(istream, cipher);
-	    ObjectInputStream inputStream = new ObjectInputStream(cipherInputStream);
-	    SealedObject sealedObject;
-	    try {
-	        sealedObject = (SealedObject) inputStream.readObject();
-	        return sealedObject.getObject(cipher);
-	    } catch (ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e) {
-	        e.printStackTrace();
-	        return null;
-	    }
+		CipherInputStream cipherInputStream = new CipherInputStream(istream, cipher);
+		ObjectInputStream inputStream = new ObjectInputStream(cipherInputStream);
+		SealedObject sealedObject;
+		try {
+			sealedObject = (SealedObject) inputStream.readObject();
+			return sealedObject.getObject(cipher);
+		} catch (ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
