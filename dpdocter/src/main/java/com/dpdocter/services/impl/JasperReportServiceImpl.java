@@ -3901,104 +3901,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDrugs(parameters, contentFontSize - 1,
 						columnWidth, pageWidth, pageHeight, "$P{prescriptionItems}", normalStyle));
 
-				band = new JRDesignBand();
-				band.setHeight(18);
-				band.setPrintWhenExpression(
-						new JRDesignExpression("!$P{operationDate}.equals( null ) && !$P{operationDate}.isEmpty()"));
-				jrDesignTextField = new JRDesignTextField();
-				jrDesignTextField.setExpression(new JRDesignExpression("$P{operationDate}"));
-				jrDesignTextField.setX(1);
-				jrDesignTextField.setY(0);
-				jrDesignTextField.setHeight(18);
-				jrDesignTextField.setWidth(columnWidth);
-				jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-				jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-				jrDesignTextField.setBold(false);
-				jrDesignTextField.setStretchWithOverflow(true);
-				jrDesignTextField.setMarkup("html");
-				jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
-				band.addElement(jrDesignTextField);
-				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-				int fieldWidth = 118;
-				if (contentFontSize > 13)
-					fieldWidth = 145;
-				else if (contentFontSize > 11)
-					fieldWidth = 128;
-
-				if (parameters.get("vitalSigns") != null) {
-					addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0,
-							false);
-				}
-
-				addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0, true);
-				addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{pastHistory}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{FamilyHistoryTitle}", "$P{familyHistory}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{PersonalHistoryTitle}", "$P{pesonalHistory}", fieldWidth, false,
-						0, false);
-				addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0, false);
-				;
-				addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$P{presentComplaints}", fieldWidth, false,
-						0, false);
-				addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$P{historyOfPresentComplaints}",
-						fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{MenstrualHistory}", "$P{menstrualHistory}", fieldWidth, false,
-						0, false);
-				addItems(jasperDesign, columnWidth, "$P{ObstetricHistory}", "$P{obstetricHistory}", fieldWidth, false,
-						0, false);
-				addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$P{systemExam}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{GeneralExam}", "$P{generalExam}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{Observations}", "$P{observations}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{Investigations}", "$P{investigations}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$P{indicationOfUSG}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{PA}", "$P{pa}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{PS}", "$P{ps}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{PV}", "$P{pv}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{LabourNotes}", "$P{labourNotes}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{BabyNotes}", "$P{babyNotes}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{BabyWeight}", "$P{babyWeight}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{EcgDetails}", "$P{ecgDetails}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{Echo}", "$P{echo}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{XRayDetails}", "$P{xRayDetails}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{Holter}", "$P{holter}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$P{procedureNote}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{OperationNotes}", "$P{operationNotes}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{Condition}", "$P{condition}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{TreatmentGiven}", "$P{treatmentGiven}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{OperationName}", "$P{operationName}", fieldWidth, false, 0,
-						false);
-				addItems(jasperDesign, columnWidth, "$P{Surgeon}", "$P{surgeon}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{Anesthetist}", "$P{anesthetist}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{Implant}", "$P{implant}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{Cement}", "$P{cement}", fieldWidth, false, 0, false);
-				addItems(jasperDesign, columnWidth, "$P{Summary}", "$P{summary}", fieldWidth, false, 0, false);
-
-				if (parameters.get("prescriptionItems") != null) {
-					addDischargeitems(jasperDesign, columnWidth, "$P{PRESCRIPTION}", 18, contentFontSize - 1, true);
-					((JRDesignSection) jasperDesign.getDetailSection())
-							.addBand(addDrugs(parameters, contentFontSize - 1, columnWidth, pageWidth, pageHeight,
-									"$P{prescriptionItems}", normalStyle));
-
-				}
-
-				show = (Boolean) parameters.get("showAdvice");
-				if (show) {
-					addDischargeitems(jasperDesign, columnWidth, "$P{Advice}", 18, contentFontSize - 1, true);
-					addDischargeitems(jasperDesign, columnWidth, "$P{advice}", 18, contentFontSize - 1, false);
-				}
-
 			}
+
+			show = (Boolean) parameters.get("showAdvice");
+			if (show) {
+				addDischargeitems(jasperDesign, columnWidth, "$P{Advice}", 18, contentFontSize - 1, true);
+				addDischargeitems(jasperDesign, columnWidth, "$P{advice}", 18, contentFontSize - 1, false);
+			}
+
 		}
 
 	}
+
 
 	private void createAdmitCard(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize,
 			int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) throws JRException {
