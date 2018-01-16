@@ -31,6 +31,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -331,6 +332,9 @@ public class DoctorProfileApi {
 					}
 					if (clinicProfile.getLogoUrl() != null) {
 						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
+					}
+					if (clinicProfile.getPackageType() == null) {
+						clinicProfile.setPackageType(PackageType.ADVANCE.getType());
 					}
 
 					if (clinicProfile.getLogoThumbnailUrl() != null) {
@@ -752,7 +756,6 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS, notes = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
@@ -767,13 +770,13 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updatePrescriptionSMS(doctorId, isSendSMS));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY, notes = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
-	public Response<Boolean> updateSaveToInventory(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("saveToInventory") boolean saveToInventory) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
+	public Response<Boolean> updateSaveToInventory(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @QueryParam("saveToInventory") boolean saveToInventory) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -782,14 +785,13 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updateSavetoInventory(doctorId, locationId, saveToInventory));
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY, notes = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY)
-	public Response<Boolean> updateShowInventory(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("showInventory") boolean showInventory) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
+	public Response<Boolean> updateShowInventory(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @QueryParam("showInventory") boolean showInventory) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -798,13 +800,13 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updateShowInventory(doctorId, locationId, showInventory));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT, notes = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT)
-	public Response<Boolean> updateShowInventoryCount(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("showInventoryCount") boolean showInventoryCount) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
+	public Response<Boolean> updateShowInventoryCount(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @QueryParam("showInventoryCount") boolean showInventoryCount) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -813,6 +815,5 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updateShowInventoryCount(doctorId, locationId, showInventoryCount));
 		return response;
 	}
-	
 
 }
