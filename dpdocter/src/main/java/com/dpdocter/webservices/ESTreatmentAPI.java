@@ -43,7 +43,7 @@ public class ESTreatmentAPI {
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
-    	if (DPDoctorUtils.anyStringEmpty(type, range, doctorId, locationId, hospitalId)) {
+    	if (DPDoctorUtils.anyStringEmpty(type, range, locationId, hospitalId)) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
