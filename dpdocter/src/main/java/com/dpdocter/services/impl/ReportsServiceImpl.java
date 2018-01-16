@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -283,6 +284,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<IPDReports> response = null;
 		IPDReportsResponse ipdReportsResponse = null;
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -374,7 +376,20 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(ipdReports);
 				}
 			}
-			int count = response.size();
+
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(doctorId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria2.and("locationId").is(locationId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria2.and("patientId").is(patientId);
+			}
+
+			count = (int) mongoTemplate.count(new Query(criteria2), IPDReportsCollection.class);
+
 			ipdReportsResponse = new IPDReportsResponse();
 			ipdReportsResponse.setIpdReports(response);
 			ipdReportsResponse.setCount(count);
@@ -393,6 +408,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<OPDReports> response = null;
 		OPDReportsResponse opdReportsResponse = null;
 		List<OPDReportsLookupResponse> opdReportsLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -549,7 +565,20 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(opdReports);
 				}
 			}
-			int count = response.size();
+
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(doctorId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria2.and("locationId").is(locationId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria2.and("patientId").is(patientId);
+			}
+
+			count = (int) mongoTemplate.count(new Query(criteria2), OPDReportsCollection.class);
+
 			opdReportsResponse = new OPDReportsResponse();
 			opdReportsResponse.setOpdReports(response);
 			opdReportsResponse.setCount(count);
@@ -678,11 +707,18 @@ public class ReportsServiceImpl implements ReportsService {
 				}
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
-			else
-				count = otReportsRepository.getReportsCount(new ObjectId(locationId));
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(doctorId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria2.and("locationId").is(locationId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria2.and("patientId").is(patientId);
+			}
 
+			count = (int) mongoTemplate.count(new Query(criteria2), OTReportsCollection.class);
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
 			otReportsResponse.setCount(count);
@@ -701,6 +737,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<DeliveryReports> response = null;
 		DeliveryReportsResponse deliveryReportsResponse = null;
 		List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -796,7 +833,19 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(deliveryReports);
 				}
 			}
-			int count = response.size();
+
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(doctorId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria2.and("locationId").is(locationId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria2.and("patientId").is(patientId);
+			}
+
+			count = (int) mongoTemplate.count(new Query(criteria2), DeliveryReportsCollection.class);
 			deliveryReportsResponse = new DeliveryReportsResponse();
 			deliveryReportsResponse.setDeliveryReports(response);
 			deliveryReportsResponse.setCount(count);
