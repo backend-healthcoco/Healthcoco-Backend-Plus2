@@ -38,7 +38,17 @@ public class OTReportsLookupResponse {
 	private String operationalNotes;
 	private PatientCollection patientCollection;
 	private UserCollection patientUser;
-	
+
+	private Boolean discarded = false;
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
 	public String getId() {
 		return id;
 	}

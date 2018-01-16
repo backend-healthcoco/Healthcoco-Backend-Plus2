@@ -135,13 +135,13 @@ public class ReportsServiceImpl implements ReportsService {
 
 	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
-	
+
 	@Autowired
 	private PatientVisitService patientVisitService;
-	
+
 	@Autowired
 	private JasperReportService jasperReportService;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -183,42 +183,43 @@ public class ReportsServiceImpl implements ReportsService {
 	@Transactional
 	public OPDReports submitOPDReport(OPDReports opdReports) {
 		OPDReports response = null;
-		OPDReportsCollection opdReportsCollection = new OPDReportsCollection();
-		
-		if (opdReports != null) {
-			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
-					.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
-			if (opdReportsCollectionOld != null) {
-				BeanUtil.map(opdReportsCollectionOld, opdReportsCollection);
-				opdReportsCollection.setAmountReceived(opdReports.getAmountReceived());
-				if(opdReports.getReceiptDate() != null){
-					opdReportsCollection.setReceiptDate(new Date(opdReports.getReceiptDate()));	
-				}else{
-					opdReportsCollection.setReceiptDate(new Date());
+
+		OPDReportsCollection opdReportsCollection = null;
+		try {
+			if (opdReports != null) {
+				OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
+						.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
+				if (opdReportsCollectionOld != null) {
+					opdReportsCollectionOld.setAmountReceived(opdReports.getAmountReceived());
+					if (opdReports.getReceiptDate() != null) {
+						opdReportsCollectionOld.setReceiptDate(new Date(opdReports.getReceiptDate()));
+					} else {
+						opdReportsCollectionOld.setReceiptDate(new Date());
+					}
+					opdReportsCollectionOld.setReceiptNo(opdReports.getReceiptNo());
+					opdReportsCollectionOld.setRemarks(opdReports.getRemarks());
+					opdReportsCollectionOld.setUpdatedTime(new Date());
+					opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
+				} else {
+					opdReportsCollection = new OPDReportsCollection();
+					UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
+					BeanUtil.map(opdReports, opdReportsCollection);
+					opdReportsCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+					opdReportsCollection.setCreatedTime(new Date());
+					opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 				}
-				opdReportsCollection.setReceiptNo(opdReports.getReceiptNo());
-				opdReportsCollection.setRemarks(opdReports.getRemarks());
-				opdReportsCollection.setUpdatedTime(new Date());
-			} else {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
-				BeanUtil.map(opdReports, opdReportsCollection);
-				opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
-				opdReportsCollection.setCreatedTime(new Date());
-			}
-			
-			opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
-			try {
 
 				if (opdReportsCollection != null) {
 					response = new OPDReports();
 					BeanUtil.map(opdReportsCollection, response);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e + " Error occured while creating OPD Records");
-				throw new BusinessException(ServiceError.Unknown, "Error occured while OPD Records");
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while creating OPD Records");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while OPD Records");
 		}
+
 		return response;
 	}
 
@@ -567,6 +568,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<OTReports> response = null;
 		OTReportsResponse otReportsResponse = null;
 		List<OTReportsLookupResponse> otReportsLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -675,7 +677,12 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(otReports);
 				}
 			}
-			int count = response.size();
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId), false);
+			else
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId), false);
+
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
 			otReportsResponse.setCount(count);
@@ -820,15 +827,13 @@ public class ReportsServiceImpl implements ReportsService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public OPDReports getOPDReportByVisitId(String visitId)
-	{
+	public OPDReports getOPDReportByVisitId(String visitId) {
 		OPDReports response = null;
 		OPDReportsCollection opdReportsCollection = opdReportsRepository.getOPDReportByVisitId(new ObjectId(visitId));
-		if(opdReportsCollection != null)
-		{
+		if (opdReportsCollection != null) {
 			response = new OPDReports();
 			BeanUtil.map(opdReportsCollection, response);
 		}
@@ -839,23 +844,26 @@ public class ReportsServiceImpl implements ReportsService {
 	public String getOTReportsFile(String otId) {
 		String response = null;
 		try {
-			List<OTReportsLookupResponse> otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(new Criteria("id").is(new ObjectId(otId))),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-					Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
-									true))),
-					new CustomAggregationOperation(new BasicDBObject("$redact",
-							new BasicDBObject("$cond",
-									new BasicDBObject("if",
-											new BasicDBObject("$eq",
-													Arrays.asList("$patientCollection.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+			List<OTReportsLookupResponse> otReportsLookupResponses = mongoTemplate
+					.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(otId))),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
+											true))),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patientCollection.locationId",
+																	"$locationId"))).append("then", "$$KEEP")
+																			.append("else", "$$PRUNE")))),
 
-					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-					Aggregation.unwind("patientUser")), OTReportsCollection.class, OTReportsLookupResponse.class)
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser")), OTReportsCollection.class,
+							OTReportsLookupResponse.class)
 					.getMappedResults();
 
 			if (otReportsLookupResponses != null) {
@@ -888,7 +896,8 @@ public class ReportsServiceImpl implements ReportsService {
 		JasperReportResponse response = null;
 
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
-				new ObjectId(otReportsLookupResponse.getDoctorId()), new ObjectId(otReportsLookupResponse.getLocationId()),
+				new ObjectId(otReportsLookupResponse.getDoctorId()),
+				new ObjectId(otReportsLookupResponse.getLocationId()),
 				new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());
 
 		if (printSettings == null) {
@@ -897,46 +906,54 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
 
-		if(otReportsLookupResponse.getOperationDate() != null) {
+		if (otReportsLookupResponse.getOperationDate() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
 			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 			parameters.put("operationDate", sdf.format(otReportsLookupResponse.getOperationDate()));
 		}
-		
-		parameters.put("anaesthesiaType", (otReportsLookupResponse.getAnaesthesiaType() != null) ? otReportsLookupResponse.getAnaesthesiaType().getAnaesthesiaType() : null);
-		
-		if(otReportsLookupResponse.getSurgery() != null) {
+
+		parameters.put("anaesthesiaType", (otReportsLookupResponse.getAnaesthesiaType() != null)
+				? otReportsLookupResponse.getAnaesthesiaType().getAnaesthesiaType() : null);
+
+		if (otReportsLookupResponse.getSurgery() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a");
 			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 			String startTime = "";
-			if(otReportsLookupResponse.getSurgery().getStartTime() != null)
+			if (otReportsLookupResponse.getSurgery().getStartTime() != null)
 				startTime = sdf.format(new Date(otReportsLookupResponse.getSurgery().getStartTime()));
-			
+
 			String endTime = "";
-			if(otReportsLookupResponse.getSurgery().getEndTime() != null)
+			if (otReportsLookupResponse.getSurgery().getEndTime() != null)
 				endTime = sdf.format(new Date(otReportsLookupResponse.getSurgery().getEndTime()));
-			
-			if(!DPDoctorUtils.anyStringEmpty(startTime, endTime))parameters.put("dateAndTimeOfSurgery", startTime + " to "+ endTime);
-			else if(!DPDoctorUtils.anyStringEmpty(startTime))parameters.put("dateAndTimeOfSurgery", startTime);
+
+			if (!DPDoctorUtils.anyStringEmpty(startTime, endTime))
+				parameters.put("dateAndTimeOfSurgery", startTime + " to " + endTime);
+			else if (!DPDoctorUtils.anyStringEmpty(startTime))
+				parameters.put("dateAndTimeOfSurgery", startTime);
 		}
-		
-		if(otReportsLookupResponse.getTimeDuration() != null) {
+
+		if (otReportsLookupResponse.getTimeDuration() != null) {
 			TimeDuration timeDuration = otReportsLookupResponse.getTimeDuration();
 			String duration = "";
-			if(timeDuration.getDays() != null && timeDuration.getDays() > 0)duration = timeDuration.getDays()+" days";
-			if(timeDuration.getHours() != null && timeDuration.getHours() > 0) {
-				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration+" " : "")+timeDuration.getHours()+" hrs";
+			if (timeDuration.getDays() != null && timeDuration.getDays() > 0)
+				duration = timeDuration.getDays() + " days";
+			if (timeDuration.getHours() != null && timeDuration.getHours() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration + " " : "") + timeDuration.getHours()
+						+ " hrs";
 			}
-			if(timeDuration.getMinutes() != null && timeDuration.getMinutes() > 0) {
-				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration+" " : "")+timeDuration.getMinutes()+" mins";
+			if (timeDuration.getMinutes() != null && timeDuration.getMinutes() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration + " " : "") + timeDuration.getMinutes()
+						+ " mins";
 			}
-			if(timeDuration.getSeconds() != null && timeDuration.getSeconds() > 0) {
-				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration+" " : "")+timeDuration.getSeconds()+" secs";
+			if (timeDuration.getSeconds() != null && timeDuration.getSeconds() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration + " " : "") + timeDuration.getSeconds()
+						+ " secs";
 			}
-			
-			if(!DPDoctorUtils.anyStringEmpty(duration))parameters.put("durationOfSurgery", duration);
+
+			if (!DPDoctorUtils.anyStringEmpty(duration))
+				parameters.put("durationOfSurgery", duration);
 		}
-		
+
 		parameters.put("provisionalDiagnosis", otReportsLookupResponse.getProvisionalDiagnosis());
 		parameters.put("finalDiagnosis", otReportsLookupResponse.getFinalDiagnosis());
 		parameters.put("operatingSurgeon", otReportsLookupResponse.getOperatingSurgeon());
@@ -945,15 +962,16 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("remarks", otReportsLookupResponse.getRemarks());
 		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
 		parameters.put("otReportsId", otReportsLookupResponse.getId());
-		
+
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient,null,
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters, null, printSettings.getHospitalUId());
-		
-		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(otReportsLookupResponse.getDoctorId()));
-		String pdfName = (user != null ? user.getFirstName() : "") + "OTREPORTS"+ new Date().getTime();
+				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters, null,
+				printSettings.getHospitalUId());
+
+		patientVisitService.generatePrintSetup(parameters, printSettings,
+				new ObjectId(otReportsLookupResponse.getDoctorId()));
+		String pdfName = (user != null ? user.getFirstName() : "") + "OTREPORTS" + new Date().getTime();
 
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
@@ -972,8 +990,8 @@ public class ReportsServiceImpl implements ReportsService {
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
 						? printSettings.getPageSetup().getRightMargin() : 20)
 				: 20;
-		response = jasperReportService.createPDF(ComponentType.OT_REPORTS, parameters, OTReportsFileName,
-				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+		response = jasperReportService.createPDF(ComponentType.OT_REPORTS, parameters, OTReportsFileName, layout,
+				pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		return response;
 	}

@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
+
 @Document(collection = "ot_report_cl")
 public class OTReportsCollection extends GenericCollection {
 
@@ -48,9 +49,22 @@ public class OTReportsCollection extends GenericCollection {
 
 	@Field
 	private String operationalNotes;
-	
+
+	@Field
+	private Boolean isPatientDiscarded = false;
+	@Field
+	private Boolean discarded = false;
+
 	public ObjectId getId() {
 		return id;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	public void setId(ObjectId id) {
