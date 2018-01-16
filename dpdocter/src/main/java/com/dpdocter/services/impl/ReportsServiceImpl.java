@@ -379,13 +379,13 @@ public class ReportsServiceImpl implements ReportsService {
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria2.and("doctorId").is(doctorId);
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria2.and("locationId").is(locationId);
+				criteria2.and("locationId").is(new ObjectId(locationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
-				criteria2.and("patientId").is(patientId);
+				criteria2.and("patientId").is(new ObjectId(patientId));
 			}
 
 			count = (int) mongoTemplate.count(new Query(criteria2), IPDReportsCollection.class);
@@ -568,13 +568,13 @@ public class ReportsServiceImpl implements ReportsService {
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria2.and("doctorId").is(doctorId);
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria2.and("locationId").is(locationId);
+				criteria2.and("locationId").is(new ObjectId(locationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
-				criteria2.and("patientId").is(patientId);
+				criteria2.and("patientId").is(new ObjectId(patientId));
 			}
 
 			count = (int) mongoTemplate.count(new Query(criteria2), OPDReportsCollection.class);
@@ -709,13 +709,13 @@ public class ReportsServiceImpl implements ReportsService {
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria2.and("doctorId").is(doctorId);
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria2.and("locationId").is(locationId);
+				criteria2.and("locationId").is(new ObjectId(locationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
-				criteria2.and("patientId").is(patientId);
+				criteria2.and("patientId").is(new ObjectId(patientId));
 			}
 
 			count = (int) mongoTemplate.count(new Query(criteria2), OTReportsCollection.class);
@@ -836,13 +836,13 @@ public class ReportsServiceImpl implements ReportsService {
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria2.and("doctorId").is(doctorId);
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria2.and("locationId").is(locationId);
+				criteria2.and("locationId").is(new ObjectId(locationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
-				criteria2.and("patientId").is(patientId);
+				criteria2.and("patientId").is(new ObjectId(patientId));
 			}
 
 			count = (int) mongoTemplate.count(new Query(criteria2), DeliveryReportsCollection.class);
