@@ -154,10 +154,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-discharge-summary.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType())) {
-			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/"+fileName);
-		}else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType())) {
-			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/"+fileName);
-		}else {
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType())) {
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
+		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
 		jasperDesign.setName("sampleDynamicJasperDesign");
@@ -213,22 +213,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 			createHistory(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
 
 		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())) {
-			if(parameters.get("clinicalNotes") != null)((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
-					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
-			
-			if(parameters.get("prescriptions") != null)
+			if (parameters.get("clinicalNotes") != null)
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
+						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+
+			if (parameters.get("prescriptions") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPrescriptionSubreport(parameters,
 						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
-			
-			if(parameters.get("clinicalNotes") != null)
+
+			if (parameters.get("clinicalNotes") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createDiagramsSubreport(parameters, dsr,
-					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
-			
-			if(parameters.get("treatments") != null)
+						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+
+			if (parameters.get("treatments") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createTreatmentServicesSubreport(parameters,
-					contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle));
+						contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle));
 		}
-			
+
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.CLINICAL_NOTES.getType()))
 			createClinicalNotes(parameters, jasperDesign, columnWidth, contentFontSize);
 
@@ -244,28 +245,30 @@ public class JasperReportServiceImpl implements JasperReportService {
 					normalStyle);
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.RECEIPT.getType()))
 			createReceipt(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType()))
 			createConsentForm(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType()))
 			createDischargeSummary(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType()))
 			createAdmitCard(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType()))
 			createOTReports(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType())) 
-			createDeliveryReports(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-	
-		if (parameters.get("eyePrescriptions") != null || componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType())) 
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType()))
+			createDeliveryReports(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
+					normalStyle);
+
+		if (parameters.get("eyePrescriptions") != null
+				|| componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType()))
 			createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
-		
+
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())) {
 			band = new JRDesignBand();
@@ -3657,8 +3660,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(18);
-		band.setPrintWhenExpression(new JRDesignExpression("(!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty()) || (!$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"
-				+ "|| (!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty() && !$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"));
+		band.setPrintWhenExpression(new JRDesignExpression(
+				"(!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty()) || (!$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"
+						+ "|| (!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty() && !$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{dOA}"));
 		jrDesignTextField.setX(1);
@@ -3687,31 +3691,32 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		band = new JRDesignBand();
 		band.setHeight(18);
-		band.setPrintWhenExpression(new JRDesignExpression("!$P{operationDate}.equals( null ) && !$P{operationDate}.isEmpty()"));
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{operationDate}"));
-			jrDesignTextField.setX(1);
-			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(columnWidth);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-			jrDesignTextField.setBold(false);
-			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
-			band.addElement(jrDesignTextField);
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+		band.setPrintWhenExpression(
+				new JRDesignExpression("!$P{operationDate}.equals( null ) && !$P{operationDate}.isEmpty()"));
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{operationDate}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setBold(false);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
 		int fieldWidth = 118;
 		if (contentFontSize > 13)
 			fieldWidth = 145;
 		else if (contentFontSize > 11)
 			fieldWidth = 128;
-		
+
 		if (parameters.get("vitalSigns") != null) {
 			addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
 		}
@@ -3719,12 +3724,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{pastHistory}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{FamilyHistoryTitle}", "$P{familyHistory}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryTitle}", "$P{pesonalHistory}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryTitle}", "$P{pesonalHistory}", fieldWidth, false, 0,
+				false);
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$P{presentComplaints}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$P{historyOfPresentComplaints}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{MenstrualHistory}", "$P{menstrualHistory}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{ObstetricHistory}", "$P{obstetricHistory}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$P{presentComplaints}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$P{historyOfPresentComplaints}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{MenstrualHistory}", "$P{menstrualHistory}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{ObstetricHistory}", "$P{obstetricHistory}", fieldWidth, false, 0,
+				false);
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$P{systemExam}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{GeneralExam}", "$P{generalExam}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Observations}", "$P{observations}", fieldWidth, false, 0, false);
@@ -3750,11 +3760,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Implant}", "$P{implant}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Cement}", "$P{cement}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Summary}", "$P{summary}", fieldWidth, false, 0, false);
-		
+
 		if (parameters.get("prescriptionItems") != null) {
-				addDischargeitems(jasperDesign, columnWidth, "$P{PRESCRIPTION}", 18, contentFontSize - 1, true);
-				((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDrugs(parameters, contentFontSize - 1,
-						columnWidth, pageWidth, pageHeight, "$P{prescriptionItems}", normalStyle));
+			addDischargeitems(jasperDesign, columnWidth, "$P{PRESCRIPTION}", 18, contentFontSize - 1, true);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDrugs(parameters, contentFontSize - 1,
+					columnWidth, pageWidth, pageHeight, "$P{prescriptionItems}", normalStyle));
 		}
 		addItems(jasperDesign, columnWidth, "$P{Advice}", "$P{advice}", fieldWidth, false, 0, false);
 
@@ -3985,37 +3995,5 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{DeliveryType}", "$P{deliveryType}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{FormNo}", "$P{formNo}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0, false);
-	}
-
-	private void createDeliveryReports(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) {
-		int fieldWidth = 118;
-		if (contentFontSize > 13)
-			fieldWidth = 145;
-		else if (contentFontSize > 11)
-			fieldWidth = 128;
-
-		band = new JRDesignBand();
-		band.setHeight(10);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-		band = new JRDesignBand();
-		band.setHeight(20);
-
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{DELIVERYREPORTS}"));
-		jrDesignTextField.setX(1);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(220);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-		
-		addItems(jasperDesign, columnWidth, "$P{DeliveryDate}", "$P{deliveryDate}", fieldWidth, false, 0);
-		addItems(jasperDesign, columnWidth, "$P{DeliveryTime}", "$P{deliveryTime}", fieldWidth, false, 0);
-		addItems(jasperDesign, columnWidth, "$P{BabyGender}", "$P{babyGender}", fieldWidth, false, 0);
-		addItems(jasperDesign, columnWidth, "$P{DeliveryType}", "$P{deliveryType}", fieldWidth,false, 0);
-		addItems(jasperDesign, columnWidth, "$P{FormNo}", "$P{formNo}", fieldWidth, false, 0);
-		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0);
 	}
 }
