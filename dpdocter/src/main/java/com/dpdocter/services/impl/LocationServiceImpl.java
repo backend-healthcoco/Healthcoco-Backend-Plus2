@@ -1936,8 +1936,9 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("labTestSamples.isCollectedAtLab").is(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientName").regex("^" + searchTerm));
+				criteria = criteria.orOperator(
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
 			}
 
 			if (isParent) {
