@@ -545,7 +545,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("location"),Aggregation.lookup("hospital_cl", "location.hospitalId", "_id", "hospital"),
+							Aggregation.unwind("hospital"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 							Aggregation.unwind("doctor")),
 					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
