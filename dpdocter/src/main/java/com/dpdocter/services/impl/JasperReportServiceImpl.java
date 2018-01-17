@@ -3667,9 +3667,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(18);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"(!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty()) || (!$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"
-						+ "|| (!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty() && !$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"));
+				"(!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty()) || (!$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"));
 		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField
+				.setPrintWhenExpression(new JRDesignExpression("(!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty())"));
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{dOA}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
@@ -3684,6 +3685,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField
+				.setPrintWhenExpression(new JRDesignExpression("(!$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"));
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{dOD}"));
 		jrDesignTextField.setX(177);
 		jrDesignTextField.setY(0);
