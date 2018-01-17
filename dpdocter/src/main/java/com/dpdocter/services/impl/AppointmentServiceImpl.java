@@ -643,7 +643,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							appointmentBookedSlotRepository.save(bookedSlotCollection);
 						}
 					}
-					
+
 					if (!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
 						appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 						User drCollection = mongoTemplate.aggregate(
@@ -653,10 +653,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentLookupResponse.setDoctor(drCollection);
 					}
 				}
-				
+
 				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-						.findByDoctorIdLocationId(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId());
-				
+						.findByDoctorIdLocationId(appointmentCollection.getDoctorId(),
+								appointmentCollection.getLocationId());
+
 				appointmentCollection.setCategory(request.getCategory());
 				appointmentCollection.setExplanation(request.getExplanation());
 				appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
@@ -697,31 +698,32 @@ public class AppointmentServiceImpl implements AppointmentService {
 				final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 						+ sdf.format(appointmentCollection.getFromDate());
 				final String doctorName = appointmentLookupResponse.getDoctor().getTitle() + " "
-				+ appointmentLookupResponse.getDoctor().getFirstName();
+						+ appointmentLookupResponse.getDoctor().getFirstName();
 				final String clinicName = appointmentLookupResponse.getLocation().getLocationName();
 				final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
-				? appointmentLookupResponse.getLocation().getClinicNumber() : "";
+						? appointmentLookupResponse.getLocation().getClinicNumber() : "";
 
 				// sendSMS after appointment is saved
-				final String id = appointmentCollection.getId().toString(), patientEmailAddress = patientCard.getEmailAddress(), 
-								patientMobileNumber = patientCard.getUser().getMobileNumber(), 
-								doctorEmailAddress = appointmentLookupResponse.getDoctor().getEmailAddress(), 
-								doctorMobileNumber = appointmentLookupResponse.getDoctor().getMobileNumber();
-				final DoctorFacility facility = (clinicProfileCollection != null) ? clinicProfileCollection.getFacility() : null;
-				
+				final String id = appointmentCollection.getId().toString(),
+						patientEmailAddress = patientCard.getEmailAddress(),
+						patientMobileNumber = patientCard.getUser().getMobileNumber(),
+						doctorEmailAddress = appointmentLookupResponse.getDoctor().getEmailAddress(),
+						doctorMobileNumber = appointmentLookupResponse.getDoctor().getMobileNumber();
+				final DoctorFacility facility = (clinicProfileCollection != null)
+						? clinicProfileCollection.getFacility() : null;
+
 				Executors.newSingleThreadExecutor().execute(new Runnable() {
-				 @Override
-				 public void run() {
-					try {
-						sendAppointmentEmailSmsNotification(false, request, id,
-									appointmentId, doctorName, patientName, dateTime, clinicName, clinicContactNum,
-									patientEmailAddress, patientMobileNumber, doctorEmailAddress, doctorMobileNumber, 
-									facility);
+					@Override
+					public void run() {
+						try {
+							sendAppointmentEmailSmsNotification(false, request, id, appointmentId, doctorName,
+									patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
+									patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility);
 						} catch (MessagingException e) {
-								e.printStackTrace();
+							e.printStackTrace();
 						}
 					}
-				});				
+				});
 
 				response = new Appointment();
 				BeanUtil.map(appointmentCollection, response);
@@ -849,8 +851,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 						+ sdf.format(appointmentCollection.getFromDate());
 				final String doctorName = userCollection.getTitle() + " " + userCollection.getFirstName();
-				final String clinicName = locationCollection.getLocationName(), clinicContactNum = locationCollection.getClinicNumber() != null
-				? locationCollection.getClinicNumber() : "";
+				final String clinicName = locationCollection.getLocationName(),
+						clinicContactNum = locationCollection.getClinicNumber() != null
+								? locationCollection.getClinicNumber() : "";
 
 				if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
 					appointmentCollection.setState(AppointmentState.CONFIRM);
@@ -879,24 +882,26 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointmentBookedSlotRepository.save(bookedSlotCollection);
 
 				// sendSMS after appointment is saved
-				
-				final String id = appointmentCollection.getId().toString(), patientEmailAddress = patientCard.getEmailAddress(), 
-						patientMobileNumber = patientCard.getUser().getMobileNumber(), doctorEmailAddress = userCollection.getEmailAddress(), 
+
+				final String id = appointmentCollection.getId().toString(),
+						patientEmailAddress = patientCard.getEmailAddress(),
+						patientMobileNumber = patientCard.getUser().getMobileNumber(),
+						doctorEmailAddress = userCollection.getEmailAddress(),
 						doctorMobileNumber = userCollection.getMobileNumber();
-				final DoctorFacility facility = (clinicProfileCollection != null) ? clinicProfileCollection.getFacility() : null;
-						
+				final DoctorFacility facility = (clinicProfileCollection != null)
+						? clinicProfileCollection.getFacility() : null;
+
 				Executors.newSingleThreadExecutor().execute(new Runnable() {
 					@Override
 					public void run() {
 						try {
-							sendAppointmentEmailSmsNotification(true, request, id,
-							appointmentId, doctorName, patientName, dateTime, clinicName, clinicContactNum,
-							patientEmailAddress, patientMobileNumber, doctorEmailAddress, doctorMobileNumber, 
-							facility);
+							sendAppointmentEmailSmsNotification(true, request, id, appointmentId, doctorName,
+									patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
+									patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility);
 						} catch (MessagingException e) {
 							e.printStackTrace();
 						}
-						
+
 					}
 				});
 
@@ -1886,6 +1891,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				response.setLocation(location);
 				response.setHospital(location.getHospital());
+				response.setId(locationId);
 
 				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
 
@@ -3548,12 +3554,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Appointment response = null;
 		try {
 			AppointmentCollection appointmentCollection = appointmentRepository.findByAppointmentId(appointmentId);
-			if(appointmentCollection != null) {
+			if (appointmentCollection != null) {
 				appointmentCollection.setDoctorId(new ObjectId(doctorId));
 				appointmentCollection.setUpdatedTime(new Date());
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
-				
-				AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(appointmentId);
+
+				AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
+						.findByAppointmentId(appointmentId);
 				if (bookedSlotCollection != null) {
 					bookedSlotCollection.setDoctorId(new ObjectId(doctorId));
 					bookedSlotCollection.setUpdatedTime(new Date());
@@ -3562,8 +3569,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response = new Appointment();
 				BeanUtil.map(appointmentCollection, response);
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while updating appointment doctor");
 		}
