@@ -164,8 +164,9 @@ public class ReportsServiceImpl implements ReportsService {
 			try {
 				ipdReportsCollection.setCreatedTime(new Date());
 
-				ipdReportsCollection.setCreatedBy(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
-						? userCollection.getTitle() : "DR." + " " + userCollection.getFirstName());
+				ipdReportsCollection.setCreatedBy(
+						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
+								+ " " + userCollection.getFirstName());
 
 				ipdReportsCollection = ipdReportsRepository.save(ipdReportsCollection);
 
@@ -208,8 +209,8 @@ public class ReportsServiceImpl implements ReportsService {
 					opdReportsCollection = new OPDReportsCollection();
 					UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
 					BeanUtil.map(opdReports, opdReportsCollection);
-					opdReportsCollection.setCreatedBy(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
-							? userCollection.getTitle() : "DR." + " " + userCollection.getFirstName());
+					opdReportsCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
+							? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
 					opdReportsCollection.setCreatedTime(new Date());
 					opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 				}
@@ -239,8 +240,9 @@ public class ReportsServiceImpl implements ReportsService {
 			try {
 				otReportsCollection.setCreatedTime(new Date());
 
-				otReportsCollection.setCreatedBy(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
-						? userCollection.getTitle() : "DR." + " " + userCollection.getFirstName());
+				otReportsCollection.setCreatedBy(
+						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
+								+ " " + userCollection.getFirstName());
 
 				otReportsCollection = otReportsRepository.save(otReportsCollection);
 
@@ -269,8 +271,9 @@ public class ReportsServiceImpl implements ReportsService {
 			try {
 				deliveryReportsCollection.setCreatedTime(new Date());
 
-				deliveryReportsCollection.setCreatedBy(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
-						? userCollection.getTitle() : "DR." + " " + userCollection.getFirstName());
+				deliveryReportsCollection.setCreatedBy(
+						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
+								+ " " + userCollection.getFirstName());
 
 				deliveryReportsCollection = deliveryReportsRepository.save(deliveryReportsCollection);
 				if (deliveryReportsCollection != null) {
