@@ -210,6 +210,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				}
+				if(oldDischargeSummaryCollection.getDischargeDate()!=null){
+				dischargeSummaryCollection.setDischargeDate(oldDischargeSummaryCollection.getDischargeDate());
+				}
+				if(oldDischargeSummaryCollection.getOperationDate()!=null){
+					dischargeSummaryCollection.setOperationDate(oldDischargeSummaryCollection.getOperationDate());
+					}
+				if(oldDischargeSummaryCollection.getAdmissionDate()!=null){
+					dischargeSummaryCollection.setAdmissionDate(oldDischargeSummaryCollection.getAdmissionDate());
+					}
 				dischargeSummaryCollection.setCreatedBy(oldDischargeSummaryCollection.getCreatedBy());
 				dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
@@ -488,7 +497,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		
+
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
@@ -722,7 +731,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 												? prescriptionItem.getInstructions() : "--",
 										genericName);
 							}
-							if(prescriptionItems == null)prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
+							if (prescriptionItems == null)
+								prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 							prescriptionItems.add(prescriptionJasperDetails);
 						}
 					}
@@ -751,7 +761,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
 			parameters.put("babyNotes", dischargeSummaryCollection.getBabyNotes());
 		}
-
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyWeight())) {
 			parameters.put("babyWeight", dischargeSummaryCollection.getBabyWeight());
@@ -799,11 +808,11 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaintHistory())) {
 			parameters.put("historyOfPresentComplaints", dischargeSummaryCollection.getPresentComplaintHistory());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getObservation())) {
 			parameters.put("observation", dischargeSummaryCollection.getObservation());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getInvestigation())) {
 			parameters.put("investigation", dischargeSummaryCollection.getInvestigation());
 		}
@@ -837,27 +846,27 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getAnesthetist())) {
 			parameters.put("anesthetist", dischargeSummaryCollection.getAnesthetist());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationNotes())) {
 			parameters.put("operationNotes", dischargeSummaryCollection.getOperationNotes());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTreatmentsGiven())) {
 			parameters.put("treatmentGiven", dischargeSummaryCollection.getTreatmentsGiven());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSystemExam())) {
 			parameters.put("systemExam", dischargeSummaryCollection.getSystemExam());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSummary())) {
 			parameters.put("summary", dischargeSummaryCollection.getSummary());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPa())) {
 			parameters.put("pa", dischargeSummaryCollection.getPa());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPs())) {
 			parameters.put("ps", dischargeSummaryCollection.getPs());
 		}
@@ -869,19 +878,19 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPersonalHistory())) {
 			parameters.put("pesonalHistory", dischargeSummaryCollection.getPersonalHistory());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaint())) {
 			parameters.put("presentComplaints", dischargeSummaryCollection.getPresentComplaint());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getProcedureNote())) {
 			parameters.put("procedureNote", dischargeSummaryCollection.getProcedureNote());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationName())) {
 			parameters.put("operationName", dischargeSummaryCollection.getOperationName());
 		}
-		
+
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 			String _24HourTime = String.format("%02d:%02d", dischargeSummaryCollection.getTime().getFromTime() / 60,
@@ -2236,11 +2245,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return response;
 	}
-	
-	
+
 	@Override
-	public void emailDischargeSummaryForWeb(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
-			String emailAddress) {
+	public void emailDischargeSummaryForWeb(String dischargeSummeryId, String doctorId, String locationId,
+			String hospitalId, String emailAddress) {
 		MailResponse mailResponse = null;
 		DischargeSummaryCollection dischargeSummaryCollection = null;
 		MailAttachment mailAttachment = null;
@@ -2251,59 +2259,59 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummeryId));
 			if (dischargeSummaryCollection != null) {
 
-						user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
-								dischargeSummaryCollection.getHospitalId());
-						user.setFirstName(patient.getLocalPatientName());
-						emailTrackCollection.setDoctorId(dischargeSummaryCollection.getDoctorId());
-						emailTrackCollection.setHospitalId(dischargeSummaryCollection.getHospitalId());
-						emailTrackCollection.setLocationId(dischargeSummaryCollection.getLocationId());
-						emailTrackCollection.setType(ComponentType.DISCHARGE_SUMMARY.getType());
-						emailTrackCollection.setSubject("Discharge Summary");
-						if (user != null) {
-							emailTrackCollection.setPatientName(patient.getLocalPatientName());
-							emailTrackCollection.setPatientId(user.getId());
-						}
+				user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
+				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
+						dischargeSummaryCollection.getHospitalId());
+				user.setFirstName(patient.getLocalPatientName());
+				emailTrackCollection.setDoctorId(dischargeSummaryCollection.getDoctorId());
+				emailTrackCollection.setHospitalId(dischargeSummaryCollection.getHospitalId());
+				emailTrackCollection.setLocationId(dischargeSummaryCollection.getLocationId());
+				emailTrackCollection.setType(ComponentType.DISCHARGE_SUMMARY.getType());
+				emailTrackCollection.setSubject("Discharge Summary");
+				if (user != null) {
+					emailTrackCollection.setPatientName(patient.getLocalPatientName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
 
-						JasperReportResponse jasperReportResponse = createJasper(dischargeSummaryCollection, patient,
-								user);
-						mailAttachment = new MailAttachment();
-						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
-						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
-						LocationCollection locationCollection = locationRepository.findOne(dischargeSummaryCollection.getLocationId());
+				JasperReportResponse jasperReportResponse = createJasper(dischargeSummaryCollection, patient, user);
+				mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+				UserCollection doctorUser = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository
+						.findOne(dischargeSummaryCollection.getLocationId());
 
-						mailResponse = new MailResponse();
-						mailResponse.setMailAttachment(mailAttachment);
-						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
-						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+				mailResponse = new MailResponse();
+				mailResponse.setMailAttachment(mailAttachment);
+				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
 
-						if (address.charAt(address.length() - 2) == ',') {
-							address = address.substring(0, address.length() - 2);
-						}
-						mailResponse.setClinicAddress(address);
-						mailResponse.setClinicName(locationCollection.getLocationName());
-						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-						mailResponse.setMailRecordCreatedDate(sdf.format(dischargeSummaryCollection.getCreatedTime()));
-						mailResponse.setPatientName(user.getFirstName());
-						emailTackService.saveEmailTrack(emailTrackCollection);
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				mailResponse.setClinicAddress(address);
+				mailResponse.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				mailResponse.setMailRecordCreatedDate(sdf.format(dischargeSummaryCollection.getCreatedTime()));
+				mailResponse.setPatientName(user.getFirstName());
+				emailTackService.saveEmailTrack(emailTrackCollection);
 
-					} else {
+			} else {
 				logger.warn("Discharge Summary  not found.Please check summaryId.");
 				throw new BusinessException(ServiceError.NoRecord,
 						"Discharge Summary not found.Please check summaryId.");
