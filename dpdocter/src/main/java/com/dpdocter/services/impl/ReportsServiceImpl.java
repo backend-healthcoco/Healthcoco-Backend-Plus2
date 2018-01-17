@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -1417,11 +1415,16 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
 		parameters.put("otReportsId", otReportsLookupResponse.getId());
 
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
-				printSettings.getHospitalUId());
+
+		patientVisitService
+				.generatePatientDetails(
+						(printSettings != null && printSettings.getHeaderSetup() != null
+								? printSettings.getHeaderSetup().getPatientDetails() : null),
+						patient, null, patient.getLocalPatientName(), user.getMobileNumber(),
+						parameters, otReportsLookupResponse.getUpdatedTime() != null
+								? otReportsLookupResponse.getUpdatedTime() : new Date(),
+						printSettings.getHospitalUId());
+
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(otReportsLookupResponse.getDoctorId()));
