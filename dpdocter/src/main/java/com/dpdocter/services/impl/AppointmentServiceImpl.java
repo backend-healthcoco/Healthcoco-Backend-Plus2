@@ -1853,13 +1853,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 							Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
 							Aggregation.unwind("hospital")), LocationCollection.class, Location.class)
 					.getUniqueMappedResult();
-
 			if (location == null) {
 				return null;
 			} else {
-				ObjectId patientObjectId = new ObjectId(patientId);
+				
 				RecommendationsCollection recommendationsCollection = new RecommendationsCollection();
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+					ObjectId patientObjectId = new ObjectId(patientId);
 					recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
 							locationObjectId, patientObjectId);
 					if (recommendationsCollection != null)
