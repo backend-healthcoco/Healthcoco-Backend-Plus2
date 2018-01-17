@@ -1941,7 +1941,8 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (from != 0 && to != 0) {
-				criteria.and("labTestSamples.updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+				criteria.and("labTestSamples.updatedTime").gte(new Date(from))
+						.lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else if (from != 0) {
 				criteria.and("labTestSamples.updatedTime").gte(new Date(from));
 			} else if (to != 0) {
@@ -1954,8 +1955,9 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("labTestSamples.isCollectedAtLab").is(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientName").regex("^" + searchTerm));
+				criteria = criteria.orOperator(
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
 			}
 
 			if (isParent) {
