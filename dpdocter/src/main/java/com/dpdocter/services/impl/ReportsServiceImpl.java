@@ -987,7 +987,7 @@ public class ReportsServiceImpl implements ReportsService {
 				.generatePatientDetails(
 						(printSettings != null && printSettings.getHeaderSetup() != null
 								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient, null, patient.getLocalPatientName(), user.getMobileNumber(),
+						patient, "", patient.getLocalPatientName(), user.getMobileNumber(),
 						parameters, otReportsLookupResponse.getUpdatedTime() != null
 								? otReportsLookupResponse.getUpdatedTime() : new Date(),
 						printSettings.getHospitalUId());
@@ -1115,7 +1115,7 @@ public class ReportsServiceImpl implements ReportsService {
 				.generatePatientDetails(
 						(printSettings != null && printSettings.getHeaderSetup() != null
 								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+						patient, "", patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 						deliveryReportsLookupResponse.getUpdatedTime() != null
 								? deliveryReportsLookupResponse.getUpdatedTime() : new Date(),
 						printSettings.getHospitalUId());
