@@ -1111,11 +1111,14 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("formNo", deliveryReportsLookupResponse.getFormNo());
 		parameters.put("remarks", deliveryReportsLookupResponse.getRemarks());
 
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
-				printSettings.getHospitalUId());
+		patientVisitService
+				.generatePatientDetails(
+						(printSettings != null && printSettings.getHeaderSetup() != null
+								? printSettings.getHeaderSetup().getPatientDetails() : null),
+						patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+						deliveryReportsLookupResponse.getUpdatedTime() != null
+								? deliveryReportsLookupResponse.getUpdatedTime() : new Date(),
+						printSettings.getHospitalUId());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(deliveryReportsLookupResponse.getDoctorId()));
