@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -201,7 +202,7 @@ public class PatientVisitApi {
 		response.setData(patientVisitService.smsVisit(visitId, doctorId, locationId, hospitalId, mobileNumber));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB, notes = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
@@ -242,6 +243,23 @@ public class PatientVisitApi {
 		Response<String> response = new Response<String>();
 		response.setData(patientVisitService.getPatientVisitFile(visitId, showPH, showPLH, showFH, showDA, showUSG,
 				isLabPrint, isCustomPDF, showLMP, showEDD, showNoOfChildren));
+		return response;
+	}
+
+	@Path(value = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT)
+	@GET
+	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT, notes = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT)
+	public Response<PatientVisitResponse> getPatientLastVisit(@PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "patientId") String patientId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		PatientVisitResponse patientVisit = patientVisitService.getPatientLastVisit(doctorId, locationId, hospitalId,
+				patientId);
+		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+		response.setData(patientVisit);
 		return response;
 	}
 

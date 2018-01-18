@@ -64,4 +64,6 @@ public interface PatientVisitService {
 
 	void includeHistoryInPdf(HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH,
 			Boolean showDA, Map<String, Object> parameters);
+
+	PatientVisitResponse getPatientLastVisit(String doctorId, String locationId, String hospitalId, String patientId);
 }

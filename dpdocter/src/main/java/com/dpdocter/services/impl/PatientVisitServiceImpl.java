@@ -1540,13 +1540,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		patientDetailList.add(uniqueEMRId);
 		if (patientDetails.getShowDOB()) {
-			if(patientDetails.getShowDate())patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+			if (patientDetails.getShowDate())
+				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
 		} else {
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-			if(patientDetails.getShowDate())patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+			if (patientDetails.getShowDate())
+				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 		}
 
 		if (patientDetails.getShowBloodGroup() && patientCard != null
@@ -1563,10 +1565,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
 		}
 
-		if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId() && !DPDoctorUtils.anyStringEmpty(hospitalUId)) {
+		if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId()
+				&& !DPDoctorUtils.anyStringEmpty(hospitalUId)) {
 			patientDetailList.add("<b>Hospital Id: </b>" + hospitalUId);
 		}
-		
+
 		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
 				? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
@@ -2493,4 +2496,83 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 	}
 
+	@Override
+	public PatientVisitResponse getPatientLastVisit(String doctorId, String locationId, String hospitalId,
+			String patientId) {
+		PatientVisitResponse response = null;
+		try {
+
+			ObjectId patientObjectId = new ObjectId(patientId), doctorObjectId = new ObjectId(doctorId),
+					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+
+			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("doctorId").is(doctorObjectId)
+					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+									true))),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
+
+			List<PatientVisitLookupBean> patientVisitlookupbeans = mongoTemplate
+					.aggregate(aggregation, PatientVisitCollection.class, PatientVisitLookupBean.class)
+					.getMappedResults();
+
+			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
+				for (PatientVisitLookupBean patientVisitlookupBean : patientVisitlookupbeans) {
+					response = new PatientVisitResponse();
+					BeanUtil.map(patientVisitlookupBean, response);
+
+					if (patientVisitlookupBean.getPrescriptionId() != null) {
+						List<Prescription> prescriptions = prescriptionServices.getPrescriptionsByIds(
+								patientVisitlookupBean.getPrescriptionId(), patientVisitlookupBean.getId());
+						response.setPrescriptions(prescriptions);
+					}
+
+					if (patientVisitlookupBean.getClinicalNotesId() != null) {
+						List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
+						for (ObjectId clinicalNotesId : patientVisitlookupBean.getClinicalNotesId()) {
+							ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId.toString(),
+									patientVisitlookupBean.getId());
+							if (clinicalNote != null) {
+								if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+									clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+								}
+								clinicalNotes.add(clinicalNote);
+							}
+						}
+						response.setClinicalNotes(clinicalNotes);
+					}
+
+					if (patientVisitlookupBean.getRecordId() != null) {
+						List<Records> records = recordsService.getRecordsByIds(patientVisitlookupBean.getRecordId(),
+								patientVisitlookupBean.getId());
+						response.setRecords(records);
+					}
+
+					if (patientVisitlookupBean.getTreatmentId() != null) {
+						List<PatientTreatment> patientTreatment = patientTreatmentServices.getPatientTreatmentByIds(
+								patientVisitlookupBean.getTreatmentId(), patientVisitlookupBean.getId());
+						response.setPatientTreatment(patientTreatment);
+					}
+
+					if (patientVisitlookupBean.getEyePrescriptionId() != null) {
+						EyePrescription eyePrescription = prescriptionServices
+								.getEyePrescription(String.valueOf(patientVisitlookupBean.getEyePrescriptionId()));
+						response.setEyePrescription(eyePrescription);
+
+					}
+					break;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while geting patient last Visit : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while geting patient last Visit : " + e.getCause().getMessage());
+		}
+		return response;
 	}
+
+}
