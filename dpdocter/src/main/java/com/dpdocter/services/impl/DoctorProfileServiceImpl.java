@@ -620,8 +620,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			logger.error(e + " Error Getting Doctor Profile");
 			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile");
 		}
-		return doctorProfile;
-	}
+		return doctorProfile;}
 
 	private DoctorClinicProfile getDoctorClinic(DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse,
 			String patientId, Boolean isMobileApp, int locationSize) {

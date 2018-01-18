@@ -292,6 +292,7 @@ public class ContactsApi {
 		response.setData(packageType);
 
 		response.setDataList(groups);
+
 		return response;
 	}
 
