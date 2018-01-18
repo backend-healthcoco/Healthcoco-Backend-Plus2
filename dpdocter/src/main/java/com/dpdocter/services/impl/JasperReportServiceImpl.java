@@ -3933,11 +3933,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private void createOTReports(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize,
 			int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) {
-		int fieldWidth = 118;
+		int fieldWidth = 123;
 		if (contentFontSize > 13)
-			fieldWidth = 145;
+			fieldWidth = 150;
 		else if (contentFontSize > 11)
-			fieldWidth = 128;
+			fieldWidth = 133;
 
 		band = new JRDesignBand();
 		band.setHeight(10);
