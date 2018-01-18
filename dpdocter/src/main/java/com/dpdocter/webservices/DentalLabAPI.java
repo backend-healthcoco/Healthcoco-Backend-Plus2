@@ -1,4 +1,4 @@
-package com.dpdocter.services.impl;
+package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -21,7 +21,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.services.DentalLabService;
-import com.dpdocter.webservices.PathProxy;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;
