@@ -23,7 +23,7 @@ public class PatientDetails {
 
     private Boolean showResourceId = true;
     
-    private Boolean showHospitalId = true;
+    private Boolean showHospitalId = false;
     
     private Boolean showCity = false;
 
