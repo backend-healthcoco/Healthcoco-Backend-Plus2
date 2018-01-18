@@ -978,7 +978,9 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("finalDiagnosis", otReportsLookupResponse.getFinalDiagnosis());
 		parameters.put("operatingSurgeon", otReportsLookupResponse.getOperatingSurgeon());
 		parameters.put("anaesthetist", otReportsLookupResponse.getAnaesthetist());
-		parameters.put("materialForHPE", otReportsLookupResponse.getMaterialForHPE());
+		parameters.put("materialForHPE",
+				otReportsLookupResponse.getMaterialForHPE() != null && !otReportsLookupResponse.getMaterialForHPE()
+						? "No" : "YES");
 		parameters.put("remarks", otReportsLookupResponse.getRemarks());
 		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
 		parameters.put("otReportsId", otReportsLookupResponse.getId());
