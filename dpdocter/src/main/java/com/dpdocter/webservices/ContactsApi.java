@@ -25,6 +25,7 @@ import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.enums.ContactsSearchType;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.BulkSMSRequest;
@@ -256,12 +257,17 @@ public class ContactsApi {
 	@Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
 	@GET
 	@ApiOperation(value = PathProxy.ContactsUrls.GET_ALL_GROUPS, notes = PathProxy.ContactsUrls.GET_ALL_GROUPS)
-	public Response<Group> getAllGroups(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Object> getAllGroups(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-
+		String packageType = "ADVANCE";
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Object> response = new Response<Object>();
 		List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
 				discarded);
 		if (groups != null) {
@@ -270,13 +276,23 @@ public class ContactsApi {
 				getDoctorContactsRequest.setDoctorId(doctorId);
 				List<String> groupList = new ArrayList<String>();
 				groupList.add(group.getId());
+
+				if (!DPDoctorUtils.anyStringEmpty(group.getPackageType())) {
+					packageType = group.getPackageType();
+
+				}
 				getDoctorContactsRequest.setGroups(groupList);
 				int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
 				group.setCount(ttlCount);
 			}
+		} else {
+			response.setData(PackageType.ADVANCE.getType());
 		}
-		Response<Group> response = new Response<Group>();
+
+		response.setData(packageType);
+
 		response.setDataList(groups);
+
 		return response;
 	}
 

@@ -494,6 +494,8 @@ public class ContactsServiceImpl implements ContactsService {
 	public List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
 		List<Group> groups = null;
+		List<GroupCollection> groupCollections = null;
+
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
@@ -531,10 +533,12 @@ public class ContactsServiceImpl implements ContactsService {
 						Aggregation.limit(size));
 
 			} else {
+
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
 						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
 						Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
 			}
 			AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation, GroupCollection.class,
 					Group.class);

@@ -546,7 +546,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("location"),Aggregation.lookup("hospital_cl", "location.hospitalId", "_id", "hospital"),
+							Aggregation.unwind("hospital"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 							Aggregation.unwind("doctor")),
 					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
@@ -620,8 +621,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			logger.error(e + " Error Getting Doctor Profile");
 			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile");
 		}
-		return doctorProfile;
-	}
+		return doctorProfile;}
 
 	private DoctorClinicProfile getDoctorClinic(DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse,
 			String patientId, Boolean isMobileApp, int locationSize) {

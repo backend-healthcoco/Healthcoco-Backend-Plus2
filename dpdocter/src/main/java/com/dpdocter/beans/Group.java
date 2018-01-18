@@ -3,41 +3,52 @@ package com.dpdocter.beans;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Group extends GenericCollection {
-    private String id;
+	private String id;
 
-    private String name;
+	private String name;
 
-    private String explanation;
+	private String explanation;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private int count = 0;
+	private int count = 0;
 
-    private Boolean discarded = false;
+	private Boolean discarded = false;
 
-    public String getId() {
-	return id;
-    }
+	private String packageType;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getPackageType() {
+		return packageType;
+	}
 
-    public String getName() {
-	return name;
-    }
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
+	}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getExplanation() {
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -46,44 +57,44 @@ public class Group extends GenericCollection {
 	}
 
 	public String getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public int getCount() {
-	return count;
-    }
+	public int getCount() {
+		return count;
+	}
 
-    public void setCount(int count) {
-	this.count = count;
-    }
+	public void setCount(int count) {
+		this.count = count;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	@Override
 	public String toString() {
