@@ -1,5 +1,7 @@
 package com.dpdocter.services;
 
+import java.util.List;
+
 import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.SendAppLink;
@@ -27,4 +29,6 @@ public interface AdminServices {
 	Boolean sendLink(SendAppLink request);
 
 	Boolean discardDuplicateClinicalItems(String doctorId);
+
+	Boolean copyClinicalItems(String doctorId, String locationId, List<String> drIds);
 }

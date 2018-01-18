@@ -1138,6 +1138,8 @@ public interface PathProxy {
 
 		public static final String DISCARD_DUPLICATE_CLINICAL_ITEMS = "clinicalItems/duplicate/discard/{doctorId}";
 
+		public static final String COPY_CLINICAL_ITEMS = "clinicalItems/copy/{doctorId}/{locationId}";
+
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";

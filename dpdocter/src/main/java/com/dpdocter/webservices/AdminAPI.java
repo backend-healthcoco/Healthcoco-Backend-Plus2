@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -136,4 +137,16 @@ public class AdminAPI {
 		response.setData(adminServices.discardDuplicateClinicalItems(doctorId));
 		return response;
 	}
+
+	@Path(value = PathProxy.AdminUrls.COPY_CLINICAL_ITEMS)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.COPY_CLINICAL_ITEMS, notes = PathProxy.AdminUrls.COPY_CLINICAL_ITEMS)
+	public Response<Boolean> copyClinicalItems(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@MatrixParam("drIds") List<String> drIds) {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(adminServices.copyClinicalItems(doctorId, locationId, drIds));
+		return response;
+	}
+
 }
