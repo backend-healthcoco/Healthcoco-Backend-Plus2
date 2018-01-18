@@ -20,13 +20,6 @@ public class TemplateItem {
 
 	private Long inventoryQuantity;
 
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
 
 	public ObjectId getDrugId() {
 		return drugId;
@@ -74,6 +67,14 @@ public class TemplateItem {
 
 	public void setInstructions(String instructions) {
 		this.instructions = instructions;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	@Override
