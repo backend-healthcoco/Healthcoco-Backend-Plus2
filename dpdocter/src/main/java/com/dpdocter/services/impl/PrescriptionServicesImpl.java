@@ -454,6 +454,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				drugCollection.setDosage(request.getDosage());
 				drugCollection.setDosageTime(request.getDosageTime());
 				drugCollection.setDirection(request.getDirection());
+				drugCollection.setExplanation(request.getExplanation());
 				if (drugCollection.getDrugType() != null) {
 					if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 						drugCollection.setDrugType(null);
@@ -5868,8 +5869,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								drugCollection.setLocationId(prescriptionCollection.getLocationId());
 								drugCollection.setHospitalId(prescriptionCollection.getHospitalId());
 								drugCollection.setRankingCount(drugCollection.getRankingCount() + 1);
-								drugCollection.setUpdatedTime(new Date());
-
 								drugCollection.setUpdatedTime(new Date());
 								drugCollection.setDuration(prescriptionItem.getDuration());
 								drugCollection.setDosage(prescriptionItem.getDosage());
