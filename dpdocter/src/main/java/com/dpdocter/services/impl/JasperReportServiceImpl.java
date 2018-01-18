@@ -3666,8 +3666,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(18);
-		band.setPrintWhenExpression(new JRDesignExpression(
-				"(!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty()) || (!$P{dOD}.equals( null ) && !$P{dOD}.isEmpty())"));
+		band.setPrintWhenExpression(new JRDesignExpression("(!$P{dOA}.equals( null )  || !$P{dOD}.equals( null ))"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField
 				.setPrintWhenExpression(new JRDesignExpression("(!$P{dOA}.equals( null ) && !$P{dOA}.isEmpty())"));

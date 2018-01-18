@@ -23,7 +23,7 @@ public class OTReports extends GenericCollection {
 	private String anaesthetist;
 	private List<String> assitingDoctors;
 	private List<String> assitingNurses;
-	private Boolean materialForHPE;
+	private Boolean materialForHPE=false;
 	private String remarks;
 	private String doctorId;
 	private String doctorName;
