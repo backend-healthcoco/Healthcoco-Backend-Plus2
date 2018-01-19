@@ -39,7 +39,7 @@ public class OTReportsLookupResponse extends GenericCollection {
 	private String operationalNotes;
 	private PatientCollection patientCollection;
 	private UserCollection patientUser;
-
+	private String uniqueOTId;
 	private Boolean discarded = false;
 
 	public Boolean getDiscarded() {
@@ -242,6 +242,14 @@ public class OTReportsLookupResponse extends GenericCollection {
 		this.patientUser = patientUser;
 	}
 
+	public String getUniqueOTId() {
+		return uniqueOTId;
+	}
+
+	public void setUniqueOTId(String uniqueOTId) {
+		this.uniqueOTId = uniqueOTId;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReportsLookupResponse [id=" + id + ", patientId=" + patientId + ", patient=" + patient
@@ -252,7 +260,8 @@ public class OTReportsLookupResponse extends GenericCollection {
 				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctor=" + doctor
 				+ ", locationId=" + locationId + ", location=" + location + ", hospitalId=" + hospitalId + ", hospital="
 				+ hospital + ", timeDuration=" + timeDuration + ", operationalNotes=" + operationalNotes
-				+ ", patientCollection=" + patientCollection + ", patientUser=" + patientUser + "]";
+				+ ", patientCollection=" + patientCollection + ", patientUser=" + patientUser + ", uniqueOTId="
+				+ uniqueOTId + ", discarded=" + discarded + "]";
 	}
 
 }

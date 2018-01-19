@@ -24,7 +24,7 @@ public class DeliveryReports extends GenericCollection {
 	private String hospitalId;
 	private String hospitalName;
 	private Boolean discarded = false;
-
+	private String uniqueDRId;
 	public String getDoctorName() {
 		return doctorName;
 	}
@@ -153,6 +153,22 @@ public class DeliveryReports extends GenericCollection {
 		this.deliveryTime = deliveryTime;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public String getUniqueDRId() {
+		return uniqueDRId;
+	}
+
+	public void setUniqueDRId(String uniqueDRId) {
+		this.uniqueDRId = uniqueDRId;
+	}
+
 	@Override
 	public String toString() {
 		return "DeliveryReports [id=" + id + ", deliveryDate=" + deliveryDate + ", deliveryTime=" + deliveryTime
@@ -160,15 +176,7 @@ public class DeliveryReports extends GenericCollection {
 				+ ", babyGender=" + babyGender + ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks="
 				+ remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId
 				+ ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
-				+ "]";
-	}
-
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
+				+ ", discarded=" + discarded + ", uniqueDRId=" + uniqueDRId + "]";
 	}
 
 }

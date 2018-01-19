@@ -17,6 +17,8 @@ public class OTReportsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
+	private String uniqueOTId;
+	@Field
 	private ObjectId patientId;
 	@Field
 	private Date operationDate;
@@ -199,15 +201,32 @@ public class OTReportsCollection extends GenericCollection {
 		this.operationalNotes = operationalNotes;
 	}
 
+	public String getUniqueOTId() {
+		return uniqueOTId;
+	}
+
+	public void setUniqueOTId(String uniqueOTId) {
+		this.uniqueOTId = uniqueOTId;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
-		return "OTReportsCollection [id=" + id + ", patientId=" + patientId + ", operationDate=" + operationDate
-				+ ", anaesthesiaType=" + anaesthesiaType + ", provisionalDiagnosis=" + provisionalDiagnosis
-				+ ", surgery=" + surgery + ", finalDiagnosis=" + finalDiagnosis + ", operatingSurgeon="
-				+ operatingSurgeon + ", anaesthetist=" + anaesthetist + ", assitingDoctors=" + assitingDoctors
-				+ ", assitingNurses=" + assitingNurses + ", materialForHPE=" + materialForHPE + ", remarks=" + remarks
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", operationalNotes=" + operationalNotes + "]";
+		return "OTReportsCollection [id=" + id + ", uniqueOTId=" + uniqueOTId + ", patientId=" + patientId
+				+ ", operationDate=" + operationDate + ", anaesthesiaType=" + anaesthesiaType
+				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis="
+				+ finalDiagnosis + ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist
+				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
+				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", operationalNotes=" + operationalNotes + ", isPatientDiscarded="
+				+ isPatientDiscarded + ", discarded=" + discarded + "]";
 	}
 
 }
