@@ -2,11 +2,15 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.RateCardDentalWorkAssociation;
+import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
+import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 
 public interface DentalLabService {
 
@@ -19,6 +23,18 @@ public interface DentalLabService {
 	Boolean changeLabType(String doctorId, String locationId, LabType labType);
 
 	DentalLabPickup addEditDentalLabPickupRequest(DentalLabPickupRequest request);
+
+	Boolean addEditRateCardDentalWorkAssociation(List<RateCardDentalWorkAssociation> request);
+
+	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String rateCardId,
+			Boolean discarded);
+
+	Boolean addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request);
+
+	DentalLabDoctorAssociation addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request);
+
+	List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, int page, int size,
+			String searchTerm);
 
 	/*
 	 * DentalLabDoctorAssociation
