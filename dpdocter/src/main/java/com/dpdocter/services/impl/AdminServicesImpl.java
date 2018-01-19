@@ -20,6 +20,7 @@ import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -41,6 +42,7 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.InvestigationCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
@@ -48,6 +50,7 @@ import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TransactionalCollection;
+import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
@@ -94,6 +97,7 @@ import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.response.ClinicalItemsResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AdminServices;
@@ -240,6 +244,9 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Autowired
 	TransnationalRepositiory transnationalRepositiory;
+	
+	@Autowired
+	UserRoleRepository userRoleRepository;
 	
 	@Override
 	@Transactional
@@ -783,6 +790,38 @@ public class AdminServicesImpl implements AdminServices {
 							response = true;
 							transactionalManagementService.addResource(prCollection.getId(), Resource.PROCEDURE_NOTE, true);
 						}
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateLocationIdInRole() {
+		Boolean response = false;
+		try {
+			
+			Aggregation a = Aggregation.newAggregation(Aggregation.match(new Criteria("roleId").is(new ObjectId("5792556ee4b01207387a7a9c"))),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.match(new Criteria("location").size(0)));
+			
+			List<UserRoleCollection> userRoleCollections = mongoTemplate.aggregate(a
+					, UserRoleCollection.class, UserRoleCollection.class).getMappedResults();
+			
+			if(userRoleCollections != null) {
+				for(UserRoleCollection userRoleCollection : userRoleCollections) {
+					List<LocationCollection> locationCollections = locationRepository.findByHospitalId(userRoleCollection.getHospitalId(), new Sort(Direction.ASC, "createdTime"));
+					if(locationCollections != null && !locationCollections.isEmpty()) {
+						System.out.println(locationCollections.get(0).getLocationName());
+						userRoleCollection.setLocationId(locationCollections.get(0).getId());
+						userRoleRepository.save(userRoleCollection);
+						response = true;
 					}
 				}
 			}

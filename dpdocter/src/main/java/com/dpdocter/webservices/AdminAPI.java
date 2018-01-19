@@ -149,4 +149,15 @@ public class AdminAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.AdminUrls.UPDATE_LOCATION_IN_ROLE)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.UPDATE_LOCATION_IN_ROLE, notes = PathProxy.AdminUrls.UPDATE_LOCATION_IN_ROLE)
+	public Response<Boolean> updateLocationIdInRole() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(adminServices.updateLocationIdInRole());
+		return response;
+	}
+
+
 }

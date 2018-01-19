@@ -31,4 +31,6 @@ public interface AdminServices {
 	Boolean discardDuplicateClinicalItems(String doctorId);
 
 	Boolean copyClinicalItems(String doctorId, String locationId, List<String> drIds);
+
+	Boolean updateLocationIdInRole();
 }
