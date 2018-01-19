@@ -1,8 +1,10 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-public class RateCardDentalWorkAssociation extends GenericCollection {
+@Document(collection = "rate_card_dental_work_association_cl")
+public class RateCardDentalWorkAssociationCollection extends GenericCollection {
 
 	private ObjectId id;
 	private ObjectId locationId;

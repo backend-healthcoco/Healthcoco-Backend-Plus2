@@ -44,6 +44,7 @@ import com.dpdocter.services.InventoryService;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
+import io.swagger.models.auth.In;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
@@ -761,6 +762,23 @@ public class InventoryServiceImpl implements InventoryService {
 			e.printStackTrace();
 		}
 		return inventoryStock;
+	}
+	
+	@Override
+	@Transactional
+	public InventoryBatch getInventoryBatchById(String id)
+	{
+		InventoryBatch inventoryBatch = null;
+		try {
+				InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
+				if(inventoryBatchCollection != null)
+				{
+				 BeanUtil.map(inventoryBatchCollection, inventoryBatch);
+				}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return inventoryBatch;
 	}
 
 }

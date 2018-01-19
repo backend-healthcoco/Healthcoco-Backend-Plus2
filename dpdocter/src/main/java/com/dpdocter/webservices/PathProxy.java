@@ -1576,6 +1576,9 @@ public interface PathProxy {
 		public static final String ADD_EDIT_DENTAL_WORK_PICKUP = "/addEditDentalWorkPickup";
 		public static final String GET_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
 		public static final String DELETE_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
+		public static final String ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION = "/addEditRateCardWorkAssociation";
+		public static final String GET_RATE_CARD_WORKS = "/getRateCardWork";
+		
 		
 	}
 

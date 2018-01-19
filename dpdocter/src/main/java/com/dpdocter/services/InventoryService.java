@@ -58,4 +58,6 @@ public interface InventoryService {
 	InventoryStock getInventoryStockByInvoiceIdResourceId(String locationId, String hospitalId, String resourceId,
 			String invoiceId);
 
+	InventoryBatch getInventoryBatchById(String id);
+
 }

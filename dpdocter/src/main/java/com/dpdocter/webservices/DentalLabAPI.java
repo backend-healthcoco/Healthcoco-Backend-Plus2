@@ -1,7 +1,10 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -13,8 +16,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.RateCardDentalWorkAssociation;
+import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -89,7 +95,8 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.changeLabType(doctorId, locationId, labType));
 		return response;
 	}
-	/*
+
+	
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION)
@@ -117,7 +124,8 @@ public class DentalLabAPI {
 		response.setDataList(dentalLabService.getDentalLabDoctorAssociations(locationId, page, size, searchTerm));
 		return response;
 	}
-*/
+
+	
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
@@ -130,6 +138,35 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.addEditDentalLabPickupRequest(request));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION)
+	@POST
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION)
+	public Response<Boolean> addEditRateCardWorkAssociation(List<RateCardDentalWorkAssociation> request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.addEditRateCardDentalWorkAssociation(request));
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
+	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,@QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm , @QueryParam("rateCardId") String rateCardId ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (rateCardId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
+		response.setDataList(dentalLabService.getRateCardWorks(page, size, searchTerm, rateCardId, discarded));
+		return response;
+	}
+	
 	
 	
 }

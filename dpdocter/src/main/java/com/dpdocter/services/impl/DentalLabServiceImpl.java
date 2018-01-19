@@ -1,10 +1,12 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.elasticsearch.index.fielddata.RamAccountingTermsEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -14,13 +16,23 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.RateCardDoctorAssociation;
+import com.dpdocter.beans.RateCardDentalWorkAssociation;
+import com.dpdocter.beans.RateCardLabAssociation;
+import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.collections.CRNCollection;
+import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.RateCardDoctorAssociationCollection;
+import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
+import com.dpdocter.collections.RateCardLabAssociationCollection;
+import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -28,12 +40,17 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CRNRepository;
+import com.dpdocter.repository.DentalLabDoctorAssociationRepository;
 import com.dpdocter.repository.DentalLabTestPickupRepository;
 import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
+import com.dpdocter.repository.RateCardDoctorAssociationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
+import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
+import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.DentalLabService;
 
 import common.util.web.DPDoctorUtils;
@@ -58,6 +75,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private CRNRepository crnRepository;
+	
+	@Autowired
+	private RateCardDentalWorkAssociationRepository rateCardDentalWorkAssociationRepository;
+	
+	@Autowired
+	private RateCardDoctorAssociationRepository rateCardDoctorAssociationRepository;
+	
+	@Autowired
+	private DentalLabDoctorAssociationRepository dentalLabDoctorAssociationRepository;
 	
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -174,7 +200,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	}
 	
 	
-	/*@Override
+	@Override
 	@Transactional
 	public DentalLabDoctorAssociation addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request) {
 		DentalLabDoctorAssociation response = null;
@@ -232,7 +258,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return customWorks;
 	}
-*/
 	
 	@Override
 	@Transactional
@@ -313,5 +338,116 @@ public class DentalLabServiceImpl implements DentalLabService {
 		crnCollection = crnRepository.save(crnCollection);
 		return crnNumber;
 	}
+	
+	
+	@Override
+	@Transactional
+	public Boolean addEditRateCardDentalWorkAssociation(List<RateCardDentalWorkAssociation> request) {
+		boolean response = false;
+		RateCardDentalWorkAssociationCollection rateCardDentalWorkAssociationCollection = null;
+		List<RateCardDentalWorkAssociationCollection> rateCardDentalWorkAssociationCollections = null;
+		try {
+			rateCardDentalWorkAssociationCollections = new ArrayList<RateCardDentalWorkAssociationCollection>();
+			for (RateCardDentalWorkAssociation workAssociation : request) {
+				if (workAssociation.getId() != null) {
+					rateCardDentalWorkAssociationCollection = rateCardDentalWorkAssociationRepository
+							.findOne(new ObjectId(workAssociation.getId()));
+					rateCardDentalWorkAssociationCollection.setCreatedTime(new Date());
+				} else {
+					rateCardDentalWorkAssociationCollection = new RateCardDentalWorkAssociationCollection();
+					workAssociation.setCreatedTime(new Date());
+					workAssociation.setUpdatedTime(new Date());
+				}
+
+				BeanUtil.map(workAssociation, rateCardDentalWorkAssociationCollection);
+			}
+			rateCardDentalWorkAssociationRepository.save(rateCardDentalWorkAssociationCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error adding / editing ratecard");
+			throw new BusinessException(ServiceError.Unknown, "Error adding / editing ratecard");
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm,
+			String rateCardId, Boolean discarded) {
+		List<RateCardDentalWorkAssociation> rateCardTests = null;
+
+		try {
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("dentalWork.workName").regex("^" + searchTerm, "i"),
+						new Criteria("dentalWork.workName").regex("^" + searchTerm));
+			}
+			criteria.and("rateCardId").is(new ObjectId(rateCardId));
+			criteria.and("isAvailable").is(true);
+			criteria.and("discarded").is(discarded);
+			
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
+						Aggregation.unwind("dentalWork"),
+						/*
+						 * Aggregation.lookup("specimen_cl",
+						 * "diagnosticTest.specimenId", "_id", "specimen"),
+						 * Aggregation.unwind("specimen"),
+						 */
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
+						Aggregation.unwind("dentalWork"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			}
+			AggregationResults<RateCardDentalWorkAssociation> aggregationResults = mongoTemplate.aggregate(
+					aggregation, RateCardDentalWorkAssociationCollection.class, RateCardDentalWorkAssociation.class);
+			rateCardTests = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting rate card works");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting rate card works");
+		}
+		return rateCardTests;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request) {
+		Boolean response = false;
+		ObjectId oldId = null;
+		RateCardDoctorAssociationCollection rateCardDoctorAssociationCollection = null;
+		try {
+			for(RateCardDoctorAssociation rateCardDoctorAssociation : request)
+			{
+			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByLocationDoctor(new ObjectId(rateCardDoctorAssociation.getDentalLabId()), new ObjectId(rateCardDoctorAssociation.getDoctorId()));
+			if (rateCardDoctorAssociationCollection == null) {
+				rateCardDoctorAssociationCollection = new RateCardDoctorAssociationCollection();
+			} else {
+				oldId = rateCardDoctorAssociationCollection.getId();
+				// rateCardLabAssociationCollection.setId(rateCardLabAssociationCollection.getId());
+			}
+
+			BeanUtil.map(rateCardDoctorAssociation, rateCardDoctorAssociationCollection);
+			rateCardDoctorAssociationCollection.setId(oldId);
+			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.save(rateCardDoctorAssociationCollection);
+			}
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn(e);
+			throw new BusinessException(ServiceError.InvalidInput , "Invalid Input" + e);
+		}
+		return response;
+	}
+
 
 }
