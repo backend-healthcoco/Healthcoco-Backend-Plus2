@@ -28,6 +28,7 @@ public class DeliveryReportsLookupResponse extends GenericCollection {
 	private PatientCollection patientCollection;
 	private UserCollection patientUser;
 	private Boolean discarded = false;
+	private String uniqueDRId;
 
 	public String getId() {
 		return id;
@@ -173,16 +174,6 @@ public class DeliveryReportsLookupResponse extends GenericCollection {
 		this.patientUser = patientUser;
 	}
 
-	@Override
-	public String toString() {
-		return "DeliveryReportsLookupResponse [id=" + id + ", deliveryDate=" + deliveryDate + ", deliveryTime="
-				+ deliveryTime + ", patientId=" + patientId + ", patient=" + patient + ", mobileNumber=" + mobileNumber
-				+ ", babyGender=" + babyGender + ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks="
-				+ remarks + ", doctorId=" + doctorId + ", doctor=" + doctor + ", locationId=" + locationId
-				+ ", location=" + location + ", hospitalId=" + hospitalId + ", hospital=" + hospital
-				+ ", patientCollection=" + patientCollection + ", patientUser=" + patientUser + "]";
-	}
-
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -190,4 +181,24 @@ public class DeliveryReportsLookupResponse extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
+
+	public String getUniqueDRId() {
+		return uniqueDRId;
+	}
+
+	public void setUniqueDRId(String uniqueDRId) {
+		this.uniqueDRId = uniqueDRId;
+	}
+
+	@Override
+	public String toString() {
+		return "DeliveryReportsLookupResponse [id=" + id + ", deliveryDate=" + deliveryDate + ", deliveryTime="
+				+ deliveryTime + ", patientId=" + patientId + ", patient=" + patient + ", mobileNumber=" + mobileNumber
+				+ ", babyGender=" + babyGender + ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks="
+				+ remarks + ", doctorId=" + doctorId + ", doctor=" + doctor + ", locationId=" + locationId
+				+ ", location=" + location + ", hospitalId=" + hospitalId + ", hospital=" + hospital
+				+ ", patientCollection=" + patientCollection + ", patientUser=" + patientUser + ", discarded="
+				+ discarded + ", uniqueDRId=" + uniqueDRId + "]";
+	}
+
 }

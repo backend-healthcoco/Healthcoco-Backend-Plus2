@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
@@ -12,6 +13,7 @@ import com.dpdocter.enums.AnaesthesiaTypeEnum;
 public class OTReports extends GenericCollection {
 
 	private String id;
+	private String uniqueOTId;
 	private String patientId;
 	private Patient patient;
 	private Date operationDate;
@@ -213,16 +215,12 @@ public class OTReports extends GenericCollection {
 		this.operationalNotes = operationalNotes;
 	}
 
-	@Override
-	public String toString() {
-		return "OTReports [id=" + id + ", patientId=" + patientId + ", patient=" + patient + ", operationDate="
-				+ operationDate + ", anaesthesiaType=" + anaesthesiaType + ", provisionalDiagnosis="
-				+ provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis=" + finalDiagnosis
-				+ ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist + ", assitingDoctors="
-				+ assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE=" + materialForHPE
-				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId="
-				+ locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName="
-				+ hospitalName + ", timeDuration=" + timeDuration + ", operationalNotes=" + operationalNotes + "]";
+	public String getUniqueOTId() {
+		return uniqueOTId;
+	}
+
+	public void setUniqueOTId(String uniqueOTId) {
+		this.uniqueOTId = uniqueOTId;
 	}
 
 	public Boolean getDiscarded() {
@@ -231,6 +229,19 @@ public class OTReports extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "OTReports [id=" + id + ", uniqueOTId=" + uniqueOTId + ", patientId=" + patientId + ", patient="
+				+ patient + ", operationDate=" + operationDate + ", anaesthesiaType=" + anaesthesiaType
+				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis="
+				+ finalDiagnosis + ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist
+				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
+				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName
+				+ ", locationId=" + locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId
+				+ ", hospitalName=" + hospitalName + ", timeDuration=" + timeDuration + ", discarded=" + discarded
+				+ ", operationalNotes=" + operationalNotes + "]";
 	}
 
 }

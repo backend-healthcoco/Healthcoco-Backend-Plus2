@@ -11,6 +11,8 @@ public class DeliveryReportsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
+	private String uniqueDRId;
+	@Field
 	private String serialNo;
 	@Field
 	private Long deliveryDate;
@@ -149,13 +151,20 @@ public class DeliveryReportsCollection extends GenericCollection {
 		this.deliveryTime = deliveryTime;
 	}
 
-	@Override
-	public String toString() {
-		return "DeliveryReportsCollection [id=" + id + ", serialNo=" + serialNo + ", deliveryDate=" + deliveryDate
-				+ ", deliveryTime=" + deliveryTime + ", patientId=" + patientId + ", mobileNumber=" + mobileNumber
-				+ ", babyGender=" + babyGender + ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks="
-				+ remarks + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ "]";
+	public String getUniqueDRId() {
+		return uniqueDRId;
 	}
 
+	public void setUniqueDRId(String uniqueDRId) {
+		this.uniqueDRId = uniqueDRId;
+	}
+
+	@Override
+	public String toString() {
+		return "DeliveryReportsCollection [id=" + id + ", uniqueDRId=" + uniqueDRId + ", serialNo=" + serialNo
+				+ ", deliveryDate=" + deliveryDate + ", deliveryTime=" + deliveryTime + ", patientId=" + patientId
+				+ ", mobileNumber=" + mobileNumber + ", babyGender=" + babyGender + ", deliveryType=" + deliveryType
+				+ ", formNo=" + formNo + ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+	}
 }
