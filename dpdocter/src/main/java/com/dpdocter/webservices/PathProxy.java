@@ -198,7 +198,8 @@ public interface PathProxy {
 		public static final String ADD_EDIT_USER_ADDRESS = "user/address/addEdit";
 
 		public static final String DELETE_USER_ADDRESS = "user/address/{addressId}/delete";
-	}
+
+}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 
@@ -1522,7 +1523,12 @@ public interface PathProxy {
 
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
 
+
 		public static final String GET_LAB_ORDERS = "/orders/lab/{locationId}";
+
+		public static final String UPDATE_EMR = "/update/EMR";
 	}
+
+	
 
 }
