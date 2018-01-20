@@ -693,9 +693,7 @@ public class LocationServiceImpl implements LocationServices {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
+				criteria = criteria.orOperator(new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm),
 						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
@@ -843,8 +841,6 @@ public class LocationServiceImpl implements LocationServices {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm),
 						new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
 						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
 			}
@@ -1953,17 +1949,25 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("labTestSamples.isCollected").is(true);
 			criteria.and("labTestSamples.isCompleted").is(true);
 			criteria.and("labTestSamples.isCollectedAtLab").is(true);
-
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(
-						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
-			}
-
 			if (isParent) {
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					criteria = criteria.orOperator(
+							new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+							new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm),
+							new Criteria("daughterLabLocation.locationName").regex("^" + searchTerm, "i"),
+							new Criteria("daughterLabLocation.locationName").regex("^" + searchTerm));
+				}
+
 				criteria.and("labTestSamples.parentLabLocationId").is(locationObjectId);
 
 			} else {
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					criteria = criteria.orOperator(
+							new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+							new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm),
+							new Criteria("parentLabLocation.locationName").regex("^" + searchTerm, "i"),
+							new Criteria("parentLabLocation.locationName").regex("^" + searchTerm));
+				}
 				criteria.and("labTestSamples.daughterLabLocationId").is(locationObjectId);
 
 			}
