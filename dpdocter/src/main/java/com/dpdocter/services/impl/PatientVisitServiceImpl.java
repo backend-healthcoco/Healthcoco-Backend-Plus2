@@ -497,6 +497,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(visitId)) {
 				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 				patientVisitCollection.setUpdatedTime(new Date());
+				if (request.getCreatedTime() != null) {
+					patientVisitCollection.setCreatedTime(request.getCreatedTime());
+				} else {
+					patientVisitCollection.setCreatedTime(patientVisitCollection.getCreatedTime());
+				}
 				if (request.getPrescription() != null && request.getPrescription().getId() == null
 						&& patientVisitCollection.getPrescriptionId() != null
 						&& patientVisitCollection.getPrescriptionId().size() > 0) {
@@ -515,7 +520,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientVisitCollection.setLocationId(new ObjectId(request.getLocationId()));
 				patientVisitCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 				patientVisitCollection.setPatientId(new ObjectId(request.getPatientId()));
-				patientVisitCollection.setCreatedTime(new Date());
+				if (request.getCreatedTime() != null) {
+					patientVisitCollection.setCreatedTime(request.getCreatedTime());
+				} else {
+					patientVisitCollection.setCreatedTime(new Date());
+				}
+				patientVisitCollection.setAdminCreatedTime(new Date());
+
 				patientVisitCollection
 						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());

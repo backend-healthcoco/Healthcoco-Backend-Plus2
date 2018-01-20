@@ -117,13 +117,19 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid DoctorId");
 			}
-			/*PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					new ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()),
-					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));*/
-			
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId( new ObjectId(request.getPatientId()),
-					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
-			
+			/*
+			 * PatientCollection patientCollection =
+			 * patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+			 * new ObjectId(request.getPatientId()), new
+			 * ObjectId(request.getDoctorId()), new
+			 * ObjectId(request.getLocationId()), new
+			 * ObjectId(request.getHospitalId()));
+			 */
+
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
+					new ObjectId(request.getHospitalId()));
+
 			if (patientCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient");
 			}
@@ -133,13 +139,19 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 			BeanUtil.map(request, admitCardCollection);
 			if (admitCardCollection.getId() == null) {
-				admitCardCollection.setCreatedTime(new Date());
+				admitCardCollection.setAdminCreatedTime(new Date());
+				if (request.getCreatedTime() == null) {
+					admitCardCollection.setCreatedTime(new Date());
+				}
 				admitCardCollection.setCreatedBy(doctor.getTitle() + " " + doctor.getFirstName());
 				admitCardCollection.setUniqueEmrId(
 						UniqueIdInitial.ADMIT_CARD.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			} else {
 				AdmitCardCollection oldAdmitCardCollection = admitCardRepository.findOne(admitCardCollection.getId());
-				admitCardCollection.setCreatedTime(oldAdmitCardCollection.getCreatedTime());
+				admitCardCollection.setAdminCreatedTime(oldAdmitCardCollection.getAdminCreatedTime());
+				if (request.getCreatedTime() == null) {
+					admitCardCollection.setCreatedTime(oldAdmitCardCollection.getCreatedTime());
+				}
 				admitCardCollection.setCreatedBy(oldAdmitCardCollection.getCreatedBy());
 				admitCardCollection.setUniqueEmrId(oldAdmitCardCollection.getUniqueEmrId());
 			}
@@ -226,13 +238,17 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			Patient patient = null;
 
 			for (AdmitCardResponse admitCardResponse : response) {
-				/*patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						new ObjectId(admitCardResponse.getPatientId()), new ObjectId(admitCardResponse.getDoctorId()),
-						new ObjectId(admitCardResponse.getLocationId()),
-						new ObjectId(admitCardResponse.getHospitalId()));*/
-				
-				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(admitCardResponse.getPatientId()),
-						new ObjectId(admitCardResponse.getLocationId()),
+				/*
+				 * patientCollection = patientRepository.
+				 * findByUserIdDoctorIdLocationIdAndHospitalId( new
+				 * ObjectId(admitCardResponse.getPatientId()), new
+				 * ObjectId(admitCardResponse.getDoctorId()), new
+				 * ObjectId(admitCardResponse.getLocationId()), new
+				 * ObjectId(admitCardResponse.getHospitalId()));
+				 */
+
+				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						new ObjectId(admitCardResponse.getPatientId()), new ObjectId(admitCardResponse.getLocationId()),
 						new ObjectId(admitCardResponse.getHospitalId()));
 				patient = new Patient();
 				BeanUtil.map(patientCollection, patient);
@@ -462,7 +478,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				patient,
 				"<b>ADMIT-CARD-ID: </b>"
 						+ (admitCardCollection.getUniqueEmrId() != null ? admitCardCollection.getUniqueEmrId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters,admitCardCollection.getUpdatedTime(), printSettings.getHospitalUId());
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters, admitCardCollection.getUpdatedTime(),
+				printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, admitCardCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "ADMIT-CARD-"
 				+ admitCardCollection.getUniqueEmrId() + new Date().getTime();
@@ -597,7 +614,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		}
 
 	}
-	
+
 	@Override
 	public void emailAdmitCardForWeb(String admitcardId, String doctorId, String locationId, String hospitalId,
 			String emailAddress) {
@@ -610,58 +627,57 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		try {
 			admitCardCollection = admitCardRepository.findOne(new ObjectId(admitcardId));
 			if (admitCardCollection != null) {
-						user = userRepository.findOne(admitCardCollection.getPatientId());
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
-								admitCardCollection.getHospitalId());
-						user.setFirstName(patient.getLocalPatientName());
-						emailTrackCollection.setDoctorId(admitCardCollection.getDoctorId());
-						emailTrackCollection.setHospitalId(admitCardCollection.getHospitalId());
-						emailTrackCollection.setLocationId(admitCardCollection.getLocationId());
-						emailTrackCollection.setType(ComponentType.ADMIT_CARD.getType());
-						emailTrackCollection.setSubject("ADMIT CARD");
-						if (user != null) {
-							emailTrackCollection.setPatientName(patient.getLocalPatientName());
-							emailTrackCollection.setPatientId(user.getId());
-						}
+				user = userRepository.findOne(admitCardCollection.getPatientId());
+				patient = patientRepository.findByUserIdLocationIdAndHospitalId(admitCardCollection.getPatientId(),
+						admitCardCollection.getLocationId(), admitCardCollection.getHospitalId());
+				user.setFirstName(patient.getLocalPatientName());
+				emailTrackCollection.setDoctorId(admitCardCollection.getDoctorId());
+				emailTrackCollection.setHospitalId(admitCardCollection.getHospitalId());
+				emailTrackCollection.setLocationId(admitCardCollection.getLocationId());
+				emailTrackCollection.setType(ComponentType.ADMIT_CARD.getType());
+				emailTrackCollection.setSubject("ADMIT CARD");
+				if (user != null) {
+					emailTrackCollection.setPatientName(patient.getLocalPatientName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
 
-						JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
-						mailAttachment = new MailAttachment();
-						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
-						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(admitCardCollection.getDoctorId());
-						LocationCollection locationCollection = locationRepository.findOne(admitCardCollection.getLocationId());
+				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
+				mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+				UserCollection doctorUser = userRepository.findOne(admitCardCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository.findOne(admitCardCollection.getLocationId());
 
-						mailResponse = new MailResponse();
-						mailResponse.setMailAttachment(mailAttachment);
-						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
-						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+				mailResponse = new MailResponse();
+				mailResponse.setMailAttachment(mailAttachment);
+				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
 
-						if (address.charAt(address.length() - 2) == ',') {
-							address = address.substring(0, address.length() - 2);
-						}
-						mailResponse.setClinicAddress(address);
-						mailResponse.setClinicName(locationCollection.getLocationName());
-						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-						mailResponse.setMailRecordCreatedDate(sdf.format(admitCardCollection.getCreatedTime()));
-						mailResponse.setPatientName(user.getFirstName());
-						emailTackService.saveEmailTrack(emailTrackCollection);
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				mailResponse.setClinicAddress(address);
+				mailResponse.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				mailResponse.setMailRecordCreatedDate(sdf.format(admitCardCollection.getCreatedTime()));
+				mailResponse.setPatientName(user.getFirstName());
+				emailTackService.saveEmailTrack(emailTrackCollection);
 
-					}  else {
+			} else {
 				logger.warn("Discharge Summary  not found.Please check Admit Card Id.");
 				throw new BusinessException(ServiceError.NoRecord,
 						"Discharge Summary not found.Please check Admit Card Id.");

@@ -346,7 +346,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Appointment appointment) {
 		ClinicalNotes clinicalNotes = null;
 		List<ObjectId> diagramIds = null;
-		Date createdTime = new Date();
+
 		try {
 			if (isAppointmentAdd) {
 				if (request.getAppointmentRequest() != null) {
@@ -368,6 +368,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							+ userCollection.getFirstName();
 				}
 			}
+			if (request.getCreatedTime() != null) {
+				clinicalNotesCollection.setCreatedTime(request.getCreatedTime());
+			} else {
+				clinicalNotesCollection.setCreatedTime(new Date());
+			}
+			clinicalNotesCollection.setAdminCreatedTime(new Date());
+
 			clinicalNotesCollection.setCreatedBy(createdBy);
 			/*
 			 * if(request.getPresentComplaint() != null ||
@@ -1528,7 +1535,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			clinicalNotesCollection
 					.setUniqueEmrId(UniqueIdInitial.CLINICALNOTES.getInitial() + DPDoctorUtils.generateRandomId());
-			clinicalNotesCollection.setCreatedTime(createdTime);
+
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
 			clinicalNotes = new ClinicalNotes();
@@ -1705,8 +1712,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					diagramIds.add(new ObjectId(diagramId));
 				}
 			}
-
-			clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
+			if (request.getCreatedTime() != null) {
+				clinicalNotesCollection.setCreatedTime(request.getCreatedTime());
+			} else {
+				clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
+			}
+			clinicalNotesCollection.setAdminCreatedTime(oldClinicalNotesCollection.getAdminCreatedTime());
 			clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());
 			clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
 			clinicalNotesCollection.setInHistory(oldClinicalNotesCollection.isInHistory());

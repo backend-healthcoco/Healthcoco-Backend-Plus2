@@ -194,8 +194,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
 			dischargeSummaryCollection = new DischargeSummaryCollection();
 			if (dischargeSummary.getId() == null) {
+				if (dischargeSummary.getCreatedTime() == null)
+					dischargeSummary.setCreatedTime(new Date());
 
-				dischargeSummary.setCreatedTime(new Date());
+				dischargeSummary.setAdminCreatedTime(new Date());
 				dischargeSummary.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setUniqueEmrId(
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
@@ -210,9 +212,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				}
-
+				if (dischargeSummary.getCreatedTime() == null)
+					dischargeSummary.setCreatedTime(oldDischargeSummaryCollection.getAdminCreatedTime());
 				dischargeSummaryCollection.setCreatedBy(oldDischargeSummaryCollection.getCreatedBy());
-				dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
+				dischargeSummaryCollection.setAdminCreatedTime(oldDischargeSummaryCollection.getAdminCreatedTime());
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
 				dischargeSummaryCollection.setUniqueEmrId(oldDischargeSummaryCollection.getUniqueEmrId());
 			}
@@ -260,7 +263,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			BeanUtil.map(dischargeSummaryCollection, response);
 			response.setPrescriptions(prescription);
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while adding  discharge summary : " + e.getCause().getMessage());
 			throw new BusinessException(ServiceError.Unknown,

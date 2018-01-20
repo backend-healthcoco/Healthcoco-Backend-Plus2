@@ -262,6 +262,15 @@ public class ClinicalNotesAddRequest {
 	private String generalHistorySurgical;
 
 	private String painScale;
+	private Date createdTime;
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
 
 	public String getPcNose() {
 		return pcNose;

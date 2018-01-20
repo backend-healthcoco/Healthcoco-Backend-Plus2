@@ -298,7 +298,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Override
 	@Transactional
-	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, Boolean isAppointmentAdd, String createdBy, Appointment appointment) {
+	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request,
+			Boolean isAppointmentAdd, String createdBy, Appointment appointment) {
 		PatientTreatmentResponse response;
 		PatientTreatmentCollection patientTreatmentCollection = new PatientTreatmentCollection();
 		try {
@@ -316,19 +317,23 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 
-				patientTreatmentCollection.setCreatedTime(new Date());
-				BeanUtil.map(request, patientTreatmentCollection);
+				if (request.getCreatedTime() != null) {
+					patientTreatmentCollection.setCreatedTime(request.getCreatedTime());
+				} else {
+					patientTreatmentCollection.setCreatedTime(new Date());
+				}
+				patientTreatmentCollection.setAdminCreatedTime(new Date());
 				patientTreatmentCollection
 						.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
-				
-				if(DPDoctorUtils.anyStringEmpty(createdBy)) {
+
+				if (DPDoctorUtils.anyStringEmpty(createdBy)) {
 					UserCollection userCollection = null;
 					if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 						userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 					}
 					if (userCollection != null)
 						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-										+ userCollection.getFirstName();
+								+ userCollection.getFirstName();
 					else {
 						throw new BusinessException(ServiceError.NotFound, "No Doctor Found");
 					}
@@ -338,19 +343,27 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findOne(
 						new ObjectId(request.getId()), new ObjectId(request.getDoctorId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+
 				if (oldPatientTreatmentCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
 				} else {
-					
+
 					createdBy = oldPatientTreatmentCollection.getCreatedBy();
-							
+
 					BeanUtil.map(request, patientTreatmentCollection);
+					if (request.getCreatedTime() != null) {
+						patientTreatmentCollection.setCreatedTime(request.getCreatedTime());
+					} else {
+						patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
+					}
+					patientTreatmentCollection.setAdminCreatedTime(oldPatientTreatmentCollection.getAdminCreatedTime());
 					patientTreatmentCollection.setUpdatedTime(new Date());
 					patientTreatmentCollection.setCreatedBy(createdBy);
 					patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					patientTreatmentCollection.setUniqueEmrId(oldPatientTreatmentCollection.getUniqueEmrId());
 					patientTreatmentCollection.setDiscarded(oldPatientTreatmentCollection.getDiscarded());
 					patientTreatmentCollection.setInHistory(oldPatientTreatmentCollection.getInHistory());
+
 				}
 			}
 			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
@@ -476,14 +489,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public PatientTreatmentResponse deletePatientTreatmentForWeb(String treatmentId, Boolean discarded) {
 		PatientTreatmentResponse response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(
-					new ObjectId(treatmentId));
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
+					.findOne(new ObjectId(treatmentId));
 
 			if (patientTreatmentCollection != null) {
 				patientTreatmentCollection.setDiscarded(discarded);
@@ -520,6 +533,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public PatientTreatmentResponse getPatientTreatmentById(String treatmentId) {
 		PatientTreatmentResponse response;
 		try {
+
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
 							Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
@@ -540,11 +554,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							Fields.field("treatments.quantity", "$treatments.quantity"),
 							Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 							Fields.field("appointmentRequest", "$appointmentRequest")));
+
 			Aggregation aggregation = Aggregation
 					.newAggregation(
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
+
 							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))),
 							Aggregation.lookup(
 									"treatment_services_cl", "treatments.treatmentServiceId", "_id",
@@ -555,10 +571,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$appointmentRequest")
 											.append("preserveNullAndEmptyArrays", true))),
+
 							Aggregation
 									.lookup("patient_visit_cl", "_id", "treatmentId",
 											"patientVisit"),
 							Aggregation.unwind("patientVisit"), projectList,
+
 							new CustomAggregationOperation(
 									new BasicDBObject("$group",
 											new BasicDBObject("id", "$_id")
@@ -659,6 +677,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 													.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 													.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 													.append("treatments", new BasicDBObject("$push", "$treatments")))));
+
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, PatientTreatment.class)
 					.getMappedResults();
 
@@ -726,6 +745,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 					Fields.field("treatments.quantity", "$treatments.quantity"),
 					Fields.field("appointmentRequest", "$appointmentRequest")));
+
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria),
@@ -737,8 +757,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 												"treatment"),
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$appointmentRequest")
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 								Aggregation.unwind("treatment"),
 								Aggregation
@@ -778,16 +798,18 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								Aggregation
 										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 												"treatment"),
+
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$appointmentRequest")
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 								Aggregation.unwind("treatment"),
 								Aggregation
 										.lookup("patient_visit_cl", "_id", "treatmentId",
 												"patientVisit"),
 								Aggregation.unwind("patientVisit"), projectList,
+
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -858,6 +880,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("treatments.status").is(status);
 			Aggregation aggregation = null;
+
 			// Aggregation.lookup("treatment_services_cl",
 			// "treatments.treatmentServiceId", "_id",
 			// "treatments.treatmentServices")
@@ -880,20 +903,23 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.quantity", "$treatments.quantity"),
 					Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 					Fields.field("appointmentRequest", "$appointmentRequest")));
+
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 												"arrayIndex"))),
+
 								Aggregation
 										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 												"treatment"),
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$appointmentRequest")
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
+
 								projectList, Aggregation.unwind("treatment"),
 								Aggregation
 										.lookup("patient_visit_cl", "_id", "treatmentId",
@@ -934,8 +960,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 												"treatment"),
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$appointmentRequest")
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 								Aggregation.unwind("treatment"),
 								Aggregation
@@ -1249,13 +1275,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String emailAddress) {
 		try {
 			MailResponse mailResponse = null;
-			if(doctorId != null && locationId != null && hospitalId != null)
-			{
-				 mailResponse = createMailData(treatmentId, doctorId, locationId, hospitalId);
-			}
-			else
-			{
-				 mailResponse = createMailDataForWeb(treatmentId, doctorId, locationId, hospitalId);
+			if (doctorId != null && locationId != null && hospitalId != null) {
+				mailResponse = createMailData(treatmentId, doctorId, locationId, hospitalId);
+			} else {
+				mailResponse = createMailDataForWeb(treatmentId, doctorId, locationId, hospitalId);
 			}
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
@@ -1615,11 +1638,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				BeanUtil.map(request, treatmentServicesCollection);
 
 				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
-				if (DPDoctorUtils.anyStringEmpty(createdBy) && !DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
+				if (DPDoctorUtils.anyStringEmpty(createdBy)
+						&& !DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
 					UserCollection userCollection = userRepository.findOne(treatmentServicesCollection.getDoctorId());
 					if (userCollection != null)
 						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-										+ userCollection.getFirstName();
+								+ userCollection.getFirstName();
 				}
 				treatmentServicesCollection.setCreatedBy(createdBy);
 				Date createdTime = new Date();
@@ -1732,8 +1756,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		response = aggregationResults.getMappedResults();
 		return response;
 	}
-	
-	private MailResponse createMailDataForWeb(String treatmentId, String doctorId, String locationId, String hospitalId) {
+
+	private MailResponse createMailDataForWeb(String treatmentId, String doctorId, String locationId,
+			String hospitalId) {
 		MailResponse response = null;
 		PatientTreatmentCollection patientTreatmentCollection = null;
 		MailAttachment mailAttachment = null;
@@ -1744,62 +1769,62 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
 			if (patientTreatmentCollection != null) {
 
-						user = userRepository.findOne(patientTreatmentCollection.getPatientId());
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
-								patientTreatmentCollection.getHospitalId());
-						user.setFirstName(patient.getLocalPatientName());
-						emailTrackCollection.setDoctorId(patientTreatmentCollection.getDoctorId());
-						emailTrackCollection.setHospitalId(patientTreatmentCollection.getHospitalId());
-						emailTrackCollection.setLocationId(patientTreatmentCollection.getLocationId());
-						emailTrackCollection.setType(ComponentType.TREATMENT.getType());
-						emailTrackCollection.setSubject("Treatment");
-						if (user != null) {
-							emailTrackCollection.setPatientName(patient.getLocalPatientName());
-							emailTrackCollection.setPatientId(user.getId());
-						}
+				user = userRepository.findOne(patientTreatmentCollection.getPatientId());
+				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
+						patientTreatmentCollection.getHospitalId());
+				user.setFirstName(patient.getLocalPatientName());
+				emailTrackCollection.setDoctorId(patientTreatmentCollection.getDoctorId());
+				emailTrackCollection.setHospitalId(patientTreatmentCollection.getHospitalId());
+				emailTrackCollection.setLocationId(patientTreatmentCollection.getLocationId());
+				emailTrackCollection.setType(ComponentType.TREATMENT.getType());
+				emailTrackCollection.setSubject("Treatment");
+				if (user != null) {
+					emailTrackCollection.setPatientName(patient.getLocalPatientName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
 
-						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient,
-								user, null, false, false, false, false);
-						mailAttachment = new MailAttachment();
-						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
-						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(patientTreatmentCollection.getDoctorId());
-						LocationCollection locationCollection = locationRepository.findOne(patientTreatmentCollection.getLocationId());
+				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
+						null, false, false, false, false);
+				mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+				UserCollection doctorUser = userRepository.findOne(patientTreatmentCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository
+						.findOne(patientTreatmentCollection.getLocationId());
 
-						response = new MailResponse();
-						response.setMailAttachment(mailAttachment);
-						response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
-						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+				response = new MailResponse();
+				response.setMailAttachment(mailAttachment);
+				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
 
-						if (address.charAt(address.length() - 2) == ',') {
-							address = address.substring(0, address.length() - 2);
-						}
-						response.setClinicAddress(address);
-						response.setClinicName(locationCollection.getLocationName());
-						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-						response.setMailRecordCreatedDate(sdf.format(patientTreatmentCollection.getCreatedTime()));
-						response.setPatientName(user.getFirstName());
-						emailTackService.saveEmailTrack(emailTrackCollection);
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				response.setClinicAddress(address);
+				response.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				response.setMailRecordCreatedDate(sdf.format(patientTreatmentCollection.getCreatedTime()));
+				response.setPatientName(user.getFirstName());
+				emailTackService.saveEmailTrack(emailTrackCollection);
 
-					}  else {
+			} else {
 				logger.warn("Treatment not found.Please check treatmentId.");
-				throw new BusinessException(ServiceError.NoRecord,
-						"Treatment not found.Please check treatmentId.");
+				throw new BusinessException(ServiceError.NoRecord, "Treatment not found.Please check treatmentId.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
