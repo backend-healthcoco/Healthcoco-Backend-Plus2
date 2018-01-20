@@ -15,4 +15,6 @@ public interface UploadDateService {
 	Boolean assignPNUMToPatientsHavingPNUMAsNull(String doctorId, String locationId, String hospitalId);
 
 	Boolean deletePatients(String doctorId, String locationId, String hospitalId);
+
+	Boolean updateEMR();
 }
