@@ -3636,10 +3636,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)
 			throws JRException {
 
-		band = new JRDesignBand();
-		band.setHeight(10);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
 		JRDesignBand band = new JRDesignBand();
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
@@ -3657,9 +3653,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		((JRDesignSection) jasperDesign.getDetailSection())
 				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
-
 		band = new JRDesignBand();
-		band.setHeight(18);
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		band = new JRDesignBand();
+		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression("(!$P{dOA}.equals( null )  || !$P{dOD}.equals( null ))"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField
@@ -3695,7 +3693,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
-		band.setHeight(18);
+		band.setHeight(20);
 		band.setPrintWhenExpression(
 				new JRDesignExpression("!$P{operationDate}.equals( null ) && !$P{operationDate}.isEmpty()"));
 		jrDesignTextField = new JRDesignTextField();
@@ -3776,11 +3774,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) throws JRException {
 
 		Boolean show = false;
-		band = new JRDesignBand();
-		band.setHeight(10);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		JRDesignBand band = new JRDesignBand();
+		band = new JRDesignBand();
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{title}"));
@@ -3797,6 +3792,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		((JRDesignSection) jasperDesign.getDetailSection())
 				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+
+		band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		show = (Boolean) parameters.get("showDOA");
 		band = new JRDesignBand();
@@ -3932,21 +3931,26 @@ public class JasperReportServiceImpl implements JasperReportService {
 			fieldWidth = 133;
 
 		band = new JRDesignBand();
-		band.setHeight(10);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-		band = new JRDesignBand();
 		band.setHeight(20);
-
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{OTREPORTS}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(220);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		((JRDesignSection) jasperDesign.getDetailSection())
+				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+
+		band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		addItems(jasperDesign, columnWidth, "$P{OperationDate}", "$P{operationDate}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{AnaesthesiaType}", "$P{anaesthesiaType}", fieldWidth, false, 0, false);
@@ -3975,21 +3979,26 @@ public class JasperReportServiceImpl implements JasperReportService {
 			fieldWidth = 128;
 
 		band = new JRDesignBand();
-		band.setHeight(10);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-		band = new JRDesignBand();
 		band.setHeight(20);
-
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{DELIVERYREPORTS}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(220);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		((JRDesignSection) jasperDesign.getDetailSection())
+				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+
+		band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		addItems(jasperDesign, columnWidth, "$P{DeliveryDate}", "$P{deliveryDate}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{DeliveryTime}", "$P{deliveryTime}", fieldWidth, false, 0, false);

@@ -125,6 +125,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -216,6 +217,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -455,8 +457,10 @@ public class LabReportsServiceImpl implements LabReportsService {
 				if (labTestPickupCollection != null) {
 					labTestPickupCollection.setStatus("REPORTS PENDING");
 					labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
+
 				}
 			}
+			labReportsCollection.setLabReports(new ArrayList<ImageURLResponse>());
 			labReportsCollection.setLabReports(request.getLabReports());
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
 			labReports = new LabReports();
@@ -464,6 +468,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
 		return labReports;
