@@ -818,7 +818,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 
 			Date createdTime = new Date();
-			prescriptionCollection.setCreatedTime(createdTime);
+			if (request.getCreatedTime() != null) {
+				prescriptionCollection.setCreatedTime(request.getCreatedTime());
+			} else {
+				prescriptionCollection.setCreatedTime(createdTime);
+			}
+			prescriptionCollection.setAdminCreatedTime(new Date());
 			prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 			prescriptionCollection
 					.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial() + DPDoctorUtils.generateRandomId());
@@ -1103,6 +1108,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setIsPatientDiscarded(oldPrescription.getIsPatientDiscarded());
 			prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
 			prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
+			Date createdTime = new Date();
+			if (request.getCreatedTime() != null) {
+				prescriptionCollection.setCreatedTime(request.getCreatedTime());
+			} else {
+				prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
+			}
+			prescriptionCollection.setAdminCreatedTime(oldPrescription.getAdminCreatedTime());
 			prescriptionCollection.setDiscarded(oldPrescription.getDiscarded());
 			prescriptionCollection.setInHistory(oldPrescription.getInHistory());
 			prescriptionCollection.setUniqueEmrId(oldPrescription.getUniqueEmrId());

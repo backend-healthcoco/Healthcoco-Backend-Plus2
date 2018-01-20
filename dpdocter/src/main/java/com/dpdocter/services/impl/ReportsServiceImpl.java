@@ -184,7 +184,11 @@ public class ReportsServiceImpl implements ReportsService {
 		if (ipdReports != null) {
 			BeanUtil.map(ipdReports, ipdReportsCollection);
 			try {
-				ipdReportsCollection.setCreatedTime(new Date());
+				ipdReportsCollection.setAdminCreatedTime(new Date());
+				if (ipdReports.getCreatedTime() == null) {
+					ipdReportsCollection.setCreatedTime(new Date());
+				}
+
 				ipdReportsCollection.setCreatedBy(
 						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
 								+ " " + userCollection.getFirstName());
@@ -222,6 +226,9 @@ public class ReportsServiceImpl implements ReportsService {
 					}
 					opdReportsCollectionOld.setReceiptNo(opdReports.getReceiptNo());
 					opdReportsCollectionOld.setRemarks(opdReports.getRemarks());
+					if (opdReports.getCreatedTime() != null) {
+						opdReportsCollectionOld.setCreatedTime(opdReports.getCreatedTime());
+					}
 					opdReportsCollectionOld.setUpdatedTime(new Date());
 					opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
 				} else {
@@ -230,7 +237,10 @@ public class ReportsServiceImpl implements ReportsService {
 					BeanUtil.map(opdReports, opdReportsCollection);
 					opdReportsCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
 							? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
-					opdReportsCollection.setCreatedTime(new Date());
+					opdReportsCollectionOld.setAdminCreatedTime(new Date());
+					if (opdReports.getCreatedTime() == null) {
+						opdReportsCollectionOld.setCreatedTime(new Date());
+					}
 					opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 				}
 
@@ -257,9 +267,15 @@ public class ReportsServiceImpl implements ReportsService {
 		if (otReports != null) {
 			BeanUtil.map(otReports, otReportsCollection);
 			try {
-				otReportsCollection.setCreatedTime(new Date());
-				if(DPDoctorUtils.anyStringEmpty(otReportsCollection.getUniqueOTId())) {
-					otReportsCollection.setUniqueOTId(UniqueIdInitial.OT_REPORTS.getInitial()+DPDoctorUtils.generateRandomId());
+
+				if (DPDoctorUtils.anyStringEmpty(otReportsCollection.getUniqueOTId()))
+					otReportsCollection
+							.setUniqueOTId(UniqueIdInitial.OT_REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
+
+				otReportsCollection.setAdminCreatedTime(new Date());
+				if (otReports.getCreatedTime() == null) {
+					otReportsCollection.setCreatedTime(new Date());
+
 				}
 				otReportsCollection.setCreatedBy(
 						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
@@ -289,9 +305,15 @@ public class ReportsServiceImpl implements ReportsService {
 		if (deliveryReports != null) {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
-				deliveryReportsCollection.setCreatedTime(new Date());
-				if(DPDoctorUtils.anyStringEmpty(deliveryReportsCollection.getUniqueDRId())) {
-					deliveryReportsCollection.setUniqueDRId(UniqueIdInitial.DELIVERY_REPORTS.getInitial()+DPDoctorUtils.generateRandomId());
+
+				if (DPDoctorUtils.anyStringEmpty(deliveryReportsCollection.getUniqueDRId()))
+					deliveryReportsCollection.setUniqueDRId(
+							UniqueIdInitial.DELIVERY_REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
+
+				deliveryReportsCollection.setAdminCreatedTime(new Date());
+				if (deliveryReports.getCreatedTime() == null) {
+					deliveryReportsCollection.setCreatedTime(new Date());
+
 				}
 				deliveryReportsCollection.setCreatedBy(
 						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
@@ -1426,20 +1448,24 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
 		parameters.put("otReportsId", otReportsLookupResponse.getId());
 
-
 		patientVisitService
 				.generatePatientDetails(
 						(printSettings != null && printSettings.getHeaderSetup() != null
 								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient, "<b>OT-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId()) ? otReportsLookupResponse.getUniqueOTId() : "--"), patient.getLocalPatientName(), user.getMobileNumber(),
+						patient,
+						"<b>OT-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId())
+								? otReportsLookupResponse.getUniqueOTId() : "--"),
+						patient.getLocalPatientName(), user.getMobileNumber(),
 						parameters, otReportsLookupResponse.getUpdatedTime() != null
 								? otReportsLookupResponse.getUpdatedTime() : new Date(),
 						printSettings.getHospitalUId());
 
-
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(otReportsLookupResponse.getDoctorId()));
-		String pdfName = (user != null ? user.getFirstName() : "") + "OTREPORTS-" +(!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId()) ? otReportsLookupResponse.getUniqueOTId() : "")+ new Date().getTime();
+		String pdfName = (user != null ? user.getFirstName() : "") + "OTREPORTS-"
+				+ (!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId())
+						? otReportsLookupResponse.getUniqueOTId() : "")
+				+ new Date().getTime();
 
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
@@ -1560,14 +1586,20 @@ public class ReportsServiceImpl implements ReportsService {
 				.generatePatientDetails(
 						(printSettings != null && printSettings.getHeaderSetup() != null
 								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient, "<b>DR-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId()) ? deliveryReportsLookupResponse.getUniqueDRId() : "--"), patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+						patient,
+						"<b>DR-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId())
+								? deliveryReportsLookupResponse.getUniqueDRId() : "--"),
+						patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 						deliveryReportsLookupResponse.getUpdatedTime() != null
 								? deliveryReportsLookupResponse.getUpdatedTime() : new Date(),
 						printSettings.getHospitalUId());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(deliveryReportsLookupResponse.getDoctorId()));
-		String pdfName = (user != null ? user.getFirstName() : "") + "DELIVERYREPORTS-"+(!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId()) ? deliveryReportsLookupResponse.getUniqueDRId() : "") + new Date().getTime();
+		String pdfName = (user != null ? user.getFirstName() : "") + "DELIVERYREPORTS-"
+				+ (!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId())
+						? deliveryReportsLookupResponse.getUniqueDRId() : "")
+				+ new Date().getTime();
 
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")

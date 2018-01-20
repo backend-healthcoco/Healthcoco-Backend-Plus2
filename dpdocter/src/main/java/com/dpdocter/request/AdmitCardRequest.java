@@ -23,12 +23,18 @@ public class AdmitCardRequest {
 	private String xRayDetails;
 	private String jointInvolvement;
 	private String treatmentsPlan;
-	private String examination;	
+	private String examination;
 	private String diagnosis;
-	private Boolean discarded=false;
+	private Boolean discarded = false;
+	private Date createdTime;
 
-	
-	
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
 
 	public String getExamination() {
 		return examination;
