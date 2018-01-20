@@ -690,6 +690,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 									.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 									.append("treatments", new BasicDBObject("$push", "$treatments")))));
+
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, PatientTreatment.class)
 					.getMappedResults();
 
@@ -820,6 +821,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										"treatmentService"),
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
+
 								new CustomAggregationOperation(
 										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
@@ -830,9 +832,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
 
 								new CustomAggregationOperation(
-										new BasicDBObject("$unwind",
-												new BasicDBObject("path", "$treatmentDoctor").append(
-														"preserveNullAndEmptyArrays", true))),
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$treatmentDoctor")
+												.append("preserveNullAndEmptyArrays", true))),
+
 								projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
@@ -944,15 +946,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 
-								Aggregation.unwind("treatmentService"),
+								Aggregation.lookup("user_cl", "treatment.doctorId", "_id", "treatmentDoctor"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$treatmentDoctor")
+												.append("preserveNullAndEmptyArrays", true))),
+								projectList, Aggregation.unwind("treatment"),
 								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.lookup("user_cl", "treatments.doctorId", "_id",
-										"treatmentDoctor"),
-								new CustomAggregationOperation(
-										new BasicDBObject("$unwind", new BasicDBObject("path", "$treatmentDoctor")
-												.append("preserveNullAndEmptyArrays", true))),
-								projectList,
+
 
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
@@ -993,8 +994,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 
+
 								Aggregation.unwind("treatmentService"),
 								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
+
 
 								Aggregation.unwind("patientVisit"),
 								Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),

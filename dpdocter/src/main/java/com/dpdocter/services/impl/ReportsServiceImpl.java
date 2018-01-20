@@ -306,6 +306,7 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
 
+
 				if (DPDoctorUtils.anyStringEmpty(deliveryReportsCollection.getUniqueDRId()))
 					deliveryReportsCollection.setUniqueDRId(
 							UniqueIdInitial.DELIVERY_REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -313,6 +314,8 @@ public class ReportsServiceImpl implements ReportsService {
 				deliveryReportsCollection.setAdminCreatedTime(new Date());
 				if (deliveryReports.getCreatedTime() == null) {
 					deliveryReportsCollection.setCreatedTime(new Date());
+
+
 
 				}
 				deliveryReportsCollection.setCreatedBy(
