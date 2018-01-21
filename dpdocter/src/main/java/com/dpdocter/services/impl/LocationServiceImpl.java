@@ -555,8 +555,8 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
 			}
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("daughterLabCRN", "$daughterLabCRN"), Fields.field("pickupTime", "$pickupTime"),
@@ -841,8 +841,8 @@ public class LocationServiceImpl implements LocationServices {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
 			}
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
