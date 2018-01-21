@@ -33,6 +33,10 @@ public class AppointmentDoctorReminderResponse {
 
     private List<UserDeviceCollection> userDevices ;
     
+    private String localPatientName;
+	
+	private String doctorName;
+
 	public String getId() {
 		return id;
 	}
@@ -121,11 +125,29 @@ public class AppointmentDoctorReminderResponse {
 		this.userDevices = userDevices;
 	}
 
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentDoctorReminderResponse [id=" + id + ", doctorId=" + doctorId + ", total=" + total
 				+ ", patientId=" + patientId + ", time=" + time + ", doctor=" + doctor + ", appointmentId="
 				+ appointmentId + ", fromDate=" + fromDate + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", userDevices=" + userDevices + "]";
+				+ ", userDevices=" + userDevices + ", localPatientName=" + localPatientName + ", doctorName="
+				+ doctorName + "]";
 	}
+
 }

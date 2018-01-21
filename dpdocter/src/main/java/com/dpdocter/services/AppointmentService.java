@@ -55,7 +55,7 @@ public interface AppointmentService {
 
 	Appointment addAppointment(AppointmentRequest request, Boolean isFormattedResponseRequired);
 
-	Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit);
+	Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit, Boolean isStatusChange);
 
 	Appointment addEvent(EventRequest request);
 

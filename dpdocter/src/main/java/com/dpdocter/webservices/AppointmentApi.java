@@ -232,7 +232,8 @@ public class AppointmentApi {
 
 	@POST
 	@ApiOperation(value = "ADD_APPOINTMENT", notes = "ADD_APPOINTMENT")
-	public Response<Appointment> BookAppoinment(AppointmentRequest request) throws MessagingException {
+	public Response<Appointment> BookAppoinment(AppointmentRequest request, 
+			@DefaultValue(value = "false") @QueryParam(value = "isStatusChange") Boolean isStatusChange) throws MessagingException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
 			logger.warn("Invalid Input");
@@ -253,7 +254,7 @@ public class AppointmentApi {
 		if (request.getAppointmentId() == null) {
 			appointment = appointmentService.addAppointment(request, true);
 		} else {
-			appointment = appointmentService.updateAppointment(request, true);
+			appointment = appointmentService.updateAppointment(request, true, isStatusChange);
 		}
 
 		Response<Appointment> response = new Response<Appointment>();

@@ -509,7 +509,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		if (appointment.getAppointmentId() == null) {
 			response = appointmentService.addAppointment(appointment, false);
 		} else {
-			response = appointmentService.updateAppointment(appointment, false);
+			response = appointmentService.updateAppointment(appointment, false, false);
 		}
 		return response;
 	}
