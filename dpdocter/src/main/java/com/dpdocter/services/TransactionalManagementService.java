@@ -44,4 +44,8 @@ public interface TransactionalManagementService {
 
 	void updateActivePrescription();
 
+	void sendAppointmentScheduleToClinicAdmin();
+
+	void sendAppointmentScheduleToStaff();
+
 }
