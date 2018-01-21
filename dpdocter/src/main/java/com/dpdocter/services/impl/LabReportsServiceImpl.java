@@ -445,7 +445,9 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 		LabReports labReports = null;
 		try {
-			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(request.getId()));
+			LabReportsCollection labReportsCollection = labReportsRepository
+					.getByRequestIdandSAmpleId(new ObjectId(request.getId()));
+			System.out.println("\n\n\n" + request.getId() + "\n\n");
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -476,6 +478,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 		LabReportsResponse labReportsResponse = null;
 		try {
 			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(id));
+
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
