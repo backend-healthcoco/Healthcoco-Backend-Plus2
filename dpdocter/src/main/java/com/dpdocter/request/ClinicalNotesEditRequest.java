@@ -173,6 +173,8 @@ public class ClinicalNotesEditRequest {
 	private String generalHistorySurgical;
 	private String painScale;
 
+	private Date createdTime;
+
 	public Date getLmp() {
 		return lmp;
 	}
@@ -260,6 +262,14 @@ public class ClinicalNotesEditRequest {
 	private String globalNeckExam;
 
 	private String globalEarsExam;
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
 
 	public String getProcedureNote() {
 		return procedureNote;
@@ -1123,7 +1133,6 @@ public class ClinicalNotesEditRequest {
 	public void setGeneralHistorySurgical(String generalHistorySurgical) {
 		this.generalHistorySurgical = generalHistorySurgical;
 	}
-	
 
 	public String getPainScale() {
 		return painScale;

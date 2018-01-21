@@ -125,7 +125,7 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private InventoryService inventoryService;
-	
+
 	@Value(value = "${jasper.print.receipt.a4.fileName}")
 	private String receiptA4FileName;
 
@@ -223,7 +223,7 @@ public class BillingServiceImpl implements BillingService {
 									? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 					doctorsMap.put(request.getDoctorId(), userCollection);
 				}
-				doctorPatientInvoiceCollection.setCreatedTime(new Date());
+				
 				LocationCollection locationCollection = locationRepository
 						.findOne(new ObjectId(request.getLocationId()));
 				if (locationCollection == null)
@@ -241,7 +241,10 @@ public class BillingServiceImpl implements BillingService {
 				dueAmount = doctorPatientInvoiceCollection.getBalanceAmount();
 				if (doctorPatientInvoiceCollection.getInvoiceDate() == null)
 					doctorPatientInvoiceCollection.setInvoiceDate(new Date());
-				doctorPatientInvoiceCollection.setCreatedTime(new Date());
+				if (request.getCreatedTime() == null) {
+					doctorPatientInvoiceCollection.setCreatedTime(new Date());
+				}
+				doctorPatientInvoiceCollection.setAdminCreatedTime(new Date());
 			} else {
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getId()));
 				Double paidAmount = doctorPatientInvoiceCollection.getGrandTotal()
@@ -253,19 +256,23 @@ public class BillingServiceImpl implements BillingService {
 					throw new BusinessException(ServiceError.Unknown,
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
-				
+				if (request.getCreatedTime() != null) {
+					doctorPatientInvoiceCollection.setCreatedTime(request.getCreatedTime());
+				}
+
 				if (!doctorPatientInvoiceCollection.getDoctorId().toString().equalsIgnoreCase(request.toString())) {
-					if(doctorPatientInvoiceCollection.getReceiptIds() == null || doctorPatientInvoiceCollection.getReceiptIds().isEmpty()) {
+					if (doctorPatientInvoiceCollection.getReceiptIds() == null
+							|| doctorPatientInvoiceCollection.getReceiptIds().isEmpty()) {
 						oldDoctorId = doctorPatientInvoiceCollection.getDoctorId();
 						oldDoctorDueAmount = doctorPatientInvoiceCollection.getBalanceAmount();
-						doctorPatientInvoiceCollection.setDoctorId(new ObjectId(request.getDoctorId()));	
-					}
-					else {
+						doctorPatientInvoiceCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					} else {
 						throw new BusinessException(ServiceError.Unknown,
 								"Doctor cannot be updated as Receipt is already created.");
 					}
 				}
 				dueAmount = -doctorPatientInvoiceCollection.getBalanceAmount();
+
 				doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 				doctorPatientInvoiceCollection.setTotalCost(request.getTotalCost());
 				doctorPatientInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
@@ -301,71 +308,68 @@ public class BillingServiceImpl implements BillingService {
 										+ doctor.getFirstName());
 					}
 				}
-				if (DPDoctorUtils.anyStringEmpty(doctorPatientInvoiceCollection.getId()))
-				{
-					 inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), doctorPatientInvoiceCollection.getId().toString());
+				if (DPDoctorUtils.anyStringEmpty(doctorPatientInvoiceCollection.getId())) {
+					inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
+							request.getHospitalId(), invoiceItemResponse.getItemId(),
+							doctorPatientInvoiceCollection.getId().toString());
 				}
-			//	InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
-				
+				// InventoryStock inventoryStock =
+				// inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
+				// request.getHospitalId(), invoiceItemResponse.getItemId(),
+				// request.getId());
+
 				if (inventoryStock != null && invoiceItemResponse.getInventoryBatch() != null) {
-					if(inventoryStock.getBatchId().equals(invoiceItemResponse.getInventoryBatch().getId()))
-					{
-						if(inventoryStock.getQuantity() > invoiceItemResponse.getQuantity().getValue())
-						{
+					if (inventoryStock.getBatchId().equals(invoiceItemResponse.getInventoryBatch().getId())) {
+						if (inventoryStock.getQuantity() > invoiceItemResponse.getQuantity().getValue()) {
 							Long diff = inventoryStock.getQuantity() - invoiceItemResponse.getQuantity().getValue();
-							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-									request.getHospitalId(), invoiceItemResponse.getItemId());
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
 								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-										invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
-										request.getLocationId(), request.getHospitalId(),
-										diff.intValue() , doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "ADDED");
 							}
-						}
-						else if (inventoryStock.getQuantity() < invoiceItemResponse.getQuantity().getValue())
-						{
-							Long diff = invoiceItemResponse.getQuantity().getValue()  - inventoryStock.getQuantity() ;
-							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-									request.getHospitalId(), invoiceItemResponse.getItemId());
+						} else if (inventoryStock.getQuantity() < invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = invoiceItemResponse.getQuantity().getValue() - inventoryStock.getQuantity();
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
 								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-										invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
-										request.getLocationId(), request.getHospitalId(),
-										diff.intValue() , doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
 							}
 						}
-							
-					}
-					else
-					{
-						//InventoryBatch inventoryBatchOld = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
-						//InventoryBatch inventoryBatchNew = inventoryService.getInventoryBatchById(invoiceItemResponse.getInventoryBatch().getId());
-						if(inventoryStock.getQuantity() > invoiceItemResponse.getQuantity().getValue())
-						{
+
+					} else {
+						// InventoryBatch inventoryBatchOld =
+						// inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
+						// InventoryBatch inventoryBatchNew =
+						// inventoryService.getInventoryBatchById(invoiceItemResponse.getInventoryBatch().getId());
+						if (inventoryStock.getQuantity() > invoiceItemResponse.getQuantity().getValue()) {
 							Long diff = inventoryStock.getQuantity() - invoiceItemResponse.getQuantity().getValue();
-							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-									request.getHospitalId(), invoiceItemResponse.getItemId());
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
 								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-										invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
-										request.getLocationId(), request.getHospitalId(),
-										diff.intValue() , doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "ADDED");
 							}
-						}
-						else if (inventoryStock.getQuantity() < invoiceItemResponse.getQuantity().getValue())
-						{
-							Long diff = invoiceItemResponse.getQuantity().getValue()  - inventoryStock.getQuantity() ;
-							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-									request.getHospitalId(), invoiceItemResponse.getItemId());
+						} else if (inventoryStock.getQuantity() < invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = invoiceItemResponse.getQuantity().getValue() - inventoryStock.getQuantity();
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
 								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-										invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
-										request.getLocationId(), request.getHospitalId(),
-										diff.intValue() , doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
 							}
 						}
 					}
-					
+
 				} else {
 					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
 							request.getHospitalId(), invoiceItemResponse.getItemId());
@@ -373,7 +377,8 @@ public class BillingServiceImpl implements BillingService {
 						createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
 								invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(),
-								invoiceItemResponse.getQuantity().getValue() , doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+								invoiceItemResponse.getQuantity().getValue(),
+								doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
 					}
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
@@ -407,23 +412,21 @@ public class BillingServiceImpl implements BillingService {
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
 				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = null;
-				if(oldDoctorId != null) {
-					doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.find(doctorPatientInvoiceCollection.getPatientId(),
-							oldDoctorId,
+				if (oldDoctorId != null) {
+					doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.find(
+							doctorPatientInvoiceCollection.getPatientId(), oldDoctorId,
 							doctorPatientInvoiceCollection.getLocationId(),
 							doctorPatientInvoiceCollection.getHospitalId());
-					if(doctorPatientDueAmountCollection != null) {
+					if (doctorPatientDueAmountCollection != null) {
 						doctorPatientDueAmountCollection
-						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - oldDoctorDueAmount);
+								.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - oldDoctorDueAmount);
 						doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 					}
 				}
-				
-				 doctorPatientDueAmountRepository
-						.find(doctorPatientInvoiceCollection.getPatientId(),
-								doctorPatientInvoiceCollection.getDoctorId(),
-								doctorPatientInvoiceCollection.getLocationId(),
-								doctorPatientInvoiceCollection.getHospitalId());
+
+				doctorPatientDueAmountRepository.find(doctorPatientInvoiceCollection.getPatientId(),
+						doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(),
+						doctorPatientInvoiceCollection.getHospitalId());
 				if (doctorPatientDueAmountCollection == null) {
 					doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
 					doctorPatientDueAmountCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
@@ -475,7 +478,8 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
+					.is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -811,7 +815,8 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
+					.is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -893,7 +898,7 @@ public class BillingServiceImpl implements BillingService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded) {
 		DoctorPatientReceipt response = null;
@@ -1064,26 +1069,39 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
-				/*if (DPDoctorUtils.anyStringEmpty(request.getId()))
-				{
-					 inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
-				}
-			//	InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
-				
-				if (inventoryStock != null) {
-
-				} else {
-					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-							request.getHospitalId(), invoiceItemResponse.getItemId());
-					if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
-						createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-								invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
-								request.getLocationId(), request.getHospitalId(),
-								invoiceItemResponse.getInventoryQuantity() , doctorPatientInvoiceCollection.getId().toString());
-					}
-				}*/
-				//createInventoryStock(invoiceItemResponse.getItemId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+						request.getHospitalId(), invoiceItemResponse.getItemId());
+				/*
+				 * if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				 * inventoryStock =
+				 * inventoryService.getInventoryStockByInvoiceIdResourceId(
+				 * request.getLocationId(), request.getHospitalId(),
+				 * invoiceItemResponse.getItemId(), request.getId()); } //
+				 * InventoryStock inventoryStock =
+				 * inventoryService.getInventoryStockByInvoiceIdResourceId(
+				 * request.getLocationId(), request.getHospitalId(),
+				 * invoiceItemResponse.getItemId(), request.getId());
+				 * 
+				 * if (inventoryStock != null) {
+				 * 
+				 * } else { InventoryItem inventoryItem =
+				 * inventoryService.getInventoryItemByResourceId(request.
+				 * getLocationId(), request.getHospitalId(),
+				 * invoiceItemResponse.getItemId()); if
+				 * (invoiceItemResponse.getInventoryBatch() != null &&
+				 * inventoryItem != null) {
+				 * createInventoryStock(invoiceItemResponse.getItemId(),
+				 * inventoryItem.getId(),
+				 * invoiceItemResponse.getInventoryBatch(),
+				 * request.getPatientId(), request.getDoctorId(),
+				 * request.getLocationId(), request.getHospitalId(),
+				 * invoiceItemResponse.getInventoryQuantity() ,
+				 * doctorPatientInvoiceCollection.getId().toString()); } }
+				 */
+				// createInventoryStock(invoiceItemResponse.getItemId(),
+				// invoiceItemResponse.getBatchId(), request.getPatientId(),
+				// request.getDoctorId(), request.getLocationId(),
+				// request.getHospitalId());
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
@@ -1258,7 +1276,8 @@ public class BillingServiceImpl implements BillingService {
 		AmountResponse dueAmount = null;
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
-					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
+					.and("isPatientDiscarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -1367,7 +1386,8 @@ public class BillingServiceImpl implements BillingService {
 		AmountResponse response = null;
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
-					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
+					.and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
@@ -1570,7 +1590,8 @@ public class BillingServiceImpl implements BillingService {
 					patient,
 					"<b>INVID: </b>" + (doctorPatientInvoiceCollection.getUniqueInvoiceId() != null
 							? doctorPatientInvoiceCollection.getUniqueInvoiceId() : "--"),
-					patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(), printSettings.getHospitalUId());
+					patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
+					printSettings.getHospitalUId());
 			patientVisitService.generatePrintSetup(parameters, printSettings,
 					doctorPatientInvoiceCollection.getDoctorId());
 			String pdfName = (user != null ? user.getFirstName() : "") + "INVOICE-"
@@ -1665,7 +1686,8 @@ public class BillingServiceImpl implements BillingService {
 				patient,
 				"<b>RECEIPTID: </b>" + (doctorPatientReceiptCollection.getUniqueReceiptId() != null
 						? doctorPatientReceiptCollection.getUniqueReceiptId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(), printSettings.getHospitalUId());
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
+				printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, doctorPatientReceiptCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "RECEIPT-"
 				+ doctorPatientReceiptCollection.getUniqueReceiptId() + new Date().getTime();
@@ -1952,8 +1974,9 @@ public class BillingServiceImpl implements BillingService {
 	 * stockCount = inventoryStockCollection.g } }
 	 */
 
-	private void createInventoryStock(String resourceId, String itemId ,InventoryBatch inventoryBatch, String patientId, String doctorId,
-			String locationId, String hospitalId , Integer inventoryQuantity ,String invoiceId , String stockType) {
+	private void createInventoryStock(String resourceId, String itemId, InventoryBatch inventoryBatch, String patientId,
+			String doctorId, String locationId, String hospitalId, Integer inventoryQuantity, String invoiceId,
+			String stockType) {
 		InventoryStock inventoryStock = new InventoryStock();
 		inventoryStock.setInventoryBatch(inventoryBatch);
 		inventoryStock.setItemId(itemId);
@@ -1964,8 +1987,7 @@ public class BillingServiceImpl implements BillingService {
 		inventoryStock.setHospitalId(hospitalId);
 		inventoryStock.setInvoiceId(invoiceId);
 		inventoryStock.setStockType(stockType);
-		if(inventoryQuantity != null)
-		{
+		if (inventoryQuantity != null) {
 			inventoryStock.setQuantity(inventoryQuantity.longValue());
 		}
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);

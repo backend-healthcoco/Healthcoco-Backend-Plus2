@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import java.util.Date;
+
 public class AddMultipleDataRequest {
 
 	private String visitId;
@@ -21,6 +23,18 @@ public class AddMultipleDataRequest {
 	private AppointmentRequest appointmentRequest;
 
 	private PatientTreatmentAddEditRequest treatmentRequest;
+	
+	private Date createdTime;
+	
+	
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
 
 	public String getVisitId() {
 		return visitId;

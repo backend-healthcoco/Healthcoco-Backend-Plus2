@@ -6,7 +6,15 @@ import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 public class GenericCollection {
+	/*
+	 * Note:-This date added after date edit change for doctor. this changes
+	 * only in EMR Module
+	 */
+	// adminCreatedTime use for actual date of collection only for EMR MODULE
+	@Indexed(direction = IndexDirection.DESCENDING)
+	private Date adminCreatedTime;
 
+	// createdTime use for date collection EMR MODULE
 	@Indexed(direction = IndexDirection.DESCENDING)
 	private Date createdTime;
 
@@ -37,6 +45,14 @@ public class GenericCollection {
 
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
+	}
+
+	public Date getAdminCreatedTime() {
+		return adminCreatedTime;
+	}
+
+	public void setAdminCreatedTime(Date adminCreatedTime) {
+		this.adminCreatedTime = adminCreatedTime;
 	}
 
 }

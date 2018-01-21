@@ -562,8 +562,8 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
 			}
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("daughterLabCRN", "$daughterLabCRN"), Fields.field("pickupTime", "$pickupTime"),
@@ -850,10 +850,9 @@ public class LocationServiceImpl implements LocationServices {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
+
 			}
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
@@ -2201,7 +2200,7 @@ public class LocationServiceImpl implements LocationServices {
 		return testGroupResponses;
 
 	}
-	
+
 	@Override
 	@Transactional
 	public DentalWork addEditCustomWork(AddEditCustomWorkRequest request) {
@@ -2238,7 +2237,7 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<DentalWork> getCustomWorks(int page, int size, String searchTerm) {
@@ -2268,7 +2267,7 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return customWorks;
 	}
-	
+
 	@Override
 	@Transactional
 	public DentalWork deleteCustomWork(String id, boolean discarded) {
@@ -2282,7 +2281,7 @@ public class LocationServiceImpl implements LocationServices {
 				customWorkCollection.setDiscarded(discarded);
 				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
 			} else {
-				throw new BusinessException(ServiceError.InvalidInput , "Record not found");
+				throw new BusinessException(ServiceError.InvalidInput, "Record not found");
 			}
 			response = new DentalWork();
 			BeanUtil.map(customWorkCollection, response);
@@ -2292,8 +2291,6 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return response;
 	}
-	
-
 
 	private String reportSerialNumberGenerator(String locationId) {
 		String generatedId = null;

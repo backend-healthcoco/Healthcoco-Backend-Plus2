@@ -297,7 +297,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Override
 	@Transactional
-	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, Boolean isAppointmentAdd, String createdBy, Appointment appointment) {
+	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request,
+			Boolean isAppointmentAdd, String createdBy, Appointment appointment) {
 		PatientTreatmentResponse response;
 		PatientTreatmentCollection patientTreatmentCollection = new PatientTreatmentCollection();
 		try {
@@ -315,41 +316,52 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 
-				patientTreatmentCollection.setCreatedTime(new Date());
-				BeanUtil.map(request, patientTreatmentCollection);
+				if (request.getCreatedTime() != null) {
+					patientTreatmentCollection.setCreatedTime(request.getCreatedTime());
+				} else {
+					patientTreatmentCollection.setCreatedTime(new Date());
+				}
+				patientTreatmentCollection.setAdminCreatedTime(new Date());
 				patientTreatmentCollection
 						.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
-				
-				if(DPDoctorUtils.anyStringEmpty(createdBy)) {
+
+				if (DPDoctorUtils.anyStringEmpty(createdBy)) {
 					UserCollection userCollection = null;
 					if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 						userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 					}
 					if (userCollection != null)
 						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-										+ userCollection.getFirstName();
+								+ userCollection.getFirstName();
 					else {
 						throw new BusinessException(ServiceError.NotFound, "No Doctor Found");
 					}
 				}
 				patientTreatmentCollection.setCreatedBy(createdBy);
 			} else {
-				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findOne(
-						new ObjectId(request.getId()));
+				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository
+						.findOne(new ObjectId(request.getId()));
 				if (oldPatientTreatmentCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
 				} else {
-					
+
 					createdBy = oldPatientTreatmentCollection.getCreatedBy();
-							
+
 					BeanUtil.map(request, patientTreatmentCollection);
+					if (request.getCreatedTime() != null) {
+						patientTreatmentCollection.setCreatedTime(request.getCreatedTime());
+					} else {
+						patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
+					}
+					patientTreatmentCollection.setAdminCreatedTime(oldPatientTreatmentCollection.getAdminCreatedTime());
 					patientTreatmentCollection.setUpdatedTime(new Date());
 					patientTreatmentCollection.setCreatedBy(createdBy);
 					patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					patientTreatmentCollection.setUniqueEmrId(oldPatientTreatmentCollection.getUniqueEmrId());
 					patientTreatmentCollection.setDiscarded(oldPatientTreatmentCollection.getDiscarded());
 					patientTreatmentCollection.setInHistory(oldPatientTreatmentCollection.getInHistory());
-					patientTreatmentCollection.setIsPatientDiscarded(oldPatientTreatmentCollection.getIsPatientDiscarded());
+					patientTreatmentCollection
+							.setIsPatientDiscarded(oldPatientTreatmentCollection.getIsPatientDiscarded());
 				}
 			}
 			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
@@ -475,14 +487,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public PatientTreatmentResponse deletePatientTreatmentForWeb(String treatmentId, Boolean discarded) {
 		PatientTreatmentResponse response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(
-					new ObjectId(treatmentId));
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
+					.findOne(new ObjectId(treatmentId));
 
 			if (patientTreatmentCollection != null) {
 				patientTreatmentCollection.setDiscarded(discarded);
@@ -519,35 +531,39 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public PatientTreatmentResponse getPatientTreatmentById(String treatmentId) {
 		PatientTreatmentResponse response;
 		try {
-			CustomAggregationOperation projectList = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
-					.append("hospitalId", "$hospitalId")
-					.append("doctorId", "$doctorId")
-					.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
-					.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
-					.append("grandTotal", "$grandTotal")
-					.append("discarded", "$discarded").append("inHistory", "$inHistory")
-					.append("appointmentId", "$appointmentId")
-					.append("time", "$time")
-					.append("fromDate", "$fromDate").append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
-					.append("createdBy", "$createdBy").append("treatments.treatmentService", "$treatmentService")
-					.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
-					.append("treatments.doctorId", "$treatments.doctorId")
-					.append("treatments.doctorName", new BasicDBObject("$concat",Arrays.asList("$treatmentDoctor.title", " ", "$treatmentDoctor.firstName")))
-					.append("treatments.status", "$treatments.status")
-					.append("treatments.cost", "$treatments.cost")
-					.append("treatments.note", "$treatments.note")
-					.append("treatments.discount", "$treatments.discount")
-					.append("treatments.finalCost", "$treatments.finalCost")
-					.append("treatments.quantity", "$treatments.quantity")
-					.append("treatments.treatmentFields", "$treatments.treatmentFields")
-					.append("appointmentRequest", "$appointmentRequest")));
+			CustomAggregationOperation projectList = new CustomAggregationOperation(
+					new BasicDBObject("$project",
+							new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
+									.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
+									.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
+									.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
+									.append("grandTotal", "$grandTotal").append("discarded", "$discarded")
+									.append("inHistory", "$inHistory").append("appointmentId", "$appointmentId")
+									.append("time", "$time").append("fromDate", "$fromDate")
+									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
+									.append("createdBy", "$createdBy")
+									.append("treatments.treatmentService", "$treatmentService")
+									.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
+									.append("treatments.doctorId", "$treatments.doctorId")
+									.append("treatments.doctorName",
+											new BasicDBObject("$concat",
+													Arrays.asList("$treatmentDoctor.title", " ",
+															"$treatmentDoctor.firstName")))
+									.append("treatments.status", "$treatments.status")
+									.append("treatments.cost", "$treatments.cost")
+									.append("treatments.note", "$treatments.note")
+									.append("treatments.discount", "$treatments.discount")
+									.append("treatments.finalCost", "$treatments.finalCost")
+									.append("treatments.quantity", "$treatments.quantity")
+									.append("treatments.treatmentFields", "$treatments.treatmentFields")
+									.append("appointmentRequest", "$appointmentRequest")));
 			Aggregation aggregation = Aggregation
 					.newAggregation(
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
-							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId)).and("isPatientDiscarded").is(false)),
+							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))
+									.and("isPatientDiscarded").is(false)),
 							Aggregation.lookup(
 									"treatment_services_cl", "treatments.treatmentServiceId", "_id",
 									"treatmentService"),
@@ -557,14 +573,17 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$appointmentRequest")
 											.append("preserveNullAndEmptyArrays", true))),
-							Aggregation
-									.lookup("patient_visit_cl", "_id", "treatmentId",
-											"patientVisit"),
+							Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 							Aggregation.unwind("patientVisit"),
-							Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$treatmentDoctor")
-											.append("preserveNullAndEmptyArrays", true))), projectList,
+
+							Aggregation
+									.lookup("user_cl", "treatments.doctorId", "_id",
+											"treatmentDoctor"),
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind", new BasicDBObject("path", "$treatmentDoctor")
+											.append("preserveNullAndEmptyArrays", true))),
+							projectList,
+
 							new CustomAggregationOperation(
 									new BasicDBObject("$group",
 											new BasicDBObject("id", "$_id")
@@ -610,70 +629,68 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		List<PatientTreatment> response = null;
 
 		try {
-			CustomAggregationOperation projectList = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
-					.append("hospitalId", "$hospitalId")
-					.append("doctorId", "$doctorId")
-					.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
-					.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
-					.append("grandTotal", "$grandTotal")
-					.append("discarded", "$discarded").append("inHistory", "$inHistory")
-					.append("appointmentId", "$appointmentId")
-					.append("time", "$time")
-					.append("fromDate", "$fromDate").append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
-					.append("createdBy", "$createdBy").append("treatments.treatmentService", "$treatmentService")
-					.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
-					.append("treatments.doctorId", "$treatments.doctorId")
-					.append("treatments.doctorName", new BasicDBObject("$concat",Arrays.asList("$treatmentDoctor.title", " ", "$treatmentDoctor.firstName")))
-					.append("treatments.status", "$treatments.status")
-					.append("treatments.cost", "$treatments.cost")
-					.append("treatments.note", "$treatments.note")
-					.append("treatments.discount", "$treatments.discount")
-					.append("treatments.finalCost", "$treatments.finalCost")
-					.append("treatments.quantity", "$treatments.quantity")
-					.append("treatments.treatmentFields", "$treatments.treatmentFields")));
-			
+			CustomAggregationOperation projectList = new CustomAggregationOperation(
+					new BasicDBObject("$project",
+							new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
+									.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
+									.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
+									.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
+									.append("grandTotal", "$grandTotal").append("discarded", "$discarded")
+									.append("inHistory", "$inHistory").append("appointmentId", "$appointmentId")
+									.append("time", "$time").append("fromDate", "$fromDate")
+									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
+									.append("createdBy", "$createdBy")
+									.append("treatments.treatmentService", "$treatmentService")
+									.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
+									.append("treatments.doctorId", "$treatments.doctorId")
+									.append("treatments.doctorName",
+											new BasicDBObject("$concat",
+													Arrays.asList("$treatmentDoctor.title", " ",
+															"$treatmentDoctor.firstName")))
+									.append("treatments.status", "$treatments.status")
+									.append("treatments.cost", "$treatments.cost")
+									.append("treatments.note", "$treatments.note")
+									.append("treatments.discount", "$treatments.discount")
+									.append("treatments.finalCost", "$treatments.finalCost")
+									.append("treatments.quantity", "$treatments.quantity")
+									.append("treatments.treatmentFields", "$treatments.treatmentFields")));
 
-			Aggregation aggregation = Aggregation
-					.newAggregation(Aggregation.match(new Criteria("_id").in(treatmentId).and("isPatientDiscarded").is(false)),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
-											"arrayIndex"))),
-							Aggregation.lookup("treatment_services_cl",
-									"treatments.treatmentServiceId", "_id", "treatmentService"),
-							Aggregation.unwind("treatmentService"),
-							Aggregation
-									.lookup("patient_visit_cl", "_id", "treatmentId",
-											"patientVisit"),
-							Aggregation.unwind("patientVisit"), 
-							Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$treatmentDoctor")
-											.append("preserveNullAndEmptyArrays", true))),
-							projectList,
-							new CustomAggregationOperation(
-									new BasicDBObject("$group",
-											new BasicDBObject("id", "$_id")
-													.append("patientId", new BasicDBObject("$first", "$patientId"))
-													.append("locationId", new BasicDBObject("$first", "$locationId"))
-													.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-													.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-													.append("visitId", new BasicDBObject("$first", "$visitId"))
-													.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-													.append("totalCost", new BasicDBObject("$first", "$totalCost"))
-													.append("totalDiscount",
-															new BasicDBObject("$first", "$totalDiscount"))
-													.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
-													.append("discarded", new BasicDBObject("$first", "$discarded"))
-													.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-													.append("appointmentId",
-															new BasicDBObject("$first", "$appointmentId"))
-													.append("time", new BasicDBObject("$first", "$time"))
-													.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-													.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-													.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-													.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-													.append("treatments", new BasicDBObject("$push", "$treatments")))));
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("_id").in(treatmentId).and("isPatientDiscarded").is(false)),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
+
+					Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+							"treatmentService"),
+					Aggregation.unwind("treatmentService"),
+					Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
+					Aggregation.unwind("patientVisit"),
+					Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$treatmentDoctor").append("preserveNullAndEmptyArrays", true))),
+
+					projectList,
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("id", "$_id")
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("visitId", new BasicDBObject("$first", "$visitId"))
+									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+									.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+									.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+									.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
+									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("time", new BasicDBObject("$first", "$time"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+									.append("treatments", new BasicDBObject("$push", "$treatments")))));
+
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, PatientTreatment.class)
 					.getMappedResults();
 
@@ -719,51 +736,55 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("treatments.status").is(status);
 			Aggregation aggregation = null;
-			CustomAggregationOperation projectList = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
-					.append("hospitalId", "$hospitalId")
-					.append("doctorId", "$doctorId")
-					.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
-					.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
-					.append("grandTotal", "$grandTotal")
-					.append("discarded", "$discarded").append("inHistory", "$inHistory")
-					.append("appointmentId", "$appointmentId")
-					.append("time", "$time")
-					.append("fromDate", "$fromDate").append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
-					.append("createdBy", "$createdBy").append("treatments.treatmentService", "$treatmentService")
-					.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
-					.append("treatments.doctorId", "$treatments.doctorId")
-					.append("treatments.doctorName", new BasicDBObject("$concat",Arrays.asList("$treatmentDoctor.title", " ", "$treatmentDoctor.firstName")))
-					.append("treatments.status", "$treatments.status")
-					.append("treatments.cost", "$treatments.cost")
-					.append("treatments.note", "$treatments.note")
-					.append("treatments.discount", "$treatments.discount")
-					.append("treatments.finalCost", "$treatments.finalCost")
-					.append("treatments.quantity", "$treatments.quantity")
-					.append("treatments.treatmentFields", "$treatments.treatmentFields")));
+			CustomAggregationOperation projectList = new CustomAggregationOperation(
+					new BasicDBObject("$project",
+							new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
+									.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
+									.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
+									.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
+									.append("grandTotal", "$grandTotal").append("discarded", "$discarded")
+									.append("inHistory", "$inHistory").append("appointmentId", "$appointmentId")
+									.append("time", "$time").append("fromDate", "$fromDate")
+									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
+									.append("createdBy", "$createdBy")
+									.append("treatments.treatmentService", "$treatmentService")
+									.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
+									.append("treatments.doctorId", "$treatments.doctorId")
+									.append("treatments.doctorName",
+											new BasicDBObject("$concat",
+													Arrays.asList("$treatmentDoctor.title", " ",
+															"$treatmentDoctor.firstName")))
+									.append("treatments.status", "$treatments.status")
+									.append("treatments.cost", "$treatments.cost")
+									.append("treatments.note", "$treatments.note")
+									.append("treatments.discount", "$treatments.discount")
+									.append("treatments.finalCost", "$treatments.finalCost")
+									.append("treatments.quantity", "$treatments.quantity")
+									.append("treatments.treatmentFields", "$treatments.treatmentFields")));
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 												"arrayIndex"))),
-								Aggregation
-										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-												"treatmentService"),
+								Aggregation.lookup(
+										"treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatmentService"),
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$appointmentRequest")
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
+
 								Aggregation.unwind("treatmentService"),
-								Aggregation
-										.lookup("patient_visit_cl", "_id", "treatmentId",
-												"patientVisit"),
+								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
+
 								Aggregation.unwind("patientVisit"),
 								Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$treatmentDoctor")
-												.append("preserveNullAndEmptyArrays", true))),
+										new BasicDBObject("path", "$treatmentDoctor").append(
+												"preserveNullAndEmptyArrays",
+												true))),
 								projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
@@ -795,23 +816,25 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 												"arrayIndex"))),
-								Aggregation
-										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-												"treatmentService"),
+								Aggregation.lookup(
+										"treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatmentService"),
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$appointmentRequest")
+
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
+
 								Aggregation.unwind("treatmentService"),
-								Aggregation
-										.lookup("patient_visit_cl", "_id", "treatmentId",
-												"patientVisit"),
-								Aggregation.unwind("patientVisit"), 
+								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
+								Aggregation.unwind("patientVisit"),
 								Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$treatmentDoctor")
+
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$treatmentDoctor")
 												.append("preserveNullAndEmptyArrays", true))),
+
 								projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
@@ -883,53 +906,55 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("treatments.status").is(status);
 			Aggregation aggregation = null;
-			CustomAggregationOperation projectList = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
-					.append("hospitalId", "$hospitalId")
-					.append("doctorId", "$doctorId")
-					.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
-					.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
-					.append("grandTotal", "$grandTotal")
-					.append("discarded", "$discarded").append("inHistory", "$inHistory")
-					.append("appointmentId", "$appointmentId")
-					.append("time", "$time")
-					.append("fromDate", "$fromDate").append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
-					.append("createdBy", "$createdBy").append("treatments.treatmentService", "$treatmentService")
-					.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
-					.append("treatments.doctorId", "$treatments.doctorId")
-					.append("treatments.doctorName", new BasicDBObject("$concat",Arrays.asList("$treatmentDoctor.title", " ", "$treatmentDoctor.firstName")))
-					.append("treatments.status", "$treatments.status")
-					.append("treatments.cost", "$treatments.cost")
-					.append("treatments.note", "$treatments.note")
-					.append("treatments.discount", "$treatments.discount")
-					.append("treatments.finalCost", "$treatments.finalCost")
-					.append("treatments.quantity", "$treatments.quantity")
-					.append("treatments.treatmentFields", "$treatments.treatmentFields")));
+			CustomAggregationOperation projectList = new CustomAggregationOperation(
+					new BasicDBObject("$project",
+							new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
+									.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
+									.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
+									.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
+									.append("grandTotal", "$grandTotal").append("discarded", "$discarded")
+									.append("inHistory", "$inHistory").append("appointmentId", "$appointmentId")
+									.append("time", "$time").append("fromDate", "$fromDate")
+									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
+									.append("createdBy", "$createdBy")
+									.append("treatments.treatmentService", "$treatmentService")
+									.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
+									.append("treatments.doctorId", "$treatments.doctorId")
+									.append("treatments.doctorName",
+											new BasicDBObject("$concat",
+													Arrays.asList("$treatmentDoctor.title", " ",
+															"$treatmentDoctor.firstName")))
+									.append("treatments.status", "$treatments.status")
+									.append("treatments.cost", "$treatments.cost")
+									.append("treatments.note", "$treatments.note")
+									.append("treatments.discount", "$treatments.discount")
+									.append("treatments.finalCost", "$treatments.finalCost")
+									.append("treatments.quantity", "$treatments.quantity")
+									.append("treatments.treatmentFields", "$treatments.treatmentFields")));
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 												"arrayIndex"))),
-								Aggregation
-										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-												"treatmentService"),
+								Aggregation.lookup(
+										"treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatmentService"),
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$appointmentRequest")
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
-								Aggregation.unwind("treatmentService"),
-								Aggregation
-										.lookup("patient_visit_cl", "_id", "treatmentId",
-												"patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
+
+								Aggregation.lookup("user_cl", "treatment.doctorId", "_id", "treatmentDoctor"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$treatmentDoctor")
 												.append("preserveNullAndEmptyArrays", true))),
-								projectList, 
-								
+								projectList, Aggregation.unwind("treatment"),
+								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
+								Aggregation.unwind("patientVisit"),
+
+
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -960,23 +985,27 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 												"arrayIndex"))),
-								Aggregation
-										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-												"treatmentService"),
+								Aggregation.lookup(
+										"treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatmentService"),
 								Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 										"appointmentRequest"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$appointmentRequest")
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
+
+
 								Aggregation.unwind("treatmentService"),
-								Aggregation
-										.lookup("patient_visit_cl", "_id", "treatmentId",
-												"patientVisit"),
+								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
+
+
 								Aggregation.unwind("patientVisit"),
 								Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$treatmentDoctor")
-												.append("preserveNullAndEmptyArrays", true))), projectList,
+										new BasicDBObject("path", "$treatmentDoctor").append(
+												"preserveNullAndEmptyArrays",
+												true))),
+								projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -1284,13 +1313,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String emailAddress) {
 		try {
 			MailResponse mailResponse = null;
-			if(doctorId != null && locationId != null && hospitalId != null)
-			{
-				 mailResponse = createMailData(treatmentId, doctorId, locationId, hospitalId);
-			}
-			else
-			{
-				 mailResponse = createMailDataForWeb(treatmentId, doctorId, locationId, hospitalId);
+			if (doctorId != null && locationId != null && hospitalId != null) {
+				mailResponse = createMailData(treatmentId, doctorId, locationId, hospitalId);
+			} else {
+				mailResponse = createMailDataForWeb(treatmentId, doctorId, locationId, hospitalId);
 			}
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
@@ -1650,11 +1676,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				BeanUtil.map(request, treatmentServicesCollection);
 
 				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
-				if (DPDoctorUtils.anyStringEmpty(createdBy) && !DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
+				if (DPDoctorUtils.anyStringEmpty(createdBy)
+						&& !DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
 					UserCollection userCollection = userRepository.findOne(treatmentServicesCollection.getDoctorId());
 					if (userCollection != null)
 						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-										+ userCollection.getFirstName();
+								+ userCollection.getFirstName();
 				}
 				treatmentServicesCollection.setCreatedBy(createdBy);
 				Date createdTime = new Date();
@@ -1767,8 +1794,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		response = aggregationResults.getMappedResults();
 		return response;
 	}
-	
-	private MailResponse createMailDataForWeb(String treatmentId, String doctorId, String locationId, String hospitalId) {
+
+	private MailResponse createMailDataForWeb(String treatmentId, String doctorId, String locationId,
+			String hospitalId) {
 		MailResponse response = null;
 		PatientTreatmentCollection patientTreatmentCollection = null;
 		MailAttachment mailAttachment = null;
@@ -1779,62 +1807,62 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
 			if (patientTreatmentCollection != null) {
 
-						user = userRepository.findOne(patientTreatmentCollection.getPatientId());
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
-								patientTreatmentCollection.getHospitalId());
-						user.setFirstName(patient.getLocalPatientName());
-						emailTrackCollection.setDoctorId(patientTreatmentCollection.getDoctorId());
-						emailTrackCollection.setHospitalId(patientTreatmentCollection.getHospitalId());
-						emailTrackCollection.setLocationId(patientTreatmentCollection.getLocationId());
-						emailTrackCollection.setType(ComponentType.TREATMENT.getType());
-						emailTrackCollection.setSubject("Treatment");
-						if (user != null) {
-							emailTrackCollection.setPatientName(patient.getLocalPatientName());
-							emailTrackCollection.setPatientId(user.getId());
-						}
+				user = userRepository.findOne(patientTreatmentCollection.getPatientId());
+				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
+						patientTreatmentCollection.getHospitalId());
+				user.setFirstName(patient.getLocalPatientName());
+				emailTrackCollection.setDoctorId(patientTreatmentCollection.getDoctorId());
+				emailTrackCollection.setHospitalId(patientTreatmentCollection.getHospitalId());
+				emailTrackCollection.setLocationId(patientTreatmentCollection.getLocationId());
+				emailTrackCollection.setType(ComponentType.TREATMENT.getType());
+				emailTrackCollection.setSubject("Treatment");
+				if (user != null) {
+					emailTrackCollection.setPatientName(patient.getLocalPatientName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
 
-						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient,
-								user, null, false, false, false, false);
-						mailAttachment = new MailAttachment();
-						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
-						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(patientTreatmentCollection.getDoctorId());
-						LocationCollection locationCollection = locationRepository.findOne(patientTreatmentCollection.getLocationId());
+				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
+						null, false, false, false, false);
+				mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+				UserCollection doctorUser = userRepository.findOne(patientTreatmentCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository
+						.findOne(patientTreatmentCollection.getLocationId());
 
-						response = new MailResponse();
-						response.setMailAttachment(mailAttachment);
-						response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
-						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+				response = new MailResponse();
+				response.setMailAttachment(mailAttachment);
+				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
 
-						if (address.charAt(address.length() - 2) == ',') {
-							address = address.substring(0, address.length() - 2);
-						}
-						response.setClinicAddress(address);
-						response.setClinicName(locationCollection.getLocationName());
-						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-						response.setMailRecordCreatedDate(sdf.format(patientTreatmentCollection.getCreatedTime()));
-						response.setPatientName(user.getFirstName());
-						emailTackService.saveEmailTrack(emailTrackCollection);
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				response.setClinicAddress(address);
+				response.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				response.setMailRecordCreatedDate(sdf.format(patientTreatmentCollection.getCreatedTime()));
+				response.setPatientName(user.getFirstName());
+				emailTackService.saveEmailTrack(emailTrackCollection);
 
-					}  else {
+			} else {
 				logger.warn("Treatment not found.Please check treatmentId.");
-				throw new BusinessException(ServiceError.NoRecord,
-						"Treatment not found.Please check treatmentId.");
+				throw new BusinessException(ServiceError.NoRecord, "Treatment not found.Please check treatmentId.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

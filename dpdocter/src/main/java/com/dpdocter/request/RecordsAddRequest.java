@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import java.util.Date;
+
 import com.dpdocter.beans.FileDetails;
 
 public class RecordsAddRequest {
@@ -40,7 +42,17 @@ public class RecordsAddRequest {
 	
 	private String mobileNumber;
 	
-    public String getPatientId() {
+	private Date createdTime;
+	
+    public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public String getPatientId() {
 	return patientId;
     }
 

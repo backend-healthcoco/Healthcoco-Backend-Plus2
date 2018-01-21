@@ -40,6 +40,16 @@ public class PrescriptionAddEditRequest {
 
 	private Date fromDate;
 
+	private Date createdTime;
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -178,5 +188,4 @@ public class PrescriptionAddEditRequest {
 				+ "]";
 	}
 
-	
 }

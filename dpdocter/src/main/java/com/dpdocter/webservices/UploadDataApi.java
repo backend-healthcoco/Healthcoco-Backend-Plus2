@@ -28,15 +28,15 @@ import io.swagger.annotations.ApiOperation;
 public class UploadDataApi {
 
 	private static Logger logger = Logger.getLogger(UploadDataApi.class.getName());
-	
+
 	@Autowired
 	private UploadDateService uploadDataService;
-	
+
 	@Path(value = PathProxy.UploadDataUrls.PATIENTS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.PATIENTS, notes = PathProxy.UploadDataUrls.PATIENTS)
-	public Response<Boolean> uploadPatientData(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, 
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> uploadPatientData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -45,94 +45,103 @@ public class UploadDataApi {
 		response.setData(uploadDataService.uploadPatientData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.PRESCRIPTIONS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.PRESCRIPTIONS, notes = PathProxy.UploadDataUrls.PRESCRIPTIONS)
-	public Response<Boolean> uploadPrescriptionData(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, 
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> uploadPrescriptionData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-	
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(uploadDataService.uploadPrescriptionData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.APPOINTMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.APPOINTMENTS, notes = PathProxy.UploadDataUrls.APPOINTMENTS)
-	public Response<Boolean> uploadAppointmentData(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, 
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> uploadAppointmentData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-	
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(uploadDataService.uploadAppointmentData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.TREATMENT_PLANS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.TREATMENT_PLANS, notes = PathProxy.UploadDataUrls.TREATMENT_PLANS)
-	public Response<Boolean> uploadTreatmentPlansData(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, 
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> uploadTreatmentPlansData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-	
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(uploadDataService.uploadTreatmentPlansData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.TREATMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.TREATMENTS, notes = PathProxy.UploadDataUrls.TREATMENTS)
-	public Response<Boolean> uploadTreatmentData(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, 
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> uploadTreatmentData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-	
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(uploadDataService.uploadTreatmentData(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.ASSIGN_PNUM_TO_PATIENTS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.ASSIGN_PNUM_TO_PATIENTS, notes = PathProxy.UploadDataUrls.ASSIGN_PNUM_TO_PATIENTS)
-	public Response<Boolean> assignPNUMToPatientsHavingPNUMAsNull(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, 
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> assignPNUMToPatientsHavingPNUMAsNull(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-	
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(uploadDataService.assignPNUMToPatientsHavingPNUMAsNull(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.UploadDataUrls.DELETE_PATIENTS)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.DELETE_PATIENTS, notes = PathProxy.UploadDataUrls.DELETE_PATIENTS)
-	public Response<Boolean> deletePatients(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, 
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> deletePatients(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-	
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(uploadDataService.deletePatients(doctorId, locationId, hospitalId));
+		return response;
+	}
+
+	@Path(value = PathProxy.UploadDataUrls.UPDATE_EMR)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_EMR, notes = PathProxy.UploadDataUrls.UPDATE_EMR)
+	public Response<Boolean> updateEMR() {
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(uploadDataService.updateEMR());
 		return response;
 	}
 }

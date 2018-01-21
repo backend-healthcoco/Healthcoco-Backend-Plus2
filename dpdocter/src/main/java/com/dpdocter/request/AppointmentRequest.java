@@ -46,21 +46,21 @@ public class AppointmentRequest {
 	private String mobileNumber;
 
 	private String visitId;
-	
+
 	private QueueStatus status = QueueStatus.SCHEDULED;
-    
-    private long waitedFor = 0;
-    
-    private long engagedFor = 0;
-    
-    private long engagedAt = 0;
-    
-    private long checkedInAt = 0;
-    
-    private long checkedOutAt = 0;
-    
-    private String category;
-    
+
+	private long waitedFor = 0;
+
+	private long engagedFor = 0;
+
+	private long engagedAt = 0;
+
+	private long checkedInAt = 0;
+
+	private long checkedOutAt = 0;
+
+	private String category;
+
 	public String getAppointmentId() {
 		return appointmentId;
 	}

@@ -37,6 +37,16 @@ public class PatientTreatmentAddEditRequest {
 	private double grandTotal = 0.0;
 	
 	private AppointmentRequest appointmentRequest;
+	
+	private Date createdTime;
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
 
 	public String getAppointmentId() {
 		return appointmentId;
