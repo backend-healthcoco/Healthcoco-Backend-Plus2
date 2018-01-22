@@ -16,15 +16,20 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
+import com.dpdocter.beans.User;
 import com.dpdocter.collections.CRNCollection;
+import com.dpdocter.collections.CollectionBoyDoctorAssociationCollection;
+import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
 import com.dpdocter.collections.DentalWorkCollection;
@@ -40,6 +45,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CRNRepository;
+import com.dpdocter.repository.CollectionBoyDoctorAssociationRepository;
 import com.dpdocter.repository.DentalLabDoctorAssociationRepository;
 import com.dpdocter.repository.DentalLabTestPickupRepository;
 import com.dpdocter.repository.DentalWorkRepository;
@@ -49,6 +55,8 @@ import com.dpdocter.repository.RateCardDoctorAssociationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
+import com.dpdocter.response.CBDoctorAssociationLookupResponse;
+import com.dpdocter.response.CBLabAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.DentalLabService;
@@ -84,6 +92,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Autowired
 	private DentalLabDoctorAssociationRepository dentalLabDoctorAssociationRepository;
+	
+	@Autowired
+	private CollectionBoyDoctorAssociationRepository collectionBoyDoctorAssociationRepository;
 	
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -226,6 +237,36 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public Boolean addEditDentalLabDoctorAssociation(List<DentalLabDoctorAssociation> request) {
+		Boolean response = null;
+		try {
+			for(DentalLabDoctorAssociation dentalLabDoctorAssociation : request)
+			{
+			DentalLabDoctorAssociationCollection dentalLabDoctorAssociationCollection= new DentalLabDoctorAssociationCollection();
+			BeanUtil.map(dentalLabDoctorAssociation, dentalLabDoctorAssociationCollection);
+			if (DPDoctorUtils.anyStringEmpty(dentalLabDoctorAssociationCollection.getId())) {
+				dentalLabDoctorAssociationCollection.setCreatedTime(new Date());
+				
+			} else {
+				DentalLabDoctorAssociationCollection oldDentalLabDoctorAssociation = dentalLabDoctorAssociationRepository
+						.findOne(dentalLabDoctorAssociationCollection.getId());
+				dentalLabDoctorAssociationCollection.setCreatedBy(oldDentalLabDoctorAssociation.getCreatedBy());
+				dentalLabDoctorAssociationCollection.setCreatedTime(oldDentalLabDoctorAssociation.getCreatedTime());
+			}
+			dentalLabDoctorAssociationCollection = dentalLabDoctorAssociationRepository.save(dentalLabDoctorAssociationCollection);
+			/*response = new DentalLabDoctorAssociation();
+			BeanUtil.map(dentalLabDoctorAssociationCollection, response);*/
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
 
 	@Override
 	@Transactional
@@ -345,9 +386,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public Boolean addEditRateCardDentalWorkAssociation(List<RateCardDentalWorkAssociation> request) {
 		boolean response = false;
 		RateCardDentalWorkAssociationCollection rateCardDentalWorkAssociationCollection = null;
-		List<RateCardDentalWorkAssociationCollection> rateCardDentalWorkAssociationCollections = null;
 		try {
-			rateCardDentalWorkAssociationCollections = new ArrayList<RateCardDentalWorkAssociationCollection>();
 			for (RateCardDentalWorkAssociation workAssociation : request) {
 				if (workAssociation.getId() != null) {
 					rateCardDentalWorkAssociationCollection = rateCardDentalWorkAssociationRepository
@@ -447,6 +486,132 @@ public class DentalLabServiceImpl implements DentalLabService {
 			throw new BusinessException(ServiceError.InvalidInput , "Invalid Input" + e);
 		}
 		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm,
+			String doctorId, Boolean discarded) {
+		List<RateCardDoctorAssociation> rateCardTests = null;
+
+		try {
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("dentalWork.workName").regex("^" + searchTerm, "i"),
+						new Criteria("dentalWork.workName").regex("^" + searchTerm));
+			}
+			criteria.and("doctorId").is(new ObjectId(doctorId));
+			criteria.and("discarded").is(discarded);
+			
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(
+						/*Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
+						Aggregation.unwind("dentalWork"),*/
+						/*
+						 * Aggregation.lookup("specimen_cl",
+						 * "diagnosticTest.specimenId", "_id", "specimen"),
+						 * Aggregation.unwind("specimen"),
+						 */
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(
+						/*Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
+						Aggregation.unwind("dentalWork"), */Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			}
+			AggregationResults<RateCardDoctorAssociation> aggregationResults = mongoTemplate.aggregate(
+					aggregation, RateCardDoctorAssociationCollection.class, RateCardDoctorAssociation.class);
+			rateCardTests = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting rate card works");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting rate card works");
+		}
+		return rateCardTests;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean addEditCollectionBoyDoctorAssociation(List<CollectionBoyDoctorAssociation> request) {
+		Boolean response = false;
+		ObjectId oldId = null;
+		CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = null;
+		try {
+			for(CollectionBoyDoctorAssociation collectionBoyDoctorAssociation : request)
+			{
+				collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository.getByLocationDoctor(new ObjectId(collectionBoyDoctorAssociation.getDentalLabId()), new ObjectId(collectionBoyDoctorAssociation.getDoctorId()));
+			if (collectionBoyDoctorAssociationCollection == null) {
+				collectionBoyDoctorAssociationCollection = new CollectionBoyDoctorAssociationCollection();
+			} else {
+				oldId = collectionBoyDoctorAssociationCollection.getId();
+				// rateCardLabAssociationCollection.setId(rateCardLabAssociationCollection.getId());
+			}
+
+			BeanUtil.map(collectionBoyDoctorAssociation, collectionBoyDoctorAssociationCollection);
+			collectionBoyDoctorAssociationCollection.setId(oldId);
+			collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository.save(collectionBoyDoctorAssociationCollection);
+			}
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn(e);
+			throw new BusinessException(ServiceError.InvalidInput , "Invalid Input" + e);
+		}
+		return response;
+	}
+
+	
+	
+	@Override
+	@Transactional
+	public List<User> getCBAssociatedDoctors(String doctorId, String dentalLabId, String collectionBoyId,
+			int size, int page) {
+		List<User> users = null;
+		List<CBDoctorAssociationLookupResponse> lookupResponses = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabId)) {
+				criteria.and("dentalLabId").is(new ObjectId(dentalLabId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(collectionBoyId)) {
+				criteria.and("collectionBoyId").is(new ObjectId(collectionBoyId));
+			}
+			criteria.and("isActive").is(true);
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
+						Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
+						Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<CBDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					CollectionBoyDoctorAssociationCollection.class, CBDoctorAssociationLookupResponse.class);
+			lookupResponses = aggregationResults.getMappedResults();
+			if (lookupResponses != null) {
+				users = new ArrayList<User>();
+				for (CBDoctorAssociationLookupResponse lookupResponse : lookupResponses) {
+					users.add(lookupResponse.getDoctor());
+				}
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.warn(e);
+		}
+		return users;
 	}
 
 

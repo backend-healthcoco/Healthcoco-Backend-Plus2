@@ -5,19 +5,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "rate_card_doctor_association_cl")
-public class RateCardDoctorAssociationCollection extends GenericCollection {
+@Document(collection = "collection_boy_doctor_association_cl")
+public class CollectionBoyDoctorAssociationCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
+	@Field
+	private ObjectId collectionBoyId;
 	@Field
 	private ObjectId dentalLabId;
 	@Field
 	private ObjectId doctorId;
 	@Field
-	private ObjectId rateCardId;
-	@Field
-	private Boolean discarded = false;
+	private Boolean isActive = true;
 
 	public ObjectId getId() {
 		return id;
@@ -25,6 +25,14 @@ public class RateCardDoctorAssociationCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
+	}
+
+	public ObjectId getCollectionBoyId() {
+		return collectionBoyId;
+	}
+
+	public void setCollectionBoyId(ObjectId collectionBoyId) {
+		this.collectionBoyId = collectionBoyId;
 	}
 
 	public ObjectId getDentalLabId() {
@@ -43,26 +51,18 @@ public class RateCardDoctorAssociationCollection extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getRateCardId() {
-		return rateCardId;
+	public Boolean getIsActive() {
+		return isActive;
 	}
 
-	public void setRateCardId(ObjectId rateCardId) {
-		this.rateCardId = rateCardId;
-	}
-
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
 	}
 
 	@Override
 	public String toString() {
-		return "RateCardDentalLabAssociationCollection [id=" + id + ", dentalLabId=" + dentalLabId + ", doctorId="
-				+ doctorId + ", rateCardId=" + rateCardId + ", discarded=" + discarded + "]";
+		return "CollectionBoyDoctorAssociationCollection [id=" + id + ", collectionBoyId=" + collectionBoyId
+				+ ", dentalLabId=" + dentalLabId + ", doctorId=" + doctorId + ", isActive=" + isActive + "]";
 	}
 
 }
