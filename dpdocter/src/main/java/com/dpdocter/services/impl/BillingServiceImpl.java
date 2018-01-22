@@ -308,7 +308,7 @@ public class BillingServiceImpl implements BillingService {
 										+ doctor.getFirstName());
 					}
 				}
-				if (DPDoctorUtils.anyStringEmpty(doctorPatientInvoiceCollection.getId())) {
+				if (!DPDoctorUtils.anyStringEmpty(doctorPatientInvoiceCollection.getId())) {
 					inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
 							request.getHospitalId(), invoiceItemResponse.getItemId(),
 							doctorPatientInvoiceCollection.getId().toString());
