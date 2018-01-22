@@ -356,7 +356,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					patientTreatmentCollection.setAdminCreatedTime(oldPatientTreatmentCollection.getAdminCreatedTime());
 					patientTreatmentCollection.setUpdatedTime(new Date());
 					patientTreatmentCollection.setCreatedBy(createdBy);
-					patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					patientTreatmentCollection.setUniqueEmrId(oldPatientTreatmentCollection.getUniqueEmrId());
 					patientTreatmentCollection.setDiscarded(oldPatientTreatmentCollection.getDiscarded());
 					patientTreatmentCollection.setInHistory(oldPatientTreatmentCollection.getInHistory());
@@ -954,7 +953,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
 
-
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -994,10 +992,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 
-
 								Aggregation.unwind("treatmentService"),
 								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
-
 
 								Aggregation.unwind("patientVisit"),
 								Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
