@@ -1629,7 +1629,6 @@ public interface PathProxy {
 
 	}
 
-
 	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";
 
 	public interface CertificateTemplatesUrls {
@@ -1648,7 +1647,6 @@ public interface PathProxy {
 		public static final String DELETE_PATIENT_CERTIFICATE = "/patient/{certificateId}/delete";
 
 		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
-		
 
 	}
 
@@ -1678,6 +1676,4 @@ public interface PathProxy {
 	public interface ESDentalLabsUrl {
 		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks/{range}";
 	}
-
-
 }

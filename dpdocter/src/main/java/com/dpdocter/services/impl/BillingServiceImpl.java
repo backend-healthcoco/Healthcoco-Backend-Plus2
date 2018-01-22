@@ -32,6 +32,7 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.InventoryStock;
@@ -224,7 +225,6 @@ public class BillingServiceImpl implements BillingService {
 			
 			ObjectId doctorObjectId = new ObjectId(request.getDoctorId());
 			Double dueAmount = 0.0;
-			
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientInvoiceCollection);
 				UserCollection userCollection = userRepository.findOne(doctorObjectId);
@@ -1538,9 +1538,9 @@ public class BillingServiceImpl implements BillingService {
 
 				String serviceName = invoiceItem.getName() != null ? invoiceItem.getName() : "";
 				String fieldName = "";
-				//if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
-				/*	String key = "";
-					for (field treatmentFile : invoiceItem.getTreatmentFields()) {
+				if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
+					String key = "";
+					for (Fields treatmentFile : invoiceItem.getTreatmentFields()) {
 						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {
@@ -1556,7 +1556,7 @@ public class BillingServiceImpl implements BillingService {
 							}
 						}
 					}
-				}*/
+				}
 				serviceName = serviceName == "" ? "--" : serviceName + fieldName;
 				invoiceItemJasperDetail.setServiceName(serviceName);
 

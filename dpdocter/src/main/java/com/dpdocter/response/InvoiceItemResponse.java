@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
@@ -18,6 +19,8 @@ public class InvoiceItemResponse {
 
 	private String doctorName;
 
+	private Date itemDate;
+	
 	private String name;
 
 	private InvoiceItemType type;
@@ -161,13 +164,22 @@ public class InvoiceItemResponse {
 	public void setInventoryBatch(InventoryBatch inventoryBatch) {
 		this.inventoryBatch = inventoryBatch;
 	}
+	
+	public Date getItemDate() {
+		return itemDate;
+	}
+
+	public void setItemDate(Date itemDate) {
+		this.itemDate = itemDate;
+	}
 
 	@Override
 	public String toString() {
 		return "InvoiceItemResponse [itemId=" + itemId + ", doctorId=" + doctorId + ", doctorName=" + doctorName
-				+ ", name=" + name + ", type=" + type + ", quantity=" + quantity + ", status=" + status + ", cost="
-				+ cost + ", discount=" + discount + ", tax=" + tax + ", finalCost=" + finalCost + ", treatmentFields="
-				+ treatmentFields + "]";
+				+ ", itemDate=" + itemDate + ", name=" + name + ", type=" + type + ", quantity=" + quantity
+				+ ", status=" + status + ", inventoryQuantity=" + inventoryQuantity + ", saveToInventory="
+				+ saveToInventory + ", cost=" + cost + ", discount=" + discount + ", tax=" + tax + ", finalCost="
+				+ finalCost + ", treatmentFields=" + treatmentFields + ", inventoryBatch=" + inventoryBatch + "]";
 	}
 
 }

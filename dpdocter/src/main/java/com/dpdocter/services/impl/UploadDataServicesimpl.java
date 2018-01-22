@@ -1312,12 +1312,10 @@ System.out.println(fields[0] +""+ fields[1]);
 							Treatment treatment = new Treatment();
 							BeanUtil.map(treatmentService, treatment);
 							treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
-
-							if (checkIfNotNullOrNone(fields[4])) {
+							if(checkIfNotNullOrNone(fields[4])) {
 								List<Fields> treatmentFieldList = new ArrayList<>();
 								Fields treatmentFields = new Fields();
-								treatmentFields.setKey("toothNumber");
-								treatmentFields.setValue(fields[4].replace("'", ""));
+								treatmentFields.setKey("toothNumber");treatmentFields.setValue(fields[4].replace("'", ""));
 								treatmentFieldList.add(treatmentFields);
 								treatment.setTreatmentFields(treatmentFieldList);
 							}

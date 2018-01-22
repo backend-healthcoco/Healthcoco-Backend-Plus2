@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -8,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Fields;
 
 @Document(collection = "consent_form_cl")
 public class ConsentFormCollection extends GenericCollection {
@@ -77,6 +79,15 @@ public class ConsentFormCollection extends GenericCollection {
 	@Field
 	private Boolean discarded = false;
 
+	@Field
+	private ObjectId templateId;
+	
+	@Field
+	private List<Fields> inputElements;
+	
+	@Field
+	private String type;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -251,6 +262,30 @@ public class ConsentFormCollection extends GenericCollection {
 
 	public void setLocationName(String locationName) {
 		this.locationName = locationName;
+	}
+
+	public ObjectId getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(ObjectId templateId) {
+		this.templateId = templateId;
+	}
+
+	public List<Fields> getInputElements() {
+		return inputElements;
+	}
+
+	public void setInputElements(List<Fields> inputElements) {
+		this.inputElements = inputElements;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

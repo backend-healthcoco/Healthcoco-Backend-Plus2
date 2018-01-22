@@ -11,8 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Executors;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 
@@ -54,7 +54,6 @@ import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientQueue;
-import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
@@ -89,8 +88,6 @@ import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorFacility;
-import com.dpdocter.enums.FONTSTYLE;
-import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.Resource;
@@ -147,7 +144,6 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.services.UserFavouriteService;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
@@ -3119,9 +3115,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointmentCollection
 						.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
 			} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
-				appointmentCollection.setCheckedOutAt(new Date().getTime());
-				appointmentCollection
-						.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
+				appointmentCollection.setCheckedOutAt(new Date(System.currentTimeMillis()).getTime());
+				appointmentCollection.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
 			}
 
 			appointmentCollection.setStatus(QueueStatus.valueOf(status));

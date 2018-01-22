@@ -38,9 +38,9 @@ public class InvoiceItem {
 	private InventoryBatch inventoryBatch;
 
 	private String note;
-	
-	private List<Fields> treatmentFields;
 
+	private List<Fields> treatmentFields;
+	
 	public ObjectId getItemId() {
 		return itemId;
 	}
