@@ -19,6 +19,7 @@ public class DentalWorksSample {
 	private String shade;
 	private List<String> material;
 	private List<DentalStage> dentalStagesForDoctor;
+	private RateCardDentalWorkAssociation rateCardDentalWorkAssociation;
 
 	public DentalWork getDentalWork() {
 		return dentalWork;
@@ -146,6 +147,14 @@ public class DentalWorksSample {
 
 	public void setDentalStagesForDoctor(List<DentalStage> dentalStagesForDoctor) {
 		this.dentalStagesForDoctor = dentalStagesForDoctor;
+	}
+
+	public RateCardDentalWorkAssociation getRateCardDentalWorkAssociation() {
+		return rateCardDentalWorkAssociation;
+	}
+
+	public void setRateCardDentalWorkAssociation(RateCardDentalWorkAssociation rateCardDentalWorkAssociation) {
+		this.rateCardDentalWorkAssociation = rateCardDentalWorkAssociation;
 	}
 
 	@Override

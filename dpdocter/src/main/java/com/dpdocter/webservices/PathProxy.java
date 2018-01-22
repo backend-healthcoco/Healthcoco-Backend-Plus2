@@ -1566,6 +1566,7 @@ public interface PathProxy {
 	public static final String DENTAL_LAB_BASE_URL = BASE_URL + "/dentalLab";
 
 	public interface DentalLabUrls {
+
 		public static final String ADD_EDIT_DENTAL_WORKS = "/addEditDentalWorks";
 		public static final String GET_DENTAL_WORKS = "/getDentalWorks";
 		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
@@ -1577,6 +1578,10 @@ public interface PathProxy {
 		public static final String DELETE_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
 		public static final String ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION = "/addEditRateCardWorkAssociation";
 		public static final String GET_RATE_CARD_WORKS = "/getRateCardWork";
+		public static final String ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION = "/addEditRateCardDoctorAssociation";
+		public static final String GET_RATE_CARD_DOCTOR_ASSOCIATION = "/getRateCardDoctorAssociation";
+		public static final String ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION = "/addEditCollectionBoyDoctorAssociation";
+		public static final String GET_COLLECTION_BOY_DOCTOR_ASSOCIATION = "/getCollectionBoyDoctorAssociation";
 
 	}
 

@@ -16,11 +16,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
-import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
+import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -96,7 +97,6 @@ public class DentalLabAPI {
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION)
@@ -110,7 +110,6 @@ public class DentalLabAPI {
 		return response;
 	}
 	
-
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
@@ -124,7 +123,6 @@ public class DentalLabAPI {
 		response.setDataList(dentalLabService.getDentalLabDoctorAssociations(locationId, page, size, searchTerm));
 		return response;
 	}
-
 	
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
 	@POST
@@ -152,7 +150,6 @@ public class DentalLabAPI {
 		return response;
 	}
 	
-	
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
@@ -167,6 +164,57 @@ public class DentalLabAPI {
 		return response;
 	}
 	
+	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION)
+	@POST
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION)
+	public Response<Boolean> addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.addEditRateCardDoctorAssociation(request));
+		return response;
+	}
 	
+	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
+	public Response<RateCardDentalWorkAssociation> getRateCards(@QueryParam("page") int page,@QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm , @QueryParam("doctorId") String doctorId ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (doctorId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
+		response.setDataList(dentalLabService.getRateCards(page, size, searchTerm, doctorId, discarded));
+		return response;
+	}
 	
+	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION)
+	@POST
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION)
+	public Response<Boolean> addEditCollectionBoyDoctorAssociation(List<CollectionBoyDoctorAssociation> request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.addEditCollectionBoyDoctorAssociation(request));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION)
+	public Response<RateCardDentalWorkAssociation> getCBDoctorAssociation(@QueryParam("page") int page,@QueryParam("size") int size,
+			 @QueryParam("doctorId") String doctorId , @QueryParam("dentalLabId") String dentalLabId , @QueryParam("collectionBoyId") String collectionBoyId) {
+		if (doctorId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
+		response.setDataList(dentalLabService.getCBAssociatedDoctors(doctorId, dentalLabId, collectionBoyId, size, page));
+		return response;
+	}
 }

@@ -3,32 +3,54 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DentalWorksSample;
 
 @Document(collection = "dental_lab_pickup_cl")
 public class DentalLabPickupCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private String patientName;
+	@Field
 	private String mobileNumber;
+	@Field
 	private String gender;
+	@Field
 	private Integer age;
+	@Field
 	private List<DentalWorksSample> dentalWorksSamples;
+	@Field
 	private String crn;
+	@Field
 	private Long pickupTime;
+	@Field
 	private Long deliveryTime;
+	@Field
 	private String status;
+	@Field
 	private ObjectId doctorId;
+	@Field
 	private ObjectId dentalLabId;
+	@Field
 	private Boolean discarded = false;
+	@Field
 	private Integer numberOfSamplesRequested;
+	@Field
 	private Integer numberOfSamplesPicked;
+	@Field
 	private String requestId;
+	@Field
 	private Boolean isAcceptedAtLab = false;
+	@Field
 	private Boolean isCompleted = false;
+	@Field
 	private String collectionBoyId;
+	@Field
 	private String serialNumber;
 
 	public ObjectId getId() {
