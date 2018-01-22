@@ -1,12 +1,13 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Tax;
-import com.dpdocter.beans.TreatmentFields;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
@@ -18,6 +19,8 @@ public class InvoiceItemResponse {
 
 	private String doctorName;
 
+	private Date itemDate;
+	
 	private String name;
 
 	private InvoiceItemType type;
@@ -38,7 +41,7 @@ public class InvoiceItemResponse {
 
 	private Double finalCost = 0.0;
 
-	private List<TreatmentFields> treatmentFields;
+	private List<Fields> treatmentFields;
 
 	private InventoryBatch inventoryBatch;
 
@@ -130,11 +133,11 @@ public class InvoiceItemResponse {
 		this.finalCost = finalCost;
 	}
 
-	public List<TreatmentFields> getTreatmentFields() {
+	public List<Fields> getTreatmentFields() {
 		return treatmentFields;
 	}
 
-	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
+	public void setTreatmentFields(List<Fields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
 	}
 
@@ -162,12 +165,21 @@ public class InvoiceItemResponse {
 		this.saveToInventory = saveToInventory;
 	}
 
+	public Date getItemDate() {
+		return itemDate;
+	}
+
+	public void setItemDate(Date itemDate) {
+		this.itemDate = itemDate;
+	}
+
 	@Override
 	public String toString() {
 		return "InvoiceItemResponse [itemId=" + itemId + ", doctorId=" + doctorId + ", doctorName=" + doctorName
-				+ ", name=" + name + ", type=" + type + ", quantity=" + quantity + ", status=" + status + ", cost="
-				+ cost + ", discount=" + discount + ", tax=" + tax + ", finalCost=" + finalCost + ", treatmentFields="
-				+ treatmentFields + "]";
+				+ ", itemDate=" + itemDate + ", name=" + name + ", type=" + type + ", quantity=" + quantity
+				+ ", status=" + status + ", inventoryQuantity=" + inventoryQuantity + ", saveToInventory="
+				+ saveToInventory + ", cost=" + cost + ", discount=" + discount + ", tax=" + tax + ", finalCost="
+				+ finalCost + ", treatmentFields=" + treatmentFields + ", inventoryBatch=" + inventoryBatch + "]";
 	}
 
 }

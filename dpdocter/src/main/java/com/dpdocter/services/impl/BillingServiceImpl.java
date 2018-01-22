@@ -38,7 +38,7 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.TreatmentFields;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
@@ -208,12 +208,11 @@ public class BillingServiceImpl implements BillingService {
 	@Override
 	public DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request) {
 		DoctorPatientInvoice response = null;
-		ObjectId oldDoctorId = null;
 		try {
 			Map<String, UserCollection> doctorsMap = new HashMap<String, UserCollection>();
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
 			ObjectId doctorObjectId = new ObjectId(request.getDoctorId());
-			Double dueAmount = 0.0, oldDoctorDueAmount = 0.0;
+			Double dueAmount = 0.0;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientInvoiceCollection);
 				UserCollection userCollection = userRepository.findOne(doctorObjectId);
@@ -263,8 +262,6 @@ public class BillingServiceImpl implements BillingService {
 				if (!doctorPatientInvoiceCollection.getDoctorId().toString().equalsIgnoreCase(request.toString())) {
 					if (doctorPatientInvoiceCollection.getReceiptIds() == null
 							|| doctorPatientInvoiceCollection.getReceiptIds().isEmpty()) {
-						oldDoctorId = doctorPatientInvoiceCollection.getDoctorId();
-						oldDoctorDueAmount = doctorPatientInvoiceCollection.getBalanceAmount();
 						doctorPatientInvoiceCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 					} else {
 						throw new BusinessException(ServiceError.Unknown,
@@ -277,8 +274,7 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientInvoiceCollection.setTotalCost(request.getTotalCost());
 				doctorPatientInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
 				doctorPatientInvoiceCollection.setTotalTax(request.getTotalTax());
-				doctorPatientInvoiceCollection
-						.setBalanceAmount((request.getGrandTotal() - doctorPatientInvoiceCollection.getGrandTotal())
+				doctorPatientInvoiceCollection.setBalanceAmount((request.getGrandTotal() - doctorPatientInvoiceCollection.getGrandTotal())
 								+ doctorPatientInvoiceCollection.getBalanceAmount());
 				doctorPatientInvoiceCollection.setGrandTotal(request.getGrandTotal());
 				if (doctorPatientInvoiceCollection.getBalanceAmount() < 0) {
@@ -399,34 +395,19 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientLedgerCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
 					doctorPatientLedgerCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
 					doctorPatientLedgerCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
-					// doctorPatientLedgerCollection.setDueAmount(balanceAmount
-					// + doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setCreatedTime(new Date());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				} else {
-					// doctorPatientLedgerCollection.setDueAmount(balanceAmount
-					// + doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
-				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = null;
-				if (oldDoctorId != null) {
-					doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.find(
-							doctorPatientInvoiceCollection.getPatientId(), oldDoctorId,
-							doctorPatientInvoiceCollection.getLocationId(),
-							doctorPatientInvoiceCollection.getHospitalId());
-					if (doctorPatientDueAmountCollection != null) {
-						doctorPatientDueAmountCollection
-								.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - oldDoctorDueAmount);
-						doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
-					}
-				}
-
-				doctorPatientDueAmountRepository.find(doctorPatientInvoiceCollection.getPatientId(),
-						doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(),
-						doctorPatientInvoiceCollection.getHospitalId());
+				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+						.find(doctorPatientInvoiceCollection.getPatientId(),
+								doctorPatientInvoiceCollection.getDoctorId(),
+								doctorPatientInvoiceCollection.getLocationId(),
+								doctorPatientInvoiceCollection.getHospitalId());
 				if (doctorPatientDueAmountCollection == null) {
 					doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
 					doctorPatientDueAmountCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
@@ -435,8 +416,7 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientDueAmountCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
 					doctorPatientDueAmountCollection.setDueAmount(0.0);
 				}
-				doctorPatientDueAmountCollection
-						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + dueAmount);
+				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + dueAmount);
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 			}
 		} catch (BusinessException be) {
@@ -1491,7 +1471,7 @@ public class BillingServiceImpl implements BillingService {
 				String fieldName = "";
 				if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
 					String key = "";
-					for (TreatmentFields treatmentFile : invoiceItem.getTreatmentFields()) {
+					for (Fields treatmentFile : invoiceItem.getTreatmentFields()) {
 						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {

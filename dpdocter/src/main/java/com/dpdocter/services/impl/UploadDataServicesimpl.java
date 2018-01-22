@@ -39,7 +39,7 @@ import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.TreatmentFields;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.AdmitCardCollection;
@@ -1222,12 +1222,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 							Treatment treatment = new Treatment();
 							BeanUtil.map(treatmentService, treatment);
 							treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
-
-							if (checkIfNotNullOrNone(fields[4])) {
-								List<TreatmentFields> treatmentFieldList = new ArrayList<>();
-								TreatmentFields treatmentFields = new TreatmentFields();
-								treatmentFields.setKey("toothNumber");
-								treatmentFields.setValue(fields[4].replace("'", ""));
+							if(checkIfNotNullOrNone(fields[4])) {
+								List<Fields> treatmentFieldList = new ArrayList<>();
+								Fields treatmentFields = new Fields();
+								treatmentFields.setKey("toothNumber");treatmentFields.setValue(fields[4].replace("'", ""));
 								treatmentFieldList.add(treatmentFields);
 								treatment.setTreatmentFields(treatmentFieldList);
 							}

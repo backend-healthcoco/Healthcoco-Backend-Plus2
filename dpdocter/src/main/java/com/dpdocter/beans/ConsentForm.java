@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import java.util.Date;
+import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 
@@ -42,7 +43,7 @@ public class ConsentForm extends GenericCollection {
 
 	private String declaration;
 
-	private Date dateOfSign = new Date();;
+	private Date dateOfSign = new Date();
 
 	private String signImageURL;
 
@@ -50,8 +51,14 @@ public class ConsentForm extends GenericCollection {
 
 	private Boolean discarded = false;
 	
+	private String templateId;
 	
-
+	private List<Fields> inputElements;
+	
+	private String templateHtmlText;
+	
+	private String type;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -227,5 +234,38 @@ public class ConsentForm extends GenericCollection {
 	public void setLocationName(String locationName) {
 		this.locationName = locationName;
 	}
+
+	public String getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
+	}
+
+	public List<Fields> getInputElements() {
+		return inputElements;
+	}
+
+	public void setInputElements(List<Fields> inputElements) {
+		this.inputElements = inputElements;
+	}
+
+	public String getTemplateHtmlText() {
+		return templateHtmlText;
+	}
+
+	public void setTemplateHtmlText(String templateHtmlText) {
+		this.templateHtmlText = templateHtmlText;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 
 }

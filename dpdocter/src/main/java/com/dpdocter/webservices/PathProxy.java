@@ -1585,4 +1585,25 @@ public interface PathProxy {
 
 	}
 
+	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";
+
+	public interface CertificateTemplatesUrls {
+		public static final String ADD_CERTIFICATE_TEMPLATES = "template/add";
+
+		public static final String GET_CERTIFICATE_TEMPLATE_BY_ID = "/template/{templateId}/view";
+		
+		public static final String GET_CERTIFICATE_TEMPLATES = "template";
+
+		public static final String DELETE_CERTIFICATE_TEMPLATES = "/template/{templateId}/delete";
+
+		public static final String ADD_PATIENT_CERTIFICATE = "/patient/add";
+
+		public static final String GET_PATIENT_CERTIFICATES = "/patient/";
+
+		public static final String DELETE_PATIENT_CERTIFICATE = "/patient/{certificateId}/delete";
+
+		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
+	
+	}
+
 }

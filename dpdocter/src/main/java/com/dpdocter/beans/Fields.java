@@ -1,6 +1,6 @@
 package com.dpdocter.beans;
 
-public class TreatmentFields {
+public class Fields {
 
 	private String key;
 	
@@ -8,7 +8,7 @@ public class TreatmentFields {
 
 	@Override
 	public String toString() {
-		return "TreatmentFields [key=" + key + ", value=" + value + "]";
+		return "Fields [key=" + key + ", value=" + value + "]";
 	}
 
 	public String getKey() {

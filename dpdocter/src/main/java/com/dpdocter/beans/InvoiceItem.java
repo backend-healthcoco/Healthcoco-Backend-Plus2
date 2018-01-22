@@ -37,15 +37,15 @@ public class InvoiceItem {
 
 	private InventoryBatch inventoryBatch;
 
-	public List<TreatmentFields> getTreatmentFields() {
+	public List<Fields> getTreatmentFields() {
 		return treatmentFields;
 	}
 
-	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
+	public void setTreatmentFields(List<Fields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
 	}
 
-	private List<TreatmentFields> treatmentFields;
+	private List<Fields> treatmentFields;
 
 	public ObjectId getItemId() {
 		return itemId;
