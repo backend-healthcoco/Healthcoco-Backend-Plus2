@@ -1084,7 +1084,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			 */
 			List<ESLocationDocument> esLocationDocuments = null;
 			Collection<String> locationIds = null;
-			if (esLabTestDocuments != null) {
+
+			if (esLabTestDocuments == null || esLabTestDocuments.isEmpty()) {
+
 				locationIds = CollectionUtils.collect(esLabTestDocuments,
 						new BeanToPropertyValueTransformer("locationId"));
 			}
