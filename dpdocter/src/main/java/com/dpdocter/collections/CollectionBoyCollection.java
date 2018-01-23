@@ -35,7 +35,7 @@ public class CollectionBoyCollection extends GenericCollection {
 	@Field
 	private Boolean isAvailable;
 	@Field
-	private LabType labType = LabType.DIAGNOSTIC;
+	private String labType = LabType.DIAGNOSTIC.getType();
 
 	public ObjectId getId() {
 		return id;
@@ -125,11 +125,11 @@ public class CollectionBoyCollection extends GenericCollection {
 		this.userId = userId;
 	}
 
-	public LabType getLabType() {
+	public String getLabType() {
 		return labType;
 	}
 
-	public void setLabType(LabType labType) {
+	public void setLabType(String labType) {
 		this.labType = labType;
 	}
 
