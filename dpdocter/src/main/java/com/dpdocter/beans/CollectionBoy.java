@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.LabType;
 
 public class CollectionBoy extends GenericCollection {
 

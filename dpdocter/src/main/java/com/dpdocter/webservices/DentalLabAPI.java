@@ -28,6 +28,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.services.DentalLabService;
+import com.dpdocter.services.LocationServices;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;
@@ -44,6 +45,9 @@ public class DentalLabAPI {
 	
 	@Autowired
 	private DentalLabService dentalLabService;
+	
+	@Autowired
+	private LocationServices locationServices;
 	
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
 	@POST
@@ -215,6 +219,22 @@ public class DentalLabAPI {
 		}
 		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
 		response.setDataList(dentalLabService.getCBAssociatedDoctors(doctorId, dentalLabId, collectionBoyId, size, page));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.GET_CB_LIST_FOR_DENTAL_LAB)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_CB_LIST_FOR_DENTAL_LAB, notes = PathProxy.DentalLabUrls.GET_CB_LIST_FOR_DENTAL_LAB)
+	public Response<Object> getCBListByParentLab(@QueryParam("dentalLabId") String locationId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+		if (locationId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Object> response = new Response<Object>();
+		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm));
+		response.setData(locationServices.getCBCount(locationId, searchTerm));
+
 		return response;
 	}
 }

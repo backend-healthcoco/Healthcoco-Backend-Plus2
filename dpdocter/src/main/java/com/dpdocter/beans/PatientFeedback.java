@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
@@ -14,7 +16,7 @@ public class PatientFeedback extends GenericCollection {
 	private String localeId;
 	private Boolean isRecommended;
 	private Boolean isAppointmentStartedOnTime;
-	private String howLateWasAppointment;
+	private Integer howLateWasAppointmentInMinutes;
 	private Float overallExperience;
 	private String reasonOfVisit;
 	private String experience;
@@ -27,6 +29,9 @@ public class PatientFeedback extends GenericCollection {
 	private MedicationEffectType medicationEffectType; // how patient feeling
 	// after taking medicine
 	private FeedbackType feedbackType;
+	private String appointmentId;
+	private String prescriptionId;
+	private List<QuestionAnswers> questionAnswers;
 
 	public String getId() {
 		return id;
@@ -92,12 +97,12 @@ public class PatientFeedback extends GenericCollection {
 		this.isAppointmentStartedOnTime = isAppointmentStartedOnTime;
 	}
 
-	public String getHowLateWasAppointment() {
-		return howLateWasAppointment;
+	public Integer getHowLateWasAppointmentInMinutes() {
+		return howLateWasAppointmentInMinutes;
 	}
 
-	public void setHowLateWasAppointment(String howLateWasAppointment) {
-		this.howLateWasAppointment = howLateWasAppointment;
+	public void setHowLateWasAppointmentInMinutes(Integer howLateWasAppointmentInMinutes) {
+		this.howLateWasAppointmentInMinutes = howLateWasAppointmentInMinutes;
 	}
 
 	public Float getOverallExperience() {
@@ -188,15 +193,40 @@ public class PatientFeedback extends GenericCollection {
 		this.feedbackType = feedbackType;
 	}
 
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public List<QuestionAnswers> getQuestionAnswers() {
+		return questionAnswers;
+	}
+
+	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedback [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId + ", patientId="
 				+ patientId + ", hospitalId=" + hospitalId + ", localeId=" + localeId + ", isRecommended="
 				+ isRecommended + ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime
-				+ ", howLateWasAppointment=" + howLateWasAppointment + ", overallExperience=" + overallExperience
-				+ ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply=" + reply
-				+ ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
+				+ ", howLateWasAppointmentInMinutes=" + howLateWasAppointmentInMinutes + ", overallExperience="
+				+ overallExperience + ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply="
+				+ reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
-				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType + "]";
+				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType
+				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + "]";
 	}
 }
