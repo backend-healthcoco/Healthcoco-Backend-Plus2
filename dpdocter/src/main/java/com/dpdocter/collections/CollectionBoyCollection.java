@@ -34,6 +34,9 @@ public class CollectionBoyCollection extends GenericCollection {
 	@Field
 	private Boolean isAvailable;
 
+	//@Field
+	//private String labType = LabType.DIAGNOSTIC.getType();
+
 	public ObjectId getId() {
 		return id;
 	}

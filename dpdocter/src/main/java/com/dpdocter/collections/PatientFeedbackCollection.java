@@ -1,35 +1,66 @@
 package com.dpdocter.collections;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
 @Document(collection = "patient_feedback_cl")
 public class PatientFeedbackCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private ObjectId locationId;
+	@Field
 	private ObjectId doctorId;
+	@Field
 	private ObjectId patientId;
+	@Field
 	private ObjectId hospitalId;
+	@Field
 	private ObjectId localeId;
+	@Field
 	private Boolean isRecommended;
+	@Field
 	private Boolean isAppointmentStartedOnTime;
-	private String howLateWasAppointment;
+	@Field
+	private Integer howLateWasAppointmentInMinutes;
+	@Field
 	private Float overallExperience;
+	@Field
 	private String reasonOfVisit;
+	@Field
 	private String experience;
+	@Field
 	private String reply;
+	@Field
 	private Boolean isAnonymous;
+	@Field
 	private Boolean isApproved = false;
+	@Field
 	private String adminUpdatedExperience;
+	@Field
 	private Boolean isDiscarded = false;
+	@Field
 	private Boolean isMedicationOnTime;
-	private MedicationEffectType medicationEffectType; // how patient feeling
-	// after taking medicine
+	@Field
+	private MedicationEffectType medicationEffectType; // how patient feeling after taking medicine
+	@Field
 	private FeedbackType feedbackType;
+
+	@Field
+	private ObjectId appointmentId;
+	@Field
+	private ObjectId prescriptionId;
+	@Field
+	private List<QuestionAnswers> questionAnswers;
 
 	public ObjectId getId() {
 		return id;
@@ -95,12 +126,12 @@ public class PatientFeedbackCollection extends GenericCollection {
 		this.isAppointmentStartedOnTime = isAppointmentStartedOnTime;
 	}
 
-	public String getHowLateWasAppointment() {
-		return howLateWasAppointment;
+	public Integer getHowLateWasAppointmentInMinutes() {
+		return howLateWasAppointmentInMinutes;
 	}
 
-	public void setHowLateWasAppointment(String howLateWasAppointment) {
-		this.howLateWasAppointment = howLateWasAppointment;
+	public void setHowLateWasAppointmentInMinutes(Integer howLateWasAppointmentInMinutes) {
+		this.howLateWasAppointmentInMinutes = howLateWasAppointmentInMinutes;
 	}
 
 	public Float getOverallExperience() {
@@ -191,14 +222,38 @@ public class PatientFeedbackCollection extends GenericCollection {
 		this.feedbackType = feedbackType;
 	}
 
+	public ObjectId getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(ObjectId appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public ObjectId getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(ObjectId prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public List<QuestionAnswers> getQuestionAnswers() {
+		return questionAnswers;
+	}
+
+	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedbackCollection [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
 				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", localeId=" + localeId
 				+ ", isRecommended=" + isRecommended + ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime
-				+ ", howLateWasAppointment=" + howLateWasAppointment + ", overallExperience=" + overallExperience
-				+ ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply=" + reply
-				+ ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
+				+ ", howLateWasAppointmentInMinutes=" + howLateWasAppointmentInMinutes + ", overallExperience="
+				+ overallExperience + ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply="
+				+ reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
 				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType + "]";
 	}

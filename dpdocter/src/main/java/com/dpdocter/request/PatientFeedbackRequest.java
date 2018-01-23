@@ -1,5 +1,8 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
+import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
@@ -11,14 +14,16 @@ public class PatientFeedbackRequest {
 	private String patientId;
 	private String hospitalId;
 	private String localeId;
+	private String appointmentId;
+	private String prescriptionId;
 	private Boolean isRecommended;
 	private Boolean isAppointmentStartedOnTime;
-	private String howLateWasAppointment;
+	private Integer howLateWasAppointmentInMinutes;
 	private Float overallExperience;
 	private String reasonOfVisit;
 	private String experience;
 	private String reply;
-	private Boolean isAnonymous;
+	private Boolean isAnonymous = false;
 	private Boolean isApproved = false;
 	private String adminUpdatedExperience;
 	private Boolean isDiscarded = false;
@@ -26,6 +31,7 @@ public class PatientFeedbackRequest {
 	private MedicationEffectType medicationEffectType; // how patient feeling
 	// after taking medicine
 	private FeedbackType feedbackType;
+	private List<QuestionAnswers> questionAnswers;
 
 	public String getId() {
 		return id;
@@ -89,14 +95,6 @@ public class PatientFeedbackRequest {
 
 	public void setIsAppointmentStartedOnTime(Boolean isAppointmentStartedOnTime) {
 		this.isAppointmentStartedOnTime = isAppointmentStartedOnTime;
-	}
-
-	public String getHowLateWasAppointment() {
-		return howLateWasAppointment;
-	}
-
-	public void setHowLateWasAppointment(String howLateWasAppointment) {
-		this.howLateWasAppointment = howLateWasAppointment;
 	}
 
 	public Float getOverallExperience() {
@@ -187,16 +185,50 @@ public class PatientFeedbackRequest {
 		this.feedbackType = feedbackType;
 	}
 
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public Integer getHowLateWasAppointmentInMinutes() {
+		return howLateWasAppointmentInMinutes;
+	}
+
+	public void setHowLateWasAppointmentInMinutes(Integer howLateWasAppointmentInMinutes) {
+		this.howLateWasAppointmentInMinutes = howLateWasAppointmentInMinutes;
+	}
+
+	public List<QuestionAnswers> getQuestionAnswers() {
+		return questionAnswers;
+	}
+
+	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedbackRequest [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
 				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", localeId=" + localeId
-				+ ", isRecommended=" + isRecommended + ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime
-				+ ", howLateWasAppointment=" + howLateWasAppointment + ", overallExperience=" + overallExperience
-				+ ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply=" + reply
-				+ ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
+				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + ", isRecommended="
+				+ isRecommended + ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime
+				+ ", howLateWasAppointmentInMinutes=" + howLateWasAppointmentInMinutes + ", overallExperience="
+				+ overallExperience + ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply="
+				+ reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
-				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType + "]";
+				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType
+				+ ", questionAnswers=" + questionAnswers + "]";
 	}
 
 }
