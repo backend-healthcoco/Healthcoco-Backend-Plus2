@@ -113,6 +113,9 @@ public class PatientVisitApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
+		if (doctorId.equalsIgnoreCase("null")) {
+			doctorId = null;
+		}
 		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId,
 				patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
 				updatedTime, visitFor);
@@ -136,9 +139,7 @@ public class PatientVisitApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		if (doctorId.equalsIgnoreCase("null")) {
-			doctorId = null;
-		}
+
 		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId,
 				patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
 				updatedTime, visitFor);
