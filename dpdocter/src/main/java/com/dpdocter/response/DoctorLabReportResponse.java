@@ -1,11 +1,11 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.collections.GenericCollection;
 
-public class DoctorLabReport extends GenericCollection {
-
+public class DoctorLabReportResponse extends GenericCollection {
 	private String id;
 
 	private String uniqueReportId;
@@ -27,6 +27,12 @@ public class DoctorLabReport extends GenericCollection {
 	private String patientId;
 
 	private String doctorId;
+
+	private String title;
+
+	private String doctorName;
+
+	private String locationName;
 
 	private String locationId;
 
@@ -128,6 +134,30 @@ public class DoctorLabReport extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
 	public String getLocationId() {
 		return locationId;
 	}
@@ -166,17 +196,6 @@ public class DoctorLabReport extends GenericCollection {
 
 	public void setUploadedByHospitalId(String uploadedByHospitalId) {
 		this.uploadedByHospitalId = uploadedByHospitalId;
-	}
-
-	@Override
-	public String toString() {
-		return "DoctorLabReport [id=" + id + ", uniqueReportId=" + uniqueReportId + ", recordsFiles=" + recordsFiles
-				+ ", recordsLabel=" + recordsLabel + ", comment=" + comment + ", patientName=" + patientName
-				+ ", mobileNumber=" + mobileNumber + ", shareWithPatient=" + shareWithPatient + ", shareWithDoctor="
-				+ shareWithDoctor + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", uploadedByDoctorId=" + uploadedByDoctorId
-				+ ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId=" + uploadedByHospitalId
-				+ "]";
 	}
 
 	public Boolean getDiscarded() {

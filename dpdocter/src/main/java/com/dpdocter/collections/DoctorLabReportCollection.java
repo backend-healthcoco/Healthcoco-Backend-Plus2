@@ -43,6 +43,16 @@ public class DoctorLabReportCollection extends GenericCollection {
 	private ObjectId uploadedByLocationId;
 	@Field
 	private ObjectId uploadedByHospitalId;
+	@Field
+	private Boolean discarded = false;
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public ObjectId getId() {
 		return id;

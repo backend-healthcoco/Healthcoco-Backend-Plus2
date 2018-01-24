@@ -199,7 +199,7 @@ public interface PathProxy {
 
 		public static final String DELETE_USER_ADDRESS = "user/address/{addressId}/delete";
 
-}
+	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 
@@ -1523,12 +1523,36 @@ public interface PathProxy {
 
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
 
-
 		public static final String GET_LAB_ORDERS = "/orders/lab/{locationId}";
 
+		public static final String GET_CERTIFICATE_TEMPLATE_BY_ID = "/template/{templateId}/view";
+
+		public static final String GET_CERTIFICATE_TEMPLATES = "template";
+
+		public static final String DELETE_CERTIFICATE_TEMPLATES = "/template/{templateId}/delete";
+
+		public static final String ADD_PATIENT_CERTIFICATE = "/patient/add";
+
+		public static final String GET_PATIENT_CERTIFICATES = "/patient/";
+
 		public static final String UPDATE_EMR = "/update/EMR";
+
+		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
+
 	}
 
-	
+	public static final String DOCTOR_LAB_URL = BASE_URL + "/doctorLab";
 
+	public interface DoctorLabUrls {
+
+		public static final String ADD_DOCTOR_LAB_REPORT = "/addEditDoctorLabReport";
+		public static final String UPLOAD_DOCTOR_LAB_MULTIPART_FILE = "/upload/file/multipart";
+		public static final String UPLOAD_DOCTOR_LAB_FILE = "/upload/file";
+		public static final String GET_DOCTOR_LAB_REPORTS = "/getDoctorLabReports";
+		public static final String GET_DOCTOR_LAB_REPORT_BY_ID = "/{reportId}/view";
+		public static final String ADD_TO_FAVOURITE_DOCTOR_LIST = "/addFavouriteDoctor";
+		public static final String GET_FAVOURITE_DOCTOR = "/getFavouriteDoctor";
+		public static final String ADD_DOCTOR_REFERENCE = "/referDoctor";
+
+	}
 }
