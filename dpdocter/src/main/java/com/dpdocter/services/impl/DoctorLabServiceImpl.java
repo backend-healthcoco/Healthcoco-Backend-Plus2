@@ -1,34 +1,52 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.RecordsFile;
-import com.dpdocter.collections.UserAllowanceDetailsCollection;
+import com.dpdocter.beans.UserRecords;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorLabDoctorReferenceCollection;
+import com.dpdocter.collections.DoctorLabFavouriteDoctorCollection;
+import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorLabFevouriteDoctorRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
-import com.dpdocter.request.DoctorLabReportsAddRequest;
+import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.DoctorLabDoctorReferenceRequest;
+import com.dpdocter.request.DoctorLabFavouriteDoctorRequest;
+import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.MyFiileRequest;
+import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
+import com.dpdocter.response.DoctorLabReportResponse;
 import com.dpdocter.services.DoctorLabService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
+import com.dpdocter.services.PushNotificationServices;
+import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -44,29 +62,118 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Autowired
 	private FileManager fileManager;
 
-	@Override
-	@Transactional
-	public DoctorLabReport addDoctorLabReport(DoctorLabReport request) {
+	@Autowired
+	private UserRepository userRepository;
 
-		return null;
+	@Autowired
+	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private DoctorLabFevouriteDoctorRepository doctorLabFevouriteDoctorRepository;
+
+	@Autowired
+	private PushNotificationServices pushNotificationServices;
+
+	@Value(value = "${doctor.welcome.message}")
+	private String doctorWelcomeMessage;
+
+	@Value(value = "${mail.signup.request.to}")
+	private String mailTo;
+
+	@Autowired
+	private MailService mailService;
+
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Value(value = "${mail.contact.us.welcome.subject}")
+	private String doctorWelcomeSubject;
+
+	@Value(value = "${mail.signup.request.subject}")
+	private String signupRequestSubject;
+
+	@Value(value = "${image.path}")
+	private String imagePath;
+
+	private static Logger logger = Logger.getLogger(DoctorLabServiceImpl.class.getName());
+
+	@Override
+	public DoctorLabReport addDoctorLabReport(DoctorLabReport request) {
+		DoctorLabReport response = null;
+		try {
+			DoctorLabReportCollection doctorLabReportCollection = new DoctorLabReportCollection();
+			for (RecordsFile file : request.getRecordsFiles()) {
+				file.setRecordsUrl(file.getRecordsUrl().replace(imagePath, ""));
+				file.setThumbnailUrl(file.getThumbnailUrl().replace(imagePath, ""));
+
+			}
+			BeanUtil.map(request, doctorLabReportCollection);
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				DoctorLabReportCollection oldDoctorLabReportCollection = doctorLabReportRepository
+						.findOne(doctorLabReportCollection.getId());
+				if (oldDoctorLabReportCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "No record found");
+				}
+
+				if (request.getCreatedTime() == null) {
+					doctorLabReportCollection.setCreatedTime(oldDoctorLabReportCollection.getCreatedTime());
+				}
+				doctorLabReportCollection.setUpdatedTime(new Date());
+				doctorLabReportCollection.setAdminCreatedTime(oldDoctorLabReportCollection.getAdminCreatedTime());
+				doctorLabReportCollection.setCreatedBy(oldDoctorLabReportCollection.getCreatedBy());
+			} else {
+				if (!DPDoctorUtils.anyStringEmpty(request.getUploadedByDoctorId())) {
+					UserCollection userCollection = userRepository
+							.findOne(new ObjectId(request.getUploadedByDoctorId()));
+					if (userCollection == null) {
+						throw new BusinessException(ServiceError.NoRecord, "No Doctor found by uploadedBydoctorId");
+					}
+
+					doctorLabReportCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
+							? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
+				}
+				if (request.getCreatedTime() == null) {
+					doctorLabReportCollection.setCreatedTime(new Date());
+				}
+				doctorLabReportCollection.setAdminCreatedTime(new Date());
+				doctorLabReportCollection.setUpdatedTime(new Date());
+			}
+			doctorLabReportCollection = doctorLabReportRepository.save(doctorLabReportCollection);
+			response = new DoctorLabReport();
+			BeanUtil.map(doctorLabReportCollection, response);
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while add Doctor Lab Report");
+		}
+
+		return response;
 	}
 
-	public RecordsFile uploadDoctorLabReport(FileDetails fileDetails, MyFiileRequest request) {
+	@Override
+	public RecordsFile uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
 		RecordsFile recordsFile = null;
 		try {
-			UserAllowanceDetailsCollection userAllowanceDetailsCollection = null;
+			FileDetails fileDetails = request.getFileDetails();
+
 			Date createdTime = new Date();
 
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
+				}
+			}
+
 			if (fileDetails != null) {
-				String path = "doctorLabReport" + File.separator + request.getPatientId();
+				String path = "doctorLabReports" + File.separator
+						+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
 
 				String fileName = fileDetails.getFileName().replaceFirst("." + fileDetails.getFileExtension(), "");
 				String recordPath = path + File.separator + fileName + createdTime.getTime() + "."
 						+ fileDetails.getFileExtension();
 				String recordfileLabel = fileName;
 				Double fileSizeInMB = 0.0;
-
-				//fileSizeInMB = fileManager.saveRecord(file, recordPath, fileSizeInMB, false);
 
 				recordsFile = new RecordsFile();
 				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
@@ -77,10 +184,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				recordsFile.setRecordsPath(path);
 				recordsFile.setRecordsType(request.getRecordsType());
 
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 
 		} catch (Exception e) {
-			//logger.error(e);
+			logger.error(e);
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "error while uploading Doctor Lab Report");
 
@@ -89,4 +198,488 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	}
 
+	@Override
+	public RecordsFile uploadDoctorLabReportMultipart(FormDataBodyPart file, MyFiileRequest request) {
+		RecordsFile recordsFile = null;
+		try {
+			Date createdTime = new Date();
+			Double fileSizeInMB = 0.0;
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
+				}
+			}
+
+			if (file != null) {
+				String path = "doctorLabReports" + File.separator
+						+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+				String recordfileLabel = fileName;
+
+				fileSizeInMB = fileManager.saveRecord(file, recordPath, fileSizeInMB, false);
+
+				recordsFile = new RecordsFile();
+				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+				recordsFile.setFileSizeInMB(fileSizeInMB);
+				recordsFile.setRecordsUrl(recordPath);
+				recordsFile.setThumbnailUrl(fileManager.saveThumbnailUrl(file, recordPath));
+				recordsFile.setRecordsFileLabel(recordfileLabel);
+				recordsFile.setRecordsPath(path);
+				recordsFile.setRecordsType(request.getRecordsType());
+			}
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while uploading Doctor Lab Report Multipart");
+
+		}
+		return recordsFile;
+
+	}
+
+	@Override
+	public List<DoctorLabReportResponse> getDoctorLabReport(int page, int size, String patientId, String doctorId,
+			String locationId, String hospitalId, String searchTerm, Boolean discarded, Boolean doctorLab) {
+		List<DoctorLabReportResponse> response = null;
+		ProjectionOperation projectList = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (doctorLab) {
+				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+					criteria = criteria.and("uploadedByDoctorId").is(new ObjectId(doctorId));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+					criteria = criteria.and("uploadedByLocationId").is(new ObjectId(locationId));
+				}
+
+				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+					criteria = criteria.and("uploadedByHospitalId").is(new ObjectId(hospitalId));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					criteria = criteria.orOperator(
+							new Criteria("uploadedByLocation.locationName").regex("^" + searchTerm, "i"),
+							new Criteria("uploadedByLocation.locationName").regex("^" + searchTerm),
+							new Criteria("uploadedByDoctor.firstName").regex("^" + searchTerm, "i"),
+							new Criteria("uploadedByDoctor.firstName").regex("^" + searchTerm),
+							new Criteria("patientName").regex("^" + searchTerm, "i"),
+							new Criteria("patientName").regex("^" + searchTerm));
+
+				}
+				projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+						Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
+						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+						Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
+						Fields.field("recordsLabel", "$recordsLabel"), Fields.field("comment", "$comment"),
+						Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
+						Fields.field("mobileNumber", "$mobileNumber"),
+						Fields.field("shareWithPatient", "$shareWithPatient"),
+						Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("title", "$title"),
+						Fields.field("doctorName", "$doctorName"),
+						Fields.field("locationName", "$uploadedByLocation.locationName"),
+						Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
+						Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
+						Fields.field("doctorName", "$uploadedByDoctor.firstName"),
+						Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+						Fields.field("updatedTime", "$updatedTime"),
+						Fields.field("adminCreatedTime", "$adminCreatedTime"),
+						Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
+
+			} else {
+
+				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+					criteria = criteria.and("locationId").is(new ObjectId(locationId));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+					criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
+							new Criteria("location.locationName").regex("^" + searchTerm),
+							new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
+							new Criteria("doctor.firstName").regex("^" + searchTerm),
+							new Criteria("patientName").regex("^" + searchTerm, "i"),
+							new Criteria("patientName").regex("^" + searchTerm));
+				}
+				criteria = criteria.and("shareWithDoctor").is(true);
+				projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+						Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
+						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+						Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
+						Fields.field("recordsLabel", "$recordsLabel"), Fields.field("comment", "$comment"),
+						Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
+						Fields.field("mobileNumber", "$mobileNumber"),
+						Fields.field("shareWithPatient", "$shareWithPatient"),
+						Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("title", "$title"),
+						Fields.field("locationName", "$uploadedByLocation.locationName"),
+						Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
+						Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
+						Fields.field("doctorName", "$uploadedByDoctor.firstName"),
+						Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+						Fields.field("updatedTime", "$updatedTime"),
+						Fields.field("adminCreatedTime", "$adminCreatedTime"),
+						Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
+			}
+			if (discarded != null) {
+				criteria = criteria.and("discarded").is(discarded);
+			}
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "uploadedByDoctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "uploadedByLocation"),
+						Aggregation.unwind("doctor"), Aggregation.unwind("location"),
+						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "uploadedByDoctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "uploadedByLocation"),
+						Aggregation.unwind("doctor"), Aggregation.unwind("location"),
+						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			}
+			AggregationResults<DoctorLabReportResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DoctorLabReportCollection.class, DoctorLabReportResponse.class);
+			response = aggregationResults.getMappedResults();
+			for (DoctorLabReportResponse doctorLabReportResponse : response) {
+				if (doctorLabReportResponse.getRecordsFiles() != null) {
+					for (RecordsFile recordsFile : doctorLabReportResponse.getRecordsFiles()) {
+
+						if (!DPDoctorUtils.anyStringEmpty(recordsFile.getRecordsUrl())) {
+							recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+						}
+						if (!DPDoctorUtils.anyStringEmpty(recordsFile.getThumbnailUrl())) {
+							recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
+						}
+					}
+				}
+
+			}
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while getting Doctor Lab Report");
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public DoctorLabReportResponse getDoctorLabReportById(String id, Boolean doctorLab) {
+		DoctorLabReportResponse response = null;
+		ProjectionOperation projectList = null;
+		try {
+			Criteria criteria = new Criteria("id").is(new ObjectId(id));
+
+			if (doctorLab) {
+				projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+						Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
+						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+						Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
+						Fields.field("recordsLabel", "$recordsLabel"), Fields.field("comment", "$comment"),
+						Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
+						Fields.field("mobileNumber", "$mobileNumber"),
+						Fields.field("shareWithPatient", "$shareWithPatient"),
+						Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("title", "$title"),
+						Fields.field("doctorName", "$doctorName"),
+						Fields.field("locationName", "$uploadedByLocation.locationName"),
+						Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
+						Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
+						Fields.field("doctorName", "$uploadedByDoctor.firstName"),
+						Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+						Fields.field("updatedTime", "$updatedTime"),
+						Fields.field("adminCreatedTime", "$adminCreatedTime"),
+						Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
+
+			} else {
+
+				projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+						Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
+						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+						Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
+						Fields.field("recordsLabel", "$recordsLabel"), Fields.field("comment", "$comment"),
+						Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
+						Fields.field("mobileNumber", "$mobileNumber"),
+						Fields.field("shareWithPatient", "$shareWithPatient"),
+						Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("title", "$title"),
+						Fields.field("locationName", "$uploadedByLocation.locationName"),
+						Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
+						Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
+						Fields.field("doctorName", "$uploadedByDoctor.firstName"),
+						Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+						Fields.field("updatedTime", "$updatedTime"),
+						Fields.field("adminCreatedTime", "$adminCreatedTime"),
+						Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
+			}
+
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "uploadedByDoctor"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "uploadedByLocation"),
+					Aggregation.unwind("doctor"), Aggregation.unwind("location"),
+					Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"), projectList);
+
+			AggregationResults<DoctorLabReportResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DoctorLabReportCollection.class, DoctorLabReportResponse.class);
+			response = aggregationResults.getUniqueMappedResult();
+
+			if (response.getRecordsFiles() != null) {
+				for (RecordsFile recordsFile : response.getRecordsFiles()) {
+
+					if (!DPDoctorUtils.anyStringEmpty(recordsFile.getRecordsUrl())) {
+						recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+					}
+					if (!DPDoctorUtils.anyStringEmpty(recordsFile.getThumbnailUrl())) {
+						recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
+					}
+				}
+			}
+
+		} catch (
+
+		Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while getting Doctor Lab Report");
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public Boolean addDoctorToFavouriteList(DoctorLabFavouriteDoctorRequest request) {
+		Boolean response = false;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+
+				UserCollection fevDoctor = userRepository.findOne(new ObjectId(request.getFavouriteDoctorId()));
+				if (fevDoctor == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor   Not Found");
+				}
+				DoctorLabFavouriteDoctorCollection favouriteDoctorCollection = new DoctorLabFavouriteDoctorCollection();
+				BeanUtil.map(request, favouriteDoctorCollection);
+				favouriteDoctorCollection.setAdminCreatedTime(new Date());
+				favouriteDoctorCollection.setCreatedTime(new Date());
+				favouriteDoctorCollection.setUpdatedTime(new Date());
+				favouriteDoctorCollection.setDoctorName(fevDoctor.getFirstName());
+				favouriteDoctorCollection.setCreatedBy(
+						(!DPDoctorUtils.anyStringEmpty(fevDoctor.getTitle()) ? fevDoctor.getTitle() : "DR.") + " "
+								+ fevDoctor.getFirstName());
+				favouriteDoctorCollection = doctorLabFevouriteDoctorRepository.save(favouriteDoctorCollection);
+
+			}
+			response = true;
+		} catch (
+
+		Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while adding fevourite Doctor ");
+
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, int page, String searchTerm,
+			String doctorId, String locationId, String hospitalId, String speciality) {
+		List<DoctorLabFavouriteDoctorResponse> response = null;
+		try {
+			/*
+			 * Collection<ObjectId> specialityIds = null; if
+			 * (DPDoctorUtils.anyStringEmpty(speciality)) {
+			 * List<ESSpecialityDocument> esSpecialityDocuments =
+			 * esSpecialityRepository .findByQueryAnnotation(speciality);
+			 * specialityIds = CollectionUtils.collect(esSpecialityDocuments,
+			 * new BeanToPropertyValueTransformer("id")); }
+			 */
+
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				criteria = criteria.orOperator(new Criteria("specialities.speciality").regex(searchTerm),
+						new Criteria("specialities.superSpeciality").regex(searchTerm));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("doctorName").regex("^" + searchTerm, "i"),
+						new Criteria("doctorName").regex("^" + searchTerm),
+						new Criteria("locationName").regex("^" + searchTerm, "i"),
+						new Criteria("locationName").regex("^" + searchTerm),
+						new Criteria("city").regex("^" + searchTerm, "i"),
+						new Criteria("city").regex("^" + searchTerm));
+
+			}
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$_id").append("doctorName", new BasicDBObject("$first", "$doctorName"))
+							.append("locationName", new BasicDBObject("$first", "$locationName"))
+							.append("city", new BasicDBObject("$first", "$city"))
+							.append("specialities", new BasicDBObject("$push", "$specialities"))
+							.append("doctorId", new BasicDBObject("$first", "$favouriteDoctorId"))
+							.append("locationId", new BasicDBObject("$first", "$favouriteLocationId"))
+							.append("hospitalId", new BasicDBObject("$first", "$favouriteHospitalId"))
+							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
+
+						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
+						Aggregation.unwind("specialities"), Aggregation.match(criteria), groupOperation,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
+						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
+						Aggregation.unwind("specialities"), Aggregation.match(criteria), groupOperation,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			}
+
+			AggregationResults<DoctorLabFavouriteDoctorResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, DoctorLabFavouriteDoctorCollection.class, DoctorLabFavouriteDoctorResponse.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while getting Fevourite Doctor ");
+		}
+		return response;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<DoctorLabFavouriteDoctorRequest> searchDoctor(int size, int page, String searchTerm, String doctorId,
+			String locationId, String hospitalId, String speciality, String city) {
+		List<DoctorLabFavouriteDoctorRequest> response = null;
+		try {
+
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(city)) {
+				criteria = criteria.and("city").is(city);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				criteria = criteria.orOperator(new Criteria("specialities.speciality").regex(searchTerm),
+						new Criteria("specialities.superSpeciality").regex(searchTerm));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("doctorName").regex("^" + searchTerm, "i"),
+						new Criteria("doctorName").regex("^" + searchTerm),
+						new Criteria("locationName").regex("^" + searchTerm, "i"),
+						new Criteria("locationName").regex("^" + searchTerm),
+						new Criteria("city").regex("^" + searchTerm, "i"),
+						new Criteria("city").regex("^" + searchTerm));
+
+			}
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$_id").append("doctorName", new BasicDBObject("$first", "$doctorName"))
+							.append("locationName", new BasicDBObject("$first", "$locationName"))
+							.append("city", new BasicDBObject("$first", "$city"))
+							.append("specialities", new BasicDBObject("$first", "$specialities"))
+							.append("doctorId", new BasicDBObject("$first", "$favouriteDoctorId"))
+							.append("locationId", new BasicDBObject("$first", "$favouriteLocationId"))
+							.append("hospitalId", new BasicDBObject("$first", "$favouriteHospitalId"))
+							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
+						Aggregation.match(criteria),
+						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
+						Aggregation.unwind("specialities"), groupOperation,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
+						Aggregation.match(criteria),
+						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
+						Aggregation.unwind("specialities"), groupOperation,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			}
+
+			AggregationResults<DoctorLabFavouriteDoctorRequest> aggregationResults = mongoTemplate
+					.aggregate(aggregation, DoctorClinicProfileCollection.class, DoctorLabFavouriteDoctorRequest.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while getting search Doctor ");
+		}
+		return response;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Boolean addDoctorReference(DoctorLabDoctorReferenceRequest request) {
+		Boolean response = false;
+		try {
+			DoctorLabDoctorReferenceCollection referenceCollection = new DoctorLabDoctorReferenceCollection();
+			BeanUtil.map(request, referenceCollection);
+			UserCollection userCollection = userRepository.findOne(referenceCollection.getDoctorId());
+			if (userCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "User not found");
+			}
+			referenceCollection.setCreatedBy(
+					(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.") + " "
+							+ userCollection.getFirstName());
+			referenceCollection.setCreatedTime(new Date());
+			referenceCollection.setAdminCreatedTime(new Date());
+			response = true;
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while refer Doctor ");
+		}
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
 }

@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URLConnection;
@@ -201,6 +200,47 @@ public class FileManagerImpl implements FileManager {
 
 	@Override
 	@Transactional
+	public Double saveRecordBase64(FileDetails fileDetail, String recordPath) {
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+		AmazonS3 s3client = new AmazonS3Client(credentials);
+		Double fileSizeInMB = 0.0;
+		try {
+			byte[] base64 = Base64.decodeBase64(fileDetail.getFileEncoded());
+			InputStream fis = new ByteArrayInputStream(base64);
+			String contentType = URLConnection.guessContentTypeFromStream(fis);
+			if (!DPDoctorUtils.anyStringEmpty(contentType) && contentType.equalsIgnoreCase("exe")) {
+				throw new BusinessException(ServiceError.NotAcceptable, "Invalid File");
+			}
+			ObjectMetadata metadata = new ObjectMetadata();
+			byte[] contentBytes = IOUtils.toByteArray(new ByteArrayInputStream(base64));
+
+			fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000 * 1000)).doubleValue();
+
+			metadata.setContentLength(contentBytes.length);
+			metadata.setContentEncoding(fileDetail.getFileExtension());
+			metadata.setContentType(contentType);
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+
+			s3client.putObject(new PutObjectRequest(bucketName, recordPath, fis, metadata));
+
+		} catch (AmazonServiceException ase) {
+			System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		} catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		} catch (Exception e) {
+			System.out.println("Error Message: " + e.getMessage());
+		}
+		return fileSizeInMB;
+	}
+
+	@Override
+	@Transactional
 	public ImageURLResponse saveImage(FormDataBodyPart file, String recordPath, Boolean createThumbnail) {
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonS3 s3client = new AmazonS3Client(credentials);
@@ -226,8 +266,7 @@ public class FileManagerImpl implements FileManager {
 					new PutObjectRequest(bucketName, recordPath, file.getEntityAs(InputStream.class), metadata));
 			response.setImageUrl(imagePath + recordPath);
 			if (createThumbnail) {
-				response.setThumbnailUrl(
-						imagePath + saveThumbnailUrl(file, recordPath));
+				response.setThumbnailUrl(imagePath + saveThumbnailUrl(file, recordPath));
 			}
 		} catch (AmazonServiceException ase) {
 			ase.printStackTrace();
