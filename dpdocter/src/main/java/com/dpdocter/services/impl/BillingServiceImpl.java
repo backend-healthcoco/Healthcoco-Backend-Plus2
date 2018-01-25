@@ -126,7 +126,7 @@ public class BillingServiceImpl implements BillingService {
 	@Autowired
 	private MailService mailService;
 
-	@Value(value="${jasper.print.receipt.a4.fileName}")
+	@Value(value = "${jasper.print.receipt.a4.fileName}")
 	private String receiptA4FileName;
 
 	@Value(value = "${jasper.print.receipt.a5.fileName}")
@@ -222,7 +222,7 @@ public class BillingServiceImpl implements BillingService {
 									? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 					doctorsMap.put(request.getDoctorId(), userCollection);
 				}
-				
+
 				LocationCollection locationCollection = locationRepository
 						.findOne(new ObjectId(request.getLocationId()));
 				if (locationCollection == null)
@@ -256,9 +256,11 @@ public class BillingServiceImpl implements BillingService {
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
 
-
 				dueAmount = -doctorPatientInvoiceCollection.getBalanceAmount();
 
+				if (request.getCreatedTime() != null) {
+					doctorPatientInvoiceCollection.setCreatedTime(request.getCreatedTime());
+				}
 				doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 				doctorPatientInvoiceCollection.setTotalCost(request.getTotalCost());
 				doctorPatientInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
@@ -294,11 +296,13 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 
-
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
-				if(invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null)
-				{
-					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(), invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId() ,invoiceItemResponse.getInventoryQuantity());
+				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+						request.getHospitalId(), invoiceItemResponse.getItemId());
+				if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+							invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+							request.getLocationId(), request.getHospitalId(),
+							invoiceItemResponse.getInventoryQuantity());
 
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
