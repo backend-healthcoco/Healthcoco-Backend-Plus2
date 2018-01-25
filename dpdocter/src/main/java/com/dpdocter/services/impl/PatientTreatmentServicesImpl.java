@@ -359,7 +359,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					patientTreatmentCollection.setAdminCreatedTime(oldPatientTreatmentCollection.getAdminCreatedTime());
 					patientTreatmentCollection.setUpdatedTime(new Date());
 					patientTreatmentCollection.setCreatedBy(createdBy);
-					patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					patientTreatmentCollection.setUniqueEmrId(oldPatientTreatmentCollection.getUniqueEmrId());
 					patientTreatmentCollection.setDiscarded(oldPatientTreatmentCollection.getDiscarded());
 					patientTreatmentCollection.setInHistory(oldPatientTreatmentCollection.getInHistory());
