@@ -648,9 +648,11 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					doctorSearchResponse.setFirstName(doctorDocument.getFirstName());
 					doctorSearchResponse.setLocationName(doctorDocument.getLocationName());
 					doctorSearchResponse.setSpecialities(doctorDocument.getSpecialities());
-					if (!DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId,
-							doctorSearchResponse.getDoctorId(), doctorSearchResponse.getLocationId(),
-							doctorSearchResponse.getHospitalId())) {
+					if (!DPDoctorUtils.anyStringEmpty(doctorId) && !DPDoctorUtils.anyStringEmpty(locationId)
+							&& !DPDoctorUtils.anyStringEmpty(hospitalId)
+							&& DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getDoctorId())
+							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getLocationId())
+							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getHospitalId())) {
 						criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
 								.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
 								.and("favouriteDoctorId").is(new ObjectId(doctorSearchResponse.getDoctorId()))
