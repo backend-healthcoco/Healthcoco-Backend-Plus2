@@ -375,13 +375,21 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
 					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
-				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
-						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
-				sendRecordSmsToPatient(localPatientName, patientMobileNumber, recordsCollection.getRecordsLabel(),
-						recordsCollection.getUploadedByLocation(), recordsCollection.getDoctorId(),
-						recordsCollection.getLocationId(), recordsCollection.getHospitalId(),
-						recordsCollection.getPatientId());
+				/*
+				 * pushNotificationServices.notifyUser(recordsCollection.
+				 * getPatientId().toString(), "Your Report from " +
+				 * recordsCollection.getUploadedByLocation() +
+				 * " is here - Tap to view it!",
+				 * ComponentType.REPORTS.getType(),
+				 * recordsCollection.getId().toString(), null);
+				 * sendRecordSmsToPatient(localPatientName, patientMobileNumber,
+				 * recordsCollection.getRecordsLabel(),
+				 * recordsCollection.getUploadedByLocation(),
+				 * recordsCollection.getDoctorId(),
+				 * recordsCollection.getLocationId(),
+				 * recordsCollection.getHospitalId(),
+				 * recordsCollection.getPatientId());
+				 */
 			}
 			Records records = new Records();
 			BeanUtil.map(recordsCollection, records);
