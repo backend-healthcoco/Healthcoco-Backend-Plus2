@@ -1191,6 +1191,7 @@ public class LocationServiceImpl implements LocationServices {
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			 {
 				criteria = criteria.orOperator(new Criteria("mobileNumber").regex("^" + searchTerm, "i"),
 						new Criteria("mobileNumber").regex("^" + searchTerm),
@@ -1204,6 +1205,8 @@ public class LocationServiceImpl implements LocationServices {
 
 			criteria.and("locationId").is(new ObjectId(locationId));
 
+			System.out.println(criteria);
+			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
@@ -1214,6 +1217,8 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<CollectionBoyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyCollection.class, CollectionBoyResponse.class);
 			response = aggregationResults.getMappedResults();
+			
+			System.out.println(aggregation);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Collection Boys");
@@ -1236,12 +1241,12 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("name").regex("^" + searchTerm));
 			}
 			
-			 if (!DPDoctorUtils.anyStringEmpty(labType))
-				{
-					criteria.and("labType").is(labType);
-				}
+			if (!DPDoctorUtils.anyStringEmpty(labType)) {
+				criteria.and("labType").is(labType);
+			}
 			criteria.and("locationId").is(new ObjectId(locationId));
 
+			
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<CollectionBoy> aggregationResults = mongoTemplate.aggregate(aggregation,
