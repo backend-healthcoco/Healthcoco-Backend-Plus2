@@ -426,7 +426,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			criteria.and("rateCardId").is(new ObjectId(rateCardId));
 			criteria.and("isAvailable").is(true);
-			criteria.and("discarded").is(discarded);
+		//	criteria.and("discarded").is(discarded);
 			
 
 			if (size > 0) {
