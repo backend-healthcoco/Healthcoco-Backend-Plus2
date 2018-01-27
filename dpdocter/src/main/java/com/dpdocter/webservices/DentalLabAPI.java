@@ -195,15 +195,16 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION)
-	public Response<Boolean> addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request) {
+	public Response<RateCardDoctorAssociation> addEditRateCardDoctorAssociation(RateCardDoctorAssociation request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<Boolean> response = new Response<Boolean>();
+		Response<RateCardDoctorAssociation> response = new Response<RateCardDoctorAssociation>();
 		response.setData(dentalLabService.addEditRateCardDoctorAssociation(request));
 		return response;
 	}
+	
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
