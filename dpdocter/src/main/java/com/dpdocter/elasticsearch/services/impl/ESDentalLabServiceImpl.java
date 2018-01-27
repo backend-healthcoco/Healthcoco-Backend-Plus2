@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
+import org.springframework.stereotype.Service;
 
 import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
@@ -31,6 +32,7 @@ import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 
+@Service
 public class ESDentalLabServiceImpl implements ESDentalLabService{
 
 	private static Logger logger = Logger.getLogger(ESDentalLabServiceImpl.class.getName());
