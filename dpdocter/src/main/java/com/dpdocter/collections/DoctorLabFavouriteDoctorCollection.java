@@ -13,12 +13,6 @@ public class DoctorLabFavouriteDoctorCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String doctorName;
-	@Field
-	private String locationName;
-	@Field
-	private String city;
-	@Field
 	private List<ObjectId> specialities;
 	@Field
 	private ObjectId doctorId;
@@ -37,30 +31,6 @@ public class DoctorLabFavouriteDoctorCollection extends GenericCollection {
 
 	public Boolean getDiscarded() {
 		return discarded;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public String getDoctorName() {
-		return doctorName;
-	}
-
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
-	}
-
-	public String getLocationName() {
-		return locationName;
-	}
-
-	public void setLocationName(String locationName) {
-		this.locationName = locationName;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
 	}
 
 	public List<ObjectId> getSpecialities() {
@@ -133,9 +103,8 @@ public class DoctorLabFavouriteDoctorCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorLabFavouriteDoctorCollection [id=" + id + ", doctorName=" + doctorName + ", locationName="
-				+ locationName + ", city=" + city + ", specialities=" + specialities + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", favouriteDoctorId="
+		return "DoctorLabFavouriteDoctorCollection [id=" + id + ", specialities=" + specialities + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", favouriteDoctorId="
 				+ favouriteDoctorId + ", favouriteLocationId=" + favouriteLocationId + ", favouriteHospitalId="
 				+ favouriteHospitalId + ", discarded=" + discarded + "]";
 	}

@@ -1,9 +1,8 @@
-package com.dpdocter.request;
+package com.dpdocter.response;
 
 import java.util.List;
 
-public class DoctorLabFavouriteDoctorRequest {
-
+public class DoctorLabSearchDoctorResponse {
 	private String id;
 
 	private String doctorId;
@@ -12,13 +11,15 @@ public class DoctorLabFavouriteDoctorRequest {
 
 	private String hospitalId;
 
-	private String favouriteDoctorId;
+	private String firstName;
 
-	private String favouriteLocationId;
+	private String locationName;
 
-	private String favouriteHospitalId;
+	private String city;
 
 	private List<String> specialities;
+
+	private Boolean isFavourite = false;
 
 	public String getId() {
 		return id;
@@ -52,28 +53,28 @@ public class DoctorLabFavouriteDoctorRequest {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getFavouriteDoctorId() {
-		return favouriteDoctorId;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setFavouriteDoctorId(String favouriteDoctorId) {
-		this.favouriteDoctorId = favouriteDoctorId;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public String getFavouriteLocationId() {
-		return favouriteLocationId;
+	public String getLocationName() {
+		return locationName;
 	}
 
-	public void setFavouriteLocationId(String favouriteLocationId) {
-		this.favouriteLocationId = favouriteLocationId;
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
 	}
 
-	public String getFavouriteHospitalId() {
-		return favouriteHospitalId;
+	public String getCity() {
+		return city;
 	}
 
-	public void setFavouriteHospitalId(String favouriteHospitalId) {
-		this.favouriteHospitalId = favouriteHospitalId;
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	public List<String> getSpecialities() {
@@ -84,8 +85,14 @@ public class DoctorLabFavouriteDoctorRequest {
 		this.specialities = specialities;
 	}
 
-	
+	public Boolean getIsFavourite() {
+		return isFavourite;
+	}
 
+	public void setIsFavourite(Boolean isFavourite) {
+		this.isFavourite = isFavourite;
+	}
+	
 	
 
 }

@@ -6,8 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 public class DoctorLabDoctorReferenceRequest {
 
-	private String title;
-
 	private String firstName;
 
 	private String mobileNumber;
@@ -50,14 +48,6 @@ public class DoctorLabDoctorReferenceRequest {
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 
 	public String getFirstName() {
@@ -118,10 +108,10 @@ public class DoctorLabDoctorReferenceRequest {
 
 	@Override
 	public String toString() {
-		return "DoctorLabDoctorReferenceRequest [title=" + title + ", firstName=" + firstName + ", mobileNumber="
-				+ mobileNumber + ", locationName=" + locationName + ", streetAddress=" + streetAddress + ", city="
-				+ city + ", state=" + state + ", country=" + country + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + "]";
+		return "DoctorLabDoctorReferenceRequest [firstName=" + firstName + ", mobileNumber=" + mobileNumber
+				+ ", locationName=" + locationName + ", streetAddress=" + streetAddress + ", city=" + city + ", state="
+				+ state + ", country=" + country + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + "]";
 	}
 
 }

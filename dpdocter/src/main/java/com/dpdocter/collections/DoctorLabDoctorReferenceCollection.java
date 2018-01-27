@@ -11,8 +11,6 @@ public class DoctorLabDoctorReferenceCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String title;
-	@Field
 	private String firstName;
 	@Field
 	private String mobileNumber;
@@ -97,14 +95,6 @@ public class DoctorLabDoctorReferenceCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
 	public String getFirstName() {
 		return firstName;
 	}
@@ -131,8 +121,9 @@ public class DoctorLabDoctorReferenceCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorLabDoctorRefrenceCollection [id=" + id + ", title=" + title + ", firstName=" + firstName
-				+ ", mobileNumber=" + mobileNumber + ", locationName=" + locationName + ", streetAddress="
-				+ streetAddress + ", city=" + city + ", state=" + state + ", country=" + country + "]";
+		return "DoctorLabDoctorReferenceCollection [id=" + id + ", firstName=" + firstName + ", mobileNumber="
+				+ mobileNumber + ", locationName=" + locationName + ", streetAddress=" + streetAddress + ", city="
+				+ city + ", state=" + state + ", country=" + country + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
 }

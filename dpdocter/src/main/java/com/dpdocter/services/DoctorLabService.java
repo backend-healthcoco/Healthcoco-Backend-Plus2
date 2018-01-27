@@ -10,6 +10,7 @@ import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
 import com.dpdocter.response.DoctorLabReportResponse;
+import com.dpdocter.response.DoctorLabSearchDoctorResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface DoctorLabService {
@@ -26,12 +27,12 @@ public interface DoctorLabService {
 	public Boolean addDoctorToFavouriteList(DoctorLabFavouriteDoctorRequest request);
 
 	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, int page, String searchTerm,
-			String doctorId, String locationId, String hospitalId, String speciality);
+			String doctorId, String locationId, String hospitalId, String speciality, String city);
 
-	public List<DoctorLabFavouriteDoctorRequest> searchDoctor(int size, int page, String searchTerm, String doctorId,
+	public List<DoctorLabSearchDoctorResponse> searchDoctor(int size, int page, String searchTerm, String doctorId,
 			String locationId, String hospitalId, String speciality, String city);
 
 	public Boolean addDoctorReference(DoctorLabDoctorReferenceRequest request);
 
-	public DoctorLabReportResponse getDoctorLabReportById(String id, Boolean doctorLab);
+	public DoctorLabReportResponse getDoctorLabReportById(String id);
 }

@@ -20,7 +20,7 @@ public class DoctorLabReportCollection extends GenericCollection {
 	@Field
 	private ObjectId recordsLabel;
 	@Field
-	private String comment;
+	private String explanation;
 	@Field
 	private String patientName;
 	@Field
@@ -86,12 +86,12 @@ public class DoctorLabReportCollection extends GenericCollection {
 		this.recordsLabel = recordsLabel;
 	}
 
-	public String getComment() {
-		return comment;
+	public String getExplanation() {
+		return explanation;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
 	}
 
 	public String getPatientName() {
@@ -185,12 +185,12 @@ public class DoctorLabReportCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "DoctorLabReportCollection [id=" + id + ", uniqueReportId=" + uniqueReportId + ", recordsFiles="
-				+ recordsFiles + ", recordsLabel=" + recordsLabel + ", comment=" + comment + ", patientName="
+				+ recordsFiles + ", recordsLabel=" + recordsLabel + ", explanation=" + explanation + ", patientName="
 				+ patientName + ", mobileNumber=" + mobileNumber + ", shareWithPatient=" + shareWithPatient
 				+ ", shareWithDoctor=" + shareWithDoctor + ", patientId=" + patientId + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", uploadedByDoctorId="
 				+ uploadedByDoctorId + ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId="
-				+ uploadedByHospitalId + "]";
+				+ uploadedByHospitalId + ", discarded=" + discarded + "]";
 	}
 
 }

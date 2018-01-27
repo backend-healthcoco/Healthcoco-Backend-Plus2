@@ -1,21 +1,37 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +45,12 @@ import com.dpdocter.collections.DoctorLabDoctorReferenceCollection;
 import com.dpdocter.collections.DoctorLabFavouriteDoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.document.ESCityDocument;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.repository.ESCityRepository;
+import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
+import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -41,6 +63,7 @@ import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
 import com.dpdocter.response.DoctorLabReportResponse;
+import com.dpdocter.response.DoctorLabSearchDoctorResponse;
 import com.dpdocter.services.DoctorLabService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailBodyGenerator;
@@ -66,6 +89,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	private UserRepository userRepository;
 
 	@Autowired
+	private ESCityRepository esCityRepository;
+
+	@Autowired
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
@@ -73,6 +99,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private ElasticsearchTemplate elasticsearchTemplate;
+
+	@Autowired
+	private ESSpecialityRepository esSpecialityRepository;
 
 	@Value(value = "${doctor.welcome.message}")
 	private String doctorWelcomeMessage;
@@ -270,24 +302,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 							new Criteria("patientName").regex("^" + searchTerm));
 
 				}
-				projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
-						Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
-						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-						Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
-						Fields.field("recordsLabel", "$recordsLabel"), Fields.field("comment", "$comment"),
-						Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
-						Fields.field("mobileNumber", "$mobileNumber"),
-						Fields.field("shareWithPatient", "$shareWithPatient"),
-						Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("title", "$title"),
-						Fields.field("doctorName", "$doctorName"),
-						Fields.field("locationName", "$uploadedByLocation.locationName"),
-						Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
-						Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
-						Fields.field("doctorName", "$uploadedByDoctor.firstName"),
-						Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-						Fields.field("updatedTime", "$updatedTime"),
-						Fields.field("adminCreatedTime", "$adminCreatedTime"),
-						Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
 
 			} else {
 
@@ -301,53 +315,57 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 				}
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
-							new Criteria("location.locationName").regex("^" + searchTerm),
-							new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
-							new Criteria("doctor.firstName").regex("^" + searchTerm),
+					criteria = criteria.orOperator(
+							new Criteria("uploadedByLocation.locationName").regex("^" + searchTerm, "i"),
+							new Criteria("uploadedByLocation.locationName").regex("^" + searchTerm),
+							new Criteria("uploadedByDoctor.firstName").regex("^" + searchTerm, "i"),
+							new Criteria("uploadedByDoctor.firstName").regex("^" + searchTerm),
 							new Criteria("patientName").regex("^" + searchTerm, "i"),
 							new Criteria("patientName").regex("^" + searchTerm));
 				}
 				criteria = criteria.and("shareWithDoctor").is(true);
-				projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
-						Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
-						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-						Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
-						Fields.field("recordsLabel", "$recordsLabel"), Fields.field("comment", "$comment"),
-						Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
-						Fields.field("mobileNumber", "$mobileNumber"),
-						Fields.field("shareWithPatient", "$shareWithPatient"),
-						Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("title", "$title"),
-						Fields.field("locationName", "$uploadedByLocation.locationName"),
-						Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
-						Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
-						Fields.field("doctorName", "$uploadedByDoctor.firstName"),
-						Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-						Fields.field("updatedTime", "$updatedTime"),
-						Fields.field("adminCreatedTime", "$adminCreatedTime"),
-						Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
+
 			}
 			if (discarded != null) {
 				criteria = criteria.and("discarded").is(discarded);
 			}
+			projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
+					Fields.field("recordsLabel", "$recordsLabel"), Fields.field("explanation", "$explanation"),
+					Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
+					Fields.field("mobileNumber", "$mobileNumber"),
+					Fields.field("shareWithPatient", "$shareWithPatient"),
+					Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("locationName", "$locationName"),
+					Fields.field("uploadedByLocationName", "$uploadedByLocation.locationName"),
+					Fields.field("uploadedByDoctorName", "$uploadedByDoctor.firstName"),
+					Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
+					Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
+					Fields.field("doctorName", "$doctorName"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("createdBy", "$createdBy"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("adminCreatedTime", "$adminCreatedTime"),
+					Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.lookup("user_cl", "doctorId", "_id", "uploadedByDoctor"),
-						Aggregation.lookup("location_cl", "locationId", "_id", "uploadedByLocation"),
+						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
+						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
 						Aggregation.unwind("doctor"), Aggregation.unwind("location"),
-						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"), projectList,
+						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
+						Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
 
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.lookup("user_cl", "doctorId", "_id", "uploadedByDoctor"),
-						Aggregation.lookup("location_cl", "locationId", "_id", "uploadedByLocation"),
+						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
+						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
 						Aggregation.unwind("doctor"), Aggregation.unwind("location"),
-						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"), projectList,
+						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
+						Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			}
@@ -379,60 +397,38 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public DoctorLabReportResponse getDoctorLabReportById(String id, Boolean doctorLab) {
+	public DoctorLabReportResponse getDoctorLabReportById(String id) {
 		DoctorLabReportResponse response = null;
 		ProjectionOperation projectList = null;
 		try {
 			Criteria criteria = new Criteria("id").is(new ObjectId(id));
 
-			if (doctorLab) {
-				projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
-						Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
-						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-						Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
-						Fields.field("recordsLabel", "$recordsLabel"), Fields.field("comment", "$comment"),
-						Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
-						Fields.field("mobileNumber", "$mobileNumber"),
-						Fields.field("shareWithPatient", "$shareWithPatient"),
-						Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("title", "$title"),
-						Fields.field("doctorName", "$doctorName"),
-						Fields.field("locationName", "$uploadedByLocation.locationName"),
-						Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
-						Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
-						Fields.field("doctorName", "$uploadedByDoctor.firstName"),
-						Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-						Fields.field("updatedTime", "$updatedTime"),
-						Fields.field("adminCreatedTime", "$adminCreatedTime"),
-						Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
+			projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
+					Fields.field("recordsLabel", "$recordsLabel"), Fields.field("explanation", "$explanation"),
+					Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
+					Fields.field("mobileNumber", "$mobileNumber"),
+					Fields.field("shareWithPatient", "$shareWithPatient"),
+					Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("locationName", "$locationName"),
+					Fields.field("uploadedByLocationName", "$uploadedByLocation.locationName"),
+					Fields.field("uploadedByDoctorName", "$uploadedByDoctor.firstName"),
+					Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
+					Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
+					Fields.field("doctorName", "$doctorName"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("createdBy", "$createdBy"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("adminCreatedTime", "$adminCreatedTime"),
+					Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
 
-			} else {
-
-				projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
-						Fields.field("uniqueReportId", "$uniqueReportId"), Fields.field("locationId", "$locationId"),
-						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-						Fields.field("discarded", "$discarded"), Fields.field("recordsFiles", "$recordsFiles"),
-						Fields.field("recordsLabel", "$recordsLabel"), Fields.field("comment", "$comment"),
-						Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
-						Fields.field("mobileNumber", "$mobileNumber"),
-						Fields.field("shareWithPatient", "$shareWithPatient"),
-						Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("title", "$title"),
-						Fields.field("locationName", "$uploadedByLocation.locationName"),
-						Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
-						Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
-						Fields.field("doctorName", "$uploadedByDoctor.firstName"),
-						Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-						Fields.field("updatedTime", "$updatedTime"),
-						Fields.field("adminCreatedTime", "$adminCreatedTime"),
-						Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
-			}
-
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "uploadedByDoctor"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "uploadedByLocation"),
+					Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
+					Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
 					Aggregation.unwind("doctor"), Aggregation.unwind("location"),
-					Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"), projectList);
+					Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
+					Aggregation.match(criteria), projectList);
 
 			AggregationResults<DoctorLabReportResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DoctorLabReportCollection.class, DoctorLabReportResponse.class);
@@ -465,24 +461,35 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Override
 	public Boolean addDoctorToFavouriteList(DoctorLabFavouriteDoctorRequest request) {
 		Boolean response = false;
+
 		try {
+			DoctorLabFavouriteDoctorCollection favouriteDoctorCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 
-				UserCollection fevDoctor = userRepository.findOne(new ObjectId(request.getFavouriteDoctorId()));
+				UserCollection fevDoctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				if (fevDoctor == null) {
-					throw new BusinessException(ServiceError.NoRecord, "Doctor   Not Found");
+					throw new BusinessException(ServiceError.NoRecord, "user not Found");
 				}
-				DoctorLabFavouriteDoctorCollection favouriteDoctorCollection = new DoctorLabFavouriteDoctorCollection();
-				BeanUtil.map(request, favouriteDoctorCollection);
-				favouriteDoctorCollection.setAdminCreatedTime(new Date());
-				favouriteDoctorCollection.setCreatedTime(new Date());
-				favouriteDoctorCollection.setUpdatedTime(new Date());
-				favouriteDoctorCollection.setDoctorName(fevDoctor.getFirstName());
-				favouriteDoctorCollection.setCreatedBy(
-						(!DPDoctorUtils.anyStringEmpty(fevDoctor.getTitle()) ? fevDoctor.getTitle() : "DR.") + " "
-								+ fevDoctor.getFirstName());
-				favouriteDoctorCollection = doctorLabFevouriteDoctorRepository.save(favouriteDoctorCollection);
+				Criteria criteria = new Criteria("doctorId").is(new ObjectId(request.getDoctorId())).and("locationId")
+						.is(new ObjectId(request.getLocationId())).and("hospitalId")
+						.is(new ObjectId(request.getHospitalId())).and("favouriteDoctorId")
+						.is(new ObjectId(request.getFavouriteDoctorId())).and("favouriteLocationId")
+						.is(new ObjectId(request.getLocationId())).and("favouriteHospitalId")
+						.is(new ObjectId(request.getHospitalId()));
+				favouriteDoctorCollection = mongoTemplate.findOne(new Query(criteria),
+						DoctorLabFavouriteDoctorCollection.class);
+				if (favouriteDoctorCollection == null) {
+					favouriteDoctorCollection = new DoctorLabFavouriteDoctorCollection();
+					BeanUtil.map(request, favouriteDoctorCollection);
+					favouriteDoctorCollection.setAdminCreatedTime(new Date());
+					favouriteDoctorCollection.setCreatedTime(new Date());
+					favouriteDoctorCollection.setUpdatedTime(new Date());
+					favouriteDoctorCollection.setCreatedBy(
+							(!DPDoctorUtils.anyStringEmpty(fevDoctor.getTitle()) ? fevDoctor.getTitle() : "DR.") + " "
+									+ fevDoctor.getFirstName());
+					favouriteDoctorCollection = doctorLabFevouriteDoctorRepository.save(favouriteDoctorCollection);
 
+				}
 			}
 			response = true;
 		} catch (
@@ -496,20 +503,11 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, int page, String searchTerm,
-			String doctorId, String locationId, String hospitalId, String speciality) {
+			String doctorId, String locationId, String hospitalId, String speciality, String city) {
 		List<DoctorLabFavouriteDoctorResponse> response = null;
 		try {
-			/*
-			 * Collection<ObjectId> specialityIds = null; if
-			 * (DPDoctorUtils.anyStringEmpty(speciality)) {
-			 * List<ESSpecialityDocument> esSpecialityDocuments =
-			 * esSpecialityRepository .findByQueryAnnotation(speciality);
-			 * specialityIds = CollectionUtils.collect(esSpecialityDocuments,
-			 * new BeanToPropertyValueTransformer("id")); }
-			 */
 
 			Criteria criteria = new Criteria();
 
@@ -528,19 +526,19 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("doctorName").regex("^" + searchTerm, "i"),
-						new Criteria("doctorName").regex("^" + searchTerm),
-						new Criteria("locationName").regex("^" + searchTerm, "i"),
-						new Criteria("locationName").regex("^" + searchTerm),
-						new Criteria("city").regex("^" + searchTerm, "i"),
-						new Criteria("city").regex("^" + searchTerm));
+				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
+						new Criteria("doctor.firstName").regex("^" + searchTerm),
+						new Criteria("location.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("location.locationName").regex("^" + searchTerm));
 
 			}
 			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("doctorName", new BasicDBObject("$first", "$doctorName"))
-							.append("locationName", new BasicDBObject("$first", "$locationName"))
-							.append("city", new BasicDBObject("$first", "$city"))
-							.append("specialities", new BasicDBObject("$push", "$specialities"))
+					new BasicDBObject("_id", "$_id")
+							.append("doctorName", new BasicDBObject("$first", "$doctor.firstName"))
+							.append("locationName", new BasicDBObject("$first", "$location.locationName"))
+							.append("city", new BasicDBObject("$first", "$location.city"))
+							.append("speciality", new BasicDBObject("$push", "$specialities.speciality"))
+							.append("superSpeciality", new BasicDBObject("$push", "$specialities.speciality"))
 							.append("doctorId", new BasicDBObject("$first", "$favouriteDoctorId"))
 							.append("locationId", new BasicDBObject("$first", "$favouriteLocationId"))
 							.append("hospitalId", new BasicDBObject("$first", "$favouriteHospitalId"))
@@ -549,17 +547,24 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
-
 						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-						Aggregation.unwind("specialities"), Aggregation.match(criteria), groupOperation,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.unwind("specialities"),
+						Aggregation.lookup("user_cl", "favouriteDoctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "favouriteLocationId", "_id", "location"),
+						Aggregation.unwind("location"), Aggregation.match(criteria), groupOperation,
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
 
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
 						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-						Aggregation.unwind("specialities"), Aggregation.match(criteria), groupOperation,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+						Aggregation.unwind("specialities"),
+						Aggregation.lookup("user_cl", "favouriteDoctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "favouriteLocationId", "_id", "location"),
+						Aggregation.unwind("location"), Aggregation.match(criteria), groupOperation,
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")));
 
 			}
 
@@ -577,82 +582,103 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<DoctorLabFavouriteDoctorRequest> searchDoctor(int size, int page, String searchTerm, String doctorId,
+	public List<DoctorLabSearchDoctorResponse> searchDoctor(int size, int page, String searchTerm, String doctorId,
 			String locationId, String hospitalId, String speciality, String city) {
-		List<DoctorLabFavouriteDoctorRequest> response = null;
+		List<DoctorLabSearchDoctorResponse> response = null;
+		DoctorLabSearchDoctorResponse doctorSearchResponse = null;
+		DoctorLabFavouriteDoctorCollection fevDoctorCollection = null;
+		Criteria criteria = null;
 		try {
-
-			Criteria criteria = new Criteria();
+			List<ESDoctorDocument> doctorDocuments = null;
+			String latitude = null, longitude = null;
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.matchQuery("isDoctorListed", true));
 
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
-				criteria = criteria.and("city").is(city);
+				city = city.trim().replace("-", " ");
+				ESCityDocument esCityDocument = esCityRepository.findByName(city);
+				if (esCityDocument != null) {
+					latitude = esCityDocument.getLatitude() + "";
+					longitude = esCityDocument.getLongitude() + "";
+				}
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria = criteria.and("locationId").is(new ObjectId(locationId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			}
+			Set<String> specialityIdSet = null;
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-				criteria = criteria.orOperator(new Criteria("specialities.speciality").regex(searchTerm),
-						new Criteria("specialities.superSpeciality").regex(searchTerm));
+				List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
+						.findByQueryAnnotation(speciality);
+				specialityIdSet = new HashSet<String>();
+				if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
+					Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
+							new BeanToPropertyValueTransformer("id"));
+					if (specialityIds != null) {
+						specialityIdSet.addAll(specialityIds);
+					}
+				}
 			}
-
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("doctorName").regex("^" + searchTerm, "i"),
-						new Criteria("doctorName").regex("^" + searchTerm),
-						new Criteria("locationName").regex("^" + searchTerm, "i"),
-						new Criteria("locationName").regex("^" + searchTerm),
-						new Criteria("city").regex("^" + searchTerm, "i"),
-						new Criteria("city").regex("^" + searchTerm));
-
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm));
 			}
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("doctorName", new BasicDBObject("$first", "$doctorName"))
-							.append("locationName", new BasicDBObject("$first", "$locationName"))
-							.append("city", new BasicDBObject("$first", "$city"))
-							.append("specialities", new BasicDBObject("$first", "$specialities"))
-							.append("doctorId", new BasicDBObject("$first", "$favouriteDoctorId"))
-							.append("locationId", new BasicDBObject("$first", "$favouriteLocationId"))
-							.append("hospitalId", new BasicDBObject("$first", "$favouriteHospitalId"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
-
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
-						Aggregation.match(criteria),
-						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-						Aggregation.unwind("specialities"), groupOperation,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			} else {
-
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
-						Aggregation.match(criteria),
-						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-						Aggregation.unwind("specialities"), groupOperation,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
+				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+						.lon(Double.parseDouble(longitude)).distance(30 + "km"));
 
 			}
 
-			AggregationResults<DoctorLabFavouriteDoctorRequest> aggregationResults = mongoTemplate
-					.aggregate(aggregation, DoctorClinicProfileCollection.class, DoctorLabFavouriteDoctorRequest.class);
-			response = aggregationResults.getMappedResults();
+			if (specialityIdSet != null && !specialityIdSet.isEmpty()) {
+				boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
+			}
+
+			SearchQuery searchQuery = null;
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("firstName").order(SortOrder.ASC))
+						.withPageable(new PageRequest(page, size)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("firstName").order(SortOrder.ASC)).build();
+
+			doctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
+			if (doctorDocuments != null && !doctorDocuments.isEmpty()) {
+				response = new ArrayList<DoctorLabSearchDoctorResponse>();
+
+				for (ESDoctorDocument doctorDocument : doctorDocuments) {
+					doctorSearchResponse = new DoctorLabSearchDoctorResponse();
+					doctorSearchResponse.setCity(doctorDocument.getCity());
+
+					doctorSearchResponse.setDoctorId(doctorDocument.getUserId());
+					doctorSearchResponse.setLocationId(doctorDocument.getLocationId());
+					doctorSearchResponse.setHospitalId(doctorDocument.getHospitalId());
+					doctorSearchResponse.setFirstName(doctorDocument.getFirstName());
+					doctorSearchResponse.setLocationName(doctorDocument.getLocationName());
+					doctorSearchResponse.setSpecialities(doctorDocument.getSpecialities());
+					if (!DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId,
+							doctorSearchResponse.getDoctorId(), doctorSearchResponse.getLocationId(),
+							doctorSearchResponse.getHospitalId())) {
+						criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
+								.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
+								.and("favouriteDoctorId").is(new ObjectId(doctorSearchResponse.getDoctorId()))
+								.and("favouriteLocationId").is(new ObjectId(doctorSearchResponse.getLocationId()))
+								.and("favouriteHospitalId").is(new ObjectId(doctorSearchResponse.getHospitalId()));
+						fevDoctorCollection = mongoTemplate.findOne(new Query(criteria),
+								DoctorLabFavouriteDoctorCollection.class);
+						if (fevDoctorCollection != null) {
+							doctorSearchResponse.setIsFavourite(true);
+						}
+					}
+					response.add(doctorSearchResponse);
+				}
+			}
 
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "error while getting search Doctor ");
+			throw new BusinessException(ServiceError.Unknown, "error while search Doctor for Doctor Lab");
 		}
 		return response;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Boolean addDoctorReference(DoctorLabDoctorReferenceRequest request) {
 		Boolean response = false;
 		try {
@@ -672,6 +698,28 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			logger.error(e);
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "error while refer Doctor ");
+		}
+		return response;
+	}
+
+	public Boolean updateShareWithDoctor(String reportId) {
+		Boolean response = false;
+		try {
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while change status share with doctor");
+		}
+		return response;
+	}
+
+	public Boolean updateShareWithPatient(String reportId) {
+		Boolean response = false;
+		try {
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while change status share with patient ");
 		}
 		return response;
 	}
