@@ -1241,9 +1241,16 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("name").regex("^" + searchTerm));
 			}
 			
+<<<<<<< HEAD
 			if (!DPDoctorUtils.anyStringEmpty(labType)) {
 				criteria.and("labType").is(labType);
 			}
+=======
+			 if (!DPDoctorUtils.anyStringEmpty(labType))
+				{
+					criteria.and("labType").is(labType);
+				}
+>>>>>>> 40a5387... changes for dental works
 			criteria.and("locationId").is(new ObjectId(locationId));
 
 			

@@ -16,7 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
+<<<<<<< HEAD
 import org.springframework.stereotype.Service;
+=======
+>>>>>>> 40a5387... changes for dental works
 
 import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;

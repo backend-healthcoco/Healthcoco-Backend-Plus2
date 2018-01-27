@@ -1604,8 +1604,8 @@ public interface PathProxy {
 	public static final String SOLR_DENTAL_WORKS_BASE_URL = BASE_URL + "/solr/dentalWorks";
 
 	public interface ESDentalLabsUrl {
-
 		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks/{range}";
 	}
+
 
 }

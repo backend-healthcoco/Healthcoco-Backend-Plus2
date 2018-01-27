@@ -23,7 +23,10 @@ import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
+<<<<<<< HEAD
 import com.dpdocter.beans.User;
+=======
+>>>>>>> 40a5387... changes for dental works
 import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.elasticsearch.services.impl.ESDentalLabServiceImpl;
 import com.dpdocter.enums.LabType;
@@ -231,7 +234,6 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.addEditRateCardDoctorAssociation(request));
 		return response;
 	}
-	
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
