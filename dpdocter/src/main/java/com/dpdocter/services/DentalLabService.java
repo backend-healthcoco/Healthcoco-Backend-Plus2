@@ -31,7 +31,7 @@ public interface DentalLabService {
 	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String rateCardId,
 			Boolean discarded);
 
-	Boolean addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request);
+	//Boolean addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request);
 
 	DentalLabDoctorAssociation addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request);
 
@@ -46,6 +46,8 @@ public interface DentalLabService {
 	List<User> getCBAssociatedDoctors(String doctorId, String dentalLabId, String collectionBoyId, int size, int page);
 
 	Boolean addEditDentalLabDoctorAssociation(List<DentalLabDoctorAssociation> request);
+
+	RateCardDoctorAssociation addEditRateCardDoctorAssociation(RateCardDoctorAssociation request);
 
 	/*
 	 * DentalLabDoctorAssociation

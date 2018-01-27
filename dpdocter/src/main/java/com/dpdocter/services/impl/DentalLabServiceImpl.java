@@ -451,14 +451,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Override
 	@Transactional
-	public Boolean addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request) {
-		Boolean response = false;
+	public RateCardDoctorAssociation addEditRateCardDoctorAssociation(RateCardDoctorAssociation request) {
+		RateCardDoctorAssociation response = null;
 		ObjectId oldId = null;
 		RateCardDoctorAssociationCollection rateCardDoctorAssociationCollection = null;
 		try {
-			for(RateCardDoctorAssociation rateCardDoctorAssociation : request)
-			{
-			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByLocationDoctor(new ObjectId(rateCardDoctorAssociation.getDentalLabId()), new ObjectId(rateCardDoctorAssociation.getDoctorId()));
+			
+			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByLocationDoctor(new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()));
 			if (rateCardDoctorAssociationCollection == null) {
 				rateCardDoctorAssociationCollection = new RateCardDoctorAssociationCollection();
 			} else {
@@ -466,11 +465,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 				// rateCardLabAssociationCollection.setId(rateCardLabAssociationCollection.getId());
 			}
 
-			BeanUtil.map(rateCardDoctorAssociation, rateCardDoctorAssociationCollection);
+			BeanUtil.map(request, rateCardDoctorAssociationCollection);
 			rateCardDoctorAssociationCollection.setId(oldId);
 			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.save(rateCardDoctorAssociationCollection);
-			}
-			response = true;
+			response = new RateCardDoctorAssociation();
+			BeanUtil.map(rateCardDoctorAssociationCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn(e);
