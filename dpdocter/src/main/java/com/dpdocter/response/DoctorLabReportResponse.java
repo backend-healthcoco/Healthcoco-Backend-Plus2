@@ -14,7 +14,7 @@ public class DoctorLabReportResponse extends GenericCollection {
 
 	private String recordsLabel;
 
-	private String comment;
+	private String explanation;
 
 	private String patientName;
 
@@ -28,8 +28,6 @@ public class DoctorLabReportResponse extends GenericCollection {
 
 	private String doctorId;
 
-	private String title;
-
 	private String doctorName;
 
 	private String locationName;
@@ -40,11 +38,31 @@ public class DoctorLabReportResponse extends GenericCollection {
 
 	private String uploadedByDoctorId;
 
+	private String uploadedByDoctorName;
+
 	private String uploadedByLocationId;
+
+	private String uploadedByLocationName;
 
 	private String uploadedByHospitalId;
 
 	private Boolean discarded = false;
+
+	public String getUploadedByDoctorName() {
+		return uploadedByDoctorName;
+	}
+
+	public void setUploadedByDoctorName(String uploadedByDoctorName) {
+		this.uploadedByDoctorName = uploadedByDoctorName;
+	}
+
+	public String getUploadedByLocationName() {
+		return uploadedByLocationName;
+	}
+
+	public void setUploadedByLocationName(String uploadedByLocationName) {
+		this.uploadedByLocationName = uploadedByLocationName;
+	}
 
 	public String getId() {
 		return id;
@@ -78,12 +96,12 @@ public class DoctorLabReportResponse extends GenericCollection {
 		this.recordsLabel = recordsLabel;
 	}
 
-	public String getComment() {
-		return comment;
+	public String getExplanation() {
+		return explanation;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
 	}
 
 	public String getPatientName() {
@@ -134,16 +152,21 @@ public class DoctorLabReportResponse extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
 	public String getDoctorName() {
 		return doctorName;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorLabReportResponse [id=" + id + ", uniqueReportId=" + uniqueReportId + ", recordsFiles="
+				+ recordsFiles + ", recordsLabel=" + recordsLabel + ", explanation=" + explanation + ", patientName="
+				+ patientName + ", mobileNumber=" + mobileNumber + ", shareWithPatient=" + shareWithPatient
+				+ ", shareWithDoctor=" + shareWithDoctor + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", doctorName=" + doctorName + ", locationName=" + locationName + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", uploadedByDoctorId=" + uploadedByDoctorId
+				+ ", uploadedByDoctorName=" + uploadedByDoctorName + ", uploadedByLocationId=" + uploadedByLocationId
+				+ ", uploadedByLocationName=" + uploadedByLocationName + ", uploadedByHospitalId="
+				+ uploadedByHospitalId + ", discarded=" + discarded + "]";
 	}
 
 	public void setDoctorName(String doctorName) {

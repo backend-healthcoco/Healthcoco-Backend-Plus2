@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorLabReport;
-import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -28,6 +27,7 @@ import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
 import com.dpdocter.response.DoctorLabReportResponse;
+import com.dpdocter.response.DoctorLabSearchDoctorResponse;
 import com.dpdocter.services.DoctorLabService;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
@@ -124,14 +124,13 @@ public class DoctorLabApi {
 	@Path(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORT_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORT_BY_ID, notes = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORT_BY_ID)
-	public Response<DoctorLabReportResponse> getRecordById(@PathParam("reportId") String reportId,
-			@QueryParam("isdoctorLab") @DefaultValue("true") Boolean isdoctorLab) {
+	public Response<DoctorLabReportResponse> getRecordById(@PathParam("reportId") String reportId) {
 		if (DPDoctorUtils.anyStringEmpty(reportId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "report Id Cannot Be Empty");
 		}
 
-		DoctorLabReportResponse doctorLabReport = doctorLabService.getDoctorLabReportById(reportId, isdoctorLab);
+		DoctorLabReportResponse doctorLabReport = doctorLabService.getDoctorLabReportById(reportId);
 
 		Response<DoctorLabReportResponse> response = new Response<DoctorLabReportResponse>();
 		response.setData(doctorLabReport);
@@ -168,7 +167,7 @@ public class DoctorLabApi {
 	public Response<Boolean> addDoctorToFavouriteList(DoctorLabFavouriteDoctorRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getLocationId(), request.getFavouriteDoctorId(), request.getFavouriteHospitalId(),
-				request.getFavouriteLocationId(), request.getDoctorName(), request.getLocationName())) {
+				request.getFavouriteLocationId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -183,17 +182,38 @@ public class DoctorLabApi {
 	public Response<DoctorLabFavouriteDoctorResponse> getFavouriteDoctors(@QueryParam("page") int page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("speciality") String speciality) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("speciality") String speciality,
+			@QueryParam("city") String city) {
 		if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "hospitalId,locationId Cannot Be Empty");
 		}
 
 		List<DoctorLabFavouriteDoctorResponse> favouriteDoctorResponses = doctorLabService.getFavouriteList(size, page,
-				searchTerm, doctorId, locationId, hospitalId, speciality);
+				searchTerm, doctorId, locationId, hospitalId, speciality, city);
 
 		Response<DoctorLabFavouriteDoctorResponse> response = new Response<DoctorLabFavouriteDoctorResponse>();
 		response.setDataList(favouriteDoctorResponses);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DoctorLabUrls.SEARCH_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorLabUrls.SEARCH_DOCTOR, notes = PathProxy.DoctorLabUrls.SEARCH_DOCTOR)
+	public Response<DoctorLabSearchDoctorResponse> searchDoctors(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("speciality") String speciality,
+			@QueryParam("city") String city) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
+			logger.warn("Record Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "hospitalId,locationId Cannot Be Empty");
+		}
+		List<DoctorLabSearchDoctorResponse> doctorLabSearchDoctorResponses = doctorLabService.searchDoctor(size, page,
+				searchTerm, doctorId, locationId, hospitalId, speciality, city);
+		Response<DoctorLabSearchDoctorResponse> response = new Response<DoctorLabSearchDoctorResponse>();
+		response.setDataList(doctorLabSearchDoctorResponses);
 		return response;
 
 	}

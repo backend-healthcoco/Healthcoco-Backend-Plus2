@@ -16,7 +16,9 @@ public class DoctorLabFavouriteDoctorResponse {
 
 	private String city;
 
-	private List<Speciality> specialities;
+	private List<String> speciality;
+
+	private List<String> superSpeciality;
 
 	private String doctorId;
 
@@ -58,12 +60,20 @@ public class DoctorLabFavouriteDoctorResponse {
 		this.city = city;
 	}
 
-	public List<Speciality> getSpecialities() {
-		return specialities;
+	public List<String> getSpeciality() {
+		return speciality;
 	}
 
-	public void setSpecialities(List<Speciality> specialities) {
-		this.specialities = specialities;
+	public void setSpeciality(List<String> speciality) {
+		this.speciality = speciality;
+	}
+
+	public List<String> getSuperSpeciality() {
+		return superSpeciality;
+	}
+
+	public void setSuperSpeciality(List<String> superSpeciality) {
+		this.superSpeciality = superSpeciality;
 	}
 
 	public String getDoctorId() {

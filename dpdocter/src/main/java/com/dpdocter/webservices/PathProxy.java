@@ -1553,6 +1553,7 @@ public interface PathProxy {
 		public static final String ADD_TO_FAVOURITE_DOCTOR_LIST = "/addFavouriteDoctor";
 		public static final String GET_FAVOURITE_DOCTOR = "/getFavouriteDoctor";
 		public static final String ADD_DOCTOR_REFERENCE = "/referDoctor";
+		public static final String SEARCH_DOCTOR= "/searchDoctor";
 
 	}
 }

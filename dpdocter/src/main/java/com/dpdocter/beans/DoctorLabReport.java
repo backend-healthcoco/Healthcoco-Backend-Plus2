@@ -14,15 +14,15 @@ public class DoctorLabReport extends GenericCollection {
 
 	private String recordsLabel;
 
-	private String comment;
+	private String explanation;
 
 	private String patientName;
 
 	private String mobileNumber;
 
-	private Boolean shareWithPatient = true;
+	private Boolean shareWithPatient = false;
 
-	private Boolean shareWithDoctor = true;
+	private Boolean shareWithDoctor = false;
 
 	private String patientId;
 
@@ -72,12 +72,12 @@ public class DoctorLabReport extends GenericCollection {
 		this.recordsLabel = recordsLabel;
 	}
 
-	public String getComment() {
-		return comment;
+	public String getExplanation() {
+		return explanation;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
 	}
 
 	public String getPatientName() {
@@ -171,12 +171,12 @@ public class DoctorLabReport extends GenericCollection {
 	@Override
 	public String toString() {
 		return "DoctorLabReport [id=" + id + ", uniqueReportId=" + uniqueReportId + ", recordsFiles=" + recordsFiles
-				+ ", recordsLabel=" + recordsLabel + ", comment=" + comment + ", patientName=" + patientName
+				+ ", recordsLabel=" + recordsLabel + ", explanation=" + explanation + ", patientName=" + patientName
 				+ ", mobileNumber=" + mobileNumber + ", shareWithPatient=" + shareWithPatient + ", shareWithDoctor="
 				+ shareWithDoctor + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", uploadedByDoctorId=" + uploadedByDoctorId
 				+ ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId=" + uploadedByHospitalId
-				+ "]";
+				+ ", discarded=" + discarded + "]";
 	}
 
 	public Boolean getDiscarded() {
