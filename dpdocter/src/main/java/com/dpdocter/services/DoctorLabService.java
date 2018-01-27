@@ -35,4 +35,8 @@ public interface DoctorLabService {
 	public Boolean addDoctorReference(DoctorLabDoctorReferenceRequest request);
 
 	public DoctorLabReportResponse getDoctorLabReportById(String id);
+
+	public Boolean updateShareWithPatient(String reportId);
+
+	public Boolean updateShareWithDoctor(String reportId);
 }

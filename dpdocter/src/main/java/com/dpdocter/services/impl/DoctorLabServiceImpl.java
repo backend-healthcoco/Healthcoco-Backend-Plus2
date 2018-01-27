@@ -2,7 +2,6 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,8 +38,6 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.RecordsFile;
-import com.dpdocter.beans.UserRecords;
-import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorLabDoctorReferenceCollection;
 import com.dpdocter.collections.DoctorLabFavouriteDoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
@@ -50,7 +47,6 @@ import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
-import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -702,24 +698,58 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		return response;
 	}
 
+	@Override
 	public Boolean updateShareWithDoctor(String reportId) {
 		Boolean response = false;
 		try {
+			DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
+					.findOne(new ObjectId(reportId));
+			if (doctorLabReportCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No report fount with reportId");
+			}
+			if (doctorLabReportCollection.getShareWithDoctor() == null) {
+				{
+					doctorLabReportCollection.setShareWithDoctor(true);
+				}
+			} else {
+				doctorLabReportCollection.setShareWithDoctor(!doctorLabReportCollection.getShareWithDoctor());
+			}
+			doctorLabReportCollection.setUpdatedTime(new Date());
+			doctorLabReportRepository.save(doctorLabReportCollection);
+			response = true;
+
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "error while change status share with doctor");
+			throw new BusinessException(ServiceError.Unknown, "error while share with doctor");
 		}
 		return response;
 	}
 
+	@Override
 	public Boolean updateShareWithPatient(String reportId) {
 		Boolean response = false;
 		try {
+			DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
+					.findOne(new ObjectId(reportId));
+			if (doctorLabReportCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No report fount with reportId");
+			}
+			if (doctorLabReportCollection.getShareWithPatient() == null) {
+				{
+					doctorLabReportCollection.setShareWithPatient(true);
+				}
+			} else {
+				doctorLabReportCollection.setShareWithPatient(!doctorLabReportCollection.getShareWithPatient());
+			}
+			doctorLabReportCollection.setUpdatedTime(new Date());
+			doctorLabReportRepository.save(doctorLabReportCollection);
+			response = true;
+
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "error while change status share with patient ");
+			throw new BusinessException(ServiceError.Unknown, "error while share with patient");
 		}
 		return response;
 	}
