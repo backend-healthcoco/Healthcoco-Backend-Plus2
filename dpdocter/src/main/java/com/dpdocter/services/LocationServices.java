@@ -36,7 +36,7 @@ public interface LocationServices {
 
 	Boolean verifyCRN(String locationId, String crn, String requestId);
 
-	List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm);
+	//List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm);
 
 	// List<Location> getAssociatedLabs(String locationId, Boolean isParent);
 
@@ -102,7 +102,7 @@ public interface LocationServices {
 	// List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int
 	// size, int page);
 
-	Integer getCBCount(String locationId, String searchTerm);
+	Integer getCBCount(String locationId, String searchTerm , String labType);
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm, int page, int size);
 
@@ -130,4 +130,7 @@ public interface LocationServices {
 	DentalWork addEditCustomWork(AddEditCustomWorkRequest request);
 
 	DentalWork deleteCustomWork(String id, boolean discarded);
+
+	List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm,
+			String labtype);
 }

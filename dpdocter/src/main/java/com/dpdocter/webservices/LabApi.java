@@ -29,6 +29,7 @@ import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Specimen;
+import com.dpdocter.enums.LabType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditCustomWorkRequest;
@@ -132,8 +133,8 @@ public class LabApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Object> response = new Response<Object>();
-		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm));
-		response.setData(locationServices.getCBCount(locationId, searchTerm));
+		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm ,LabType.DIAGNOSTIC.getType()));
+		response.setData(locationServices.getCBCount(locationId, searchTerm , LabType.DIAGNOSTIC.getType()));
 
 		return response;
 	}

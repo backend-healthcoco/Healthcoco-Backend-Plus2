@@ -1561,6 +1561,49 @@ public interface PathProxy {
 
 	}
 
+
+	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";
+
+	public interface CertificateTemplatesUrls {
+		public static final String ADD_CERTIFICATE_TEMPLATES = "template/add";
+
+		public static final String GET_CERTIFICATE_TEMPLATE_BY_ID = "/template/{templateId}/view";
+
+		public static final String GET_CERTIFICATE_TEMPLATES = "template";
+
+		public static final String DELETE_CERTIFICATE_TEMPLATES = "/template/{templateId}/delete";
+
+		public static final String ADD_PATIENT_CERTIFICATE = "/patient/add";
+
+		public static final String GET_PATIENT_CERTIFICATES = "/patient/";
+
+		public static final String DELETE_PATIENT_CERTIFICATE = "/patient/{certificateId}/delete";
+
+		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
+
+	}
+
+	public static final String DOCTOR_LAB_URL = BASE_URL + "/doctorLab";
+
+	public interface DoctorLabUrls {
+
+		public static final String ADD_DOCTOR_LAB_REPORT = "/addEditDoctorLabReport";
+		public static final String UPLOAD_DOCTOR_LAB_MULTIPART_FILE = "/upload/file/multipart";
+		public static final String UPLOAD_DOCTOR_LAB_FILE = "/upload/file";
+		public static final String GET_DOCTOR_LAB_REPORTS = "/getDoctorLabReports";
+		public static final String GET_DOCTOR_LAB_REPORT_BY_ID = "/{reportId}/view";
+		public static final String ADD_TO_FAVOURITE_DOCTOR_LIST = "/addFavouriteDoctor";
+		public static final String GET_FAVOURITE_DOCTOR = "/getFavouriteDoctor";
+		public static final String ADD_DOCTOR_REFERENCE = "/referDoctor";
+		public static final String SEARCH_DOCTOR= "/searchDoctor";
+
+	}
 	
+	public static final String SOLR_DENTAL_WORKS_BASE_URL = BASE_URL + "/solr/dentalWorks";
+
+	public interface ESDentalLabsUrl {
+
+		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks";
+	}
 
 }

@@ -54,6 +54,7 @@ import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.SpecimenCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -1185,16 +1186,20 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm) {
+	public List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm , String labType) {
 		List<CollectionBoyResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			 {
 				criteria = criteria.orOperator(new Criteria("mobileNumber").regex("^" + searchTerm, "i"),
 						new Criteria("mobileNumber").regex("^" + searchTerm),
 						new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
+			}
+			 if (!DPDoctorUtils.anyStringEmpty(labType))
+			{
+				criteria.and("labType").is(labType);
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));
@@ -1219,7 +1224,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public Integer getCBCount(String locationId, String searchTerm) {
+	public Integer getCBCount(String locationId, String searchTerm , String labType) {
 		Integer count = null;
 		try {
 			Aggregation aggregation = null;
@@ -1230,7 +1235,11 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
 			}
-
+			
+			 if (!DPDoctorUtils.anyStringEmpty(labType))
+				{
+					criteria.and("labType").is(labType);
+				}
 			criteria.and("locationId").is(new ObjectId(locationId));
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),

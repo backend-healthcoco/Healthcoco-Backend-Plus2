@@ -22,9 +22,12 @@ import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
+import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
+import com.dpdocter.elasticsearch.services.impl.ESDentalLabServiceImpl;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.services.DentalLabService;
@@ -49,17 +52,28 @@ public class DentalLabAPI {
 	@Autowired
 	private LocationServices locationServices;
 	
+	@Autowired
+	private ESDentalLabServiceImpl esDentalLabServiceImpl;
+	
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
 	public Response<DentalWork> addEditDEntalWorks(AddEditCustomWorkRequest request) {
+		DentalWork dentalWork = null;
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
+		dentalWork = new DentalWork();
+		dentalWork = dentalLabService.addEditCustomWork(request);
 		Response<DentalWork> response = new Response<DentalWork>();
-		response.setData(dentalLabService.addEditCustomWork(request));
-
+		if(dentalWork != null)
+		{
+			response.setData(dentalWork);
+			ESDentalWorksDocument dentalWorksDocument = new ESDentalWorksDocument();
+			BeanUtil.map(dentalWork, dentalWorksDocument);
+			esDentalLabServiceImpl.addDentalWorks(dentalWorksDocument);
+		}
 		return response;
 	}
 
@@ -76,14 +90,24 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.DELETE_DENTAL_WORKS)
 	@DELETE
 	@ApiOperation(value = PathProxy.DentalLabUrls.DELETE_DENTAL_WORKS, notes = PathProxy.DentalLabUrls.DELETE_DENTAL_WORKS)
-	public Response<Object> deleteDentalWork(@QueryParam("id") String id,
+	public Response<DentalWork> deleteDentalWork(@QueryParam("id") String id,
 			@QueryParam("discarded") boolean discarded) {
+		
+		DentalWork dentalWork = null;
 		if (id == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<Object> response = new Response<Object>();
-		response.setData(dentalLabService.deleteCustomWork(id, discarded));
+		dentalWork = new DentalWork();
+		dentalWork = dentalLabService.deleteCustomWork(id, discarded);
+		Response<DentalWork> response = new Response<DentalWork>();
+		if(dentalWork != null)
+		{
+			response.setData(dentalWork);
+			ESDentalWorksDocument dentalWorksDocument = new ESDentalWorksDocument();
+			BeanUtil.map(dentalWork, dentalWorksDocument);
+			esDentalLabServiceImpl.addDentalWorks(dentalWorksDocument);
+		}
 		return response;
 	}
 	
@@ -115,7 +139,7 @@ public class DentalLabAPI {
 	}
 	
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
-	@POST
+	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	public Response<DentalLabDoctorAssociation> getDentalLabDoctorAssociation(@QueryParam("locationId") String locationId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
@@ -180,7 +204,6 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.addEditRateCardDoctorAssociation(request));
 		return response;
 	}
-	
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
@@ -232,8 +255,8 @@ public class DentalLabAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Object> response = new Response<Object>();
-		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm));
-		response.setData(locationServices.getCBCount(locationId, searchTerm));
+		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm, LabType.DENTAL.getType()));
+		response.setData(locationServices.getCBCount(locationId, searchTerm ,LabType.DENTAL.getType()));
 
 		return response;
 	}
