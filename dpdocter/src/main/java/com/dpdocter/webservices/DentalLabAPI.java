@@ -143,7 +143,7 @@ public class DentalLabAPI {
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	public Response<DentalLabDoctorAssociation> getDentalLabDoctorAssociation(@QueryParam("locationId") String locationId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
-		if (locationId != null) {
+		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
