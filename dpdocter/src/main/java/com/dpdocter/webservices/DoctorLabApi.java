@@ -218,6 +218,34 @@ public class DoctorLabApi {
 
 	}
 
+	@Path(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_DOCTOR, notes = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_DOCTOR)
+	public Response<Boolean> updateShareWithDoctor(@PathParam("reportId") String reportId) {
+		if (DPDoctorUtils.anyStringEmpty(reportId)) {
+			logger.warn("Record Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(doctorLabService.updateShareWithDoctor(reportId));
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_PATIENT, notes = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_PATIENT)
+	public Response<Boolean> updateShareWithPatent(@PathParam("reportId") String reportId) {
+		if (DPDoctorUtils.anyStringEmpty(reportId)) {
+			logger.warn("Record Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(doctorLabService.updateShareWithPatient(reportId));
+		return response;
+
+	}
+
 	@POST
 	@Path(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE, notes = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)
