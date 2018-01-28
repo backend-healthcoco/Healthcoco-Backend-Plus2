@@ -19,7 +19,7 @@ public class RateCardDentalWorkAssociationCollection extends GenericCollection {
 	@Field
 	private ObjectId rateCardId;
 	@Field
-	private Integer turnaroundTime;
+	private Integer eta;
 	@Field
 	private Double cost;
 	@Field
@@ -65,12 +65,12 @@ public class RateCardDentalWorkAssociationCollection extends GenericCollection {
 		this.rateCardId = rateCardId;
 	}
 
-	public Integer getTurnaroundTime() {
-		return turnaroundTime;
+	public Integer getEta() {
+		return eta;
 	}
 
-	public void setTurnaroundTime(Integer turnaroundTime) {
-		this.turnaroundTime = turnaroundTime;
+	public void setEta(Integer eta) {
+		this.eta = eta;
 	}
 
 	public Double getCost() {

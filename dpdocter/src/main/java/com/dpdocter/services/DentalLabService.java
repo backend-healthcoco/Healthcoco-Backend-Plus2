@@ -12,6 +12,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
+import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 
 public interface DentalLabService {
@@ -43,7 +44,7 @@ public interface DentalLabService {
 
 	Boolean addEditCollectionBoyDoctorAssociation(List<CollectionBoyDoctorAssociation> request);
 
-	List<User> getCBAssociatedDoctors(String doctorId, String dentalLabId, String collectionBoyId, int size, int page);
+	List<CBDoctorAssociationLookupResponse> getCBAssociatedDoctors(String doctorId, String dentalLabId, String collectionBoyId, int size, int page);
 
 	Boolean addEditDentalLabDoctorAssociation(List<DentalLabDoctorAssociation> request);
 

@@ -1803,7 +1803,7 @@ public class LocationServiceImpl implements LocationServices {
 	@Override
 	@Transactional
 	public List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab,
-			Boolean isParent, String searchTerm) {
+			Boolean isParent,Boolean isDentalWorksLab ,Boolean isDentalImagingLab,  String searchTerm) {
 		List<Location> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -1828,6 +1828,14 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			if (isParent != null) {
 				criteria.and("isParent").is(isParent);
+			}
+			
+			if (isDentalWorksLab != null) {
+				criteria.and("isDentalWorksLab").is(isDentalWorksLab);
+			}
+			
+			if (isDentalImagingLab != null) {
+				criteria.and("isDentalImagingLab").is(isDentalImagingLab);
 			}
 
 			if (size > 0) {

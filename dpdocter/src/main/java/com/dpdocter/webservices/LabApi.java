@@ -354,10 +354,10 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_CLINICS_AND_LABS, notes = PathProxy.LabUrls.GET_CLINICS_AND_LABS)
 	public Response<Location> getClinics(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "isClinic") Boolean isClinic,
-			@QueryParam(value = "isLab") Boolean isLab, @QueryParam(value = "isParent") Boolean isParent,
+			@QueryParam(value = "isLab") Boolean isLab, @QueryParam(value = "isDentalWorksLab") Boolean isDentalWorksLab ,  @QueryParam(value = "isDentalImagingLab") Boolean isDentalImagingLab ,  @QueryParam(value = "isParent") Boolean isParent,
 			@QueryParam(value = "searchTerm") String searchTerm) {
 
-		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent,
+		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent, isDentalWorksLab , isDentalImagingLab,
 				searchTerm);
 
 		Response<Location> response = new Response<Location>();
