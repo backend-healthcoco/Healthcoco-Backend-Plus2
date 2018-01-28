@@ -9,6 +9,7 @@ public class RateCardDoctorAssociation extends GenericCollection {
 	private String doctorId;
 	private String rateCardId;
 	private Boolean discarded = false;
+	private RateCard rateCard;
 
 	public String getId() {
 		return id;
@@ -48,6 +49,15 @@ public class RateCardDoctorAssociation extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+	
+
+	public RateCard getRateCard() {
+		return rateCard;
+	}
+
+	public void setRateCard(RateCard rateCard) {
+		this.rateCard = rateCard;
 	}
 
 	@Override

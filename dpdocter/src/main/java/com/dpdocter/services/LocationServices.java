@@ -68,9 +68,9 @@ public interface LocationServices {
 	RateCardLabAssociation addEditRateCardAssociatedLab(RateCardLabAssociation rateCardLabAssociation);
 
 	RateCardLabAssociation getRateCardAssociatedLab(String daughterLabId, String parentLabId);
-
+/*
 	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
-			String searchTerm);
+			String searchTerm);*/
 
 	// Integer getCBCount(int size, int page, String locationId, String
 	// searchTerm);
@@ -133,4 +133,7 @@ public interface LocationServices {
 
 	List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm,
 			String labtype);
+
+	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
+			Boolean isDentalWorksLab, Boolean isDentalImagingLab, String searchTerm);
 }

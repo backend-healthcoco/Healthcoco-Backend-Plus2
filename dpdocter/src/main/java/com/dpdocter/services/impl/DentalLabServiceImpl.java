@@ -489,8 +489,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("dentalWork.workName").regex("^" + searchTerm, "i"),
-						new Criteria("dentalWork.workName").regex("^" + searchTerm));
+				criteria = criteria.orOperator(new Criteria("rateCard.name").regex("^" + searchTerm, "i"),
+						new Criteria("rateCard.name").regex("^" + searchTerm));
 			}
 			criteria.and("doctorId").is(new ObjectId(doctorId));
 			criteria.and("discarded").is(discarded);
@@ -498,8 +498,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
-						/*Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
-						Aggregation.unwind("dentalWork"),*/
+						Aggregation.lookup("rate_card_cl", "rateCardId", "_id", "rateCard"),
+						Aggregation.unwind("rateCard"),
 						/*
 						 * Aggregation.lookup("specimen_cl",
 						 * "diagnosticTest.specimenId", "_id", "specimen"),
@@ -509,8 +509,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(
-						/*Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
-						Aggregation.unwind("dentalWork"), */Aggregation.match(criteria),
+						Aggregation.lookup("rate_card_cl", "rateCardId", "_id", "rateCard"),
+						Aggregation.unwind("rateCard"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			}
@@ -559,7 +559,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Override
 	@Transactional
-	public List<User> getCBAssociatedDoctors(String doctorId, String dentalLabId, String collectionBoyId,
+	public List<CBDoctorAssociationLookupResponse> getCBAssociatedDoctors(String doctorId, String dentalLabId, String collectionBoyId,
 			int size, int page) {
 		List<User> users = null;
 		List<CBDoctorAssociationLookupResponse> lookupResponses = null;
@@ -578,30 +578,32 @@ public class DentalLabServiceImpl implements DentalLabService {
 			criteria.and("isActive").is(true);
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "location"),
+						Aggregation.unwind("dentalLab"),Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),  Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "location"),
+						Aggregation.unwind("dentalLab"),Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			AggregationResults<CBDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyDoctorAssociationCollection.class, CBDoctorAssociationLookupResponse.class);
 			lookupResponses = aggregationResults.getMappedResults();
-			if (lookupResponses != null) {
+			/*if (lookupResponses != null) {
 				users = new ArrayList<User>();
 				for (CBDoctorAssociationLookupResponse lookupResponse : lookupResponses) {
 					users.add(lookupResponse.getDoctor());
 				}
-			}
+			}*/
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 			logger.warn(e);
 		}
-		return users;
+		return lookupResponses;
 	}
 
 
