@@ -179,21 +179,21 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public RecordsFile uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
+	public List<RecordsFile> uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
+		List<RecordsFile> response = null;
 		RecordsFile recordsFile = null;
 		try {
-			FileDetails fileDetails = request.getFileDetails();
-
-			Date createdTime = new Date();
-
+			Date createdTime = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
 			}
+			for (FileDetails fileDetails : request.getFileDetails()) {
+				recordsFile = new RecordsFile();
+				createdTime = new Date();
 
-			if (fileDetails != null) {
 				String path = "doctorLabReports" + File.separator
 						+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
 
@@ -206,14 +206,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				recordsFile = new RecordsFile();
 				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
 				recordsFile.setFileSizeInMB(fileSizeInMB);
-				recordsFile.setRecordsUrl(recordPath);
-				recordsFile.setThumbnailUrl(fileManager.saveThumbnailAndReturnThumbNailUrl(fileDetails, recordPath));
+				recordsFile.setRecordsUrl(getFinalImageURL(recordPath));
+				recordsFile.setThumbnailUrl(
+						getFinalImageURL(fileManager.saveThumbnailAndReturnThumbNailUrl(fileDetails, recordPath)));
 				recordsFile.setRecordsFileLabel(recordfileLabel);
 				recordsFile.setRecordsPath(path);
 				recordsFile.setRecordsType(request.getRecordsType());
-
-			} else {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 
 		} catch (Exception e) {
@@ -222,7 +220,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			throw new BusinessException(ServiceError.Unknown, "error while uploading Doctor Lab Report");
 
 		}
-		return recordsFile;
+		return response;
 
 	}
 
@@ -520,7 +518,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
-
+			if (!DPDoctorUtils.anyStringEmpty(city)) {
+				criteria = criteria.and("location.city").regex(city);
+			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm),
