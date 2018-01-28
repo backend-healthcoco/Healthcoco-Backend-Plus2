@@ -104,20 +104,15 @@ public class DoctorLabApi {
 	@Path(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE, notes = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
 	public Response<RecordsFile> uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
-		if (request == null || request.getFileDetails() == null) {
+		if (request == null || request.getFileDetails() == null || request.getFileDetails().isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		RecordsFile recordsFile = doctorLabService.uploadDoctorLabReport(request);
-
-		if (recordsFile != null) {
-			recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
-			recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
-		}
+		List<RecordsFile> recordsFiles = doctorLabService.uploadDoctorLabReport(request);
 
 		Response<RecordsFile> response = new Response<RecordsFile>();
-		response.setData(recordsFile);
+		response.setDataList(recordsFiles);
 		return response;
 	}
 
