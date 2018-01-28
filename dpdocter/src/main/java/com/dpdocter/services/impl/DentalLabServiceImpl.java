@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.elasticsearch.index.fielddata.RamAccountingTermsEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -21,23 +20,17 @@ import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorksSample;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
-import com.dpdocter.beans.RateCardLabAssociation;
-import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyDoctorAssociationCollection;
-import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
-import com.dpdocter.collections.RateCardLabAssociationCollection;
-import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -56,9 +49,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
-import com.dpdocter.response.CBLabAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
-import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.DentalLabService;
 
 import common.util.web.DPDoctorUtils;
@@ -426,7 +417,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			criteria.and("rateCardId").is(new ObjectId(rateCardId));
 			criteria.and("isAvailable").is(true);
-			criteria.and("discarded").is(discarded);
+		//	criteria.and("discarded").is(discarded);
 			
 
 			if (size > 0) {
@@ -460,14 +451,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Override
 	@Transactional
-	public Boolean addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request) {
-		Boolean response = false;
+	public RateCardDoctorAssociation addEditRateCardDoctorAssociation(RateCardDoctorAssociation request) {
+		RateCardDoctorAssociation response = null;
 		ObjectId oldId = null;
 		RateCardDoctorAssociationCollection rateCardDoctorAssociationCollection = null;
 		try {
-			for(RateCardDoctorAssociation rateCardDoctorAssociation : request)
-			{
-			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByLocationDoctor(new ObjectId(rateCardDoctorAssociation.getDentalLabId()), new ObjectId(rateCardDoctorAssociation.getDoctorId()));
+			
+			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByLocationDoctor(new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()));
 			if (rateCardDoctorAssociationCollection == null) {
 				rateCardDoctorAssociationCollection = new RateCardDoctorAssociationCollection();
 			} else {
@@ -475,11 +465,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 				// rateCardLabAssociationCollection.setId(rateCardLabAssociationCollection.getId());
 			}
 
-			BeanUtil.map(rateCardDoctorAssociation, rateCardDoctorAssociationCollection);
+			BeanUtil.map(request, rateCardDoctorAssociationCollection);
 			rateCardDoctorAssociationCollection.setId(oldId);
 			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.save(rateCardDoctorAssociationCollection);
-			}
-			response = true;
+			response = new RateCardDoctorAssociation();
+			BeanUtil.map(rateCardDoctorAssociationCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn(e);

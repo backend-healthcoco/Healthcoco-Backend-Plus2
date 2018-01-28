@@ -1630,7 +1630,7 @@ public interface PathProxy {
 
 	public interface ESDentalLabsUrl {
 
-		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks";
+		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks/{range}";
 	}
 
 
