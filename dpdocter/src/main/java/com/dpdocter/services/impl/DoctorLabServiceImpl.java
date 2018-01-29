@@ -331,7 +331,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
 					Fields.field("mobileNumber", "$mobileNumber"),
 					Fields.field("shareWithPatient", "$shareWithPatient"),
-					Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("locationName", "$locationName"),
+					Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("locationName", "$location.locationName"),
 					Fields.field("uploadedByLocationName", "$uploadedByLocation.locationName"),
 					Fields.field("uploadedByDoctorName", "$uploadedByDoctor.firstName"),
 					Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
