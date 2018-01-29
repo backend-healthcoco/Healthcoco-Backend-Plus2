@@ -14,6 +14,7 @@ import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
+import com.dpdocter.response.DentalLabPickupResponse;
 
 public interface DentalLabService {
 
@@ -36,11 +37,11 @@ public interface DentalLabService {
 
 	DentalLabDoctorAssociation addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request);
 
-	List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, int page, int size,
-			String searchTerm);
+	/*List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, int page, int size,
+			String searchTerm);*/
 
-	List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm, String doctorId,
-			Boolean discarded);
+	/*List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm, String doctorId,
+			Boolean discarded);*/
 
 	Boolean addEditCollectionBoyDoctorAssociation(List<CollectionBoyDoctorAssociation> request);
 
@@ -49,6 +50,15 @@ public interface DentalLabService {
 	Boolean addEditDentalLabDoctorAssociation(List<DentalLabDoctorAssociation> request);
 
 	RateCardDoctorAssociation addEditRateCardDoctorAssociation(RateCardDoctorAssociation request);
+
+	List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm, String doctorId,
+			String dentalLabId, Boolean discarded);
+
+	List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, String doctorId,
+			int page, int size, String searchTerm);
+
+	List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
+			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, int size, int page);
 
 	/*
 	 * DentalLabDoctorAssociation

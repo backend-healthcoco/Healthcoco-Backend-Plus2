@@ -8,9 +8,10 @@ import com.dpdocter.request.DentalLabPickupRequest;
 
 import common.util.web.JacksonUtil;
 
-public class DentalLabPickup extends GenericCollection{
+public class DentalLabPickup extends GenericCollection {
 
 	private String id;
+	private String patientId;
 	private String patientName;
 	private String mobileNumber;
 	private String gender;
@@ -207,6 +208,14 @@ public class DentalLabPickup extends GenericCollection{
 
 	public void setDentalLab(Location dentalLab) {
 		this.dentalLab = dentalLab;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
 	@Override

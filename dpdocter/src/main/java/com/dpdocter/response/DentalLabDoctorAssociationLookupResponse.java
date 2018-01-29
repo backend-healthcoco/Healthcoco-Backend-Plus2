@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
 
@@ -10,6 +11,7 @@ public class DentalLabDoctorAssociationLookupResponse extends GenericCollection 
 	private String dentalLabId;
 	private Boolean isActive = true;
 	private User doctor;
+	private Location dentalLab;
 
 	public String getId() {
 		return id;
@@ -49,6 +51,14 @@ public class DentalLabDoctorAssociationLookupResponse extends GenericCollection 
 
 	public void setDoctor(User doctor) {
 		this.doctor = doctor;
+	}
+
+	public Location getDentalLab() {
+		return dentalLab;
+	}
+
+	public void setDentalLab(Location dentalLab) {
+		this.dentalLab = dentalLab;
 	}
 
 	@Override
