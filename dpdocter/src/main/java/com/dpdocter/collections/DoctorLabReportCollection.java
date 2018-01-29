@@ -45,6 +45,26 @@ public class DoctorLabReportCollection extends GenericCollection {
 	private ObjectId uploadedByHospitalId;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private String doctorName;
+	@Field
+	private String doctorMobileNumber;
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getDoctorMobileNumber() {
+		return doctorMobileNumber;
+	}
+
+	public void setDoctorMobileNumber(String doctorMobileNumber) {
+		this.doctorMobileNumber = doctorMobileNumber;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;
