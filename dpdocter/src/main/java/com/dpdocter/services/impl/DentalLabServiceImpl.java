@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -180,8 +179,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 	
-	
-	
 	@Override
 	@Transactional
 	public Boolean changeLabType(String doctorId, String locationId, LabType labType) {
@@ -195,12 +192,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 				response = true;
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
 	}
-	
 	
 	@Override
 	@Transactional
@@ -375,32 +370,34 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Override
 	@Transactional
 	public Boolean addEditRateCardDentalWorkAssociation(List<RateCardDentalWorkAssociation> request) {
-		boolean response = false;
+		Boolean response = false;
+		ObjectId oldId = null;
 		RateCardDentalWorkAssociationCollection rateCardDentalWorkAssociationCollection = null;
 		try {
-			for (RateCardDentalWorkAssociation workAssociation : request) {
-				if (workAssociation.getId() != null) {
-					rateCardDentalWorkAssociationCollection = rateCardDentalWorkAssociationRepository
-							.findOne(new ObjectId(workAssociation.getId()));
-					rateCardDentalWorkAssociationCollection.setCreatedTime(new Date());
-				} else {
+			for (RateCardDentalWorkAssociation rateCardDentalWorkAssociation : request) {
+				rateCardDentalWorkAssociationCollection = rateCardDentalWorkAssociationRepository
+						.getByLocationWorkRateCard(new ObjectId(rateCardDentalWorkAssociation.getLocationId()),
+								new ObjectId(rateCardDentalWorkAssociation.getDentalWorkId()),
+								new ObjectId(rateCardDentalWorkAssociation.getRateCardId()));
+				if (rateCardDentalWorkAssociationCollection == null) {
 					rateCardDentalWorkAssociationCollection = new RateCardDentalWorkAssociationCollection();
-					workAssociation.setCreatedTime(new Date());
-					workAssociation.setUpdatedTime(new Date());
+				} else {
+					oldId = rateCardDentalWorkAssociationCollection.getId();
 				}
-
-				BeanUtil.map(workAssociation, rateCardDentalWorkAssociationCollection);
+				BeanUtil.map(rateCardDentalWorkAssociation, rateCardDentalWorkAssociationCollection);
+				rateCardDentalWorkAssociationCollection.setId(oldId);
+				rateCardDentalWorkAssociationCollection = rateCardDentalWorkAssociationRepository
+						.save(rateCardDentalWorkAssociationCollection);
 			}
-			rateCardDentalWorkAssociationRepository.save(rateCardDentalWorkAssociationCollection);
 			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error adding / editing ratecard");
-			throw new BusinessException(ServiceError.Unknown, "Error adding / editing ratecard");
+			logger.warn(e);
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input" + e);
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm,
@@ -578,13 +575,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 			criteria.and("isActive").is(true);
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("location_cl", "dentalLabId", "_id", "location"),
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"),Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),  Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("location_cl", "dentalLabId", "_id", "location"),
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"),Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
