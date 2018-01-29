@@ -145,10 +145,6 @@ public class DentalLabAPI {
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	public Response<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociation(@QueryParam("locationId") String locationId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
-		if (locationId == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
 		Response<DentalLabDoctorAssociationLookupResponse> response = new Response<DentalLabDoctorAssociationLookupResponse>();
 		response.setDataList(dentalLabService.getDentalLabDoctorAssociations(locationId, doctorId ,page, size, searchTerm));
 		return response;
@@ -175,10 +171,7 @@ public class DentalLabAPI {
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("status") String status,
 			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted,
 			@QueryParam("size") int size, @QueryParam("page") int page) {
-		if (doctorId == null || dentalLabId == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
+		
 		Response<DentalLabPickupResponse> response = new Response<DentalLabPickupResponse>();
 		response.setDataList(dentalLabService.getRequests(dentalLabId, doctorId, from, to, searchTerm, status,
 				isAcceptedAtLab, isCompleted, size, page));
