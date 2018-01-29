@@ -6,6 +6,7 @@ import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.User;
@@ -54,11 +55,13 @@ public interface DentalLabService {
 	List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm, String doctorId,
 			String dentalLabId, Boolean discarded);
 
-	List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, String doctorId,
+	List<User> getDentalLabDoctorAssociations(String locationId, String doctorId,
 			int page, int size, String searchTerm);
 
 	List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
 			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, int size, int page);
+
+	List<Location> getDentalLabDoctorAssociationsForDoctor(String doctorId, int page, int size, String searchTerm);
 
 	/*
 	 * DentalLabDoctorAssociation
