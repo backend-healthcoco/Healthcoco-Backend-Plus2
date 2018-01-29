@@ -32,6 +32,10 @@ public class DoctorLabReport extends GenericCollection {
 
 	private String hospitalId;
 
+	private String doctorName;
+
+	private String doctorMobileNumber;
+
 	private String uploadedByDoctorId;
 
 	private String uploadedByLocationId;
@@ -39,6 +43,23 @@ public class DoctorLabReport extends GenericCollection {
 	private String uploadedByHospitalId;
 
 	private Boolean discarded = false;
+	
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getDoctorMobileNumber() {
+		return doctorMobileNumber;
+	}
+
+	public void setDoctorMobileNumber(String doctorMobileNumber) {
+		this.doctorMobileNumber = doctorMobileNumber;
+	}
 
 	public String getId() {
 		return id;

@@ -48,6 +48,16 @@ public class DoctorLabReportResponse extends GenericCollection {
 
 	private Boolean discarded = false;
 
+	private String doctorMobileNumber;
+
+	public String getDoctorMobileNumber() {
+		return doctorMobileNumber;
+	}
+
+	public void setDoctorMobileNumber(String doctorMobileNumber) {
+		this.doctorMobileNumber = doctorMobileNumber;
+	}
+
 	public String getUploadedByDoctorName() {
 		return uploadedByDoctorName;
 	}

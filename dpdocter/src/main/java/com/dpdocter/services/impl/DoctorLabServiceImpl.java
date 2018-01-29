@@ -287,11 +287,10 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					criteria = criteria.and("uploadedByHospitalId").is(new ObjectId(hospitalId));
 				}
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					criteria = criteria.orOperator(
-							new Criteria("uploadedByLocation.locationName").regex("^" + searchTerm, "i"),
-							new Criteria("uploadedByLocation.locationName").regex("^" + searchTerm),
-							new Criteria("uploadedByDoctor.firstName").regex("^" + searchTerm, "i"),
-							new Criteria("uploadedByDoctor.firstName").regex("^" + searchTerm),
+					criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
+							new Criteria("location.locationName").regex("^" + searchTerm),
+							new Criteria("doctorName").regex("^" + searchTerm, "i"),
+							new Criteria("doctorName").regex("^" + searchTerm),
 							new Criteria("patientName").regex("^" + searchTerm, "i"),
 							new Criteria("patientName").regex("^" + searchTerm));
 
@@ -331,14 +330,16 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
 					Fields.field("mobileNumber", "$mobileNumber"),
 					Fields.field("shareWithPatient", "$shareWithPatient"),
-					Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("locationName", "$location.locationName"),
+					Fields.field("shareWithDoctor", "$shareWithDoctor"),
+					Fields.field("locationName", "$location.locationName"),
 					Fields.field("uploadedByLocationName", "$uploadedByLocation.locationName"),
 					Fields.field("uploadedByDoctorName", "$uploadedByDoctor.firstName"),
 					Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
 					Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
-					Fields.field("doctorName", "$doctorName"), Fields.field("createdTime", "$createdTime"),
-					Fields.field("createdBy", "$createdBy"), Fields.field("updatedTime", "$updatedTime"),
-					Fields.field("adminCreatedTime", "$adminCreatedTime"),
+					Fields.field("doctorName", "$doctorName"),
+					Fields.field("doctorMobileNumber", "$doctorMobileNumber"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("adminCreatedTime", "$adminCreatedTime"),
 					Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -405,12 +406,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
 					Fields.field("mobileNumber", "$mobileNumber"),
 					Fields.field("shareWithPatient", "$shareWithPatient"),
-					Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("locationName", "$locationName"),
+					Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("locationName", "$location.locationName"),
 					Fields.field("uploadedByLocationName", "$uploadedByLocation.locationName"),
 					Fields.field("uploadedByDoctorName", "$uploadedByDoctor.firstName"),
 					Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
-					Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
-					Fields.field("doctorName", "$doctorName"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("uploadedByLocationId", "$uploadedByLocationId"),Fields.field("doctorName", "$doctorName"),
+					Fields.field("doctorMobileNumber", "$doctorMobileNumber"), Fields.field("createdTime", "$createdTime"),
 					Fields.field("createdBy", "$createdBy"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("adminCreatedTime", "$adminCreatedTime"),
 					Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
