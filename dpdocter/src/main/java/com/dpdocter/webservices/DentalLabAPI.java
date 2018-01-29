@@ -20,8 +20,10 @@ import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
+import com.dpdocter.beans.User;
 import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.elasticsearch.services.impl.ESDentalLabServiceImpl;
 import com.dpdocter.enums.LabType;
@@ -143,10 +145,22 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
-	public Response<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociation(@QueryParam("locationId") String locationId, @QueryParam("doctorId") String doctorId,
+	public Response<User> getDentalLabDoctorAssociationForLocation(@QueryParam("locationId") String locationId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
-		Response<DentalLabDoctorAssociationLookupResponse> response = new Response<DentalLabDoctorAssociationLookupResponse>();
+		Response<User> response = new Response<User>();
 		response.setDataList(dentalLabService.getDentalLabDoctorAssociations(locationId, doctorId ,page, size, searchTerm));
+		return response;
+	}
+	
+	
+
+	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR)
+	public Response<Location> getDentalLabDoctorAssociationForDoctor( @QueryParam("doctorId") String doctorId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+		Response<Location> response = new Response<Location>();
+		response.setDataList(dentalLabService.getDentalLabDoctorAssociationsForDoctor(doctorId, page, size, searchTerm));
 		return response;
 	}
 	
@@ -250,7 +264,7 @@ public class DentalLabAPI {
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION)
 	public Response<RateCardDentalWorkAssociation> getCBDoctorAssociation(@QueryParam("page") int page,@QueryParam("size") int size,
 			 @QueryParam("doctorId") String doctorId , @QueryParam("dentalLabId") String dentalLabId , @QueryParam("collectionBoyId") String collectionBoyId) {
-		if (doctorId == null) {
+		if (collectionBoyId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

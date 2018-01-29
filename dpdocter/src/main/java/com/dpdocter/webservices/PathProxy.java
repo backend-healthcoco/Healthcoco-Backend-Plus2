@@ -1574,6 +1574,7 @@ public interface PathProxy {
 		public static final String CHANGE_LAB_TYPE = "/changeLabType";
 		public static final String ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION = "/addEditDentalLabDoctorAssociation";
 		public static final String GET_DENTAL_LAB_DOCTOR_ASSOCIATION = "/getDentalLabDoctorAssociation";
+		public static final String GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR = "/getDentalLabDoctorAssociationForDoctor";
 		public static final String ADD_EDIT_DENTAL_WORK_PICKUP = "/addEditDentalWorkPickup";
 		public static final String GET_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
 		public static final String DELETE_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
