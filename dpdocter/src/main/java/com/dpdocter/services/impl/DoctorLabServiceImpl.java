@@ -47,6 +47,7 @@ import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -163,6 +164,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				if (request.getCreatedTime() == null) {
 					doctorLabReportCollection.setCreatedTime(new Date());
 				}
+				doctorLabReportCollection.setUniqueReportId(
+						UniqueIdInitial.DOCTOR_LAB_REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
 				doctorLabReportCollection.setAdminCreatedTime(new Date());
 				doctorLabReportCollection.setUpdatedTime(new Date());
 			}
