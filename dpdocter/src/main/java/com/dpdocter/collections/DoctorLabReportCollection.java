@@ -18,7 +18,7 @@ public class DoctorLabReportCollection extends GenericCollection {
 	@Field
 	private List<RecordsFile> recordsFiles;
 	@Field
-	private ObjectId recordsLabel;
+	private String recordsLabel;
 	@Field
 	private String explanation;
 	@Field
@@ -78,11 +78,11 @@ public class DoctorLabReportCollection extends GenericCollection {
 		this.recordsFiles = recordsFiles;
 	}
 
-	public ObjectId getRecordsLabel() {
+	public String getRecordsLabel() {
 		return recordsLabel;
 	}
 
-	public void setRecordsLabel(ObjectId recordsLabel) {
+	public void setRecordsLabel(String recordsLabel) {
 		this.recordsLabel = recordsLabel;
 	}
 
