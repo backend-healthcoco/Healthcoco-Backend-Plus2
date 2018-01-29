@@ -343,25 +343,37 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
-						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-						Aggregation.unwind("doctor"), Aggregation.unwind("location"),
-						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
-						Aggregation.match(criteria), projectList,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
+								Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+												true))),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays",
+												true))),
+								Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
+								Aggregation.match(criteria), projectList,
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+								Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
 
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
-						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-						Aggregation.unwind("doctor"), Aggregation.unwind("location"),
-						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
-						Aggregation.match(criteria), projectList,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
+								Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+												true))),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays",
+												true))),
+								Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
+								Aggregation.match(criteria), projectList,
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			}
 			AggregationResults<DoctorLabReportResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -406,14 +418,16 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Fields.field("patientName", "$patientName"), Fields.field("patientId", "$patientId"),
 					Fields.field("mobileNumber", "$mobileNumber"),
 					Fields.field("shareWithPatient", "$shareWithPatient"),
-					Fields.field("shareWithDoctor", "$shareWithDoctor"), Fields.field("locationName", "$location.locationName"),
+					Fields.field("shareWithDoctor", "$shareWithDoctor"),
+					Fields.field("locationName", "$location.locationName"),
 					Fields.field("uploadedByLocationName", "$uploadedByLocation.locationName"),
 					Fields.field("uploadedByDoctorName", "$uploadedByDoctor.firstName"),
 					Fields.field("uploadedByDoctorId", "$uploadedByDoctorId"),
-					Fields.field("uploadedByLocationId", "$uploadedByLocationId"),Fields.field("doctorName", "$doctorName"),
-					Fields.field("doctorMobileNumber", "$doctorMobileNumber"), Fields.field("createdTime", "$createdTime"),
-					Fields.field("createdBy", "$createdBy"), Fields.field("updatedTime", "$updatedTime"),
-					Fields.field("adminCreatedTime", "$adminCreatedTime"),
+					Fields.field("uploadedByLocationId", "$uploadedByLocationId"),
+					Fields.field("doctorName", "$doctorName"),
+					Fields.field("doctorMobileNumber", "$doctorMobileNumber"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("adminCreatedTime", "$adminCreatedTime"),
 					Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
 
 			Aggregation aggregation = Aggregation.newAggregation(
@@ -421,7 +435,10 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
 					Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-					Aggregation.unwind("doctor"), Aggregation.unwind("location"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 					Aggregation.match(criteria), projectList);
 
