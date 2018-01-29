@@ -19,6 +19,7 @@ import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.User;
@@ -28,6 +29,8 @@ import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.LabTestPickupCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.UserCollection;
@@ -42,6 +45,7 @@ import com.dpdocter.repository.DentalLabDoctorAssociationRepository;
 import com.dpdocter.repository.DentalLabTestPickupRepository;
 import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
 import com.dpdocter.repository.RateCardDoctorAssociationRepository;
 import com.dpdocter.repository.UserRepository;
@@ -49,6 +53,7 @@ import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
+import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.services.DentalLabService;
 
 import common.util.web.DPDoctorUtils;
@@ -85,6 +90,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Autowired
 	private CollectionBoyDoctorAssociationRepository collectionBoyDoctorAssociationRepository;
+	
+	@Autowired
+	private LocationRepository locationRepository;
 	
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -256,11 +264,19 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Override
 	@Transactional
-	public List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId ,int page, int size, String searchTerm) {
+	public List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId , String doctorId,int page, int size, String searchTerm) {
 		List<DentalLabDoctorAssociationLookupResponse> customWorks = null;
 		try {
 			Aggregation aggregation = null;
-			Criteria criteria = new Criteria().and("dentalLabId").is(new ObjectId(locationId));
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) 
+			{
+				criteria = new Criteria().and("dentalLabId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) 
+			{
+				criteria = new Criteria().and("doctorId").is(new ObjectId(doctorId));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm));
@@ -269,11 +285,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),Aggregation.match(criteria),
+						Aggregation.unwind("doctor"),Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.unwind("dentalLab"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.unwind("dentalLab"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabDoctorAssociationCollection.class, DentalLabDoctorAssociationLookupResponse.class);
@@ -293,15 +312,28 @@ public class DentalLabServiceImpl implements DentalLabService {
 		DentalLabPickup response = null;
 		DentalLabPickupCollection dentalLabPickupCollection = null;
 		String requestId = null;
+		String initials = "";
 
 		try {
 
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getDentalLabId())); 
+			if(locationCollection != null)
+			{
+				String locationName = locationCollection.getLocationName();
+				
+				for (String firstChar : locationName.split(" ")) {
+					initials+= firstChar.charAt(0);
+				}
+			}
+			
 			if (request.getId() != null) {
 				dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getId()));
 				if (dentalLabPickupCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
 				}
 
+				
+				
 				BeanUtil.map(request, dentalLabPickupCollection);
 				dentalLabPickupCollection.setDentalWorksSamples(request.getDentalWorksSamples());
 				dentalLabPickupCollection.setUpdatedTime(new Date());
@@ -315,25 +347,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection.setRequestId(requestId);
 				
 				for (DentalWorksSample dentalWorksSample : request.getDentalWorksSamples()) {
-					dentalWorksSample.setUniqueWorkId("");
+					dentalWorksSample.setUniqueWorkId(initials);
 				}
 				
-				//for(request.get)
-				/*CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-						.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
-								new ObjectId(request.getDaughterLabLocationId()), true);*/
-				/*if (collectionBoyLabAssociationCollection != null) {
-					dentalLabPickupCollection
-							.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
-					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-							.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
-					pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
-							RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
-
-					// pushNotificationServices.notifyPharmacy(id, requestId,
-					// responseId, role, message);
-
-				}*/
 				dentalLabPickupCollection.setCreatedTime(new Date());
 				dentalLabPickupCollection.setIsCompleted(false);
 				dentalLabPickupCollection.setStatus(request.getStatus());
@@ -341,6 +357,23 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 
 			}
+			
+			//for(request.get)
+			/*CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
+					.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
+							new ObjectId(request.getDaughterLabLocationId()), true);*/
+			/*if (collectionBoyLabAssociationCollection != null) {
+				dentalLabPickupCollection
+						.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
+				CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+						.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
+				pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
+						RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+
+				// pushNotificationServices.notifyPharmacy(id, requestId,
+				//DentalLabDoctorAssociation responseId, role, message);
+
+			}*/
 
 			response = new DentalLabPickup();
 			BeanUtil.map(dentalLabPickupCollection, response);
@@ -352,6 +385,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
+	
 	
 	
 	private String saveCRN(String locationId, String requestId, Integer length) {
@@ -478,7 +512,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Override
 	@Transactional
 	public List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm,
-			String doctorId, Boolean discarded) {
+			String doctorId, String dentalLabId, Boolean discarded) {
 		List<RateCardDoctorAssociation> rateCardTests = null;
 
 		try {
@@ -489,7 +523,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria = criteria.orOperator(new Criteria("rateCard.name").regex("^" + searchTerm, "i"),
 						new Criteria("rateCard.name").regex("^" + searchTerm));
 			}
-			criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabId)) {
+				criteria.and("dentalLabId").is(new ObjectId(dentalLabId));
+			}
 			criteria.and("discarded").is(discarded);
 			
 
@@ -603,5 +642,82 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return lookupResponses;
 	}
 
+	
+	@Override
+	@Transactional
+	public List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from,
+			Long to, String searchTerm, String status, Boolean isAcceptedAtLab , Boolean isCompleted, int size, int page) {
+		
+		List<DentalLabPickupResponse> response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabId)) {
+				criteria.and("dentalLabId").is(new ObjectId(dentalLabId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			if (isAcceptedAtLab != null) {
+				criteria.and("isAcceptedAtLab").is(isAcceptedAtLab);
+			}
+
+			if (isCompleted != null) {
+				criteria.and("isCompleted").is(isCompleted);
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("status").is(status);
+			}
+			if (from != 0 && to != 0) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+			} else if (from != 0) {
+				criteria.and("updatedTime").gte(new Date(from));
+			} else if (to != 0) {
+				criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to)));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("dentalLab.locationName").regex("^" + searchTerm),
+						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
+						new Criteria("doctor.firstName").regex("^" + searchTerm));
+
+			}
+			
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.unwind("dentalLab"),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.unwind("dentalLab"),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria), 
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<DentalLabPickupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalLabPickupCollection.class, DentalLabPickupResponse.class);
+			response = aggregationResults.getMappedResults();
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
 
 }

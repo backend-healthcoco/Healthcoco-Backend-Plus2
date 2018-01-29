@@ -7,6 +7,7 @@ import com.dpdocter.beans.DentalWorksSample;
 public class DentalLabPickupRequest {
 
 	private String id;
+	private String patientId;
 	private String patientName;
 	private String mobileNumber;
 	private String gender;
@@ -26,7 +27,6 @@ public class DentalLabPickupRequest {
 	private Boolean isCompleted = false;
 	private String collectionBoyId;
 	private String serialNumber;
-	
 
 	public String getId() {
 		return id;
@@ -34,6 +34,14 @@ public class DentalLabPickupRequest {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
 	public String getPatientName() {

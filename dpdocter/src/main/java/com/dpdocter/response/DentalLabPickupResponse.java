@@ -1,66 +1,54 @@
-package com.dpdocter.collections;
+package com.dpdocter.response;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
+import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.Location;
+import com.dpdocter.beans.User;
+import com.dpdocter.collections.GenericCollection;
 
-@Document(collection = "dental_lab_pickup_cl")
-public class DentalLabPickupCollection extends GenericCollection {
+public class DentalLabPickupResponse extends GenericCollection {
 
-	@Id
-	private ObjectId id;
-	@Field
-	private ObjectId patientId;
-	@Field
+	private String id;
+	private String patientId;
 	private String patientName;
-	@Field
 	private String mobileNumber;
-	@Field
 	private String gender;
-	@Field
 	private Integer age;
-	@Field
 	private List<DentalWorksSample> dentalWorksSamples;
-	@Field
 	private String crn;
-	@Field
 	private Long pickupTime;
-	@Field
 	private Long deliveryTime;
-	@Field
 	private String status;
-	@Field
-	private ObjectId doctorId;
-	@Field
-	private ObjectId dentalLabId;
-	@Field
+	private String doctorId;
+	private String dentalLabId;
 	private Boolean discarded = false;
-	@Field
 	private Integer numberOfSamplesRequested;
-	@Field
 	private Integer numberOfSamplesPicked;
-	@Field
 	private String requestId;
-	@Field
 	private Boolean isAcceptedAtLab = false;
-	@Field
 	private Boolean isCompleted = false;
-	@Field
 	private String collectionBoyId;
-	@Field
 	private String serialNumber;
+	private Location dentalLab;
+	private User doctor;
+	private CollectionBoy collectionBoy;
 
-	public ObjectId getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
 	public String getPatientName() {
@@ -135,19 +123,19 @@ public class DentalLabPickupCollection extends GenericCollection {
 		this.status = status;
 	}
 
-	public ObjectId getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(ObjectId doctorId) {
+	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getDentalLabId() {
+	public String getDentalLabId() {
 		return dentalLabId;
 	}
 
-	public void setDentalLabId(ObjectId dentalLabId) {
+	public void setDentalLabId(String dentalLabId) {
 		this.dentalLabId = dentalLabId;
 	}
 
@@ -215,17 +203,33 @@ public class DentalLabPickupCollection extends GenericCollection {
 		this.serialNumber = serialNumber;
 	}
 
-	public ObjectId getPatientId() {
-		return patientId;
+	public Location getDentalLab() {
+		return dentalLab;
 	}
 
-	public void setPatientId(ObjectId patientId) {
-		this.patientId = patientId;
+	public void setDentalLab(Location dentalLab) {
+		this.dentalLab = dentalLab;
+	}
+
+	public User getDoctor() {
+		return doctor;
+	}
+
+	public void setDoctor(User doctor) {
+		this.doctor = doctor;
+	}
+
+	public CollectionBoy getCollectionBoy() {
+		return collectionBoy;
+	}
+
+	public void setCollectionBoy(CollectionBoy collectionBoy) {
+		this.collectionBoy = collectionBoy;
 	}
 
 	@Override
 	public String toString() {
-		return "DentalLabPickupCollection [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber
+		return "DentalLabPickupResponse [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber
 				+ ", gender=" + gender + ", age=" + age + ", dentalWorksSamples=" + dentalWorksSamples + ", crn=" + crn
 				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", status=" + status + ", doctorId="
 				+ doctorId + ", dentalLabId=" + dentalLabId + ", discarded=" + discarded + ", numberOfSamplesRequested="

@@ -30,6 +30,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
+import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
+import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.LocationServices;
 
@@ -141,14 +143,14 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
-	public Response<DentalLabDoctorAssociation> getDentalLabDoctorAssociation(@QueryParam("locationId") String locationId,
+	public Response<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociation(@QueryParam("locationId") String locationId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<DentalLabDoctorAssociation> response = new Response<DentalLabDoctorAssociation>();
-		response.setDataList(dentalLabService.getDentalLabDoctorAssociations(locationId, page, size, searchTerm));
+		Response<DentalLabDoctorAssociationLookupResponse> response = new Response<DentalLabDoctorAssociationLookupResponse>();
+		response.setDataList(dentalLabService.getDentalLabDoctorAssociations(locationId, doctorId ,page, size, searchTerm));
 		return response;
 	}
 	
@@ -165,6 +167,24 @@ public class DentalLabAPI {
 		return response;
 	}
 	
+	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_WORK_PICKUPS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_WORK_PICKUPS, notes = PathProxy.DentalLabUrls.GET_DENTAL_WORK_PICKUPS)
+	public Response<DentalLabPickupResponse> getPickupRequests(@QueryParam("dentalLabId") String dentalLabId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("from") Long from, @QueryParam("to") Long to,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("status") String status,
+			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted,
+			@QueryParam("size") int size, @QueryParam("page") int page) {
+		if (doctorId == null || dentalLabId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalLabPickupResponse> response = new Response<DentalLabPickupResponse>();
+		response.setDataList(dentalLabService.getRequests(dentalLabId, doctorId, from, to, searchTerm, status,
+				isAcceptedAtLab, isCompleted, size, page));
+		return response;
+	}
+
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION)
@@ -209,13 +229,13 @@ public class DentalLabAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
 	public Response<RateCardDentalWorkAssociation> getRateCards(@QueryParam("page") int page,@QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm , @QueryParam("doctorId") String doctorId ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+			@QueryParam("searchTerm") String searchTerm , @QueryParam("doctorId") String doctorId , @QueryParam("dentalLabId") String dentalLabId ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 		if (doctorId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
-		response.setDataList(dentalLabService.getRateCards(page, size, searchTerm, doctorId, discarded));
+		response.setDataList(dentalLabService.getRateCards(page, size, searchTerm, doctorId,dentalLabId, discarded));
 		return response;
 	}
 	
