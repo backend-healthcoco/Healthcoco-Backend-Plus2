@@ -54,10 +54,8 @@ public class DoctorLabApi {
 	@POST
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT, notes = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT)
 	public Response<DoctorLabReport> addDoctorLabReport(DoctorLabReport request) {
-		if (request == null
-				|| DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(), request.getLocationId(),
-						request.getPatientId(), request.getPatientName(), request.getUploadedByDoctorId(),
-						request.getUploadedByHospitalId(), request.getUploadedByLocationId())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientName(), request.getUploadedByDoctorId(),
+				request.getUploadedByHospitalId(), request.getUploadedByLocationId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
