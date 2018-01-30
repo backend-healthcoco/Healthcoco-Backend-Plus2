@@ -288,4 +288,19 @@ public class DentalLabAPI {
 
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS, notes = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
+	public Response<Boolean> getCBListByParentLab(@QueryParam("requestId") String requestId,
+			@QueryParam("status") String status) {
+		if (status == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.changeStatus(requestId, status));
+
+		return response;
+	}
 }
