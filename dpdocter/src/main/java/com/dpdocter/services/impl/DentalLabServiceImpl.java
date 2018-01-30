@@ -864,5 +864,26 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 	
+	@Override
+	@Transactional
+	public Boolean changeStatus(String dentalLabPickupId, String status) {
+		DentalLabPickupCollection dentalLabPickupCollection = null;
+		Boolean response = null;
+
+		try {
+			dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(dentalLabPickupId));
+			if (dentalLabPickupCollection != null) {
+				dentalLabPickupCollection.setStatus(status);
+				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
+				response = true;
+			} else {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
 
 }
