@@ -239,6 +239,21 @@ public class DoctorLabApi {
 
 	}
 
+	@Path(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR, notes = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
+	public Response<Boolean> updateShareWithPatent(@PathParam("id") String id,
+			@QueryParam("discarded") @DefaultValue("false") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Id Cannot Be Empty");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(doctorLabService.DiscardFavouriteDoctor(id, discarded));
+		return response;
+
+	}
+
 	@POST
 	@Path(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE, notes = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)

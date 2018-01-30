@@ -547,6 +547,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
 				criteria = criteria.and("location.city").regex(city);
 			}
+			criteria = criteria.and("discarded").is(true);
+
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm),
@@ -778,6 +780,30 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			logger.error(e);
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "error while share with patient");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean DiscardFavouriteDoctor(String id, Boolean isdiscarded) {
+		Boolean response = false;
+		try {
+			DoctorLabFavouriteDoctorCollection favouriteDoctorCollection = doctorLabFevouriteDoctorRepository
+					.findOne(new ObjectId(id));
+			if (favouriteDoctorCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No Fevourite Doctor found with Id");
+			}
+
+			favouriteDoctorCollection.setDiscarded(isdiscarded);
+
+			favouriteDoctorCollection.setUpdatedTime(new Date());
+			doctorLabFevouriteDoctorRepository.save(favouriteDoctorCollection);
+			response = true;
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while discarding Favourite Doctor");
 		}
 		return response;
 	}
