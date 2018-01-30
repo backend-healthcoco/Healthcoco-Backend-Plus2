@@ -33,7 +33,19 @@ public class RecordsAddRequestMultipart {
 	
 	private String mobileNumber;
 	
-    public String getId() {
+	private Boolean shareWithPatient = false;
+	
+	
+	
+    public Boolean getShareWithPatient() {
+		return shareWithPatient;
+	}
+
+	public void setShareWithPatient(Boolean shareWithPatient) {
+		this.shareWithPatient = shareWithPatient;
+	}
+
+	public String getId() {
 		return id;
 	}
 

@@ -432,6 +432,8 @@ public interface PathProxy {
 
 		public static final String SHARE_USER_RECORDS_WITH_PATIENT = "user/file/{recordId}/{patientId}/share";
 
+		public static final String SHARE_RECORD_WITH_PATIENT = "/{recordId}/share";
+
 		public static final String GET_RECORDS_DOCTOR_ID = "getByDoctorId/{doctorId}";
 
 	}
@@ -1558,4 +1560,5 @@ public interface PathProxy {
 		public static final String UPDATE_IS_SHARE_WITH_DOCTOR = "/updateIsShareWithDoctor/{reportId}";
 
 	}
+
 }

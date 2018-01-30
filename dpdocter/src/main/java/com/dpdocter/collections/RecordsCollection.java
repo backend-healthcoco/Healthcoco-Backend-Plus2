@@ -74,6 +74,9 @@ public class RecordsCollection extends GenericCollection {
 	private ObjectId diagnosticTestId;
 
 	@Field
+	private Boolean shareWithPatient = false;
+
+	@Field
 	private Boolean isFeedbackAvailable = false;
 
 	@Field
@@ -81,6 +84,17 @@ public class RecordsCollection extends GenericCollection {
 
 	@Field
 	private List<String> messages;
+
+	@Field
+	private Boolean isPatientDiscarded = false;
+
+	public Boolean getShareWithPatient() {
+		return shareWithPatient;
+	}
+
+	public void setShareWithPatient(Boolean shareWithPatient) {
+		this.shareWithPatient = shareWithPatient;
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -256,6 +270,14 @@ public class RecordsCollection extends GenericCollection {
 
 	public void setMessages(List<String> messages) {
 		this.messages = messages;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
 	@Override
