@@ -87,4 +87,6 @@ public interface RecordsService {
 	RecordsFile uploadUserRecord(FormDataBodyPart file, MyFiileRequest request);
 
 	List<Records> getRecordsByDoctorId(String doctorId, int page, int size, String updatedTime, Boolean discarded);
+
+	public Boolean updateShareWithPatient(String recordId);
 }

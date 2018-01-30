@@ -167,13 +167,12 @@ public class RecordsApi {
 		return response;
 
 	}
-	
+
 	@Path(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
 	@GET
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID, notes = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
-	public Response<Records> getRecordsByDoctorId(@PathParam("doctorId") String doctorId,
-			@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+	public Response<Records> getRecordsByDoctorId(@PathParam("doctorId") String doctorId, @QueryParam("page") int page,
+			@QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
@@ -544,19 +543,16 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.SHARE_USER_RECORDS_WITH_PATIENT)
+	@Path(value = PathProxy.RecordsUrls.SHARE_RECORD_WITH_PATIENT)
 	@GET
-	@ApiOperation(value = PathProxy.RecordsUrls.SHARE_USER_RECORDS_WITH_PATIENT, notes = PathProxy.RecordsUrls.SHARE_USER_RECORDS_WITH_PATIENT)
-	public Response<UserRecords> shareUserRecords(@PathParam("patientId") String patientId,
-			@PathParam("recordId") String recordId) {
-		if (DPDoctorUtils.anyStringEmpty(recordId) && DPDoctorUtils.anyStringEmpty(patientId)) {
+	@ApiOperation(value = PathProxy.RecordsUrls.SHARE_RECORD_WITH_PATIENT, notes = PathProxy.RecordsUrls.SHARE_RECORD_WITH_PATIENT)
+	public Response<Boolean> shareUserRecords(@PathParam("recordId") String recordId) {
+		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Record Id Cannot Be Empty");
-			throw new BusinessException(ServiceError.InvalidInput, "Record Id  and userId Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Record Id cannot Be Empty");
 		}
-
-		UserRecords record = recordsService.shareUserRecordsFile(recordId, patientId);
-		Response<UserRecords> response = new Response<UserRecords>();
-		response.setData(record);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(recordsService.updateShareWithPatient(recordId));
 		return response;
 
 	}

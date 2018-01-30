@@ -6,45 +6,47 @@ import com.dpdocter.beans.FileDetails;
 
 public class RecordsAddRequest {
 
-    private String patientId;
+	private String patientId;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String recordsUrl;
+	private String recordsUrl;
 
-    private String explanation;
+	private String explanation;
 
-    private FileDetails fileDetails;
+	private FileDetails fileDetails;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String recordsType;
+	private String recordsType;
 
-    private String createdBy;
+	private String createdBy;
 
-    private String visitId;
+	private String visitId;
 
-    private String prescriptionId;
+	private String prescriptionId;
 
-    private String diagnosticTestId;
+	private String diagnosticTestId;
 
-    private String recordsLabel;
-    
-    private String recordsFileLabel;
-    
-    private String recordsState;
-   
-    private Boolean registerPatient = false;
+	private String recordsLabel;
+
+	private String recordsFileLabel;
+
+	private String recordsState;
+
+	private Boolean registerPatient = false;
 
 	private String firstName;
-	
+
 	private String mobileNumber;
-	
+
 	private Date createdTime;
-	
-    public Date getCreatedTime() {
+
+	private Boolean shareWithPatient = false;
+
+	public Date getCreatedTime() {
 		return createdTime;
 	}
 
@@ -53,22 +55,22 @@ public class RecordsAddRequest {
 	}
 
 	public String getPatientId() {
-	return patientId;
-    }
+		return patientId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getExplanation() {
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -77,60 +79,68 @@ public class RecordsAddRequest {
 	}
 
 	public FileDetails getFileDetails() {
-	return fileDetails;
-    }
+		return fileDetails;
+	}
 
-    public void setFileDetails(FileDetails fileDetails) {
-	this.fileDetails = fileDetails;
-    }
+	public void setFileDetails(FileDetails fileDetails) {
+		this.fileDetails = fileDetails;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public Boolean getShareWithPatient() {
+		return shareWithPatient;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setShareWithPatient(Boolean shareWithPatient) {
+		this.shareWithPatient = shareWithPatient;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getRecordsType() {
-	return recordsType;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setRecordsType(String recordsType) {
-	this.recordsType = recordsType;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getCreatedBy() {
-	return createdBy;
-    }
+	public String getRecordsType() {
+		return recordsType;
+	}
 
-    public void setCreatedBy(String createdBy) {
-	this.createdBy = createdBy;
-    }
+	public void setRecordsType(String recordsType) {
+		this.recordsType = recordsType;
+	}
 
-    public String getVisitId() {
-	return visitId;
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
-    public void setVisitId(String visitId) {
-	this.visitId = visitId;
-    }
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public String getPrescriptionId() {
-	return prescriptionId;
-    }
+	public String getVisitId() {
+		return visitId;
+	}
 
-    public void setPrescriptionId(String prescriptionId) {
-	this.prescriptionId = prescriptionId;
-    }
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
 
 	public String getDiagnosticTestId() {
 		return diagnosticTestId;
