@@ -659,6 +659,23 @@ public class DPDoctorUtils {
 		return localCalendar.getTime();
 
 	}
+	
+	public static Long getStartTimeInMillis(Date date) {
+
+		DateTime startTime = null;
+		
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+
+		startTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+		
+		return startTime.getMillis();
+
+	}
 
 	public static Date getToTime(Date date) {
 
@@ -682,6 +699,23 @@ public class DPDoctorUtils {
 
 		return new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+	}
+	
+	public static Long getEndTimeInMillis(Date date) {
+
+		DateTime endTime = null;
+		
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+
+		endTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+		
+		return endTime.getMillis();
 
 	}
 
