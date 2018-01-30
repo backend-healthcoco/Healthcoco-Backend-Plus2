@@ -942,34 +942,40 @@ public class LocationServiceImpl implements LocationServices {
 									.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
-						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
-						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
-								"labTestSamples"),
-						Aggregation.unwind("labTestSamples"),
-						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
-						Aggregation.unwind("daughterLab"),
-						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"),
-						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria), aggregationOperation1,
-						projectList, aggregationOperation2,
+				aggregation = Aggregation
+						.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+								Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
+								Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds",
+										"_id", "labTestSamples"),
+								Aggregation.unwind("labTestSamples"),
+								Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
+								Aggregation.unwind("daughterLab"),
+								Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
+								Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"),
+								Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$collectionBoy").append("includeArrayIndex",
+												"arrayIndex"))),
+								Aggregation.match(criteria), aggregationOperation1, projectList, aggregationOperation2,
 
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+								Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
-						Aggregation.lookup("lab_test_sample_cl", "labTestSampleIds", "_id", "labTestSamples"),
-						Aggregation.unwind("labTestSamples"),
-						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
-						Aggregation.unwind("daughterLab"),
-						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("parentLab"),
-						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria), aggregationOperation1,
-						projectList, aggregationOperation2,
+				aggregation = Aggregation
+						.newAggregation(Aggregation.unwind("labTestSampleIds"),
+								Aggregation.lookup("lab_test_sample_cl", "labTestSampleIds", "_id", "labTestSamples"),
+								Aggregation.unwind("labTestSamples"),
+								Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
+								Aggregation.unwind("daughterLab"),
+								Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
+								Aggregation.unwind("parentLab"),
+								Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$collectionBoy").append("includeArrayIndex",
+												"arrayIndex"))),
+								Aggregation.match(criteria), aggregationOperation1, projectList, aggregationOperation2,
 
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			// System.out.println(aggregation);
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
@@ -1189,27 +1195,26 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm , String labType) {
+	public List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm,
+			String labType) {
 		List<CollectionBoyResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-			 {
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("mobileNumber").regex("^" + searchTerm, "i"),
 						new Criteria("mobileNumber").regex("^" + searchTerm),
 						new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
 			}
-			 if (!DPDoctorUtils.anyStringEmpty(labType))
-			{
+			if (!DPDoctorUtils.anyStringEmpty(labType)) {
 				criteria.and("labType").is(labType);
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));
 
 			System.out.println(criteria);
-			
+
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
@@ -1220,7 +1225,7 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<CollectionBoyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyCollection.class, CollectionBoyResponse.class);
 			response = aggregationResults.getMappedResults();
-			
+
 			System.out.println(aggregation);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1232,7 +1237,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public Integer getCBCount(String locationId, String searchTerm , String labType) {
+	public Integer getCBCount(String locationId, String searchTerm, String labType) {
 		Integer count = null;
 		try {
 			Aggregation aggregation = null;
@@ -1243,13 +1248,12 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(labType)) {
 				criteria.and("labType").is(labType);
 			}
 			criteria.and("locationId").is(new ObjectId(locationId));
 
-			
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<CollectionBoy> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1803,7 +1807,7 @@ public class LocationServiceImpl implements LocationServices {
 	@Override
 	@Transactional
 	public List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab,
-			Boolean isParent,Boolean isDentalWorksLab ,Boolean isDentalImagingLab,  String searchTerm) {
+			Boolean isParent, Boolean isDentalWorksLab, Boolean isDentalImagingLab, String searchTerm) {
 		List<Location> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -1829,11 +1833,11 @@ public class LocationServiceImpl implements LocationServices {
 			if (isParent != null) {
 				criteria.and("isParent").is(isParent);
 			}
-			
+
 			if (isDentalWorksLab != null) {
 				criteria.and("isDentalWorksLab").is(isDentalWorksLab);
 			}
-			
+
 			if (isDentalImagingLab != null) {
 				criteria.and("isDentalImagingLab").is(isDentalImagingLab);
 			}
