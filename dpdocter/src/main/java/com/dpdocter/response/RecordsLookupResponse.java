@@ -49,6 +49,18 @@ public class RecordsLookupResponse extends GenericCollection {
 
 	private PatientVisit patientVisit;
 
+	private Boolean shareWithPatient = false;
+	
+	
+
+	public Boolean getShareWithPatient() {
+		return shareWithPatient;
+	}
+
+	public void setShareWithPatient(Boolean shareWithPatient) {
+		this.shareWithPatient = shareWithPatient;
+	}
+
 	public String getId() {
 		return id;
 	}
