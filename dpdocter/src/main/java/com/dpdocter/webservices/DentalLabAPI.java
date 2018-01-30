@@ -209,13 +209,13 @@ public class DentalLabAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
 	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,@QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm , @QueryParam("rateCardId") String rateCardId ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
-		if (rateCardId == null) {
+			@QueryParam("searchTerm") String searchTerm , @QueryParam("dentalLabId") String dentalLabId,@QueryParam("doctorId") String doctorId ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (doctorId == null || dentalLabId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
-		response.setDataList(dentalLabService.getRateCardWorks(page, size, searchTerm, rateCardId, discarded));
+		response.setDataList(dentalLabService.getRateCardWorks(page, size, searchTerm,dentalLabId, doctorId, discarded));
 		return response;
 	}
 	
