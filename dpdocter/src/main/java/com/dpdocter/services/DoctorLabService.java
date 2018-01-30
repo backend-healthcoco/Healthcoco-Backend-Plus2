@@ -39,4 +39,6 @@ public interface DoctorLabService {
 	public Boolean updateShareWithPatient(String reportId);
 
 	public Boolean updateShareWithDoctor(String reportId);
+
+	public Boolean DiscardFavouriteDoctor(String id, Boolean isdiscarded);
 }

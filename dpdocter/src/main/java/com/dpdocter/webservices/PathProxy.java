@@ -1558,6 +1558,7 @@ public interface PathProxy {
 		public static final String SEARCH_DOCTOR = "/searchDoctor";
 		public static final String UPDATE_IS_SHARE_WITH_PATIENT = "/updateIsShareWithPatient/{reportId}";
 		public static final String UPDATE_IS_SHARE_WITH_DOCTOR = "/updateIsShareWithDoctor/{reportId}";
+		public static final String DELETE_FAVOURITE_DOCTOR = "fevouriteDoctor/{id}/delete";
 
 	}
 
