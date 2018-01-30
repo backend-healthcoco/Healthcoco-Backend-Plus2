@@ -51,7 +51,7 @@ public class DentalLabPickupCollection extends GenericCollection {
 	@Field
 	private Boolean isCompleted = false;
 	@Field
-	private String collectionBoyId;
+	private ObjectId collectionBoyId;
 	@Field
 	private String serialNumber;
 
@@ -199,11 +199,11 @@ public class DentalLabPickupCollection extends GenericCollection {
 		this.isCompleted = isCompleted;
 	}
 
-	public String getCollectionBoyId() {
+	public ObjectId getCollectionBoyId() {
 		return collectionBoyId;
 	}
 
-	public void setCollectionBoyId(String collectionBoyId) {
+	public void setCollectionBoyId(ObjectId collectionBoyId) {
 		this.collectionBoyId = collectionBoyId;
 	}
 
