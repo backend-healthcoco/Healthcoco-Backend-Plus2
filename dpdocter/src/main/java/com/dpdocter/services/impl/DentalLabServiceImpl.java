@@ -490,22 +490,28 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Override
 	@Transactional
 	public List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm,
-			String rateCardId, Boolean discarded) {
+			 String dentalLabId,String doctorId, Boolean discarded) {
 		List<RateCardDentalWorkAssociation> rateCardTests = null;
 
 		try {
 			Aggregation aggregation = null;
 
 			Criteria criteria = new Criteria();
+			RateCardDoctorAssociationCollection rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByLocationDoctor(new ObjectId(dentalLabId), new ObjectId(doctorId));
+			if(rateCardDoctorAssociationCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord, "Association not found");
+			}
+			else {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalWork.workName").regex("^" + searchTerm, "i"),
 						new Criteria("dentalWork.workName").regex("^" + searchTerm));
 			}
-			criteria.and("rateCardId").is(new ObjectId(rateCardId));
+			criteria.and("rateCardId").is(rateCardDoctorAssociationCollection.getRateCardId());
 			criteria.and("isAvailable").is(true);
 		//	criteria.and("discarded").is(discarded);
 			
-
+			}
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),

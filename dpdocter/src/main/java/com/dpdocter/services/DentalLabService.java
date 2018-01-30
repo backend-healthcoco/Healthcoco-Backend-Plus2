@@ -31,9 +31,9 @@ public interface DentalLabService {
 
 	Boolean addEditRateCardDentalWorkAssociation(List<RateCardDentalWorkAssociation> request);
 
-	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String rateCardId,
+	/*List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String rateCardId,
 			Boolean discarded);
-
+*/
 	//Boolean addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation> request);
 
 	DentalLabDoctorAssociation addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request);
@@ -62,6 +62,9 @@ public interface DentalLabService {
 			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, int size, int page);
 
 	List<Location> getDentalLabDoctorAssociationsForDoctor(String doctorId, int page, int size, String searchTerm);
+
+	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String dentalLabId,
+			String doctorId, Boolean discarded);
 
 	/*
 	 * DentalLabDoctorAssociation
