@@ -1,22 +1,18 @@
 package com.dpdocter.request;
 
-import java.util.List;
-
 import com.dpdocter.beans.FileDetails;
 
 public class DoctorLabReportUploadRequest {
 
-	private List<FileDetails> fileDetails;
+	private FileDetails fileDetails;
 	private String recordsType;
 	private String patientId;
 
-	
-
-	public List<FileDetails> getFileDetails() {
+	public FileDetails getFileDetails() {
 		return fileDetails;
 	}
 
-	public void setFileDetails(List<FileDetails> fileDetails) {
+	public void setFileDetails(FileDetails fileDetails) {
 		this.fileDetails = fileDetails;
 	}
 
