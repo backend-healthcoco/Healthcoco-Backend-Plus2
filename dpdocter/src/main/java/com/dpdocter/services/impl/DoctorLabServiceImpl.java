@@ -289,6 +289,10 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 					criteria = criteria.and("uploadedByHospitalId").is(new ObjectId(hospitalId));
 				}
+				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+					criteria = criteria.and("patientId").is(new ObjectId(patientId));
+				}
+
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
 							new Criteria("location.locationName").regex("^" + searchTerm),
