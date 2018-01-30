@@ -182,8 +182,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public List<RecordsFile> uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
-		List<RecordsFile> response = null;
+	public RecordsFile uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
+
 		RecordsFile recordsFile = null;
 		try {
 			Date createdTime = null;
@@ -193,37 +193,38 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
 			}
-			for (FileDetails fileDetails : request.getFileDetails()) {
-				recordsFile = new RecordsFile();
-				createdTime = new Date();
+			FileDetails fileDetails = request.getFileDetails();
+			recordsFile = new RecordsFile();
+			createdTime = new Date();
 
-				String path = "doctorLabReports" + File.separator
-						+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
+			String path = "doctorLabReports" + File.separator
+					+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
 
-				String fileName = fileDetails.getFileName().replaceFirst("." + fileDetails.getFileExtension(), "");
-				String recordPath = path + File.separator + fileName + createdTime.getTime() + "."
-						+ fileDetails.getFileExtension();
-				String recordfileLabel = fileName;
-				Double fileSizeInMB = 0.0;
+			String fileName = fileDetails.getFileName().replaceFirst("." + fileDetails.getFileExtension(), "");
+			String recordPath = path + File.separator + fileName + createdTime.getTime() + "."
+					+ fileDetails.getFileExtension();
+			String recordfileLabel = fileName;
+			Double fileSizeInMB = 0.0;
 
-				recordsFile = new RecordsFile();
-				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
-				recordsFile.setFileSizeInMB(fileSizeInMB);
-				recordsFile.setRecordsUrl(getFinalImageURL(recordPath));
-				recordsFile.setThumbnailUrl(
-						getFinalImageURL(fileManager.saveThumbnailAndReturnThumbNailUrl(fileDetails, recordPath)));
-				recordsFile.setRecordsFileLabel(recordfileLabel);
-				recordsFile.setRecordsPath(path);
-				recordsFile.setRecordsType(request.getRecordsType());
-			}
+			recordsFile = new RecordsFile();
+			recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+			recordsFile.setFileSizeInMB(fileSizeInMB);
+			recordsFile.setRecordsUrl(getFinalImageURL(recordPath));
+			recordsFile.setThumbnailUrl(
+					getFinalImageURL(fileManager.saveThumbnailAndReturnThumbNailUrl(fileDetails, recordPath)));
+			recordsFile.setRecordsFileLabel(recordfileLabel);
+			recordsFile.setRecordsPath(path);
+			recordsFile.setRecordsType(request.getRecordsType());
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			logger.error(e);
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "error while uploading Doctor Lab Report");
 
 		}
-		return response;
+		return recordsFile;
 
 	}
 

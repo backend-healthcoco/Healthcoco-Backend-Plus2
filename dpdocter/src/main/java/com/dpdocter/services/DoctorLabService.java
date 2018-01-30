@@ -17,7 +17,7 @@ public interface DoctorLabService {
 
 	public DoctorLabReport addDoctorLabReport(DoctorLabReport request);
 
-	public List<RecordsFile> uploadDoctorLabReport(DoctorLabReportUploadRequest request);
+	public RecordsFile uploadDoctorLabReport(DoctorLabReportUploadRequest request);
 
 	public RecordsFile uploadDoctorLabReportMultipart(FormDataBodyPart file, MyFiileRequest request);
 
