@@ -49,6 +49,8 @@ public class DentalLabPickupCollection extends GenericCollection {
 	@Field
 	private Boolean isAcceptedAtLab = false;
 	@Field
+	private Boolean isCollectedAtLab = false;
+	@Field
 	private Boolean isCompleted = false;
 	@Field
 	private ObjectId collectionBoyId;
@@ -221,6 +223,14 @@ public class DentalLabPickupCollection extends GenericCollection {
 
 	public void setPatientId(ObjectId patientId) {
 		this.patientId = patientId;
+	}
+
+	public Boolean getIsCollectedAtLab() {
+		return isCollectedAtLab;
+	}
+
+	public void setIsCollectedAtLab(Boolean isCollectedAtLab) {
+		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
 	@Override

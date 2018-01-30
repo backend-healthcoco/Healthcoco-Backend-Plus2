@@ -66,7 +66,9 @@ public interface DentalLabService {
 	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String dentalLabId,
 			String doctorId, Boolean discarded);
 
-	Boolean changeStatus(String dentalLabPickupId, String status);
+	//Boolean changeStatus(String dentalLabPickupId, String status);
+
+	Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtLab);
 
 	/*
 	 * DentalLabDoctorAssociation

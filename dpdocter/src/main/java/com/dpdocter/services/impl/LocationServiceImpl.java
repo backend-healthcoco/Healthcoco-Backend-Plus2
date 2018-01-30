@@ -939,18 +939,21 @@ public class LocationServiceImpl implements LocationServices {
 									.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
-						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
-						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
-								"labTestSamples"),
-						Aggregation.unwind("labTestSamples"),
-						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
-						Aggregation.unwind("daughterLab"),
-						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"),
-						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria), aggregationOperation1,
-						projectList, aggregationOperation2,
+
+				aggregation = Aggregation
+						.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+								Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
+								Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds",
+										"_id", "labTestSamples"),
+								Aggregation.unwind("labTestSamples"),
+								Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
+								Aggregation.unwind("daughterLab"),
+								Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
+								Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"),
+								Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
+								Aggregation.match(criteria), aggregationOperation1, projectList, aggregationOperation2,
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
@@ -1241,16 +1244,9 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("name").regex("^" + searchTerm));
 			}
 			
-<<<<<<< HEAD
 			if (!DPDoctorUtils.anyStringEmpty(labType)) {
 				criteria.and("labType").is(labType);
 			}
-=======
-			 if (!DPDoctorUtils.anyStringEmpty(labType))
-				{
-					criteria.and("labType").is(labType);
-				}
->>>>>>> 40a5387... changes for dental works
 			criteria.and("locationId").is(new ObjectId(locationId));
 
 			

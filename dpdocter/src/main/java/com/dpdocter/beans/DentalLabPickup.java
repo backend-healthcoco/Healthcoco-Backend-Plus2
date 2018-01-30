@@ -29,6 +29,7 @@ public class DentalLabPickup extends GenericCollection {
 	private String requestId;
 	private Boolean isAcceptedAtLab = false;
 	private Boolean isCompleted = false;
+	private Boolean isCollectedAtLab = false;
 	private String collectionBoyId;
 	private String serialNumber;
 	private User doctor;
@@ -216,6 +217,14 @@ public class DentalLabPickup extends GenericCollection {
 
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
+	}
+
+	public Boolean getIsCollectedAtLab() {
+		return isCollectedAtLab;
+	}
+
+	public void setIsCollectedAtLab(Boolean isCollectedAtLab) {
+		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
 	@Override

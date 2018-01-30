@@ -422,6 +422,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalWorksSample.setUniqueWorkId(locationInitials + getInitials(request.getPatientName()) + currentDateGenerator() + DPDoctorUtils.getPrefixedNumber(serialNo + 1) + DPDoctorUtils.getPrefixedNumber(count));
 					count++;
 				}
+				//dentalLabPickupCollection.setCrn(crn);
 				dentalLabPickupCollection.setSerialNumber(String.valueOf(serialNo + 1));
 				dentalLabPickupCollection.setCreatedTime(new Date());
 				dentalLabPickupCollection.setIsCompleted(false);
@@ -805,10 +806,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.unwind("dentalLab"),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
-						/*Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$collectionBoy").append("includeArrayIndex",
-										"arrayIndex")))*/ Aggregation.match(criteria),
+								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
+						 Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
@@ -817,10 +818,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.unwind("dentalLab"),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
-						/*Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$collectionBoy").append("includeArrayIndex",
-										"arrayIndex")))*/ Aggregation.match(criteria), 
+								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
+						 Aggregation.match(criteria), 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			
 			//System.out.println(aggregation);
@@ -866,14 +867,21 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Override
 	@Transactional
-	public Boolean changeStatus(String dentalLabPickupId, String status) {
+	public Boolean changeStatus(String dentalLabPickupId, String status ,Boolean isCollectedAtLab) {
 		DentalLabPickupCollection dentalLabPickupCollection = null;
 		Boolean response = null;
 
 		try {
 			dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(dentalLabPickupId));
 			if (dentalLabPickupCollection != null) {
-				dentalLabPickupCollection.setStatus(status);
+				if(status != null)
+				{
+					dentalLabPickupCollection.setStatus(status);
+				}
+				if(isCollectedAtLab != null)
+				{
+					dentalLabPickupCollection.setIsCollectedAtLab(isCollectedAtLab);
+				}
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 				response = true;
 			} else {
