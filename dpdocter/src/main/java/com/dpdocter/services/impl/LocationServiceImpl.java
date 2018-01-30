@@ -971,8 +971,7 @@ public class LocationServiceImpl implements LocationServices {
 								Aggregation.unwind("parentLab"),
 								Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$collectionBoy").append("includeArrayIndex",
-												"arrayIndex"))),
+										new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
 								Aggregation.match(criteria), aggregationOperation1, projectList, aggregationOperation2,
 
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
