@@ -37,6 +37,7 @@ public class DentalLabPickupResponse extends GenericCollection {
 	private Location dentalLab;
 	private User doctor;
 	private CollectionBoy collectionBoy;
+	private String reasonForCancel;
 
 	public String getId() {
 		return id;
@@ -236,6 +237,14 @@ public class DentalLabPickupResponse extends GenericCollection {
 
 	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
 		this.isCollectedAtDoctor = isCollectedAtDoctor;
+	}
+
+	public String getReasonForCancel() {
+		return reasonForCancel;
+	}
+
+	public void setReasonForCancel(String reasonForCancel) {
+		this.reasonForCancel = reasonForCancel;
 	}
 
 	@Override

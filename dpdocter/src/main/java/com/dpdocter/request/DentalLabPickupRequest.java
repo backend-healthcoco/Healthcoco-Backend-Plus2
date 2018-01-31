@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+
 import com.dpdocter.beans.DentalWorksSample;
 
 public class DentalLabPickupRequest {
@@ -28,6 +29,7 @@ public class DentalLabPickupRequest {
 	private Boolean isCollectedAtDoctor = false;
 	private String collectionBoyId;
 	private String serialNumber;
+	private String reasonForCancel;
 
 	public String getId() {
 		return id;
@@ -203,6 +205,14 @@ public class DentalLabPickupRequest {
 
 	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
 		this.isCollectedAtDoctor = isCollectedAtDoctor;
+	}
+
+	public String getReasonForCancel() {
+		return reasonForCancel;
+	}
+
+	public void setReasonForCancel(String reasonForCancel) {
+		this.reasonForCancel = reasonForCancel;
 	}
 
 	@Override
