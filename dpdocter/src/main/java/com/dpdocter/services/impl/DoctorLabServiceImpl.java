@@ -660,7 +660,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					doctorSearchResponse.setDoctorId(doctorDocument.getUserId());
 					doctorSearchResponse.setLocationId(doctorDocument.getLocationId());
 					doctorSearchResponse.setHospitalId(doctorDocument.getHospitalId());
-					doctorSearchResponse.setFirstName(doctorDocument.getFirstName());
+					doctorSearchResponse.setDoctorName(doctorDocument.getFirstName());
 					doctorSearchResponse.setLocationName(doctorDocument.getLocationName());
 					doctorSearchResponse.setSpecialities(doctorDocument.getSpecialities());
 					if (!DPDoctorUtils.anyStringEmpty(doctorId) && !DPDoctorUtils.anyStringEmpty(locationId)
