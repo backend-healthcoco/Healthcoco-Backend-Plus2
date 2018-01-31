@@ -183,12 +183,12 @@ public class DentalLabAPI {
 	public Response<DentalLabPickupResponse> getPickupRequests(@QueryParam("dentalLabId") String dentalLabId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("from") Long from, @QueryParam("to") Long to,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("status") String status,
-			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted,
+			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted, @QueryParam("isCollectedAtDoctor") Boolean isCollectedAtDoctor,
 			@QueryParam("size") int size, @QueryParam("page") int page) {
 		
 		Response<DentalLabPickupResponse> response = new Response<DentalLabPickupResponse>();
 		response.setDataList(dentalLabService.getRequests(dentalLabId, doctorId, from, to, searchTerm, status,
-				isAcceptedAtLab, isCompleted, size, page));
+				isAcceptedAtLab, isCompleted,isCollectedAtDoctor, size, page));
 		return response;
 	}
 
@@ -293,14 +293,13 @@ public class DentalLabAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS, notes = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
 	public Response<Boolean> getCBListByParentLab(@QueryParam("requestId") String requestId,
-			@QueryParam("status") String status , @QueryParam("isCollectedAtLab") Boolean isCollectedAtLab) {
+			@QueryParam("status") String status , @QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab , @QueryParam("isCollectedAtDoctor") Boolean isCollectedAtDoctor, @QueryParam("isCompleted") Boolean isCompleted) {
 		if (status == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(dentalLabService.changeStatus(requestId, status,isCollectedAtLab));
-
+		response.setData(dentalLabService.changeStatus(requestId, status, isCollectedAtDoctor, isCompleted, isAcceptedAtLab));
 		return response;
 	}
 }

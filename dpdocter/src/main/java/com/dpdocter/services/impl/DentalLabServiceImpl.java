@@ -33,12 +33,10 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyDoctorAssociationCollection;
-import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
@@ -63,7 +61,6 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
-import com.dpdocter.response.CollectionBoyLabAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.services.DentalLabService;
@@ -758,7 +755,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Override
 	@Transactional
 	public List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from,
-			Long to, String searchTerm, String status, Boolean isAcceptedAtLab , Boolean isCompleted, int size, int page) {
+			Long to, String searchTerm, String status, Boolean isAcceptedAtLab , Boolean isCompleted, Boolean isCollectedAtDoctor, int size, int page) {
 		
 		List<DentalLabPickupResponse> response = null;
 		try {
@@ -776,6 +773,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (isAcceptedAtLab != null) {
 				criteria.and("isAcceptedAtLab").is(isAcceptedAtLab);
 			}
+			
+			if (isCollectedAtDoctor != null) {
+				criteria.and("isCollectedAtDoctor").is(isCollectedAtDoctor);
+			}
 
 			if (isCompleted != null) {
 				criteria.and("isCompleted").is(isCompleted);
@@ -784,6 +785,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
 				criteria.and("status").is(status);
 			}
+			
 			/*if (from != 0 && to != 0) {
 				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else if (from != 0) {
@@ -797,7 +799,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("dentalLab.locationName").regex("^" + searchTerm),
 						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm));
-
 			}
 			
 			if (size > 0)
@@ -867,7 +868,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Override
 	@Transactional
-	public Boolean changeStatus(String dentalLabPickupId, String status ,Boolean isCollectedAtLab) {
+	public Boolean changeStatus(String dentalLabPickupId, String status ,Boolean isCollectedAtDoctor ,Boolean isCompleted , Boolean isAcceptedAtLab) {
 		DentalLabPickupCollection dentalLabPickupCollection = null;
 		Boolean response = null;
 
@@ -878,9 +879,17 @@ public class DentalLabServiceImpl implements DentalLabService {
 				{
 					dentalLabPickupCollection.setStatus(status);
 				}
-				if(isCollectedAtLab != null)
+				if(isCollectedAtDoctor != null)
 				{
-					dentalLabPickupCollection.setIsCollectedAtLab(isCollectedAtLab);
+					dentalLabPickupCollection.setIsCollectedAtDoctor(isCollectedAtDoctor);
+				}
+				if(isCompleted != null)
+				{
+					dentalLabPickupCollection.setIsCompleted(isCompleted);
+				}
+				if(isAcceptedAtLab != null)
+				{
+					dentalLabPickupCollection.setIsAcceptedAtLab(isAcceptedAtLab);
 				}
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 				response = true;
