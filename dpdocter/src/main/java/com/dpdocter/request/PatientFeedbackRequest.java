@@ -1,5 +1,8 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
+import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
@@ -15,7 +18,7 @@ public class PatientFeedbackRequest {
 	private String prescriptionId;
 	private Boolean isRecommended;
 	private Boolean isAppointmentStartedOnTime;
-	private String howLateWasAppointment;
+	private Integer howLateWasAppointmentInMinutes;
 	private Float overallExperience;
 	private String reasonOfVisit;
 	private String experience;
@@ -28,6 +31,7 @@ public class PatientFeedbackRequest {
 	private MedicationEffectType medicationEffectType; // how patient feeling
 	// after taking medicine
 	private FeedbackType feedbackType;
+	private List<QuestionAnswers> questionAnswers;
 
 	public String getId() {
 		return id;
@@ -91,14 +95,6 @@ public class PatientFeedbackRequest {
 
 	public void setIsAppointmentStartedOnTime(Boolean isAppointmentStartedOnTime) {
 		this.isAppointmentStartedOnTime = isAppointmentStartedOnTime;
-	}
-
-	public String getHowLateWasAppointment() {
-		return howLateWasAppointment;
-	}
-
-	public void setHowLateWasAppointment(String howLateWasAppointment) {
-		this.howLateWasAppointment = howLateWasAppointment;
 	}
 
 	public Float getOverallExperience() {
@@ -205,16 +201,34 @@ public class PatientFeedbackRequest {
 		this.prescriptionId = prescriptionId;
 	}
 
+	public Integer getHowLateWasAppointmentInMinutes() {
+		return howLateWasAppointmentInMinutes;
+	}
+
+	public void setHowLateWasAppointmentInMinutes(Integer howLateWasAppointmentInMinutes) {
+		this.howLateWasAppointmentInMinutes = howLateWasAppointmentInMinutes;
+	}
+
+	public List<QuestionAnswers> getQuestionAnswers() {
+		return questionAnswers;
+	}
+
+	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedbackRequest [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
 				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", localeId=" + localeId
-				+ ", isRecommended=" + isRecommended + ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime
-				+ ", howLateWasAppointment=" + howLateWasAppointment + ", overallExperience=" + overallExperience
-				+ ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply=" + reply
-				+ ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
+				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + ", isRecommended="
+				+ isRecommended + ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime
+				+ ", howLateWasAppointmentInMinutes=" + howLateWasAppointmentInMinutes + ", overallExperience="
+				+ overallExperience + ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply="
+				+ reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
-				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType + "]";
+				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType
+				+ ", questionAnswers=" + questionAnswers + "]";
 	}
 
 }

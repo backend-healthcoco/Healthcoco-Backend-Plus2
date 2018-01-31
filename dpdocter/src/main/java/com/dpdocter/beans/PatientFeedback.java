@@ -209,6 +209,14 @@ public class PatientFeedback extends GenericCollection {
 		this.prescriptionId = prescriptionId;
 	}
 
+	public List<QuestionAnswers> getQuestionAnswers() {
+		return questionAnswers;
+	}
+
+	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedback [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId + ", patientId="
