@@ -1560,6 +1560,8 @@ public interface PathProxy {
 		public static final String GET_COLLECTION_BOY_DOCTOR_ASSOCIATION = "/getCollectionBoyDoctorAssociation";
 		public static final String GET_CB_LIST_FOR_DENTAL_LAB = "/getCBListForDentalLab";
 		public static final String CHANGE_REQUEST_STATUS = "/changeRequestStatus";
+		public static final String ADD_DENTAL_IMAGE_MULTIPART = "/addDentalImageMultipart";
+		public static final String ADD_DENTAL_IMAGE_BASE_64 = "/addDentalImageBase64";
 
 	}
 
