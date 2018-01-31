@@ -175,15 +175,14 @@ public class DoctorLabApi {
 	public Response<DoctorLabFavouriteDoctorResponse> getFavouriteDoctors(@QueryParam("page") int page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("speciality") String speciality,
-			@QueryParam("city") String city) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("city") String city) {
 		if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "hospitalId,locationId Cannot Be Empty");
 		}
 
 		List<DoctorLabFavouriteDoctorResponse> favouriteDoctorResponses = doctorLabService.getFavouriteList(size, page,
-				searchTerm, doctorId, locationId, hospitalId, speciality, city);
+				searchTerm, doctorId, locationId, hospitalId, city);
 
 		Response<DoctorLabFavouriteDoctorResponse> response = new Response<DoctorLabFavouriteDoctorResponse>();
 		response.setDataList(favouriteDoctorResponses);

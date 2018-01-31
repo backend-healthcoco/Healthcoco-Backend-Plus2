@@ -525,16 +525,13 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Override
 	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, int page, String searchTerm,
-			String doctorId, String locationId, String hospitalId, String speciality, String city) {
+			String doctorId, String locationId, String hospitalId, String city) {
 		List<DoctorLabFavouriteDoctorResponse> response = null;
+		ProjectionOperation projectList = null;
 		try {
 
 			Criteria criteria = new Criteria();
 
-			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-				criteria = criteria.orOperator(new Criteria("specialities.speciality").regex(searchTerm),
-						new Criteria("specialities.superSpeciality").regex(searchTerm));
-			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -547,7 +544,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
 				criteria = criteria.and("location.city").regex(city);
 			}
-			criteria = criteria.and("discarded").is(true);
+			criteria = criteria.and("discarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
@@ -556,38 +553,28 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						new Criteria("location.locationName").regex("^" + searchTerm));
 
 			}
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id")
-							.append("doctorName", new BasicDBObject("$first", "$doctor.firstName"))
-							.append("locationName", new BasicDBObject("$first", "$location.locationName"))
-							.append("city", new BasicDBObject("$first", "$location.city"))
-							.append("speciality", new BasicDBObject("$push", "$specialities.speciality"))
-							.append("superSpeciality", new BasicDBObject("$push", "$specialities.speciality"))
-							.append("doctorId", new BasicDBObject("$first", "$favouriteDoctorId"))
-							.append("locationId", new BasicDBObject("$first", "$favouriteLocationId"))
-							.append("hospitalId", new BasicDBObject("$first", "$favouriteHospitalId"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
 
+			projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("locationId", "$favouriteLocationId"),
+					Fields.field("hospitalId", "$favouriteHospitalId"), Fields.field("doctorId", "$favouriteDoctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("doctorName", "$doctor.firstName"),
+					Fields.field("locationName", "$location.locationName"), Fields.field("city", "$location.city")));
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
-						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-						Aggregation.unwind("specialities"),
+				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("user_cl", "favouriteDoctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "favouriteLocationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria), groupOperation,
+						Aggregation.unwind("location"), Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
 
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("specialities"),
-						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-						Aggregation.unwind("specialities"),
+				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("user_cl", "favouriteDoctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "favouriteLocationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria), groupOperation,
+						Aggregation.unwind("location"), Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")));
 
 			}

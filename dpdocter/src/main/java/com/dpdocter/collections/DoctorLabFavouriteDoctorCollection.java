@@ -13,8 +13,6 @@ public class DoctorLabFavouriteDoctorCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private List<ObjectId> specialities;
-	@Field
 	private ObjectId doctorId;
 	@Field
 	private ObjectId locationId;
@@ -31,14 +29,6 @@ public class DoctorLabFavouriteDoctorCollection extends GenericCollection {
 
 	public Boolean getDiscarded() {
 		return discarded;
-	}
-
-	public List<ObjectId> getSpecialities() {
-		return specialities;
-	}
-
-	public void setSpecialities(List<ObjectId> specialities) {
-		this.specialities = specialities;
 	}
 
 	public void setDiscarded(Boolean discarded) {
@@ -103,10 +93,10 @@ public class DoctorLabFavouriteDoctorCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorLabFavouriteDoctorCollection [id=" + id + ", specialities=" + specialities + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", favouriteDoctorId="
-				+ favouriteDoctorId + ", favouriteLocationId=" + favouriteLocationId + ", favouriteHospitalId="
-				+ favouriteHospitalId + ", discarded=" + discarded + "]";
+		return "DoctorLabFavouriteDoctorCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", favouriteDoctorId=" + favouriteDoctorId + ", favouriteLocationId="
+				+ favouriteLocationId + ", favouriteHospitalId=" + favouriteHospitalId + ", discarded=" + discarded
+				+ "]";
 	}
 
 }

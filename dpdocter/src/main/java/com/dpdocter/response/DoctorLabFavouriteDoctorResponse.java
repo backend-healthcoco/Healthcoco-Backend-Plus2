@@ -1,11 +1,5 @@
 package com.dpdocter.response;
 
-import java.util.List;
-
-import org.bson.types.ObjectId;
-
-import com.dpdocter.beans.Speciality;
-
 public class DoctorLabFavouriteDoctorResponse {
 
 	private String id;
@@ -15,10 +9,6 @@ public class DoctorLabFavouriteDoctorResponse {
 	private String locationName;
 
 	private String city;
-
-	private List<String> speciality;
-
-	private List<String> superSpeciality;
 
 	private String doctorId;
 
@@ -58,22 +48,6 @@ public class DoctorLabFavouriteDoctorResponse {
 
 	public void setCity(String city) {
 		this.city = city;
-	}
-
-	public List<String> getSpeciality() {
-		return speciality;
-	}
-
-	public void setSpeciality(List<String> speciality) {
-		this.speciality = speciality;
-	}
-
-	public List<String> getSuperSpeciality() {
-		return superSpeciality;
-	}
-
-	public void setSuperSpeciality(List<String> superSpeciality) {
-		this.superSpeciality = superSpeciality;
 	}
 
 	public String getDoctorId() {
