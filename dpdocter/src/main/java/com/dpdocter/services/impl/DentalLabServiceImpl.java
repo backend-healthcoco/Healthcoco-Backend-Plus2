@@ -1,11 +1,13 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +27,14 @@ import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDoctorAssociation;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CRNCollection;
@@ -37,12 +44,17 @@ import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.LabReportsCollection;
+import com.dpdocter.collections.LabTestPickupCollection;
+import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -60,13 +72,18 @@ import com.dpdocter.repository.RateCardDoctorAssociationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
+import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.DentalLabService;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -113,10 +130,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 	private PushNotificationServices pushNotificationServices;
 	
 	@Autowired
-	LocationServices locationServices;
+	private LocationServices locationServices;
+	
+	@Autowired
+	private FileManager fileManager;
 	
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
 	
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -909,6 +932,58 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 	
+	@Override
+	@Transactional
+	public ImageURLResponse addDentalImage(FormDataBodyPart file) {
+		ImageURLResponse response = null;
+		ImageURLResponse imageURLResponse = null;
+		try {
+			if (file != null) {
+				String path = "dental-images";
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
+				imageURLResponse = fileManager.saveImage(file, recordPath, true);
+				if (imageURLResponse != null) {
+					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
+					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
 	
+	@Override
+	@Transactional
+	public ImageURLResponse addDentalImageBase64(FileDetails fileDetails) {
+		ImageURLResponse response = null;
+		ImageURLResponse imageURLResponse = null;
+		try {
+			Date createdTime = new Date();
+
+			if (fileDetails != null) {
+				// String path = "lab-reports";
+				// String recordLabel = fileDetails.getFileName();
+				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
+				String path = "dental-images";
+				String recordPath = path + File.separator + fileDetails.getFileName() + System.currentTimeMillis() + "." + fileDetails.getFileExtension();
+				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, recordPath, true);
+				if (imageURLResponse != null) {
+					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
+					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+				}
+			}
+	
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 
 }

@@ -6,6 +6,7 @@ import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
@@ -16,6 +17,8 @@ import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
+import com.dpdocter.response.ImageURLResponse;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface DentalLabService {
 
@@ -76,6 +79,11 @@ public interface DentalLabService {
 
 	Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtDoctor, Boolean isCompleted,
 			Boolean isAcceptedAtLab);
+
+	ImageURLResponse addDentalImage(FormDataBodyPart file);
+
+	ImageURLResponse addDentalImageBase64(FileDetails fileDetails);
+
 
 	/*
 	 * DentalLabDoctorAssociation

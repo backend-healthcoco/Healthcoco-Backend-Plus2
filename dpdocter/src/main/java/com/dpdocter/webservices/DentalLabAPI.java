@@ -20,6 +20,8 @@ import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
@@ -32,10 +34,14 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
+import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.LocationServices;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;
@@ -302,4 +308,39 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.changeStatus(requestId, status, isCollectedAtDoctor, isCompleted, isAcceptedAtLab));
 		return response;
 	}
+	
+	@POST
+	@Path(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_MULTIPART)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_MULTIPART, notes = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_MULTIPART)
+	public Response<ImageURLResponse> addDentalImageMultipart(@FormDataParam("file") FormDataBodyPart file) {
+
+		if (file == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		ImageURLResponse imageURLResponse = dentalLabService.addDentalImage(file);
+
+		Response<ImageURLResponse> response = new Response<ImageURLResponse>();
+		response.setData(imageURLResponse);
+		return response;
+	}
+	
+	@POST
+	@Path(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64)
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64, notes = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64)
+	public Response<ImageURLResponse> addDentalImageBase64(FileDetails fileDetails) {
+
+		if (fileDetails == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		ImageURLResponse imageURLResponse = dentalLabService.addDentalImageBase64(fileDetails);
+
+		Response<ImageURLResponse> response = new Response<ImageURLResponse>();
+		response.setData(imageURLResponse);
+		return response;
+	}
+
+
 }
