@@ -10,6 +10,6 @@ import com.dpdocter.collections.DentalLabPickupCollection;
 
 public interface DentalLabTestPickupRepository extends MongoRepository<DentalLabPickupCollection, ObjectId>{
 
-	@Query(value = "{'dentalLabId':?0, 'updatedTime' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
+	@Query(value = "{'dentalLabId':?0, 'updatedTime' : {'$gt' : ?1, '$lte' : ?2}}", count = true)
 	Integer findTodaysCompletedReport(ObjectId locationId, Date start, Date end);
 }

@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.response.ImageURLResponse;
+
 public class DentalWorksSample {
 	private DentalWork dentalWork;
 	private List<String> toothNumbers;
@@ -15,6 +17,7 @@ public class DentalWorksSample {
 	private String ponticDesign;
 	private String collarAndMetalDesign;
 	private String uniqueWorkId;
+	private List<ImageURLResponse> dentalImages;
 	private List<DentalWorkCardValue> dentalWorkCardValues;
 	private String shade;
 	private List<String> material;
@@ -155,6 +158,14 @@ public class DentalWorksSample {
 
 	public void setRateCardDentalWorkAssociation(RateCardDentalWorkAssociation rateCardDentalWorkAssociation) {
 		this.rateCardDentalWorkAssociation = rateCardDentalWorkAssociation;
+	}
+
+	public List<ImageURLResponse> getDentalImages() {
+		return dentalImages;
+	}
+
+	public void setDentalImages(List<ImageURLResponse> dentalImages) {
+		this.dentalImages = dentalImages;
 	}
 
 	@Override

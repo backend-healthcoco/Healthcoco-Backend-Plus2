@@ -64,6 +64,7 @@ import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.services.DentalLabService;
+import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
 
@@ -110,6 +111,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+	
+	@Autowired
+	LocationServices locationServices;
 	
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
@@ -416,10 +420,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection.setRequestId(requestId);
 				serialNo = dentalLabTestPickupRepository.findTodaysCompletedReport(new ObjectId(request.getDentalLabId()), DPDoctorUtils.getFormTime(new Date()), DPDoctorUtils.getToTime(new Date()));
 				for (DentalWorksSample dentalWorksSample : request.getDentalWorksSamples()) {
-					dentalWorksSample.setUniqueWorkId(locationInitials + getInitials(request.getPatientName()) + currentDateGenerator() + DPDoctorUtils.getPrefixedNumber(serialNo + 1) + DPDoctorUtils.getPrefixedNumber(count));
+					String uniqueWorkId = locationInitials + getInitials(request.getPatientName()) + currentDateGenerator() + DPDoctorUtils.getPrefixedNumber(serialNo + 1) + DPDoctorUtils.getPrefixedNumber(count);
+					dentalWorksSample.setUniqueWorkId(uniqueWorkId);
 					count++;
 				}
-				//dentalLabPickupCollection.setCrn(crn);
+				dentalLabPickupCollection.setDentalWorksSamples(request.getDentalWorksSamples());
+				dentalLabPickupCollection.setCrn(saveCRN(request.getDentalLabId(), requestId, 5));
 				dentalLabPickupCollection.setSerialNumber(String.valueOf(serialNo + 1));
 				dentalLabPickupCollection.setCreatedTime(new Date());
 				dentalLabPickupCollection.setIsCompleted(false);
@@ -902,5 +908,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
+	
+	
 
 }

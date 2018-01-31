@@ -15,9 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AppointmentGeneralFeedback;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.PharmacyFeedback;
@@ -55,6 +57,7 @@ import com.dpdocter.request.PrescriptionFeedbackRequest;
 import com.dpdocter.response.DailyImprovementFeedbackResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
 import com.dpdocter.services.FeedbackService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -487,6 +490,9 @@ public class FeedbackServiceImpl implements FeedbackService {
 		LocationCollection locationCollection = null;
 		HospitalCollection hospitalCollection = null;
 		UserCollection userCollection = null;
+		PatientCollection patientCollection = null;
+		Aggregation aggregation = null;
+		int count = 1;
 		try {
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(type))
@@ -518,28 +524,56 @@ public class FeedbackServiceImpl implements FeedbackService {
 				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
 				locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			}
+			
+			/*if (!DPDoctorUtils.anyStringEmpty(request.getAppointmentId()))
+			{
+				criteria.and("appointmentId").is(new ObjectId(request.getAppointmentId()));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId()))
+			{
+				criteria.and("prescriptionId").is(new ObjectId(request.getPrescriptionId()));
+			}*/
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
+			{
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
+				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId())); 
+			}
 			
 			
 			
 			//criteria.and("discarded").is(false);
-			criteria.and("isApproved").is(true);
+			//criteria.and("isApproved").is(true);
 
 			if (request.getSize() > 0)
-				feedbackResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						Aggregation.unwind("patientCard"),
+			{
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointment"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointment").append("preserveNullAndEmptyArrays", true))),Aggregation.match(criteria),
 						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), PatientFeedbackCollection.class,
-						PatientFeedbackResponse.class).getMappedResults();
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+				
 			else
-				feedbackResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-								Aggregation.unwind("patientCard"),
-								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-						PatientFeedbackCollection.class, PatientFeedbackResponse.class).getMappedResults();
+			{
+				aggregation = Aggregation.newAggregation(
+				Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
+				new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
+				Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointment"),
+				new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new BasicDBObject("path", "$appointment").append("preserveNullAndEmptyArrays", true))),Aggregation.match(criteria),
+				Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			
+			feedbackResponses = mongoTemplate.aggregate(aggregation, PatientFeedbackCollection.class, PatientFeedbackResponse.class).getMappedResults();
+				
+		
 			
 			for (PatientFeedbackResponse patientFeedbackResponse : feedbackResponses) {
 				if(localeCollection != null)
@@ -558,6 +592,14 @@ public class FeedbackServiceImpl implements FeedbackService {
 				{
 					patientFeedbackResponse.setHospitalName(hospitalCollection.getHospitalName());
 				}
+				if(patientCollection != null)
+				{
+					PatientShortCard patientCard = new PatientShortCard();
+					BeanUtil.map(patientCollection, patientCard);
+					patientFeedbackResponse.setPatientCard(patientCard);
+				}
+
+				
 			}
 			
 		} catch (Exception e) {
