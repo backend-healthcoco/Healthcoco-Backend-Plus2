@@ -14,6 +14,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
+import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
@@ -83,6 +84,10 @@ public interface DentalLabService {
 	ImageURLResponse addDentalImage(FormDataBodyPart file);
 
 	ImageURLResponse addDentalImageBase64(FileDetails fileDetails);
+
+	Boolean updateDentalStageForDoctor(UpdateDentalStagingRequest request);
+
+	Boolean updateDentalStageForLab(UpdateDentalStagingRequest request);
 
 
 	/*

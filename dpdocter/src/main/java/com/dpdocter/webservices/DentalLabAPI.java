@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
+import com.dpdocter.beans.DentalStage;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
@@ -35,6 +36,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.LabReportsAddRequest;
+import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.ImageURLResponse;
@@ -339,6 +341,35 @@ public class DentalLabAPI {
 
 		Response<ImageURLResponse> response = new Response<ImageURLResponse>();
 		response.setData(imageURLResponse);
+		return response;
+	}
+	
+	@POST
+	@Path(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR)
+	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR, notes = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR)
+	public Response<Boolean> updateDentalStagesForDoctor(UpdateDentalStagingRequest request) {
+
+	
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.updateDentalStageForDoctor(request));
+		return response;
+	}
+	
+	
+	@POST
+	@Path(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB)
+	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB, notes = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB)
+	public Response<Boolean> updateDentalStagesForLab(UpdateDentalStagingRequest request) {
+
+	
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.updateDentalStageForDoctor(request));
 		return response;
 	}
 
