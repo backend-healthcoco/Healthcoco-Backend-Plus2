@@ -1,7 +1,5 @@
 package com.dpdocter.request;
 
-import java.util.List;
-
 public class DoctorLabFavouriteDoctorRequest {
 
 	private String id;
@@ -17,8 +15,6 @@ public class DoctorLabFavouriteDoctorRequest {
 	private String favouriteLocationId;
 
 	private String favouriteHospitalId;
-
-	private List<String> specialities;
 
 	public String getId() {
 		return id;
@@ -75,17 +71,5 @@ public class DoctorLabFavouriteDoctorRequest {
 	public void setFavouriteHospitalId(String favouriteHospitalId) {
 		this.favouriteHospitalId = favouriteHospitalId;
 	}
-
-	public List<String> getSpecialities() {
-		return specialities;
-	}
-
-	public void setSpecialities(List<String> specialities) {
-		this.specialities = specialities;
-	}
-
-	
-
-	
 
 }

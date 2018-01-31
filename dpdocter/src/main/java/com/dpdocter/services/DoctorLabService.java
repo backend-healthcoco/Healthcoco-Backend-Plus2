@@ -27,7 +27,7 @@ public interface DoctorLabService {
 	public Boolean addDoctorToFavouriteList(DoctorLabFavouriteDoctorRequest request);
 
 	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, int page, String searchTerm,
-			String doctorId, String locationId, String hospitalId, String speciality, String city);
+			String doctorId, String locationId, String hospitalId, String city);
 
 	public List<DoctorLabSearchDoctorResponse> searchDoctor(int size, int page, String searchTerm, String doctorId,
 			String locationId, String hospitalId, String speciality, String city);
