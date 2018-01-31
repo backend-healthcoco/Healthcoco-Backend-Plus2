@@ -936,7 +936,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Override
 	@Transactional
 	public ImageURLResponse addDentalImage(FormDataBodyPart file) {
-		ImageURLResponse response = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
 			if (file != null) {
@@ -955,13 +954,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return response;
+		return imageURLResponse;
 	}
 	
 	@Override
 	@Transactional
 	public ImageURLResponse addDentalImageBase64(FileDetails fileDetails) {
-		ImageURLResponse response = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
 			Date createdTime = new Date();
@@ -983,7 +981,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return response;
+		return imageURLResponse;
 	}
 	
 	@Override
