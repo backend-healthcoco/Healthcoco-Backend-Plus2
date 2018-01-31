@@ -572,7 +572,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "favouriteLocationId", "_id", "location"),
 						Aggregation.unwind("location"),
-						Aggregation.lookup("hospital_cl", "favouriteHospitalId", "_id", "location"),
+						Aggregation.lookup("hospital_cl", "favouriteHospitalId", "_id", "hospital"),
 						Aggregation.unwind("hospital"), Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
@@ -583,7 +583,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "favouriteLocationId", "_id", "location"),
 						Aggregation.unwind("location"),
-						Aggregation.lookup("hospital_cl", "favouriteHospitalId", "_id", "location"),
+						Aggregation.lookup("hospital_cl", "favouriteHospitalId", "_id", "hospital"),
 						Aggregation.unwind("hospital"), Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")));
 
