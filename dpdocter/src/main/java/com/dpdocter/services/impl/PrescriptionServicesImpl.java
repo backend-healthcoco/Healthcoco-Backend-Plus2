@@ -1390,7 +1390,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
-					Fields.field("tests", "$diagnosticTests")));
+					Fields.field("tests", "$diagnosticTests"),Fields.field("locationName", "$location.locationName")));
 			Aggregation aggregation = null;
 
 			if (size > 0) {
@@ -1401,6 +1401,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -1446,6 +1448,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -3230,13 +3234,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("patientId", "$patientId"),
 					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
 					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
-					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
-					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("locationName", "$locationName"),
+					Fields.field("createdBy", "$createdBy"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("items.drug", "$drug"), Fields.field("items.duration", "$items.duration"),
+					Fields.field("items.dosage", "$items.dosage"),
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("tests", "$diagnosticTests")));
+
 			Aggregation aggregation = null;
 
 			if (size > 0) {
