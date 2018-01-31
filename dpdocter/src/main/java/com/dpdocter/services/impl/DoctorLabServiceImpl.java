@@ -119,7 +119,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	private String doctorWelcomeSubject;
 
 	@Value(value = "${mail.signup.request.subject}")
-	private String signupRequestSubject;
+	private String g;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -170,6 +170,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				doctorLabReportCollection.setUpdatedTime(new Date());
 			}
 			doctorLabReportCollection = doctorLabReportRepository.save(doctorLabReportCollection);
+			if (doctorLabReportCollection.getShareWithDoctor()) {
+
+			}
+			if (doctorLabReportCollection.getShareWithPatient()) {
+
+			}
 			response = new DoctorLabReport();
 			BeanUtil.map(doctorLabReportCollection, response);
 		} catch (Exception e) {
@@ -494,8 +500,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						.is(new ObjectId(request.getLocationId())).and("hospitalId")
 						.is(new ObjectId(request.getHospitalId())).and("favouriteDoctorId")
 						.is(new ObjectId(request.getFavouriteDoctorId())).and("favouriteLocationId")
-						.is(new ObjectId(request.getLocationId())).and("favouriteHospitalId")
-						.is(new ObjectId(request.getHospitalId()));
+						.is(new ObjectId(request.getFavouriteDoctorId())).and("favouriteHospitalId")
+						.is(new ObjectId(request.getFavouriteHospitalId()));
 				favouriteDoctorCollection = mongoTemplate.findOne(new Query(criteria),
 						DoctorLabFavouriteDoctorCollection.class);
 				if (favouriteDoctorCollection == null) {
@@ -555,9 +561,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			}
 
 			projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
-					Fields.field("locationId", "$favouriteLocationId"),
-					Fields.field("hospitalId", "$favouriteHospitalId"), Fields.field("doctorId", "$favouriteDoctorId"),
-					Fields.field("discarded", "$discarded"), Fields.field("doctorName", "$doctor.firstName"),
+					Fields.field("locationId", "$location._id"), Fields.field("hospitalId", "$hospital._id"),
+					Fields.field("doctorId", "$doctor._id"), Fields.field("discarded", "$discarded"),
+					Fields.field("doctorName", "$doctor.firstName"),
 					Fields.field("locationName", "$location.locationName"), Fields.field("city", "$location.city")));
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -565,7 +571,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						Aggregation.lookup("user_cl", "favouriteDoctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "favouriteLocationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria), projectList,
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "favouriteHospitalId", "_id", "location"),
+						Aggregation.unwind("hospital"), Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
@@ -574,7 +582,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						Aggregation.lookup("user_cl", "favouriteDoctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "favouriteLocationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria), projectList,
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "favouriteHospitalId", "_id", "location"),
+						Aggregation.unwind("hospital"), Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")));
 
 			}
@@ -665,7 +675,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					doctorSearchResponse.setSpecialities(doctorDocument.getSpecialities());
 					if (!DPDoctorUtils.anyStringEmpty(doctorId) && !DPDoctorUtils.anyStringEmpty(locationId)
 							&& !DPDoctorUtils.anyStringEmpty(hospitalId)
-							&& DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getDoctorId())
+							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getDoctorId())
 							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getLocationId())
 							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getHospitalId())) {
 						criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
