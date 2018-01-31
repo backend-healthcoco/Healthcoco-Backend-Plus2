@@ -24,4 +24,6 @@ public interface CertificatesServices {
 
 	ConsentForm deletePatientCertificate(String certificateId, Boolean discarded);
 
+	String downloadPatientCertificate(String certificateId);
+
 }

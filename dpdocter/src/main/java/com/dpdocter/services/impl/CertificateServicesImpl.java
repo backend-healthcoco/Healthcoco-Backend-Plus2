@@ -1,7 +1,12 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -16,16 +21,26 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.collections.CertificateTemplateCollection;
 import com.dpdocter.collections.ConsentFormCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CertificateTemplateRepository;
 import com.dpdocter.repository.ConsentFormRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.ConsentFormCollectionLookupResponse;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.CertificatesServices;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.PatientVisitService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -43,6 +58,18 @@ public class CertificateServicesImpl implements CertificatesServices {
 	
 	@Autowired
 	private ConsentFormRepository consentFormRepository;
+	
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+	
+	@Autowired
+	private PatientVisitService patientVisitService;
+	
+	@Autowired
+	private JasperReportService jasperReportService;
+	
+	@Value(value = "${jasper.print.patient.certificate.fileName}")
+	private String patientCertificateFileName;
 	
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -319,5 +346,108 @@ public class CertificateServicesImpl implements CertificatesServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while discarding patient certificate" + e.getMessage());
 		}
 		return response;
-	}	
+	}
+
+	@Override
+	public String downloadPatientCertificate(String certificateId) {
+		String response = null;
+		try {
+			ConsentFormCollectionLookupResponse consentFormCollection = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(certificateId))),
+							Aggregation.lookup("patient_cl","patientId", "userId", "patientCollection"),
+							Aggregation.unwind("patientCollection"),
+							new CustomAggregationOperation(new BasicDBObject("$redact", 
+									new BasicDBObject("$cond",
+											new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patientCollection.locationId", "$locationId")))
+											.append("then", "$$KEEP")
+											.append("else", "$$PRUNE")))),
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser"),
+							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
+							Aggregation.unwind("certificateTemplate")),
+					ConsentFormCollection.class, ConsentFormCollectionLookupResponse.class).getUniqueMappedResult();
+
+			if (consentFormCollection != null) {
+				PatientCollection patient = consentFormCollection.getPatientCollection();
+				UserCollection user = consentFormCollection.getPatientUser();
+
+				JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Prescription Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Prescription PDF");
+		}
+		return response;
+	}
+
+	private JasperReportResponse createJasper(ConsentFormCollectionLookupResponse consentFormCollection, PatientCollection patient,
+			UserCollection user) throws IOException, ParseException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		
+		JasperReportResponse response = null;
+
+		String htmlText = consentFormCollection.getCertificateTemplate().getHtmlText();
+		if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
+			for(Fields field : consentFormCollection.getInputElements()) {
+				htmlText = htmlText.replace(field.getKey(), field.getValue());
+			}
+		}
+		parameters.put("certificateId", consentFormCollection.getId());
+		parameters.put("htmlText", htmlText);
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
+				new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+		
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"",
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				consentFormCollection.getUpdatedTime(), printSettings.getHospitalUId());
+		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(consentFormCollection.getDoctorId()));
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CERTIFICATE-"
+				+ new Date().getTime();
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null
+						? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null
+						? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+
+		response = jasperReportService.createPDF(ComponentType.CERTIFICATE, parameters, patientCertificateFileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+		return response;
+	}
 }

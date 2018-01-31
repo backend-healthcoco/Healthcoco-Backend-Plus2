@@ -23,7 +23,6 @@ import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.services.BirthdaySMSServices;
 import com.dpdocter.services.CertificatesServices;
 
 import common.util.web.DPDoctorUtils;
@@ -148,6 +147,19 @@ public class CertificatesAPI {
 		}
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		response.setData(certificatesServices.deletePatientCertificate(certificateId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.CertificateTemplatesUrls.DOWNLOAD_PATIENT_CERTIFICATE)
+	@GET
+	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.DOWNLOAD_PATIENT_CERTIFICATE, notes = PathProxy.CertificateTemplatesUrls.DOWNLOAD_PATIENT_CERTIFICATE)
+	public Response<String> downloadPatientCertificate(@PathParam("certificateId") String certificateId) {
+		if (DPDoctorUtils.anyStringEmpty(certificateId)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(certificatesServices.downloadPatientCertificate(certificateId));
 		return response;
 	}
 }
