@@ -157,7 +157,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
-
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-lab-dental-works-a4.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())) {
@@ -171,7 +170,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-lab-requisation-form-a4.jrxml");
 		}else if (componentType.getType().equalsIgnoreCase(ComponentType.PATIENT_CARD.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo_patient_card.jrxml");
-		}  else {
+		}else if (componentType.getType().equalsIgnoreCase(ComponentType.CERTIFICATE.getType())) {
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
+		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
 		jasperDesign.setName("sampleDynamicJasperDesign");
@@ -301,7 +302,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.PATIENT_CARD.getType()))
 			createPatientCardPrint(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-
+		
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.CERTIFICATE.getType()))
+			createPatientCertificate(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
+					normalStyle);
+		
 		if (parameters.get("eyePrescriptions") != null
 				|| componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType()))
 			createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
