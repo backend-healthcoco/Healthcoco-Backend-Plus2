@@ -25,6 +25,7 @@ public class DentalLabPickupRequest {
 	private String requestId;
 	private Boolean isAcceptedAtLab = false;
 	private Boolean isCompleted = false;
+	private Boolean isCollectedAtDoctor = false;
 	private String collectionBoyId;
 	private String serialNumber;
 
@@ -194,6 +195,14 @@ public class DentalLabPickupRequest {
 
 	public void setAge(Integer age) {
 		this.age = age;
+	}
+
+	public Boolean getIsCollectedAtDoctor() {
+		return isCollectedAtDoctor;
+	}
+
+	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
+		this.isCollectedAtDoctor = isCollectedAtDoctor;
 	}
 
 	@Override

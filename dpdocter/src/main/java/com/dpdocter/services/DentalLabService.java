@@ -58,9 +58,9 @@ public interface DentalLabService {
 	List<User> getDentalLabDoctorAssociations(String locationId, String doctorId,
 			int page, int size, String searchTerm);
 
-	List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
+/*	List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
 			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, int size, int page);
-
+*/
 	List<Location> getDentalLabDoctorAssociationsForDoctor(String doctorId, int page, int size, String searchTerm);
 
 	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String dentalLabId,
@@ -68,7 +68,14 @@ public interface DentalLabService {
 
 	//Boolean changeStatus(String dentalLabPickupId, String status);
 
-	Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtLab);
+	//Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtLab);
+
+	List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
+			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor,
+			int size, int page);
+
+	Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtDoctor, Boolean isCompleted,
+			Boolean isAcceptedAtLab);
 
 	/*
 	 * DentalLabDoctorAssociation

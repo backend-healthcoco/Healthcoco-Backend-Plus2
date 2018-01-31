@@ -2,6 +2,8 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.DentalWorksSample;
 import com.dpdocter.beans.Location;
@@ -30,6 +32,7 @@ public class DentalLabPickupResponse extends GenericCollection {
 	private Boolean isAcceptedAtLab = false;
 	private Boolean isCompleted = false;
 	private String collectionBoyId;
+	private Boolean isCollectedAtDoctor = false;
 	private String serialNumber;
 	private Location dentalLab;
 	private User doctor;
@@ -225,6 +228,14 @@ public class DentalLabPickupResponse extends GenericCollection {
 
 	public void setCollectionBoy(CollectionBoy collectionBoy) {
 		this.collectionBoy = collectionBoy;
+	}
+
+	public Boolean getIsCollectedAtDoctor() {
+		return isCollectedAtDoctor;
+	}
+
+	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
+		this.isCollectedAtDoctor = isCollectedAtDoctor;
 	}
 
 	@Override
