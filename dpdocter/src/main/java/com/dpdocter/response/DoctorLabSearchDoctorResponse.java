@@ -11,7 +11,7 @@ public class DoctorLabSearchDoctorResponse {
 
 	private String hospitalId;
 
-	private String firstName;
+	private String doctorName;
 
 	private String locationName;
 
@@ -53,12 +53,12 @@ public class DoctorLabSearchDoctorResponse {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getDoctorName() {
+		return doctorName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
 	}
 
 	public String getLocationName() {
@@ -92,7 +92,5 @@ public class DoctorLabSearchDoctorResponse {
 	public void setIsFavourite(Boolean isFavourite) {
 		this.isFavourite = isFavourite;
 	}
-	
-	
 
 }
