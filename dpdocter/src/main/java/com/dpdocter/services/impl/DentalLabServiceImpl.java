@@ -73,6 +73,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.LabReportsAddRequest;
+import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
@@ -984,6 +985,67 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public Boolean updateDentalStageForDoctor(UpdateDentalStagingRequest request)
+	{
+		Boolean response = false;
+		
+		try {
+			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getRequestId()));
+			if(dentalLabPickupCollection != null)
+			{
+				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
+				for(DentalWorksSample dentalWorksSample : dentalWorksSamples)
+				{
+					if(dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId()))
+					{
+						dentalWorksSample.setDentalStagesForDoctor(request.getDentalStages());
+					}
+				}
+				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
+				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
+				response =true;
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} 
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean updateDentalStageForLab(UpdateDentalStagingRequest request)
+	{
+		Boolean response = false;
+		
+		try {
+			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getRequestId()));
+			if(dentalLabPickupCollection != null)
+			{
+				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
+				for(DentalWorksSample dentalWorksSample : dentalWorksSamples)
+				{
+					if(dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId()))
+					{
+						dentalWorksSample.setDentalStagesForLab(request.getDentalStages());
+					}
+				}
+				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
+				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
+				response =true;
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} 
+		return response;
+	}
+
 
 
 }
