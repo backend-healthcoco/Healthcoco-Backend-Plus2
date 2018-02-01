@@ -38,15 +38,21 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.RecordsFile;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorLabDoctorReferenceCollection;
 import com.dpdocter.collections.DoctorLabFavouriteDoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -66,6 +72,7 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -103,8 +110,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Autowired
 	private ESSpecialityRepository esSpecialityRepository;
 
-	@Value(value = "${doctor.welcome.message}")
-	private String doctorWelcomeMessage;
+	@Autowired
+	private SMSServices smsServices;
 
 	@Value(value = "${mail.signup.request.to}")
 	private String mailTo;
@@ -114,12 +121,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
-
-	@Value(value = "${mail.contact.us.welcome.subject}")
-	private String doctorWelcomeSubject;
-
-	@Value(value = "${mail.signup.request.subject}")
-	private String g;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -682,7 +683,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 								.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
 								.and("favouriteDoctorId").is(new ObjectId(doctorSearchResponse.getDoctorId()))
 								.and("favouriteLocationId").is(new ObjectId(doctorSearchResponse.getLocationId()))
-								.and("favouriteHospitalId").is(new ObjectId(doctorSearchResponse.getHospitalId()));
+								.and("favouriteHospitalId").is(new ObjectId(doctorSearchResponse.getHospitalId()))
+								.and("discarded").is(false);
 						fevDoctorCollection = mongoTemplate.findOne(new Query(criteria),
 								DoctorLabFavouriteDoctorCollection.class);
 						if (fevDoctorCollection != null) {
@@ -826,6 +828,63 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			throw new BusinessException(ServiceError.Unknown, "error while discarding  Doctor lab report");
 		}
 		return response;
+	}
+
+	private void sendSmsToPatient(String patientName, String patientMobileNumber, String recordName, String doctorName,
+			ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
+
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		smsTrackDetail.setDoctorId(doctorId);
+		smsTrackDetail.setHospitalId(hospitalId);
+		smsTrackDetail.setLocationId(locationId);
+		smsTrackDetail.setType(ComponentType.DOCTOR_LAB_REPORTS.getType());
+		SMSDetail smsDetail = new SMSDetail();
+		smsDetail.setUserId(patientId);
+		smsDetail.setUserName(patientName);
+		SMS sms = new SMS();
+		if (DPDoctorUtils.anyStringEmpty(recordName))
+			recordName = "";
+		String message = "";
+		sms.setSmsText(message.replace("{patientName}", patientName).replace("{doctorName}", doctorName)
+				.replace("{reportName}", recordName));
+		SMSAddress smsAddress = new SMSAddress();
+		smsAddress.setRecipient(patientMobileNumber);
+		sms.setSmsAddress(smsAddress);
+		smsDetail.setSms(sms);
+		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+		smsServices.sendSMS(smsTrackDetail, true);
+	}
+
+	private void sendSmsTodoctor(String patientName, String patientMobileNumber, String recordName, String doctorName,
+			ObjectId uploadedBydoctorId, ObjectId uploadedBylocationId, ObjectId uploadedByhospitalId,
+			ObjectId patientId) {
+
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		smsTrackDetail.setDoctorId(uploadedBydoctorId);
+		smsTrackDetail.setHospitalId(uploadedByhospitalId);
+		smsTrackDetail.setLocationId(uploadedBylocationId);
+		smsTrackDetail.setType(ComponentType.DOCTOR_LAB_REPORTS.getType());
+		SMSDetail smsDetail = new SMSDetail();
+		smsDetail.setUserId(patientId);
+		smsDetail.setUserName(patientName);
+		SMS sms = new SMS();
+		if (DPDoctorUtils.anyStringEmpty(recordName))
+			recordName = "";
+		String message = "";
+		sms.setSmsText(message.replace("{patientName}", patientName).replace("{doctorName}", doctorName)
+				.replace("{reportName}", recordName));
+		SMSAddress smsAddress = new SMSAddress();
+		smsAddress.setRecipient(patientMobileNumber);
+		sms.setSmsAddress(smsAddress);
+		smsDetail.setSms(sms);
+		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+		smsServices.sendSMS(smsTrackDetail, true);
 	}
 
 	private String getFinalImageURL(String imageURL) {
