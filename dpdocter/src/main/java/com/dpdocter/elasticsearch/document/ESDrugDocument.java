@@ -49,24 +49,27 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.String)
-	private String companyName;
+    @Field(type = FieldType.String)
+    private String companyName;
+ 
+    @Field(type = FieldType.String)
+    private String packSize;
 
-	@Field(type = FieldType.String)
-	private String packSize;
+    @Field(type = FieldType.String)
+	private String packForm;
+	
+    @Field(type = FieldType.String)
+	private String prizePerPack;
+	
+    @Field(type = FieldType.String)
+    private String MRP;
 
-	@Field(type = FieldType.Long)
-	private long companyRankingCount = 0;
-
-	@Field(type = FieldType.String)
-	private String MRP;
-
-	@Field(type = FieldType.Nested)
+    @Field(type = FieldType.Nested)
 	private Duration duration;
 
-	@Field(type = FieldType.String)
+    @Field(type = FieldType.String)
 	private String dosage;
-
+	
 	@MultiField(mainField = @Field(type = FieldType.Long))
 	private List<Long> dosageTime;
 
@@ -87,6 +90,25 @@ public class ESDrugDocument {
 
 	@Field(type = FieldType.Long)
 	private Long totalStock;
+
+    @MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialities;
+	 
+    @Field(type = FieldType.String)
+	private String rxRequired;
+	
+    @Field(type = FieldType.String)
+	private String unsafeWith;
+	
+	@Override
+	public int hashCode() {
+		return this.drugCode.hashCode();
+	}
+
+	public boolean equals(Object obj) {
+		ESDrugDocument drugDocument = (ESDrugDocument) obj;
+		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
+	}
 
 	public String getId() {
 		return id;
@@ -118,6 +140,22 @@ public class ESDrugDocument {
 
 	public void setDrugCode(String drugCode) {
 		this.drugCode = drugCode;
+	}
+
+	public String getDrugTypeId() {
+		return drugTypeId;
+	}
+
+	public void setDrugTypeId(String drugTypeId) {
+		this.drugTypeId = drugTypeId;
+	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
 	}
 
 	public String getDoctorId() {
@@ -160,22 +198,6 @@ public class ESDrugDocument {
 		this.updatedTime = updatedTime;
 	}
 
-	public String getDrugTypeId() {
-		return drugTypeId;
-	}
-
-	public void setDrugTypeId(String drugTypeId) {
-		this.drugTypeId = drugTypeId;
-	}
-
-	public String getDrugType() {
-		return drugType;
-	}
-
-	public void setDrugType(String drugType) {
-		this.drugType = drugType;
-	}
-
 	public String getCompanyName() {
 		return companyName;
 	}
@@ -190,6 +212,22 @@ public class ESDrugDocument {
 
 	public void setPackSize(String packSize) {
 		this.packSize = packSize;
+	}
+
+	public String getPackForm() {
+		return packForm;
+	}
+
+	public void setPackForm(String packForm) {
+		this.packForm = packForm;
+	}
+
+	public String getPrizePerPack() {
+		return prizePerPack;
+	}
+
+	public void setPrizePerPack(String prizePerPack) {
+		this.prizePerPack = prizePerPack;
 	}
 
 	public String getMRP() {
@@ -256,20 +294,6 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
-	public long getCompanyRankingCount() {
-		return companyRankingCount;
-	}
-
-	public boolean equals(Object obj) {
-		ESDrugDocument drugDocument = (ESDrugDocument) obj;
-		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
-	}
-
-	@Override
-	public int hashCode() {
-		return this.drugCode.hashCode();
-	}
-
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -286,8 +310,28 @@ public class ESDrugDocument {
 		this.totalStock = totalStock;
 	}
 
-	public void setCompanyRankingCount(long companyRankingCount) {
-		this.companyRankingCount = companyRankingCount;
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public String getRxRequired() {
+		return rxRequired;
+	}
+
+	public void setRxRequired(String rxRequired) {
+		this.rxRequired = rxRequired;
+	}
+
+	public String getUnsafeWith() {
+		return unsafeWith;
+	}
+
+	public void setUnsafeWith(String unsafeWith) {
+		this.unsafeWith = unsafeWith;
 	}
 
 	@Override
@@ -295,9 +339,11 @@ public class ESDrugDocument {
 		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
 				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", companyRankingCount="
-				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
-				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
-				+ categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
+				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize
+				+ ", packForm=" + packForm + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP + ", duration="
+				+ duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction
+				+ ", categories=" + categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount
+				+ ", inventoryQuantity=" + inventoryQuantity + ", totalStock=" + totalStock + ", specialities="
+				+ specialities + ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
 	}
 }

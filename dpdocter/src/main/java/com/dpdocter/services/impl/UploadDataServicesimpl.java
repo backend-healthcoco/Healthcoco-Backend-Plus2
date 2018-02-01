@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -110,8 +109,6 @@ import common.util.web.PrescriptionUtils;
 @Service
 public class UploadDataServicesimpl implements UploadDateService {
 
-	private static Logger logger = Logger.getLogger(UploadDataServicesimpl.class.getName());
-
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
@@ -153,9 +150,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 	@Autowired
 	private PatientTreamentRepository patientTreamentRepository;
-
-	@Autowired
-	private ESTreatmentServiceRepository esTreatmentServiceRepository;
 
 	@Autowired
 	private DrugRepository drugRepository;
@@ -298,6 +292,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// }
 			//
 			//
+
 			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
 					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
 			for (PatientCollection patientCollection : patientCollections) {
