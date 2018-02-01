@@ -1541,6 +1541,8 @@ public interface PathProxy {
 
 		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
 
+		public static final String DOWNLOAD_PATIENT_CERTIFICATE = "/patient/{certificateId}/download";
+
 	}
 
 	public static final String DOCTOR_LAB_URL = BASE_URL + "/doctorLab";
@@ -1559,6 +1561,7 @@ public interface PathProxy {
 		public static final String UPDATE_IS_SHARE_WITH_PATIENT = "/updateIsShareWithPatient/{reportId}";
 		public static final String UPDATE_IS_SHARE_WITH_DOCTOR = "/updateIsShareWithDoctor/{reportId}";
 		public static final String DELETE_FAVOURITE_DOCTOR = "fevouriteDoctor/{id}/delete";
+		public static final String DELETE_DOCTOR_LAB_REPORTS = "/{reportId}/delete";
 
 	}
 

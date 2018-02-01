@@ -805,6 +805,29 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		return response;
 	}
 
+	@Override
+	public Boolean DiscardDoctorLabReports(String reportId, Boolean isdiscarded) {
+		Boolean response = false;
+		try {
+			DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
+					.findOne(new ObjectId(reportId));
+			if (doctorLabReportCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No report found with reportId");
+			}
+			doctorLabReportCollection.setDiscarded(isdiscarded);
+
+			doctorLabReportCollection.setUpdatedTime(new Date());
+			doctorLabReportRepository.save(doctorLabReportCollection);
+			response = true;
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while discarding  Doctor lab report");
+		}
+		return response;
+	}
+
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;
