@@ -241,14 +241,29 @@ public class DoctorLabApi {
 	@Path(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR, notes = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
-	public Response<Boolean> updateShareWithPatent(@PathParam("id") String id,
-			@QueryParam("discarded") @DefaultValue("false") Boolean discarded) {
+	public Response<Boolean> DiscardFavouriteDoctor(@PathParam("id") String id,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Id Cannot Be Empty");
 		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(doctorLabService.DiscardFavouriteDoctor(id, discarded));
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS, notes = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS)
+	public Response<Boolean> DiscardDoctorLabReports(@PathParam("reportId") String reportId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(reportId)) {
+			logger.warn("Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "report Id Cannot Be Empty");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(doctorLabService.DiscardFavouriteDoctor(reportId, discarded));
 		return response;
 
 	}
