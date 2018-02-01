@@ -206,7 +206,7 @@ public interface PrescriptionServices {
 			Boolean discarded);
 
 
-	Boolean removeDuplicateDrugs();
+	Boolean updateGenericCodes();
 
 	List<Drug> getDrugSubstitutes(String drugId);
 
@@ -221,7 +221,11 @@ public interface PrescriptionServices {
 
 	Prescription deletePrescriptionForWeb(String prescriptionId, String doctorId, String hospitalId, String locationId,
 			String patientId, Boolean discarded);
-	
 
+	Boolean updateDrugRankingOnBasisOfRanking();
+
+	Boolean uploadDrugs();
+
+	Boolean updateDrugInteraction();
 
 }

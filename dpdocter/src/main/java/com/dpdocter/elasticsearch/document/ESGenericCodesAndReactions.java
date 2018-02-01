@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.MultiField;
 
 import com.dpdocter.beans.Code;
 
@@ -17,7 +16,7 @@ public class ESGenericCodesAndReactions {
 	@Id
 	private String id;
 	
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@Field(type = FieldType.Nested)
 	private List<Code> codes;
 	
     @Field(type = FieldType.Date)
