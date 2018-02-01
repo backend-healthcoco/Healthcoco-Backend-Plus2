@@ -93,7 +93,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private DentalWorkRepository dentalWorkRepository;
-	
+
 	@Autowired
 	private DentalLabTestPickupRepository dentalLabTestPickupRepository;
 
@@ -102,46 +102,46 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Autowired
 	private CRNRepository crnRepository;
-	
+
 	@Autowired
 	private RateCardDentalWorkAssociationRepository rateCardDentalWorkAssociationRepository;
-	
+
 	@Autowired
 	private RateCardDoctorAssociationRepository rateCardDoctorAssociationRepository;
-	
+
 	@Autowired
 	private DentalLabDoctorAssociationRepository dentalLabDoctorAssociationRepository;
-	
+
 	@Autowired
 	private CollectionBoyDoctorAssociationRepository collectionBoyDoctorAssociationRepository;
-	
+
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Autowired
 	private CollectionBoyRepository collectionBoyRepository;
-	
+
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
-	
+
 	@Autowired
 	private LocationServices locationServices;
-	
+
 	@Autowired
 	private FileManager fileManager;
-	
+
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
-	
+
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
 	@Override
@@ -234,16 +234,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public Boolean changeLabType(String doctorId, String locationId, LabType labType) {
 		Boolean response = false;
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
-			if(doctorClinicProfileCollection != null)
-			{
+			doctorClinicProfileCollection = doctorClinicProfileRepository
+					.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			if (doctorClinicProfileCollection != null) {
 				doctorClinicProfileCollection.setLabType(labType.getType());
 				response = true;
 			}
@@ -252,24 +252,25 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public DentalLabDoctorAssociation addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request) {
 		DentalLabDoctorAssociation response = null;
 		try {
-			DentalLabDoctorAssociationCollection dentalLabDoctorAssociationCollection= new DentalLabDoctorAssociationCollection();
+			DentalLabDoctorAssociationCollection dentalLabDoctorAssociationCollection = new DentalLabDoctorAssociationCollection();
 			BeanUtil.map(request, dentalLabDoctorAssociationCollection);
 			if (DPDoctorUtils.anyStringEmpty(dentalLabDoctorAssociationCollection.getId())) {
 				dentalLabDoctorAssociationCollection.setCreatedTime(new Date());
-				
+
 			} else {
 				DentalLabDoctorAssociationCollection oldDentalLabDoctorAssociation = dentalLabDoctorAssociationRepository
 						.findOne(dentalLabDoctorAssociationCollection.getId());
 				dentalLabDoctorAssociationCollection.setCreatedBy(oldDentalLabDoctorAssociation.getCreatedBy());
 				dentalLabDoctorAssociationCollection.setCreatedTime(oldDentalLabDoctorAssociation.getCreatedTime());
 			}
-			dentalLabDoctorAssociationCollection = dentalLabDoctorAssociationRepository.save(dentalLabDoctorAssociationCollection);
+			dentalLabDoctorAssociationCollection = dentalLabDoctorAssociationRepository
+					.save(dentalLabDoctorAssociationCollection);
 			response = new DentalLabDoctorAssociation();
 			BeanUtil.map(dentalLabDoctorAssociationCollection, response);
 		} catch (Exception e) {
@@ -279,28 +280,30 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public Boolean addEditDentalLabDoctorAssociation(List<DentalLabDoctorAssociation> request) {
 		Boolean response = null;
 		try {
-			for(DentalLabDoctorAssociation dentalLabDoctorAssociation : request)
-			{
-			DentalLabDoctorAssociationCollection dentalLabDoctorAssociationCollection= new DentalLabDoctorAssociationCollection();
-			BeanUtil.map(dentalLabDoctorAssociation, dentalLabDoctorAssociationCollection);
-			if (DPDoctorUtils.anyStringEmpty(dentalLabDoctorAssociationCollection.getId())) {
-				dentalLabDoctorAssociationCollection.setCreatedTime(new Date());
-				
-			} else {
-				DentalLabDoctorAssociationCollection oldDentalLabDoctorAssociation = dentalLabDoctorAssociationRepository
-						.findOne(dentalLabDoctorAssociationCollection.getId());
-				dentalLabDoctorAssociationCollection.setCreatedBy(oldDentalLabDoctorAssociation.getCreatedBy());
-				dentalLabDoctorAssociationCollection.setCreatedTime(oldDentalLabDoctorAssociation.getCreatedTime());
-			}
-			dentalLabDoctorAssociationCollection = dentalLabDoctorAssociationRepository.save(dentalLabDoctorAssociationCollection);
-			/*response = new DentalLabDoctorAssociation();
-			BeanUtil.map(dentalLabDoctorAssociationCollection, response);*/
+			for (DentalLabDoctorAssociation dentalLabDoctorAssociation : request) {
+				DentalLabDoctorAssociationCollection dentalLabDoctorAssociationCollection = new DentalLabDoctorAssociationCollection();
+				BeanUtil.map(dentalLabDoctorAssociation, dentalLabDoctorAssociationCollection);
+				if (DPDoctorUtils.anyStringEmpty(dentalLabDoctorAssociationCollection.getId())) {
+					dentalLabDoctorAssociationCollection.setCreatedTime(new Date());
+
+				} else {
+					DentalLabDoctorAssociationCollection oldDentalLabDoctorAssociation = dentalLabDoctorAssociationRepository
+							.findOne(dentalLabDoctorAssociationCollection.getId());
+					dentalLabDoctorAssociationCollection.setCreatedBy(oldDentalLabDoctorAssociation.getCreatedBy());
+					dentalLabDoctorAssociationCollection.setCreatedTime(oldDentalLabDoctorAssociation.getCreatedTime());
+				}
+				dentalLabDoctorAssociationCollection = dentalLabDoctorAssociationRepository
+						.save(dentalLabDoctorAssociationCollection);
+				/*
+				 * response = new DentalLabDoctorAssociation();
+				 * BeanUtil.map(dentalLabDoctorAssociationCollection, response);
+				 */
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -312,18 +315,17 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Override
 	@Transactional
-	public List<User> getDentalLabDoctorAssociations(String locationId , String doctorId,int page, int size, String searchTerm) {
+	public List<User> getDentalLabDoctorAssociations(String locationId, String doctorId, int page, int size,
+			String searchTerm) {
 		List<DentalLabDoctorAssociationLookupResponse> customWorks = null;
 		List<User> users = new ArrayList<>();
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) 
-			{
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria = new Criteria().and("dentalLabId").is(new ObjectId(locationId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) 
-			{
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = new Criteria().and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -332,27 +334,27 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"),Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"),Aggregation.match(criteria),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DentalLabDoctorAssociationCollection.class, DentalLabDoctorAssociationLookupResponse.class);
+			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, DentalLabDoctorAssociationCollection.class,
+					DentalLabDoctorAssociationLookupResponse.class);
 			customWorks = aggregationResults.getMappedResults();
-			
-			for(DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : customWorks)
-			{
+
+			for (DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : customWorks) {
 				users.add(doctorAssociationLookupResponse.getDoctor());
 			}
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error getting dental lab doctor association");
@@ -360,17 +362,17 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return users;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<Location> getDentalLabDoctorAssociationsForDoctor(String doctorId,int page, int size, String searchTerm) {
+	public List<Location> getDentalLabDoctorAssociationsForDoctor(String doctorId, int page, int size,
+			String searchTerm) {
 		List<DentalLabDoctorAssociationLookupResponse> customWorks = null;
 		List<Location> locations = new ArrayList<>();
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) 
-			{
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = new Criteria().and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -379,23 +381,24 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"),Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"),Aggregation.match(criteria),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DentalLabDoctorAssociationCollection.class, DentalLabDoctorAssociationLookupResponse.class);
+			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, DentalLabDoctorAssociationCollection.class,
+					DentalLabDoctorAssociationLookupResponse.class);
 			customWorks = aggregationResults.getMappedResults();
-			
-			for(DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : customWorks)
-			{
+
+			for (DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : customWorks) {
 				locations.add(doctorAssociationLookupResponse.getDentalLab());
 			}
 		} catch (Exception e) {
@@ -405,11 +408,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return locations;
 	}
-	
+
 	@Override
 	@Transactional
-	public DentalLabPickup addEditDentalLabPickupRequest(DentalLabPickupRequest request)
-	{
+	public DentalLabPickup addEditDentalLabPickupRequest(DentalLabPickupRequest request) {
 		DentalLabPickup response = null;
 		DentalLabPickupCollection dentalLabPickupCollection = null;
 		String requestId = null;
@@ -418,13 +420,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 		Integer count = 1;
 
 		try {
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getDentalLabId())); 
-			if(locationCollection != null)
-			{
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getDentalLabId()));
+			if (locationCollection != null) {
 				String locationName = locationCollection.getLocationName();
-				
+
 				for (String firstChar : locationName.split(" ")) {
-					locationInitials+= firstChar.charAt(0);
+					locationInitials += firstChar.charAt(0);
 				}
 			}
 			if (request.getId() != null) {
@@ -442,9 +443,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection = new DentalLabPickupCollection();
 				BeanUtil.map(request, dentalLabPickupCollection);
 				dentalLabPickupCollection.setRequestId(requestId);
-				serialNo = dentalLabTestPickupRepository.findTodaysCompletedReport(new ObjectId(request.getDentalLabId()), DPDoctorUtils.getFormTime(new Date()), DPDoctorUtils.getToTime(new Date()));
+				serialNo = dentalLabTestPickupRepository.findTodaysCompletedReport(
+						new ObjectId(request.getDentalLabId()), DPDoctorUtils.getFormTime(new Date()),
+						DPDoctorUtils.getToTime(new Date()));
 				for (DentalWorksSample dentalWorksSample : request.getDentalWorksSamples()) {
-					String uniqueWorkId = locationInitials + getInitials(request.getPatientName()) + currentDateGenerator() + DPDoctorUtils.getPrefixedNumber(serialNo + 1) + DPDoctorUtils.getPrefixedNumber(count);
+					String uniqueWorkId = locationInitials + getInitials(request.getPatientName())
+							+ currentDateGenerator() + DPDoctorUtils.getPrefixedNumber(serialNo + 1)
+							+ DPDoctorUtils.getPrefixedNumber(count);
 					dentalWorksSample.setUniqueWorkId(uniqueWorkId);
 					count++;
 				}
@@ -458,7 +463,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 			}
 			CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-					.getByLocationDoctorIsActive(new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()), true);
+					.getByLocationDoctorIsActive(new ObjectId(request.getDentalLabId()),
+							new ObjectId(request.getDoctorId()), true);
 			if (collectionBoyDoctorAssociationCollection != null) {
 				dentalLabPickupCollection
 						.setCollectionBoyId(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
@@ -475,9 +481,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
-	
-	
-	
+
 	private String saveCRN(String locationId, String requestId, Integer length) {
 		CRNCollection crnCollection = new CRNCollection();
 		String crnNumber = DPDoctorUtils.randomString(length);
@@ -489,8 +493,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		crnCollection = crnRepository.save(crnCollection);
 		return crnNumber;
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public Boolean addEditRateCardDentalWorkAssociation(List<RateCardDentalWorkAssociation> request) {
@@ -525,27 +528,26 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Override
 	@Transactional
 	public List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm,
-			 String dentalLabId,String doctorId, Boolean discarded) {
+			String dentalLabId, String doctorId, Boolean discarded) {
 		List<RateCardDentalWorkAssociation> rateCardTests = null;
 
 		try {
 			Aggregation aggregation = null;
 
 			Criteria criteria = new Criteria();
-			RateCardDoctorAssociationCollection rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByLocationDoctor(new ObjectId(dentalLabId), new ObjectId(doctorId));
-			if(rateCardDoctorAssociationCollection == null)
-			{
+			RateCardDoctorAssociationCollection rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository
+					.getByLocationDoctor(new ObjectId(dentalLabId), new ObjectId(doctorId));
+			if (rateCardDoctorAssociationCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Association not found");
-			}
-			else {
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("dentalWork.workName").regex("^" + searchTerm, "i"),
-						new Criteria("dentalWork.workName").regex("^" + searchTerm));
-			}
-			criteria.and("rateCardId").is(rateCardDoctorAssociationCollection.getRateCardId());
-			criteria.and("isAvailable").is(true);
-		//	criteria.and("discarded").is(discarded);
-			
+			} else {
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					criteria = criteria.orOperator(new Criteria("dentalWork.workName").regex("^" + searchTerm, "i"),
+							new Criteria("dentalWork.workName").regex("^" + searchTerm));
+				}
+				criteria.and("rateCardId").is(rateCardDoctorAssociationCollection.getRateCardId());
+				criteria.and("isAvailable").is(true);
+				// criteria.and("discarded").is(discarded);
+
 			}
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
@@ -565,8 +567,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			}
-			AggregationResults<RateCardDentalWorkAssociation> aggregationResults = mongoTemplate.aggregate(
-					aggregation, RateCardDentalWorkAssociationCollection.class, RateCardDentalWorkAssociation.class);
+			AggregationResults<RateCardDentalWorkAssociation> aggregationResults = mongoTemplate.aggregate(aggregation,
+					RateCardDentalWorkAssociationCollection.class, RateCardDentalWorkAssociation.class);
 			rateCardTests = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -575,7 +577,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return rateCardTests;
 	}
-	
+
 	@Override
 	@Transactional
 	public RateCardDoctorAssociation addEditRateCardDoctorAssociation(RateCardDoctorAssociation request) {
@@ -583,8 +585,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 		ObjectId oldId = null;
 		RateCardDoctorAssociationCollection rateCardDoctorAssociationCollection = null;
 		try {
-			
-			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.getByLocationDoctor(new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()));
+
+			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository
+					.getByLocationDoctor(new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()));
 			if (rateCardDoctorAssociationCollection == null) {
 				rateCardDoctorAssociationCollection = new RateCardDoctorAssociationCollection();
 			} else {
@@ -594,21 +597,22 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			BeanUtil.map(request, rateCardDoctorAssociationCollection);
 			rateCardDoctorAssociationCollection.setId(oldId);
-			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository.save(rateCardDoctorAssociationCollection);
+			rateCardDoctorAssociationCollection = rateCardDoctorAssociationRepository
+					.save(rateCardDoctorAssociationCollection);
 			response = new RateCardDoctorAssociation();
 			BeanUtil.map(rateCardDoctorAssociationCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn(e);
-			throw new BusinessException(ServiceError.InvalidInput , "Invalid Input" + e);
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input" + e);
 		}
 		return response;
 	}
 
 	@Override
 	@Transactional
-	public List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm,
-			String doctorId, String dentalLabId, Boolean discarded) {
+	public List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm, String doctorId,
+			String dentalLabId, Boolean discarded) {
 		List<RateCardDoctorAssociation> rateCardTests = null;
 
 		try {
@@ -626,7 +630,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria.and("dentalLabId").is(new ObjectId(dentalLabId));
 			}
 			criteria.and("discarded").is(discarded);
-			
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
@@ -642,12 +645,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 			} else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_cl", "rateCardId", "_id", "rateCard"),
-						Aggregation.unwind("rateCard"),Aggregation.match(criteria),
+						Aggregation.unwind("rateCard"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			}
-			AggregationResults<RateCardDoctorAssociation> aggregationResults = mongoTemplate.aggregate(
-					aggregation, RateCardDoctorAssociationCollection.class, RateCardDoctorAssociation.class);
+			AggregationResults<RateCardDoctorAssociation> aggregationResults = mongoTemplate.aggregate(aggregation,
+					RateCardDoctorAssociationCollection.class, RateCardDoctorAssociation.class);
 			rateCardTests = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -656,7 +659,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return rateCardTests;
 	}
-	
+
 	@Override
 	@Transactional
 	public Boolean addEditCollectionBoyDoctorAssociation(List<CollectionBoyDoctorAssociation> request) {
@@ -665,12 +668,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 		try {
 			for (CollectionBoyDoctorAssociation collectionBoyDoctorAssociation : request) {
 				if (DPDoctorUtils.anyStringEmpty(collectionBoyDoctorAssociation.getCollectionBoyId(),
-						collectionBoyDoctorAssociation.getDentalLabId(), collectionBoyDoctorAssociation.getDoctorId())) {
+						collectionBoyDoctorAssociation.getDentalLabId(),
+						collectionBoyDoctorAssociation.getDoctorId())) {
 					throw new BusinessException(ServiceError.InvalidInput,
 							"Invalid Input - Doctor & Dental Lab ID cannot be null");
 				}
-				collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-						.getByLocationDoctor(new ObjectId(collectionBoyDoctorAssociation.getDentalLabId()), new ObjectId(collectionBoyDoctorAssociation.getDoctorId()));
+				collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository.getByLocationDoctor(
+						new ObjectId(collectionBoyDoctorAssociation.getDentalLabId()),
+						new ObjectId(collectionBoyDoctorAssociation.getDoctorId()));
 				if (collectionBoyDoctorAssociationCollection == null) {
 					collectionBoyDoctorAssociationCollection = new CollectionBoyDoctorAssociationCollection();
 					BeanUtil.map(collectionBoyDoctorAssociation, collectionBoyDoctorAssociationCollection);
@@ -699,28 +704,34 @@ public class DentalLabServiceImpl implements DentalLabService {
 				collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 						.save(collectionBoyDoctorAssociationCollection);
 			}
-			
-			response =true;
-			
-			/*Aggregation aggregation = null;
-			Criteria criteria = new Criteria();*/
-			/*if (!DPDoctorUtils.anyStringEmpty(request.get(0).getParentLabId())) {
-				criteria.and("parentLabId").is(new ObjectId(collectionBoyDoctorAssociationCollection.get(0).getParentLabId()));
-			}
-			criteria.and("isActive").is(true);
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-					Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<CollectionBoyLabAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
-					aggregation, CollectionBoyLabAssociationCollection.class,
-					CollectionBoyLabAssociationLookupResponse.class);
-			lookupResponses = aggregationResults.getMappedResults();
-			if (lookupResponses != null) {
-				locations = new ArrayList<Location>();
-				for (CollectionBoyLabAssociationLookupResponse lookupResponse : lookupResponses) {
-					locations.add(lookupResponse.getLocation());
-				}
-			}*/
+
+			response = true;
+
+			/*
+			 * Aggregation aggregation = null; Criteria criteria = new
+			 * Criteria();
+			 */
+			/*
+			 * if
+			 * (!DPDoctorUtils.anyStringEmpty(request.get(0).getParentLabId()))
+			 * { criteria.and("parentLabId").is(new
+			 * ObjectId(collectionBoyDoctorAssociationCollection.get(0).
+			 * getParentLabId())); } criteria.and("isActive").is(true);
+			 * aggregation =
+			 * Aggregation.newAggregation(Aggregation.match(criteria),
+			 * Aggregation.lookup("location_cl", "daughterLabId", "_id",
+			 * "location"), Aggregation.unwind("location"), Aggregation.sort(new
+			 * Sort(Sort.Direction.DESC, "updatedTime")));
+			 * AggregationResults<CollectionBoyLabAssociationLookupResponse>
+			 * aggregationResults = mongoTemplate.aggregate( aggregation,
+			 * CollectionBoyLabAssociationCollection.class,
+			 * CollectionBoyLabAssociationLookupResponse.class); lookupResponses
+			 * = aggregationResults.getMappedResults(); if (lookupResponses !=
+			 * null) { locations = new ArrayList<Location>(); for
+			 * (CollectionBoyLabAssociationLookupResponse lookupResponse :
+			 * lookupResponses) { locations.add(lookupResponse.getLocation()); }
+			 * }
+			 */
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -730,12 +741,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 
-	
-	
 	@Override
 	@Transactional
-	public List<CBDoctorAssociationLookupResponse> getCBAssociatedDoctors(String doctorId, String dentalLabId, String collectionBoyId,
-			int size, int page) {
+	public List<CBDoctorAssociationLookupResponse> getCBAssociatedDoctors(String doctorId, String dentalLabId,
+			String collectionBoyId, int size, int page) {
 		List<User> users = null;
 		List<CBDoctorAssociationLookupResponse> lookupResponses = null;
 		try {
@@ -754,24 +763,24 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"),Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),  Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"),Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-			AggregationResults<CBDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					CollectionBoyDoctorAssociationCollection.class, CBDoctorAssociationLookupResponse.class);
+			AggregationResults<CBDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, CollectionBoyDoctorAssociationCollection.class,
+					CBDoctorAssociationLookupResponse.class);
 			lookupResponses = aggregationResults.getMappedResults();
-			/*if (lookupResponses != null) {
-				users = new ArrayList<User>();
-				for (CBDoctorAssociationLookupResponse lookupResponse : lookupResponses) {
-					users.add(lookupResponse.getDoctor());
-				}
-			}*/
+			/*
+			 * if (lookupResponses != null) { users = new ArrayList<User>(); for
+			 * (CBDoctorAssociationLookupResponse lookupResponse :
+			 * lookupResponses) { users.add(lookupResponse.getDoctor()); } }
+			 */
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -781,12 +790,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return lookupResponses;
 	}
 
-	
 	@Override
 	@Transactional
-	public List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from,
-			Long to, String searchTerm, String status, Boolean isAcceptedAtLab , Boolean isCompleted, Boolean isCollectedAtDoctor, int size, int page) {
-		
+	public List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
+			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor,
+			int size, int page) {
+
 		List<DentalLabPickupResponse> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -799,11 +808,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
-			
+
 			if (isAcceptedAtLab != null) {
 				criteria.and("isAcceptedAtLab").is(isAcceptedAtLab);
 			}
-			
+
 			if (isCollectedAtDoctor != null) {
 				criteria.and("isCollectedAtDoctor").is(isCollectedAtDoctor);
 			}
@@ -811,18 +820,19 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (isCompleted != null) {
 				criteria.and("isCompleted").is(isCompleted);
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
 				criteria.and("status").is(status);
 			}
-			
-			/*if (from != 0 && to != 0) {
-				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
-			} else if (from != 0) {
-				criteria.and("updatedTime").gte(new Date(from));
-			} else if (to != 0) {
-				criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to)));
-			}*/
+
+			/*
+			 * if (from != 0 && to != 0) { criteria.and("updatedTime").gte(new
+			 * Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to))); } else
+			 * if (from != 0) { criteria.and("updatedTime").gte(new Date(from));
+			 * } else if (to != 0) {
+			 * criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new
+			 * Date(to))); }
+			 */
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
@@ -830,46 +840,42 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm));
 			}
-			
+
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"),
-						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
-						 Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"),
-						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
-						 Aggregation.match(criteria), 
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			
-			//System.out.println(aggregation);
+								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			// System.out.println(aggregation);
 			AggregationResults<DentalLabPickupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabPickupCollection.class, DentalLabPickupResponse.class);
 			response = aggregationResults.getMappedResults();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
 	}
-	
-	private String currentDateGenerator()
-	{
-		
+
+	private String currentDateGenerator() {
+
 		String currentDate = null;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -877,48 +883,45 @@ public class DentalLabServiceImpl implements DentalLabService {
 			int currentDay = localCalendar.get(Calendar.DATE);
 			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 			int currentYear = localCalendar.get(Calendar.YEAR);
-			
-			currentDate = DPDoctorUtils.getPrefixedNumber(currentDay)
-					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100);
+
+			currentDate = DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
+					+ DPDoctorUtils.getPrefixedNumber(currentYear % 100);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return currentDate;
 	}
-	
+
 	private String getInitials(String inputString) {
 		String response = "";
 		for (String firstChar : inputString.split(" ")) {
-			response+= firstChar.charAt(0);
+			response += firstChar.charAt(0);
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public Boolean changeStatus(String dentalLabPickupId, String status ,Boolean isCollectedAtDoctor ,Boolean isCompleted , Boolean isAcceptedAtLab) {
+	public Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtDoctor,
+			Boolean isCompleted, Boolean isAcceptedAtLab) {
 		DentalLabPickupCollection dentalLabPickupCollection = null;
 		Boolean response = null;
 
 		try {
 			dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(dentalLabPickupId));
 			if (dentalLabPickupCollection != null) {
-				if(status != null)
-				{
+				if (status != null) {
 					dentalLabPickupCollection.setStatus(status);
 				}
-				if(isCollectedAtDoctor != null)
-				{
+				if (isCollectedAtDoctor != null) {
 					dentalLabPickupCollection.setIsCollectedAtDoctor(isCollectedAtDoctor);
 				}
-				if(isCompleted != null)
-				{
+				if (isCompleted != null) {
 					dentalLabPickupCollection.setIsCompleted(isCompleted);
 				}
-				if(isAcceptedAtLab != null)
-				{
+				if (isAcceptedAtLab != null) {
 					dentalLabPickupCollection.setIsAcceptedAtLab(isAcceptedAtLab);
 				}
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
@@ -932,7 +935,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public ImageURLResponse addDentalImage(FormDataBodyPart file) {
@@ -946,8 +949,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 				if (imageURLResponse != null) {
-					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
-					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+					imageURLResponse.setImageUrl(imageURLResponse.getImageUrl());
+					imageURLResponse.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 				}
 			}
 		} catch (Exception e) {
@@ -956,7 +959,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return imageURLResponse;
 	}
-	
+
 	@Override
 	@Transactional
 	public ImageURLResponse addDentalImageBase64(FileDetails fileDetails) {
@@ -969,81 +972,74 @@ public class DentalLabServiceImpl implements DentalLabService {
 				// String recordLabel = fileDetails.getFileName();
 				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
 				String path = "dental-images";
-				String recordPath = path + File.separator + fileDetails.getFileName() + System.currentTimeMillis() + "." + fileDetails.getFileExtension();
+				String recordPath = path + File.separator + fileDetails.getFileName() + System.currentTimeMillis() + "."
+						+ fileDetails.getFileExtension();
 				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, recordPath, true);
 				if (imageURLResponse != null) {
 					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
 					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
 				}
 			}
-	
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return imageURLResponse;
 	}
-	
+
 	@Override
 	@Transactional
-	public Boolean updateDentalStageForDoctor(UpdateDentalStagingRequest request)
-	{
+	public Boolean updateDentalStageForDoctor(UpdateDentalStagingRequest request) {
 		Boolean response = false;
-		
+
 		try {
-			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getRequestId()));
-			if(dentalLabPickupCollection != null)
-			{
+			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
+					.findOne(new ObjectId(request.getRequestId()));
+			if (dentalLabPickupCollection != null) {
 				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
-				for(DentalWorksSample dentalWorksSample : dentalWorksSamples)
-				{
-					if(dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId()))
-					{
+				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
+					if (dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId())) {
 						dentalWorksSample.setDentalStagesForDoctor(request.getDentalStages());
 					}
 				}
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
-				response =true;
+				response = true;
 			}
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-		} 
+		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public Boolean updateDentalStageForLab(UpdateDentalStagingRequest request)
-	{
+	public Boolean updateDentalStageForLab(UpdateDentalStagingRequest request) {
 		Boolean response = false;
-		
+
 		try {
-			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getRequestId()));
-			if(dentalLabPickupCollection != null)
-			{
+			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
+					.findOne(new ObjectId(request.getRequestId()));
+			if (dentalLabPickupCollection != null) {
 				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
-				for(DentalWorksSample dentalWorksSample : dentalWorksSamples)
-				{
-					if(dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId()))
-					{
+				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
+					if (dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId())) {
 						dentalWorksSample.setDentalStagesForLab(request.getDentalStages());
 					}
 				}
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
-				response =true;
+				response = true;
 			}
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-		} 
+		}
 		return response;
 	}
-
-
 
 }
