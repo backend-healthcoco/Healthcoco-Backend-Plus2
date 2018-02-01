@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -56,9 +57,16 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private String packSize;
+
 	@Field
 	private long companyRankingCount = 0;
 
+	@Field
+	private String packForm;
+	
+	@Field
+	private String prizePerPack;
+	
 	@Field
 	private String MRP;
 
@@ -83,6 +91,18 @@ public class DrugCollection extends GenericCollection {
 	@Field
 	private Long inventoryQuantity;
 
+	@Field
+	private List<String> specialities;
+	 
+	@Field
+	private String rxRequired;
+	
+	@Field
+	private String unsafeWith;
+	
+	@Field
+	private Long totalStock;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -254,6 +274,22 @@ public class DrugCollection extends GenericCollection {
 		this.companyRankingCount = companyRankingCount;
 	}
 
+	public String getPackForm() {
+		return packForm;
+	}
+
+	public void setPackForm(String packForm) {
+		this.packForm = packForm;
+	}
+
+	public String getPrizePerPack() {
+		return prizePerPack;
+	}
+
+	public void setPrizePerPack(String prizePerPack) {
+		this.prizePerPack = prizePerPack;
+	}
+
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -262,14 +298,49 @@ public class DrugCollection extends GenericCollection {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public String getRxRequired() {
+		return rxRequired;
+	}
+
+	public void setRxRequired(String rxRequired) {
+		this.rxRequired = rxRequired;
+	}
+
+	public String getUnsafeWith() {
+		return unsafeWith;
+	}
+
+	public void setUnsafeWith(String unsafeWith) {
+		this.unsafeWith = unsafeWith;
+	}
+
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId
 				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
-				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
-				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
-				+ direction + ", categories=" + categories + ", rankingCount=" + rankingCount + "]";
+				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize
+				+ ", companyRankingCount=" + companyRankingCount + ", packForm=" + packForm + ", prizePerPack="
+				+ prizePerPack + ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
+				+ dosageTime + ", direction=" + direction + ", categories=" + categories + ", rankingCount="
+				+ rankingCount + ", inventoryQuantity=" + inventoryQuantity + ", specialities=" + specialities
+				+ ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + ", totalStock=" + totalStock + "]";
 	}
 
 }

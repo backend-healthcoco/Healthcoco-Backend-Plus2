@@ -1289,6 +1289,16 @@ public class PrescriptionApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES, notes = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES)
+	public Response<Boolean> updateGenericCodes() {
+		
+		Boolean removeDuplicateDrugs = prescriptionServices.updateGenericCodes();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(removeDuplicateDrugs);
+		return response;
+	}
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_DRUG_SUBSTITUTES)
 	@GET
@@ -1319,6 +1329,39 @@ public class PrescriptionApi {
 		Prescription prescriptionDeleteResponse = prescriptionServices.deletePrescriptionForWeb(prescriptionId, doctorId, hospitalId, locationId, patientId, discarded);
 		Response<Prescription> response = new Response<Prescription>();
 		response.setData(prescriptionDeleteResponse);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING, notes = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING)
+	public Response<Boolean> updateDrugRankingOnBasisOfRanking() {
+		
+		Boolean removeDuplicateDrugs = prescriptionServices.updateDrugRankingOnBasisOfRanking();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(removeDuplicateDrugs);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.UPLOAD_DRUGS)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.UPLOAD_DRUGS, notes = PathProxy.PrescriptionUrls.UPLOAD_DRUGS)
+	public Response<Boolean> uploadDrugs() {
+		
+		Boolean removeDuplicateDrugs = prescriptionServices.uploadDrugs();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(removeDuplicateDrugs);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION, notes = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION)
+	public Response<Boolean> updateDrugInteraction() {
+		
+		Boolean removeDuplicateDrugs = prescriptionServices.updateDrugInteraction();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(removeDuplicateDrugs);
 		return response;
 	}
 }
