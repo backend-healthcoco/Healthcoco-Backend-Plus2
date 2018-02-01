@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -65,7 +66,7 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private String prizePerPack;
-
+	
 	@Field
 	private String MRP;
 
@@ -101,7 +102,10 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private Long inventoryQuantity;
-
+	
+	@Field
+	private Long totalStock;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -143,6 +147,14 @@ public class DrugCollection extends GenericCollection {
 
 	public void setStrength(Strength strength) {
 		this.strength = strength;
+	}
+
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
 	}
 
 	public ObjectId getDoctorId() {
@@ -193,12 +205,36 @@ public class DrugCollection extends GenericCollection {
 		this.companyName = companyName;
 	}
 
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+
 	public String getPackSize() {
 		return packSize;
 	}
 
 	public void setPackSize(String packSize) {
 		this.packSize = packSize;
+	}
+
+	public String getPackForm() {
+		return packForm;
+	}
+
+	public void setPackForm(String packForm) {
+		this.packForm = packForm;
+	}
+
+	public String getPrizePerPack() {
+		return prizePerPack;
+	}
+
+	public void setPrizePerPack(String prizePerPack) {
+		this.prizePerPack = prizePerPack;
 	}
 
 	public String getMRP() {
@@ -249,14 +285,6 @@ public class DrugCollection extends GenericCollection {
 		this.categories = categories;
 	}
 
-	public List<GenericCode> getGenericNames() {
-		return genericNames;
-	}
-
-	public void setGenericNames(List<GenericCode> genericNames) {
-		this.genericNames = genericNames;
-	}
-
 	public long getRankingCount() {
 		return rankingCount;
 	}
@@ -281,22 +309,6 @@ public class DrugCollection extends GenericCollection {
 		this.specialities = specialities;
 	}
 
-	public String getPackForm() {
-		return packForm;
-	}
-
-	public void setPackForm(String packForm) {
-		this.packForm = packForm;
-	}
-
-	public String getPrizePerPack() {
-		return prizePerPack;
-	}
-
-	public void setPrizePerPack(String prizePerPack) {
-		this.prizePerPack = prizePerPack;
-	}
-
 	public String getRxRequired() {
 		return rxRequired;
 	}
@@ -313,14 +325,6 @@ public class DrugCollection extends GenericCollection {
 		this.unsafeWith = unsafeWith;
 	}
 
-	public long getCompanyRankingCount() {
-		return companyRankingCount;
-	}
-
-	public void setCompanyRankingCount(long companyRankingCount) {
-		this.companyRankingCount = companyRankingCount;
-	}
-
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -329,15 +333,26 @@ public class DrugCollection extends GenericCollection {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId
 				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
-				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", packForm="
-				+ packForm + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP + ", duration=" + duration + ", dosage="
-				+ dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
-				+ ", rankingCount=" + rankingCount + ", gcStrengthIds=" + gcStrengthIds + ", specialities="
-				+ specialities + ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
+				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", companyRankingCount="
+				+ companyRankingCount + ", packSize=" + packSize + ", packForm=" + packForm + ", prizePerPack="
+				+ prizePerPack + ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
+				+ dosageTime + ", direction=" + direction + ", categories=" + categories + ", rankingCount="
+				+ rankingCount + ", gcStrengthIds=" + gcStrengthIds + ", specialities=" + specialities + ", rxRequired="
+				+ rxRequired + ", unsafeWith=" + unsafeWith + ", inventoryQuantity=" + inventoryQuantity
+				+ ", totalStock=" + totalStock + "]";
 	}
+
 }

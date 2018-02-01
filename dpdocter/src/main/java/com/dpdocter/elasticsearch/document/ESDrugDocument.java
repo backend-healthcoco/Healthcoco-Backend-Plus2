@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
@@ -70,9 +71,9 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Nested)
 	private Duration duration;
 
-	@Field(type = FieldType.String)
+    @Field(type = FieldType.String)
 	private String dosage;
-
+	
 	@MultiField(mainField = @Field(type = FieldType.Long))
 	private List<Long> dosageTime;
 
@@ -88,15 +89,6 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private long rankingCount = 0;
 
-	@Field
-	private List<String> specialities;
-
-	@Field
-	private String rxRequired;
-
-	@Field
-	private String unsafeWith;
-
 	@Field(type = FieldType.Long)
 	private Long inventoryQuantity;
 
@@ -105,6 +97,25 @@ public class ESDrugDocument {
 	
 	@Field(type = FieldType.Long)
 	private Long retailPrice;
+
+    @MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialities;
+	 
+    @Field(type = FieldType.String)
+	private String rxRequired;
+	
+    @Field(type = FieldType.String)
+	private String unsafeWith;
+	
+	@Override
+	public int hashCode() {
+		return this.drugCode.hashCode();
+	}
+
+	public boolean equals(Object obj) {
+		ESDrugDocument drugDocument = (ESDrugDocument) obj;
+		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
+	}
 
 	public String getId() {
 		return id;
@@ -136,6 +147,22 @@ public class ESDrugDocument {
 
 	public void setDrugCode(String drugCode) {
 		this.drugCode = drugCode;
+	}
+
+	public String getDrugTypeId() {
+		return drugTypeId;
+	}
+
+	public void setDrugTypeId(String drugTypeId) {
+		this.drugTypeId = drugTypeId;
+	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
 	}
 
 	public String getDoctorId() {
@@ -178,30 +205,6 @@ public class ESDrugDocument {
 		this.updatedTime = updatedTime;
 	}
 
-	public String getDrugTypeId() {
-		return drugTypeId;
-	}
-
-	public void setDrugTypeId(String drugTypeId) {
-		this.drugTypeId = drugTypeId;
-	}
-
-	public String getDrugType() {
-		return drugType;
-	}
-
-	public void setDrugType(String drugType) {
-		this.drugType = drugType;
-	}
-
-	public String getCompanyName() {
-		return companyName;
-	}
-
-	public void setCompanyName(String companyName) {
-		this.companyName = companyName;
-	}
-
 	public String getPackSize() {
 		return packSize;
 	}
@@ -210,12 +213,44 @@ public class ESDrugDocument {
 		this.packSize = packSize;
 	}
 
+	public String getPackForm() {
+		return packForm;
+	}
+
+	public void setPackForm(String packForm) {
+		this.packForm = packForm;
+	}
+
+	public String getPrizePerPack() {
+		return prizePerPack;
+	}
+
+	public void setPrizePerPack(String prizePerPack) {
+		this.prizePerPack = prizePerPack;
+	}
+
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+
 	public String getMRP() {
 		return MRP;
 	}
 
 	public void setMRP(String mRP) {
 		MRP = mRP;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
 	public Duration getDuration() {
@@ -274,37 +309,6 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
-	public String getPackForm() {
-		return packForm;
-	}
-
-	public void setPackForm(String packForm) {
-		this.packForm = packForm;
-	}
-
-	public String getPrizePerPack() {
-		return prizePerPack;
-	}
-
-	public long getCompanyRankingCount() {
-		return companyRankingCount;
-	}
-
-	public void setPrizePerPack(String prizePerPack) {
-		this.prizePerPack = prizePerPack;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		ESDrugDocument drugDocument = (ESDrugDocument) obj;
-		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
-	}
-
-	@Override
-	public int hashCode() {
-		return this.drugCode.hashCode();
-	}
-
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -321,19 +325,12 @@ public class ESDrugDocument {
 		this.totalStock = totalStock;
 	}
 
-	public void setCompanyRankingCount(long companyRankingCount) {
-		this.companyRankingCount = companyRankingCount;
+	public Long getRetailPrice() {
+		return retailPrice;
 	}
 
-	@Override
-	public String toString() {
-		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
-				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", companyRankingCount="
-				+ companyRankingCount + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
-				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
-				+ categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
+	public void setRetailPrice(Long retailPrice) {
+		this.retailPrice = retailPrice;
 	}
 
 	public List<String> getSpecialities() {
@@ -360,14 +357,17 @@ public class ESDrugDocument {
 		this.unsafeWith = unsafeWith;
 	}
 
-	public Long getRetailPrice() {
-		return retailPrice;
+	@Override
+	public String toString() {
+		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
+				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", packSize=" + packSize + ", packForm=" + packForm
+				+ ", prizePerPack=" + prizePerPack + ", companyRankingCount=" + companyRankingCount + ", MRP=" + MRP
+				+ ", companyName=" + companyName + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
+				+ dosageTime + ", direction=" + direction + ", categories=" + categories + ", genericNames="
+				+ genericNames + ", rankingCount=" + rankingCount + ", inventoryQuantity=" + inventoryQuantity
+				+ ", totalStock=" + totalStock + ", retailPrice=" + retailPrice + ", specialities=" + specialities
+				+ ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
 	}
-
-	public void setRetailPrice(Long retailPrice) {
-		this.retailPrice = retailPrice;
-	}
-
-	
-	
 }

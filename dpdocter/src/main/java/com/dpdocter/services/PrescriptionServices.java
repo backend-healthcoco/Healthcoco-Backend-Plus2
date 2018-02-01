@@ -225,4 +225,5 @@ public interface PrescriptionServices {
 
 	Boolean uploadDrugs();
 
+	Boolean updateDrugInteraction();
 }

@@ -33,13 +33,13 @@ import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.AdmitCardCollection;
@@ -67,7 +67,6 @@ import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
-import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.QuantityEnum;
@@ -239,11 +238,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 			ObjectId doctorObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
-
-			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
-					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
-			for (PatientCollection patientCollection : patientCollections) {
-
+			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId, new Date(Long.parseLong("0")), 
+					new Sort(Direction.ASC, "createdTime"));
+			for(PatientCollection patientCollection : patientCollections) {
 				ESPatientDocument document = esPatientRepository.findOne(patientCollection.getId().toString());
 				if (document != null)
 					esPatientRepository.delete(document);
