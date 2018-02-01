@@ -473,9 +473,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"!$P{personalHistoryAlcohol}.equals( null ) && ! $P{personalHistoryAlcohol} .isEmpty() || !$P{personalHistoryTobacco}.equals( null ) && ! $P{personalHistoryTobacco} .isEmpty()"
-						+ "|| !$P{personalHistorySmoking}.equals( null ) && ! $P{personalHistorySmoking} .isEmpty() || !$P{personalHistoryDiet}.equals( null ) && ! $P{personalHistoryDiet} .isEmpty()"
-						+ "|| !$P{personalHistoryOccupation}.equals( null ) && ! $P{personalHistoryOccupation} .isEmpty()"));
+				"(!$P{personalHistoryAlcohol}.equals( null ) && ! $P{personalHistoryAlcohol} .isEmpty()) || (!$P{personalHistoryTobacco}.equals( null ) && ! $P{personalHistoryTobacco} .isEmpty())"
+						+ "|| (!$P{personalHistorySmoking}.equals( null ) && ! $P{personalHistorySmoking} .isEmpty()) || (!$P{personalHistoryDiet}.equals( null ) && ! $P{personalHistoryDiet} .isEmpty())"
+						+ "|| (!$P{personalHistoryOccupation}.equals( null ) && ! $P{personalHistoryOccupation} .isEmpty())"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{PersonalHistoryTitle}"));
 		jrDesignTextField.setX(1);
@@ -490,9 +490,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryAlcohol}", "$P{personalHistoryAlcohol}", fieldWidth,
-				false, 0,false);
+		
 		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryTobacco}", "$P{personalHistoryTobacco}", fieldWidth,
+				false, 0,false);
+		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryAlcohol}", "$P{personalHistoryAlcohol}", fieldWidth,
 				false, 0,false);
 		addItems(jasperDesign, columnWidth, "$P{PersonalHistorySmoking}", "$P{personalHistorySmoking}", fieldWidth,
 				false, 0,false);
@@ -1002,9 +1003,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty() || !$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty()"
-						+ "|| !$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty() || !$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty()"
-						+ "|| !$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty()"));
+				"(!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty()) || (!$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty())"
+						+ "|| (!$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty()) || (!$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty())"
+						+ "|| (!$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty())"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{PersonalHistoryTitle}"));
 		jrDesignTextField.setX(1);
@@ -1018,9 +1019,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryAlcohol}", "$F{personalHistoryAlcohol}", fieldWidth,
-				false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryTobacco}", "$F{personalHistoryTobacco}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryAlcohol}", "$F{personalHistoryAlcohol}", fieldWidth,
 				false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PersonalHistorySmoking}", "$F{personalHistorySmoking}", fieldWidth,
 				false, 0, false);
