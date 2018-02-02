@@ -1592,6 +1592,10 @@ public interface PathProxy {
 		public static final String ADD_DENTAL_IMAGE_BASE_64 = "/addDentalImageBase64";
 		public static final String UPDATE_DENTAL_STAGES_FOR_LAB = "/updateDentalStagesForLab";
 		public static final String UPDATE_DENTAL_STAGES_FOR_DOCTOR = "/updateDentalStagesForDoctor";
+		public static final String GET_RATE_CARD_WORKS_BY_RATE_CARD = "/getRateCardWorkByRateCard";
+		public static final String CANCEL_REQUEST = "/cancelRequest";
+		public static final String UPDATE_ETA = "/updateETA";
+		
 	}
 
 	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";

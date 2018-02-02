@@ -37,6 +37,7 @@ import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.request.UpdateDentalStagingRequest;
+import com.dpdocter.request.UpdateETARequest;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.ImageURLResponse;
@@ -373,5 +374,45 @@ public class DentalLabAPI {
 		return response;
 	}
 
+	
+	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS_BY_RATE_CARD)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS_BY_RATE_CARD, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
+	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,@QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm , @QueryParam("rateCardId") String rateCardId,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (rateCardId== null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
+		response.setDataList(dentalLabService.getRateCardWorks(page, size, searchTerm, rateCardId, discarded));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.CANCEL_REQUEST)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.CANCEL_REQUEST, notes = PathProxy.DentalLabUrls.CANCEL_REQUEST)
+	public Response<Boolean> changeStatus(@QueryParam("requestId") String requestId,
+			@QueryParam("reasonForCancel") String reasonForCancel , @QueryParam("cancelledBy") String cancelledBy) {
+		if (requestId == null) {
+		//	logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.cancelRequest(requestId, reasonForCancel, cancelledBy));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.UPDATE_ETA)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_ETA, notes = PathProxy.DentalLabUrls.UPDATE_ETA)
+	public Response<Boolean> updateETA(UpdateETARequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.updateETA(request));
+		return response;
+	}
 
 }
