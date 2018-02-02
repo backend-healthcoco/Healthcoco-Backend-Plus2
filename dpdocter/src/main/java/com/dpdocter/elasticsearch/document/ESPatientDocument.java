@@ -33,6 +33,9 @@ public class ESPatientDocument {
 	private String localPatientName;
 
 	@Field(type = FieldType.String)
+	private String localPatientNameFormatted;
+	
+	@Field(type = FieldType.String)
 	private String gender;
 
 	@Field(type = FieldType.String)
@@ -312,18 +315,40 @@ public class ESPatientDocument {
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
+	
+	public String getLocalPatientNameFormatted() {
+		return localPatientNameFormatted;
+	}
+
+	public void setLocalPatientNameFormatted(String localPatientNameFormatted) {
+		this.localPatientNameFormatted = localPatientNameFormatted;
+	}
 
 	@Override
 	public String toString() {
 		return "ESPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
 				+ ", firstName=" + firstName + ", localPatientName=" + localPatientName + ", gender=" + gender
-				+ ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", dob=" + dob + ", city=" + city
-				+ ", locality=" + locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber
-				+ ", profession=" + profession + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime
-				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode
-				+ ", registrationDate=" + registrationDate + ", userUId=" + userUId + ", consultantDoctorIds="
-				+ consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ ", firstName=" + firstName + ", localPatientName=" + localPatientName + ", localPatientNameFormatted="
+				+ localPatientNameFormatted + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
+				+ emailAddress + ", dob=" + dob + ", city=" + city + ", locality=" + locality + ", postalCode="
+				+ postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy
+				+ ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
+				+ ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + ", userUId=" + userUId
+				+ ", consultantDoctorIds=" + consultantDoctorIds + ", getId()=" + getId() + ", getUserId()="
+				+ getUserId() + ", getLocalPatientName()=" + getLocalPatientName() + ", getPID()=" + getPID()
+				+ ", getUserName()=" + getUserName() + ", getFirstName()=" + getFirstName() + ", getGender()="
+				+ getGender() + ", getBloodGroup()=" + getBloodGroup() + ", getEmailAddress()=" + getEmailAddress()
+				+ ", getDob()=" + getDob() + ", getCity()=" + getCity() + ", getLocality()=" + getLocality()
+				+ ", getPostalCode()=" + getPostalCode() + ", getMobileNumber()=" + getMobileNumber()
+				+ ", getProfession()=" + getProfession() + ", getDoctorId()=" + getDoctorId() + ", getLocationId()="
+				+ getLocationId() + ", getHospitalId()=" + getHospitalId() + ", getReferredBy()=" + getReferredBy()
+				+ ", getCreatedTime()=" + getCreatedTime() + ", getImageUrl()=" + getImageUrl() + ", getThumbnailUrl()="
+				+ getThumbnailUrl() + ", getColorCode()=" + getColorCode() + ", getRegistrationDate()="
+				+ getRegistrationDate() + ", getUserUId()=" + getUserUId() + ", getConsultantDoctorIds()="
+				+ getConsultantDoctorIds() + ", getLocalPatientNameFormatted()=" + getLocalPatientNameFormatted()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+				+ "]";
 	}
 
 }

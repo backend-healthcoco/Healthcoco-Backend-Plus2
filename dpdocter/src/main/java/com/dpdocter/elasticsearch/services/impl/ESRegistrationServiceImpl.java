@@ -93,6 +93,12 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	public boolean addPatient(ESPatientDocument request) {
 		boolean response = false;
 		try {
+			if(!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
+				String localPatientNameFormatted = request.getLocalPatientName().replaceAll("[^a-zA-Z0-9]", "");
+				request.setLocalPatientNameFormatted(localPatientNameFormatted.toLowerCase());
+			}
+				
+			
 			esPatientRepository.save(request);
 			response = true;
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.PATIENT, true);
@@ -112,15 +118,14 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		ESPatientResponseDetails patientResponseDetails = null;
 		try {
 			searchTerm = searchTerm.toLowerCase();
+			String patientName = searchTerm.replaceAll("[^a-zA-Z0-9]", "");
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 					.must(QueryBuilders.termQuery("isPatientDiscarded", false))
-					.should(QueryBuilders.regexpQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(),
-							searchTerm.replaceAll("[^\\w\\s-]", "") + ".*").boost(4))
-					.should(QueryBuilders.matchQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), searchTerm)
-							.boost(4))
-					.should(QueryBuilders.matchQuery(AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), searchTerm)
+
+					.should(QueryBuilders
+							.queryStringQuery("localPatientNameFormatted:*"+patientName+"*")
 							.boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
@@ -135,7 +140,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 				boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", doctorId));
 			}
-
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
