@@ -1,18 +1,28 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "rate_card_dental_work_association_cl")
 public class RateCardDentalWorkAssociationCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private ObjectId locationId;
+	@Field
 	private ObjectId hospitalId;
+	@Field
 	private ObjectId dentalWorkId;
+	@Field
 	private ObjectId rateCardId;
-	private Integer turnaroundTime;
+	@Field
+	private Integer eta;
+	@Field
 	private Double cost;
+	@Field
 	private Boolean isAvailable = true;
 
 	public ObjectId getId() {
@@ -55,12 +65,12 @@ public class RateCardDentalWorkAssociationCollection extends GenericCollection {
 		this.rateCardId = rateCardId;
 	}
 
-	public Integer getTurnaroundTime() {
-		return turnaroundTime;
+	public Integer getEta() {
+		return eta;
 	}
 
-	public void setTurnaroundTime(Integer turnaroundTime) {
-		this.turnaroundTime = turnaroundTime;
+	public void setEta(Integer eta) {
+		this.eta = eta;
 	}
 
 	public Double getCost() {

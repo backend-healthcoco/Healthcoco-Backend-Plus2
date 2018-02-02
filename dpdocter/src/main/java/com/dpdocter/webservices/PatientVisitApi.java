@@ -108,10 +108,13 @@ public class PatientVisitApi {
 			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@QueryParam("visitFor") String visitFor) {
 
-		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		if (doctorId.equalsIgnoreCase("null")) {
+			doctorId = null;
 		}
 		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId,
 				patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
@@ -136,6 +139,7 @@ public class PatientVisitApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Hospital Id, Location Id Cannot Be Empty");
 		}
+
 		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId,
 				patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
 				updatedTime, visitFor);
@@ -202,7 +206,7 @@ public class PatientVisitApi {
 		response.setData(patientVisitService.smsVisit(visitId, doctorId, locationId, hospitalId, mobileNumber));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB, notes = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
@@ -250,13 +254,14 @@ public class PatientVisitApi {
 	@GET
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT, notes = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT)
 	public Response<PatientVisitResponse> getPatientLastVisit(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, 
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PatientVisitResponse patientVisit = patientVisitService.getPatientLastVisit(doctorId, locationId, hospitalId, patientId);
+		PatientVisitResponse patientVisit = patientVisitService.getPatientLastVisit(doctorId, locationId, hospitalId,
+				patientId);
 		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 		response.setData(patientVisit);
 		return response;

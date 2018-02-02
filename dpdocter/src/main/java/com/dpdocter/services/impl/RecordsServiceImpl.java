@@ -52,6 +52,7 @@ import com.dpdocter.beans.Tags;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.UserAllowanceDetails;
 import com.dpdocter.beans.UserRecords;
+import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -243,7 +244,6 @@ public class RecordsServiceImpl implements RecordsService {
 				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(),
 						new ObjectId(request.getPatientId()));
 			}
-
 			if (request.getRegisterPatient()) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
 				patientRegistrationRequest.setFirstName(request.getFirstName());
@@ -302,17 +302,17 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			recordsCollection.setCreatedTime(createdTime);
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
-			
-			if(DPDoctorUtils.allStringsEmpty(createdBy)) {
+
+			if (DPDoctorUtils.allStringsEmpty(createdBy)) {
 				UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 				if (userCollection != null) {
 					createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-									+ userCollection.getFirstName();
+							+ userCollection.getFirstName();
 				}
 			}
-			
+
 			recordsCollection.setCreatedBy(createdBy);
-			
+
 			LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
 			if (locationCollection != null) {
 				recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
@@ -373,7 +373,8 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
-					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
+					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())
+					&& recordsCollection.getShareWithPatient()) {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
@@ -466,7 +467,7 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsCollection.setRecordsState(oldRecord.getRecordsState());
 			recordsCollection.setDiagnosticTestId(oldRecord.getDiagnosticTestId());
 			recordsCollection.setIsPatientDiscarded(oldRecord.getIsPatientDiscarded());
-			
+
 			recordsCollection = recordsRepository.save(recordsCollection);
 
 			// pushNotificationServices.notifyUser(recordsCollection.getPatientId(),
@@ -843,7 +844,8 @@ public class RecordsServiceImpl implements RecordsService {
 			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer recordCount = 0;
 		try {
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
+					.and("isPatientDiscarded").is(false);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -1223,7 +1225,7 @@ public class RecordsServiceImpl implements RecordsService {
 				 */
 
 				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("patientId")
-						.is(patientObjectId).and("isPatientDiscarded").is(false);
+						.is(patientObjectId).and("isPatientDiscarded").is(false).and("shareWithPatient").is(true);
 				if (!discarded)
 					criteria.and("discarded").is(discarded);
 
@@ -1307,7 +1309,7 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 		return records;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<Records> getRecordsByDoctorId(String doctorId, int page, int size, String updatedTime,
@@ -1326,39 +1328,38 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
 
-			
-				/*
-				 * if (size > 0) recordsCollections =
-				 * recordsRepository.findRecordsByPatientId(patientObjectId, new
-				 * Date(updatedTimeLong), discards, new PageRequest(page, size,
-				 * Sort.Direction.DESC, "createdTime")); else recordsCollections
-				 * = recordsRepository.findRecordsByPatientId(patientObjectId,
-				 * new Date(updatedTimeLong), discards, new
-				 * Sort(Sort.Direction.DESC, "createdTime"));
-				 */
+			/*
+			 * if (size > 0) recordsCollections =
+			 * recordsRepository.findRecordsByPatientId(patientObjectId, new
+			 * Date(updatedTimeLong), discards, new PageRequest(page, size,
+			 * Sort.Direction.DESC, "createdTime")); else recordsCollections =
+			 * recordsRepository.findRecordsByPatientId(patientObjectId, new
+			 * Date(updatedTimeLong), discards, new Sort(Sort.Direction.DESC,
+			 * "createdTime"));
+			 */
 
-				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("doctorId")
-						.is(doctorObjectId);
-				if (!discarded)
-					criteria.and("discarded").is(discarded);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("doctorId")
+					.is(doctorObjectId);
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
 
-				Aggregation aggregation = null;
+			Aggregation aggregation = null;
 
-				if (size > 0)
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-							Aggregation.unwind("patientVisit"),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
-				else
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-							Aggregation.unwind("patientVisit"),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
+						Aggregation.unwind("patientVisit"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
+						Aggregation.unwind("patientVisit"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-				AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-						RecordsCollection.class, RecordsLookupResponse.class);
-				recordsLookupResponses = aggregationResults.getMappedResults();
+			AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					RecordsCollection.class, RecordsLookupResponse.class);
+			recordsLookupResponses = aggregationResults.getMappedResults();
 
 			records = new ArrayList<Records>();
 			for (RecordsLookupResponse recordsLookupResponse : recordsLookupResponses) {
@@ -1536,7 +1537,8 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
-					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
+					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())
+					&& recordsCollection.getShareWithPatient()) {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
@@ -1595,7 +1597,8 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsRepository.save(recordsCollection);
 			response = new Records();
 			BeanUtil.map(recordsCollection, response);
-			if (recordsState.equalsIgnoreCase(RecordsState.APPROVED_BY_DOCTOR.toString())) {
+			if (recordsState.equalsIgnoreCase(RecordsState.APPROVED_BY_DOCTOR.toString())
+					&& recordsCollection.getShareWithPatient()) {
 				UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
 						recordsCollection.getPatientId(), recordsCollection.getLocationId(),
@@ -1787,7 +1790,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 			ObjectId patientObjectId = null;
 			ObjectId doctorObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId)){
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				patientObjectId = new ObjectId(patientId);
 			}
 
@@ -2162,6 +2165,60 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 		return recordsFile;
 
+	}
+
+	@Override
+	public Boolean updateShareWithPatient(String recordId) {
+		Boolean response = false;
+		try {
+			String localPatientName = null;
+			String patientMobileNumber = null;
+			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+			if (recordsCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No record found with recordId");
+			}
+			if (recordsCollection.getShareWithPatient() == null) {
+				{
+					recordsCollection.setShareWithPatient(true);
+				}
+			} else {
+				recordsCollection.setShareWithPatient(!recordsCollection.getShareWithPatient());
+			}
+			recordsCollection.setUpdatedTime(new Date());
+			recordsRepository.save(recordsCollection);
+
+			List<PatientCard> patientCards = mongoTemplate
+					.aggregate(Aggregation.newAggregation(
+							Aggregation.match(new Criteria("userId").is(recordsCollection.getPatientId())
+									.and("locationId").is(recordsCollection.getLocationId()).and("hospitalId")
+									.is(recordsCollection.getHospitalId())),
+							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
+							PatientCollection.class, PatientCard.class)
+					.getMappedResults();
+			if (patientCards != null && !patientCards.isEmpty()) {
+				localPatientName = patientCards.get(0).getLocalPatientName();
+				patientMobileNumber = patientCards.get(0).getUser().getMobileNumber();
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
+					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())
+					&& recordsCollection.getShareWithPatient()) {
+				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
+						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+				sendRecordSmsToPatient(localPatientName, patientMobileNumber, recordsCollection.getRecordsLabel(),
+						recordsCollection.getUploadedByLocation(), recordsCollection.getDoctorId(),
+						recordsCollection.getLocationId(), recordsCollection.getHospitalId(),
+						recordsCollection.getPatientId());
+			}
+			response = true;
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while share record with patient");
+		}
+		return response;
 	}
 
 }

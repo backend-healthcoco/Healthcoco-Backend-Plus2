@@ -48,7 +48,18 @@ public class Records extends GenericCollection {
 
     private String recordsState = RecordsState.APPROVAL_NOT_REQUIRED.toString();
     
-    public String getId() {
+    private Boolean shareWithPatient = false;
+    
+    
+    public Boolean getShareWithPatient() {
+		return shareWithPatient;
+	}
+
+	public void setShareWithPatient(Boolean shareWithPatient) {
+		this.shareWithPatient = shareWithPatient;
+	}
+
+	public String getId() {
 	return id;
     }
 

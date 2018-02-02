@@ -142,6 +142,10 @@ public class LocationCollection extends GenericCollection {
 	/*
 	 * @Field private ObjectId defaultParentLabId;
 	 */
+	@Field
+	private Boolean isDentalWorksLab = false;
+	@Field
+	private Boolean isDentalImagingLab = false;
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
@@ -504,6 +508,22 @@ public class LocationCollection extends GenericCollection {
 				+ noOfClinicRecommendations + ", locationType=" + locationType + ", invoiceInitial=" + invoiceInitial
 				+ ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview + ", isParent="
 				+ isParent + ", associatedLabs=" + associatedLabs + "]";
+	}
+
+	public Boolean getIsDentalWorksLab() {
+		return isDentalWorksLab;
+	}
+
+	public void setIsDentalWorksLab(Boolean isDentalWorksLab) {
+		this.isDentalWorksLab = isDentalWorksLab;
+	}
+
+	public Boolean getIsDentalImagingLab() {
+		return isDentalImagingLab;
+	}
+
+	public void setIsDentalImagingLab(Boolean isDentalImagingLab) {
+		this.isDentalImagingLab = isDentalImagingLab;
 	}
 
 }

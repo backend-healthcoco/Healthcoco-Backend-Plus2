@@ -8,9 +8,10 @@ import com.dpdocter.request.DentalLabPickupRequest;
 
 import common.util.web.JacksonUtil;
 
-public class DentalLabPickup extends GenericCollection{
+public class DentalLabPickup extends GenericCollection {
 
 	private String id;
+	private String patientId;
 	private String patientName;
 	private String mobileNumber;
 	private String gender;
@@ -28,10 +29,12 @@ public class DentalLabPickup extends GenericCollection{
 	private String requestId;
 	private Boolean isAcceptedAtLab = false;
 	private Boolean isCompleted = false;
+	private Boolean isCollectedAtDoctor = false;
 	private String collectionBoyId;
 	private String serialNumber;
 	private User doctor;
 	private Location dentalLab;
+	private String reasonForCancel;
 
 	public String getId() {
 		return id;
@@ -207,6 +210,30 @@ public class DentalLabPickup extends GenericCollection{
 
 	public void setDentalLab(Location dentalLab) {
 		this.dentalLab = dentalLab;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public Boolean getIsCollectedAtDoctor() {
+		return isCollectedAtDoctor;
+	}
+
+	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
+		this.isCollectedAtDoctor = isCollectedAtDoctor;
+	}
+
+	public String getReasonForCancel() {
+		return reasonForCancel;
+	}
+
+	public void setReasonForCancel(String reasonForCancel) {
+		this.reasonForCancel = reasonForCancel;
 	}
 
 	@Override

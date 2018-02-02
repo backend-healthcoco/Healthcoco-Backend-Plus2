@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Quantity;
-import com.dpdocter.beans.TreatmentFields;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.TreatmentService;
 
 public class TreatmentRequest {
@@ -32,7 +32,7 @@ public class TreatmentRequest {
 
 	private List<TreatmentService> treatmentServices;
 	
-	private List<TreatmentFields> treatmentFields;
+	private List<Fields> treatmentFields;
 
 	public TreatmentService getTreatmentService() {
 		return treatmentService;
@@ -106,11 +106,11 @@ public class TreatmentRequest {
 		this.treatmentServices = treatmentServices;
 	}
 
-	public List<TreatmentFields> getTreatmentFields() {
+	public List<Fields> getTreatmentFields() {
 		return treatmentFields;
 	}
 
-	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
+	public void setTreatmentFields(List<Fields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
 	}
 

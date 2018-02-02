@@ -2,11 +2,13 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+
 import com.dpdocter.beans.DentalWorksSample;
 
 public class DentalLabPickupRequest {
 
 	private String id;
+	private String patientId;
 	private String patientName;
 	private String mobileNumber;
 	private String gender;
@@ -24,9 +26,10 @@ public class DentalLabPickupRequest {
 	private String requestId;
 	private Boolean isAcceptedAtLab = false;
 	private Boolean isCompleted = false;
+	private Boolean isCollectedAtDoctor = false;
 	private String collectionBoyId;
 	private String serialNumber;
-	
+	private String reasonForCancel;
 
 	public String getId() {
 		return id;
@@ -34,6 +37,14 @@ public class DentalLabPickupRequest {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
 	public String getPatientName() {
@@ -186,6 +197,22 @@ public class DentalLabPickupRequest {
 
 	public void setAge(Integer age) {
 		this.age = age;
+	}
+
+	public Boolean getIsCollectedAtDoctor() {
+		return isCollectedAtDoctor;
+	}
+
+	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
+		this.isCollectedAtDoctor = isCollectedAtDoctor;
+	}
+
+	public String getReasonForCancel() {
+		return reasonForCancel;
+	}
+
+	public void setReasonForCancel(String reasonForCancel) {
+		this.reasonForCancel = reasonForCancel;
 	}
 
 	@Override

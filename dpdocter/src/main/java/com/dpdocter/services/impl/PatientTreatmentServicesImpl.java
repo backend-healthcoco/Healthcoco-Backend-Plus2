@@ -34,7 +34,7 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.TreatmentFields;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
@@ -356,7 +356,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					patientTreatmentCollection.setAdminCreatedTime(oldPatientTreatmentCollection.getAdminCreatedTime());
 					patientTreatmentCollection.setUpdatedTime(new Date());
 					patientTreatmentCollection.setCreatedBy(createdBy);
-					patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					patientTreatmentCollection.setUniqueEmrId(oldPatientTreatmentCollection.getUniqueEmrId());
 					patientTreatmentCollection.setDiscarded(oldPatientTreatmentCollection.getDiscarded());
 					patientTreatmentCollection.setInHistory(oldPatientTreatmentCollection.getInHistory());
@@ -954,7 +953,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
 
-
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -994,10 +992,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 
-
 								Aggregation.unwind("treatmentService"),
 								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
-
 
 								Aggregation.unwind("patientVisit"),
 								Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
@@ -1489,7 +1485,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				String fieldName = "";
 				if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
 					String key = "";
-					for (TreatmentFields treatmentFile : treatment.getTreatmentFields()) {
+					for (Fields treatmentFile : treatment.getTreatmentFields()) {
 						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {

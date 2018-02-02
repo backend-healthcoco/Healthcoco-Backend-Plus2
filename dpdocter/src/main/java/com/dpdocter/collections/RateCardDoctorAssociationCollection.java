@@ -1,15 +1,22 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "rate_card_doctor_association_cl")
 public class RateCardDoctorAssociationCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private ObjectId dentalLabId;
+	@Field
 	private ObjectId doctorId;
+	@Field
 	private ObjectId rateCardId;
+	@Field
 	private Boolean discarded = false;
 
 	public ObjectId getId() {

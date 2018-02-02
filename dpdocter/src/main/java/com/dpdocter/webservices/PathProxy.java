@@ -418,6 +418,7 @@ public interface PathProxy {
 		public static final String CHANGE_RECORD_STATE = "/{recordId}/{recordsState}/changeState";
 
 		public static final String ADD_USER_RECORDS = "/user/add";
+
 		public static final String UPLOAD_USER_RECORD_FILE = "/upload/file/";
 
 		public static final String GET_USER_RECORD_BY_ID = "user/{recordId}/view";
@@ -435,6 +436,8 @@ public interface PathProxy {
 		public static final String UPDATE_RECORDS_DATA = "/updateData";
 
 		public static final String SHARE_USER_RECORDS_WITH_PATIENT = "user/file/{recordId}/{patientId}/share";
+
+		public static final String SHARE_RECORD_WITH_PATIENT = "/{recordId}/share";
 
 		public static final String GET_RECORDS_DOCTOR_ID = "getByDoctorId/{doctorId}";
 
@@ -1566,17 +1569,79 @@ public interface PathProxy {
 	public static final String DENTAL_LAB_BASE_URL = BASE_URL + "/dentalLab";
 
 	public interface DentalLabUrls {
+
 		public static final String ADD_EDIT_DENTAL_WORKS = "/addEditDentalWorks";
 		public static final String GET_DENTAL_WORKS = "/getDentalWorks";
 		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
 		public static final String CHANGE_LAB_TYPE = "/changeLabType";
 		public static final String ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION = "/addEditDentalLabDoctorAssociation";
 		public static final String GET_DENTAL_LAB_DOCTOR_ASSOCIATION = "/getDentalLabDoctorAssociation";
+		public static final String GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR = "/getDentalLabDoctorAssociationForDoctor";
 		public static final String ADD_EDIT_DENTAL_WORK_PICKUP = "/addEditDentalWorkPickup";
 		public static final String GET_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
 		public static final String DELETE_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
 		public static final String ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION = "/addEditRateCardWorkAssociation";
 		public static final String GET_RATE_CARD_WORKS = "/getRateCardWork";
+		public static final String ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION = "/addEditRateCardDoctorAssociation";
+		public static final String GET_RATE_CARD_DOCTOR_ASSOCIATION = "/getRateCardDoctorAssociation";
+		public static final String ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION = "/addEditCollectionBoyDoctorAssociation";
+		public static final String GET_COLLECTION_BOY_DOCTOR_ASSOCIATION = "/getCollectionBoyDoctorAssociation";
+		public static final String GET_CB_LIST_FOR_DENTAL_LAB = "/getCBListForDentalLab";
+		public static final String CHANGE_REQUEST_STATUS = "/changeRequestStatus";
+		public static final String ADD_DENTAL_IMAGE_MULTIPART = "/addDentalImageMultipart";
+		public static final String ADD_DENTAL_IMAGE_BASE_64 = "/addDentalImageBase64";
+		public static final String UPDATE_DENTAL_STAGES_FOR_LAB = "/updateDentalStagesForLab";
+		public static final String UPDATE_DENTAL_STAGES_FOR_DOCTOR = "/updateDentalStagesForDoctor";
+	}
+
+	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";
+
+	public interface CertificateTemplatesUrls {
+		public static final String ADD_CERTIFICATE_TEMPLATES = "template/add";
+
+		public static final String GET_CERTIFICATE_TEMPLATE_BY_ID = "/template/{templateId}/view";
+
+		public static final String GET_CERTIFICATE_TEMPLATES = "template";
+
+		public static final String DELETE_CERTIFICATE_TEMPLATES = "/template/{templateId}/delete";
+
+		public static final String ADD_PATIENT_CERTIFICATE = "/patient/add";
+
+		public static final String GET_PATIENT_CERTIFICATES = "/patient/";
+
+		public static final String DELETE_PATIENT_CERTIFICATE = "/patient/{certificateId}/delete";
+
+		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
+
+		public static final String DOWNLOAD_PATIENT_CERTIFICATE = "/patient/{certificateId}/download";
+
+	}
+
+	public static final String DOCTOR_LAB_URL = BASE_URL + "/doctorLab";
+
+	public interface DoctorLabUrls {
+
+		public static final String ADD_DOCTOR_LAB_REPORT = "/addEditDoctorLabReport";
+		public static final String UPLOAD_DOCTOR_LAB_MULTIPART_FILE = "/upload/file/multipart";
+		public static final String UPLOAD_DOCTOR_LAB_FILE = "/upload/file";
+		public static final String GET_DOCTOR_LAB_REPORTS = "/getDoctorLabReports";
+		public static final String GET_DOCTOR_LAB_REPORT_BY_ID = "/{reportId}/view";
+		public static final String ADD_TO_FAVOURITE_DOCTOR_LIST = "/addFavouriteDoctor";
+		public static final String GET_FAVOURITE_DOCTOR = "/getFavouriteDoctor";
+		public static final String ADD_DOCTOR_REFERENCE = "/referDoctor";
+		public static final String SEARCH_DOCTOR = "/searchDoctor";
+		public static final String UPDATE_IS_SHARE_WITH_PATIENT = "/updateIsShareWithPatient/{reportId}";
+		public static final String UPDATE_IS_SHARE_WITH_DOCTOR = "/updateIsShareWithDoctor/{reportId}";
+		public static final String DELETE_FAVOURITE_DOCTOR = "fevouriteDoctor/{id}/delete";
+		public static final String DELETE_DOCTOR_LAB_REPORTS = "/{reportId}/delete";
+
+	}
+
+	public static final String SOLR_DENTAL_WORKS_BASE_URL = BASE_URL + "/solr/dentalWorks";
+
+	public interface ESDentalLabsUrl {
+
+		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks/{range}";
 
 	}
 

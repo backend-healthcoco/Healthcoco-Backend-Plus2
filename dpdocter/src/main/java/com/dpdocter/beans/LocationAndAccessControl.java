@@ -65,6 +65,10 @@ public class LocationAndAccessControl {
 
 	private Boolean isHomeServiceAvailable = false;
 
+	private Boolean isDentalWorksLab = false;
+
+	private Boolean isDentalImagingLab = false;
+
 	private List<Role> roles;
 
 	public String getId() {
@@ -305,6 +309,22 @@ public class LocationAndAccessControl {
 
 	public void setIsParent(Boolean isParent) {
 		this.isParent = isParent;
+	}
+
+	public Boolean getIsDentalWorksLab() {
+		return isDentalWorksLab;
+	}
+
+	public void setIsDentalWorksLab(Boolean isDentalWorksLab) {
+		this.isDentalWorksLab = isDentalWorksLab;
+	}
+
+	public Boolean getIsDentalImagingLab() {
+		return isDentalImagingLab;
+	}
+
+	public void setIsDentalImagingLab(Boolean isDentalImagingLab) {
+		this.isDentalImagingLab = isDentalImagingLab;
 	}
 
 	@Override
