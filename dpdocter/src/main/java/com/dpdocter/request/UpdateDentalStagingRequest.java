@@ -6,9 +6,10 @@ import com.dpdocter.beans.DentalStage;
 
 public class UpdateDentalStagingRequest {
 
-	String requestId;
-	String uniqueWorkId;
-	List<DentalStage> dentalStages;
+	private String requestId;
+	private String uniqueWorkId;
+	private List<DentalStage> dentalStages;
+	private String status;
 
 	public String getRequestId() {
 		return requestId;
@@ -32,6 +33,14 @@ public class UpdateDentalStagingRequest {
 
 	public void setDentalStages(List<DentalStage> dentalStages) {
 		this.dentalStages = dentalStages;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

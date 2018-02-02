@@ -15,6 +15,7 @@ import com.dpdocter.enums.LabType;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.UpdateDentalStagingRequest;
+import com.dpdocter.request.UpdateETARequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
@@ -88,6 +89,13 @@ public interface DentalLabService {
 	Boolean updateDentalStageForDoctor(UpdateDentalStagingRequest request);
 
 	Boolean updateDentalStageForLab(UpdateDentalStagingRequest request);
+
+	Boolean updateETA(UpdateETARequest request);
+
+	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String rateCardId,
+			Boolean discarded);
+
+	Boolean cancelRequest(String requestId, String reasonOfCancellation, String cancelledBy);
 
 
 	/*

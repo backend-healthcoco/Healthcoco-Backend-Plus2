@@ -267,6 +267,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setCi(componentTypeId);
 					notification.setNotificationType(componentType);
 				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
@@ -723,6 +727,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
 										ComponentType.LAB_REQUEST.getType(), null, null, role.getRole());
+							} 
+							else if (role.equals(RoleEnum.DENTAL_COLLECTION_BOY)) {
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message,
+										ComponentType.DENTAL_LAB_REQUEST.getType(), null, null, role.getRole());
 							} else {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
