@@ -103,16 +103,15 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("type", type);
 		model.put("mobileNumber", mobileNumber);
 		model.put("emailAddress", emailAddress);
-		
 
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "contactmail.vm", "UTF-8", model);
 		return text;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
-	public String generateContactEmailBody(DoctorContactUs contactUs , String type) {
+	public String generateContactEmailBody(DoctorContactUs contactUs, String type) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("fName", contactUs.getTitle() + " " + contactUs.getFirstName());
 		model.put("city", contactUs.getCity());
@@ -125,16 +124,32 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "contactmail.vm", "UTF-8", model);
 		return text;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
-	public String generatePrescriptionListMail(String collectionBody , String requestBody) {
+	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,String labName) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("fName", "Dr." + " " + fName);
+		model.put("locationName", locationName);
+		model.put("mobileNumber", mobileNumber);
+		model.put("labName", labName);
+
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "doctorReferenceMail.vm", "UTF-8",
+				model);
+		return text;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	@Transactional
+	public String generatePrescriptionListMail(String collectionBody, String requestBody) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("collectionBody", collectionBody);
 		model.put("requestBody", requestBody);
 
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "prescriptionListMail.vm", "UTF-8", model);
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "prescriptionListMail.vm", "UTF-8",
+				model);
 		return text;
 	}
 
@@ -330,13 +345,13 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
 	public String generateExceptionEmailBody(String exception) {
 		Map<String, Object> model = new HashMap<String, Object>();
-		
+
 		model.put("exceptionMsg", exception);
 
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "exceptionMail.vm", "UTF-8", model);

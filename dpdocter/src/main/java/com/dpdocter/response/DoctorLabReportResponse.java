@@ -50,7 +50,9 @@ public class DoctorLabReportResponse extends GenericCollection {
 
 	private String doctorMobileNumber;
 
-	public String getDoctorMobileNumber() {
+	private boolean patientRegistered;
+
+	String getDoctorMobileNumber() {
 		return doctorMobileNumber;
 	}
 
@@ -237,6 +239,14 @@ public class DoctorLabReportResponse extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public boolean getPatientRegistered() {
+		return patientRegistered;
+	}
+
+	public void setPatientRegistered(boolean patientRegistered) {
+		this.patientRegistered = patientRegistered;
 	}
 
 }

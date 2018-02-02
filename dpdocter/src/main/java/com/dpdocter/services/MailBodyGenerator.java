@@ -47,4 +47,7 @@ public interface MailBodyGenerator {
 	String generatePrescriptionListMail(String collectionBody, String requestBody);
 
 	String generateExceptionEmailBody(String exception);
+
+	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,
+			String labName);
 }

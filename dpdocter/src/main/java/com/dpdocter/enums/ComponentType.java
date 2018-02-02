@@ -15,7 +15,8 @@ public enum ComponentType {
 																					"OT_REPORTS"), DELIVERY_REPORTS(
 																							"DELIVERY_REPORTS"), DOCTOR_LAB_REPORTS(
 																									"DOCTOR_LAB_REPORTS"), CERTIFICATE(
-																											"CERTIFICATE");
+																											"CERTIFICATE"), DOCTOR_REFERNCE(
+																													"DOCTOR_REFERNCE");
 
 	private String type;
 
