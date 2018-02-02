@@ -8,7 +8,6 @@ import com.dpdocter.request.DoctorLabDoctorReferenceRequest;
 import com.dpdocter.request.DoctorLabFavouriteDoctorRequest;
 import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.MyFiileRequest;
-import com.dpdocter.response.DoctorLabDoctorReferenceResponse;
 import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
 import com.dpdocter.response.DoctorLabReportResponse;
 import com.dpdocter.response.DoctorLabSearchDoctorResponse;
