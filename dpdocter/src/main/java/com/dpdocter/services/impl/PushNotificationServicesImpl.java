@@ -264,7 +264,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setCi(componentTypeId);
 					notification.setNotificationType(componentType);
 				} else if (componentType.equalsIgnoreCase(ComponentType.USER_RECORD.getType())) {
-					notification.setCi(componentTypeId);
+					notification.setRi(componentTypeId);
+					notification.setNotificationType(componentType);
+				} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
+					notification.setRi(componentTypeId);
 					notification.setNotificationType(componentType);
 				}
 			}
@@ -400,6 +403,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "A");
 				} else if (componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())) {
 					customValues.put("T", "C");
+				} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
+					customValues.put("RI", componentTypeId);
+					customValues.put("T", "DLR");
+				} else if (componentType.equalsIgnoreCase(ComponentType.USER_RECORD.getType())) {
+					customValues.put("RI", componentTypeId);
+					customValues.put("T", "UR");
 				}
 			}
 			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();

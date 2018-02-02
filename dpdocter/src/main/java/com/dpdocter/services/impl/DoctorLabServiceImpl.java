@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -44,6 +45,7 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorLabDoctorReferenceCollection;
 import com.dpdocter.collections.DoctorLabFavouriteDoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
@@ -59,6 +61,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorLabFevouriteDoctorRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorLabDoctorReferenceRequest;
 import com.dpdocter.request.DoctorLabFavouriteDoctorRequest;
@@ -122,6 +125,15 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
 
+	@Autowired
+	private LocationRepository locationRepository;
+
+	@Value(value = "${sms.add.doctor.Lab.report.to.patient}")
+	private String patientSMSText;
+
+	@Value(value = "${sms.add.doctor.Lab.report.to.doctor}")
+	private String doctorSMSText;
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -131,6 +143,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	public DoctorLabReport addDoctorLabReport(DoctorLabReport request) {
 		DoctorLabReport response = null;
 		try {
+			UserCollection doctor = null;
 			DoctorLabReportCollection doctorLabReportCollection = new DoctorLabReportCollection();
 			for (RecordsFile file : request.getRecordsFiles()) {
 				file.setRecordsUrl(file.getRecordsUrl().replace(imagePath, ""));
@@ -138,6 +151,17 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 			}
 			BeanUtil.map(request, doctorLabReportCollection);
+			LocationCollection locationCollection = locationRepository
+					.findOne(doctorLabReportCollection.getUploadedByLocationId());
+			if (locationCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No Lab found with UploadedByLocationId");
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getDoctorId())) {
+				doctor = userRepository.findOne(doctorLabReportCollection.getDoctorId());
+				if (doctor == null) {
+					throw new BusinessException(ServiceError.NoRecord, " Doctor not found with doctorId");
+				}
+			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				DoctorLabReportCollection oldDoctorLabReportCollection = doctorLabReportRepository
 						.findOne(doctorLabReportCollection.getId());
@@ -152,6 +176,10 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				doctorLabReportCollection.setAdminCreatedTime(oldDoctorLabReportCollection.getAdminCreatedTime());
 				doctorLabReportCollection.setCreatedBy(oldDoctorLabReportCollection.getCreatedBy());
 			} else {
+				if (doctor != null) {
+					doctorLabReportCollection.setDoctorMobileNumber(doctor.getMobileNumber());
+					doctorLabReportCollection.setDoctorName(doctor.getFirstName());
+				}
 				if (!DPDoctorUtils.anyStringEmpty(request.getUploadedByDoctorId())) {
 					UserCollection userCollection = userRepository
 							.findOne(new ObjectId(request.getUploadedByDoctorId()));
@@ -172,10 +200,39 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			}
 			doctorLabReportCollection = doctorLabReportRepository.save(doctorLabReportCollection);
 			if (doctorLabReportCollection.getShareWithDoctor()) {
-
+				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getDoctorMobileNumber())) {
+					sendSmsTodoctor(doctorLabReportCollection.getDoctorName(),
+							doctorLabReportCollection.getDoctorMobileNumber(),
+							doctorLabReportCollection.getRecordsLabel(), locationCollection.getLocationName(),
+							doctorLabReportCollection.getUploadedByDoctorId(),
+							doctorLabReportCollection.getUploadedByLocationId(),
+							doctorLabReportCollection.getUploadedByHospitalId(),
+							doctorLabReportCollection.getDoctorId());
+					if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getDoctorId())) {
+						pushNotificationServices.notifyUser(doctorLabReportCollection.getDoctorId().toString(),
+								locationCollection.getLocationName() + "Lab has shared report "
+										+ doctorLabReportCollection.getRecordsLabel() + " with you - Tap to view it!",
+								ComponentType.DOCTOR_LAB_REPORTS.getType(),
+								doctorLabReportCollection.getId().toString(), null);
+					}
+				}
 			}
 			if (doctorLabReportCollection.getShareWithPatient()) {
-
+				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getMobileNumber())) {
+					sendSmsToPatient(doctorLabReportCollection.getPatientName(), locationCollection.getLocationName(),
+							doctorLabReportCollection.getMobileNumber(), doctorLabReportCollection.getRecordsLabel(),
+							doctorLabReportCollection.getUploadedByDoctorId(),
+							doctorLabReportCollection.getUploadedByLocationId(),
+							doctorLabReportCollection.getUploadedByHospitalId(),
+							doctorLabReportCollection.getPatientId());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getPatientId())) {
+					pushNotificationServices.notifyUser(doctorLabReportCollection.getPatientId().toString(),
+							locationCollection.getLocationName() + "Lab has shared report "
+									+ doctorLabReportCollection.getRecordsLabel() + " with you - Tap to view it!",
+							ComponentType.DOCTOR_LAB_REPORTS.getType(), doctorLabReportCollection.getId().toString(),
+							null);
+				}
 			}
 			response = new DoctorLabReport();
 			BeanUtil.map(doctorLabReportCollection, response);
@@ -743,8 +800,31 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			} else {
 				doctorLabReportCollection.setShareWithDoctor(!doctorLabReportCollection.getShareWithDoctor());
 			}
+			LocationCollection locationCollection = locationRepository
+					.findOne(doctorLabReportCollection.getUploadedByLocationId());
+			if (locationCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No Lab found with UploadedByLocationId");
+			}
 			doctorLabReportCollection.setUpdatedTime(new Date());
 			doctorLabReportRepository.save(doctorLabReportCollection);
+			if (doctorLabReportCollection.getShareWithDoctor()) {
+				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getDoctorMobileNumber())) {
+					sendSmsTodoctor(doctorLabReportCollection.getDoctorName(),
+							doctorLabReportCollection.getDoctorMobileNumber(),
+							doctorLabReportCollection.getRecordsLabel(), locationCollection.getLocationName(),
+							doctorLabReportCollection.getUploadedByDoctorId(),
+							doctorLabReportCollection.getUploadedByLocationId(),
+							doctorLabReportCollection.getUploadedByHospitalId(),
+							doctorLabReportCollection.getDoctorId());
+					if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getDoctorId())) {
+						pushNotificationServices.notifyUser(doctorLabReportCollection.getDoctorId().toString(),
+								locationCollection.getLocationName() + "Lab has shared report "
+										+ doctorLabReportCollection.getRecordsLabel() + " with you - Tap to view it!",
+								ComponentType.DOCTOR_LAB_REPORTS.getType(),
+								doctorLabReportCollection.getId().toString(), null);
+					}
+				}
+			}
 			response = true;
 
 		} catch (Exception e) {
@@ -771,8 +851,30 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			} else {
 				doctorLabReportCollection.setShareWithPatient(!doctorLabReportCollection.getShareWithPatient());
 			}
+			LocationCollection locationCollection = locationRepository
+					.findOne(doctorLabReportCollection.getUploadedByLocationId());
+			if (locationCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No Lab found with UploadedByLocationId");
+			}
 			doctorLabReportCollection.setUpdatedTime(new Date());
 			doctorLabReportRepository.save(doctorLabReportCollection);
+			if (doctorLabReportCollection.getShareWithPatient()) {
+				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getMobileNumber())) {
+					sendSmsToPatient(doctorLabReportCollection.getPatientName(), locationCollection.getLocationName(),
+							doctorLabReportCollection.getMobileNumber(), doctorLabReportCollection.getRecordsLabel(),
+							doctorLabReportCollection.getUploadedByDoctorId(),
+							doctorLabReportCollection.getUploadedByLocationId(),
+							doctorLabReportCollection.getUploadedByHospitalId(),
+							doctorLabReportCollection.getPatientId());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getPatientId())) {
+					pushNotificationServices.notifyUser(doctorLabReportCollection.getPatientId().toString(),
+							locationCollection.getLocationName() + "Lab has shared report "
+									+ doctorLabReportCollection.getRecordsLabel() + " with you - Tap to view it!",
+							ComponentType.DOCTOR_LAB_REPORTS.getType(), doctorLabReportCollection.getId().toString(),
+							null);
+				}
+			}
 			response = true;
 
 		} catch (Exception e) {
@@ -830,8 +932,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		return response;
 	}
 
-	private void sendSmsToPatient(String patientName, String patientMobileNumber, String recordName, String doctorName,
-			ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
+	private void sendSmsToPatient(String patientName, String locationName, String patientMobileNumber,
+			String recordName, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
 
 		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 		smsTrackDetail.setDoctorId(doctorId);
@@ -839,13 +941,14 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		smsTrackDetail.setLocationId(locationId);
 		smsTrackDetail.setType(ComponentType.DOCTOR_LAB_REPORTS.getType());
 		SMSDetail smsDetail = new SMSDetail();
-		smsDetail.setUserId(patientId);
+		if (!DPDoctorUtils.anyStringEmpty(patientId))
+			smsDetail.setUserId(patientId);
 		smsDetail.setUserName(patientName);
 		SMS sms = new SMS();
 		if (DPDoctorUtils.anyStringEmpty(recordName))
 			recordName = "";
-		String message = "";
-		sms.setSmsText(message.replace("{patientName}", patientName).replace("{doctorName}", doctorName)
+		String message = patientSMSText;
+		sms.setSmsText(message.replace("{patientName}", patientName).replace("{labName}", locationName)
 				.replace("{reportName}", recordName));
 		SMSAddress smsAddress = new SMSAddress();
 		smsAddress.setRecipient(patientMobileNumber);
@@ -858,9 +961,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		smsServices.sendSMS(smsTrackDetail, true);
 	}
 
-	private void sendSmsTodoctor(String patientName, String patientMobileNumber, String recordName, String doctorName,
+	private void sendSmsTodoctor(String doctorName, String mobileNumber, String recordName, String labName,
 			ObjectId uploadedBydoctorId, ObjectId uploadedBylocationId, ObjectId uploadedByhospitalId,
-			ObjectId patientId) {
+			ObjectId doctorId) {
 
 		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 		smsTrackDetail.setDoctorId(uploadedBydoctorId);
@@ -868,16 +971,16 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		smsTrackDetail.setLocationId(uploadedBylocationId);
 		smsTrackDetail.setType(ComponentType.DOCTOR_LAB_REPORTS.getType());
 		SMSDetail smsDetail = new SMSDetail();
-		smsDetail.setUserId(patientId);
-		smsDetail.setUserName(patientName);
+		smsDetail.setUserId(doctorId);
+		smsDetail.setUserName(doctorName);
 		SMS sms = new SMS();
 		if (DPDoctorUtils.anyStringEmpty(recordName))
 			recordName = "";
-		String message = "";
-		sms.setSmsText(message.replace("{patientName}", patientName).replace("{doctorName}", doctorName)
-				.replace("{reportName}", recordName));
+		String message = doctorSMSText;
+		sms.setSmsText(message.replace("{doctorName}", doctorName).replace("{labName}", labName).replace("{reportName}",
+				recordName));
 		SMSAddress smsAddress = new SMSAddress();
-		smsAddress.setRecipient(patientMobileNumber);
+		smsAddress.setRecipient(mobileNumber);
 		sms.setSmsAddress(smsAddress);
 		smsDetail.setSms(sms);
 		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
