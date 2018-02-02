@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -46,6 +45,7 @@ import com.dpdocter.collections.DoctorLabDoctorReferenceCollection;
 import com.dpdocter.collections.DoctorLabFavouriteDoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
@@ -59,9 +59,11 @@ import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorLabDoctorReferenceRepository;
 import com.dpdocter.repository.DoctorLabFevouriteDoctorRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorLabDoctorReferenceRequest;
 import com.dpdocter.request.DoctorLabFavouriteDoctorRequest;
@@ -96,6 +98,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	private UserRepository userRepository;
 
 	@Autowired
+	private PatientRepository patientRepository;
+
+	@Autowired
 	private ESCityRepository esCityRepository;
 
 	@Autowired
@@ -112,6 +117,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private ESSpecialityRepository esSpecialityRepository;
+
+	@Autowired
+	private DoctorLabDoctorReferenceRepository doctorLabDoctorReferenceRepository;
 
 	@Autowired
 	private SMSServices smsServices;
@@ -134,8 +142,14 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Value(value = "${sms.add.doctor.Lab.report.to.doctor}")
 	private String doctorSMSText;
 
+	@Value(value = "${sms.doctor.Lab.report.to.reference.doctor}")
+	private String refernceSMSTextToDoctor;
+
 	@Value(value = "${image.path}")
 	private String imagePath;
+
+	@Value(value = "${mail.signup..doctor.refenrence.subject}")
+	private String referenceRequestSubject;
 
 	private static Logger logger = Logger.getLogger(DoctorLabServiceImpl.class.getName());
 
@@ -452,6 +466,16 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					DoctorLabReportCollection.class, DoctorLabReportResponse.class);
 			response = aggregationResults.getMappedResults();
 			for (DoctorLabReportResponse doctorLabReportResponse : response) {
+				if (!doctorLab && !DPDoctorUtils.anyStringEmpty(doctorLabReportResponse.getPatientId())) {
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							new ObjectId(doctorLabReportResponse.getPatientId()), new ObjectId(locationId),
+							new ObjectId(hospitalId), false);
+					if (patientCollection != null) {
+						doctorLabReportResponse.setPatientRegistered(true);
+					}
+
+				}
+
 				if (doctorLabReportResponse.getRecordsFiles() != null) {
 					for (RecordsFile recordsFile : doctorLabReportResponse.getRecordsFiles()) {
 
@@ -766,8 +790,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		try {
 			DoctorLabDoctorReferenceCollection referenceCollection = new DoctorLabDoctorReferenceCollection();
 			BeanUtil.map(request, referenceCollection);
+			LocationCollection locationCollection = locationRepository.findOne(referenceCollection.getLocationId());
 			UserCollection userCollection = userRepository.findOne(referenceCollection.getDoctorId());
-			if (userCollection == null) {
+			if (userCollection == null && locationCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "User not found");
 			}
 			referenceCollection.setCreatedBy(
@@ -775,6 +800,35 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 							+ userCollection.getFirstName());
 			referenceCollection.setCreatedTime(new Date());
 			referenceCollection.setAdminCreatedTime(new Date());
+			referenceCollection = doctorLabDoctorReferenceRepository.save(referenceCollection);
+
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			smsTrackDetail.setDoctorId(referenceCollection.getDoctorId());
+			smsTrackDetail.setHospitalId(referenceCollection.getHospitalId());
+			smsTrackDetail.setLocationId(referenceCollection.getLocationId());
+			smsTrackDetail.setType(ComponentType.DOCTOR_REFERNCE.getType());
+			SMSDetail smsDetail = new SMSDetail();
+			smsDetail.setUserName(referenceCollection.getFirstName());
+			SMS sms = new SMS();
+			String message = refernceSMSTextToDoctor;
+			sms.setSmsText(message.replace("{doctorName}", referenceCollection.getFirstName()).replace("{labName}",
+					locationCollection.getLocationName()));
+			SMSAddress smsAddress = new SMSAddress();
+			smsAddress.setRecipient(referenceCollection.getMobileNumber());
+			sms.setSmsAddress(smsAddress);
+			smsDetail.setSms(sms);
+			smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			smsDetails.add(smsDetail);
+			smsTrackDetail.setSmsDetails(smsDetails);
+			smsServices.sendSMS(smsTrackDetail, true);
+
+			String body = mailBodyGenerator.generateDoctorReferenceEmailBody(referenceCollection.getFirstName(),
+					referenceCollection.getMobileNumber(), referenceCollection.getLocationName(),
+					locationCollection.getLocationName());
+			mailService.sendEmail(mailTo,
+					referenceRequestSubject.replace("{labName}", locationCollection.getLocationName()), body, null);
+
 			response = true;
 		} catch (Exception e) {
 			logger.error(e);

@@ -16,14 +16,7 @@ public class DoctorLabDoctorReferenceCollection extends GenericCollection {
 	private String mobileNumber;
 	@Field
 	private String locationName;
-	@Field
-	private String streetAddress;
-	@Field
-	private String city;
-	@Field
-	private String state;
-	@Field
-	private String country;
+
 	@Field
 	private ObjectId doctorId;
 	@Field
@@ -55,36 +48,12 @@ public class DoctorLabDoctorReferenceCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getStreetAddress() {
-		return streetAddress;
-	}
-
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
-
 	public String getLocationName() {
 		return locationName;
 	}
 
 	public void setLocationName(String locationName) {
 		this.locationName = locationName;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
 	}
 
 	public ObjectId getId() {
@@ -111,19 +80,10 @@ public class DoctorLabDoctorReferenceCollection extends GenericCollection {
 		this.mobileNumber = mobileNumber;
 	}
 
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
 	@Override
 	public String toString() {
 		return "DoctorLabDoctorReferenceCollection [id=" + id + ", firstName=" + firstName + ", mobileNumber="
-				+ mobileNumber + ", locationName=" + locationName + ", streetAddress=" + streetAddress + ", city="
-				+ city + ", state=" + state + ", country=" + country + ", doctorId=" + doctorId + ", locationId="
+				+ mobileNumber + ", locationName=" + locationName + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + "]";
 	}
 }

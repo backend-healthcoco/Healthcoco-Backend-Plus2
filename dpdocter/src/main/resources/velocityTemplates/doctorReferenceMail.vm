@@ -1,0 +1,11 @@
+<html>
+<body>
+	Hello Healthcoco Team,
+	<br>
+	<br> You have got reference for doctor singup from ${labName}. Following are the details :
+	<br> Name : ${fName}
+	<br> Mobile number : ${mobileNumber}
+	<br> clinic Name : ${locationName}
+	
+</body>
+</html>
