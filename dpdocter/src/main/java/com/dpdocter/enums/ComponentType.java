@@ -13,10 +13,13 @@ public enum ComponentType {
 																	"REFRESH_REQUEST"), REFRESH_RESPONSE(
 																			"REFRESH_RESPONSE"), OT_REPORTS(
 																					"OT_REPORTS"), DELIVERY_REPORTS(
+
 																							"DELIVERY_REPORTS"), DOCTOR_LAB_REPORTS(
 																									"DOCTOR_LAB_REPORTS"), CERTIFICATE(
 																											"CERTIFICATE"), DOCTOR_REFERNCE(
-																													"DOCTOR_REFERNCE");
+																													"DOCTOR_REFERNCE")
+
+	, DENTAL_WORKS("DENTAL_WORKS"), DENTAL_LAB_REQUEST("DENTAL_LAB_REQUEST");
 
 	private String type;
 
