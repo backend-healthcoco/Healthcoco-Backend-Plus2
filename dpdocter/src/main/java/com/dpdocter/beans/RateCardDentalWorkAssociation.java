@@ -13,6 +13,7 @@ public class RateCardDentalWorkAssociation extends GenericCollection {
 	private Double cost;
 	private Boolean isAvailable = true;
 	private DentalWork dentalWork;
+	private Boolean discarded = false;
 
 	public String getId() {
 		return id;
@@ -84,6 +85,14 @@ public class RateCardDentalWorkAssociation extends GenericCollection {
 
 	public void setDentalWork(DentalWork dentalWork) {
 		this.dentalWork = dentalWork;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	@Override

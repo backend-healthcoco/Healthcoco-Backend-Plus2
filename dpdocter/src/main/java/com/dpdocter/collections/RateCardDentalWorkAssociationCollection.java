@@ -24,6 +24,8 @@ public class RateCardDentalWorkAssociationCollection extends GenericCollection {
 	private Double cost;
 	@Field
 	private Boolean isAvailable = true;
+	@Field
+	private Boolean discarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -87,6 +89,14 @@ public class RateCardDentalWorkAssociationCollection extends GenericCollection {
 
 	public void setIsAvailable(Boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 }
