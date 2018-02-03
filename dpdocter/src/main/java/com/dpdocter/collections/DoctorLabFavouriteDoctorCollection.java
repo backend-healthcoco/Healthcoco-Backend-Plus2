@@ -1,13 +1,11 @@
 package com.dpdocter.collections;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "doctor_lab_fev_doctor_cl")
+@Document(collection = "doctor_lab_fav_doctor_cl")
 public class DoctorLabFavouriteDoctorCollection extends GenericCollection {
 
 	@Id
