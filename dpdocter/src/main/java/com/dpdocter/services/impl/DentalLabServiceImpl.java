@@ -601,11 +601,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
 						Aggregation.unwind("dentalWork"),
-						/*
-						 * Aggregation.lookup("specimen_cl",
-						 * "diagnosticTest.specimenId", "_id", "specimen"),
-						 * Aggregation.unwind("specimen"),
-						 */
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
@@ -732,46 +727,20 @@ public class DentalLabServiceImpl implements DentalLabService {
 								.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
 						LocationCollection locationCollection = locationRepository
 								.findOne(collectionBoyDoctorAssociationCollection.getDentalLabId());
-						// throw new Exception("Collection boy " +
-						// collectionBoyCollection.getName() + " is already
-						// assigned to " + locationCollection.getLocationName()
-						// + ". Please select another lab / collection boy");
 						throw new BusinessException(ServiceError.Unknown,
 								"Collection boy " + collectionBoyCollection.getName() + " is already assigned to "
 										+ locationCollection.getLocationName()
 										+ ". Please select another lab / collection boy");
 					}
 					ObjectId oldId = collectionBoyDoctorAssociationCollection.getId();
-
-					BeanUtil.map(collectionBoyDoctorAssociationCollection, collectionBoyDoctorAssociationCollection);
+					BeanUtil.map(collectionBoyDoctorAssociation, collectionBoyDoctorAssociationCollection);
 					collectionBoyDoctorAssociationCollection.setId(oldId);
 				}
 				collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 						.save(collectionBoyDoctorAssociationCollection);
 			}
-			
-			response =true;
-			
-			/*Aggregation aggregation = null;
-			Criteria criteria = new Criteria();*/
-			/*if (!DPDoctorUtils.anyStringEmpty(request.get(0).getParentLabId())) {
-				criteria.and("parentLabId").is(new ObjectId(collectionBoyDoctorAssociationCollection.get(0).getParentLabId()));
-			}
-			criteria.and("isActive").is(true);
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-					Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<CollectionBoyLabAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
-					aggregation, CollectionBoyLabAssociationCollection.class,
-					CollectionBoyLabAssociationLookupResponse.class);
-			lookupResponses = aggregationResults.getMappedResults();
-			if (lookupResponses != null) {
-				locations = new ArrayList<Location>();
-				for (CollectionBoyLabAssociationLookupResponse lookupResponse : lookupResponses) {
-					locations.add(lookupResponse.getLocation());
-				}
-			}*/
 
+			response =true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn(e);
