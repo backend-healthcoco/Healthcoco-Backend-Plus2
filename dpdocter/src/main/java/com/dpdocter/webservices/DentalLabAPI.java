@@ -400,7 +400,7 @@ public class DentalLabAPI {
 	}
 	
 	@Path(value = PathProxy.DentalLabUrls.UPDATE_ETA)
-	@GET
+	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_ETA, notes = PathProxy.DentalLabUrls.UPDATE_ETA)
 	public Response<Boolean> updateETA(UpdateETARequest request) {
 		if (request == null) {
