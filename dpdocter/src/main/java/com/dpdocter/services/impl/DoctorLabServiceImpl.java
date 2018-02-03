@@ -940,7 +940,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public Boolean DiscardFavouriteDoctor(String id, Boolean isdiscarded) {
+	public Boolean DiscardFavouriteDoctor(String id) {
 		Boolean response = false;
 		try {
 			DoctorLabFavouriteDoctorCollection favouriteDoctorCollection = doctorLabFevouriteDoctorRepository
@@ -949,7 +949,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				throw new BusinessException(ServiceError.NoRecord, "No Fevourite Doctor found with Id");
 			}
 
-			favouriteDoctorCollection.setDiscarded(isdiscarded);
+			favouriteDoctorCollection.setDiscarded(!favouriteDoctorCollection.getDiscarded());
 
 			favouriteDoctorCollection.setUpdatedTime(new Date());
 			doctorLabFevouriteDoctorRepository.save(favouriteDoctorCollection);
@@ -964,7 +964,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public Boolean DiscardDoctorLabReports(String reportId, Boolean isdiscarded) {
+	public Boolean DiscardDoctorLabReports(String reportId) {
 		Boolean response = false;
 		try {
 			DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
@@ -972,7 +972,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			if (doctorLabReportCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No report found with reportId");
 			}
-			doctorLabReportCollection.setDiscarded(isdiscarded);
+			doctorLabReportCollection.setDiscarded(!doctorLabReportCollection.getDiscarded());
 
 			doctorLabReportCollection.setUpdatedTime(new Date());
 			doctorLabReportRepository.save(doctorLabReportCollection);
