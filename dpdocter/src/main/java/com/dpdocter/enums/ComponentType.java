@@ -12,7 +12,15 @@ public enum ComponentType {
 													"USER_RECORD"), DUE_AMOUNT("DUE_AMOUNT"), ADMIT_CARD(
 															"ADMIT_CARD"), LAB_REQUEST("LAB_REQUEST"), REFRESH_REQUEST(
 																	"REFRESH_REQUEST"), REFRESH_RESPONSE(
-																			"REFRESH_RESPONSE"), OT_REPORTS("OT_REPORTS"), DELIVERY_REPORTS("DELIVERY_REPORTS");
+
+																			"REFRESH_RESPONSE"), OT_REPORTS(
+																					"OT_REPORTS"), DELIVERY_REPORTS(
+																							"DELIVERY_REPORTS"), DOCTOR_LAB_REPORTS(
+																									"DOCTOR_LAB_REPORTS"), CERTIFICATE(
+																											"CERTIFICATE"), DOCTOR_REFERNCE(
+																													"DOCTOR_REFERNCE"), DENTAL_WORKS(
+																															"DENTAL_WORKS"), DENTAL_LAB_REQUEST(
+																																	"DENTAL_LAB_REQUEST");
 
 	private String type;
 
