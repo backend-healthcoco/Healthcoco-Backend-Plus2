@@ -372,7 +372,7 @@ public class DentalLabAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(dentalLabService.updateDentalStageForDoctor(request));
+		response.setData(dentalLabService.updateDentalStageForLab(request));
 		return response;
 	}
 
