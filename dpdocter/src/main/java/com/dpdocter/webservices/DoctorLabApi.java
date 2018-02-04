@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -239,7 +240,7 @@ public class DoctorLabApi {
 	}
 
 	@Path(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
-	@GET
+	@DELETE
 	@ApiOperation(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR, notes = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
 	public Response<Boolean> DiscardFavouriteDoctor(@PathParam("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
@@ -253,7 +254,7 @@ public class DoctorLabApi {
 	}
 
 	@Path(value = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS)
-	@GET
+	@DELETE
 	@ApiOperation(value = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS, notes = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS)
 	public Response<Boolean> DiscardDoctorLabReports(@PathParam("reportId") String reportId) {
 		if (DPDoctorUtils.anyStringEmpty(reportId)) {
