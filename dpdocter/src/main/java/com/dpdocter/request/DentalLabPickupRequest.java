@@ -2,7 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-
 import com.dpdocter.beans.DentalWorksSample;
 
 public class DentalLabPickupRequest {
@@ -13,7 +12,7 @@ public class DentalLabPickupRequest {
 	private String mobileNumber;
 	private String gender;
 	private Integer age;
-	private List<DentalWorksSample> dentalWorksSamples;
+	private List<DentalWorksSampleRequest> dentalWorksSamples;
 	private String crn;
 	private Long pickupTime;
 	private Long deliveryTime;
@@ -30,6 +29,7 @@ public class DentalLabPickupRequest {
 	private String collectionBoyId;
 	private String serialNumber;
 	private String reasonForCancel;
+	private String cancelledBy;
 
 	public String getId() {
 		return id;
@@ -63,11 +63,11 @@ public class DentalLabPickupRequest {
 		this.mobileNumber = mobileNumber;
 	}
 
-	public List<DentalWorksSample> getDentalWorksSamples() {
+	public List<DentalWorksSampleRequest> getDentalWorksSamples() {
 		return dentalWorksSamples;
 	}
 
-	public void setDentalWorksSamples(List<DentalWorksSample> dentalWorksSamples) {
+	public void setDentalWorksSamples(List<DentalWorksSampleRequest> dentalWorksSamples) {
 		this.dentalWorksSamples = dentalWorksSamples;
 	}
 
@@ -213,6 +213,14 @@ public class DentalLabPickupRequest {
 
 	public void setReasonForCancel(String reasonForCancel) {
 		this.reasonForCancel = reasonForCancel;
+	}
+
+	public String getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(String cancelledBy) {
+		this.cancelledBy = cancelledBy;
 	}
 
 	@Override

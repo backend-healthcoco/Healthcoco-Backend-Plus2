@@ -9,6 +9,7 @@ import com.dpdocter.beans.DentalWorksSample;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.request.DentalWorksSampleRequest;
 
 public class DentalLabPickupResponse extends GenericCollection {
 
@@ -18,7 +19,7 @@ public class DentalLabPickupResponse extends GenericCollection {
 	private String mobileNumber;
 	private String gender;
 	private Integer age;
-	private List<DentalWorksSample> dentalWorksSamples;
+	private List<DentalWorksSampleRequest> dentalWorksSamples;
 	private String crn;
 	private Long pickupTime;
 	private Long deliveryTime;
@@ -38,6 +39,7 @@ public class DentalLabPickupResponse extends GenericCollection {
 	private User doctor;
 	private CollectionBoy collectionBoy;
 	private String reasonForCancel;
+	private String cancelledBy;
 
 	public String getId() {
 		return id;
@@ -87,11 +89,11 @@ public class DentalLabPickupResponse extends GenericCollection {
 		this.age = age;
 	}
 
-	public List<DentalWorksSample> getDentalWorksSamples() {
+	public List<DentalWorksSampleRequest> getDentalWorksSamples() {
 		return dentalWorksSamples;
 	}
 
-	public void setDentalWorksSamples(List<DentalWorksSample> dentalWorksSamples) {
+	public void setDentalWorksSamples(List<DentalWorksSampleRequest> dentalWorksSamples) {
 		this.dentalWorksSamples = dentalWorksSamples;
 	}
 
@@ -245,6 +247,14 @@ public class DentalLabPickupResponse extends GenericCollection {
 
 	public void setReasonForCancel(String reasonForCancel) {
 		this.reasonForCancel = reasonForCancel;
+	}
+
+	public String getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(String cancelledBy) {
+		this.cancelledBy = cancelledBy;
 	}
 
 	@Override

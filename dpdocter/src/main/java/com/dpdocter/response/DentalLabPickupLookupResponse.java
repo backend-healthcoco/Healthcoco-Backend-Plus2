@@ -1,14 +1,14 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.dpdocter.beans.CollectionBoy;
+import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.Location;
+import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.request.DentalLabPickupRequest;
 
-import common.util.web.JacksonUtil;
-
-public class DentalLabPickup extends GenericCollection {
+public class DentalLabPickupLookupResponse extends GenericCollection {
 
 	private String id;
 	private String patientId;
@@ -29,11 +29,12 @@ public class DentalLabPickup extends GenericCollection {
 	private String requestId;
 	private Boolean isAcceptedAtLab = false;
 	private Boolean isCompleted = false;
-	private Boolean isCollectedAtDoctor = false;
 	private String collectionBoyId;
+	private Boolean isCollectedAtDoctor = false;
 	private String serialNumber;
-	private User doctor;
 	private Location dentalLab;
+	private User doctor;
+	private CollectionBoy collectionBoy;
 	private String reasonForCancel;
 	private String cancelledBy;
 
@@ -43,6 +44,14 @@ public class DentalLabPickup extends GenericCollection {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
 	public String getPatientName() {
@@ -189,20 +198,20 @@ public class DentalLabPickup extends GenericCollection {
 		this.collectionBoyId = collectionBoyId;
 	}
 
+	public Boolean getIsCollectedAtDoctor() {
+		return isCollectedAtDoctor;
+	}
+
+	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
+		this.isCollectedAtDoctor = isCollectedAtDoctor;
+	}
+
 	public String getSerialNumber() {
 		return serialNumber;
 	}
 
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
-	}
-
-	public User getDoctor() {
-		return doctor;
-	}
-
-	public void setDoctor(User doctor) {
-		this.doctor = doctor;
 	}
 
 	public Location getDentalLab() {
@@ -213,20 +222,20 @@ public class DentalLabPickup extends GenericCollection {
 		this.dentalLab = dentalLab;
 	}
 
-	public String getPatientId() {
-		return patientId;
+	public User getDoctor() {
+		return doctor;
 	}
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
+	public void setDoctor(User doctor) {
+		this.doctor = doctor;
 	}
 
-	public Boolean getIsCollectedAtDoctor() {
-		return isCollectedAtDoctor;
+	public CollectionBoy getCollectionBoy() {
+		return collectionBoy;
 	}
 
-	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
-		this.isCollectedAtDoctor = isCollectedAtDoctor;
+	public void setCollectionBoy(CollectionBoy collectionBoy) {
+		this.collectionBoy = collectionBoy;
 	}
 
 	public String getReasonForCancel() {
@@ -245,15 +254,4 @@ public class DentalLabPickup extends GenericCollection {
 		this.cancelledBy = cancelledBy;
 	}
 
-	@Override
-	public String toString() {
-		return "DentalLabPickup [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber
-				+ ", gender=" + gender + ", age=" + age + ", dentalWorksSamples=" + dentalWorksSamples + ", crn=" + crn
-				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", status=" + status + ", doctorId="
-				+ doctorId + ", dentalLabId=" + dentalLabId + ", discarded=" + discarded + ", numberOfSamplesRequested="
-				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
-				+ requestId + ", isAcceptedAtLab=" + isAcceptedAtLab + ", isCompleted=" + isCompleted
-				+ ", collectionBoyId=" + collectionBoyId + ", serialNumber=" + serialNumber + ", doctor=" + doctor
-				+ ", dentalLab=" + dentalLab + "]";
-	}
 }
