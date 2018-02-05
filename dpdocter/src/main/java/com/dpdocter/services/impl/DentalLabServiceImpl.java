@@ -905,7 +905,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("dentalLab.locationName").regex("^" + searchTerm),
 						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
-						new Criteria("doctor.firstName").regex("^" + searchTerm));
+						new Criteria("doctor.firstName").regex("^" + searchTerm),
+						new Criteria("patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientName").regex("^" + searchTerm));
 			}
 
 			if (size > 0)
@@ -1181,6 +1183,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 						dentalWorksSample.setDentalStagesForDoctor(dentalStages);
 						dentalWorksSample.setProcessStatus(request.getProcessStatus());
+						if(request.getIsCompleted() != null)
+						{
+							dentalWorksSample.setIsCompleted(request.getIsCompleted());
+						}
 					}
 				}
 				dentalLabPickupCollection.setStatus(request.getStatus());
@@ -1244,6 +1250,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 					}
 						dentalWorksSample.setDentalStagesForLab(dentalStages);
 						dentalWorksSample.setProcessStatus(request.getProcessStatus());
+						if(request.getIsCompleted() != null)
+						{
+							dentalWorksSample.setIsCompleted(request.getIsCompleted());
+						}
 					}
 				}
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
@@ -1354,4 +1364,23 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public Boolean discardRequest(String requestId, Boolean discarded) {
+		Boolean response = false;
+		try {
+			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
+					.findOne(new ObjectId(requestId));
+			if (dentalLabPickupCollection != null) {
+				dentalLabPickupCollection.setDiscarded(discarded);
+				response = true;
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 }

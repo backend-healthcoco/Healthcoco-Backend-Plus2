@@ -11,6 +11,7 @@ public class UpdateDentalStagingRequest {
 	private List<DentalStageRequest> dentalStages;
 	private String status;
 	private String processStatus;
+	private Boolean isCompleted;
 
 	public String getRequestId() {
 		return requestId;
@@ -50,6 +51,14 @@ public class UpdateDentalStagingRequest {
 
 	public void setProcessStatus(String processStatus) {
 		this.processStatus = processStatus;
+	}
+
+	public Boolean getIsCompleted() {
+		return isCompleted;
+	}
+
+	public void setIsCompleted(Boolean isCompleted) {
+		this.isCompleted = isCompleted;
 	}
 
 }

@@ -97,6 +97,8 @@ public interface DentalLabService {
 
 	Boolean cancelRequest(String requestId, String reasonOfCancellation, String cancelledBy);
 
+	Boolean discardRequest(String requestId, Boolean discarded);
+
 
 	/*
 	 * DentalLabDoctorAssociation
