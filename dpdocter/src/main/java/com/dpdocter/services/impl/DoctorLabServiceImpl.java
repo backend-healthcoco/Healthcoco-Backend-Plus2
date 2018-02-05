@@ -466,7 +466,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					DoctorLabReportCollection.class, DoctorLabReportResponse.class);
 			response = aggregationResults.getMappedResults();
 			for (DoctorLabReportResponse doctorLabReportResponse : response) {
-				if (!doctorLab && !DPDoctorUtils.anyStringEmpty(doctorLabReportResponse.getPatientId())) {
+				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportResponse.getPatientId())) {
 					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
 							new ObjectId(doctorLabReportResponse.getPatientId()), new ObjectId(locationId),
 							new ObjectId(hospitalId), false);
