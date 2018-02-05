@@ -8,6 +8,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -392,9 +393,9 @@ public class DentalLabAPI {
 	}
 	
 	@Path(value = PathProxy.DentalLabUrls.CANCEL_REQUEST)
-	@POST
+	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.CANCEL_REQUEST, notes = PathProxy.DentalLabUrls.CANCEL_REQUEST)
-	public Response<Boolean> changeStatus(@QueryParam("requestId") String requestId,
+	public Response<Boolean> cancelRequest(@QueryParam("requestId") String requestId,
 			@QueryParam("reasonForCancel") String reasonForCancel , @QueryParam("cancelledBy") String cancelledBy) {
 		if (requestId == null) {
 		//	logger.warn("Invalid Input");
@@ -402,6 +403,20 @@ public class DentalLabAPI {
 		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(dentalLabService.cancelRequest(requestId, reasonForCancel, cancelledBy));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.DISCARD_REQUEST)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.DISCARD_REQUEST, notes = PathProxy.DentalLabUrls.DISCARD_REQUEST)
+	public Response<Boolean> discardRequest(@PathParam("requestId") String requestId,
+			@QueryParam("discarded") Boolean discarded ) {
+		if (requestId == null) {
+		//	logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.discardRequest(requestId, discarded));
 		return response;
 	}
 	
