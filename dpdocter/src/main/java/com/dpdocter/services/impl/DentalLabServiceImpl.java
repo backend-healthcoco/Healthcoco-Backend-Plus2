@@ -1163,7 +1163,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Transactional
 	public Boolean updateDentalStageForDoctor(UpdateDentalStagingRequest request) {
 		Boolean response = false;
-		List<DentalStage> dentalStages = new ArrayList<>();
+		
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
 					.findOne(new ObjectId(request.getRequestId()));
@@ -1171,7 +1171,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
 
 				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
+					
 					if (dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId())) {
+						List<DentalStage> dentalStages = new ArrayList<>();
 						for (DentalStageRequest dentalStageRequest : request.getDentalStages()) {
 							DentalStage dentalStage = new DentalStage();
 							BeanUtil.map(dentalStageRequest, dentalStage);
@@ -1225,7 +1227,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Transactional
 	public Boolean updateDentalStageForLab(UpdateDentalStagingRequest request) {
 		Boolean response = false;
-		List<DentalStage> dentalStages = new ArrayList<>();
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
 					.findOne(new ObjectId(request.getRequestId()));
@@ -1235,6 +1236,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection.setStatus(request.getStatus());
 				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
 					if (dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId())) {
+					List<DentalStage> dentalStages = new ArrayList<>();
 					for (DentalStageRequest dentalStageRequest : request.getDentalStages()) {
 						DentalStage dentalStage = new DentalStage();
 						BeanUtil.map(dentalStageRequest, dentalStage);
