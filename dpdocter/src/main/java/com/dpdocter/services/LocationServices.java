@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
@@ -37,7 +39,8 @@ public interface LocationServices {
 
 	Boolean verifyCRN(String locationId, String crn, String requestId);
 
-	//List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm);
+	// List<CollectionBoyResponse> getCollectionBoyList(int size, int page,
+	// String locationId, String searchTerm);
 
 	// List<Location> getAssociatedLabs(String locationId, Boolean isParent);
 
@@ -47,7 +50,7 @@ public interface LocationServices {
 
 	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
 			String rateCardId, String labId, Boolean discarded);
-	
+
 	RateCard addEditRateCard(RateCard request);
 
 	List<RateCard> getRateCards(int page, int size, String searchTerm, String locationId);
@@ -69,9 +72,10 @@ public interface LocationServices {
 	RateCardLabAssociation addEditRateCardAssociatedLab(RateCardLabAssociation rateCardLabAssociation);
 
 	RateCardLabAssociation getRateCardAssociatedLab(String daughterLabId, String parentLabId);
-/*
-	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
-			String searchTerm);*/
+	/*
+	 * List<Location> getClinics(int page, int size, String hospitalId, Boolean
+	 * isClinic, Boolean isLab, Boolean isParent, String searchTerm);
+	 */
 
 	// Integer getCBCount(int size, int page, String locationId, String
 	// searchTerm);
@@ -103,7 +107,7 @@ public interface LocationServices {
 	// List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int
 	// size, int page);
 
-	Integer getCBCount(String locationId, String searchTerm , String labType);
+	Integer getCBCount(String locationId, String searchTerm, String labType);
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm, int page, int size);
 
@@ -137,4 +141,6 @@ public interface LocationServices {
 
 	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
 			Boolean isDentalWorksLab, Boolean isDentalImagingLab, String searchTerm);
+
+	public List<LabTestPickupLookupResponse> getLabTestPickupByIds(List<ObjectId> requestIds);
 }

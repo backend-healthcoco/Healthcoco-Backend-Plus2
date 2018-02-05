@@ -1447,6 +1447,8 @@ public interface PathProxy {
 		public static final String ADD_EDIT_DENTAL_WORKS = "/addEditDentalWorks";
 		public static final String GET_DENTAL_WORKS = "/getDentalWorks";
 		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
+		public static final String DOWNLOAD_PARENT_LAB_REQUISATION_FORM = "/parentlab/download/requisationForm";
+		public static final String DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM = "/doughterlab/download/requisationForm";
 
 	}
 
@@ -1597,7 +1599,7 @@ public interface PathProxy {
 		public static final String GET_RATE_CARD_WORKS_BY_RATE_CARD = "/getRateCardWorkByRateCard";
 		public static final String CANCEL_REQUEST = "/cancelRequest";
 		public static final String UPDATE_ETA = "/updateETA";
-		
+
 	}
 
 	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";

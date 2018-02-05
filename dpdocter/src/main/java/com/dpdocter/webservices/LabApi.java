@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -133,8 +134,9 @@ public class LabApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Object> response = new Response<Object>();
-		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm ,LabType.DIAGNOSTIC.getType()));
-		response.setData(locationServices.getCBCount(locationId, searchTerm , LabType.DIAGNOSTIC.getType()));
+		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm,
+				LabType.DIAGNOSTIC.getType()));
+		response.setData(locationServices.getCBCount(locationId, searchTerm, LabType.DIAGNOSTIC.getType()));
 
 		return response;
 	}
@@ -354,11 +356,13 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_CLINICS_AND_LABS, notes = PathProxy.LabUrls.GET_CLINICS_AND_LABS)
 	public Response<Location> getClinics(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "isClinic") Boolean isClinic,
-			@QueryParam(value = "isLab") Boolean isLab, @QueryParam(value = "isDentalWorksLab") Boolean isDentalWorksLab ,  @QueryParam(value = "isDentalImagingLab") Boolean isDentalImagingLab ,  @QueryParam(value = "isParent") Boolean isParent,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+			@QueryParam(value = "isLab") Boolean isLab,
+			@QueryParam(value = "isDentalWorksLab") Boolean isDentalWorksLab,
+			@QueryParam(value = "isDentalImagingLab") Boolean isDentalImagingLab,
+			@QueryParam(value = "isParent") Boolean isParent, @QueryParam(value = "searchTerm") String searchTerm) {
 
-		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent, isDentalWorksLab , isDentalImagingLab,
-				searchTerm);
+		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent,
+				isDentalWorksLab, isDentalImagingLab, searchTerm);
 
 		Response<Location> response = new Response<Location>();
 		response.setDataList(locations);
@@ -714,7 +718,6 @@ public class LabApi {
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS)
 	@POST
 	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS, notes = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS)
@@ -732,8 +735,8 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_DENTAL_WORKS)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_DENTAL_WORKS, notes = PathProxy.LabUrls.GET_DENTAL_WORKS)
-	public Response<Object> getDentalWorks(@QueryParam("locationId") String locationId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+	public Response<Object> getDentalWorks(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -742,6 +745,31 @@ public class LabApi {
 		response.setDataList(locationServices.getCustomWorks(page, size, searchTerm));
 		return response;
 	}
-	
-	
+
+	@Path(value = PathProxy.LabUrls.DOWNLOAD_PARENT_LAB_REQUISATION_FORM)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.DOWNLOAD_PARENT_LAB_REQUISATION_FORM, notes = PathProxy.LabUrls.DOWNLOAD_PARENT_LAB_REQUISATION_FORM)
+	public Response<String> downloadFormForParentLab(@MatrixParam("requestIds") List<String> requestIds) {
+		if (requestIds == null || requestIds.isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(labReportsService.downloadLabreportPrintforParent(requestIds, true));
+		return response;
+	}
+
+	@Path(value = PathProxy.LabUrls.DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM, notes = PathProxy.LabUrls.DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM)
+	public Response<String> downloadFormForDoughterLab(@MatrixParam("requestIds") List<String> requestIds) {
+		if (requestIds == null || requestIds.isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(labReportsService.downloadLabreportPrintforParent(requestIds, false));
+		return response;
+	}
+
 }
