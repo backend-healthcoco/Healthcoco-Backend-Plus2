@@ -3,13 +3,13 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.apache.velocity.runtime.directive.Foreach;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -935,39 +935,46 @@ public class DentalLabServiceImpl implements DentalLabService {
 					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
 			lookupResponses = aggregationResults.getMappedResults();
 			
-			if (lookupResponses != null)
+			if (lookupResponses != null) {
 				response = new ArrayList<>();
-			List<DentalStageRequest> dentalStageRequestsForDoctor = new ArrayList<>();
-			List<DentalStageRequest> dentalStageRequestsForLab = new ArrayList<>();
-			List<DentalWorksSampleRequest> dentalWorksSampleRequests = new ArrayList<>();
-			for (DentalLabPickupLookupResponse dentalLabPickupLookupResponse : lookupResponses) {
-				DentalLabPickupResponse dentalLabPickupResponse = new DentalLabPickupResponse();
-				BeanUtil.map(dentalLabPickupLookupResponse, dentalLabPickupResponse);
-				for (DentalWorksSample dentalWorksSample : dentalLabPickupLookupResponse.getDentalWorksSamples()) {
-					DentalWorksSampleRequest dentalWorksSampleRequest = new DentalWorksSampleRequest();
-					BeanUtil.map(dentalWorksSample, dentalWorksSampleRequest);
-					if (dentalWorksSample.getDentalStagesForDoctor() != null) {
-						for (DentalStage dentalStage : dentalWorksSample.getDentalStagesForDoctor()) {
-							DentalStageRequest dentalStageRequest = new DentalStageRequest();
-							BeanUtil.map(dentalStage, dentalStageRequest);
-							dentalStageRequestsForDoctor.add(dentalStageRequest);
+				
+				for (DentalLabPickupLookupResponse dentalLabPickupLookupResponse : lookupResponses) {
+					List<DentalStageRequest> dentalStageRequestsForDoctor = null;
+					List<DentalStageRequest> dentalStageRequestsForLab = null;
+					List<DentalWorksSampleRequest> dentalWorksSampleRequests =  new ArrayList<>();
+					//System.out.println( " lookup response :: " + dentalLabPickupLookupResponse);
+					DentalLabPickupResponse dentalLabPickupResponse = new DentalLabPickupResponse();
+					BeanUtil.map(dentalLabPickupLookupResponse, dentalLabPickupResponse);
+					
+					for (DentalWorksSample dentalWorksSample : dentalLabPickupLookupResponse.getDentalWorksSamples()) {
+						//sSystem.out.println( " work sample:: " + dentalLabPickupLookupResponse.getDentalWorksSamples());
+						DentalWorksSampleRequest dentalWorksSampleRequest = new DentalWorksSampleRequest();
+						BeanUtil.map(dentalWorksSample, dentalWorksSampleRequest);
+						if (dentalWorksSample.getDentalStagesForDoctor() != null) {
+							dentalStageRequestsForDoctor = new ArrayList<>(); 
+							for (DentalStage dentalStage : dentalWorksSample.getDentalStagesForDoctor()) {
+								DentalStageRequest dentalStageRequest = new DentalStageRequest();
+								BeanUtil.map(dentalStage, dentalStageRequest);
+								dentalStageRequestsForDoctor.add(dentalStageRequest);
+							}
 						}
-					}
-					if (dentalWorksSample.getDentalStagesForLab() != null) {
-						for (DentalStage dentalStage : dentalWorksSample.getDentalStagesForLab()) {
-							DentalStageRequest dentalStageRequest = new DentalStageRequest();
-							BeanUtil.map(dentalStage, dentalStageRequest);
-							dentalStageRequestsForLab.add(dentalStageRequest);
+						if (dentalWorksSample.getDentalStagesForLab() != null) {
+							dentalStageRequestsForLab = new ArrayList<>();
+							for (DentalStage dentalStage : dentalWorksSample.getDentalStagesForLab()) {
+								DentalStageRequest dentalStageRequest = new DentalStageRequest();
+								BeanUtil.map(dentalStage, dentalStageRequest);
+								dentalStageRequestsForLab.add(dentalStageRequest);
+							}
 						}
+						dentalWorksSampleRequest.setDentalStagesForDoctor(dentalStageRequestsForDoctor);
+						dentalWorksSampleRequest.setDentalStagesForLab(dentalStageRequestsForLab);
+						dentalWorksSampleRequests.add(dentalWorksSampleRequest);
+						dentalLabPickupResponse.setDentalWorksSamples(dentalWorksSampleRequests);
+						response.add(dentalLabPickupResponse);
 					}
-					dentalWorksSampleRequest.setDentalStagesForDoctor(dentalStageRequestsForDoctor);
-					dentalWorksSampleRequest.setDentalStagesForLab(dentalStageRequestsForLab);
-					dentalWorksSampleRequests.add(dentalWorksSampleRequest);
+					
 				}
-				dentalLabPickupResponse.setDentalWorksSamples(dentalWorksSampleRequests);
-				response.add(dentalLabPickupResponse);
 			}
-			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -1286,6 +1293,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (dentalLabPickupCollection != null) {
 				dentalLabPickupCollection.setStatus("CANCELLED");
 				dentalLabPickupCollection.setReasonForCancel(reasonOfCancellation);
+				dentalLabPickupCollection.setCancelledBy(cancelledBy);
 				dentalLabPickupCollection.setDiscarded(true);
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 				if (cancelledBy.equalsIgnoreCase("DOCTOR")) {
