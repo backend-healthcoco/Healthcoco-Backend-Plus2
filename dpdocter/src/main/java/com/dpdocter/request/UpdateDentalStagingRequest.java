@@ -8,8 +8,9 @@ public class UpdateDentalStagingRequest {
 
 	private String requestId;
 	private String uniqueWorkId;
-	private List<DentalStage> dentalStages;
+	private List<DentalStageRequest> dentalStages;
 	private String status;
+	private String processStatus;
 
 	public String getRequestId() {
 		return requestId;
@@ -27,11 +28,11 @@ public class UpdateDentalStagingRequest {
 		this.uniqueWorkId = uniqueWorkId;
 	}
 
-	public List<DentalStage> getDentalStages() {
+	public List<DentalStageRequest> getDentalStages() {
 		return dentalStages;
 	}
 
-	public void setDentalStages(List<DentalStage> dentalStages) {
+	public void setDentalStages(List<DentalStageRequest> dentalStages) {
 		this.dentalStages = dentalStages;
 	}
 
@@ -41,6 +42,14 @@ public class UpdateDentalStagingRequest {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getProcessStatus() {
+		return processStatus;
+	}
+
+	public void setProcessStatus(String processStatus) {
+		this.processStatus = processStatus;
 	}
 
 }

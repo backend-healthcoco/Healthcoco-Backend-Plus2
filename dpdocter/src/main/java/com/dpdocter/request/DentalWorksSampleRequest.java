@@ -1,13 +1,17 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorkCardValue;
+import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.response.ImageURLResponse;
 
-public class DentalWorksSample {
+public class DentalWorksSampleRequest {
+
 	private DentalWork dentalWork;
 	private List<String> toothNumbers;
-	private List<DentalStage> dentalStagesForLab;
+	private List<DentalStageRequest> dentalStagesForLab;
 	private Long etaInDate;
 	private Integer etaInHour;
 	private Boolean isCompleted = false;
@@ -21,7 +25,7 @@ public class DentalWorksSample {
 	private List<DentalWorkCardValue> dentalWorkCardValues;
 	private String shade;
 	private List<String> material;
-	private List<DentalStage> dentalStagesForDoctor;
+	private List<DentalStageRequest> dentalStagesForDoctor;
 	private RateCardDentalWorkAssociation rateCardDentalWorkAssociation;
 	private String processStatus;
 
@@ -39,6 +43,14 @@ public class DentalWorksSample {
 
 	public void setToothNumbers(List<String> toothNumbers) {
 		this.toothNumbers = toothNumbers;
+	}
+
+	public List<DentalStageRequest> getDentalStagesForLab() {
+		return dentalStagesForLab;
+	}
+
+	public void setDentalStagesForLab(List<DentalStageRequest> dentalStagesForLab) {
+		this.dentalStagesForLab = dentalStagesForLab;
 	}
 
 	public Long getEtaInDate() {
@@ -113,6 +125,14 @@ public class DentalWorksSample {
 		this.uniqueWorkId = uniqueWorkId;
 	}
 
+	public List<ImageURLResponse> getDentalImages() {
+		return dentalImages;
+	}
+
+	public void setDentalImages(List<ImageURLResponse> dentalImages) {
+		this.dentalImages = dentalImages;
+	}
+
 	public List<DentalWorkCardValue> getDentalWorkCardValues() {
 		return dentalWorkCardValues;
 	}
@@ -137,19 +157,11 @@ public class DentalWorksSample {
 		this.material = material;
 	}
 
-	public List<DentalStage> getDentalStagesForLab() {
-		return dentalStagesForLab;
-	}
-
-	public void setDentalStagesForLab(List<DentalStage> dentalStagesForLab) {
-		this.dentalStagesForLab = dentalStagesForLab;
-	}
-
-	public List<DentalStage> getDentalStagesForDoctor() {
+	public List<DentalStageRequest> getDentalStagesForDoctor() {
 		return dentalStagesForDoctor;
 	}
 
-	public void setDentalStagesForDoctor(List<DentalStage> dentalStagesForDoctor) {
+	public void setDentalStagesForDoctor(List<DentalStageRequest> dentalStagesForDoctor) {
 		this.dentalStagesForDoctor = dentalStagesForDoctor;
 	}
 
@@ -161,14 +173,6 @@ public class DentalWorksSample {
 		this.rateCardDentalWorkAssociation = rateCardDentalWorkAssociation;
 	}
 
-	public List<ImageURLResponse> getDentalImages() {
-		return dentalImages;
-	}
-
-	public void setDentalImages(List<ImageURLResponse> dentalImages) {
-		this.dentalImages = dentalImages;
-	}
-
 	public String getProcessStatus() {
 		return processStatus;
 	}
@@ -176,16 +180,7 @@ public class DentalWorksSample {
 	public void setProcessStatus(String processStatus) {
 		this.processStatus = processStatus;
 	}
-
-	@Override
-	public String toString() {
-		return "DentalWorksSample [dentalWork=" + dentalWork + ", toothNumbers=" + toothNumbers
-				+ ", dentalStagesForLab=" + dentalStagesForLab + ", etaInDate=" + etaInDate + ", etaInHour=" + etaInHour
-				+ ", isCompleted=" + isCompleted + ", isUrgent=" + isUrgent + ", instructions=" + instructions
-				+ ", occlusalStaining=" + occlusalStaining + ", ponticDesign=" + ponticDesign
-				+ ", collarAndMetalDesign=" + collarAndMetalDesign + ", uniqueWorkId=" + uniqueWorkId
-				+ ", dentalWorkCardValues=" + dentalWorkCardValues + ", shade=" + shade + ", material=" + material
-				+ ", dentalStagesForDoctor=" + dentalStagesForDoctor + "]";
-	}
+	
+	
 
 }

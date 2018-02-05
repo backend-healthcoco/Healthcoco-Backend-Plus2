@@ -386,7 +386,7 @@ public class DentalLabAPI {
 	}
 	
 	@Path(value = PathProxy.DentalLabUrls.CANCEL_REQUEST)
-	@GET
+	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.CANCEL_REQUEST, notes = PathProxy.DentalLabUrls.CANCEL_REQUEST)
 	public Response<Boolean> changeStatus(@QueryParam("requestId") String requestId,
 			@QueryParam("reasonForCancel") String reasonForCancel , @QueryParam("cancelledBy") String cancelledBy) {

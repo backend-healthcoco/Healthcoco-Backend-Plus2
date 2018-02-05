@@ -1,14 +1,12 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
-import org.bson.types.ObjectId;
-
-public class DentalStage {
+public class DentalStageRequest {
 
 	private String stage;
 	private Long pickupTime;
 	private Long deliveryTime;
 	private String authorisedPerson;
-	private ObjectId staffId;
+	private String staffId;
 
 	public String getStage() {
 		return stage;
@@ -42,18 +40,18 @@ public class DentalStage {
 		this.authorisedPerson = authorisedPerson;
 	}
 
-	public ObjectId getStaffId() {
+	public String getStaffId() {
 		return staffId;
 	}
 
-	public void setStaffId(ObjectId staffId) {
+	public void setStaffId(String staffId) {
 		this.staffId = staffId;
 	}
 
 	@Override
 	public String toString() {
-		return "DentalStage [stage=" + stage + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime
-				+ ", authorisedPerson=" + authorisedPerson + "]";
+		return "DentalStageRequest [stage=" + stage + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime
+				+ ", authorisedPerson=" + authorisedPerson + ", staffId=" + staffId + "]";
 	}
 
 }
