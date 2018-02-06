@@ -668,7 +668,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId)).and("role.role").is("HOSPITAL_ADMIN");
 			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$doctor._id"), Fields.field("firstName", "$doctor.firstName")));
+					Fields.from(Fields.field("id", "$userId"), Fields.field("firstName", "$doctor.firstName")));
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("user_cl", "userId", "_id", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("role_cl", "roleId", "_id", "role"), Aggregation.unwind("role"),
@@ -729,67 +729,75 @@ public class LabReportsServiceImpl implements LabReportsService {
 					parentlabNames.add(labTestPickupLookupResponse.getParentLab().getLocationName());
 				}
 			}
-			for (PatientLabTestSample patientLabTestSample : labTestPickupLookupResponse.getPatientLabTestSamples()) {
-				labReportJasperDetail = new LabReportJasperDetail();
+			if (labTestPickupLookupResponse.getPatientLabTestSamples() != null
+					&& !labTestPickupLookupResponse.getPatientLabTestSamples().isEmpty()) {
+				for (PatientLabTestSample patientLabTestSample : labTestPickupLookupResponse
+						.getPatientLabTestSamples()) {
+					labReportJasperDetail = new LabReportJasperDetail();
 
-				labReportJasperDetail.setNo(sNo + 1);
-				if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getPatientName())) {
-					labReportJasperDetail.setPatientName(patientLabTestSample.getPatientName());
-				} else {
-					labReportJasperDetail.setPatientName("--");
-				}
-				if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getGender())) {
-					labReportJasperDetail.setGender(patientLabTestSample.getGender());
-				} else {
-					labReportJasperDetail.setGender("--");
-				}
-				if (patientLabTestSample.getAge() != null) {
-					labReportJasperDetail.setGender(labReportJasperDetail.getGender() + "/"
-							+ (patientLabTestSample.getAge() > 0 ? patientLabTestSample.getAge().toString() : "--"));
-				} else {
-					labReportJasperDetail.setGender(labReportJasperDetail.getGender() + "/" + "--");
-				}
-				for (LabTestSample labTestsample : patientLabTestSample.getLabTestSamples()) {
-
-					if (DPDoctorUtils.anyStringEmpty(labReportJasperDetail.getTest())) {
-						if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
-							labReportJasperDetail.setTest(labTestsample.getSampleType());
-
-						} else {
-							labReportJasperDetail.setTest("--");
-						}
-						if (labTestsample.getRateCardTestAssociation() != null) {
-							if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
-								labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/"
-										+ (!DPDoctorUtils.anyStringEmpty(labTestsample.getRateCardTestAssociation()
-												.getDiagnosticTest().getTestName())
-														? labTestsample.getRateCardTestAssociation().getDiagnosticTest()
-																.getTestName()
-														: "--"));
-							}
-						} else {
-							labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/" + "--");
-						}
+					labReportJasperDetail.setNo(sNo + 1);
+					if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getPatientName())) {
+						labReportJasperDetail.setPatientName(patientLabTestSample.getPatientName());
 					} else {
-						if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
-							labReportJasperDetail.setTest(",<br>" + labTestsample.getSampleType());
+						labReportJasperDetail.setPatientName("--");
+					}
+					if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getGender())) {
+						labReportJasperDetail.setGender(patientLabTestSample.getGender());
+					} else {
+						labReportJasperDetail.setGender("--");
+					}
+					if (patientLabTestSample.getAge() != null) {
+						labReportJasperDetail
+								.setGender(labReportJasperDetail.getGender() + "/" + (patientLabTestSample.getAge() > 0
+										? patientLabTestSample.getAge().toString() : "--"));
+					} else {
+						labReportJasperDetail.setGender(labReportJasperDetail.getGender() + "/" + "--");
+					}
+					if (patientLabTestSample.getLabTestSamples() != null
+							&& !patientLabTestSample.getLabTestSamples().isEmpty()) {
+						for (LabTestSample labTestsample : patientLabTestSample.getLabTestSamples()) {
 
-						} else {
-							labReportJasperDetail.setTest("--");
-						}
-						if (labTestsample.getRateCardTestAssociation() != null) {
-							if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
-								labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/"
-										+ (!DPDoctorUtils.anyStringEmpty(labTestsample.getRateCardTestAssociation()
-												.getDiagnosticTest().getTestName())
-														? labTestsample.getRateCardTestAssociation().getDiagnosticTest()
-																.getTestName()
-														: "--"));
+							if (DPDoctorUtils.anyStringEmpty(labReportJasperDetail.getTest())) {
+								if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
+									labReportJasperDetail.setTest(labTestsample.getSampleType());
+
+								} else {
+									labReportJasperDetail.setTest("--");
+								}
+								if (labTestsample.getRateCardTestAssociation() != null) {
+									if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
+										labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/"
+												+ (!DPDoctorUtils.anyStringEmpty(labTestsample
+														.getRateCardTestAssociation().getDiagnosticTest().getTestName())
+																? labTestsample.getRateCardTestAssociation()
+																		.getDiagnosticTest().getTestName()
+																: "--"));
+									}
+								} else {
+									labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/" + "--");
+								}
+							} else {
+								if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
+									labReportJasperDetail.setTest(",<br>" + labTestsample.getSampleType());
+
+								} else {
+									labReportJasperDetail.setTest("--");
+								}
+								if (labTestsample.getRateCardTestAssociation() != null) {
+									if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
+										labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/"
+												+ (!DPDoctorUtils.anyStringEmpty(labTestsample
+														.getRateCardTestAssociation().getDiagnosticTest().getTestName())
+																? labTestsample.getRateCardTestAssociation()
+																		.getDiagnosticTest().getTestName()
+																: "--"));
+									}
+								} else {
+									labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/" + "--");
+								}
+
 							}
-						} else {
-							labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/" + "--");
 						}
-
 					}
 				}
 			}
@@ -811,7 +819,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId)).and("role.role").is("HOSPITAL_ADMIN");
 			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$doctor._id"), Fields.field("firstName", "$doctor.firstName")));
+					Fields.from(Fields.field("id", "$userId"), Fields.field("firstName", "$doctor.firstName")));
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("user_cl", "userId", "_id", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("role_cl", "roleId", "_id", "role"), Aggregation.unwind("role"),
