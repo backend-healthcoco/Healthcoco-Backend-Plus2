@@ -258,7 +258,7 @@ public class BillingServiceImpl implements BillingService {
 				if (request.getCreatedTime() != null) {
 					doctorPatientInvoiceCollection.setCreatedTime(request.getCreatedTime());
 				}
-
+				
 				if (!doctorPatientInvoiceCollection.getDoctorId().toString().equalsIgnoreCase(request.toString())) {
 					if (doctorPatientInvoiceCollection.getReceiptIds() == null
 							|| doctorPatientInvoiceCollection.getReceiptIds().isEmpty()) {
@@ -284,6 +284,8 @@ public class BillingServiceImpl implements BillingService {
 				}
 				dueAmount = dueAmount + doctorPatientInvoiceCollection.getBalanceAmount();
 			}
+			
+			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
 				InventoryStock inventoryStock = null;
@@ -309,10 +311,6 @@ public class BillingServiceImpl implements BillingService {
 							request.getHospitalId(), invoiceItemResponse.getItemId(),
 							doctorPatientInvoiceCollection.getId().toString());
 				}
-				// InventoryStock inventoryStock =
-				// inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
-				// request.getHospitalId(), invoiceItemResponse.getItemId(),
-				// request.getId());
 
 				if (inventoryStock != null && invoiceItemResponse.getInventoryBatch() != null) {
 					if (inventoryStock.getBatchId().equals(invoiceItemResponse.getInventoryBatch().getId())) {
@@ -339,19 +337,25 @@ public class BillingServiceImpl implements BillingService {
 						}
 
 					} else {
-						// InventoryBatch inventoryBatchOld =
-						// inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
-						// InventoryBatch inventoryBatchNew =
-						// inventoryService.getInventoryBatchById(invoiceItemResponse.getInventoryBatch().getId());
+					
+						InventoryBatch oldInventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
+						//InventoryBatch newInventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
+						
 						if (inventoryStock.getQuantity() > invoiceItemResponse.getQuantity().getValue()) {
 							Long diff = inventoryStock.getQuantity() - invoiceItemResponse.getQuantity().getValue();
 							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
 									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
+							if (oldInventoryBatch != null && inventoryItem != null) {
+								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+										oldInventoryBatch, request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+							}
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
 								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
 										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
 										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
 							}
 						} else if (inventoryStock.getQuantity() < invoiceItemResponse.getQuantity().getValue()) {
 							Long diff = invoiceItemResponse.getQuantity().getValue() - inventoryStock.getQuantity();
@@ -360,6 +364,12 @@ public class BillingServiceImpl implements BillingService {
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
 								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
 										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+							}
+							if (oldInventoryBatch != null && inventoryItem != null) {
+								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+										oldInventoryBatch, request.getPatientId(),
 										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
 							}
