@@ -1201,14 +1201,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 						dentalWorksSample.setDentalStagesForDoctor(dentalStages);
 						dentalWorksSample.setProcessStatus(request.getProcessStatus());
-						if(request.getIsCompleted() != null)
-						{
-							dentalWorksSample.setIsCompleted(request.getIsCompleted());
-						}
+						
 					}
 				}
 				dentalLabPickupCollection.setStatus(request.getStatus());
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
+				if(request.getIsCompleted() != null)
+				{
+					dentalLabPickupCollection.setIsCompleted(request.getIsCompleted());
+				}
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 				if (request.getStatus() != null) {
 					if (request.getStatus().equals("COPING_TRIAL")) {
@@ -1267,13 +1268,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 					}
 						dentalWorksSample.setDentalStagesForLab(dentalStages);
 						dentalWorksSample.setProcessStatus(request.getProcessStatus());
-						if(request.getIsCompleted() != null)
-						{
-							dentalWorksSample.setIsCompleted(request.getIsCompleted());
-						}
+						
 					}
 				}
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
+				if(request.getIsCompleted() != null)
+				{
+					dentalLabPickupCollection.setIsCompleted(request.getIsCompleted());
+				}
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 				if (request.getStatus() != null) {
 					if (request.getStatus().equals("COPING_TRIAL")) {
