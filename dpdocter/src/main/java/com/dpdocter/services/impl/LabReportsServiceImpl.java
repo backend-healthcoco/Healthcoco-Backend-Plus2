@@ -664,7 +664,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			doughterlab = "--";
 		}
 		UserCollection userCollection = null;
-		if (DPDoctorUtils.anyStringEmpty(locationId)) {
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId)).and("role.role").is("HOSPITAL_ADMIN");
 			ProjectionOperation projectList = new ProjectionOperation(
@@ -815,7 +815,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			lab = "--";
 		}
 		UserCollection userCollection = null;
-		if (DPDoctorUtils.anyStringEmpty(locationId)) {
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId)).and("role.role").is("HOSPITAL_ADMIN");
 			ProjectionOperation projectList = new ProjectionOperation(
