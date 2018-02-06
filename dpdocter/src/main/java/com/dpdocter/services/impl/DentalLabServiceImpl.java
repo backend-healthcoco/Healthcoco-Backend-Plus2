@@ -1191,17 +1191,19 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 
 				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
-					
+
 					if (dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId())) {
 						List<DentalStage> dentalStages = new ArrayList<>();
-						for (DentalStageRequest dentalStageRequest : request.getDentalStages()) {
-							DentalStage dentalStage = new DentalStage();
-							BeanUtil.map(dentalStageRequest, dentalStage);
-							dentalStages.add(dentalStage);
+						if (request.getDentalStages() != null) {
+							for (DentalStageRequest dentalStageRequest : request.getDentalStages()) {
+								DentalStage dentalStage = new DentalStage();
+								BeanUtil.map(dentalStageRequest, dentalStage);
+								dentalStages.add(dentalStage);
+							}
+							dentalWorksSample.setDentalStagesForDoctor(dentalStages);
 						}
-						dentalWorksSample.setDentalStagesForDoctor(dentalStages);
 						dentalWorksSample.setProcessStatus(request.getProcessStatus());
-						
+
 					}
 				}
 				dentalLabPickupCollection.setStatus(request.getStatus());
@@ -1260,17 +1262,20 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
 					if (dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId())) {
-					List<DentalStage> dentalStages = new ArrayList<>();
-					for (DentalStageRequest dentalStageRequest : request.getDentalStages()) {
-						DentalStage dentalStage = new DentalStage();
-						BeanUtil.map(dentalStageRequest, dentalStage);
-						dentalStages.add(dentalStage);
-					}
-						dentalWorksSample.setDentalStagesForLab(dentalStages);
+						List<DentalStage> dentalStages = new ArrayList<>();
+						if (request.getDentalStages() != null) {
+							for (DentalStageRequest dentalStageRequest : request.getDentalStages()) {
+								DentalStage dentalStage = new DentalStage();
+								BeanUtil.map(dentalStageRequest, dentalStage);
+								dentalStages.add(dentalStage);
+							}
+							dentalWorksSample.setDentalStagesForLab(dentalStages);
+						}
 						dentalWorksSample.setProcessStatus(request.getProcessStatus());
 						
 					}
 				}
+				
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				if(request.getIsCompleted() != null)
 				{
