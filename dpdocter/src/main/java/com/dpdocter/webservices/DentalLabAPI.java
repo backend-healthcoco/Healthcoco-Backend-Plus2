@@ -108,7 +108,7 @@ public class DentalLabAPI {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		dentalWork = new DentalWork();
+		//dentalWork = new DentalWork();
 		dentalWork = dentalLabService.deleteCustomWork(id, discarded);
 		Response<DentalWork> response = new Response<DentalWork>();
 		if(dentalWork != null)
