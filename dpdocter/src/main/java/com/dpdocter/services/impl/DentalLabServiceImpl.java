@@ -146,6 +146,25 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
 	
+<<<<<<< HEAD
+=======
+	@Value("${dental.lab.coping.trial.message}")
+	private String COPING_TRIAL_NOTIFICATION;
+	
+	@Value("${dental.lab.bisque.trial.message}")
+	private String BISQUE_TRIAL_NOTIFICATION;
+	
+	@Value("${dental.lab.finished.message}")
+	private String FINISHED_LAB_NOTIFICATION;
+	
+	@Value("${dental.lab.cancelled.message}")
+	private String CANCELLED_NOTIFICATION;
+	
+	@Value("${dental.lab.accepted.message}")
+	private String ACCEPTED_NOTIFICATION;
+	
+
+>>>>>>> 17b7774... Dental Lab changes for notifiacation
 	@Value(value = "${image.path}")
 	private String imagePath;
 	
@@ -224,7 +243,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		DentalWork response = null;
 		DentalWorkCollection customWorkCollection = null;
 		try {
-			if (DPDoctorUtils.anyStringEmpty(id)) {
+			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				customWorkCollection = dentalWorkRepository.findOne(new ObjectId(id));
 			}
 			if (customWorkCollection != null) {
@@ -1078,14 +1097,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									"Your request has been accepted!", ComponentType.DENTAL_WORKS.getType(),
+									ACCEPTED_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 				if(dentalLabPickupCollection.getCollectionBoyId() != null)
 						{
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Your request has been accepted!");
+								RoleEnum.COLLECTION_BOY, ACCEPTED_NOTIFICATION);
 						}
 					} else if (status.equals("OUT_FOR_COLLECTION")) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
@@ -1102,36 +1121,36 @@ public class DentalLabServiceImpl implements DentalLabService {
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									"Work has been sent for coping trial", ComponentType.DENTAL_WORKS.getType(),
+									COPING_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 				if(dentalLabPickupCollection.getCollectionBoyId() != null)
 						{
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Work has been sent for coping trial!");
+								RoleEnum.COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
 						}
 					} else if (status.equals("BISQUE_TRIAL")) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									"Work has been sent for bisque trial", ComponentType.DENTAL_WORKS.getType(),
+									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 						if(dentalLabPickupCollection.getCollectionBoyId() != null)
 						{
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Work has been sent for bisque trial!");
 
+								RoleEnum.COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
 						}
 					} else if (status.equals("FINISHED_LAB")) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									"Work has been finised", ComponentType.DENTAL_WORKS.getType(),
+									FINISHED_LAB_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 
@@ -1139,7 +1158,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						{
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Work has been finised!");
+								RoleEnum.COLLECTION_BOY, FINISHED_LAB_NOTIFICATION);
 						}
 					}
 					
@@ -1267,24 +1286,25 @@ public class DentalLabServiceImpl implements DentalLabService {
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									"Work has been sent for coping trial", ComponentType.DENTAL_WORKS.getType(),
+									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Work has been sent for coping trial!");
+								RoleEnum.COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
 					} else if (request.getStatus().equals("BISQUE_TRIAL")) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									"Work has been sent for bisque trial", ComponentType.DENTAL_WORKS.getType(),
+									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Work has been sent for bisque trial!");
-					} 
+
+								RoleEnum.COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+					}
 				}
 				response =true;
 			}
@@ -1336,24 +1356,25 @@ public class DentalLabServiceImpl implements DentalLabService {
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									"Work has been sent for coping trial", ComponentType.DENTAL_WORKS.getType(),
+									COPING_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Work has been sent for coping trial!");
+								RoleEnum.COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
 					} else if (request.getStatus().equals("BISQUE_TRIAL")) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									"Work has been sent for bisque trial", ComponentType.DENTAL_WORKS.getType(),
+									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Work has been sent for bisque trial!");
-					} 
+
+								RoleEnum.COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+					}
 				}
 				response =true;
 			}
@@ -1379,17 +1400,20 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection.setCancelledBy(cancelledBy);
 				dentalLabPickupCollection.setDiscarded(true);
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
-				if(cancelledBy.equalsIgnoreCase("DOCTOR"))
-				{
-					 List<DoctorClinicProfileCollection>  doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(dentalLabPickupCollection.getDentalLabId());
-					 
-					 for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-						 pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(), "Your request has been cancelled!", ComponentType.DENTAL_WORKS.getType(), dentalLabPickupCollection.getId().toString(), null);
+
+				if (cancelledBy.equalsIgnoreCase("DOCTOR")) {
+					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+							.findByLocationId(dentalLabPickupCollection.getDentalLabId());
+
+					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+								CANCELLED_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+								dentalLabPickupCollection.getId().toString(), null);
 					}
-				}
-				else if(cancelledBy.equalsIgnoreCase("DENTAL_WORKS_LAB"))
-				{
-					pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(), "Your request has been cancelled!", ComponentType.DENTAL_WORKS.getType(), dentalLabPickupCollection.getId().toString(), null);
+				} else if (cancelledBy.equalsIgnoreCase("DENTAL_WORKS_LAB")) {
+					pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
+							CANCELLED_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+							dentalLabPickupCollection.getId().toString(), null);
 				}
 				response = true;
 			}
