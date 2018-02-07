@@ -62,4 +62,6 @@ public interface InventoryService {
 
 	InventoryBatch getInventoryBatchById(String id);
 
+	Long getInventoryStockItemCount(String locationId, String hospitalId, String resourceId, String invoiceId);
+
 }

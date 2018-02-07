@@ -816,6 +816,32 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Override
 	@Transactional
+	public Long getInventoryStockItemCount(String locationId, String hospitalId, String resourceId , String invoiceId)
+	{
+		Long quantity = 0l;
+		try {
+			List<InventoryStockCollection> inventoryStockCollections = inventoryStockRepository.findListByLocationIdHospitalIdResourceIdInvoiceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId), new ObjectId(invoiceId));
+			if(inventoryStockCollections != null) {
+				for (InventoryStockCollection inventoryStockCollection : inventoryStockCollections) {
+					if(inventoryStockCollection.getStockType().equalsIgnoreCase("CONSUMED"))
+					{
+						quantity = quantity + inventoryStockCollection.getQuantity();
+					}
+					else if(inventoryStockCollection.getStockType().equalsIgnoreCase("ADDED"))
+					{
+						quantity = quantity - inventoryStockCollection.getQuantity();
+					}
+				}
+			
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return quantity;
+	}
+	
+	@Override
+	@Transactional
 	public InventoryBatch getInventoryBatchById(String id)
 	{
 		InventoryBatch inventoryBatch = null;
