@@ -522,10 +522,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (collectionBoyDoctorAssociationCollection != null) {
 				dentalLabPickupCollection
 						.setCollectionBoyId(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
-				CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-						.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
-				pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
-						RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+				/*CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+						.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());*/
+				/*pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
+						RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);*/
 			}
 			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 			response = new DentalLabPickup();
@@ -894,14 +894,52 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
 				criteria.and("status").is(status);
 			}
+
+
+			/*
+			 * if (from != 0 && to != 0) { criteria.and("updatedTime").gte(new
+			 * Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to))); } else
+			 * if (from != 0) { criteria.and("updatedTime").gte(new Date(from));
+			 * } else if (to != 0) {
+			 * criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new
+			 * Date(to))); }
+			 */
 			
-			/*if (from != 0 && to != 0) {
-				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
-			} else if (from != 0) {
-				criteria.and("updatedTime").gte(new Date(from));
-			} else if (to != 0) {
-				criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to)));
-			}*/
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(
+					new BasicDBObject("$group",
+							new BasicDBObject("_id", "$_id")
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("patientName", new BasicDBObject("$first", "$patientName"))
+									.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
+									.append("dentalWorksSamples",
+											new BasicDBObject("$push", "$dentalWorksSamples"))
+									.append("gender", new BasicDBObject("$first", "$gender"))
+									.append("age", new BasicDBObject("$first", "$age"))
+									.append("crn", new BasicDBObject("$first", "$crn"))
+									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
+									.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
+									.append("status", new BasicDBObject("$first", "$status"))
+									.append("doctorId",
+											new BasicDBObject("$first", "$doctorId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("numberOfSamplesRequested",
+											new BasicDBObject("$first", "$numberOfSamplesRequested"))
+									.append("numberOfSamplesPicked",
+											new BasicDBObject("$first", "$numberOfSamplesPicked"))
+									.append("requestId", new BasicDBObject("$first", "$requestId"))
+									.append("isCompleted", new BasicDBObject("$first", "$isCompleted"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+									.append("isAcceptedAtLab", new BasicDBObject("$first", "$isAcceptedAtLab"))
+									.append("isCollectedAtDoctor", new BasicDBObject("$first", "$isCollectedAtDoctor"))
+									.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
+									.append("serialNumber", new BasicDBObject("$first", "$serialNumber"))
+									.append("reasonForCancel", new BasicDBObject("$first", "$reasonForCancel"))
+									.append("cancelledBy", new BasicDBObject("$first", "$cancelledBy"))
+									.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
+									.append("dentalLab", new BasicDBObject("$first", "$dentalLab"))
+									.append("doctor", new BasicDBObject("$first", "$doctor"))));
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
@@ -909,23 +947,27 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm),
 						new Criteria("patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientName").regex("^" + searchTerm));
+						new Criteria("patientName").regex("^" + searchTerm),
+						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm, "i"),
+						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm));
 			}
 			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
+						Aggregation.unwind("dentalWorksSamples"),
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
-						 Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(
+						Aggregation.unwind("dentalWorksSamples"),
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -935,7 +977,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
-						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+						Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			// System.out.println(aggregation);
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1113,6 +1155,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 				if(isAcceptedAtLab != null)
 				{
 					dentalLabPickupCollection.setIsAcceptedAtLab(isAcceptedAtLab);
+					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+					.findOne(dentalLabPickupCollection.getCollectionBoyId());
+					if (collectionBoyCollection != null) {
+						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
+								null, RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+					}
 				}
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 				response = true;

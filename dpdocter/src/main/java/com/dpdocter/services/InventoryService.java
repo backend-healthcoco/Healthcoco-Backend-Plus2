@@ -64,4 +64,5 @@ public interface InventoryService {
 
 	Long getInventoryStockItemCount(String locationId, String hospitalId, String resourceId, String invoiceId);
 
+
 }

@@ -728,56 +728,6 @@ public class InventoryServiceImpl implements InventoryService {
 	}
 
 	
-	@Override
-	@Transactional
-	public List<InventoryBatch> getInventoryBatchByResourceId(String locationId, String hospitalId, String resourceId)
-	{
-		List<InventoryBatch> inventoryBatchs = null;
-		try {
-			InventoryItem inventoryItem = getInventoryItemByResourceId(locationId, hospitalId, resourceId);
-			if(inventoryItem != null)
-			{
-				inventoryBatchs = getInventoryBatchList(locationId, hospitalId, inventoryItem.getId(), null, 0, 0);
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		return inventoryBatchs;
-	}
-
-
-	@Override
-	@Transactional
-	public InventorySettings getInventorySetting(String id,String doctorId, String locationId, String hospitalId) {
-		InventorySettings response = null;
-		InventorySettingsCollection inventorySettingsCollection = null;
-		try {
-			if (DPDoctorUtils.anyStringEmpty(id)) {
-				inventorySettingsCollection = inventorySettingRepository.findOne(new ObjectId(id));
-			} else {
-				inventorySettingsCollection = inventorySettingRepository.findByDoctorIdPatientIdHospitalId(
-						new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
-			}
-			if (inventorySettingsCollection != null) {
-				response = new InventorySettings();
-				System.out.println(inventorySettingsCollection);
-				BeanUtil.map( inventorySettingsCollection, response);
-			} else {
-				response = new InventorySettings();
-				response.setDoctorId(doctorId);
-				response.setLocationId(locationId);
-				response.setHospitalId(hospitalId);
-				response.setSaveToInventory(false);
-				response.setShowInventoryCount(false);
-			}
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			logger.warn("Error while getting inventory setting");
-			e.printStackTrace();
-		}
-		return response;
-	}
 	
 	@Override
 	@Transactional
@@ -855,6 +805,12 @@ public class InventoryServiceImpl implements InventoryService {
 			// TODO: handle exception
 		}
 		return inventoryBatch;
+	}
+
+	@Override
+	public InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
