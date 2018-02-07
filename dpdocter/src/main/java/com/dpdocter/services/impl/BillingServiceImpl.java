@@ -289,6 +289,7 @@ public class BillingServiceImpl implements BillingService {
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
 				InventoryStock inventoryStock = null;
+				Long quantity = null;
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
 					invoiceItemResponse.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
@@ -310,12 +311,17 @@ public class BillingServiceImpl implements BillingService {
 					inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
 							request.getHospitalId(), invoiceItemResponse.getItemId(),
 							doctorPatientInvoiceCollection.getId().toString());
+					quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
+							request.getHospitalId(), invoiceItemResponse.getItemId(),
+							doctorPatientInvoiceCollection.getId().toString());
+					System.out.println(quantity);
+					
 				}
 
-				if (inventoryStock != null && invoiceItemResponse.getInventoryBatch() != null) {
+				if (quantity != null && quantity > 0 && invoiceItemResponse.getInventoryBatch() != null) {
 					if (inventoryStock.getBatchId().equals(invoiceItemResponse.getInventoryBatch().getId())) {
-						if (inventoryStock.getQuantity() > invoiceItemResponse.getQuantity().getValue()) {
-							Long diff = inventoryStock.getQuantity() - invoiceItemResponse.getQuantity().getValue();
+						if (quantity > invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = quantity - invoiceItemResponse.getQuantity().getValue();
 							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
 									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
@@ -324,8 +330,8 @@ public class BillingServiceImpl implements BillingService {
 										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "ADDED");
 							}
-						} else if (inventoryStock.getQuantity() < invoiceItemResponse.getQuantity().getValue()) {
-							Long diff = invoiceItemResponse.getQuantity().getValue() - inventoryStock.getQuantity();
+						} else if (quantity < invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = invoiceItemResponse.getQuantity().getValue() - quantity;
 							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
 									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
@@ -341,8 +347,8 @@ public class BillingServiceImpl implements BillingService {
 						InventoryBatch oldInventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
 						//InventoryBatch newInventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
 						
-						if (inventoryStock.getQuantity() > invoiceItemResponse.getQuantity().getValue()) {
-							Long diff = inventoryStock.getQuantity() - invoiceItemResponse.getQuantity().getValue();
+						if (quantity > invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = quantity - invoiceItemResponse.getQuantity().getValue();
 							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
 									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 							if (oldInventoryBatch != null && inventoryItem != null) {
@@ -357,8 +363,8 @@ public class BillingServiceImpl implements BillingService {
 										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
 							}
-						} else if (inventoryStock.getQuantity() < invoiceItemResponse.getQuantity().getValue()) {
-							Long diff = invoiceItemResponse.getQuantity().getValue() - inventoryStock.getQuantity();
+						} else if (quantity < invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = invoiceItemResponse.getQuantity().getValue() - quantity;
 							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
 									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
