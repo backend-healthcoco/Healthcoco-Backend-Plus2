@@ -26,7 +26,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private String firstName;
-	
+
 	@Field
 	private String localPatientName;
 
@@ -110,13 +110,13 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private PersonalInformation personalInformation;
-	
+
 	@Field
 	private List<QuestionAnswers> medicalQuestionAnswers;
-	
+
 	@Field
 	private List<QuestionAnswers> lifestyleQuestionAnswers;
-	
+
 	@Field
 	private String PNUM;
 

@@ -76,6 +76,7 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FormContentCollection;
@@ -119,6 +120,7 @@ import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ConsentFormRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
@@ -336,6 +338,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${user.reminder.not.found}")
 	private String reminderNotFoundException;
+
+	@Autowired
+	private DoctorLabReportRepository doctorLabReportRepository;
 
 	@Override
 	@Transactional
@@ -593,6 +598,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 				// sMSServices.sendSMS(smsTrackDetail, false);
 
 			}
+
+			if (request.getRecordType().equals(ComponentType.DOCTOR_LAB_REPORTS)
+					&& DPDoctorUtils.anyStringEmpty(request.getRecordId())) {
+				DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
+						.findOne(new ObjectId(request.getRecordId()));
+				doctorLabReportCollection.setId(new ObjectId(registeredPatientDetails.getUserId()));
+				doctorLabReportRepository.save(doctorLabReportCollection);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1858,7 +1872,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(request, userCollection);
 			userCollection.setUserName(request.getEmailAddress());
 			userCollection.setCreatedTime(new Date());
+
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
+
+
 			if (DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
 				userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			}
@@ -2421,7 +2438,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						clinicDoctorResponse.setUserId(doctorClinicProfileLookupResponse.getUser().getId().toString());
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
 						clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
-						
+
 						if (doctorClinicProfileLookupResponse.getDoctor() != null)
 							clinicDoctorResponse.setRegisterNumber(
 									doctorClinicProfileLookupResponse.getDoctor().getRegisterNumber());
@@ -2445,12 +2462,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 						} else if (role.equalsIgnoreCase("ALL")) {
 							roleCriteria = new Criteria("roleCollection.role").nin(Arrays
 									.asList(RoleEnum.LOCATION_ADMIN.getRole(), RoleEnum.HOSPITAL_ADMIN.getRole()));
-						}
-						else if (role.equalsIgnoreCase(RoleEnum.WEB_DOCTOR.getRole())) {
+
+						} else if (role.equalsIgnoreCase(RoleEnum.WEB_DOCTOR.getRole())) {
+
 							roleCriteria = new Criteria("roleCollection.role")
-									.in(Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),RoleEnum.LOCATION_ADMIN.getRole(), RoleEnum.HOSPITAL_ADMIN.getRole(),
+									.in(Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),
+											RoleEnum.LOCATION_ADMIN.getRole(), RoleEnum.HOSPITAL_ADMIN.getRole(),
 											RoleEnum.ADMIN.getRole()));
-						} 
+						}
 
 						List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate
 								.aggregate(
@@ -2485,19 +2504,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 							clinicDoctorResponse.setRole(roles);
 							clinicDoctorResponse
 									.setColorCode(doctorClinicProfileLookupResponse.getUser().getColorCode());
-							if(clinicDoctorResponse.getRole() != null){
+							if (clinicDoctorResponse.getRole() != null) {
 								for (Role userRole : clinicDoctorResponse.getRole()) {
-									if(userRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || userRole.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))
-									{
+									if (userRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
+											|| userRole.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())) {
 										clinicDoctorResponse.setWebRole(RoleEnum.ADMIN.getRole());
 									}
-										
+
 								}
 							}
-							if(clinicDoctorResponse.getWebRole() == null || clinicDoctorResponse.getWebRole().isEmpty())
-							{
-								if(clinicDoctorResponse.getRole() != null)
-								{
+							if (clinicDoctorResponse.getWebRole() == null
+									|| clinicDoctorResponse.getWebRole().isEmpty()) {
+								if (clinicDoctorResponse.getRole() != null) {
 									clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole());
 								}
 							}

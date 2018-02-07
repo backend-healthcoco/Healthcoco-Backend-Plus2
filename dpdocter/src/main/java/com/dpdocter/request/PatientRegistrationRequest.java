@@ -9,6 +9,7 @@ import com.dpdocter.beans.PersonalInformation;
 import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Relations;
+import com.dpdocter.enums.ComponentType;
 
 public class PatientRegistrationRequest {
 	private String userId;
@@ -82,6 +83,19 @@ public class PatientRegistrationRequest {
 	private PersonalInformation personalInformation;
 
 	private String PNUM;
+	
+	private ComponentType recordType;
+	
+	private String recordId;
+	
+
+	public String getRecordId() {
+		return recordId;
+	}
+
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
+	}
 
 	public String getUserId() {
 		return userId;
@@ -386,6 +400,14 @@ public class PatientRegistrationRequest {
 				+ registrationDate + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
 				+ personalInformation + ", PNUM=" + PNUM + "]";
+	}
+
+	public ComponentType getRecordType() {
+		return recordType;
+	}
+
+	public void setRecordType(ComponentType recordType) {
+		this.recordType = recordType;
 	}
 
 }
