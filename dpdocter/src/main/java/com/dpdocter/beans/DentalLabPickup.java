@@ -3,6 +3,10 @@ package com.dpdocter.beans;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.request.DentalLabPickupRequest;
 
@@ -36,7 +40,7 @@ public class DentalLabPickup extends GenericCollection {
 	private Location dentalLab;
 	private String reasonForCancel;
 	private String cancelledBy;
-
+	
 	public String getId() {
 		return id;
 	}

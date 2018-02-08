@@ -355,6 +355,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm));
 			}
+			criteria.and("isActive").is(true);
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -539,10 +540,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (collectionBoyDoctorAssociationCollection != null) {
 				dentalLabPickupCollection
 						.setCollectionBoyId(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
-				/*CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-						.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());*/
-				/*pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
-						RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);*/
 			}
 			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 			response = new DentalLabPickup();
@@ -800,11 +797,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 							&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
-						LocationCollection locationCollection = locationRepository
-								.findOne(collectionBoyDoctorAssociationCollection.getDentalLabId());
+						UserCollection userCollection = userRepository
+								.findOne(collectionBoyDoctorAssociationCollection.getDoctorId());
 						throw new BusinessException(ServiceError.Unknown,
-								"Collection boy " + collectionBoyCollection.getName() + " is already assigned to "
-										+ locationCollection.getLocationName()
+								"Collection boy " + collectionBoyCollection.getName() + " is already assigned to Dr. "
+										+ userCollection.getFirstName()
 										+ ". Please select another lab / collection boy");
 					}
 					ObjectId oldId = collectionBoyDoctorAssociationCollection.getId();
@@ -933,7 +930,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 									.append("status", new BasicDBObject("$first", "$status"))
 									.append("doctorId",
 											new BasicDBObject("$first", "$doctorId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("dentalLabId", new BasicDBObject("$first", "$dentalLabId"))
 									.append("numberOfSamplesRequested",
 											new BasicDBObject("$first", "$numberOfSamplesRequested"))
 									.append("numberOfSamplesPicked",
