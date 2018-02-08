@@ -599,12 +599,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			}
 
-			if (request.getRecordType().equals(ComponentType.DOCTOR_LAB_REPORTS)
-					&& DPDoctorUtils.anyStringEmpty(request.getRecordId())) {
-				DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
-						.findOne(new ObjectId(request.getRecordId()));
-				doctorLabReportCollection.setId(new ObjectId(registeredPatientDetails.getUserId()));
-				doctorLabReportRepository.save(doctorLabReportCollection);
+			if (request.getRecordType() != null && DPDoctorUtils.anyStringEmpty(request.getRecordId())) {
+				if (request.getRecordType().equals(ComponentType.DOCTOR_LAB_REPORTS)) {
+					DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
+							.findOne(new ObjectId(request.getRecordId()));
+					doctorLabReportCollection.setPatientId(new ObjectId(registeredPatientDetails.getUserId()));
+					doctorLabReportRepository.save(doctorLabReportCollection);
+				}
 			}
 
 		} catch (Exception e) {
