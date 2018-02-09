@@ -476,13 +476,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection = new DentalLabPickupCollection();
 				BeanUtil.map(request, dentalLabPickupCollection);
 				dentalLabPickupCollection.setRequestId(requestId);
-<<<<<<< HEAD
-				serialNo = dentalLabTestPickupRepository.findTodaysCompletedReport(new ObjectId(request.getDentalLabId()), DPDoctorUtils.getFormTime(new Date()), DPDoctorUtils.getToTime(new Date()));
-				for (DentalWorksSample dentalWorksSample : request.getDentalWorksSamples()) {
-					String uniqueWorkId = locationInitials + getInitials(request.getPatientName()) + currentDateGenerator() + DPDoctorUtils.getPrefixedNumber(serialNo + 1) + DPDoctorUtils.getPrefixedNumber(count);
-					dentalWorksSample.setUniqueWorkId(uniqueWorkId);
-					count++;
-=======
+
 				serialNo = dentalLabTestPickupRepository.findTodaysCompletedReport(
 						new ObjectId(request.getDentalLabId()), DPDoctorUtils.getFormTime(new Date()),
 						DPDoctorUtils.getToTime(new Date()));
@@ -514,7 +508,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					}
 					dentalWorksSamples.add(dentalWorksSample);
 					
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 				}
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				dentalLabPickupCollection.setCrn(saveCRN(request.getDentalLabId(), requestId, 5));
@@ -937,18 +930,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-<<<<<<< HEAD
-								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
-						 Aggregation.match(criteria), 
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			
-			//System.out.println(aggregation);
-			AggregationResults<DentalLabPickupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DentalLabPickupCollection.class, DentalLabPickupResponse.class);
-			response = aggregationResults.getMappedResults();
-		}
-		catch (Exception e) {
-=======
+
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
@@ -992,7 +974,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			
 		} catch (Exception e) {
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 			// TODO: handle exception
 			e.printStackTrace();
 		}
@@ -1049,21 +1030,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 									"Your request has been accepted!", ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-<<<<<<< HEAD
-						pushNotificationServices.notifyPharmacy(dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Your request has been accepted!");
-					}
-					else if(status.equals("OUT_FOR_COLLECTION"))
-					{
-=======
-						if(dentalLabPickupCollection.getCollectionBoyId() != null)
+				if(dentalLabPickupCollection.getCollectionBoyId() != null)
 						{
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
 								RoleEnum.COLLECTION_BOY, "Your request has been accepted!");
 						}
 					} else if (status.equals("OUT_FOR_COLLECTION")) {
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
@@ -1081,20 +1054,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 									"Work has been sent for coping trial", ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-<<<<<<< HEAD
-						pushNotificationServices.notifyPharmacy(dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, "Work has been sent for coping trial!");
-					}
-					else if (status.equals("BISQUE_TRIAL")) {
-=======
-						if(dentalLabPickupCollection.getCollectionBoyId() != null)
+				if(dentalLabPickupCollection.getCollectionBoyId() != null)
 						{
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
 								RoleEnum.COLLECTION_BOY, "Work has been sent for coping trial!");
 						}
 					} else if (status.equals("BISQUE_TRIAL")) {
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
@@ -1107,14 +1073,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
 								RoleEnum.COLLECTION_BOY, "Work has been sent for bisque trial!");
-<<<<<<< HEAD
-					} 
-					else if(status.equals("FINISHED_LAB"))
-					{
-=======
+
 						}
 					} else if (status.equals("FINISHED_LAB")) {
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
@@ -1122,14 +1083,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 									"Work has been finised", ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-<<<<<<< HEAD
-						pushNotificationServices.notifyPharmacy(dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-=======
+
 						if(dentalLabPickupCollection.getCollectionBoyId() != null)
 						{
 						pushNotificationServices.notifyPharmacy(
 								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 								RoleEnum.COLLECTION_BOY, "Work has been finised!");
 						}
 					}
@@ -1215,23 +1173,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public Boolean updateDentalStageForDoctor(UpdateDentalStagingRequest request)
 	{
 		Boolean response = false;
-<<<<<<< HEAD
 		
-=======
 		List<DentalStage> dentalStages = new ArrayList<>();
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getRequestId()));
 			if(dentalLabPickupCollection != null)
 			{
 				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
-<<<<<<< HEAD
-				for(DentalWorksSample dentalWorksSample : dentalWorksSamples)
-				{
-					if(dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId()))
-					{ 
-						dentalWorksSample.setDentalStagesForDoctor(request.getDentalStages());
-=======
+
 
 				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
 					if (dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId())) {
@@ -1242,7 +1191,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 						dentalWorksSample.setDentalStagesForDoctor(dentalStages);
 						dentalWorksSample.setProcessStatus(request.getProcessStatus());
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 					}
 				}
 				dentalLabPickupCollection.setStatus(request.getStatus());
@@ -1288,24 +1236,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public Boolean updateDentalStageForLab(UpdateDentalStagingRequest request)
 	{
 		Boolean response = false;
-<<<<<<< HEAD
-		
-=======
+
 		List<DentalStage> dentalStages = new ArrayList<>();
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getRequestId()));
 			if(dentalLabPickupCollection != null)
 			{
 				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
 				dentalLabPickupCollection.setStatus(request.getStatus());
-<<<<<<< HEAD
-				for(DentalWorksSample dentalWorksSample : dentalWorksSamples)
-				{
-					if(dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId()))
-					{
-						dentalWorksSample.setDentalStagesForLab(request.getDentalStages());
-=======
+
 				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
 					if (dentalWorksSample.getUniqueWorkId().equals(request.getUniqueWorkId())) {
 					for (DentalStageRequest dentalStageRequest : request.getDentalStages()) {
@@ -1315,7 +1254,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					}
 						dentalWorksSample.setDentalStagesForLab(dentalStages);
 						dentalWorksSample.setProcessStatus(request.getProcessStatus());
->>>>>>> ffa4952... Dental Lab : changes for process status and staff id
 					}
 				}
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
