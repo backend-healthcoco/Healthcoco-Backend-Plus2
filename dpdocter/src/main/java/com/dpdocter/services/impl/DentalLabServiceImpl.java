@@ -1156,7 +1156,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if(dentalLabPickupCollection.getDoctorId() != null)
 						{
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
-									FINISHED_LAB_NOTIFICATION, ComponentType.REFRESH.getType(),
+									"work received", ComponentType.REFRESH.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 					}
