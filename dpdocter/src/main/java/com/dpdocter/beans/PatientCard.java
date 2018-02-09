@@ -5,6 +5,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -87,6 +88,17 @@ public class PatientCard extends GenericCollection {
 	private PersonalInformation personalInformation;
 
 	private String PNUM;
+
+	private PatientCollection patient;
+	
+	
+	public PatientCollection getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientCollection patient) {
+		this.patient = patient;
+	}
 
 	public String getPatientId() {
 		return patientId;

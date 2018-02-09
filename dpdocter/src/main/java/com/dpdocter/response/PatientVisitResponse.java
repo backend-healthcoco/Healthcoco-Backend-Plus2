@@ -11,6 +11,7 @@ import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.enums.VisitedFor;
 
 public class PatientVisitResponse extends GenericCollection {
@@ -51,6 +52,8 @@ public class PatientVisitResponse extends GenericCollection {
 
 	private Boolean discarded = false;
 
+	private PatientCollection patient;
+	
 	public String getId() {
 		return id;
 	}
@@ -184,8 +187,10 @@ public class PatientVisitResponse extends GenericCollection {
 		return "PatientVisitResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions
-				+ ", clinicalNotes=" + clinicalNotes + ", records=" + records + ", appointmentId=" + appointmentId
-				+ ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ ", clinicalNotes=" + clinicalNotes + ", patientTreatment=" + patientTreatment + ", records=" + records
+				+ ", appointmentId=" + appointmentId + ", appointmentRequest=" + appointmentRequest + ", time=" + time
+				+ ", fromDate=" + fromDate + ", eyePrescription=" + eyePrescription + ", discarded=" + discarded
+				+ ", patient=" + patient + "]";
 	}
 
 	public Appointment getAppointmentRequest() {
@@ -202,6 +207,14 @@ public class PatientVisitResponse extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public PatientCollection getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientCollection patient) {
+		this.patient = patient;
 	}
 
 }
