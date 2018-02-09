@@ -146,8 +146,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
 	
-<<<<<<< HEAD
-=======
 	@Value("${dental.lab.coping.trial.message}")
 	private String COPING_TRIAL_NOTIFICATION;
 	
@@ -162,9 +160,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Value("${dental.lab.accepted.message}")
 	private String ACCEPTED_NOTIFICATION;
-	
 
->>>>>>> 17b7774... Dental Lab changes for notifiacation
 	@Value(value = "${image.path}")
 	private String imagePath;
 	

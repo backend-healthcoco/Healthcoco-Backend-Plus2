@@ -27,10 +27,7 @@ import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
-<<<<<<< HEAD
 import com.dpdocter.beans.User;
-=======
->>>>>>> 40a5387... changes for dental works
 import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.elasticsearch.services.impl.ESDentalLabServiceImpl;
 import com.dpdocter.enums.LabType;
