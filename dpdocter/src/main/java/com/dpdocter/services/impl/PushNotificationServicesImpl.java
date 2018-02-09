@@ -273,6 +273,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setCi(componentTypeId);
 					notification.setNotificationType(componentType);
 				}
+				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
+				
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
