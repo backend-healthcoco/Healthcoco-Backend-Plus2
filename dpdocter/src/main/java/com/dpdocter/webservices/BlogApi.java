@@ -48,15 +48,16 @@ public class BlogApi {
 		response.setData(blogresponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BlogsUrls.GET_BLOG_List)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_List, notes = PathProxy.BlogsUrls.GET_BLOG_List)
-	public Response<Blog> getBlogList(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+	public Response<Object> getBlogList(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
 			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
 			@QueryParam(value = "title") String title) {
 		BlogResponse blogresponse = blogService.getBlogs(size, page, category, userId, title);
-		Response<Blog> response = new Response<Blog>();
+		Response<Object> response = new Response<Object>();
+		response.setData(blogresponse.getTotalsize());
 		response.setDataList(blogresponse.getBlogs());
 		return response;
 	}
@@ -66,9 +67,9 @@ public class BlogApi {
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL, notes = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
 	public Response<Blog> getBlogBySlugURL(@PathParam("slugURL") String slugURL, @QueryParam("userId") String userId) {
 		Blog blogresponse = blogService.getBlog(null, slugURL, userId);
-		if(DPDoctorUtils.anyStringEmpty(slugURL)){
+		if (DPDoctorUtils.anyStringEmpty(slugURL)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
-			
+
 		}
 		Response<Blog> response = new Response<Blog>();
 		response.setData(blogresponse);

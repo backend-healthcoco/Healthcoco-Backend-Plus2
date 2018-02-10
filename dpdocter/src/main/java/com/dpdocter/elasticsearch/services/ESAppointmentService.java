@@ -42,4 +42,8 @@ public interface ESAppointmentService {
 			int maxTime, List<String> days, String gender, int minExperience, int maxExperience, String service,
 			String locality);
 
+	public Integer getDoctorCount(String city, String location, String latitude, String longitude, String speciality,
+			String symptom, Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime,
+			List<String> days, String gender, int minExperience, int maxExperience, String service);
+
 }
