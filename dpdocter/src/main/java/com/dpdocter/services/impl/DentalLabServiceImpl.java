@@ -443,7 +443,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		Integer serialNo = null;
 		Integer count = 1;
 		List<DentalWorksSample> dentalWorksSamples = new ArrayList<>();
-		List<DentalStage> dentalStages = new ArrayList<>();
+		List<DentalStage> dentalStages = null;
 
 		try {
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getDentalLabId()));
@@ -464,6 +464,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					DentalWorksSample dentalWorksSample = new DentalWorksSample();
 					BeanUtil.map(dentalWorksSampleRequest, dentalWorksSample);
 					if (dentalWorksSampleRequest.getDentalStagesForDoctor() != null) {
+						dentalStages = new ArrayList<>();
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
 								.getDentalStagesForDoctor()) {
 							DentalStage dentalStage = new DentalStage();
@@ -474,8 +475,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 					}
 
 					if (dentalWorksSampleRequest.getDentalStagesForLab() != null) {
+						dentalStages = new ArrayList<>();
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
-								.getDentalStagesForDoctor()) {
+								.getDentalStagesForLab()) {
 							DentalStage dentalStage = new DentalStage();
 							BeanUtil.map(dentalStage, dentalStageRequest);
 							dentalStages.add(dentalStage);
@@ -505,6 +507,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					DentalWorksSample dentalWorksSample = new DentalWorksSample();
 					BeanUtil.map(dentalWorksSampleRequest, dentalWorksSample);
 					if (dentalWorksSampleRequest.getDentalStagesForDoctor() != null) {
+						dentalStages = new ArrayList<>();
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
 								.getDentalStagesForDoctor()) {
 							DentalStage dentalStage = new DentalStage();
@@ -515,8 +518,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 					}
 
 					if (dentalWorksSampleRequest.getDentalStagesForLab() != null) {
+						dentalStages = new ArrayList<>();
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
-								.getDentalStagesForDoctor()) {
+								.getDentalStagesForLab()) {
 							DentalStage dentalStage = new DentalStage();
 							BeanUtil.map(dentalStage, dentalStageRequest);
 							dentalStages.add(dentalStage);
@@ -1076,7 +1080,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(dentalLabPickupId));
 			if (dentalLabPickupCollection != null) {
 				if (status != null) {
-					dentalLabPickupCollection.setStatus(status);
+
 					if (status.equals("ACCEPTED")) {
 						if(dentalLabPickupCollection.getDoctorId() != null)
 						{
@@ -1084,11 +1088,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 									ACCEPTED_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-						if(dentalLabPickupCollection.getCollectionBoyId() != null)
-						{
-						pushNotificationServices.notifyPharmacy(
-								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyCollection != null) {
+								pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
+										null, null, RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+							}
 						}
 					} else if (status.equals("OUT_FOR_COLLECTION")) {
 						
@@ -1105,11 +1112,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 									COPING_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-						if(dentalLabPickupCollection.getCollectionBoyId() != null)
-						{
-						pushNotificationServices.notifyPharmacy(
-								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.DENTAL_COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyCollection != null) {
+								pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
+										null, null, RoleEnum.DENTAL_COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+							}
 						}
 					} else if (status.equals("BISQUE_TRIAL")) {
 						if(dentalLabPickupCollection.getDoctorId() != null)
@@ -1118,11 +1128,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-						if(dentalLabPickupCollection.getCollectionBoyId() != null)
-						{
-						pushNotificationServices.notifyPharmacy(
-								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.DENTAL_COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyCollection != null) {
+								pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
+										null, null, RoleEnum.DENTAL_COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+							}
 						}
 					} else if (status.equals("FINISHED_LAB")) {
 						if(dentalLabPickupCollection.getDoctorId() != null)
@@ -1131,11 +1144,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 									FINISHED_LAB_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-						if(dentalLabPickupCollection.getCollectionBoyId() != null)
-						{
-						pushNotificationServices.notifyPharmacy(
-								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.DENTAL_COLLECTION_BOY, FINISHED_LAB_NOTIFICATION);
+
+
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyCollection != null) {
+								pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
+										null, null, RoleEnum.DENTAL_COLLECTION_BOY, FINISHED_LAB_NOTIFICATION);
+							}
 						}
 					}
 					else if (status.equals("WORK_RECEIVED")) {
