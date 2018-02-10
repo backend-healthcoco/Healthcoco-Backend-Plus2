@@ -718,7 +718,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY) || role.equals(RoleEnum.DENTAL_COLLECTION_BOY)) {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
-
 			if (role.equals(RoleEnum.PATIENT)) {
 				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
 			}
