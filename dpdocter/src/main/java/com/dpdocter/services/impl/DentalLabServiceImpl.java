@@ -466,7 +466,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
 								.getDentalStagesForDoctor()) {
 							DentalStage dentalStage = new DentalStage();
-							BeanUtil.map(dentalStage, dentalStageRequest);
+							BeanUtil.map(dentalStageRequest, dentalStage);
 							dentalStages.add(dentalStage);
 						}
 						dentalWorksSample.setDentalStagesForDoctor(dentalStages);
@@ -477,7 +477,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
 								.getDentalStagesForLab()) {
 							DentalStage dentalStage = new DentalStage();
-							BeanUtil.map(dentalStage, dentalStageRequest);
+							BeanUtil.map(dentalStageRequest, dentalStage);
 							dentalStages.add(dentalStage);
 						}
 						dentalWorksSample.setDentalStagesForLab(dentalStages);
@@ -510,7 +510,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
 								.getDentalStagesForDoctor()) {
 							DentalStage dentalStage = new DentalStage();
-							BeanUtil.map(dentalStage, dentalStageRequest);
+							BeanUtil.map(dentalStageRequest, dentalStage);
 							dentalStages.add(dentalStage);
 						}
 						dentalWorksSample.setDentalStagesForDoctor(dentalStages);
@@ -521,7 +521,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
 								.getDentalStagesForLab()) {
 							DentalStage dentalStage = new DentalStage();
-							BeanUtil.map(dentalStage, dentalStageRequest);
+							BeanUtil.map(dentalStageRequest, dentalStage);
 							dentalStages.add(dentalStage);
 						}
 						dentalWorksSample.setDentalStagesForLab(dentalStages);
