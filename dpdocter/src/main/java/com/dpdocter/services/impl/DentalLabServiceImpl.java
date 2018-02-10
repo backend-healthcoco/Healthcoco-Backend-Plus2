@@ -400,7 +400,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm));
 			}
-
+			criteria.and("isActive").is(true);
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
