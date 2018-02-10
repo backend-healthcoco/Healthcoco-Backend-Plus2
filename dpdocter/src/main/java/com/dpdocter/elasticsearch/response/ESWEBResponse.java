@@ -11,6 +11,15 @@ public class ESWEBResponse {
 	private List<LabResponse> labs;
 	private String metaData;
 	private String Speciality;
+	private Integer count = 0;
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 
 	public List<ESDoctorWEbSearch> getDoctors() {
 		return doctors;

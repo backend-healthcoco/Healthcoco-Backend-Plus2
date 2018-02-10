@@ -736,6 +736,156 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return esDoctorDocuments;
 	}
 
+	@SuppressWarnings({ "unchecked" })
+	@Override
+	public Integer getDoctorCount(String city, String location, String latitude, String longitude, String speciality,
+			String symptom, Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime,
+			List<String> days, String gender, int minExperience, int maxExperience, String service) {
+		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
+		Integer response = 0;
+		try {
+
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				city = city.trim().replace("-", " ");
+				ESCityDocument esCityDocument = esCityRepository.findByName(city);
+				if (esCityDocument != null) {
+					latitude = esCityDocument.getLatitude() + "";
+					longitude = esCityDocument.getLongitude() + "";
+				}
+			}
+
+			Set<String> specialityIdSet = new HashSet<String>();
+			Set<String> locationIds = null, doctorIds = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(service)) {
+				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
+						.findByName(service);
+				if (esTreatmentServiceDocuments != null) {
+					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
+							new BeanToPropertyValueTransformer("id"));
+					Collection<String> specialities = CollectionUtils.collect(esTreatmentServiceDocuments,
+							new BeanToPropertyValueTransformer("speciality"));
+
+					for (String specialitySTR : specialities) {
+						List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
+								.findByQueryAnnotation(specialitySTR);
+						if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
+							Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
+									new BeanToPropertyValueTransformer("id"));
+							if (specialityIds != null) {
+								specialityIdSet.addAll(specialityIds);
+							}
+						}
+
+					}
+
+					int count = (int) elasticsearchTemplate.count(
+							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
+							ESTreatmentServiceCostDocument.class);
+					if (count > 0)
+						esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(
+								new NativeSearchQueryBuilder()
+										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
+										.withPageable(new PageRequest(0, count)).build(),
+								ESTreatmentServiceCostDocument.class);
+
+				}
+				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
+					return null;
+				}
+				locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
+						new BeanToPropertyValueTransformer("locationId")));
+				doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
+						new BeanToPropertyValueTransformer("doctorId")));
+
+				locationIds.remove(null);
+				doctorIds.remove(null);
+			}
+
+			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
+			QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
+			Integer distance = 4;
+			String citylongitude = null, citylatitude = null;
+			do {
+				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+						.must(QueryBuilders.matchQuery("isDoctorListed", true))
+						.must(QueryBuilders.matchQuery("isClinic", true));
+				if (specialityIdSet != null && !specialityIdSet.isEmpty()) {
+					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
+				}
+
+				if ((locationIds != null && !locationIds.isEmpty()) && (doctorIds != null && !doctorIds.isEmpty())) {
+					boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds))
+							.must(QueryBuilders.termsQuery("locationId", locationIds));
+				}
+
+				/*
+				 * if (!DPDoctorUtils.anyStringEmpty(symptom)) {
+				 * List<ESComplaintsDocument> esComplaintsDocuments =
+				 * esComplaintsRepository.findByComplaint(symptom); if
+				 * (esComplaintsDocuments == null ||
+				 * esComplaintsDocuments.isEmpty()) { return null; } Set<String>
+				 * locationIds = new
+				 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
+				 * BeanToPropertyValueTransformer("locationId"))); Set<String>
+				 * doctorIds = new HashSet<>(
+				 * CollectionUtils.collect(esComplaintsDocuments, new
+				 * BeanToPropertyValueTransformer("doctorId")));
+				 * 
+				 * locationIds.remove(null); doctorIds.remove(null); if
+				 * ((locationIds == null || locationIds.isEmpty()) && (doctorIds
+				 * == null || doctorIds.isEmpty())) { return null; }
+				 * boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
+				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId",
+				 * locationIds)); }
+				 */
+
+				if (specialityQueryBuilder != null)
+					boolQueryBuilder.must(specialityQueryBuilder);
+				if (facilityQueryBuilder != null)
+					boolQueryBuilder.must(facilityQueryBuilder);
+
+				if (!DPDoctorUtils.anyStringEmpty(location)) {
+					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
+				}
+
+				createConsultationFeeFilter(boolQueryBuilder, maxFee, minFee);
+				createExperienceFilter(boolQueryBuilder, maxExperience, minExperience);
+				if (!DPDoctorUtils.anyStringEmpty(gender)) {
+					boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
+				}
+
+				createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
+
+				if (latitude.equals("21.1458004") && longitude.equals("79.0881546")) {
+					citylatitude = latitude;
+					citylongitude = longitude;
+					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+							.lon(Double.parseDouble(longitude)).distance("30km"));
+
+				} else if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
+					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+							.lon(Double.parseDouble(longitude)).distance(distance + "km"));
+					distance = distance + 26;
+				}
+
+				SearchQuery searchQuery = null;
+
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
+
+				response = (int) elasticsearchTemplate.count(searchQuery, ESDoctorDocument.class);
+
+			} while (citylatitude == null && citylongitude == null && distance <= 30 && response < 10);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting Doctor count From ES : " + e.getMessage());
+		}
+		return response;
+	}
+
 	@SuppressWarnings("deprecation")
 	private void createTimeFilter(BoolQueryBuilder boolQueryBuilder, int maxTime, int minTime, List<String> days) {
 		if (days != null && !days.isEmpty()) {
@@ -1342,6 +1492,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			}
 			doctorResponse.setMetaData(doctorResponse.getMetaData() + StringUtils.capitalize(city));
 
+			doctorResponse.setCount(getDoctorCount(city, location, latitude, longitude, speciality, symptom, booking,
+					calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience, maxExperience, service));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
@@ -1432,7 +1585,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return response;
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<ESDoctorCardResponse> getDoctorsShortCard(int page, int size, String city, String location,
 			String latitude, String longitude, String speciality, String searchTerm) {
