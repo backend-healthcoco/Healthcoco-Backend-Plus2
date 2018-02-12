@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
@@ -14,8 +15,10 @@ public class ClinicalNotes extends GenericCollection {
 
 	private String uniqueEmrId;
 
-	private List<Diagnoses> diagnoses;
+//	private List<Diagnoses> diagnoses;
 
+	private List<ObjectId> diagramIds;
+	
 	private List<Diagram> diagrams;
 
 	private String note;
@@ -144,13 +147,13 @@ public class ClinicalNotes extends GenericCollection {
 		this.id = id;
 	}
 
-	public List<Diagnoses> getDiagnoses() {
-		return diagnoses;
-	}
-
-	public void setDiagnoses(List<Diagnoses> diagnoses) {
-		this.diagnoses = diagnoses;
-	}
+//	public List<Diagnoses> getDiagnoses() {
+//		return diagnoses;
+//	}
+//
+//	public void setDiagnoses(List<Diagnoses> diagnoses) {
+//		this.diagnoses = diagnoses;
+//	}
 
 	public List<Diagram> getDiagrams() {
 		return diagrams;
@@ -625,9 +628,17 @@ public class ClinicalNotes extends GenericCollection {
 		this.painScale = painScale;
 	}
 
+	public List<ObjectId> getDiagramIds() {
+		return diagramIds;
+	}
+
+	public void setDiagramIds(List<ObjectId> diagramIds) {
+		this.diagramIds = diagramIds;
+	}
+
 	@Override
 	public String toString() {
-		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses + ", diagrams="
+		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagramIds=" + diagramIds + ", diagrams="
 				+ diagrams + ", note=" + note + ", observation=" + observation + ", investigation=" + investigation
 				+ ", diagnosis=" + diagnosis + ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam="
 				+ generalExam + ", systemExam=" + systemExam + ", complaint=" + complaint + ", presentComplaint="
@@ -639,11 +650,17 @@ public class ClinicalNotes extends GenericCollection {
 				+ ", pcEars=" + pcEars + ", noseExam=" + noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam
 				+ ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam="
 				+ earsExam + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId=" + visitId + ", patientId="
-				+ patientId + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId
-				+ ", appointmentRequest=" + appointmentRequest + ", time=" + time + ", fromDate=" + fromDate + ", lmp="
-				+ lmp + ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren="
-				+ noOfMaleChildren + "]";
+				+ ", pastHistory=" + pastHistory + ", familyHistory=" + familyHistory + ", personalHistoryTobacco="
+				+ personalHistoryTobacco + ", personalHistoryAlcohol=" + personalHistoryAlcohol
+				+ ", personalHistorySmoking=" + personalHistorySmoking + ", personalHistoryDiet=" + personalHistoryDiet
+				+ ", personalHistoryOccupation=" + personalHistoryOccupation + ", generalHistoryDrugs="
+				+ generalHistoryDrugs + ", generalHistoryMedicine=" + generalHistoryMedicine
+				+ ", generalHistoryAllergies=" + generalHistoryAllergies + ", generalHistorySurgical="
+				+ generalHistorySurgical + ", painScale=" + painScale + ", inHistory=" + inHistory + ", discarded="
+				+ discarded + ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns
+				+ ", appointmentId=" + appointmentId + ", appointmentRequest=" + appointmentRequest + ", time=" + time
+				+ ", fromDate=" + fromDate + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren="
+				+ noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
 	}
 
 }

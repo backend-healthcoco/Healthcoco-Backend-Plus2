@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
@@ -36,6 +37,8 @@ public class PatientVisitResponse extends GenericCollection {
 
 	private List<ClinicalNotes> clinicalNotes;
 
+	private List<Diagram> clinicalNotesDiagrams;
+	
 	private List<PatientTreatment> patientTreatment;
 
 	private List<Records> records;
@@ -182,15 +185,12 @@ public class PatientVisitResponse extends GenericCollection {
 		this.eyePrescription = eyePrescription;
 	}
 
-	@Override
-	public String toString() {
-		return "PatientVisitResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions
-				+ ", clinicalNotes=" + clinicalNotes + ", patientTreatment=" + patientTreatment + ", records=" + records
-				+ ", appointmentId=" + appointmentId + ", appointmentRequest=" + appointmentRequest + ", time=" + time
-				+ ", fromDate=" + fromDate + ", eyePrescription=" + eyePrescription + ", discarded=" + discarded
-				+ ", patient=" + patient + "]";
+	public List<Diagram> getClinicalNotesDiagrams() {
+		return clinicalNotesDiagrams;
+	}
+
+	public void setClinicalNotesDiagrams(List<Diagram> clinicalNotesDiagrams) {
+		this.clinicalNotesDiagrams = clinicalNotesDiagrams;
 	}
 
 	public Appointment getAppointmentRequest() {
@@ -215,6 +215,17 @@ public class PatientVisitResponse extends GenericCollection {
 
 	public void setPatient(PatientCollection patient) {
 		this.patient = patient;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientVisitResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions
+				+ ", clinicalNotes=" + clinicalNotes + ", clinicalNotesDiagrams=" + clinicalNotesDiagrams
+				+ ", patientTreatment=" + patientTreatment + ", records=" + records + ", appointmentId=" + appointmentId
+				+ ", appointmentRequest=" + appointmentRequest + ", time=" + time + ", fromDate=" + fromDate
+				+ ", eyePrescription=" + eyePrescription + ", discarded=" + discarded + ", patient=" + patient + "]";
 	}
 
 }

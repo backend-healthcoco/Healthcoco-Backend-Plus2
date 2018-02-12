@@ -20,7 +20,7 @@ public class PatientTreatment  extends GenericCollection {
 
 	private String doctorId;
 
-	private double totalCost = 0.0;
+	private Double totalCost = 0.0;
 
 	private Discount totalDiscount;
 
@@ -110,11 +110,11 @@ public class PatientTreatment  extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public double getTotalCost() {
+	public Double getTotalCost() {
 		return totalCost;
 	}
 
-	public void setTotalCost(double totalCost) {
+	public void setTotalCost(Double totalCost) {
 		this.totalCost = totalCost;
 	}
 
