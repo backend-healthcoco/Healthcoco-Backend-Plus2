@@ -14,7 +14,9 @@ import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Specimen;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
 import com.dpdocter.response.CollectionBoyResponse;
+import com.dpdocter.response.DynamicCollectionBoyAllocationResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.PatientLabTestSampleReportResponse;
@@ -136,4 +138,6 @@ public interface LocationServices {
 
 	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
 			Boolean isDentalWorksLab, Boolean isDentalImagingLab, String searchTerm);
+
+	DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request);
 }

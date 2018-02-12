@@ -46,6 +46,7 @@ import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LabTestSampleCollection;
@@ -69,6 +70,7 @@ import com.dpdocter.repository.DentalLabDoctorAssociationRepository;
 import com.dpdocter.repository.DentalLabTestPickupRepository;
 import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
 import com.dpdocter.repository.RateCardDoctorAssociationRepository;
@@ -140,6 +142,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Autowired
 	private LocationServices locationServices;
 	
+	@Autowired
+	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
+
 	@Autowired
 	private FileManager fileManager;
 	
@@ -536,12 +541,27 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection.setIsCompleted(false);
 				dentalLabPickupCollection.setStatus(request.getStatus());
 				dentalLabPickupCollection.setUpdatedTime(new Date());
-				}
-			CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
-					.getByLocationDoctorIsActive(new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()), true);
-			if (collectionBoyDoctorAssociationCollection != null) {
+			}
+			DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.getByAssignorAssignee(new ObjectId(request.getDentalLabId()), new ObjectId(request.getDoctorId()));
+			if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection.getFromTime() <= System.currentTimeMillis() && System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
 				dentalLabPickupCollection
-						.setCollectionBoyId(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+						.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+				CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+						.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+				pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
+						RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+			} else {
+				CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+						.getByLocationDoctorIsActive(new ObjectId(request.getDentalLabId()),
+								new ObjectId(request.getDoctorId()), true);
+				if (collectionBoyDoctorAssociationCollection != null) {
+					dentalLabPickupCollection
+							.setCollectionBoyId(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+							.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+					pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
+							RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+				}
 			}
 			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 			response = new DentalLabPickup();

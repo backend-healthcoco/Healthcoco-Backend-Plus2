@@ -1413,6 +1413,7 @@ public interface PathProxy {
 		public static final String ADD_EDIT_DENTAL_WORKS = "/addEditDentalWorks";
 		public static final String GET_DENTAL_WORKS = "/getDentalWorks";
 		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
+		public static final String ALLOCATE_COLLECTION_BOY_DYNAMICALLY = "/allocateDynamicCB";
 
 	}
 
