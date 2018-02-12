@@ -875,10 +875,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Override
 	@Transactional
-	public List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
-			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor,
-			int size, int page) {
 
+	public List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from,
+			Long to, String searchTerm, String status, Boolean isAcceptedAtLab , Boolean isCompleted, Boolean isCollectedAtDoctor, int size, int page) {
+		
+		
 		List<DentalLabPickupResponse> response = null;
 		List<DentalLabPickupLookupResponse> lookupResponses = null;
 		try {
@@ -909,14 +910,21 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria.and("status").is(status);
 			}
 
-			/*
-			 * if (from != 0 && to != 0) { criteria.and("updatedTime").gte(new
-			 * Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to))); } else
-			 * if (from != 0) { criteria.and("updatedTime").gte(new Date(from));
-			 * } else if (to != 0) {
-			 * criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new
-			 * Date(to))); }
-			 */
+
+			if (to != null ) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+			} else {
+				criteria.and("updatedTime").gte(new Date(from));
+			}
+
+			/*if (from != 0 && {
+				
+			} else if (from != 0) {
+				criteria.and("updatedTime").gte(new Date(from));
+			} else if (to != null) {
+				criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to)));
+			}*/
+			 
 			
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(
 					new BasicDBObject("$group",
@@ -989,7 +997,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 										true))),
 						Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-			// System.out.println(aggregation);
+			System.out.println(aggregation);
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
 			lookupResponses = aggregationResults.getMappedResults();
@@ -1080,34 +1088,43 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(dentalLabPickupId));
 			if (dentalLabPickupCollection != null) {
 				if (status != null) {
+		dentalLabPickupCollection.setStatus(status);
 
 					if (status.equals("ACCEPTED")) {
-						if(dentalLabPickupCollection.getDoctorId() != null)
-						{
+						if (dentalLabPickupCollection.getDoctorId() != null) {
+
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									ACCEPTED_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
+
 						}
 
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
-							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-									.findOne(dentalLabPickupCollection.getCollectionBoyId());
-							if (collectionBoyCollection != null) {
-								pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
-										null, null, RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(dentalLabPickupCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+								}
 							}
 						}
 					} else if (status.equals("OUT_FOR_COLLECTION")) {
-						
-						if(dentalLabPickupCollection.getDoctorId() != null)
-						{
+
+						if (dentalLabPickupCollection.getDoctorId() != null) {
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									"Work is out for collection!", ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 					} else if (status.equals("COPING_TRIAL")) {
-						if(dentalLabPickupCollection.getDoctorId() != null)
-						{
+						if (dentalLabPickupCollection.getDoctorId() != null) {
+
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									COPING_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
@@ -1116,14 +1133,21 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 									.findOne(dentalLabPickupCollection.getCollectionBoyId());
-							if (collectionBoyCollection != null) {
-								pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
-										null, null, RoleEnum.DENTAL_COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								if (collectionBoyCollection != null) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+								}
 							}
 						}
 					} else if (status.equals("BISQUE_TRIAL")) {
-						if(dentalLabPickupCollection.getDoctorId() != null)
-						{
+						if (dentalLabPickupCollection.getDoctorId() != null) {
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
@@ -1132,14 +1156,21 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 									.findOne(dentalLabPickupCollection.getCollectionBoyId());
-							if (collectionBoyCollection != null) {
-								pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
-										null, null, RoleEnum.DENTAL_COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								if (collectionBoyCollection != null) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+								}
 							}
 						}
 					} else if (status.equals("FINISHED_LAB")) {
-						if(dentalLabPickupCollection.getDoctorId() != null)
-						{
+						if (dentalLabPickupCollection.getDoctorId() != null) {
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									FINISHED_LAB_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
@@ -1149,15 +1180,21 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 									.findOne(dentalLabPickupCollection.getCollectionBoyId());
-							if (collectionBoyCollection != null) {
-								pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
-										null, null, RoleEnum.DENTAL_COLLECTION_BOY, FINISHED_LAB_NOTIFICATION);
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								if (collectionBoyCollection != null) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, FINISHED_LAB_NOTIFICATION);
+								}
 							}
 						}
-					}
-					else if (status.equals("WORK_RECEIVED")) {
-						if(dentalLabPickupCollection.getDoctorId() != null)
-						{
+					} else if (status.equals("WORK_RECEIVED")) {
+						if (dentalLabPickupCollection.getDoctorId() != null) {
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									"work received", ComponentType.REFRESH.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
@@ -1434,7 +1471,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 				pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
-						"ETA for work has been updated!", ComponentType.DENTAL_WORKS.getType(),
+						"ETA for work has been updated.", ComponentType.DENTAL_WORKS.getType(),
 						dentalLabPickupCollection.getId().toString(), null);
 
 				response = true;
