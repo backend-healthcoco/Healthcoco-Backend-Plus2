@@ -16,7 +16,9 @@ import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Specimen;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
 import com.dpdocter.response.CollectionBoyResponse;
+import com.dpdocter.response.DynamicCollectionBoyAllocationResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.PatientLabTestSampleReportResponse;
@@ -132,4 +134,6 @@ public interface LocationServices {
 	List<LabTestPickupLookupResponse> getLabTestPickupByIds(List<ObjectId> ids);
 
 	CustomWork addEditCustomWork(AddEditCustomWorkRequest request);
+	
+	DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request);
 }

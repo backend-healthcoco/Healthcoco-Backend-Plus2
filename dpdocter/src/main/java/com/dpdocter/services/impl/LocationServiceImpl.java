@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -43,6 +44,7 @@ import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.CustomWorkCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
+import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LabAssociationCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
@@ -63,6 +65,7 @@ import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.CustomWorkRepository;
+import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LabAssociationRepository;
 import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
@@ -75,10 +78,12 @@ import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
 import com.dpdocter.request.PatientLabTestsampleRequest;
 import com.dpdocter.response.CBLabAssociationLookupResponse;
 import com.dpdocter.response.CollectionBoyLabAssociationLookupResponse;
 import com.dpdocter.response.CollectionBoyResponse;
+import com.dpdocter.response.DynamicCollectionBoyAllocationResponse;
 import com.dpdocter.response.LabAssociationLookupResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.PatientLabTestSampleReportResponse;
@@ -143,6 +148,9 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Autowired
 	private CustomWorkRepository customWorkRepository;
+	
+	@Autowired
+	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
 
 	@Value("${geocoding.services.api.key}")
 	private String GEOCODING_SERVICES_API_KEY;
@@ -1138,8 +1146,8 @@ public class LocationServiceImpl implements LocationServices {
 									&& DPDoctorUtils.anyStringEmpty(OldlabTestSampleCollection.getSerialNumber())) {
 								String serialNumber = reportSerialNumberGenerator(
 										labTestSampleCollection.getParentLabLocationId().toString());
-								System.out.println("/////////Serial No. is" + serialNumber
-										+ "///////////////////////////////////////////////////");
+								/*System.out.println("/////////Serial No. is" + serialNumber
+										+ "///////////////////////////////////////////////////");*/
 								labTestSampleCollection.setSerialNumber(serialNumber);
 							}
 							labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
@@ -1218,20 +1226,30 @@ public class LocationServiceImpl implements LocationServices {
 				BeanUtil.map(request, labTestPickupCollection);
 				labTestPickupCollection.setRequestId(requestId);
 				labTestPickupCollection.setPatientLabTestSamples(items);
-				CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-						.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
-								new ObjectId(request.getDaughterLabLocationId()), true);
-				if (collectionBoyLabAssociationCollection != null) {
-					labTestPickupCollection
-							.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
-					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-							.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
-					pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
-							RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+				
+				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()), new ObjectId(request.getDaughterLabLocationId()));
+				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection.getFromTime() <= System.currentTimeMillis() && System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
+						labTestPickupCollection
+								.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+								.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
+								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 
-					// pushNotificationServices.notifyPharmacy(id, requestId,
-					// responseId, role, message);
+				} else {
+					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
+							.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
+									new ObjectId(request.getDaughterLabLocationId()), true);
+					if (collectionBoyLabAssociationCollection != null) {
+						labTestPickupCollection
+								.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
+						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+								.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
+						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
+								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 
+						
+					}
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
 				labTestPickupCollection.setIsCompleted(false);
@@ -2430,4 +2448,32 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return generatedId;
 	}
+
+
+
+	@Override
+	@Transactional
+	public DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request) {
+		DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = null;
+		DynamicCollectionBoyAllocationResponse response = null;
+		try {
+			if (request != null) {
+				dynamicCollectionBoyAllocationCollection = new DynamicCollectionBoyAllocationCollection();
+				BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
+				Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
+				dynamicCollectionBoyAllocationCollection.setToTime(toTime);
+				dynamicCollectionBoyAllocationCollection.setCreatedTime(new Date());
+				dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.save(dynamicCollectionBoyAllocationCollection);
+				if(dynamicCollectionBoyAllocationCollection != null) {
+					response = new DynamicCollectionBoyAllocationResponse();
+					BeanUtil.map(dynamicCollectionBoyAllocationCollection, response);
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 }

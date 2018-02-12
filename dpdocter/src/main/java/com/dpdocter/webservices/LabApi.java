@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.cluster.routing.allocation.command.AllocateAllocationCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,10 +34,12 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.DoctorRecordUploadRequest;
+import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
 import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.response.DoctorLabReportResponseWithCount;
+import com.dpdocter.response.DynamicCollectionBoyAllocationResponse;
 import com.dpdocter.response.LabReportsResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.PatientLabTestSampleReportResponse;
@@ -723,4 +726,20 @@ public class LabApi {
 		return response;
 	}
 
+	
+	@POST
+	@Path(value = PathProxy.LabUrls.ALLOCATE_COLLECTION_BOY_DYNAMICALLY)
+	@ApiOperation(value = PathProxy.LabUrls.ALLOCATE_COLLECTION_BOY_DYNAMICALLY, notes = PathProxy.LabUrls.ALLOCATE_COLLECTION_BOY_DYNAMICALLY)
+	public Response<DynamicCollectionBoyAllocationResponse> AllocateDynamicCB(DynamicCollectionBoyAllocationRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		DynamicCollectionBoyAllocationResponse dynamicCollectionBoyAllocationResponse = locationServices.allocateCBDynamically(request);
+		Response<DynamicCollectionBoyAllocationResponse> response = new Response<DynamicCollectionBoyAllocationResponse>();
+		response.setData(dynamicCollectionBoyAllocationResponse);
+		return response;
+	}
+
+	
+	
 }
