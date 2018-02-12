@@ -1449,6 +1449,7 @@ public interface PathProxy {
 		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
 		public static final String DOWNLOAD_PARENT_LAB_REQUISATION_FORM = "/parentlab/download/requisationForm";
 		public static final String DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM = "/doughterlab/download/requisationForm";
+		public static final String ALLOCATE_COLLECTION_BOY_DYNAMICALLY = "/allocateDynamicCB";
 
 	}
 
