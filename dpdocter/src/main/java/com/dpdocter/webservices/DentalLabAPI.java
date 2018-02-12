@@ -187,7 +187,7 @@ public class DentalLabAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_WORK_PICKUPS, notes = PathProxy.DentalLabUrls.GET_DENTAL_WORK_PICKUPS)
 	public Response<DentalLabPickupResponse> getPickupRequests(@QueryParam("dentalLabId") String dentalLabId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("from") Long from, @QueryParam("to") Long to,
+			@QueryParam("doctorId") String doctorId,@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("status") String status,
 			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted, @QueryParam("isCollectedAtDoctor") Boolean isCollectedAtDoctor,
 			@QueryParam("size") int size, @QueryParam("page") int page) {
