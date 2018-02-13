@@ -145,4 +145,6 @@ public interface LocationServices {
 			Boolean isDentalWorksLab, Boolean isDentalImagingLab, String searchTerm);
 
 	DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request);
+
+	List<LabTestPickupLookupResponse> getLabTestPickupByIds(List<ObjectId> ids);
 }
