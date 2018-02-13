@@ -102,12 +102,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			if (request.getUsername() == null)
 				request.setUsername(request.getEmailAddress());
 
-			Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
+			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
-			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
-			if (userCollections != null && !userCollections.isEmpty())
-				userCollection = userCollections.get(0);
+			userCollection = mongoTemplate.findOne(query, UserCollection.class);
 
 			if (userCollection != null) {
 				if (userCollection.getUserState() == UserState.USERSTATECOMPLETE) {
