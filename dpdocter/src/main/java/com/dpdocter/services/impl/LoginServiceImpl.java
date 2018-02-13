@@ -72,10 +72,10 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	private DoctorRepository doctorRepository;
-	
+
 	@Autowired
 	private SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	private OTPService otpService;
 
@@ -103,13 +103,10 @@ public class LoginServiceImpl implements LoginService {
 	public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
 		LoginResponse response = null;
 		try {
-			Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
+			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
-			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
-			UserCollection userCollection = null;
-			if (userCollections != null && !userCollections.isEmpty())
-				userCollection = userCollections.get(0);
+			UserCollection userCollection = mongoTemplate.findOne(query, UserCollection.class);
 
 			if (userCollection == null) {
 				logger.warn(login);
@@ -273,9 +270,9 @@ public class LoginServiceImpl implements LoginService {
 								}
 							}
 						}
-						
+
 						DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());
-						
+
 						if (doctorCollection.getSpecialities() != null) {
 							List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
 									.findAll(doctorCollection.getSpecialities());
