@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Address;
@@ -239,11 +240,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 			ObjectId doctorObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
-			
-			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId, new Date(Long.parseLong("0")), 
-					new Sort(Direction.ASC, "createdTime"));
-			for(PatientCollection patientCollection : patientCollections) {
-				
+
+			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
+					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
+			for (PatientCollection patientCollection : patientCollections) {
 
 				ESPatientDocument document = esPatientRepository.findOne(patientCollection.getId().toString());
 				if (document != null)
@@ -1414,74 +1414,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Override
 	public Boolean updateEMR() {
 		try {
-			List<PatientVisitCollection> patientVisitCollections = patientVisitRepository.findAll();
-			for (PatientVisitCollection patientVisitCollection : patientVisitCollections) {
 
-				patientVisitCollection.setAdminCreatedTime(patientVisitCollection.getCreatedTime());
-			}
-			patientVisitRepository.save(patientVisitCollections);
-
-			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository.findAll();
-			for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
-
-				patientTreatmentCollection.setAdminCreatedTime(patientTreatmentCollection.getCreatedTime());
-			}
-			patientTreamentRepository.save(patientTreatmentCollections);
-			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findAll();
-			for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
-
-				clinicalNotesCollection.setAdminCreatedTime(clinicalNotesCollection.getCreatedTime());
-			}
-			clinicalNotesRepository.save(clinicalNotesCollections);
-			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findAll();
-			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
-
-				prescriptionCollection.setAdminCreatedTime(prescriptionCollection.getCreatedTime());
-			}
-			prescriptionRepository.save(prescriptionCollections);
-			List<OTReportsCollection> otReportsCollections = otReportsRepository.findAll();
-			for (OTReportsCollection otReportsCollection : otReportsCollections) {
-
-				otReportsCollection.setAdminCreatedTime(otReportsCollection.getCreatedTime());
-			}
-			otReportsRepository.save(otReportsCollections);
-			List<DeliveryReportsCollection> deliveryReportsCollections = deliveryReportsRepository.findAll();
-			for (DeliveryReportsCollection deliveryReportsCollection : deliveryReportsCollections) {
-
-				deliveryReportsCollection.setAdminCreatedTime(deliveryReportsCollection.getCreatedTime());
-			}
-			deliveryReportsRepository.save(deliveryReportsCollections);
-
-			List<OPDReportsCollection> opdReportsCollections = opdReportsRepository.findAll();
-			for (OPDReportsCollection opdReportsCollection : opdReportsCollections) {
-
-				opdReportsCollection.setAdminCreatedTime(opdReportsCollection.getCreatedTime());
-			}
-			opdReportsRepository.save(opdReportsCollections);
-
-			List<IPDReportsCollection> ipdReportsCollections = ipdReportsRepository.findAll();
-			for (IPDReportsCollection ipdReportsCollection : ipdReportsCollections) {
-
-				ipdReportsCollection.setAdminCreatedTime(ipdReportsCollection.getCreatedTime());
-			}
-			ipdReportsRepository.save(ipdReportsCollections);
-
-			List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = doctorPatientInvoiceRepository
-					.findAll();
-			for (DoctorPatientInvoiceCollection doctorPatientInvoiceCollection : doctorPatientInvoiceCollections) {
-
-				doctorPatientInvoiceCollection.setAdminCreatedTime(doctorPatientInvoiceCollection.getCreatedTime());
-			}
-			doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollections);
-
-			List<AdmitCardCollection> admitCardCollections = admitCardRepository.findAll();
-			for (AdmitCardCollection admitCardCollection : admitCardCollections) {
-
-				admitCardCollection.setAdminCreatedTime(admitCardCollection.getCreatedTime());
-			}
-			admitCardRepository.save(admitCardCollections);
-
-			List<DischargeSummaryCollection> dischargeSummaryCollections = dischargeSummaryRepository.findAll();
+			List<DischargeSummaryCollection> dischargeSummaryCollections = mongoTemplate
+					.find(new Query(new Criteria("createdTime").exists(false)), DischargeSummaryCollection.class); 
 			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
 
 				dischargeSummaryCollection.setAdminCreatedTime(dischargeSummaryCollection.getCreatedTime());
