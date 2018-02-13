@@ -752,26 +752,26 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.DOWNLOAD_PARENT_LAB_REQUISATION_FORM)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.DOWNLOAD_PARENT_LAB_REQUISATION_FORM, notes = PathProxy.LabUrls.DOWNLOAD_PARENT_LAB_REQUISATION_FORM)
-	public Response<String> downloadFormForParentLab(@MatrixParam("requestIds") List<String> requestIds) {
-		if (requestIds == null || requestIds.isEmpty()) {
+	public Response<String> downloadFormForParentLab(@MatrixParam("ids") List<String> ids) {
+		if (ids == null || ids.isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(labReportsService.downloadLabreportPrintforParent(requestIds, true));
+		response.setData(labReportsService.downloadLabreportPrint(ids, true));
 		return response;
 	}
 
 	@Path(value = PathProxy.LabUrls.DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM, notes = PathProxy.LabUrls.DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM)
-	public Response<String> downloadFormForDoughterLab(@MatrixParam("requestIds") List<String> requestIds) {
-		if (requestIds == null || requestIds.isEmpty()) {
+	public Response<String> downloadFormForDoughterLab(@MatrixParam("ids") List<String> ids) {
+		if (ids == null || ids.isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(labReportsService.downloadLabreportPrintforParent(requestIds, false));
+		response.setData(labReportsService.downloadLabreportPrint(ids, false));
 		return response;
 	}
 

@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
@@ -34,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReportJasperDetail;
 import com.dpdocter.beans.LabReports;
+import com.dpdocter.beans.LabSubReportJasperDetails;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.PatientLabTestSample;
@@ -48,6 +47,7 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -69,6 +69,8 @@ import com.dpdocter.services.LabReportsService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.SMSServices;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -526,25 +528,25 @@ public class LabReportsServiceImpl implements LabReportsService {
 	}
 
 	@Override
-	public String downloadLabreportPrintforParent(List<String> requestIds, boolean isParent) {
+	public String downloadLabreportPrint(List<String> ids, boolean isParent) {
 		String response = null;
 		List<LabTestPickupLookupResponse> labTestPickupLookupResponses = null;
 		List<ObjectId> pickupRequestIds = null;
 		JasperReportResponse jasperReportResponse = null;
 		try {
 			pickupRequestIds = new ArrayList<ObjectId>();
-			for (String requestId : requestIds) {
-				if (!DPDoctorUtils.anyStringEmpty(requestId))
-					pickupRequestIds.add(new ObjectId(requestId));
+			for (String id : ids) {
+				if (!DPDoctorUtils.anyStringEmpty(id))
+					pickupRequestIds.add(new ObjectId(id));
 			}
 			labTestPickupLookupResponses = locationServices.getLabTestPickupByIds(pickupRequestIds);
 			if (labTestPickupLookupResponses == null || labTestPickupLookupResponses.isEmpty()) {
 				throw new BusinessException(ServiceError.NoRecord, " No Lab Report found with ids");
 			}
 			if (isParent) {
-				jasperReportResponse = createJasperParentLab(labTestPickupLookupResponses);
+				jasperReportResponse = createJasper(labTestPickupLookupResponses, true);
 			} else {
-				jasperReportResponse = createJasperDoughterLab(labTestPickupLookupResponses);
+				jasperReportResponse = createJasper(labTestPickupLookupResponses, false);
 			}
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
@@ -560,213 +562,111 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 	}
 
-	private JasperReportResponse createJasperParentLab(List<LabTestPickupLookupResponse> labTestPickupLookupResponses)
-			throws IOException, ParseException {
+	private JasperReportResponse createJasper(List<LabTestPickupLookupResponse> labTestPickupLookupResponses,
+			boolean isparent) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		String labName = "";
-		Set<String> doughterlabNames = null;
-		String doughterlab = "";
 		String locationId = null, hospitalId = null;
 		int sNo = 0;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-		List<LabReportJasperDetail> labReportJasperDetails = new ArrayList<LabReportJasperDetail>();
-		LabReportJasperDetail labReportJasperDetail = null;
-		for (LabTestPickupLookupResponse labTestPickupLookupResponse : labTestPickupLookupResponses) {
-			if (labTestPickupLookupResponse.getParentLab() != null) {
-				locationId = labTestPickupLookupResponse.getParentLab().getId();
-				hospitalId = labTestPickupLookupResponse.getParentLab().getHospitalId();
-				labName = " for" + labTestPickupLookupResponse.getParentLab().getLocationName();
-			}
-			if (labTestPickupLookupResponse.getDaughterLab() != null) {
-				doughterlabNames = new HashSet<String>();
-				if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDaughterLab().getLocationName())) {
-					doughterlabNames.add(labTestPickupLookupResponse.getDaughterLab().getLocationName());
-				}
-			}
-			for (PatientLabTestSample patientLabTestSample : labTestPickupLookupResponse.getPatientLabTestSamples()) {
-				labReportJasperDetail = new LabReportJasperDetail();
-
-				labReportJasperDetail.setNo(sNo + 1);
-				if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getPatientName())) {
-					labReportJasperDetail.setPatientName(patientLabTestSample.getPatientName());
-				} else {
-					labReportJasperDetail.setPatientName("--");
-				}
-				if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getGender())) {
-					labReportJasperDetail.setGender(patientLabTestSample.getGender());
-				} else {
-					labReportJasperDetail.setGender("--");
-				}
-				if (patientLabTestSample.getAge() != null) {
-					labReportJasperDetail.setGender(labReportJasperDetail.getGender() + "/"
-							+ (patientLabTestSample.getAge() > 0 ? patientLabTestSample.getAge().toString() : "--"));
-				} else {
-					labReportJasperDetail.setGender(labReportJasperDetail.getGender() + "/" + "--");
-				}
-				for (LabTestSample labTestsample : patientLabTestSample.getLabTestSamples()) {
-
-					if (DPDoctorUtils.anyStringEmpty(labReportJasperDetail.getTest())) {
-						if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
-							labReportJasperDetail.setTest(labTestsample.getSampleType());
-
-						} else {
-							labReportJasperDetail.setTest("--");
-						}
-						if (labTestsample.getRateCardTestAssociation() != null) {
-							if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
-								labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/"
-										+ (!DPDoctorUtils.anyStringEmpty(labTestsample.getRateCardTestAssociation()
-												.getDiagnosticTest().getTestName())
-														? labTestsample.getRateCardTestAssociation().getDiagnosticTest()
-																.getTestName()
-														: "--"));
-							}
-						} else {
-							labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/" + "--");
-						}
-					} else {
-						if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
-							labReportJasperDetail.setTest(",<br>" + labTestsample.getSampleType());
-
-						} else {
-							labReportJasperDetail.setTest("--");
-						}
-						if (labTestsample.getRateCardTestAssociation() != null) {
-							if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
-								labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/"
-										+ (!DPDoctorUtils.anyStringEmpty(labTestsample.getRateCardTestAssociation()
-												.getDiagnosticTest().getTestName())
-														? labTestsample.getRateCardTestAssociation().getDiagnosticTest()
-																.getTestName()
-														: "--"));
-							}
-						} else {
-							labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/" + "--");
-						}
-
-					}
-				}
-			}
-			labReportJasperDetails.add(labReportJasperDetail);
-		}
-		if (doughterlabNames != null && !doughterlabNames.isEmpty()) {
-			for (String doughterlabName : doughterlabNames) {
-				if (DPDoctorUtils.anyStringEmpty(doughterlab)) {
-					doughterlab = doughterlabName;
-				} else {
-					doughterlab = doughterlab + ",<br>" + doughterlabName;
-				}
-			}
-		} else {
-			doughterlab = "--";
-		}
 		UserCollection userCollection = null;
-		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId)).and("role.role").is("HOSPITAL_ADMIN");
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$userId"), Fields.field("firstName", "$doctor.firstName")));
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("user_cl", "userId", "_id", "doctor"), Aggregation.unwind("doctor"),
-					Aggregation.lookup("role_cl", "roleId", "_id", "role"), Aggregation.unwind("role"),
-					Aggregation.match(criteria), projectList);
-			userCollection = mongoTemplate.aggregate(aggregation, UserRoleCollection.class, UserCollection.class)
-					.getUniqueMappedResult();
-			parameters.put("doctor", "Dr. " + userCollection.getFirstName());
-		} else {
-			parameters.put("doctor", "--");
-		}
-		parameters.put("from", doughterlab);
-		parameters.put("items", labReportJasperDetails);
-		parameters.put("title", "REQUISATION FORM" + labName.toUpperCase());
-		parameters.put("date", simpleDateFormat.format(new Date()));
-		parameters.put("poweredBy", footerText);
 
-		String pdfName = (userCollection != null ? userCollection.getFirstName() : "") + "REQUISATION-FORM"
-				+ new Date().getTime();
-
-		String layout = "PORTRAIT";
-		String pageSize = "A4";
-		Integer topMargin = 20;
-		Integer bottonMargin = 20;
-		Integer leftMargin = 20;
-		Integer rightMargin = 20;
-		patientVisitService.generatePrintSetup(parameters, null, userCollection.getId());
-		response = jasperReportService.createPDF(ComponentType.LAB_REQUISATION_FORM, parameters,
-				labRequisationFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
-				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
-
-		return response;
-
-	}
-
-	private JasperReportResponse createJasperDoughterLab(List<LabTestPickupLookupResponse> labTestPickupLookupResponses)
-			throws IOException, ParseException {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		JasperReportResponse response = null;
-		String pattern = "dd/MM/yyyy";
-		String labName = "";
-		Set<String> parentlabNames = null;
-		String lab = "";
-		String locationId = null, hospitalId = null;
-		int sNo = 0;
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-		List<LabReportJasperDetail> labReportJasperDetails = new ArrayList<LabReportJasperDetail>();
-		LabReportJasperDetail labReportJasperDetail = null;
+		LabSubReportJasperDetails labSubReportJasperDetail = null;
+		DBObject labReportItems = null;
+		List<DBObject> labreports = new ArrayList<DBObject>();
+		List<LabSubReportJasperDetails> labSubReportJasperDetails = null;
 		for (LabTestPickupLookupResponse labTestPickupLookupResponse : labTestPickupLookupResponses) {
-			if (labTestPickupLookupResponse.getParentLab() != null) {
-				locationId = labTestPickupLookupResponse.getDaughterLab().getId();
-				hospitalId = labTestPickupLookupResponse.getDaughterLab().getHospitalId();
-				labName = " for" + labTestPickupLookupResponse.getDaughterLab().getLocationName();
-			}
-			if (labTestPickupLookupResponse.getDaughterLab() != null) {
-				parentlabNames = new HashSet<String>();
-				if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getParentLab().getLocationName())) {
-					parentlabNames.add(labTestPickupLookupResponse.getParentLab().getLocationName());
+
+			labReportItems = new BasicDBObject();
+			if (!isparent) {
+				if (labTestPickupLookupResponse.getDaughterLab() != null) {
+					locationId = labTestPickupLookupResponse.getDaughterLab().getId();
+					hospitalId = labTestPickupLookupResponse.getDaughterLab().getHospitalId();
+					labName = " for " + labTestPickupLookupResponse.getDaughterLab().getLocationName();
 				}
+				if (labTestPickupLookupResponse.getParentLab() != null) {
+
+					if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getParentLab().getLocationName())) {
+						labReportItems.put("from",
+								"<b>To :- </b>" + labTestPickupLookupResponse.getParentLab().getLocationName());
+					}
+				} else {
+					labReportItems.put("from", "<b>To :- </b>");
+
+				}
+			} else {
+				if (labTestPickupLookupResponse.getParentLab() != null) {
+					locationId = labTestPickupLookupResponse.getParentLab().getId();
+					hospitalId = labTestPickupLookupResponse.getParentLab().getHospitalId();
+					labName = " for " + labTestPickupLookupResponse.getParentLab().getLocationName();
+				}
+				if (labTestPickupLookupResponse.getParentLab() != null) {
+
+					if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDaughterLab().getLocationName())) {
+						labReportItems.put("from",
+								"<b>From :- </b>" + labTestPickupLookupResponse.getDaughterLab().getLocationName());
+					}
+				} else {
+					labReportItems.put("from", "<b>From :- </b>");
+
+				}
+
 			}
+			if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDoctorId())) {
+				userCollection = userRepository.findOne(new ObjectId(labTestPickupLookupResponse.getDoctorId()));
+				if (userCollection != null)
+					labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
+				else
+
+					labReportItems.put("doctor", "<b>Doctor :- </b> ");
+			} else {
+				labReportItems.put("doctor", "<b>Doctor :- </b> ");
+
+			}
+
 			if (labTestPickupLookupResponse.getPatientLabTestSamples() != null
 					&& !labTestPickupLookupResponse.getPatientLabTestSamples().isEmpty()) {
+
+				labSubReportJasperDetails = new ArrayList<LabSubReportJasperDetails>();
 				for (PatientLabTestSample patientLabTestSample : labTestPickupLookupResponse
 						.getPatientLabTestSamples()) {
-					labReportJasperDetail = new LabReportJasperDetail();
+					labSubReportJasperDetail = new LabSubReportJasperDetails();
 
-					labReportJasperDetail.setNo(sNo + 1);
+					labSubReportJasperDetail.setNo(sNo + 1);
 					if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getPatientName())) {
-						labReportJasperDetail.setPatientName(patientLabTestSample.getPatientName());
+						labSubReportJasperDetail.setPatientName(patientLabTestSample.getPatientName());
 					} else {
-						labReportJasperDetail.setPatientName("--");
+						labSubReportJasperDetail.setPatientName("--");
 					}
 					if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getGender())) {
-						labReportJasperDetail.setGender(patientLabTestSample.getGender());
+						labSubReportJasperDetail.setGender(patientLabTestSample.getGender());
 					} else {
-						labReportJasperDetail.setGender("--");
+						labSubReportJasperDetail.setGender("--");
 					}
 					if (patientLabTestSample.getAge() != null) {
-						labReportJasperDetail
-								.setGender(labReportJasperDetail.getGender() + "/" + (patientLabTestSample.getAge() > 0
+						labSubReportJasperDetail.setGender(
+								labSubReportJasperDetail.getGender() + "/" + (patientLabTestSample.getAge() > 0
 										? patientLabTestSample.getAge().toString() : "--"));
 					} else {
-						labReportJasperDetail.setGender(labReportJasperDetail.getGender() + "/" + "--");
+						labSubReportJasperDetail.setGender(labSubReportJasperDetail.getGender() + "/" + "--");
 					}
 					if (patientLabTestSample.getLabTestSamples() != null
 							&& !patientLabTestSample.getLabTestSamples().isEmpty()) {
 						for (LabTestSample labTestsample : patientLabTestSample.getLabTestSamples()) {
 
-							if (DPDoctorUtils.anyStringEmpty(labReportJasperDetail.getTest())) {
+							if (DPDoctorUtils.anyStringEmpty(labSubReportJasperDetail.getTest())) {
 								if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
-									labReportJasperDetail.setTest(labTestsample.getSampleType());
+									labSubReportJasperDetail.setTest(labTestsample.getSampleType());
 
 								} else {
-									labReportJasperDetail.setTest("--");
+									labSubReportJasperDetail.setTest("--");
 								}
 								if (labTestsample.getRateCardTestAssociation() != null) {
 									if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
-										labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/"
+										labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + "/"
 												+ (!DPDoctorUtils.anyStringEmpty(labTestsample
 														.getRateCardTestAssociation().getDiagnosticTest().getTestName())
 																? labTestsample.getRateCardTestAssociation()
@@ -774,18 +674,19 @@ public class LabReportsServiceImpl implements LabReportsService {
 																: "--"));
 									}
 								} else {
-									labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/" + "--");
+									labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + "/" + "--");
 								}
 							} else {
 								if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
-									labReportJasperDetail.setTest(",<br>" + labTestsample.getSampleType());
+									labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + ",<br>"
+											+ labTestsample.getSampleType());
 
 								} else {
-									labReportJasperDetail.setTest("--");
+									labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + ",<br>--");
 								}
 								if (labTestsample.getRateCardTestAssociation() != null) {
 									if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
-										labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/"
+										labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + "/"
 												+ (!DPDoctorUtils.anyStringEmpty(labTestsample
 														.getRateCardTestAssociation().getDiagnosticTest().getTestName())
 																? labTestsample.getRateCardTestAssociation()
@@ -793,28 +694,20 @@ public class LabReportsServiceImpl implements LabReportsService {
 																: "--"));
 									}
 								} else {
-									labReportJasperDetail.setTest(labReportJasperDetail.getTest() + "/" + "--");
+									labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + "/" + "--");
 								}
 
 							}
 						}
 					}
+					labSubReportJasperDetails.add(labSubReportJasperDetail);
 				}
+
 			}
-			labReportJasperDetails.add(labReportJasperDetail);
+			labReportItems.put("details", labSubReportJasperDetails);
+			labreports.add(labReportItems);
 		}
-		if (parentlabNames != null && !parentlabNames.isEmpty()) {
-			for (String parentlabName : parentlabNames) {
-				if (DPDoctorUtils.anyStringEmpty(lab)) {
-					lab = parentlabName;
-				} else {
-					lab = lab + ",<br>" + parentlabName;
-				}
-			}
-		} else {
-			lab = "--";
-		}
-		UserCollection userCollection = null;
+		userCollection = null;
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId)).and("role.role").is("HOSPITAL_ADMIN");
@@ -826,14 +719,11 @@ public class LabReportsServiceImpl implements LabReportsService {
 					Aggregation.match(criteria), projectList);
 			userCollection = mongoTemplate.aggregate(aggregation, UserRoleCollection.class, UserCollection.class)
 					.getUniqueMappedResult();
-			parameters.put("doctor", "Dr. " + userCollection.getFirstName());
-		} else {
-			parameters.put("doctor", "--");
+
 		}
-		parameters.put("from", lab);
-		parameters.put("items", labReportJasperDetails);
+		parameters.put("items", labreports);
 		parameters.put("title", "REQUISATION FORM" + labName.toUpperCase());
-		parameters.put("date", simpleDateFormat.format(new Date()));
+		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
 		parameters.put("poweredBy", footerText);
 
 		String pdfName = (userCollection != null ? userCollection.getFirstName() : "") + "REQUISATION-FORM"
@@ -846,6 +736,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 		Integer leftMargin = 20;
 		Integer rightMargin = 20;
 		patientVisitService.generatePrintSetup(parameters, null, userCollection.getId());
+		parameters.put("contentLineSpace", LineSpace.SMALL.name());
 		response = jasperReportService.createPDF(ComponentType.LAB_REQUISATION_FORM, parameters,
 				labRequisationFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));

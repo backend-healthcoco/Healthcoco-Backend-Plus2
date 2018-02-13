@@ -39,6 +39,6 @@ public interface LabReportsService {
 
 	LabReportsResponse changePatientShareStatus(String id, Boolean status);
 
-	public String downloadLabreportPrintforParent(List<String> requestIds, boolean isParent);
+	public String downloadLabreportPrint(List<String> ids, boolean isParent);
 
 }

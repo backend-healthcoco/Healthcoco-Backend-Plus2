@@ -1,44 +1,27 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class LabReportJasperDetail {
-	private int no;
 
-	private String patientName;
+	private String from;
 
-	private String gender;
+	private String doctor;
 
-	private String test;
-
-	public String getPatientName() {
-		return patientName;
+	public String getFrom() {
+		return from;
 	}
 
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
+	public void setFrom(String from) {
+		this.from = from;
 	}
 
-	public int getNo() {
-		return no;
+	public String getDoctor() {
+		return doctor;
 	}
 
-	public void setNo(int no) {
-		this.no = no;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getTest() {
-		return test;
-	}
-
-	public void setTest(String test) {
-		this.test = test;
+	public void setDoctor(String doctor) {
+		this.doctor = doctor;
 	}
 
 }
