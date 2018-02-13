@@ -212,8 +212,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				}
-				if (dischargeSummary.getCreatedTime() == null)
-					dischargeSummary.setCreatedTime(oldDischargeSummaryCollection.getAdminCreatedTime());
+				if (dischargeSummaryCollection.getCreatedTime() == null) {
+					dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
+				}
 				dischargeSummaryCollection.setCreatedBy(oldDischargeSummaryCollection.getCreatedBy());
 				dischargeSummaryCollection.setAdminCreatedTime(oldDischargeSummaryCollection.getAdminCreatedTime());
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
