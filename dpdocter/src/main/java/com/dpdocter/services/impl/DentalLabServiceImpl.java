@@ -1019,7 +1019,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 										true))),
 						Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-			System.out.println(aggregation);
+			//System.out.println(aggregation);
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
 			lookupResponses = aggregationResults.getMappedResults();
@@ -1523,5 +1523,75 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public DentalLabPickupResponse getRequestById(String id)
+	{
+		DentalLabPickupResponse dentalLabPickupResponse = null;
+		DentalLabPickupLookupResponse dentalLabPickupLookupResponse = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			criteria.and("_id").in(new ObjectId(id));
+			
+			aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+					Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"),
+					Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
+									true))),
+					Aggregation.match(criteria));
+			System.out.println(aggregation);
+			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
+			dentalLabPickupLookupResponse = aggregationResults.getUniqueMappedResult();
+			
+			if(dentalLabPickupLookupResponse != null)
+			{
+				List<DentalStageRequest> dentalStageRequestsForDoctor = null;
+				List<DentalStageRequest> dentalStageRequestsForLab = null;
+				List<DentalWorksSampleRequest> dentalWorksSampleRequests =  new ArrayList<>();
+				//System.out.println( " lookup response :: " + dentalLabPickupLookupResponse);
+				dentalLabPickupResponse = new DentalLabPickupResponse();
+				BeanUtil.map(dentalLabPickupLookupResponse, dentalLabPickupResponse);
+				
+				for (DentalWorksSample dentalWorksSample : dentalLabPickupLookupResponse.getDentalWorksSamples()) {
+					//sSystem.out.println( " work sample:: " + dentalLabPickupLookupResponse.getDentalWorksSamples());
+					DentalWorksSampleRequest dentalWorksSampleRequest = new DentalWorksSampleRequest();
+					BeanUtil.map(dentalWorksSample, dentalWorksSampleRequest);
+					if (dentalWorksSample.getDentalStagesForDoctor() != null) {
+						dentalStageRequestsForDoctor = new ArrayList<>(); 
+						for (DentalStage dentalStage : dentalWorksSample.getDentalStagesForDoctor()) {
+							DentalStageRequest dentalStageRequest = new DentalStageRequest();
+							BeanUtil.map(dentalStage, dentalStageRequest);
+							dentalStageRequestsForDoctor.add(dentalStageRequest);
+						}
+					}
+					if (dentalWorksSample.getDentalStagesForLab() != null) {
+						dentalStageRequestsForLab = new ArrayList<>();
+						for (DentalStage dentalStage : dentalWorksSample.getDentalStagesForLab()) {
+							DentalStageRequest dentalStageRequest = new DentalStageRequest();
+							BeanUtil.map(dentalStage, dentalStageRequest);
+							dentalStageRequestsForLab.add(dentalStageRequest);
+						}
+					}
+					dentalWorksSampleRequest.setDentalStagesForDoctor(dentalStageRequestsForDoctor);
+					dentalWorksSampleRequest.setDentalStagesForLab(dentalStageRequestsForLab);
+					dentalWorksSampleRequests.add(dentalWorksSampleRequest);
+					dentalLabPickupResponse.setDentalWorksSamples(dentalWorksSampleRequests);
+					
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return dentalLabPickupResponse;
+	}
+	
+	
 	
 }

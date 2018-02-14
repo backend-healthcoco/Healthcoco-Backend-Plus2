@@ -425,5 +425,17 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.updateETA(request));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalLabUrls.GET_PICKUP_REQUEST_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_PICKUP_REQUEST_BY_ID, notes = PathProxy.DentalLabUrls.GET_PICKUP_REQUEST_BY_ID)
+	public Response<DentalLabPickupResponse> getRequestById(@PathParam("requestId") String requestId) {
+		if (requestId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalLabPickupResponse> response = new Response<DentalLabPickupResponse>();
+		response.setData(dentalLabService.getRequestById(requestId));
+		return response;
+	}
 
 }
