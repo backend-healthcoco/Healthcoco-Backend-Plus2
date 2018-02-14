@@ -213,12 +213,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				}
 				if (dischargeSummary.getCreatedTime() == null)
-					dischargeSummary.setCreatedTime(oldDischargeSummaryCollection.getAdminCreatedTime());
+					dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
 				dischargeSummaryCollection.setCreatedBy(oldDischargeSummaryCollection.getCreatedBy());
 				dischargeSummaryCollection.setAdminCreatedTime(oldDischargeSummaryCollection.getAdminCreatedTime());
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
 				dischargeSummaryCollection.setUniqueEmrId(oldDischargeSummaryCollection.getUniqueEmrId());
 				dischargeSummaryCollection.setIsPatientDiscarded(oldDischargeSummaryCollection.getIsPatientDiscarded());
+				dischargeSummaryCollection.setUpdatedTime(new Date());
 			}
 			if (dischargeSummary.getPrescriptions() != null) {
 				PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();

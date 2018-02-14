@@ -237,9 +237,9 @@ public class ReportsServiceImpl implements ReportsService {
 					BeanUtil.map(opdReports, opdReportsCollection);
 					opdReportsCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
 							? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
-					opdReportsCollectionOld.setAdminCreatedTime(new Date());
+					opdReportsCollection.setAdminCreatedTime(new Date());
 					if (opdReports.getCreatedTime() == null) {
-						opdReportsCollectionOld.setCreatedTime(new Date());
+						opdReportsCollection.setCreatedTime(new Date());
 					}
 					opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 				}
@@ -306,7 +306,6 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
 
-
 				if (DPDoctorUtils.anyStringEmpty(deliveryReportsCollection.getUniqueDRId()))
 					deliveryReportsCollection.setUniqueDRId(
 							UniqueIdInitial.DELIVERY_REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -314,8 +313,6 @@ public class ReportsServiceImpl implements ReportsService {
 				deliveryReportsCollection.setAdminCreatedTime(new Date());
 				if (deliveryReports.getCreatedTime() == null) {
 					deliveryReportsCollection.setCreatedTime(new Date());
-
-
 
 				}
 				deliveryReportsCollection.setCreatedBy(
