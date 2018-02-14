@@ -217,9 +217,9 @@ public class ReportsServiceImpl implements ReportsService {
 					BeanUtil.map(opdReports, opdReportsCollection);
 					opdReportsCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
 							? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
-					opdReportsCollectionOld.setAdminCreatedTime(new Date());
+					opdReportsCollection.setAdminCreatedTime(new Date());
 					if (opdReports.getCreatedTime() == null) {
-						opdReportsCollectionOld.setCreatedTime(new Date());
+						opdReportsCollection.setCreatedTime(new Date());
 					}
 					opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 				}
