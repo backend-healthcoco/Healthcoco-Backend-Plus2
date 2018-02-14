@@ -229,8 +229,7 @@ public class DPDoctorUtils {
 					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder));
-			} else
-				boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
+			}
 		}
 
 		if (!DPDoctorUtils.anyStringEmpty(category)) {
@@ -269,7 +268,7 @@ public class DPDoctorUtils {
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("doctorId", doctorId));
 		}
-		if (!DPDoctorUtils.anyStringEmpty(disease)){
+		if (!DPDoctorUtils.anyStringEmpty(disease)) {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
@@ -382,9 +381,9 @@ public class DPDoctorUtils {
 					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder)).minimumNumberShouldMatch(1);
-			} else
-				boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
+			}
 		}
+
 		if (!DPDoctorUtils.anyStringEmpty(category)) {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}
