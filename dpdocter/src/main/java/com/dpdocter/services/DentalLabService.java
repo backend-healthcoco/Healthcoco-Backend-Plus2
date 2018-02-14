@@ -99,6 +99,8 @@ public interface DentalLabService {
 
 	Boolean discardRequest(String requestId, Boolean discarded);
 
+	DentalLabPickupResponse getRequestById(String id);
+
 
 	/*
 	 * DentalLabDoctorAssociation

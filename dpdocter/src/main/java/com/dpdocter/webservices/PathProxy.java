@@ -1596,7 +1596,8 @@ public interface PathProxy {
 		public static final String CANCEL_REQUEST = "/cancelRequest";
 		public static final String UPDATE_ETA = "/updateETA";
 		public static final String DISCARD_REQUEST = "/discardRequest/{requestId}";
-		
+		public static final String GET_PICKUP_REQUEST_BY_ID = "/getRequestById/{requestId}";
+
 	}
 
 
