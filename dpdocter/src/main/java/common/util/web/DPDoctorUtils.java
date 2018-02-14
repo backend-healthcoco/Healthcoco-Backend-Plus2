@@ -225,12 +225,12 @@ public class DPDoctorUtils {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				orQueryBuilder.add(QueryBuilders.boolQuery().must(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
 					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder));
-			} else
-				boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
+			}
 		}
 
 		if (!DPDoctorUtils.anyStringEmpty(category)) {
@@ -269,7 +269,7 @@ public class DPDoctorUtils {
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("doctorId", doctorId));
 		}
-		if (!DPDoctorUtils.anyStringEmpty(disease)){
+		if (!DPDoctorUtils.anyStringEmpty(disease)) {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
@@ -374,16 +374,17 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
 				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
 				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
-				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM) || resource.equals(Resource.DENTAL_WORKS)) {
+				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)
+				|| resource.equals(Resource.DENTAL_WORKS)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				orQueryBuilder.add(QueryBuilders.boolQuery().must(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
 					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder)).minimumNumberShouldMatch(1);
-			} else
-				boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
+			}
 		}
 		if (!DPDoctorUtils.anyStringEmpty(category)) {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
@@ -659,11 +660,11 @@ public class DPDoctorUtils {
 		return localCalendar.getTime();
 
 	}
-	
+
 	public static Long getStartTimeInMillis(Date date) {
 
 		DateTime startTime = null;
-		
+
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
@@ -672,7 +673,7 @@ public class DPDoctorUtils {
 
 		startTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		
+
 		return startTime.getMillis();
 
 	}
@@ -701,11 +702,11 @@ public class DPDoctorUtils {
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 	}
-	
+
 	public static Long getEndTimeInMillis(Date date) {
 
 		DateTime endTime = null;
-		
+
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
@@ -714,7 +715,7 @@ public class DPDoctorUtils {
 
 		endTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		
+
 		return endTime.getMillis();
 
 	}
