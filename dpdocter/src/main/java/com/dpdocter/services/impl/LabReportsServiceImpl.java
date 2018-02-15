@@ -705,7 +705,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 		}
 		parameters.put("items", labreports);
-		parameters.put("title", "REQUISATION FORM" + labName.toUpperCase());
+		parameters.put("title", "REQUISITION FORM" + labName.toUpperCase());
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
 		parameters.put("poweredBy", footerText);
 
