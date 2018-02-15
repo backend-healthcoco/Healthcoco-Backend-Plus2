@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.LabReportJasperDetail;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabSubReportJasperDetails;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
@@ -528,7 +527,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 	}
 
 	@Override
-	public String downloadLabreportPrint(List<String> ids, boolean isParent) {
+	public String downloadLabreportPrint(List<String> ids) {
 		String response = null;
 		List<LabTestPickupLookupResponse> labTestPickupLookupResponses = null;
 		List<ObjectId> pickupRequestIds = null;
@@ -543,11 +542,9 @@ public class LabReportsServiceImpl implements LabReportsService {
 			if (labTestPickupLookupResponses == null || labTestPickupLookupResponses.isEmpty()) {
 				throw new BusinessException(ServiceError.NoRecord, " No Lab Report found with ids");
 			}
-			if (isParent) {
-				jasperReportResponse = createJasper(labTestPickupLookupResponses, true);
-			} else {
-				jasperReportResponse = createJasper(labTestPickupLookupResponses, false);
-			}
+
+			jasperReportResponse = createJasper(labTestPickupLookupResponses);
+
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
 			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -562,8 +559,8 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 	}
 
-	private JasperReportResponse createJasper(List<LabTestPickupLookupResponse> labTestPickupLookupResponses,
-			boolean isparent) throws IOException, ParseException {
+	private JasperReportResponse createJasper(List<LabTestPickupLookupResponse> labTestPickupLookupResponses)
+			throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
@@ -581,40 +578,26 @@ public class LabReportsServiceImpl implements LabReportsService {
 		for (LabTestPickupLookupResponse labTestPickupLookupResponse : labTestPickupLookupResponses) {
 
 			labReportItems = new BasicDBObject();
-			if (!isparent) {
-				if (labTestPickupLookupResponse.getDaughterLab() != null) {
-					locationId = labTestPickupLookupResponse.getDaughterLab().getId();
-					hospitalId = labTestPickupLookupResponse.getDaughterLab().getHospitalId();
-					labName = " for " + labTestPickupLookupResponse.getDaughterLab().getLocationName();
-				}
-				if (labTestPickupLookupResponse.getParentLab() != null) {
 
-					if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getParentLab().getLocationName())) {
-						labReportItems.put("from",
-								"<b>To :- </b>" + labTestPickupLookupResponse.getParentLab().getLocationName());
-					}
-				} else {
-					labReportItems.put("from", "<b>To :- </b>");
+			if (labTestPickupLookupResponse.getParentLab() != null) {
+				locationId = labTestPickupLookupResponse.getParentLab().getId();
+				hospitalId = labTestPickupLookupResponse.getParentLab().getHospitalId();
+				labName = " for " + labTestPickupLookupResponse.getParentLab().getLocationName();
+			}
+			if (labTestPickupLookupResponse.getDaughterLab() != null) {
 
-				}
-			} else {
-				if (labTestPickupLookupResponse.getParentLab() != null) {
-					locationId = labTestPickupLookupResponse.getParentLab().getId();
-					hospitalId = labTestPickupLookupResponse.getParentLab().getHospitalId();
-					labName = " for " + labTestPickupLookupResponse.getParentLab().getLocationName();
-				}
-				if (labTestPickupLookupResponse.getParentLab() != null) {
-
-					if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDaughterLab().getLocationName())) {
-						labReportItems.put("from",
-								"<b>From :- </b>" + labTestPickupLookupResponse.getDaughterLab().getLocationName());
-					}
+				if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDaughterLab().getLocationName())) {
+					labReportItems.put("from",
+							"<b>From :- </b>" + labTestPickupLookupResponse.getDaughterLab().getLocationName());
 				} else {
 					labReportItems.put("from", "<b>From :- </b>");
 
 				}
+			} else {
+				labReportItems.put("from", "<b>From :- </b>");
 
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDoctorId())) {
 				userCollection = userRepository.findOne(new ObjectId(labTestPickupLookupResponse.getDoctorId()));
 				if (userCollection != null)

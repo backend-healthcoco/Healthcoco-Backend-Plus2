@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
-import com.dpdocter.beans.PatientLabTestSample;
 import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
@@ -39,6 +38,6 @@ public interface LabReportsService {
 
 	LabReportsResponse changePatientShareStatus(String id, Boolean status);
 
-	public String downloadLabreportPrint(List<String> ids, boolean isParent);
+	public String downloadLabreportPrint(List<String> ids);
 
 }
