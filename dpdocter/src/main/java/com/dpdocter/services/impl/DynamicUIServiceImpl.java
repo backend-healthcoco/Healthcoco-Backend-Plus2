@@ -27,6 +27,7 @@ import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.enums.AdmitCardPermissionEnum;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.ClinicalNotesPermissionEnum;
+import com.dpdocter.enums.DentalLabRequestPermissions;
 import com.dpdocter.enums.DentistPermissionEnum;
 import com.dpdocter.enums.DischargeSummaryPermissions;
 import com.dpdocter.enums.ENTPermissionType;
@@ -39,6 +40,7 @@ import com.dpdocter.enums.ProfilePermissionEnum;
 import com.dpdocter.enums.SpecialityTypeEnum;
 import com.dpdocter.enums.TabPermissionsEnum;
 import com.dpdocter.enums.VitalSignPermissions;
+import com.dpdocter.enums.WorkSamplePermissions;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -81,6 +83,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		Set<String> vitalSignPermissionSet = new HashSet<String>();
 		Set<String> dischargeSummaryPermissionSet = new HashSet<String>();
 		Set<String> admitCardPermissionSet = new HashSet<String>();
+		Set<String> dentalLabRequestPermissionSet = new HashSet<String>();
+		Set<String> dentalWorkSamplePermissionSet = new HashSet<String>();
 		DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
 		if (doctorCollection != null) {
 			uiPermissions = new UIPermissions();
@@ -105,6 +109,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 						vitalSignPermissionSet.addAll(tempPermissions.getVitalSignPermissions());
 						dischargeSummaryPermissionSet.addAll(tempPermissions.getDischargeSummaryPermissions());
 						admitCardPermissionSet.addAll(tempPermissions.getAdmitCardPermissions());
+						dentalLabRequestPermissionSet.addAll(tempPermissions.getDentalLabRequestPermission());
+						dentalWorkSamplePermissionSet.addAll(tempPermissions.getDentalWorkSamplePermission());
 					}
 				}
 				uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
@@ -115,6 +121,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				uiPermissions.setVitalSignPermissions(new ArrayList<String>(vitalSignPermissionSet));
 				uiPermissions.setDischargeSummaryPermissions(new ArrayList<String>(dischargeSummaryPermissionSet));
 				uiPermissions.setAdmitCardPermissions(new ArrayList<String>(admitCardPermissionSet));
+				uiPermissions.setDentalLabRequestPermission(new ArrayList<String>(dentalLabRequestPermissionSet));
+				uiPermissions.setDentalWorkSamplePermission(new ArrayList<String>(dentalWorkSamplePermissionSet));
 			}
 		}
 		return uiPermissions;
@@ -167,6 +175,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		ArrayList<String> vitalSignPermission = null;
 		ArrayList<String> dischargeSummaryPermission = null;
 		ArrayList<String> admitCardPermission = null;
+		ArrayList<String> dentalLabRequestPermission = null;
+		ArrayList<String> dentalWorkSamplePermission = null;
 		switch (speciality.toUpperCase().trim()) {
 		case "OPHTHALMOLOGIST":
 			uiPermissions = new UIPermissions();
@@ -273,6 +283,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
 			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
+			dentalLabRequestPermission = new ArrayList<String>(Arrays.asList(dentalLabRequestPermission()));
+			dentalWorkSamplePermission = new ArrayList<String>(Arrays.asList(dentalWorkSamplePermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -281,6 +293,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			uiPermissions.setAdmitCardPermissions(admitCardPermission);
+			uiPermissions.setDentalLabRequestPermission(dentalLabRequestPermission);
+			uiPermissions.setDentalWorkSamplePermission(dentalWorkSamplePermission);
 			break;
 
 		case "EAR-NOSE-THROAT (ENT) SPECIALIST":
@@ -464,6 +478,14 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	
 	private String[] orthoPermission() {
 		return Arrays.toString(OrthoPermissionType.values()).replaceAll("^.|.$", "").split(", ");
+	}
+	
+	private String[] dentalLabRequestPermission() {
+		return Arrays.toString(DentalLabRequestPermissions.values()).replaceAll("^.|.$", "").split(", ");
+	}
+	
+	private String[] dentalWorkSamplePermission() {
+		return Arrays.toString(WorkSamplePermissions.values()).replaceAll("^.|.$", "").split(", ");
 	}
 	
 

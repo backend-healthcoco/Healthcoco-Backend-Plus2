@@ -1544,7 +1544,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 							new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 									true))),
 					Aggregation.match(criteria));
-			System.out.println(aggregation);
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
 			dentalLabPickupLookupResponse = aggregationResults.getUniqueMappedResult();
