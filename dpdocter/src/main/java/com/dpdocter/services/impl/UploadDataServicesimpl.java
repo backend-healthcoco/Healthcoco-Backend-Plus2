@@ -1471,7 +1471,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 					.find(new Query(new Criteria("createdTime").exists(false)), DischargeSummaryCollection.class); 
 			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
 
-				dischargeSummaryCollection.setAdminCreatedTime(dischargeSummaryCollection.getCreatedTime());
+				dischargeSummaryCollection.setCreatedTime(dischargeSummaryCollection.getAdminCreatedTime());
 			}
 			dischargeSummaryRepository.save(dischargeSummaryCollections);
 
