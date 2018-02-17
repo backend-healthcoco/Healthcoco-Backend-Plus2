@@ -1,6 +1,8 @@
 package com.dpdocter.services;
 
 import com.dpdocter.beans.DataDynamicUI;
+import com.dpdocter.beans.DentalLabDynamicField;
+import com.dpdocter.beans.DentalLabDynamicUi;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.request.DynamicUIRequest;
@@ -21,5 +23,11 @@ public interface DynamicUIService {
 	DataDynamicUI getDynamicDataPermissionForDoctor(String doctorId);
 
 	DataDynamicUI postDataPermissions(DataDynamicUI dynamicUIRequest);
+
+	DentalLabDynamicUi postDentalLabPermissions(DentalLabDynamicUi request);
+
+	DentalLabDynamicField getAllDentalLabPermissions();
+
+	DentalLabDynamicUi getPermissionForDentalLab(String dentalLabId);
 
 }

@@ -16,8 +16,6 @@ public class UIPermissions {
 	private List<String> vitalSignPermissions = new ArrayList<String>();
 	private List<String> dischargeSummaryPermissions = new ArrayList<String>();
 	private List<String> admitCardPermissions = new ArrayList<String>();
-	private List<String> dentalLabRequestPermission = new ArrayList<>();
-	private List<String> dentalWorkSamplePermission = new ArrayList<>();
 	private String landingPagePermissions = "CONTACTS";
 
 	public List<String> getTabPermissions() {
@@ -90,22 +88,6 @@ public class UIPermissions {
 
 	public void setLandingPagePermissions(String landingPagePermissions) {
 		this.landingPagePermissions = landingPagePermissions;
-	}
-
-	public List<String> getDentalLabRequestPermission() {
-		return dentalLabRequestPermission;
-	}
-
-	public void setDentalLabRequestPermission(List<String> dentalLabRequestPermission) {
-		this.dentalLabRequestPermission = dentalLabRequestPermission;
-	}
-
-	public List<String> getDentalWorkSamplePermission() {
-		return dentalWorkSamplePermission;
-	}
-
-	public void setDentalWorkSamplePermission(List<String> dentalWorkSamplePermission) {
-		this.dentalWorkSamplePermission = dentalWorkSamplePermission;
 	}
 
 	@Override
