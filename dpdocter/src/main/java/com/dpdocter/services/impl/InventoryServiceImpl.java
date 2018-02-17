@@ -19,6 +19,7 @@ import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.InventorySettings;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.InventoryBatchCollection;
 import com.dpdocter.collections.InventoryItemCollection;
@@ -31,6 +32,7 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.InventoryBatchRepository;
 import com.dpdocter.repository.InventoryItemRepository;
@@ -41,6 +43,7 @@ import com.dpdocter.request.InventorySettingRequest;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 import com.dpdocter.services.InventoryService;
+import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
@@ -77,6 +80,12 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Autowired
 	private ESPrescriptionService esPrescriptionService;
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+	
+	@Autowired
+	private PrescriptionServices prescriptionServices;
 
 	@Override
 	@Transactional
@@ -100,6 +109,12 @@ public class InventoryServiceImpl implements InventoryService {
 				response = new InventoryItem();
 				BeanUtil.map(inventoryItemCollection, response);
 			}
+			
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
+			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+				prescriptionServices.makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+			}
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while adding inventory item");
@@ -392,27 +407,27 @@ public class InventoryServiceImpl implements InventoryService {
 			response = new InventoryStock();
 			BeanUtil.map(inventoryStockCollection, response);
 			
-			DrugCollection drugCollection =  drugRepository.find(inventoryStockCollection.getResourceId() , inventoryStockCollection.getDoctorId(), inventoryStockCollection.getLocationId(), inventoryStockCollection.getHospitalId());
+			List<DrugCollection> drugCollections =  drugRepository.findByIdLocationIdHospitalId(inventoryStockCollection.getResourceId() , inventoryStockCollection.getLocationId(), inventoryStockCollection.getHospitalId());
 			
-			if(drugCollection != null)
-			{
-				InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findOne(inventoryStockCollection.getItemId());
-				if (inventoryItemCollection != null) {
-					transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-					if (drugCollection != null) {
-						ESDrugDocument esDrugDocument = new ESDrugDocument();
-						BeanUtil.map(drugCollection, esDrugDocument);
-						if (drugCollection.getDrugType() != null) {
-							esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-							esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+			for (DrugCollection drugCollection : drugCollections) {
+				{
+					InventoryItemCollection inventoryItemCollection = inventoryItemRepository
+							.findOne(inventoryStockCollection.getItemId());
+					if (inventoryItemCollection != null) {
+						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+						if (drugCollection != null) {
+							ESDrugDocument esDrugDocument = new ESDrugDocument();
+							BeanUtil.map(drugCollection, esDrugDocument);
+							if (drugCollection.getDrugType() != null) {
+								esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+								esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+							}
+							esPrescriptionService.addDrug(esDrugDocument);
 						}
-						esPrescriptionService.addDrug(esDrugDocument);
 					}
-				}
 
+				}
 			}
-			
-			
 
 		} catch (Exception e) {
 			// TODO: handle exception

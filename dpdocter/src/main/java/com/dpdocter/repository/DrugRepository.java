@@ -101,6 +101,9 @@ public interface DrugRepository
 
 	@Query("{'id': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3}")
 	DrugCollection find(ObjectId drugId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
+	
+	@Query("{'id': ?0,  'locationId': ?1, 'hospitalId': ?2}")
+	List<DrugCollection> findByIdLocationIdHospitalId(ObjectId drugId, ObjectId locationId, ObjectId hospitalId);
 
 	@Query("{'drugCode': ?0, 'doctorId': ?1}")
 	DrugCollection findByCodeAndDoctorId(String drugCode, ObjectId objectId);

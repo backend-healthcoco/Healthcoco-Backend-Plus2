@@ -3,12 +3,15 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -205,14 +208,18 @@ public class BillingServiceImpl implements BillingService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request) {
 		DoctorPatientInvoice response = null;
 		try {
 			Map<String, UserCollection> doctorsMap = new HashMap<String, UserCollection>();
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
+			Collection<String> itemIds = null;
+			
 			ObjectId doctorObjectId = new ObjectId(request.getDoctorId());
 			Double dueAmount = 0.0;
+			
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientInvoiceCollection);
 				UserCollection userCollection = userRepository.findOne(doctorObjectId);
@@ -286,10 +293,21 @@ public class BillingServiceImpl implements BillingService {
 			}
 			
 			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+			if(doctorPatientInvoiceCollection != null && doctorPatientInvoiceCollection.getInvoiceItems() != null)
+			{
+				 itemIds = CollectionUtils.collect(doctorPatientInvoiceCollection.getInvoiceItems(),
+						new BeanToPropertyValueTransformer("itemId"));
+				 System.out.println("Item ids ->");
+				 for(String itemid : itemIds)
+				 {
+					 System.out.println("id :: " + itemid);
+				 }
+			}
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
 				InventoryStock inventoryStock = null;
 				Long quantity = null;
+				itemIds.remove(invoiceItemResponse.getItemId());
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
 					invoiceItemResponse.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
@@ -393,10 +411,31 @@ public class BillingServiceImpl implements BillingService {
 								doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
 					}
 				}
+				
 				InvoiceItem invoiceItem = new InvoiceItem();
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
+			}
+			
+			for (String itemId : itemIds) {
+				InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
+						request.getHospitalId(), itemId,
+						doctorPatientInvoiceCollection.getId().toString());
+				Long quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
+						request.getHospitalId(), itemId,
+						doctorPatientInvoiceCollection.getId().toString());
+				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+						request.getHospitalId(), itemId);
+				if (inventoryStock.getInventoryBatch() != null && inventoryItem != null) {
+					createInventoryStock(itemId, inventoryItem.getId(),
+							inventoryStock.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+							request.getLocationId(), request.getHospitalId(),
+							quantity.intValue(),
+							doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+				}
+				
+				
 			}
 			if (doctorPatientInvoiceCollection != null) {
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
