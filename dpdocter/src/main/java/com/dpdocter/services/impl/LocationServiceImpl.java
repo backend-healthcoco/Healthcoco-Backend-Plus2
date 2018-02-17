@@ -149,7 +149,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Autowired
 	private DentalWorkRepository dentalWorkRepository;
-	
+
 	@Autowired
 	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
 
@@ -1154,8 +1154,12 @@ public class LocationServiceImpl implements LocationServices {
 									&& DPDoctorUtils.anyStringEmpty(OldlabTestSampleCollection.getSerialNumber())) {
 								String serialNumber = reportSerialNumberGenerator(
 										labTestSampleCollection.getParentLabLocationId().toString());
-								/*System.out.println("/////////Serial No. is" + serialNumber
-										+ "///////////////////////////////////////////////////");*/
+								/*
+								 * System.out.println("/////////Serial No. is" +
+								 * serialNumber +
+								 * "///////////////////////////////////////////////////"
+								 * );
+								 */
 								labTestSampleCollection.setSerialNumber(serialNumber);
 							}
 							labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
@@ -1234,15 +1238,19 @@ public class LocationServiceImpl implements LocationServices {
 				BeanUtil.map(request, labTestPickupCollection);
 				labTestPickupCollection.setRequestId(requestId);
 				labTestPickupCollection.setPatientLabTestSamples(items);
-				
-				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()), new ObjectId(request.getDaughterLabLocationId()));
-				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection.getFromTime() <= System.currentTimeMillis() && System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
-						labTestPickupCollection
-								.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-								.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
-								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+
+				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
+						.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()),
+								new ObjectId(request.getDaughterLabLocationId()));
+				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
+						.getFromTime() <= System.currentTimeMillis()
+						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
+					labTestPickupCollection
+							.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+							.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+					pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
+							RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 
 				} else {
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
@@ -1256,7 +1264,6 @@ public class LocationServiceImpl implements LocationServices {
 						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
 								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 
-						
 					}
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
@@ -1675,6 +1682,7 @@ public class LocationServiceImpl implements LocationServices {
 					rateCardTestAssociationCollection = rateCardTestAssociationRepository
 							.findOne(new ObjectId(rateCardTestAssociation.getId()));
 					rateCardTestAssociation.setCreatedTime(new Date());
+
 				} else {
 					rateCardTestAssociationCollection = new RateCardTestAssociationCollection();
 					rateCardTestAssociation.setCreatedTime(new Date());
@@ -1682,8 +1690,10 @@ public class LocationServiceImpl implements LocationServices {
 				}
 
 				BeanUtil.map(rateCardTestAssociation, rateCardTestAssociationCollection);
+				rateCardTestAssociationCollections.add(rateCardTestAssociationCollection);
 			}
-			rateCardTestAssociationRepository.save(rateCardTestAssociationCollections);
+			rateCardTestAssociationCollections = rateCardTestAssociationRepository
+					.save(rateCardTestAssociationCollections);
 			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2473,7 +2483,6 @@ public class LocationServiceImpl implements LocationServices {
 		return generatedId;
 	}
 
-
 	@Override
 	@Transactional
 	public DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request) {
@@ -2486,8 +2495,9 @@ public class LocationServiceImpl implements LocationServices {
 				Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
 				dynamicCollectionBoyAllocationCollection.setToTime(toTime);
 				dynamicCollectionBoyAllocationCollection.setCreatedTime(new Date());
-				dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.save(dynamicCollectionBoyAllocationCollection);
-				if(dynamicCollectionBoyAllocationCollection != null) {
+				dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
+						.save(dynamicCollectionBoyAllocationCollection);
+				if (dynamicCollectionBoyAllocationCollection != null) {
 					response = new DynamicCollectionBoyAllocationResponse();
 					BeanUtil.map(dynamicCollectionBoyAllocationCollection, response);
 				}
@@ -2498,7 +2508,5 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return response;
 	}
-
-	
 
 }
