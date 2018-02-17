@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicalNotesDynamicField;
 import com.dpdocter.beans.DataDynamicField;
+
+import com.dpdocter.beans.DataDynamicUI;
+import com.dpdocter.beans.DentalLabDynamicField;
+import com.dpdocter.beans.DentalLabDynamicUi;
 import com.dpdocter.beans.DischargeSummaryDynamicFields;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.PrescriptionDynamicField;
@@ -23,8 +27,10 @@ import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.PrescriptionDynamicField;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.collections.DataDynamicUICollection;
+import com.dpdocter.collections.DentalLabDynamicUICollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DynamicUICollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.enums.AdmitCardPermissionEnum;
 import com.dpdocter.enums.CardioPermissionEnum;
@@ -47,12 +53,15 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DataDynamicUIRepository;
+import com.dpdocter.repository.DentalLabDynamicUIRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DynamicUIRequest;
 import com.dpdocter.response.DynamicUIResponse;
+import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.DynamicUIService;
 
 @Service
@@ -69,9 +78,18 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 	@Autowired
 	SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	DataDynamicUIRepository dataDynamicUIRepository;
+
+	@Autowired
+	DentalLabDynamicUIRepository dentalLabDynamicUIRepository;
+
+	@Autowired
+	DentalLabService dentalLabService;
+	
+	@Autowired
+	LocationRepository locationRepository;
 
 	@Override
 	@Transactional
@@ -85,8 +103,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		Set<String> vitalSignPermissionSet = new HashSet<String>();
 		Set<String> dischargeSummaryPermissionSet = new HashSet<String>();
 		Set<String> admitCardPermissionSet = new HashSet<String>();
-		Set<String> dentalLabRequestPermissionSet = new HashSet<String>();
-		Set<String> dentalWorkSamplePermissionSet = new HashSet<String>();
 		DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
 		if (doctorCollection != null) {
 			uiPermissions = new UIPermissions();
@@ -111,8 +127,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 						vitalSignPermissionSet.addAll(tempPermissions.getVitalSignPermissions());
 						dischargeSummaryPermissionSet.addAll(tempPermissions.getDischargeSummaryPermissions());
 						admitCardPermissionSet.addAll(tempPermissions.getAdmitCardPermissions());
-						dentalLabRequestPermissionSet.addAll(tempPermissions.getDentalLabRequestPermission());
-						dentalWorkSamplePermissionSet.addAll(tempPermissions.getDentalWorkSamplePermission());
+
 					}
 				}
 				uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
@@ -123,8 +138,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				uiPermissions.setVitalSignPermissions(new ArrayList<String>(vitalSignPermissionSet));
 				uiPermissions.setDischargeSummaryPermissions(new ArrayList<String>(dischargeSummaryPermissionSet));
 				uiPermissions.setAdmitCardPermissions(new ArrayList<String>(admitCardPermissionSet));
-				uiPermissions.setDentalLabRequestPermission(new ArrayList<String>(dentalLabRequestPermissionSet));
-				uiPermissions.setDentalWorkSamplePermission(new ArrayList<String>(dentalWorkSamplePermissionSet));
+
 			}
 		}
 		return uiPermissions;
@@ -276,7 +290,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		case "DENTIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
-			//clinicalNotesPermission.add(DentistPermissionEnum.PROCEDURE_NOTE.getPermissions());
+			// clinicalNotesPermission.add(DentistPermissionEnum.PROCEDURE_NOTE.getPermissions());
 			clinicalNotesPermission.add(DentistPermissionEnum.PAIN_SCALE.getPermissions());
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
@@ -295,8 +309,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			uiPermissions.setAdmitCardPermissions(admitCardPermission);
-			uiPermissions.setDentalLabRequestPermission(dentalLabRequestPermission);
-			uiPermissions.setDentalWorkSamplePermission(dentalWorkSamplePermission);
+
 			break;
 
 		case "EAR-NOSE-THROAT (ENT) SPECIALIST":
@@ -320,7 +333,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
-			
+
 		case "ORTHOPEDIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
@@ -340,11 +353,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
-			
+
 			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
-			
-			
+
 		case "EMPTY":
 			uiPermissions = new UIPermissions();
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
@@ -476,19 +488,18 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	private String[] entPermission() {
 		return Arrays.toString(ENTPermissionType.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
 	private String[] orthoPermission() {
 		return Arrays.toString(OrthoPermissionType.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
 	private String[] dentalLabRequestPermission() {
 		return Arrays.toString(DentalLabRequestPermissions.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
 	private String[] dentalWorkSamplePermission() {
 		return Arrays.toString(WorkSamplePermissions.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
 
 	@Override
 	@Transactional
@@ -510,14 +521,12 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
 		if (doctorCollection != null) {
 			dataDynamicUI = new DataDynamicUI();
-			DataDynamicUICollection dataDynamicUICollection = dataDynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
-			if(dataDynamicUICollection != null)
-			{
+			DataDynamicUICollection dataDynamicUICollection = dataDynamicUIRepository
+					.findByDoctorId(new ObjectId(doctorId));
+			if (dataDynamicUICollection != null) {
 				BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
-			}
-			else
-			{
-				dataDynamicUI  = new DataDynamicUI();
+			} else {
+				dataDynamicUI = new DataDynamicUI();
 				dataDynamicUI.setDoctorId(doctorId);
 				DataDynamicField dataDynamicField = new DataDynamicField();
 				dataDynamicField.setClinicalNotesDynamicField(new ClinicalNotesDynamicField());
@@ -532,9 +541,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
 				dataDynamicUI.setDataDynamicField(dataDynamicField);
 			}
-		}else
-		{
-			throw new BusinessException(ServiceError.InvalidInput , "Doctor not present");
+		} else {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor not present");
 		}
 		return dataDynamicUI;
 	}
@@ -561,5 +569,70 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return dataDynamicUI;
 	}
 
-	
+	@Override
+	@Transactional
+	public DentalLabDynamicUi postDentalLabPermissions(DentalLabDynamicUi request) {
+		DentalLabDynamicUi dentalLabDynamicUI = null;
+		DentalLabDynamicUICollection dentalLabDynamicUICollection = dentalLabDynamicUIRepository
+				.findByDentalLabId(new ObjectId(request.getDentalLabId()));
+		if (dentalLabDynamicUICollection != null) {
+			dentalLabDynamicUICollection.setDentalLabDynamicField(request.getDentalLabDynamicField());
+			dentalLabDynamicUICollection = dentalLabDynamicUIRepository.save(dentalLabDynamicUICollection);
+			dentalLabDynamicUI = new DentalLabDynamicUi();
+			BeanUtil.map(dentalLabDynamicUICollection, dentalLabDynamicUI);
+		} else {
+			dentalLabDynamicUICollection = new DentalLabDynamicUICollection();
+			BeanUtil.map(request, dentalLabDynamicUICollection);
+			dentalLabDynamicUICollection.setCreatedTime(new Date());
+			dentalLabDynamicUICollection = dentalLabDynamicUIRepository.save(dentalLabDynamicUICollection);
+			dentalLabDynamicUI = new DentalLabDynamicUi();
+			BeanUtil.map(dentalLabDynamicUICollection, dentalLabDynamicUI);
+		}
+		return dentalLabDynamicUI;
+	}
+
+	@Override
+	@Transactional
+	public DentalLabDynamicField getAllDentalLabPermissions() {
+		DentalLabDynamicField dentalLabDynamicField = null;
+		try {
+			dentalLabDynamicField = new DentalLabDynamicField();
+			dentalLabDynamicField
+					.setDentalLabRequestPermission(new ArrayList<String>(Arrays.asList(dentalLabRequestPermission())));
+			dentalLabDynamicField
+					.setDentalWorkSamplePermission(new ArrayList<String>(Arrays.asList(dentalWorkSamplePermission())));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return dentalLabDynamicField;
+	}
+
+	@Override
+	@Transactional
+	public DentalLabDynamicUi getPermissionForDentalLab(String dentalLabId) {
+		DentalLabDynamicUi dentalLabDynamicUi = null;
+		try {
+			
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(dentalLabId));
+			if(locationCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord , "Lab not found");
+			}
+			DentalLabDynamicUICollection dentalLabDynamicUICollection = dentalLabDynamicUIRepository
+					.findByDentalLabId(new ObjectId(dentalLabId));
+			if (dentalLabDynamicUICollection != null) {
+				dentalLabDynamicUi = new DentalLabDynamicUi();
+				BeanUtil.map(dentalLabDynamicUICollection, dentalLabDynamicUi);
+			} else {
+				dentalLabDynamicUi = new DentalLabDynamicUi();
+				dentalLabDynamicUi.setDentalLabId(dentalLabId);
+				dentalLabDynamicUi.setDentalLabDynamicField(getAllDentalLabPermissions());
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return dentalLabDynamicUi;
+	}
+
 }

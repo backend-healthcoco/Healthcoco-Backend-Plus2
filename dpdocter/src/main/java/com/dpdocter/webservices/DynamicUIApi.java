@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DataDynamicUI;
+import com.dpdocter.beans.DentalLabDynamicField;
+import com.dpdocter.beans.DentalLabDynamicUi;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.exceptions.BusinessException;
@@ -127,6 +129,50 @@ public class DynamicUIApi {
 		Response<DataDynamicUI> response = new Response<DataDynamicUI>();
 		response.setData(dynamicUIResponse);
 		return response;
+	}
+	
+	@Path(value = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB)
+	@GET
+	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB, notes = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB)
+	public Response<DentalLabDynamicField> getAllPermissionForDentalLab() {
+		
+		DentalLabDynamicField dentalLabDynamicField = dynamicUIService.getAllDentalLabPermissions();
+		Response<DentalLabDynamicField> response = new Response<DentalLabDynamicField>();
+		response.setData(dentalLabDynamicField);
+		return response;
+	}
+
+	@Path(value = PathProxy.DynamicUIUrls.GET_DENTAL_LAB_PERMISSION_FOR_LAB)
+	@GET
+	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_DENTAL_LAB_PERMISSION_FOR_LAB, notes = PathProxy.DynamicUIUrls.GET_DENTAL_LAB_PERMISSION_FOR_LAB)
+	public Response<DentalLabDynamicUi> getPermissionForDentalLab(@PathParam("dentalLabId") String dentalLabId) {
+		if (DPDoctorUtils.anyStringEmpty(dentalLabId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Dental Lab Id is null");
+		}
+		DentalLabDynamicUi dentalLabDynamicUi = dynamicUIService.getPermissionForDentalLab(dentalLabId);
+		Response<DentalLabDynamicUi> response = new Response<DentalLabDynamicUi>();
+		response.setData(dentalLabDynamicUi);
+		return response;
+	}
+
+	@Path(value = PathProxy.DynamicUIUrls.POST_DENTAL_LAB_PERMISSIONS)
+	@POST
+	@ApiOperation(value = "SUBMIT_DENTAL_LAB_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DENTAL_LAB_DYNAMIC_UI_PERMISSION")
+	public Response<DentalLabDynamicUi> postDentalLabPermissions(DentalLabDynamicUi dynamicUIRequest) {
+		if (dynamicUIRequest == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
+		} else if (dynamicUIRequest.getDentalLabDynamicField() == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "UI permissions are null");
+		}
+		if (dynamicUIRequest.getDentalLabId() == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Dental Lab Id is null");
+		}
+
+		DentalLabDynamicUi dentalLabDynamicUi = dynamicUIService.postDentalLabPermissions(dynamicUIRequest);
+		Response<DentalLabDynamicUi> response = new Response<DentalLabDynamicUi>();
+		response.setData(dentalLabDynamicUi);
+		return response;
+
 	}
 
 

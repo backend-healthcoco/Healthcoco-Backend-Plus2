@@ -1205,7 +1205,9 @@ public interface PathProxy {
 		public static final String POST_PERMISSIONS = "/postPermissions";
 		public static final String GET_DATA_PERMISSION_FOR_DOCTOR = "/getDataPermissionForDoctor/{doctorId}";
 		public static final String POST_DATA_PERMISSIONS = "/postDataPermissions";
-
+		public static final String GET_DENTAL_LAB_PERMISSION_FOR_LAB = "/getDataPermissionForLab/{dentalLabId}";
+		public static final String POST_DENTAL_LAB_PERMISSIONS = "/postDentalLabPermissions";
+		public static final String GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB = "/getAllDataPermissionForLab";
 	}
 
 	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
