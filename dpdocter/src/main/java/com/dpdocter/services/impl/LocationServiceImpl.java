@@ -1763,7 +1763,7 @@ public class LocationServiceImpl implements LocationServices {
 			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
 					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
 			if (rateCardLabAssociationCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord, "Association not found");
+				return rateCardTestAssociationLookupResponses;
 			} else {
 				if (rateCardLabAssociationCollection.getDiscarded() == true) {
 					RateCardCollection rateCardCollection = rateCardRepository
@@ -1771,7 +1771,7 @@ public class LocationServiceImpl implements LocationServices {
 					if (rateCardCollection != null) {
 						rateCardId = rateCardCollection.getId();
 					} else {
-						throw new BusinessException(ServiceError.NoRecord, "Association not found");
+						return rateCardTestAssociationLookupResponses;
 					}
 				} else {
 					rateCardId = rateCardLabAssociationCollection.getRateCardId();
@@ -1827,7 +1827,6 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			}
-
 			else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId", "rateCardTest"),
