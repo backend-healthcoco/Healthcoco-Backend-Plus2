@@ -1763,7 +1763,7 @@ public class LocationServiceImpl implements LocationServices {
 	public List<RateCardTestAssociationByLBResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId, String specimen) {
 		ObjectId rateCardId = null;
-		List<RateCardTestAssociationByLBResponse> rateCardTestAssociationLookupResponses = null;
+		List<RateCardTestAssociationByLBResponse> rateCardTestAssociationLookupResponses = new ArrayList<RateCardTestAssociationByLBResponse>();
 		AggregationResults<RateCardTestAssociationByLBResponse> aggregationResults = null;
 		try {
 			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
@@ -1811,6 +1811,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
 					Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
+
 					Fields.field("createdTime", "$createdTime")));
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -1853,13 +1854,10 @@ public class LocationServiceImpl implements LocationServices {
 						 */
 						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-				aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
-						RateCardTestAssociationByLBResponse.class);
-				rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
-				if (rateCardTestAssociationLookupResponses == null) {
-					rateCardTestAssociationLookupResponses = new ArrayList<RateCardTestAssociationByLBResponse>();
-				}
 			}
+			aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
+					RateCardTestAssociationByLBResponse.class);
+			rateCardTestAssociationLookupResponses.addAll(aggregationResults.getMappedResults());
 
 			if (rateCardTestAssociationLookupResponses.size() < size || size == 0) {
 				aggregationResults = null;
@@ -1934,10 +1932,17 @@ public class LocationServiceImpl implements LocationServices {
 							 */
 							Aggregation.match(criteria), projectList, aggregationOperation,
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-					aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
-							RateCardTestAssociationByLBResponse.class);
-					rateCardTestAssociationLookupResponses.addAll(aggregationResults.getMappedResults());
+
 				}
+				aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
+						RateCardTestAssociationByLBResponse.class);
+
+				rateCardTestAssociationLookupResponses.addAll(aggregationResults.getMappedResults());
+
+			}
+
+			if (rateCardTestAssociationLookupResponses.isEmpty()) {
+				rateCardTestAssociationLookupResponses = null;
 			}
 
 			/*
