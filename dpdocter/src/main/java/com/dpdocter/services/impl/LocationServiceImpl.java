@@ -1763,8 +1763,7 @@ public class LocationServiceImpl implements LocationServices {
 	public List<RateCardTestAssociationByLBResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId, String specimen) {
 		ObjectId rateCardId = null;
-		List<RateCardTestAssociationByLBResponse> rateCardTestAssociationLookupResponses = new ArrayList<RateCardTestAssociationByLBResponse>();
-		AggregationResults<RateCardTestAssociationByLBResponse> aggregationResults = null;
+		List<RateCardTestAssociationByLBResponse> rateCardTestAssociationLookupResponses = null;
 		try {
 			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
 					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
@@ -1792,7 +1791,6 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			criteria.and("rateCardTest.rateCardId").is(rateCardId);
 			criteria.and("rateCardTest.discarded").is(false);
-			criteria.and("favouritediagnosticTest.discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
 				criteria = criteria
 						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
@@ -1811,7 +1809,6 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
 					Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
-
 					Fields.field("createdTime", "$createdTime")));
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -1822,13 +1819,10 @@ public class LocationServiceImpl implements LocationServices {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId", "rateCardTest"),
-						Aggregation.unwind("rateCardTest"), Aggregation.lookup("diagnostic_test_cl",
-								"rateCardTest.diagnosticTestId", "_id", "diagnosticTest"),
+						Aggregation.unwind("rateCardTest"),
+						Aggregation.lookup("diagnostic_test_cl", "rateCardTest.diagnosticTestId", "_id",
+								"diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"),
-
-						Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
-								"favouritediagnosticTest"),
-						Aggregation.unwind("favouritediagnosticTest"),
 						/*
 						 * Aggregation.lookup("specimen_cl",
 						 * "diagnosticTest.specimenId", "_id", "specimen"),
@@ -1844,9 +1838,6 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("diagnostic_test_cl", "rateCardTest.diagnosticTestId", "_id",
 								"diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"),
-						Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
-								"favouritediagnosticTest"),
-						Aggregation.unwind("favouritediagnosticTest"),
 						/*
 						 * Aggregation.lookup("specimen_cl",
 						 * "diagnosticTest.specimenId", "_id", "specimen"),
@@ -1855,95 +1846,9 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			}
-			aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
-					RateCardTestAssociationByLBResponse.class);
-			rateCardTestAssociationLookupResponses.addAll(aggregationResults.getMappedResults());
-
-			if (rateCardTestAssociationLookupResponses.size() < size || size == 0) {
-				aggregationResults = null;
-				size = size - rateCardTestAssociationLookupResponses.size();
-				criteria = new Criteria();
-				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					criteria = criteria.orOperator(new Criteria("testName").regex("^" + searchTerm, "i"),
-							new Criteria("testName").regex("^" + searchTerm));
-				}
-				criteria.and("rateCardTest.rateCardId").is(rateCardId);
-				criteria.and("rateCardTest.discarded").is(false);
-				criteria.orOperator(new Criteria("favouritediagnosticTest").exists(false),
-						new Criteria("favouritediagnosticTest.discarded").is(true));
-				if (!DPDoctorUtils.anyStringEmpty(specimen)) {
-					criteria = criteria
-							.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
-									new Criteria("specimen").regex("^" + specimen)));
-				}
-				projectList = new ProjectionOperation(Fields.from(Fields.field("specimen", "$specimen"),
-						Fields.field("rateCardTest._id", "$rateCardTest._id"),
-						Fields.field("rateCardTest.locationId", "$rateCardTest.locationId"),
-						Fields.field("rateCardTest.hospitalId", "$rateCardTest.hospitalId"),
-						Fields.field("rateCardTest.rateCardId", "$rateCardTest.rateCardId"),
-						Fields.field("rateCardTest.diagnosticTestId", "$rateCardTest.diagnosticTestId"),
-						Fields.field("rateCardTest.turnaroundTime", "$rateCardTest.turnaroundTime"),
-						Fields.field("rateCardTest.cost", "$rateCardTest.cost"),
-						Fields.field("rateCardTest.category", "$rateCardTest.category"),
-						Fields.field("rateCardTest.labId", "$rateCardTest.labId"),
-						Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
-						Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
-						Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
-						Fields.field("createdTime", "$createdTime")));
-
-				if (size > 0) {
-					aggregation = Aggregation.newAggregation(
-							Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId",
-									"rateCardTest"),
-							Aggregation.unwind("rateCardTest"), Aggregation.lookup("diagnostic_test_cl",
-									"rateCardTest.diagnosticTestId", "_id", "diagnosticTest"),
-							Aggregation.unwind("diagnosticTest"),
-
-							Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
-									"favouritediagnosticTest"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$favouritediagnosticTest")
-											.append("preserveNullAndEmptyArrays", true))),
-							/*
-							 * Aggregation.lookup("specimen_cl",
-							 * "diagnosticTest.specimenId", "_id", "specimen"),
-							 * Aggregation.unwind("specimen"),
-							 */
-							Aggregation.match(criteria), projectList, aggregationOperation,
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
-				} else {
-					aggregation = Aggregation.newAggregation(
-							Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId",
-									"rateCardTest"),
-							Aggregation.unwind("rateCardTest"),
-							Aggregation.lookup("diagnostic_test_cl", "rateCardTest.diagnosticTestId", "_id",
-									"diagnosticTest"),
-							Aggregation.unwind("diagnosticTest"),
-							Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
-									"favouritediagnosticTest"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$favouritediagnosticTest")
-											.append("preserveNullAndEmptyArrays", true))),
-							/*
-							 * Aggregation.lookup("specimen_cl",
-							 * "diagnosticTest.specimenId", "_id", "specimen"),
-							 * Aggregation.unwind("specimen"),
-							 */
-							Aggregation.match(criteria), projectList, aggregationOperation,
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-
-				}
-				aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
-						RateCardTestAssociationByLBResponse.class);
-
-				rateCardTestAssociationLookupResponses.addAll(aggregationResults.getMappedResults());
-
-			}
-
-			if (rateCardTestAssociationLookupResponses.isEmpty()) {
-				rateCardTestAssociationLookupResponses = null;
-			}
+			AggregationResults<RateCardTestAssociationByLBResponse> aggregationResults = mongoTemplate
+					.aggregate(aggregation, DiagnosticTestCollection.class, RateCardTestAssociationByLBResponse.class);
+			rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
 
 			/*
 			 * if (!DPDoctorUtils.anyStringEmpty(labId)) { aggregation =
