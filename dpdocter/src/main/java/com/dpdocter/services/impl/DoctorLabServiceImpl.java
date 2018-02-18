@@ -383,6 +383,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				}
 
 			} else {
+				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+					criteria = criteria.and("patientId").is(new ObjectId(patientId));
+				}
 
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
