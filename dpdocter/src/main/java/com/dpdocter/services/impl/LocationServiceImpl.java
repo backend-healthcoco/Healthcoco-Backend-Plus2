@@ -1239,13 +1239,6 @@ public class LocationServiceImpl implements LocationServices {
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
-<<<<<<< HEAD
-					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-							.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-					if (collectionBoyCollection != null) {
-						labTestPickupCollection
-								.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-=======
 
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 							.findbyParentIdandDaughterId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
@@ -1263,11 +1256,7 @@ public class LocationServiceImpl implements LocationServices {
 									null, null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 						}
 					}
->>>>>>> c798004... Dynamic colelction boy :: condition updated for deactivated collection boy
 
-						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
-								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
-					}
 				} else {
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 							.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
@@ -2572,6 +2561,7 @@ public class LocationServiceImpl implements LocationServices {
 					}
 				}
 				if (response == null) {
+
 					response = new DynamicCollectionBoyAllocationResponse();
 					BeanUtil.map(request, response);
 				}
@@ -2582,4 +2572,5 @@ public class LocationServiceImpl implements LocationServices {
 		return response;
 	}
 
+	
 }
