@@ -1239,11 +1239,31 @@ public class LocationServiceImpl implements LocationServices {
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
+<<<<<<< HEAD
 					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 							.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
 					if (collectionBoyCollection != null) {
 						labTestPickupCollection
 								.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+=======
+
+					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
+							.findbyParentIdandDaughterId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
+									new ObjectId(request.getParentLabLocationId()),
+									new ObjectId(request.getDaughterLabLocationId()));
+					if (collectionBoyLabAssociationCollection != null
+							&& collectionBoyLabAssociationCollection.getIsActive() == true) {
+						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+								.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+						if (collectionBoyCollection != null) {
+							labTestPickupCollection
+									.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+
+							pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
+									null, null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+						}
+					}
+>>>>>>> c798004... Dynamic colelction boy :: condition updated for deactivated collection boy
 
 						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
 								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
@@ -2557,7 +2577,6 @@ public class LocationServiceImpl implements LocationServices {
 				}
 			}
 		} catch (Exception e) {
-
 			e.printStackTrace();
 		}
 		return response;
