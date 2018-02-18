@@ -125,7 +125,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.must(QueryBuilders.termQuery("isPatientDiscarded", false))
 
 					.should(QueryBuilders
-							.queryStringQuery("localPatientNameFormatted:*"+patientName+"*")
+							.queryStringQuery("localPatientNameFormatted:"+patientName+"*")
 							.boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
