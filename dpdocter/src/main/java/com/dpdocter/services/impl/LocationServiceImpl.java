@@ -45,6 +45,7 @@ import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
+import com.dpdocter.collections.FavouriteRateCardTestCollection;
 import com.dpdocter.collections.LabAssociationCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
@@ -67,6 +68,7 @@ import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
+import com.dpdocter.repository.FavouriteRateCardTestRepositoy;
 import com.dpdocter.repository.LabAssociationRepository;
 import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
@@ -104,6 +106,9 @@ import common.util.web.DPDoctorUtils;
 public class LocationServiceImpl implements LocationServices {
 
 	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
+
+	@Autowired
+	private FavouriteRateCardTestRepositoy favouriteRateCardTestRepositoy;
 
 	@Autowired
 	private LocationRepository locationRepository;
@@ -1759,6 +1764,7 @@ public class LocationServiceImpl implements LocationServices {
 			String daughterLabId, String parentLabId, String labId, String specimen) {
 		ObjectId rateCardId = null;
 		List<RateCardTestAssociationByLBResponse> rateCardTestAssociationLookupResponses = null;
+		AggregationResults<RateCardTestAssociationByLBResponse> aggregationResults = null;
 		try {
 			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
 					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
@@ -1786,6 +1792,7 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			criteria.and("rateCardTest.rateCardId").is(rateCardId);
 			criteria.and("rateCardTest.discarded").is(false);
+			criteria.and("rateCardTest.isFavrouriteTest.discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
 				criteria = criteria
 						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
@@ -1804,6 +1811,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
 					Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
+					Fields.field("rateCardTest.isFavrouriteTest", "true"),
 					Fields.field("createdTime", "$createdTime")));
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -1814,10 +1822,13 @@ public class LocationServiceImpl implements LocationServices {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId", "rateCardTest"),
-						Aggregation.unwind("rateCardTest"),
-						Aggregation.lookup("diagnostic_test_cl", "rateCardTest.diagnosticTestId", "_id",
-								"diagnosticTest"),
+						Aggregation.unwind("rateCardTest"), Aggregation.lookup("diagnostic_test_cl",
+								"rateCardTest.diagnosticTestId", "_id", "diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"),
+
+						Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
+								"favouritediagnosticTest"),
+						Aggregation.unwind("favouritediagnosticTest"),
 						/*
 						 * Aggregation.lookup("specimen_cl",
 						 * "diagnosticTest.specimenId", "_id", "specimen"),
@@ -1826,14 +1837,16 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
-			}
-			else {
+			} else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId", "rateCardTest"),
 						Aggregation.unwind("rateCardTest"),
 						Aggregation.lookup("diagnostic_test_cl", "rateCardTest.diagnosticTestId", "_id",
 								"diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"),
+						Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
+								"favouritediagnosticTest"),
+						Aggregation.unwind("favouritediagnosticTest"),
 						/*
 						 * Aggregation.lookup("specimen_cl",
 						 * "diagnosticTest.specimenId", "_id", "specimen"),
@@ -1841,10 +1854,87 @@ public class LocationServiceImpl implements LocationServices {
 						 */
 						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-				AggregationResults<RateCardTestAssociationByLBResponse> aggregationResults = mongoTemplate.aggregate(
-						aggregation, DiagnosticTestCollection.class, RateCardTestAssociationByLBResponse.class);
+				aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
+						RateCardTestAssociationByLBResponse.class);
 				rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
 			}
+
+			if (rateCardTestAssociationLookupResponses.size() < size) {
+				aggregationResults = null;
+				size = size - rateCardTestAssociationLookupResponses.size();
+				criteria = new Criteria();
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					criteria = criteria.orOperator(new Criteria("testName").regex("^" + searchTerm, "i"),
+							new Criteria("testName").regex("^" + searchTerm));
+				}
+				criteria.and("rateCardTest.rateCardId").is(rateCardId);
+				criteria.and("rateCardTest.discarded").is(false);
+				criteria.orOperator(new Criteria("rateCardTest.isFavrouriteTest").exists(false),
+						new Criteria("rateCardTest.isFavrouriteTest.discarded").is(true));
+				if (!DPDoctorUtils.anyStringEmpty(specimen)) {
+					criteria = criteria
+							.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
+									new Criteria("specimen").regex("^" + specimen)));
+				}
+				projectList = new ProjectionOperation(Fields.from(Fields.field("specimen", "$specimen"),
+						Fields.field("rateCardTest._id", "$rateCardTest._id"),
+						Fields.field("rateCardTest.locationId", "$rateCardTest.locationId"),
+						Fields.field("rateCardTest.hospitalId", "$rateCardTest.hospitalId"),
+						Fields.field("rateCardTest.rateCardId", "$rateCardTest.rateCardId"),
+						Fields.field("rateCardTest.diagnosticTestId", "$rateCardTest.diagnosticTestId"),
+						Fields.field("rateCardTest.turnaroundTime", "$rateCardTest.turnaroundTime"),
+						Fields.field("rateCardTest.cost", "$rateCardTest.cost"),
+						Fields.field("rateCardTest.category", "$rateCardTest.category"),
+						Fields.field("rateCardTest.labId", "$rateCardTest.labId"),
+						Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
+						Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
+						Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
+						Fields.field("rateCardTest.isFavrouriteTest", "true"),
+						Fields.field("createdTime", "$createdTime")));
+
+				if (size > 0) {
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId",
+									"rateCardTest"),
+							Aggregation.unwind("rateCardTest"), Aggregation.lookup("diagnostic_test_cl",
+									"rateCardTest.diagnosticTestId", "_id", "diagnosticTest"),
+							Aggregation.unwind("diagnosticTest"),
+
+							Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
+									"favouritediagnosticTest"),
+							Aggregation.unwind("favouritediagnosticTest"),
+							/*
+							 * Aggregation.lookup("specimen_cl",
+							 * "diagnosticTest.specimenId", "_id", "specimen"),
+							 * Aggregation.unwind("specimen"),
+							 */
+							Aggregation.match(criteria), projectList, aggregationOperation,
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+				} else {
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId",
+									"rateCardTest"),
+							Aggregation.unwind("rateCardTest"),
+							Aggregation.lookup("diagnostic_test_cl", "rateCardTest.diagnosticTestId", "_id",
+									"diagnosticTest"),
+							Aggregation.unwind("diagnosticTest"),
+							Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
+									"favouritediagnosticTest"),
+							Aggregation.unwind("favouritediagnosticTest"),
+							/*
+							 * Aggregation.lookup("specimen_cl",
+							 * "diagnosticTest.specimenId", "_id", "specimen"),
+							 * Aggregation.unwind("specimen"),
+							 */
+							Aggregation.match(criteria), projectList, aggregationOperation,
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
+							RateCardTestAssociationByLBResponse.class);
+					rateCardTestAssociationLookupResponses.addAll(aggregationResults.getMappedResults());
+				}
+			}
+
 			/*
 			 * if (!DPDoctorUtils.anyStringEmpty(labId)) { aggregation =
 			 * Aggregation.newAggregation(
@@ -2504,6 +2594,37 @@ public class LocationServiceImpl implements LocationServices {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public Boolean makeFavouriteRateCardTest(String locationId, String hospitalId, String diagnosticTestId) {
+		Boolean response = false;
+		try {
+
+			FavouriteRateCardTestCollection favouriteRateCardTestCollection = favouriteRateCardTestRepositoy
+					.findByLocationIdHospitalIdAndTestId(new ObjectId(locationId), new ObjectId(hospitalId),
+							new ObjectId(diagnosticTestId));
+			if (favouriteRateCardTestCollection != null) {
+				favouriteRateCardTestCollection.setDiscarded(!favouriteRateCardTestCollection.getDiscarded());
+			} else {
+				favouriteRateCardTestCollection = new FavouriteRateCardTestCollection();
+				favouriteRateCardTestCollection.setHospitalId(new ObjectId(hospitalId));
+				favouriteRateCardTestCollection.setLocationId(new ObjectId(locationId));
+				favouriteRateCardTestCollection.setDiagnosticTestId(new ObjectId(diagnosticTestId));
+				favouriteRateCardTestCollection.setDiscarded(true);
+				favouriteRateCardTestCollection.setCreatedTime(new Date());
+				favouriteRateCardTestCollection.setAdminCreatedTime(new Date());
+			}
+			favouriteRateCardTestCollection.setUpdatedTime(new Date());
+			favouriteRateCardTestRepositoy.save(favouriteRateCardTestCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error Getting while make Favourite to Rate Card Test");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting while make Favourite to Rate Card Test");
 		}
 		return response;
 	}

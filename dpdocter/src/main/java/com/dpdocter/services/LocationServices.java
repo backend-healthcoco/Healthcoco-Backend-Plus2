@@ -147,4 +147,6 @@ public interface LocationServices {
 	DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request);
 
 	List<LabTestPickupLookupResponse> getLabTestPickupByIds(List<ObjectId> ids);
+	
+	public Boolean makeFavouriteRateCardTest(String locationId, String hospitalId, String diagnosticTestId);
 }

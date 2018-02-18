@@ -776,4 +776,17 @@ public class LabApi {
 		return response;
 	}
 
+	@GET
+	@Path(value = PathProxy.LabUrls.ADD_TO_FAVOURITE_RATE_CARD_TEST)
+	@ApiOperation(value = PathProxy.LabUrls.ADD_TO_FAVOURITE_RATE_CARD_TEST, notes = PathProxy.LabUrls.ADD_TO_FAVOURITE_RATE_CARD_TEST)
+	public Response<Boolean> makeFavouriteRateCardTest(@PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("diagnosticTestId") String diagnosticTestId) {
+		if (DPDoctorUtils.allStringsEmpty(hospitalId, locationId, diagnosticTestId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(locationServices.makeFavouriteRateCardTest(locationId, hospitalId, diagnosticTestId));
+		return response;
+	}
+
 }

@@ -16,6 +16,15 @@ public class RateCardTestAssociation extends GenericCollection {
 	private Boolean isAvailable = true;
 	private Boolean discarded = false;
 	private DiagnosticTest diagnosticTest;
+	private Boolean isFavrouriteTest;
+
+	public Boolean getIsFavrouriteTest() {
+		return isFavrouriteTest;
+	}
+
+	public void setIsFavrouriteTest(Boolean isFavrouriteTest) {
+		this.isFavrouriteTest = isFavrouriteTest;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;
