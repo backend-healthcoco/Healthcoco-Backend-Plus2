@@ -1226,15 +1226,30 @@ public class LocationServiceImpl implements LocationServices {
 				BeanUtil.map(request, labTestPickupCollection);
 				labTestPickupCollection.setRequestId(requestId);
 				labTestPickupCollection.setPatientLabTestSamples(items);
-				
-				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()), new ObjectId(request.getDaughterLabLocationId()));
-				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection.getFromTime() <= System.currentTimeMillis() && System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
-						labTestPickupCollection
-								.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+
+				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
+						.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()),
+								new ObjectId(request.getDaughterLabLocationId()));
+				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
+						.getFromTime() <= System.currentTimeMillis()
+						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
+
+					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
+							.findbyParentIdandDaughterId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
+									new ObjectId(request.getParentLabLocationId()),
+									new ObjectId(request.getDaughterLabLocationId()));
+					if (collectionBoyLabAssociationCollection != null
+							&& collectionBoyLabAssociationCollection.getIsActive() == true) {
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
-								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+						if (collectionBoyCollection != null) {
+							labTestPickupCollection
+									.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+
+							pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
+									null, null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+						}
+					}
 
 				} else {
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
@@ -2456,21 +2471,35 @@ public class LocationServiceImpl implements LocationServices {
 	public DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request) {
 		DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = null;
 		DynamicCollectionBoyAllocationResponse response = null;
+		ObjectId oldId = null;
 		try {
 			if (request != null) {
-				dynamicCollectionBoyAllocationCollection = new DynamicCollectionBoyAllocationCollection();
-				BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
-				Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
-				dynamicCollectionBoyAllocationCollection.setToTime(toTime);
-				dynamicCollectionBoyAllocationCollection.setCreatedTime(new Date());
-				dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.save(dynamicCollectionBoyAllocationCollection);
-				if(dynamicCollectionBoyAllocationCollection != null) {
+
+				dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.getByAssignorAssignee(new ObjectId(request.getAssignorId()), new ObjectId(request.getAssigneeId()));
+				if(dynamicCollectionBoyAllocationCollection == null)
+				{
+					dynamicCollectionBoyAllocationCollection = new DynamicCollectionBoyAllocationCollection();
+					BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
+					Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
+					dynamicCollectionBoyAllocationCollection.setToTime(toTime);
+					dynamicCollectionBoyAllocationCollection.setCreatedTime(new Date());
+				}
+				else
+				{
+					oldId = dynamicCollectionBoyAllocationCollection.getId();
+					BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
+					Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
+					dynamicCollectionBoyAllocationCollection.setToTime(toTime);
+					dynamicCollectionBoyAllocationCollection.setId(oldId);
+				}
+				dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
+						.save(dynamicCollectionBoyAllocationCollection);
+				if (dynamicCollectionBoyAllocationCollection != null) {
 					response = new DynamicCollectionBoyAllocationResponse();
 					BeanUtil.map(dynamicCollectionBoyAllocationCollection, response);
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return response;
