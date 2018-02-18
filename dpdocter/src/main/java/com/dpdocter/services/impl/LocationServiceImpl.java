@@ -1792,7 +1792,7 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			criteria.and("rateCardTest.rateCardId").is(rateCardId);
 			criteria.and("rateCardTest.discarded").is(false);
-			criteria.and("rateCardTest.isFavrouriteTest.discarded").is(false);
+			criteria.and("favouritediagnosticTest.discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
 				criteria = criteria
 						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
@@ -1811,7 +1811,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
 					Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
-					Fields.field("rateCardTest.isFavrouriteTest", "true"),
+					Fields.field("rateCardTest.isFavrouriteTest", "'true'"),
 					Fields.field("createdTime", "$createdTime")));
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -1862,7 +1862,7 @@ public class LocationServiceImpl implements LocationServices {
 				}
 			}
 
-			if (rateCardTestAssociationLookupResponses.size() < size) {
+			if (rateCardTestAssociationLookupResponses.size() < size || size == 0) {
 				aggregationResults = null;
 				size = size - rateCardTestAssociationLookupResponses.size();
 				criteria = new Criteria();
@@ -1872,8 +1872,8 @@ public class LocationServiceImpl implements LocationServices {
 				}
 				criteria.and("rateCardTest.rateCardId").is(rateCardId);
 				criteria.and("rateCardTest.discarded").is(false);
-				criteria.orOperator(new Criteria("rateCardTest.isFavrouriteTest").exists(false),
-						new Criteria("rateCardTest.isFavrouriteTest.discarded").is(true));
+				criteria.orOperator(new Criteria("favouritediagnosticTest").exists(false),
+						new Criteria("favouritediagnosticTest.discarded").is(true));
 				if (!DPDoctorUtils.anyStringEmpty(specimen)) {
 					criteria = criteria
 							.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
@@ -1892,7 +1892,7 @@ public class LocationServiceImpl implements LocationServices {
 						Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
 						Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 						Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
-						Fields.field("rateCardTest.isFavrouriteTest", "true"),
+						Fields.field("rateCardTest.isFavrouriteTest", "'false'"),
 						Fields.field("createdTime", "$createdTime")));
 
 				if (size > 0) {
@@ -1905,7 +1905,9 @@ public class LocationServiceImpl implements LocationServices {
 
 							Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
 									"favouritediagnosticTest"),
-							Aggregation.unwind("favouritediagnosticTest"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$favouritediagnosticTest")
+											.append("preserveNullAndEmptyArrays", true))),
 							/*
 							 * Aggregation.lookup("specimen_cl",
 							 * "diagnosticTest.specimenId", "_id", "specimen"),
@@ -1924,7 +1926,9 @@ public class LocationServiceImpl implements LocationServices {
 							Aggregation.unwind("diagnosticTest"),
 							Aggregation.lookup("favourite_rate_card_test_cl", "rateCardTest.diagnosticTestId", "_id",
 									"favouritediagnosticTest"),
-							Aggregation.unwind("favouritediagnosticTest"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$favouritediagnosticTest")
+											.append("preserveNullAndEmptyArrays", true))),
 							/*
 							 * Aggregation.lookup("specimen_cl",
 							 * "diagnosticTest.specimenId", "_id", "specimen"),
