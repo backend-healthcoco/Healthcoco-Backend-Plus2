@@ -282,7 +282,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			String recordPath = path + File.separator + fileName + createdTime.getTime() + "."
 					+ fileDetails.getFileExtension();
 			String recordfileLabel = fileName;
-			Double fileSizeInMB = 0.0;
+			Double fileSizeInMB = fileManager.saveRecordBase64(fileDetails, recordPath);
 
 			recordsFile = new RecordsFile();
 			recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
