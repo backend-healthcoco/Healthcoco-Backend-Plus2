@@ -1811,7 +1811,6 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
 					Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
-					Fields.field("rateCardTest.isFavrouriteTest", "$true"),
 					Fields.field("createdTime", "$createdTime")));
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -1892,7 +1891,6 @@ public class LocationServiceImpl implements LocationServices {
 						Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
 						Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 						Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
-						Fields.field("rateCardTest.isFavrouriteTest", "$false"),
 						Fields.field("createdTime", "$createdTime")));
 
 				if (size > 0) {
