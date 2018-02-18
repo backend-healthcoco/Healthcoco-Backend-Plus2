@@ -1857,6 +1857,9 @@ public class LocationServiceImpl implements LocationServices {
 				aggregationResults = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class,
 						RateCardTestAssociationByLBResponse.class);
 				rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
+				if (rateCardTestAssociationLookupResponses == null) {
+					rateCardTestAssociationLookupResponses = new ArrayList<RateCardTestAssociationByLBResponse>();
+				}
 			}
 
 			if (rateCardTestAssociationLookupResponses.size() < size) {
