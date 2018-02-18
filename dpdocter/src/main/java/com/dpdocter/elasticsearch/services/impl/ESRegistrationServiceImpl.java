@@ -123,7 +123,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 					.should(QueryBuilders
-							.queryStringQuery("localPatientNameFormatted:*"+patientName+"*")
+							.queryStringQuery("localPatientNameFormatted:"+patientName+"*")
 							.boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
