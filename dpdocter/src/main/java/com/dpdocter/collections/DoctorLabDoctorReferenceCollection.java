@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "doctor_contact_us_cl")
+@Document(collection = "doctor_lab_doctor_reference_cl")
 public class DoctorLabDoctorReferenceCollection extends GenericCollection {
 
 	@Id
@@ -16,7 +16,6 @@ public class DoctorLabDoctorReferenceCollection extends GenericCollection {
 	private String mobileNumber;
 	@Field
 	private String locationName;
-
 	@Field
 	private ObjectId doctorId;
 	@Field
