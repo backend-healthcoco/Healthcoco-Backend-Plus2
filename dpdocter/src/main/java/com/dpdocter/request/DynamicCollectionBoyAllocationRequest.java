@@ -8,6 +8,8 @@ public class DynamicCollectionBoyAllocationRequest {
 	private Long fromTime;
 	private Integer duration;
 	private String type;
+	private Boolean isFuture = false;
+	private String requestId;
 
 	public String getAssignorId() {
 		return assignorId;
@@ -55,6 +57,22 @@ public class DynamicCollectionBoyAllocationRequest {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Boolean getIsFuture() {
+		return isFuture;
+	}
+
+	public void setIsFuture(Boolean isFuture) {
+		this.isFuture = isFuture;
+	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
 	}
 
 }
