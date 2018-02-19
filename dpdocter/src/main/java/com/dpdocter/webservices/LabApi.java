@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -707,6 +708,18 @@ public class LabApi {
 
 		Response<LabReportsResponse> response = new Response<LabReportsResponse>();
 		response.setData(labReports);
+		return response;
+	}
+	@Path(value = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM, notes = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM)
+	public Response<String> downloadRequisationForm(@MatrixParam("ids") List<String> ids) {
+		if (ids == null || ids.isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(labReportsService.downloadLabreportPrint(ids));
 		return response;
 	}
 

@@ -20,11 +20,13 @@ public interface LabReportsService {
 
 	LabReports editLabReports(EditLabReportsRequest request);
 
-	/*List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String locationId, String hospitalId, String searchTerm,
-			int page, int size);
-
-	List<LabReportsResponse> getLabReportsForLab(String doctorId, String locationId, String hospitalId, String searchTerm,
-			int page, int size);*/
+	/*
+	 * List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String
+	 * locationId, String hospitalId, String searchTerm, int page, int size);
+	 * 
+	 * List<LabReportsResponse> getLabReportsForLab(String doctorId, String
+	 * locationId, String hospitalId, String searchTerm, int page, int size);
+	 */
 
 	LabReports addLabReportBase64(FileDetails fileDetails, DoctorLabReportsAddRequest request);
 
@@ -35,5 +37,7 @@ public interface LabReportsService {
 			String patientId, String searchTerm, int page, int size);
 
 	LabReportsResponse changePatientShareStatus(String id, Boolean status);
-	
+
+	public String downloadLabreportPrint(List<String> ids);
+
 }

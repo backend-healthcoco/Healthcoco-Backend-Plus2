@@ -1407,6 +1407,7 @@ public interface PathProxy {
 		public static final String GET_LAB_REPORTS_FOR_LAB = "/getLabReportsForLab";
 		public static final String UPLOAD_REPORTS_TO_DOCTOR = "/uploadReportsToDoctor";
 		public static final String CHANGE_PATIENT_SHARE_STATUS = "/changePatientShareStatus";
+		public static final String DOWNLOAD_REQUISATION_FORM = "/requisationForm/download";
 	}
 
 	public static final String INVENTORY_BASE_URL = BASE_URL + "/inventory";

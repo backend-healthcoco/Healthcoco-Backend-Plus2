@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
@@ -126,6 +128,8 @@ public interface LocationServices {
 			String parentLabId, String labId);
 
 	List<CustomWork> getCustomWorks(int page, int size, String searchTerm);
+
+	List<LabTestPickupLookupResponse> getLabTestPickupByIds(List<ObjectId> ids);
 
 	CustomWork addEditCustomWork(AddEditCustomWorkRequest request);
 }

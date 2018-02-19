@@ -1,10 +1,15 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
@@ -18,12 +23,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
+import com.dpdocter.beans.LabSubReportJasperDetails;
+import com.dpdocter.beans.LabTestPickupLookupResponse;
+import com.dpdocter.beans.LabTestSample;
+import com.dpdocter.beans.PatientLabTestSample;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -34,6 +45,9 @@ import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -47,10 +61,16 @@ import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.LabReportsResponse;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LabReportsService;
+import com.dpdocter.services.LocationServices;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.SMSServices;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -60,6 +80,9 @@ import common.util.web.DPDoctorUtils;
 public class LabReportsServiceImpl implements LabReportsService {
 
 	public static final Logger LOGGER = Logger.getLogger(LabReportsServiceImpl.class);
+
+	@Autowired
+	private LocationServices locationServices;
 
 	@Autowired
 	LabReportsRepository labReportsRepository;
@@ -72,6 +95,12 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 	@Autowired
 	LocationRepository locationRepository;
+
+	@Autowired
+	private PatientVisitService patientVisitService;
+
+	@Autowired
+	private JasperReportService jasperReportService;
 
 	@Autowired
 	SMSServices smsServices;
@@ -88,8 +117,14 @@ public class LabReportsServiceImpl implements LabReportsService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
+	@Value(value = "${jasper.print.labRequisationForm.a4.fileName}")
+	private String labRequisationFormA4FileName;
+
 	@Value(value = "${lab.reports.upload}")
 	private String labReportUploadMessage;
+
+	@Value(value = "${pdf.footer.text}")
+	private String footerText;
 
 	@Override
 	@Transactional
@@ -497,4 +532,212 @@ public class LabReportsServiceImpl implements LabReportsService {
 		return labReportsResponse;
 	}
 
+	@Override
+	public String downloadLabreportPrint(List<String> ids) {
+		String response = null;
+		List<LabTestPickupLookupResponse> labTestPickupLookupResponses = null;
+		List<ObjectId> pickupRequestIds = null;
+		JasperReportResponse jasperReportResponse = null;
+		try {
+			pickupRequestIds = new ArrayList<ObjectId>();
+			for (String id : ids) {
+				if (!DPDoctorUtils.anyStringEmpty(id))
+					pickupRequestIds.add(new ObjectId(id));
+			}
+			labTestPickupLookupResponses = locationServices.getLabTestPickupByIds(pickupRequestIds);
+			if (labTestPickupLookupResponses == null || labTestPickupLookupResponses.isEmpty()) {
+				throw new BusinessException(ServiceError.NoRecord, " No Lab Report found with ids");
+			}
+
+			jasperReportResponse = createJasper(labTestPickupLookupResponses);
+
+			if (jasperReportResponse != null)
+				response = getFinalImageURL(jasperReportResponse.getPath());
+			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+				if (jasperReportResponse.getFileSystemResource().getFile().exists())
+					jasperReportResponse.getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOGGER.error(e + " Error while getting Lab Report PDF for Parent");
+			throw new BusinessException(ServiceError.Unknown, " Error while getting Lab Report PDF for Parent");
+		}
+		return response;
+
+	}
+
+	private JasperReportResponse createJasper(List<LabTestPickupLookupResponse> labTestPickupLookupResponses)
+			throws IOException, ParseException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		String pattern = "dd/MM/yyyy";
+		String labName = "";
+		String locationId = null, hospitalId = null;
+		int sNo = 0;
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+		UserCollection userCollection = null;
+
+		LabSubReportJasperDetails labSubReportJasperDetail = null;
+		DBObject labReportItems = null;
+		List<DBObject> labreports = new ArrayList<DBObject>();
+		List<LabSubReportJasperDetails> labSubReportJasperDetails = null;
+		for (LabTestPickupLookupResponse labTestPickupLookupResponse : labTestPickupLookupResponses) {
+
+			labReportItems = new BasicDBObject();
+
+			if (labTestPickupLookupResponse.getParentLab() != null) {
+				locationId = labTestPickupLookupResponse.getParentLab().getId();
+				hospitalId = labTestPickupLookupResponse.getParentLab().getHospitalId();
+				labName = " for " + labTestPickupLookupResponse.getParentLab().getLocationName();
+			}
+
+			if (labTestPickupLookupResponse.getDaughterLab() != null) {
+
+				if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDaughterLab().getLocationName())) {
+					labReportItems.put("from",
+							"<b>From :- </b>" + labTestPickupLookupResponse.getDaughterLab().getLocationName());
+				} else {
+					labReportItems.put("from", "<b>From :- </b>");
+
+				}
+			} else {
+				labReportItems.put("from", "<b>From :- </b>");
+
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDoctorId())) {
+				userCollection = userRepository.findOne(new ObjectId(labTestPickupLookupResponse.getDoctorId()));
+				if (userCollection != null)
+					labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
+				else
+
+					labReportItems.put("doctor", "<b>Doctor :- </b> ");
+			} else {
+				labReportItems.put("doctor", "<b>Doctor :- </b> ");
+
+			}
+
+			if (labTestPickupLookupResponse.getPatientLabTestSamples() != null
+					&& !labTestPickupLookupResponse.getPatientLabTestSamples().isEmpty()) {
+
+				labSubReportJasperDetails = new ArrayList<LabSubReportJasperDetails>();
+				for (PatientLabTestSample patientLabTestSample : labTestPickupLookupResponse
+						.getPatientLabTestSamples()) {
+					labSubReportJasperDetail = new LabSubReportJasperDetails();
+
+					labSubReportJasperDetail.setNo(labSubReportJasperDetail.getNo() + 1);
+					if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getPatientName())) {
+						labSubReportJasperDetail.setPatientName(patientLabTestSample.getPatientName());
+					} else {
+						labSubReportJasperDetail.setPatientName("--");
+					}
+					if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getGender())) {
+						labSubReportJasperDetail.setGender(patientLabTestSample.getGender());
+					} else {
+						labSubReportJasperDetail.setGender("--");
+					}
+					if (patientLabTestSample.getAge() != null) {
+						labSubReportJasperDetail.setGender(
+								labSubReportJasperDetail.getGender() + "/" + (patientLabTestSample.getAge() > 0
+										? patientLabTestSample.getAge().toString() : "--"));
+					} else {
+						labSubReportJasperDetail.setGender(labSubReportJasperDetail.getGender() + "/" + "--");
+					}
+					if (patientLabTestSample.getLabTestSamples() != null
+							&& !patientLabTestSample.getLabTestSamples().isEmpty()) {
+						for (LabTestSample labTestsample : patientLabTestSample.getLabTestSamples()) {
+
+							if (DPDoctorUtils.anyStringEmpty(labSubReportJasperDetail.getTest())) {
+								if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
+									labSubReportJasperDetail.setTest(labTestsample.getSampleType());
+
+								} else {
+									labSubReportJasperDetail.setTest("--");
+								}
+								if (labTestsample.getRateCardTestAssociation() != null) {
+									if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
+										labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + "/"
+												+ (!DPDoctorUtils.anyStringEmpty(labTestsample
+														.getRateCardTestAssociation().getDiagnosticTest().getTestName())
+																? labTestsample.getRateCardTestAssociation()
+																		.getDiagnosticTest().getTestName()
+																: "--"));
+									}
+								} else {
+									labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + "/" + "--");
+								}
+							} else {
+								if (!DPDoctorUtils.anyStringEmpty(labTestsample.getSampleType())) {
+									labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + ",<br>"
+											+ labTestsample.getSampleType());
+
+								} else {
+									labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + ",<br>--");
+								}
+								if (labTestsample.getRateCardTestAssociation() != null) {
+									if (labTestsample.getRateCardTestAssociation().getDiagnosticTest() != null) {
+										labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + "/"
+												+ (!DPDoctorUtils.anyStringEmpty(labTestsample
+														.getRateCardTestAssociation().getDiagnosticTest().getTestName())
+																? labTestsample.getRateCardTestAssociation()
+																		.getDiagnosticTest().getTestName()
+																: "--"));
+									}
+								} else {
+									labSubReportJasperDetail.setTest(labSubReportJasperDetail.getTest() + "/" + "--");
+								}
+
+							}
+						}
+					}
+					labSubReportJasperDetails.add(labSubReportJasperDetail);
+				}
+
+			}
+			labReportItems.put("details", labSubReportJasperDetails);
+			labreports.add(labReportItems);
+		}
+		userCollection = null;
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+					.is(new ObjectId(hospitalId)).and("role.role").is("HOSPITAL_ADMIN");
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("id", "$userId"), Fields.field("firstName", "$doctor.firstName")));
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("user_cl", "userId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("role_cl", "roleId", "_id", "role"), Aggregation.unwind("role"),
+					Aggregation.match(criteria), projectList);
+			userCollection = mongoTemplate.aggregate(aggregation, UserRoleCollection.class, UserCollection.class)
+					.getUniqueMappedResult();
+
+		}
+		parameters.put("items", labreports);
+		parameters.put("title", "REQUISITION FORM" + labName.toUpperCase());
+		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
+		String pdfName = (userCollection != null ? userCollection.getFirstName() : "") + "REQUISATION-FORM"
+				+ new Date().getTime();
+
+		String layout = "PORTRAIT";
+		String pageSize = "A4";
+		Integer topMargin = 20;
+		Integer bottonMargin = 20;
+		Integer leftMargin = 20;
+		Integer rightMargin = 20;
+		patientVisitService.generatePrintSetup(parameters, null, userCollection.getId());
+		parameters.put("poweredBy", footerText);
+		parameters.put("contentLineSpace", LineSpace.SMALL.name());
+		response = jasperReportService.createPDF(ComponentType.LAB_REQUISATION_FORM, parameters,
+				labRequisationFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
 }
