@@ -187,6 +187,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					doctorLabReportCollection.setCreatedTime(oldDoctorLabReportCollection.getCreatedTime());
 				}
 				doctorLabReportCollection.setUpdatedTime(new Date());
+				doctorLabReportCollection.setUniqueReportId(oldDoctorLabReportCollection.getUniqueReportId());
 				doctorLabReportCollection.setAdminCreatedTime(oldDoctorLabReportCollection.getAdminCreatedTime());
 				doctorLabReportCollection.setCreatedBy(oldDoctorLabReportCollection.getCreatedBy());
 			} else {
