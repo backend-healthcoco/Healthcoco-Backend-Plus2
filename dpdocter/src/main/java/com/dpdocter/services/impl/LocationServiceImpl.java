@@ -1247,10 +1247,14 @@ public class LocationServiceImpl implements LocationServices {
 				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
 						.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()),
 								new ObjectId(request.getDaughterLabLocationId()));
+				System.out.println(dynamicCollectionBoyAllocationCollection);
+				System.out.println(new Date(dynamicCollectionBoyAllocationCollection.getFromTime()));
+				System.out.println(new Date(dynamicCollectionBoyAllocationCollection.getToTime()));
+				System.out.println(new Date());
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
-
+					System.out.println(dynamicCollectionBoyAllocationCollection);
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 							.findbyParentIdandDaughterId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
 									new ObjectId(request.getParentLabLocationId()),
@@ -2506,28 +2510,41 @@ public class LocationServiceImpl implements LocationServices {
 		ObjectId oldId = null;
 		try {
 			if (request != null) {
-				dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository.getByAssignorAssignee(new ObjectId(request.getAssignorId()), new ObjectId(request.getAssigneeId()));
-				if(dynamicCollectionBoyAllocationCollection == null)
-				{
-					dynamicCollectionBoyAllocationCollection = new DynamicCollectionBoyAllocationCollection();
-					BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
-					Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
-					dynamicCollectionBoyAllocationCollection.setToTime(toTime);
-					dynamicCollectionBoyAllocationCollection.setCreatedTime(new Date());
+
+				if (request.getRequestId() != null) {
+					LabTestPickupCollection labTestPickupCollection = labTestPickupRepository
+							.findOne(new ObjectId(request.getRequestId()));
+					labTestPickupCollection.setCollectionBoyId(new ObjectId(request.getCollectionBoyId()));
+					labTestPickupRepository.save(labTestPickupCollection);
 				}
-				else
-				{
-					oldId = dynamicCollectionBoyAllocationCollection.getId();
-					BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
-					Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
-					dynamicCollectionBoyAllocationCollection.setToTime(toTime);
-					dynamicCollectionBoyAllocationCollection.setId(oldId);
+				if (request.getIsFuture() == true) {
+					dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
+							.getByAssignorAssignee(new ObjectId(request.getAssignorId()),
+									new ObjectId(request.getAssigneeId()));
+					if (dynamicCollectionBoyAllocationCollection == null) {
+						dynamicCollectionBoyAllocationCollection = new DynamicCollectionBoyAllocationCollection();
+						BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
+						Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
+						dynamicCollectionBoyAllocationCollection.setToTime(toTime);
+						dynamicCollectionBoyAllocationCollection.setCreatedTime(new Date());
+					} else {
+						oldId = dynamicCollectionBoyAllocationCollection.getId();
+						BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
+						Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
+						dynamicCollectionBoyAllocationCollection.setToTime(toTime);
+						dynamicCollectionBoyAllocationCollection.setId(oldId);
+					}
+					dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
+							.save(dynamicCollectionBoyAllocationCollection);
+					if (dynamicCollectionBoyAllocationCollection != null) {
+						response = new DynamicCollectionBoyAllocationResponse();
+						BeanUtil.map(dynamicCollectionBoyAllocationCollection, response);
+					}
 				}
-				dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
-						.save(dynamicCollectionBoyAllocationCollection);
-				if (dynamicCollectionBoyAllocationCollection != null) {
+				if(response == null)
+				{
 					response = new DynamicCollectionBoyAllocationResponse();
-					BeanUtil.map(dynamicCollectionBoyAllocationCollection, response);
+					BeanUtil.map(request, response);
 				}
 			}
 		} catch (Exception e) {
