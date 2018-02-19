@@ -1255,21 +1255,14 @@ public class LocationServiceImpl implements LocationServices {
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
 					System.out.println(dynamicCollectionBoyAllocationCollection);
-					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-							.findbyParentIdandDaughterId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
-									new ObjectId(request.getParentLabLocationId()),
-									new ObjectId(request.getDaughterLabLocationId()));
-					if (collectionBoyLabAssociationCollection != null
-							&& collectionBoyLabAssociationCollection.getIsActive() == true) {
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-						if (collectionBoyCollection != null) {
+						if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
 							labTestPickupCollection
 									.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-
 							pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
 									null, null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
-						}
+						
 					}
 
 				} else {
