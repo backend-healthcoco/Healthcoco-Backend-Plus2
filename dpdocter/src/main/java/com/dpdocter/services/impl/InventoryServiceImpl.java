@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.InventorySettings;
@@ -112,7 +113,8 @@ public class InventoryServiceImpl implements InventoryService {
 			
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
 			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-				prescriptionServices.makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+				Drug drug =prescriptionServices.makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+				System.out.println(drug);
 			}
 			
 		} catch (Exception e) {
@@ -699,7 +701,7 @@ public class InventoryServiceImpl implements InventoryService {
 				response = new InventoryItem();
 				BeanUtil.map( inventoryItemCollection, response);
 			} else {
-				throw new BusinessException(ServiceError.NoRecord , "Inventory item not found");
+				logger.warn("Inventory item not found");
 			}
 
 		} catch (Exception e) {

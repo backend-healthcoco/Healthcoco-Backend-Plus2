@@ -215,7 +215,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			Map<String, UserCollection> doctorsMap = new HashMap<String, UserCollection>();
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
-			Collection<String> itemIds = null;
+			Collection<ObjectId> itemIds = null;
 			
 			ObjectId doctorObjectId = new ObjectId(request.getDoctorId());
 			Double dueAmount = 0.0;
@@ -298,7 +298,7 @@ public class BillingServiceImpl implements BillingService {
 				 itemIds = CollectionUtils.collect(doctorPatientInvoiceCollection.getInvoiceItems(),
 						new BeanToPropertyValueTransformer("itemId"));
 				 System.out.println("Item ids ->");
-				 for(String itemid : itemIds)
+				 for(ObjectId itemid : itemIds)
 				 {
 					 System.out.println("id :: " + itemid);
 				 }
@@ -418,17 +418,17 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
 			}
 			
-			for (String itemId : itemIds) {
+			for (ObjectId itemId : itemIds) {
 				InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
-						request.getHospitalId(), itemId,
+						request.getHospitalId(), itemId.toString(),
 						doctorPatientInvoiceCollection.getId().toString());
 				Long quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
-						request.getHospitalId(), itemId,
+						request.getHospitalId(), itemId.toString(),
 						doctorPatientInvoiceCollection.getId().toString());
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-						request.getHospitalId(), itemId);
+						request.getHospitalId(), itemId.toString());
 				if (inventoryStock.getInventoryBatch() != null && inventoryItem != null) {
-					createInventoryStock(itemId, inventoryItem.getId(),
+					createInventoryStock(itemId.toString(), inventoryItem.getId(),
 							inventoryStock.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(),
 							quantity.intValue(),
