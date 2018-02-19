@@ -1230,24 +1230,19 @@ public class LocationServiceImpl implements LocationServices {
 				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
 						.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()),
 								new ObjectId(request.getDaughterLabLocationId()));
-				System.out.println(dynamicCollectionBoyAllocationCollection);
-				System.out.println(new Date(dynamicCollectionBoyAllocationCollection.getFromTime()));
-				System.out.println(new Date(dynamicCollectionBoyAllocationCollection.getToTime()));
-				System.out.println(new Date());
+				
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
-					System.out.println(dynamicCollectionBoyAllocationCollection);
-						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-								.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-						if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
-							labTestPickupCollection
-									.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
-							pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
-									null, null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
-						
-					}
+					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+							.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+					if (collectionBoyCollection != null) {
+						labTestPickupCollection
+								.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
 
+						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
+								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+					}
 				} else {
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 							.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
