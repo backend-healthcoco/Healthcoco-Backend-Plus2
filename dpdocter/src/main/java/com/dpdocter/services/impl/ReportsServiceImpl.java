@@ -349,16 +349,15 @@ public class ReportsServiceImpl implements ReportsService {
 				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 			if (size > 0)
-				ipdReportLookupResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.unwind("doctor"),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.unwind("location"),
-								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
-								Aggregation.unwind("hospital"), Aggregation.skip(page * size), Aggregation.limit(size),
-								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-						IPDReportsCollection.class, IPDReportLookupResponse.class).getMappedResults();
+				ipdReportLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+						Aggregation.unwind("hospital"), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+						Aggregation.skip(page * size), Aggregation.limit(size)), IPDReportsCollection.class,
+						IPDReportLookupResponse.class).getMappedResults();
 			else
 				ipdReportLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
 						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -474,8 +473,9 @@ public class ReportsServiceImpl implements ReportsService {
 								Aggregation.unwind("hospital"),
 								Aggregation.lookup("prescription_cl", "prescriptionId", "_id",
 										"prescriptionCollection"),
-								Aggregation.unwind("prescriptionCollection"), Aggregation.skip(page * size),
-								Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+								Aggregation.unwind("prescriptionCollection"),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+								Aggregation.skip(page * size), Aggregation.limit(size)),
 						OPDReportsCollection.class, OPDReportsLookupResponse.class).getMappedResults();
 			else
 				opdReportsLookupResponses = mongoTemplate.aggregate(
@@ -643,16 +643,15 @@ public class ReportsServiceImpl implements ReportsService {
 			}
 
 			if (size > 0)
-				otReportsLookupResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.unwind("doctor"),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.unwind("location"),
-								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
-								Aggregation.unwind("hospital"), Aggregation.skip(page * size), Aggregation.limit(size),
-								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-						OTReportsCollection.class, OTReportsLookupResponse.class).getMappedResults();
+				otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+						Aggregation.unwind("hospital"), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+						Aggregation.skip(page * size), Aggregation.limit(size)), OTReportsCollection.class,
+						OTReportsLookupResponse.class).getMappedResults();
 			else
 				otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
 						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -774,14 +773,16 @@ public class ReportsServiceImpl implements ReportsService {
 
 			if (size > 0)
 				deliveryReportsLookupResponses = mongoTemplate
-						.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.unwind("doctor"),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.unwind("location"),
-								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
-								Aggregation.unwind("hospital"), Aggregation.skip(page * size), Aggregation.limit(size),
-								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						.aggregate(
+								Aggregation.newAggregation(Aggregation.match(criteria),
+										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+										Aggregation.unwind("location"),
+										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+										Aggregation.unwind("hospital"),
+										Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+										Aggregation.skip(page * size), Aggregation.limit(size)),
 								DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class)
 						.getMappedResults();
 			else
@@ -888,6 +889,7 @@ public class ReportsServiceImpl implements ReportsService {
 	}
 
 	@Override
+	@Transactional
 	public String getOTReportsFile(String otId) {
 		String response = null;
 		try {
