@@ -1,5 +1,8 @@
 package com.dpdocter.beans;
-public class RateCardTestAssociation {
+
+import com.dpdocter.collections.GenericCollection;
+
+public class RateCardTestAssociation extends GenericCollection  {
 
 	private String id;
 	private String locationId;

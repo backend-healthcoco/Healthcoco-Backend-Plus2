@@ -1630,22 +1630,26 @@ public class LocationServiceImpl implements LocationServices {
 	public Boolean addEditRateCardTestAssociation(List<RateCardTestAssociation> request) {
 		boolean response = false;
 		RateCardTestAssociationCollection rateCardTestAssociationCollection = null;
+		List<RateCardTestAssociationCollection> rateCardTestAssociationCollections = null;
 		try {
+			rateCardTestAssociationCollections = new ArrayList<RateCardTestAssociationCollection>();
 			for (RateCardTestAssociation rateCardTestAssociation : request) {
 				if (rateCardTestAssociation.getId() != null) {
 					rateCardTestAssociationCollection = rateCardTestAssociationRepository
 							.findOne(new ObjectId(rateCardTestAssociation.getId()));
-					rateCardTestAssociation.setId(String.valueOf(rateCardTestAssociationCollection.getId()));
+					rateCardTestAssociation.setCreatedTime(new Date());
+
 				} else {
 					rateCardTestAssociationCollection = new RateCardTestAssociationCollection();
-
+					rateCardTestAssociation.setCreatedTime(new Date());
+					rateCardTestAssociation.setUpdatedTime(new Date());
 				}
 
 				BeanUtil.map(rateCardTestAssociation, rateCardTestAssociationCollection);
-				rateCardTestAssociationCollection = rateCardTestAssociationRepository
-						.save(rateCardTestAssociationCollection);
-				BeanUtil.map(rateCardTestAssociationCollection, response);
+				rateCardTestAssociationCollections.add(rateCardTestAssociationCollection);
 			}
+			rateCardTestAssociationCollections = rateCardTestAssociationRepository
+					.save(rateCardTestAssociationCollections);
 			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
