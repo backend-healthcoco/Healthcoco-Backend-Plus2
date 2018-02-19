@@ -1239,7 +1239,7 @@ public class LocationServiceImpl implements LocationServices {
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
-
+					System.out.println(dynamicCollectionBoyAllocationCollection);
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 							.findbyParentIdandDaughterId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
 									new ObjectId(request.getParentLabLocationId()),
@@ -2534,7 +2534,7 @@ public class LocationServiceImpl implements LocationServices {
 						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
 								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 					}
-					labTestPickupRepository.save(labTestPickupCollection);
+
 				}
 				if (request.getIsFuture() == true) {
 					dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
@@ -2550,6 +2550,7 @@ public class LocationServiceImpl implements LocationServices {
 						oldId = dynamicCollectionBoyAllocationCollection.getId();
 						BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
 						Long toTime = DPDoctorUtils.getEndTime(new Date(request.getFromTime())).getMillis();
+
 						dynamicCollectionBoyAllocationCollection.setToTime(toTime);
 						dynamicCollectionBoyAllocationCollection.setId(oldId);
 					}
