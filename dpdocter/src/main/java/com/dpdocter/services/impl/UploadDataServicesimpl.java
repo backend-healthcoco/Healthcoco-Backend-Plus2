@@ -23,7 +23,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Address;
@@ -44,22 +43,14 @@ import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
-import com.dpdocter.collections.ClinicalNotesCollection;
-import com.dpdocter.collections.DeliveryReportsCollection;
-import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DiseasesCollection;
-import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugDirectionCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.GroupCollection;
-import com.dpdocter.collections.IPDReportsCollection;
-import com.dpdocter.collections.OPDReportsCollection;
-import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
@@ -247,55 +238,66 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
 
-			
-//			List<DrugCollection> drugCollections = drugRepository.findByLocationId(locationObjectId);
-//			if(drugCollections != null)
-//			for(DrugCollection drugCollection : drugCollections) {
-//				
-//				ESDrugDocument document = esDrugRepository.findOne(drugCollection.getId().toString());
-//				if(document != null)esDrugRepository.delete(document);
-//				drugRepository.delete(drugCollection);
-//			}
-//			
-//			BoolQueryBuilder booleanQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.termQuery("locationId", locationId));
-//			
-//			
-//			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(booleanQueryBuilder).withPageable(new PageRequest(0, 3267)).build();
-//			List<ESDrugDocument> drugDocuments = elasticsearchTemplate.queryForList(searchQuery,
-//					ESDrugDocument.class);
-//			if(drugDocuments != null) {
-//				System.out.println(drugDocuments.size());
-//				for(ESDrugDocument esDrugDocument : drugDocuments) {
-//					esDrugRepository.delete(esDrugDocument.getId());
-//				}
-//			}
-//			
-//			List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findByLocationId(locationObjectId);
-//			if(treatmentServicesCollections != null)
-//			for(TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
-//				
-//				ESTreatmentServiceDocument document = esTreatmentServiceRepository.findOne(treatmentServicesCollection.getId().toString());
-//				if(document != null)esTreatmentServiceRepository.delete(document.getId());
-//				treatmentServicesRepository.delete(treatmentServicesCollection);
-//			}
-//			
-//			
-//			searchQuery = new NativeSearchQueryBuilder().withQuery(booleanQueryBuilder).build();
-//			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = elasticsearchTemplate.queryForList(searchQuery,
-//					ESTreatmentServiceDocument.class);
-//			if(esTreatmentServiceDocuments != null) {
-//				System.out.println(esTreatmentServiceDocuments.size());
-//				for(ESTreatmentServiceDocument esTreatmentServiceDocument : esTreatmentServiceDocuments) {
-//					esTreatmentServiceRepository.delete(esTreatmentServiceDocument.getId());
-//				}
-//			}
-//			
-//			
-			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId, new Date(Long.parseLong("0")), 
-					new Sort(Direction.ASC, "createdTime"));
-			for(PatientCollection patientCollection : patientCollections) {
-				
-
+			// List<DrugCollection> drugCollections =
+			// drugRepository.findByLocationId(locationObjectId);
+			// if(drugCollections != null)
+			// for(DrugCollection drugCollection : drugCollections) {
+			//
+			// ESDrugDocument document =
+			// esDrugRepository.findOne(drugCollection.getId().toString());
+			// if(document != null)esDrugRepository.delete(document);
+			// drugRepository.delete(drugCollection);
+			// }
+			//
+			// BoolQueryBuilder booleanQueryBuilder = new
+			// BoolQueryBuilder().must(QueryBuilders.termQuery("locationId",
+			// locationId));
+			//
+			//
+			// SearchQuery searchQuery = new
+			// NativeSearchQueryBuilder().withQuery(booleanQueryBuilder).withPageable(new
+			// PageRequest(0, 3267)).build();
+			// List<ESDrugDocument> drugDocuments =
+			// elasticsearchTemplate.queryForList(searchQuery,
+			// ESDrugDocument.class);
+			// if(drugDocuments != null) {
+			// System.out.println(drugDocuments.size());
+			// for(ESDrugDocument esDrugDocument : drugDocuments) {
+			// esDrugRepository.delete(esDrugDocument.getId());
+			// }
+			// }
+			//
+			// List<TreatmentServicesCollection> treatmentServicesCollections =
+			// treatmentServicesRepository.findByLocationId(locationObjectId);
+			// if(treatmentServicesCollections != null)
+			// for(TreatmentServicesCollection treatmentServicesCollection :
+			// treatmentServicesCollections) {
+			//
+			// ESTreatmentServiceDocument document =
+			// esTreatmentServiceRepository.findOne(treatmentServicesCollection.getId().toString());
+			// if(document !=
+			// null)esTreatmentServiceRepository.delete(document.getId());
+			// treatmentServicesRepository.delete(treatmentServicesCollection);
+			// }
+			//
+			//
+			// searchQuery = new
+			// NativeSearchQueryBuilder().withQuery(booleanQueryBuilder).build();
+			// List<ESTreatmentServiceDocument> esTreatmentServiceDocuments =
+			// elasticsearchTemplate.queryForList(searchQuery,
+			// ESTreatmentServiceDocument.class);
+			// if(esTreatmentServiceDocuments != null) {
+			// System.out.println(esTreatmentServiceDocuments.size());
+			// for(ESTreatmentServiceDocument esTreatmentServiceDocument :
+			// esTreatmentServiceDocuments) {
+			// esTreatmentServiceRepository.delete(esTreatmentServiceDocument.getId());
+			// }
+			// }
+			//
+			//
+			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
+					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
+			for (PatientCollection patientCollection : patientCollections) {
 
 				ESPatientDocument document = esPatientRepository.findOne(patientCollection.getId().toString());
 				if (document != null)
@@ -1466,16 +1468,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Override
 	public Boolean updateEMR() {
 		try {
-
-			List<DischargeSummaryCollection> dischargeSummaryCollections = mongoTemplate
-					.find(new Query(new Criteria("createdTime").exists(false)), DischargeSummaryCollection.class); 
-			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
-
-				dischargeSummaryCollection.setAdminCreatedTime(dischargeSummaryCollection.getCreatedTime());
-			}
-			dischargeSummaryRepository.save(dischargeSummaryCollections);
-
 		} catch (Exception e) {
+
 			e.printStackTrace();
 		}
 
