@@ -751,7 +751,8 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM, notes = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM)
-	public Response<String> downloadRequisationForm(@MatrixParam("ids") List<String> ids) {
+	public Response<String> downloadRequisationForm(@MatrixParam("ids") List<String> ids,
+			@QueryParam("isParent") boolean isParent) {
 		if (ids == null || ids.isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
