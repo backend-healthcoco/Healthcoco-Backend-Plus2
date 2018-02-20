@@ -35,6 +35,7 @@ import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.OPDReports;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Reference;
@@ -51,6 +52,8 @@ import com.dpdocter.collections.DrugDirectionCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.collections.OPDReportsCollection;
+import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
@@ -1467,12 +1470,46 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 	@Override
 	public Boolean updateEMR() {
-		try {
-		} catch (Exception e) {
 
+		try {
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("opd_report_cl", "_id", "prescriptionId", "opd"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$opd").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.match(new Criteria("opd.prescriptionId").exists(false)));
+			List<PrescriptionCollection> prescriptionCollections = mongoTemplate
+					.aggregate(aggregation, "prescription_cl", PrescriptionCollection.class).getMappedResults();
+			OPDReportsCollection opdReportsCollection = null;
+			List<OPDReportsCollection> opdReportsCollections = new ArrayList<OPDReportsCollection>();
+			if (prescriptionCollections != null && !prescriptionCollections.isEmpty()) {
+				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+					OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+							String.valueOf(prescriptionCollection.getId()),
+							String.valueOf(prescriptionCollection.getDoctorId()),
+							String.valueOf(prescriptionCollection.getLocationId()),
+							String.valueOf(prescriptionCollection.getHospitalId()),
+							prescriptionCollection.getCreatedTime());
+					opdReportsCollection = new OPDReportsCollection();
+					UserCollection userCollection = null;
+					if (!DPDoctorUtils.anyStringEmpty(opdReports.getDoctorId())) {
+						userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
+					}
+					BeanUtil.map(opdReports, opdReportsCollection);
+					if (userCollection != null) {
+						opdReportsCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
+								? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
+					}
+					opdReportsCollection.setAdminCreatedTime(new Date());
+					if (opdReports.getCreatedTime() == null) {
+						opdReportsCollection.setCreatedTime(new Date());
+					}
+					opdReportsCollections.add(opdReportsCollection);
+				}
+			}
+			opdReportsRepository.save(opdReportsCollections);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return true;
 	}
 
