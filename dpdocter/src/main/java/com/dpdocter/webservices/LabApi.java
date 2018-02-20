@@ -713,10 +713,12 @@ public class LabApi {
 		response.setData(labReports);
 		return response;
 	}
+
 	@Path(value = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM, notes = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM)
-	public Response<String> downloadRequisationForm(@MatrixParam("ids") List<String> ids) {
+	public Response<String> downloadRequisationForm(@MatrixParam("ids") List<String> ids,
+			@QueryParam("isParent") boolean isParent) {
 		if (ids == null || ids.isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -726,20 +728,19 @@ public class LabApi {
 		return response;
 	}
 
-	
 	@POST
 	@Path(value = PathProxy.LabUrls.ALLOCATE_COLLECTION_BOY_DYNAMICALLY)
 	@ApiOperation(value = PathProxy.LabUrls.ALLOCATE_COLLECTION_BOY_DYNAMICALLY, notes = PathProxy.LabUrls.ALLOCATE_COLLECTION_BOY_DYNAMICALLY)
-	public Response<DynamicCollectionBoyAllocationResponse> AllocateDynamicCB(DynamicCollectionBoyAllocationRequest request) {
+	public Response<DynamicCollectionBoyAllocationResponse> AllocateDynamicCB(
+			DynamicCollectionBoyAllocationRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		DynamicCollectionBoyAllocationResponse dynamicCollectionBoyAllocationResponse = locationServices.allocateCBDynamically(request);
+		DynamicCollectionBoyAllocationResponse dynamicCollectionBoyAllocationResponse = locationServices
+				.allocateCBDynamically(request);
 		Response<DynamicCollectionBoyAllocationResponse> response = new Response<DynamicCollectionBoyAllocationResponse>();
 		response.setData(dynamicCollectionBoyAllocationResponse);
 		return response;
 	}
 
-	
-	
 }

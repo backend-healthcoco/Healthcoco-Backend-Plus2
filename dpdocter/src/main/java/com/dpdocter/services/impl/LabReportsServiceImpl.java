@@ -698,24 +698,11 @@ public class LabReportsServiceImpl implements LabReportsService {
 			labreports.add(labReportItems);
 		}
 		userCollection = null;
-		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId)).and("role.role").is("HOSPITAL_ADMIN");
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$userId"), Fields.field("firstName", "$doctor.firstName")));
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("user_cl", "userId", "_id", "doctor"), Aggregation.unwind("doctor"),
-					Aggregation.lookup("role_cl", "roleId", "_id", "role"), Aggregation.unwind("role"),
-					Aggregation.match(criteria), projectList);
-			userCollection = mongoTemplate.aggregate(aggregation, UserRoleCollection.class, UserCollection.class)
-					.getUniqueMappedResult();
 
-		}
 		parameters.put("items", labreports);
 		parameters.put("title", "REQUISITION FORM" + labName.toUpperCase());
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
-		String pdfName = (userCollection != null ? userCollection.getFirstName() : "") + "REQUISATION-FORM"
-				+ new Date().getTime();
+		String pdfName = locationId + "REQUISATION-FORM" + new Date().getTime();
 
 		String layout = "PORTRAIT";
 		String pageSize = "A4";
@@ -723,7 +710,16 @@ public class LabReportsServiceImpl implements LabReportsService {
 		Integer bottonMargin = 20;
 		Integer leftMargin = 20;
 		Integer rightMargin = 20;
-		patientVisitService.generatePrintSetup(parameters, null, userCollection.getId());
+		parameters.put("footerSignature", "");
+		parameters.put("bottomSignText", "");
+		parameters.put("contentFontSize", 11);
+		parameters.put("headerLeftText", "");
+		parameters.put("headerRightText", "");
+		parameters.put("footerBottomText", "");
+		parameters.put("logoURL", "");
+
+		parameters.put("showTableOne", false);
+
 		parameters.put("poweredBy", footerText);
 		parameters.put("contentLineSpace", LineSpace.SMALL.name());
 		response = jasperReportService.createPDF(ComponentType.LAB_REQUISATION_FORM, parameters,
