@@ -11,7 +11,7 @@ public interface DiagnosticTestOrderService {
 
 	List<LabSearchResponse> searchLabs(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames, int page, int size, Boolean havePackage);
 
-	List<DiagnosticTestSamplePickUpSlot> getDiagnosticTestSamplePickUpTimeSlots();
+	List<DiagnosticTestSamplePickUpSlot> getDiagnosticTestSamplePickUpTimeSlots(String date);
 
 	OrderDiagnosticTest placeDiagnosticTestOrder(OrderDiagnosticTest request);
 

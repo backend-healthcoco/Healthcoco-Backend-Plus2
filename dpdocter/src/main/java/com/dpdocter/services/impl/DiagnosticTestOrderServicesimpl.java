@@ -203,13 +203,14 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 	}
 
 	@Override
-	public List<DiagnosticTestSamplePickUpSlot> getDiagnosticTestSamplePickUpTimeSlots() {
+	public List<DiagnosticTestSamplePickUpSlot> getDiagnosticTestSamplePickUpTimeSlots(String dateStr) {
 		List<DiagnosticTestSamplePickUpSlot> response = new ArrayList<DiagnosticTestSamplePickUpSlot>();
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
 			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 			
 			Date date = new Date();
+			if(!DPDoctorUtils.anyStringEmpty(dateStr))date = new Date(Long.parseLong(dateStr));
 			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			localCalendar.setTime(date);
