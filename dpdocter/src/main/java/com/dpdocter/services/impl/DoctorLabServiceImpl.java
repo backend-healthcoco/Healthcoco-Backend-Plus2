@@ -446,7 +446,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 												true))),
 								Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 								Aggregation.match(criteria), projectList,
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
 
@@ -463,7 +463,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 												true))),
 								Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 								Aggregation.match(criteria), projectList,
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}
 			AggregationResults<DoctorLabReportResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -977,7 +977,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				throw new BusinessException(ServiceError.NoRecord, "No report found with reportId");
 			}
 			doctorLabReportCollection.setDiscarded(!doctorLabReportCollection.getDiscarded());
-
 			doctorLabReportCollection.setUpdatedTime(new Date());
 			doctorLabReportRepository.save(doctorLabReportCollection);
 			response = true;
