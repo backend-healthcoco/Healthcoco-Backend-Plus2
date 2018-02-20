@@ -267,7 +267,7 @@ public class DoctorLabApi {
 			throw new BusinessException(ServiceError.InvalidInput, "report Id Cannot Be Empty");
 		}
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(doctorLabService.DiscardFavouriteDoctor(reportId));
+		response.setData(doctorLabService.DiscardDoctorLabReports(reportId));
 		return response;
 
 	}
