@@ -2512,13 +2512,13 @@ public class LocationServiceImpl implements LocationServices {
 					if (dynamicCollectionBoyAllocationCollection == null) {
 						dynamicCollectionBoyAllocationCollection = new DynamicCollectionBoyAllocationCollection();
 						BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
-						Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
+						Long toTime = DPDoctorUtils.getEndTimeInMillis(new Date(request.getFromTime()));
 						dynamicCollectionBoyAllocationCollection.setToTime(toTime);
 						dynamicCollectionBoyAllocationCollection.setCreatedTime(new Date());
 					} else {
 						oldId = dynamicCollectionBoyAllocationCollection.getId();
 						BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
-						Long toTime = request.getFromTime() + TimeUnit.MINUTES.toMillis(request.getDuration());
+						Long toTime = DPDoctorUtils.getEndTimeInMillis(new Date(request.getFromTime()));
 						dynamicCollectionBoyAllocationCollection.setToTime(toTime);
 						dynamicCollectionBoyAllocationCollection.setId(oldId);
 					}
