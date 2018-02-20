@@ -148,7 +148,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Autowired
 	private CustomWorkRepository customWorkRepository;
-	
+
 	@Autowired
 	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
 
@@ -1057,8 +1057,10 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
 						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria), aggregationOperation1,
-						projectList, aggregationOperation2,
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.match(criteria), aggregationOperation1, projectList, aggregationOperation2,
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
@@ -1071,8 +1073,10 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
 						Aggregation.unwind("parentLab"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						Aggregation.unwind("collectionBoy"), Aggregation.match(criteria), aggregationOperation1,
-						projectList, aggregationOperation2,
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.match(criteria), aggregationOperation1, projectList, aggregationOperation2,
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			// System.out.println(aggregation);
@@ -1146,8 +1150,12 @@ public class LocationServiceImpl implements LocationServices {
 									&& DPDoctorUtils.anyStringEmpty(OldlabTestSampleCollection.getSerialNumber())) {
 								String serialNumber = reportSerialNumberGenerator(
 										labTestSampleCollection.getParentLabLocationId().toString());
-								/*System.out.println("/////////Serial No. is" + serialNumber
-										+ "///////////////////////////////////////////////////");*/
+								/*
+								 * System.out.println("/////////Serial No. is" +
+								 * serialNumber +
+								 * "///////////////////////////////////////////////////"
+								 * );
+								 */
 								labTestSampleCollection.setSerialNumber(serialNumber);
 							}
 							labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
@@ -1230,7 +1238,7 @@ public class LocationServiceImpl implements LocationServices {
 				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
 						.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()),
 								new ObjectId(request.getDaughterLabLocationId()));
-				
+
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
@@ -1255,7 +1263,6 @@ public class LocationServiceImpl implements LocationServices {
 						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
 								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 
-						
 					}
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
@@ -2456,8 +2463,6 @@ public class LocationServiceImpl implements LocationServices {
 		return generatedId;
 	}
 
-
-
 	@Override
 	@Transactional
 	public DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request) {
@@ -2496,8 +2501,7 @@ public class LocationServiceImpl implements LocationServices {
 						BeanUtil.map(dynamicCollectionBoyAllocationCollection, response);
 					}
 				}
-				if(response == null)
-				{
+				if (response == null) {
 					response = new DynamicCollectionBoyAllocationResponse();
 					BeanUtil.map(request, response);
 				}
