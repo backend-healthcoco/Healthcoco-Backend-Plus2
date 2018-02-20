@@ -1247,7 +1247,7 @@ public class LocationServiceImpl implements LocationServices {
 				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
 						.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()),
 								new ObjectId(request.getDaughterLabLocationId()));
-				
+
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
@@ -2529,8 +2529,7 @@ public class LocationServiceImpl implements LocationServices {
 						BeanUtil.map(dynamicCollectionBoyAllocationCollection, response);
 					}
 				}
-				if(response == null)
-				{
+				if (response == null) {
 					response = new DynamicCollectionBoyAllocationResponse();
 					BeanUtil.map(request, response);
 				}
