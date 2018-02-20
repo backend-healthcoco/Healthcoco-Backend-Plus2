@@ -136,8 +136,9 @@ public class CollectionBoyCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "CollectionBoyCollection [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", name=" + name + ", age=" + age + ", gender=" + gender + ", address=" + address + ", mobileNumber="
-				+ mobileNumber + ", discarded=" + discarded + "]";
+				+ ", userId=" + userId + ", name=" + name + ", age=" + age + ", gender=" + gender + ", address="
+				+ address + ", mobileNumber=" + mobileNumber + ", discarded=" + discarded + ", isAvailable="
+				+ isAvailable + ", labType=" + labType + "]";
 	}
 
 }

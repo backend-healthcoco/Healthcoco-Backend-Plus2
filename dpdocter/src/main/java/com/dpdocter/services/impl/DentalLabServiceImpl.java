@@ -1129,8 +1129,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findOne(dentalLabPickupCollection.getCollectionBoyId());
-								if (collectionBoyCollection != null) {
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
 											collectionBoyCollection.getUserId().toString(), null, null,
 											RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
@@ -1153,15 +1153,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
-							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+							
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
-								if (collectionBoyCollection != null) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
 											collectionBoyCollection.getUserId().toString(), null, null,
 											RoleEnum.DENTAL_COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
@@ -1176,15 +1177,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
-							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+						
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
-								if (collectionBoyCollection != null) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
 											collectionBoyCollection.getUserId().toString(), null, null,
 											RoleEnum.DENTAL_COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
@@ -1200,15 +1202,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
-							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+							
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
 											dentalLabPickupCollection.getCollectionBoyId());
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
-								if (collectionBoyCollection != null) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
 											collectionBoyCollection.getUserId().toString(), null, null,
 											RoleEnum.DENTAL_COLLECTION_BOY, FINISHED_LAB_NOTIFICATION);
@@ -1332,27 +1335,76 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 				if (request.getStatus() != null) {
 					if (request.getStatus().equals("COPING_TRIAL")) {
-						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
-								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
-						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+						if (dentalLabPickupCollection.getDoctorId() != null) {
+							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
+									COPING_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-						pushNotificationServices.notifyPharmacy(
-								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+								}
+							}
+						}
 					} else if (request.getStatus().equals("BISQUE_TRIAL")) {
-						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
-								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
-						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+						if (dentalLabPickupCollection.getDoctorId() != null) {
+							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-						pushNotificationServices.notifyPharmacy(
-								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false ) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+								}
+							}
+						}
+					}
+					else if (request.getStatus().equals("FINISHED_LAB")) {
+						if (dentalLabPickupCollection.getDoctorId() != null) {
+							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
+									FINISHED_LAB_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+									dentalLabPickupCollection.getId().toString(), null);
+						}
+
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, FINISHED_LAB_NOTIFICATION);
+								}
+							}
+						}
 					}
 				}
 				response = true;
@@ -1409,9 +1461,22 @@ public class DentalLabServiceImpl implements DentalLabService {
 									COPING_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-						pushNotificationServices.notifyPharmacy(
-								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+								}
+							}
+						}
 					} else if (request.getStatus().equals("BISQUE_TRIAL")) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
@@ -1420,9 +1485,48 @@ public class DentalLabServiceImpl implements DentalLabService {
 									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
-						pushNotificationServices.notifyPharmacy(
-								dentalLabPickupCollection.getCollectionBoyId().toString(), null, null,
-								RoleEnum.COLLECTION_BOY, COPING_TRIAL_NOTIFICATION);
+
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, BISQUE_TRIAL_NOTIFICATION);
+								}
+							}
+						}
+					}
+					else if (request.getStatus().equals("FINISHED_LAB")) {
+						if (dentalLabPickupCollection.getDoctorId() != null) {
+							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
+									FINISHED_LAB_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+									dentalLabPickupCollection.getId().toString(), null);
+						}
+
+						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+							
+							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+											dentalLabPickupCollection.getDoctorId(),
+											dentalLabPickupCollection.getCollectionBoyId());
+							if (collectionBoyDoctorAssociationCollection != null
+									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
+									pushNotificationServices.notifyPharmacy(
+											collectionBoyCollection.getUserId().toString(), null, null,
+											RoleEnum.DENTAL_COLLECTION_BOY, FINISHED_LAB_NOTIFICATION);
+								}
+							}
+						}
 					}
 				}
 				response = true;
@@ -1444,7 +1548,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
 					.findOne(new ObjectId(requestId));
 			if (dentalLabPickupCollection != null) {
-				dentalLabPickupCollection.setStatus("CANCELLED");
+				//dentalLabPickupCollection.setStatus("CANCELLED");
 				dentalLabPickupCollection.setReasonForCancel(reasonOfCancellation);
 				dentalLabPickupCollection.setCancelledBy(cancelledBy);
 				dentalLabPickupCollection.setDiscarded(true);
