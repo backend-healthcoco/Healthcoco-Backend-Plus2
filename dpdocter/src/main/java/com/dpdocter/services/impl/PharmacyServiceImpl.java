@@ -589,7 +589,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getPostalCode())
 										? pickUpAddress.getPostalCode() : "");
 
-						if (DPDoctorUtils.anyStringEmpty(pickUpFormattedAddress)) {
+						if (!DPDoctorUtils.anyStringEmpty(pickUpFormattedAddress)) {
 							if (pickUpFormattedAddress.charAt(pickUpFormattedAddress.length() - 2) == ',') {
 								pickUpFormattedAddress = pickUpFormattedAddress.substring(0,
 										pickUpFormattedAddress.length() - 2);
