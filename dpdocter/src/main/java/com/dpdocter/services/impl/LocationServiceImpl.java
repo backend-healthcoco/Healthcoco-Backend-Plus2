@@ -2502,7 +2502,19 @@ public class LocationServiceImpl implements LocationServices {
 				if (request.getRequestId() != null) {
 					LabTestPickupCollection labTestPickupCollection = labTestPickupRepository
 							.findOne(new ObjectId(request.getRequestId()));
+					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+							.findOne(labTestPickupCollection.getCollectionBoyId());
+					if (collectionBoyCollection != null) {
+						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
+								null, RoleEnum.COLLECTION_BOY_REFRESH, COLLECTION_BOY_NOTIFICATION);
+					}
 					labTestPickupCollection.setCollectionBoyId(new ObjectId(request.getCollectionBoyId()));
+					CollectionBoyCollection newCollectionBoyCollection = collectionBoyRepository
+							.findOne(labTestPickupCollection.getCollectionBoyId());
+					if (collectionBoyCollection != null) {
+						pushNotificationServices.notifyPharmacy(newCollectionBoyCollection.getUserId().toString(), null,
+								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+					}
 					labTestPickupRepository.save(labTestPickupCollection);
 				}
 				if (request.getIsFuture() == true) {
