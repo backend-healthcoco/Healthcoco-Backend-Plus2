@@ -2479,14 +2479,14 @@ public class LocationServiceImpl implements LocationServices {
 							.findOne(labTestPickupCollection.getCollectionBoyId());
 					if (collectionBoyCollection != null) {
 						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
-								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+								null, RoleEnum.REFRESH, COLLECTION_BOY_NOTIFICATION);
 					}
 					labTestPickupCollection.setCollectionBoyId(new ObjectId(request.getCollectionBoyId()));
 					collectionBoyCollection = collectionBoyRepository
 							.findOne(labTestPickupCollection.getCollectionBoyId());
 					if (collectionBoyCollection != null) {
 						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
-								null, RoleEnum.REFRESH, COLLECTION_BOY_NOTIFICATION);
+								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 					}
 					labTestPickupRepository.save(labTestPickupCollection);
 				}
