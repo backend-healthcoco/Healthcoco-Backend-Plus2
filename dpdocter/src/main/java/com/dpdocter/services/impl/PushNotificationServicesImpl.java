@@ -732,11 +732,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
 										ComponentType.LAB_REQUEST.getType(), null, null, role.getRole());
+							} 
+							if (role.equals(RoleEnum.REFRESH)) {
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message,
+										ComponentType.REFRESH.getType(), null, null, role.getRole());
 							} else {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
 										ComponentType.USER_ORDER.getType(), requestId, responseId, role.getRole());
 							}
+							
 
 						}
 					}
@@ -755,7 +761,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			Sender sender = null;
 
 			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString())
-					|| role.equals(RoleEnum.COLLECTION_BOY.getRole())) {
+					|| role.equals(RoleEnum.COLLECTION_BOY.getRole()) || role.equals(RoleEnum.REFRESH.getRole())) {
 				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
 			} else {
