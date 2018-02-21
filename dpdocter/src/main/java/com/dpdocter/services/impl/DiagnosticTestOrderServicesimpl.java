@@ -13,12 +13,15 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DiagnosticTestPackage;
 import com.dpdocter.beans.DiagnosticTestSamplePickUpSlot;
 import com.dpdocter.beans.OrderDiagnosticTest;
@@ -643,6 +646,96 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			logger.error("Error while getting diagnostic test package" + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting diagnostic test package");
+		}
+		return response;
+	}
+
+	@Override
+	public List<DiagnosticTest> searchDiagnosticTest(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+		List<DiagnosticTest> response = null;
+		try{
+			
+			Criteria criteria = new Criteria();
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria = new Criteria("testName").regex("^" + searchTerm + "*", "i");
+			
+			if(size > 0) {
+				response = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria),
+						
+						new CustomAggregationOperation(new BasicDBObject("$project", 
+								new BasicDBObject("_id", "$_id").append("testName", "$testName")
+								.append("insensitiveTestName", new BasicDBObject("$toLower", "$testName"))
+								.append("explanation", "$explanation")
+								.append("discarded", "$discarded")
+								.append("specimen", "$specimen")
+								.append("diagnosticTestCode", "$diagnosticTestCode")
+								.append("diagnosticTestCost", "$diagnosticTestCost")
+								.append("diagnosticTestComission", "$diagnosticTestComission")
+								.append("diagnosticTestCostForPatient", "$diagnosticTestCostForPatient")
+								.append("createdTime", "$createdTime")
+								.append("updatedTime", "$updatedTime")
+								.append("adminCreatedTime", "$adminCreatedTime")
+								.append("createdBy", "$createdBy"))),
+								
+						new CustomAggregationOperation(new BasicDBObject("$group", 
+								new BasicDBObject("_id", new BasicDBObject("testName", "$testName"))
+								.append("insensitiveTestName", new BasicDBObject("$first", "$testName"))
+								.append("explanation", new BasicDBObject("$first", "$explanation"))
+								.append("discarded", new BasicDBObject("$first", "$discarded"))
+								.append("specimen", new BasicDBObject("$first", "$specimen"))
+								.append("diagnosticTestCode", new BasicDBObject("$first", "$diagnosticTestCode"))
+								.append("diagnosticTestCost", new BasicDBObject("$first", "$diagnosticTestCost"))
+								.append("diagnosticTestComission", new BasicDBObject("$first", "$diagnosticTestComission"))
+								.append("diagnosticTestCostForPatient", new BasicDBObject("$first", "$diagnosticTestCostForPatient"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+						
+						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("insensitiveTestName", 1))),
+						Aggregation.skip(page * size),
+						Aggregation.limit(size)), DiagnosticTestCollection.class, DiagnosticTest.class).getMappedResults();
+			}else {
+				response = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria),
+						
+						new CustomAggregationOperation(new BasicDBObject("$project", 
+								new BasicDBObject("_id", "$_id").append("testName", "$testName")
+								.append("insensitiveTestName", new BasicDBObject("$toLower", "$testName"))
+								.append("explanation", "$explanation")
+								.append("discarded", "$discarded")
+								.append("specimen", "$specimen")
+								.append("diagnosticTestCode", "$diagnosticTestCode")
+								.append("diagnosticTestCost", "$diagnosticTestCost")
+								.append("diagnosticTestComission", "$diagnosticTestComission")
+								.append("diagnosticTestCostForPatient", "$diagnosticTestCostForPatient")
+								.append("createdTime", "$createdTime")
+								.append("updatedTime", "$updatedTime")
+								.append("adminCreatedTime", "$adminCreatedTime")
+								.append("createdBy", "$createdBy"))),
+								
+						new CustomAggregationOperation(new BasicDBObject("$group", 
+								new BasicDBObject("_id", new BasicDBObject("testName", "$testName"))
+								.append("insensitiveTestName", new BasicDBObject("$first", "$testName"))
+								.append("explanation", new BasicDBObject("$first", "$explanation"))
+								.append("discarded", new BasicDBObject("$first", "$discarded"))
+								.append("specimen", new BasicDBObject("$first", "$specimen"))
+								.append("diagnosticTestCode", new BasicDBObject("$first", "$diagnosticTestCode"))
+								.append("diagnosticTestCost", new BasicDBObject("$first", "$diagnosticTestCost"))
+								.append("diagnosticTestComission", new BasicDBObject("$first", "$diagnosticTestComission"))
+								.append("diagnosticTestCostForPatient", new BasicDBObject("$first", "$diagnosticTestCostForPatient"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+						
+						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("insensitiveTestName", 1)))), DiagnosticTestCollection.class, DiagnosticTest.class).getMappedResults();
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error while getting diagnostic tests" + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting diagnostic tests");
 		}
 		return response;
 	}

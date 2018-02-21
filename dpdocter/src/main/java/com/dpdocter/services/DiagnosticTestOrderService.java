@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DiagnosticTestPackage;
 import com.dpdocter.beans.DiagnosticTestSamplePickUpSlot;
 import com.dpdocter.beans.OrderDiagnosticTest;
@@ -24,5 +25,8 @@ public interface DiagnosticTestOrderService {
 	OrderDiagnosticTest getDiagnosticTestOrderById(String orderId, Boolean isLab, Boolean isUser);
 
 	List<DiagnosticTestPackage> getDiagnosticTestPackages(String locationId, String hospitalId, Boolean discarded, int page, int size);
+
+	List<DiagnosticTest> searchDiagnosticTest(int page, int size, String updatedTime, Boolean discarded,
+			String searchTerm);
 
 }

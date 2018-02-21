@@ -17,9 +17,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DiagnosticTestPackage;
 import com.dpdocter.beans.DiagnosticTestSamplePickUpSlot;
 import com.dpdocter.beans.OrderDiagnosticTest;
+import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.LabSearchResponse;
@@ -154,4 +156,17 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_DIAGNOSTIC_TEST)
+	@GET
+	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.DiagnosticTestOrderUrls.SEARCH_DIAGNOSTIC_TEST)
+	public Response<Object> searchDiagnosticTest(@QueryParam("page") int page, @QueryParam("size") int size,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		
+		List<DiagnosticTest> diagnosticTests = diagnosticTestOrderService.searchDiagnosticTest(page, size, updatedTime, discarded, searchTerm);
+		Response<Object> response = new Response<Object>();
+		response.setDataList(diagnosticTests);
+		return response;
+	}
 }

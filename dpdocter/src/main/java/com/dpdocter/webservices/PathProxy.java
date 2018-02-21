@@ -914,6 +914,7 @@ public interface PathProxy {
 		public static final String SEARCH_LAB_TEST = "searchLabTest/{range}";
 
 		public static final String SEARCH_DIAGNOSTIC_TEST = "searchDiagnosticTest/{range}";
+		
 		public static final String SEARCH_ADVICE = "searchAdvice/{range}";
 	}
 
@@ -1551,6 +1552,8 @@ public interface PathProxy {
 		public static final String ADD_EDIT_DIAGNOSTIC_TEST_PACKAGE = "packages/addEdit";
 
 		public static final String GET_DIAGNOSTIC_TEST_PACKAGES = "packages/{locationId}/{hospitalId}";
+
+		public static final String SEARCH_DIAGNOSTIC_TEST = "searchDiagnosticTest";
 	}
 
 	public static final String UPLOAD_DATA_BASE_URL = BASE_URL + "/upload";
