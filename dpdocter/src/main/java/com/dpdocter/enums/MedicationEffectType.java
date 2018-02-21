@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum MedicationEffectType {
-	EXCELLENT("EXCELLENT"), GOOD("GOOD"), OK("OK"), BAD("BAD"), WORSE("WORSE");
+	EXCELLENT("EXCELLENT"), GOOD("GOOD"), OK("OK"), BAD("BAD"), WORSE("WORSE"), BETTER("BETTER"), NOT_WELL("NOT_WELL"), SICK("SICK") , GREAT("GREAT");
 
 	private String type;
 

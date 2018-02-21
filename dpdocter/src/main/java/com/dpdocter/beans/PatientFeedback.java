@@ -29,7 +29,6 @@ public class PatientFeedback extends GenericCollection {
 	private MedicationEffectType medicationEffectType; // how patient feeling
 	// after taking medicine
 	private FeedbackType feedbackType;
-
 	private String appointmentId;
 	private String prescriptionId;
 	private List<QuestionAnswers> questionAnswers;
