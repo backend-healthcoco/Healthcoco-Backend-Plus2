@@ -1,0 +1,75 @@
+package com.dpdocter.request;
+
+import common.util.web.JacksonUtil;
+
+public class DentalLabPickupChangeStatusRequest {
+
+	private String dentalLabPickupId;
+	private String status;
+	private Boolean isCollectedAtDoctor;
+	private Boolean isCompleted;
+	private Boolean isAcceptedAtLab;
+	private Integer feedbackRating;
+	private String feedbackComment;
+
+	public String getDentalLabPickupId() {
+		return dentalLabPickupId;
+	}
+
+	public void setDentalLabPickupId(String dentalLabPickupId) {
+		this.dentalLabPickupId = dentalLabPickupId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Boolean getIsCollectedAtDoctor() {
+		return isCollectedAtDoctor;
+	}
+
+	public void setIsCollectedAtDoctor(Boolean isCollectedAtDoctor) {
+		this.isCollectedAtDoctor = isCollectedAtDoctor;
+	}
+
+	public Boolean getIsCompleted() {
+		return isCompleted;
+	}
+
+	public void setIsCompleted(Boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
+
+	public Boolean getIsAcceptedAtLab() {
+		return isAcceptedAtLab;
+	}
+
+	public void setIsAcceptedAtLab(Boolean isAcceptedAtLab) {
+		this.isAcceptedAtLab = isAcceptedAtLab;
+	}
+
+	public Integer getFeedbackRating() {
+		return feedbackRating;
+	}
+
+	public void setFeedbackRating(Integer feedbackRating) {
+		this.feedbackRating = feedbackRating;
+	}
+
+	public String getFeedbackComment() {
+		return feedbackComment;
+	}
+
+	public void setFeedbackComment(String feedbackComment) {
+		this.feedbackComment = feedbackComment;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(JacksonUtil.obj2Json(new DentalLabPickupChangeStatusRequest()));
+	}
+
+}

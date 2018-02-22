@@ -33,6 +33,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditCustomWorkRequest;
+import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.request.UpdateETARequest;
@@ -43,6 +44,7 @@ import com.dpdocter.services.LocationServices;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -190,11 +192,10 @@ public class DentalLabAPI {
 			@QueryParam("doctorId") String doctorId,@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("status") String status,
 			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted, @QueryParam("isCollectedAtDoctor") Boolean isCollectedAtDoctor,
-			@QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("size") int size, @QueryParam("page") int page , @QueryParam("fromETA") Long fromETA, @QueryParam("toETA") Long toETA,@QueryParam("isTrailsRequired") Boolean isTrailsRequired) {
 		
 		Response<DentalLabPickupResponse> response = new Response<DentalLabPickupResponse>();
-		response.setDataList(dentalLabService.getRequests(dentalLabId, doctorId, from, to, searchTerm, status,
-				isAcceptedAtLab, isCompleted,isCollectedAtDoctor, size, page));
+		response.setDataList(dentalLabService.getRequests(dentalLabId, doctorId, from, to, searchTerm, status, isAcceptedAtLab, isCompleted, isCollectedAtDoctor, size, page, fromETA, toETA, isTrailsRequired));
 		return response;
 	}
 
@@ -296,16 +297,15 @@ public class DentalLabAPI {
 	}
 	
 	@Path(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
-	@GET
+	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS, notes = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
-	public Response<Boolean> getCBListByParentLab(@QueryParam("requestId") String requestId,
-			@QueryParam("status") String status , @QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab , @QueryParam("isCollectedAtDoctor") Boolean isCollectedAtDoctor, @QueryParam("isCompleted") Boolean isCompleted) {
-		if (status == null) {
+	public Response<Boolean> changeStatus(DentalLabPickupChangeStatusRequest request) {
+		if (DPDoctorUtils.anyStringEmpty(request.getDentalLabPickupId() , request.getStatus())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(dentalLabService.changeStatus(requestId, status, isCollectedAtDoctor, isCompleted, isAcceptedAtLab));
+		response.setData(dentalLabService.changeStatus(request));
 		return response;
 	}
 	

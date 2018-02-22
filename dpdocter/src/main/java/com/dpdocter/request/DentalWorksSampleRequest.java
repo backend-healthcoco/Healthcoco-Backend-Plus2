@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.DentalToothNumber;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorkCardValue;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
@@ -10,7 +11,7 @@ import com.dpdocter.response.ImageURLResponse;
 public class DentalWorksSampleRequest {
 
 	private DentalWork dentalWork;
-	private List<String> toothNumbers;
+	private List<DentalToothNumber> dentalToothNumbers;
 	private List<DentalStageRequest> dentalStagesForLab;
 	private Long etaInDate;
 	private Integer etaInHour;
@@ -35,14 +36,6 @@ public class DentalWorksSampleRequest {
 
 	public void setDentalWork(DentalWork dentalWork) {
 		this.dentalWork = dentalWork;
-	}
-
-	public List<String> getToothNumbers() {
-		return toothNumbers;
-	}
-
-	public void setToothNumbers(List<String> toothNumbers) {
-		this.toothNumbers = toothNumbers;
 	}
 
 	public List<DentalStageRequest> getDentalStagesForLab() {
@@ -180,7 +173,13 @@ public class DentalWorksSampleRequest {
 	public void setProcessStatus(String processStatus) {
 		this.processStatus = processStatus;
 	}
-	
-	
+
+	public List<DentalToothNumber> getDentalToothNumbers() {
+		return dentalToothNumbers;
+	}
+
+	public void setDentalToothNumbers(List<DentalToothNumber> dentalToothNumbers) {
+		this.dentalToothNumbers = dentalToothNumbers;
+	}
 
 }

@@ -6,7 +6,7 @@ import com.dpdocter.response.ImageURLResponse;
 
 public class DentalWorksSample {
 	private DentalWork dentalWork;
-	private List<String> toothNumbers;
+	private List<DentalToothNumber> dentalToothNumbers;
 	private List<DentalStage> dentalStagesForLab;
 	private Long etaInDate;
 	private Integer etaInHour;
@@ -31,14 +31,6 @@ public class DentalWorksSample {
 
 	public void setDentalWork(DentalWork dentalWork) {
 		this.dentalWork = dentalWork;
-	}
-
-	public List<String> getToothNumbers() {
-		return toothNumbers;
-	}
-
-	public void setToothNumbers(List<String> toothNumbers) {
-		this.toothNumbers = toothNumbers;
 	}
 
 	public Long getEtaInDate() {
@@ -179,13 +171,15 @@ public class DentalWorksSample {
 
 	@Override
 	public String toString() {
-		return "DentalWorksSample [dentalWork=" + dentalWork + ", toothNumbers=" + toothNumbers
+		return "DentalWorksSample [dentalWork=" + dentalWork + ", dentalToothNumbers=" + dentalToothNumbers
 				+ ", dentalStagesForLab=" + dentalStagesForLab + ", etaInDate=" + etaInDate + ", etaInHour=" + etaInHour
 				+ ", isCompleted=" + isCompleted + ", isUrgent=" + isUrgent + ", instructions=" + instructions
 				+ ", occlusalStaining=" + occlusalStaining + ", ponticDesign=" + ponticDesign
 				+ ", collarAndMetalDesign=" + collarAndMetalDesign + ", uniqueWorkId=" + uniqueWorkId
-				+ ", dentalWorkCardValues=" + dentalWorkCardValues + ", shade=" + shade + ", material=" + material
-				+ ", dentalStagesForDoctor=" + dentalStagesForDoctor + "]";
+				+ ", dentalImages=" + dentalImages + ", dentalWorkCardValues=" + dentalWorkCardValues + ", shade="
+				+ shade + ", material=" + material + ", dentalStagesForDoctor=" + dentalStagesForDoctor
+				+ ", rateCardDentalWorkAssociation=" + rateCardDentalWorkAssociation + ", processStatus="
+				+ processStatus + "]";
 	}
 
 }

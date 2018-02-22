@@ -13,6 +13,7 @@ import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.User;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.request.AddEditCustomWorkRequest;
+import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.request.UpdateETARequest;
@@ -75,12 +76,12 @@ public interface DentalLabService {
 
 	//Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtLab);
 
-	List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
+	/*List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
 			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor,
-			int size, int page);
+			int size, int page);*/
 
-	Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtDoctor, Boolean isCompleted,
-			Boolean isAcceptedAtLab);
+	/*Boolean changeStatus(String dentalLabPickupId, String status, Boolean isCollectedAtDoctor, Boolean isCompleted,
+			Boolean isAcceptedAtLab);*/
 
 	ImageURLResponse addDentalImage(FormDataBodyPart file);
 
@@ -100,6 +101,12 @@ public interface DentalLabService {
 	Boolean discardRequest(String requestId, Boolean discarded);
 
 	DentalLabPickupResponse getRequestById(String id);
+
+	List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
+			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor,
+			int size, int page, Long fromETA, Long toETA, Boolean isTrailsRequired);
+
+	Boolean changeStatus(DentalLabPickupChangeStatusRequest request);
 
 
 	/*
