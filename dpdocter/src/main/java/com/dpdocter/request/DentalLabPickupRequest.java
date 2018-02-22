@@ -30,6 +30,8 @@ public class DentalLabPickupRequest {
 	private String serialNumber;
 	private String reasonForCancel;
 	private String cancelledBy;
+	private Integer feedBackRating;
+	private String feedBackComment;
 
 	public String getId() {
 		return id;
@@ -221,6 +223,22 @@ public class DentalLabPickupRequest {
 
 	public void setCancelledBy(String cancelledBy) {
 		this.cancelledBy = cancelledBy;
+	}
+
+	public Integer getFeedBackRating() {
+		return feedBackRating;
+	}
+
+	public void setFeedBackRating(Integer feedBackRating) {
+		this.feedBackRating = feedBackRating;
+	}
+
+	public String getFeedBackComment() {
+		return feedBackComment;
+	}
+
+	public void setFeedBackComment(String feedBackComment) {
+		this.feedBackComment = feedBackComment;
 	}
 
 	@Override

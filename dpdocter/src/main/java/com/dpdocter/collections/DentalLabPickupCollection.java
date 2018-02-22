@@ -60,6 +60,10 @@ public class DentalLabPickupCollection extends GenericCollection {
 	private String reasonForCancel;
 	@Field
 	private String cancelledBy;
+	@Field
+	private Integer feedBackRating;
+	@Field
+	private String feedBackComment;
 
 	public ObjectId getId() {
 		return id;
@@ -253,15 +257,34 @@ public class DentalLabPickupCollection extends GenericCollection {
 		this.cancelledBy = cancelledBy;
 	}
 
+	public Integer getFeedBackRating() {
+		return feedBackRating;
+	}
+
+	public void setFeedBackRating(Integer feedBackRating) {
+		this.feedBackRating = feedBackRating;
+	}
+
+	public String getFeedBackComment() {
+		return feedBackComment;
+	}
+
+	public void setFeedBackComment(String feedBackComment) {
+		this.feedBackComment = feedBackComment;
+	}
+
 	@Override
 	public String toString() {
-		return "DentalLabPickupCollection [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber
-				+ ", gender=" + gender + ", age=" + age + ", dentalWorksSamples=" + dentalWorksSamples + ", crn=" + crn
-				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", status=" + status + ", doctorId="
-				+ doctorId + ", dentalLabId=" + dentalLabId + ", discarded=" + discarded + ", numberOfSamplesRequested="
-				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
-				+ requestId + ", isAcceptedAtLab=" + isAcceptedAtLab + ", isCompleted=" + isCompleted
-				+ ", collectionBoyId=" + collectionBoyId + ", serialNumber=" + serialNumber + "]";
+		return "DentalLabPickupCollection [id=" + id + ", patientId=" + patientId + ", patientName=" + patientName
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", age=" + age + ", dentalWorksSamples="
+				+ dentalWorksSamples + ", crn=" + crn + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime
+				+ ", status=" + status + ", doctorId=" + doctorId + ", dentalLabId=" + dentalLabId + ", discarded="
+				+ discarded + ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
+				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isAcceptedAtLab=" + isAcceptedAtLab
+				+ ", isCollectedAtDoctor=" + isCollectedAtDoctor + ", isCompleted=" + isCompleted + ", collectionBoyId="
+				+ collectionBoyId + ", serialNumber=" + serialNumber + ", reasonForCancel=" + reasonForCancel
+				+ ", cancelledBy=" + cancelledBy + ", feedBackRating=" + feedBackRating + ", feedBackComment="
+				+ feedBackComment + "]";
 	}
 
 }

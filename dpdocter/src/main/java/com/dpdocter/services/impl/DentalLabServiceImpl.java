@@ -76,6 +76,7 @@ import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
 import com.dpdocter.repository.RateCardDoctorAssociationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
+import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.DentalStageRequest;
 import com.dpdocter.request.DentalWorksSampleRequest;
@@ -899,7 +900,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Override
 	@Transactional
 	public List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from,
-			Long to, String searchTerm, String status, Boolean isAcceptedAtLab , Boolean isCompleted, Boolean isCollectedAtDoctor, int size, int page) {
+			Long to, String searchTerm, String status, Boolean isAcceptedAtLab , Boolean isCompleted, Boolean isCollectedAtDoctor, int size, int page ,Long fromETA,
+			Long toETA , Boolean isTrailsRequired) {
 		
 		
 		
@@ -937,6 +939,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else {
 				criteria.and("updatedTime").gte(new Date(from));
+			}
+
+			
+			if (fromETA != null && toETA != null) {
+				criteria.and("dentalWorksSamples.etaInDate").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			}
 
 			/*if (from != 0 && {
@@ -1107,17 +1114,19 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Override
 	@Transactional
-	public Boolean changeStatus(String dentalLabPickupId, String status ,Boolean isCollectedAtDoctor ,Boolean isCompleted , Boolean isAcceptedAtLab) {
+
+	public Boolean changeStatus(DentalLabPickupChangeStatusRequest request ) {
 		DentalLabPickupCollection dentalLabPickupCollection = null;
 		Boolean response = null;
 
 		try {
-			dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(dentalLabPickupId));
+			dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getDentalLabPickupId()));
 			if (dentalLabPickupCollection != null) {
-				if (status != null) {
-					dentalLabPickupCollection.setStatus(status);
 
-					if (status.equals("ACCEPTED")) {
+				if (request.getStatus() != null) {
+		dentalLabPickupCollection.setStatus(request.getStatus());
+
+					if (request.getStatus().equals("ACCEPTED")) {
 						if (dentalLabPickupCollection.getDoctorId() != null) {
 
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
@@ -1141,7 +1150,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 								}
 							}
 						}
-					} else if (status.equals("OUT_FOR_COLLECTION")) {
+					} else if (request.getStatus().equals("OUT_FOR_COLLECTION")) {
 
 						if (dentalLabPickupCollection.getDoctorId() != null) {
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
@@ -1149,7 +1158,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 									dentalLabPickupCollection.getId().toString(), null);
 						}
 
-					} else if (status.equals("COPING_TRIAL")) {
+					} else if (request.getStatus().equals("COPING_TRIAL")) {
 						if (dentalLabPickupCollection.getDoctorId() != null) {
 
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
@@ -1172,7 +1181,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 								}
 							}
 						}
-					} else if (status.equals("BISQUE_TRIAL")) {
+					} else if (request.getStatus().equals("BISQUE_TRIAL")) {
 						if (dentalLabPickupCollection.getDoctorId() != null) {
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
@@ -1194,7 +1203,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 								}
 							}
 						}
-					} else if (status.equals("FINISHED_LAB")) {
+					} else if (request.getStatus().equals("FINISHED_LAB")) {
 						if (dentalLabPickupCollection.getDoctorId() != null) {
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									FINISHED_LAB_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
@@ -1217,7 +1226,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 								}
 							}
 						}
-					} else if (status.equals("WORK_RECEIVED")) {
+					} else if (request.getStatus().equals("WORK_RECEIVED")) {
 						if (dentalLabPickupCollection.getDoctorId() != null) {
 							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
 									"work received", ComponentType.REFRESH.getType(),
@@ -1226,20 +1235,26 @@ public class DentalLabServiceImpl implements DentalLabService {
 					}
 
 				}
-				if(isCollectedAtDoctor != null)
-				{
-					dentalLabPickupCollection.setIsCollectedAtDoctor(isCollectedAtDoctor);
+
+				if (request.getIsCollectedAtDoctor() != null) {
+					dentalLabPickupCollection.setIsCollectedAtDoctor(request.getIsCollectedAtDoctor());
 				}
-				if(isCompleted != null)
-				{
-					dentalLabPickupCollection.setIsCompleted(isCompleted);
+				if (request.getIsCompleted() != null) {
+					dentalLabPickupCollection.setIsCompleted(request.getIsCompleted());
 				}
-				if(isAcceptedAtLab != null)
-				{
-					dentalLabPickupCollection.setIsAcceptedAtLab(isAcceptedAtLab);
-					
+				if (request.getIsAcceptedAtLab() != null) {
+					dentalLabPickupCollection.setIsAcceptedAtLab(request.getIsAcceptedAtLab());
 				}
-				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
+				if(request.getFeedbackRating() != null)
+				{
+					dentalLabPickupCollection.setFeedBackRating(request.getFeedbackRating());
+				}
+				if(request.getFeedbackComment() != null)
+				{
+					dentalLabPickupCollection.setFeedBackComment(request.getFeedbackComment());
+				}
+				dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
+				System.out.println(dentalLabPickupCollection);
 				response = true;
 			} else {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");

@@ -1,16 +1,9 @@
 package com.dpdocter.beans;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.request.DentalLabPickupRequest;
-
-import common.util.web.JacksonUtil;
 
 public class DentalLabPickup extends GenericCollection {
 
@@ -40,7 +33,9 @@ public class DentalLabPickup extends GenericCollection {
 	private Location dentalLab;
 	private String reasonForCancel;
 	private String cancelledBy;
-	
+	private Integer feedBackRating;
+	private String feedBackComment;
+
 	public String getId() {
 		return id;
 	}
@@ -247,6 +242,22 @@ public class DentalLabPickup extends GenericCollection {
 
 	public void setCancelledBy(String cancelledBy) {
 		this.cancelledBy = cancelledBy;
+	}
+
+	public Integer getFeedBackRating() {
+		return feedBackRating;
+	}
+
+	public void setFeedBackRating(Integer feedBackRating) {
+		this.feedBackRating = feedBackRating;
+	}
+
+	public String getFeedBackComment() {
+		return feedBackComment;
+	}
+
+	public void setFeedBackComment(String feedBackComment) {
+		this.feedBackComment = feedBackComment;
 	}
 
 	@Override
