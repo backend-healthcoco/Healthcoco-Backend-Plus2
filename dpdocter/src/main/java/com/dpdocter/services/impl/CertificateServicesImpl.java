@@ -323,8 +323,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 							new CustomAggregationOperation(new BasicDBObject("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
-													Arrays.asList("$certificateTemplate.type", type))
-															.append("then", "$$KEEP").append("else", "$$PRUNE"))))), project, group,
+													Arrays.asList("$certificateTemplate.type", type)))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))), project, group,
 							Aggregation.skip((page) * size),
 							Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime")
 							), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
@@ -335,8 +335,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 							new CustomAggregationOperation(new BasicDBObject("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
-													Arrays.asList("$certificateTemplate.type", type))
-															.append("then", "$$KEEP").append("else", "$$PRUNE"))))),
+													Arrays.asList("$certificateTemplate.type", type)))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 							project, group, Aggregation.sort(Sort.Direction.DESC, "createdTime")), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
 				}
 			}else {
