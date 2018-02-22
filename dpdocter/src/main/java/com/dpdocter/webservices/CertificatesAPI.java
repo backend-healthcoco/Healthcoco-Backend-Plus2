@@ -128,11 +128,11 @@ public class CertificatesAPI {
 			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("true") @QueryParam("discarded") boolean discarded,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @QueryParam("type") String type) {
 
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		List<ConsentForm> consentForms = certificatesServices.getPatientCertificates(page, size, patientId, doctorId, locationId,
-				hospitalId, discarded, updatedTime);
+				hospitalId, discarded, updatedTime, type);
 		response.setDataList(consentForms);
 		return response;
 	}

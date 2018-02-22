@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -265,7 +266,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 
 	@Override
 	public List<ConsentForm> getPatientCertificates(int page, int size, String patientId, String doctorId,
-			String locationId, String hospitalId, boolean discarded, String updatedTime) {
+			String locationId, String hospitalId, boolean discarded, String updatedTime, String type) {
 		List<ConsentForm> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -283,38 +284,78 @@ public class CertificateServicesImpl implements CertificatesServices {
 			
 			if (!discarded)criteria.and("discarded").is(discarded);
 			
-			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
-					Aggregation.unwind("certificateTemplate"),
-					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$_id")
-							.append("doctorId", "$doctorId")
-							.append("locationId", "$locationId")
-							.append("hospitalId", "$hospitalId")
-							.append("patientId", "$patientId")
-							.append("dateOfSign", "$dateOfSign")
-							.append("signImageURL", "$signImageURL")
-							.append("templateId", "$templateId")
-							.append("inputElements", "$inputElements")
-							.append("templateHtmlText", "$certificateTemplate.htmlText")
-							.append("type", "$type")
-							.append("createdTime", "$createdTime")
-							.append("updatedTime", "$updatedTime")
-							.append("createdBy", "$createdBy"))),
-					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$id")
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("dateOfSign", new BasicDBObject("$first", "$dateOfSign"))
-							.append("signImageURL", new BasicDBObject("$first", "$signImageURL"))
-							.append("templateId", new BasicDBObject("$first", "$templateId"))
-							.append("inputElements", new BasicDBObject("$first", "$inputElements"))
-							.append("templateHtmlText", new BasicDBObject("$first", "$certificateTemplate.htmlText"))
-							.append("type", new BasicDBObject("$first", "$type"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))))
-					), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
+			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$_id")
+					.append("doctorId", "$doctorId")
+					.append("locationId", "$locationId")
+					.append("hospitalId", "$hospitalId")
+					.append("patientId", "$patientId")
+					.append("dateOfSign", "$dateOfSign")
+					.append("signImageURL", "$signImageURL")
+					.append("templateId", "$templateId")
+					.append("inputElements", "$inputElements")
+					.append("templateHtmlText", "$certificateTemplate.htmlText")
+					.append("type", "$type")
+					.append("createdTime", "$createdTime")
+					.append("updatedTime", "$updatedTime")
+					.append("createdBy", "$createdBy")));
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$id")
+					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+					.append("locationId", new BasicDBObject("$first", "$locationId"))
+					.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+					.append("patientId", new BasicDBObject("$first", "$patientId"))
+					.append("dateOfSign", new BasicDBObject("$first", "$dateOfSign"))
+					.append("signImageURL", new BasicDBObject("$first", "$signImageURL"))
+					.append("templateId", new BasicDBObject("$first", "$templateId"))
+					.append("inputElements", new BasicDBObject("$first", "$inputElements"))
+					.append("templateHtmlText", new BasicDBObject("$first", "$certificateTemplate.htmlText"))
+					.append("type", new BasicDBObject("$first", "$type"))
+					.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+					.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+					.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+			
+			
+			if(!DPDoctorUtils.anyStringEmpty(type)) {
+				if(size > 0) {
+					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
+							Aggregation.unwind("certificateTemplate"),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond", new BasicDBObject("if", 
+											new BasicDBObject("$eq", 
+													Arrays.asList("$certificateTemplate.type", type))
+															.append("then", "$$KEEP").append("else", "$$PRUNE"))))), project, group,
+							Aggregation.skip((page) * size),
+							Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime")
+							), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
+				}else {
+					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
+							Aggregation.unwind("certificateTemplate"),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond", new BasicDBObject("if", 
+											new BasicDBObject("$eq", 
+													Arrays.asList("$certificateTemplate.type", type))
+															.append("then", "$$KEEP").append("else", "$$PRUNE"))))),
+							project, group, Aggregation.sort(Sort.Direction.DESC, "createdTime")), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
+				}
+			}else {
+				if(size > 0) {
+					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
+							Aggregation.unwind("certificateTemplate"),
+							project, group,
+							Aggregation.skip((page) * size),
+							Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime")
+							), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
+				}else {
+					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
+							Aggregation.unwind("certificateTemplate"),
+							project, group, Aggregation.sort(Sort.Direction.DESC, "createdTime")), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
+				}
+			}
+			
 			
 			if(response != null) {
 				for(ConsentForm consentForm : response)consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));

@@ -20,7 +20,7 @@ public interface CertificatesServices {
 	ConsentForm getPatientCertificateById(String certificateId);
 
 	List<ConsentForm> getPatientCertificates(int page, int size, String patientId, String doctorId, String locationId,
-			String hospitalId, boolean discarded, String updatedTime);
+			String hospitalId, boolean discarded, String updatedTime, String type);
 
 	ConsentForm deletePatientCertificate(String certificateId, Boolean discarded);
 
