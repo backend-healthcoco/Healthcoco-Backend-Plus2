@@ -270,7 +270,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 		List<ConsentForm> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("type").is("CERTIFICATE");
 					
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -284,7 +284,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 			
 			if (!discarded)criteria.and("discarded").is(discarded);
 			
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$_id")
+			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
 					.append("doctorId", "$doctorId")
 					.append("locationId", "$locationId")
 					.append("hospitalId", "$hospitalId")
@@ -294,12 +294,12 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("templateId", "$templateId")
 					.append("inputElements", "$inputElements")
 					.append("templateHtmlText", "$certificateTemplate.htmlText")
-					.append("type", "$type")
+					.append("type", "$certificateTemplate.type")
 					.append("createdTime", "$createdTime")
 					.append("updatedTime", "$updatedTime")
 					.append("createdBy", "$createdBy")));
 			
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$id")
+			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 					.append("locationId", new BasicDBObject("$first", "$locationId"))
 					.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -308,7 +308,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("signImageURL", new BasicDBObject("$first", "$signImageURL"))
 					.append("templateId", new BasicDBObject("$first", "$templateId"))
 					.append("inputElements", new BasicDBObject("$first", "$inputElements"))
-					.append("templateHtmlText", new BasicDBObject("$first", "$certificateTemplate.htmlText"))
+					.append("templateHtmlText", new BasicDBObject("$first", "$templateHtmlText"))
 					.append("type", new BasicDBObject("$first", "$type"))
 					.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 					.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
