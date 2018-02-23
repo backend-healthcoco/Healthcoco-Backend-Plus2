@@ -11,7 +11,7 @@ public class PrescriptionItem {
 	private Duration duration;
 
 	private String dosage;
-	
+
 	private DrugType drugType;
 
 	private String drugName;
@@ -24,8 +24,18 @@ public class PrescriptionItem {
 
 	private String instructions;
 
+	private Integer drugQuantity;
+
 	private Long inventoryQuantity;
-	 
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
 	public PrescriptionItem() {
 		super();
 	}
@@ -46,7 +56,7 @@ public class PrescriptionItem {
 
 	@Transient
 	private Long arrayIndex1;
-	
+
 	public DrugType getDrugType() {
 		return drugType;
 	}

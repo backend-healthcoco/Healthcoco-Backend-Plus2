@@ -42,6 +42,17 @@ public class DrugAddEditRequest {
 
 	private List<GenericCode> genericNames;
 
+	private Integer drugQuantity;
+	
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
 	public String getId() {
 		return id;
 	}

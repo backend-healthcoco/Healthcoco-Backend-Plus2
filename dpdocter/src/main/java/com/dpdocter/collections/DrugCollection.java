@@ -66,7 +66,7 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private String prizePerPack;
-	
+
 	@Field
 	private String MRP;
 
@@ -102,10 +102,21 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private Long inventoryQuantity;
-	
+
 	@Field
 	private Long totalStock;
-	
+
+	@Field
+	private Integer drugQuantity;
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

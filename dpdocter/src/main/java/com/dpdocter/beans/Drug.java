@@ -50,6 +50,8 @@ public class Drug extends GenericCollection {
 	private Long totalStock;
 
 	private Long retailPrice;
+	
+	private Integer drugQuantity;
 
 	public String getId() {
 		return id;
@@ -226,5 +228,13 @@ public class Drug extends GenericCollection {
 				+ locationId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime
 				+ ", direction=" + direction + ", categories=" + categories + ", rankingCount=" + rankingCount
 				+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + ", count=" + count + "]";
+	}
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
 	}
 }

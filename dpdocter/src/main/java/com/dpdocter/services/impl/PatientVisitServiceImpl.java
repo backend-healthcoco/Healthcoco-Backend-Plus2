@@ -566,7 +566,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 
 			if (request.getRecord() != null) {
-				
+
 				addRecords(request, response, patientVisitCollection, visitId, appointment,
 						patientVisitCollection.getCreatedBy());
 			}
@@ -1915,7 +1915,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice());
 
 					int no = 0;
-					Boolean showIntructions = false, showDirection = false;
+					Boolean showIntructions = false, showDirection = false, showDrugQty = false;
 					if (prescriptionCollection.getItems() != null)
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
@@ -2023,11 +2023,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
 														? prescriptionItem.getInstructions() : "--",
 												genericName);
+
+									}
+									if (prescriptionItem.getDrugQuantity() == null) {
+										prescriptionJasperDetails.setDrugQuantity("0");
+									} else {
+										showDrugQty = true;
+										prescriptionJasperDetails
+												.setDrugQuantity(prescriptionItem.getDrugQuantity().toString());
 									}
 									prescriptionItems.add(prescriptionJasperDetails);
 								}
 							}
 						}
+					parameters.put("showDrugQty", showDrugQty);
 					parameters.put("showIntructions", showIntructions);
 					parameters.put("showDirection", showDirection);
 					if (parameters.get("followUpAppointment") == null

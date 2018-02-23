@@ -1387,14 +1387,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 				? (Boolean) parameters.get("showDirection") : false;
 		String instructionAlign = parameters.get("instructionAlign") != null
 				? (String) parameters.get("instructionAlign") : "VERTICAL";
-		int drugWidth = 0, dosageWidth = 0, directionWidth = 0, durationWidth = 0, instructionWidth = 0;
+		int drugWidth = 0, dosageWidth = 0, directionWidth = 0, durationWidth = 0, instructionWidth = 0,
+				quantityWidth = 0;
 		if (showDirection != null && showIntructions != null) {
 			if (showDirection && showIntructions) {
-				drugWidth = (30 * (columnWidth - 31)) / 100;
+				drugWidth = (27 * (columnWidth - 31)) / 100;
 				dosageWidth = (16 * (columnWidth - 31) / 100);
 				directionWidth = (23 * (columnWidth - 31) / 100);
 				durationWidth = (13 * (columnWidth - 31) / 100);
 				instructionWidth = (18 * (columnWidth - 31) / 100);
+
 			} else if (showDirection) {
 				drugWidth = (30 * (columnWidth - 31)) / 100;
 				dosageWidth = (21 * (columnWidth - 31) / 100);
@@ -1429,15 +1431,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(0);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(35);
+		jrDesignTextField.setWidth(30);
 		jrDesignTextField.setBold(true);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(titleFontSize));
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{DrugName}"));
-		jrDesignTextField.setX(35);
+		jrDesignTextField.setX(30);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(drugWidth);
@@ -1448,7 +1451,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Frequency}"));
-		jrDesignTextField.setX(35 + drugWidth);
+		jrDesignTextField.setX(30 + drugWidth);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(dosageWidth);
@@ -1460,7 +1463,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (showDirection) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Direction}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth);
+			jrDesignTextField.setX(30 + drugWidth + dosageWidth);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
 			jrDesignTextField.setWidth(directionWidth);
@@ -1472,7 +1475,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (showDirection && showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Duration}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
+			jrDesignTextField.setX(30 + drugWidth + dosageWidth + directionWidth + 15);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
 			jrDesignTextField.setWidth(durationWidth - 15 + 5);
@@ -1486,7 +1489,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 					new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
 
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Instruction}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
+			jrDesignTextField.setX(30 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
 			jrDesignTextField.setWidth(instructionWidth);
@@ -1498,7 +1501,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		} else {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Duration}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
+			jrDesignTextField.setX(30 + drugWidth + dosageWidth + directionWidth + 15);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
 			jrDesignTextField.setWidth(durationWidth - 15);
@@ -1512,7 +1515,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 						new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
 
 				jrDesignTextField.setExpression(new JRDesignExpression("$P{Instruction}"));
-				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth);
+				jrDesignTextField.setX(30 + drugWidth + dosageWidth + directionWidth + durationWidth);
 				jrDesignTextField.setY(4);
 				jrDesignTextField.setHeight(15);
 				jrDesignTextField.setWidth(instructionWidth);
@@ -1521,6 +1524,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				jrDesignTextField.setFontSize(new Float(titleFontSize));
 				band.addElement(jrDesignTextField);
 			}
+
 		}
 
 		// if(showIntructions){
@@ -1555,13 +1559,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(0);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(35);
+		jrDesignTextField.setWidth(30);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{drug}"));
-		jrDesignTextField.setX(35);
+		jrDesignTextField.setX(30);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(drugWidth - 3);
@@ -1571,7 +1575,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{dosage}"));
-		jrDesignTextField.setX(38 + drugWidth);
+		jrDesignTextField.setX(30 + drugWidth);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(dosageWidth - 3);
@@ -1583,7 +1587,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		{
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{direction}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth);
+			jrDesignTextField.setX(30 + drugWidth + dosageWidth);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(directionWidth);
@@ -1594,7 +1598,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (showDirection && showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{duration}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
+			jrDesignTextField.setX(30 + drugWidth + dosageWidth + directionWidth + 15);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(durationWidth - 15 + 5);
@@ -1604,7 +1608,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 				jrDesignTextField = new JRDesignTextField();
 				jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
-				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
+				jrDesignTextField.setX(30 + drugWidth + dosageWidth + directionWidth + durationWidth + 10);
 				jrDesignTextField.setY(0);
 				jrDesignTextField.setHeight(18);
 				jrDesignTextField.setWidth(instructionWidth);
@@ -1614,7 +1618,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		} else {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{duration}"));
-			jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + 15);
+			jrDesignTextField.setX(30 + drugWidth + dosageWidth + directionWidth + 15);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(durationWidth - 15);
@@ -1624,7 +1628,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (showIntructions && instructionAlign.equalsIgnoreCase("VERTICAL")) {
 				jrDesignTextField = new JRDesignTextField();
 				jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
-				jrDesignTextField.setX(35 + drugWidth + dosageWidth + directionWidth + durationWidth);
+				jrDesignTextField.setX(30 + drugWidth + dosageWidth + directionWidth + durationWidth);
 				jrDesignTextField.setY(0);
 				jrDesignTextField.setHeight(18);
 				jrDesignTextField.setWidth(instructionWidth);
@@ -1644,7 +1648,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setPrintWhenExpression(
 					new JRDesignExpression("!$F{instruction}.equals(null) && !$F{instruction}.isEmpty() "));
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{instruction}"));
-			jrDesignTextField.setX(35);
+			jrDesignTextField.setX(30);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(15);
 			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);

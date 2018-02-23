@@ -29,6 +29,8 @@ public class PrescriptionItemDetail {
 	private Long inventoryQuantity;
 
 	private Long totalStock;
+	
+	private Integer drugQuantity;
 
 	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
@@ -132,5 +134,13 @@ public class PrescriptionItemDetail {
 	public String toString() {
 		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage
 				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
+	}
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
 	}
 }
