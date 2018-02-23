@@ -18,11 +18,14 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.UserAddress;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
+import com.dpdocter.response.UserAddressResponse;
 import com.dpdocter.services.LoginService;
+import com.dpdocter.services.RegistrationService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -40,6 +43,9 @@ public class LoginApi {
 
     @Autowired
     private LoginService loginService;
+    
+    @Autowired
+    private RegistrationService registrationService;
 
     @Value(value = "${image.path}")
     private String imagePath;
@@ -77,7 +83,7 @@ public class LoginApi {
     @Path(value = PathProxy.LoginUrls.LOGIN_PATIENT)
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
-    public Response<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
+    public Response<Object> loginPatient(LoginPatientRequest request, @DefaultValue("true")  @QueryParam("discardedAddress") Boolean discardedAddress) {
 	if (request == null|| DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -89,8 +95,16 @@ public class LoginApi {
 			user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 		}
 	}
-	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+	Response<Object> response = new Response<Object>();
 	response.setDataList(users);
+	if(users != null && !users.isEmpty()) {
+		List<UserAddress> userAddress = registrationService.getUserAddress(null, request.getMobileNumber(), discardedAddress);
+		if(userAddress != null && !userAddress.isEmpty()) {
+			UserAddressResponse userAddressResponse = new UserAddressResponse();
+			userAddressResponse.setUserAddress(userAddress);
+			response.setData(userAddressResponse);
+		}
+	}
 	return response;
     }
 

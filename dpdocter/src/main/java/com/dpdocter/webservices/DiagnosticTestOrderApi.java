@@ -21,7 +21,6 @@ import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DiagnosticTestPackage;
 import com.dpdocter.beans.DiagnosticTestSamplePickUpSlot;
 import com.dpdocter.beans.OrderDiagnosticTest;
-import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.LabSearchResponse;

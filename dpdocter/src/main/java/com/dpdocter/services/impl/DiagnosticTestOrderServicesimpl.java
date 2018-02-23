@@ -140,6 +140,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 					Aggregation.match(new Criteria("testName").in(testNames).and("locationId").ne(null)),
 					new CustomAggregationOperation(new BasicDBObject("$project", 
 							new BasicDBObject("locationId", "$locationId")
+							.append("hospitalId", "$hospitalId")
 							.append("test.testName", "$testName")
 							.append("test._id", "$_id")
 							.append("test.locationId", "$locationId")
@@ -151,13 +152,15 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 					new CustomAggregationOperation(new BasicDBObject("$group", 
 							new BasicDBObject("_id", "$locationId")
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
+							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("diagnosticTests", new BasicDBObject("$push", "$test"))
 							.append("totalCost", new BasicDBObject("$sum", "$totalCost"))
 							.append("totalCostForPatient", new BasicDBObject("$sum", "$totalCostForPatient")))),
 					
 					new CustomAggregationOperation(new BasicDBObject("$project", 
-							new BasicDBObject("id", "$locationId")
+							new BasicDBObject("_id", "$locationId")
 							.append("locationId", "$locationId")
+							.append("hospitalId", "$hospitalId")
 							.append("diagnosticTests", "$diagnosticTests")
 							.append("isLocationRequired", new BasicDBObject("$cond", new BasicDBObject(
 							          "if", new BasicDBObject("$gte", Arrays.asList(new BasicDBObject("$size", "$diagnosticTests"), testNames.size())))
@@ -165,16 +168,24 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							        .append("else", false)))
 							.append("totalCost", "$totalCost")
 							.append("totalCostForPatient", "$totalCostForPatient")
-							.append("totalSavingInPercentage", new BasicDBObject("$multiply", 
-									Arrays.asList(new BasicDBObject("$divide", Arrays.asList(new BasicDBObject("$subtract", Arrays.asList("$totalCost","$totalCostForPatient")),"$totalCost")), 100))))),
+							.append("totalSavingInPercentage", new BasicDBObject("$cond", new BasicDBObject(
+							          "if", new BasicDBObject("$gt", Arrays.asList("$totalCost", 0)))
+							        .append("then", new BasicDBObject("$multiply", 
+											Arrays.asList(new BasicDBObject("$divide", Arrays.asList(new BasicDBObject("$subtract", Arrays.asList("$totalCost","$totalCostForPatient")),"$totalCost")), 100)))
+							        .append("else", 0)))
+							        
+							)
+							
+							),
 					
 					Aggregation.match(new Criteria("isLocationRequired").is(true)),
 					
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
 					
 					new CustomAggregationOperation(new BasicDBObject("$project", 
-							new BasicDBObject("id", "$locationId")
+							new BasicDBObject("_id", "$locationId")
 							.append("locationId", "$locationId")
+							.append("hospitalId", "$hospitalId")
 							.append("locationName", "$location.locationName")
 							.append("isNABLAccredited", "$location.isNABLAccredited")
 							.append("localeRankingCount", "$location.localeRankingCount")
@@ -185,6 +196,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 					
 					new CustomAggregationOperation(new BasicDBObject("$group", 
 							new BasicDBObject("_id", "$locationId")
+							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("locationName", new BasicDBObject("$first", "$locationName"))
 							.append("isNABLAccredited", new BasicDBObject("$first", "$isNABLAccredited"))
 							.append("localeRankingCount", new BasicDBObject("$first", "$localeRankingCount"))
@@ -663,7 +675,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 						Aggregation.match(criteria),
 						
 						new CustomAggregationOperation(new BasicDBObject("$project", 
-								new BasicDBObject("_id", "$_id").append("testName", "$testName")
+								new BasicDBObject("testId", "$_id").append("testName", "$testName")
 								.append("insensitiveTestName", new BasicDBObject("$toLower", "$testName"))
 								.append("explanation", "$explanation")
 								.append("discarded", "$discarded")
@@ -679,6 +691,8 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 								
 						new CustomAggregationOperation(new BasicDBObject("$group", 
 								new BasicDBObject("_id", new BasicDBObject("testName", "$testName"))
+								.append("testId", new BasicDBObject("$first", "$testId"))
+								.append("testName", new BasicDBObject("$first", "$testName"))
 								.append("insensitiveTestName", new BasicDBObject("$first", "$testName"))
 								.append("explanation", new BasicDBObject("$first", "$explanation"))
 								.append("discarded", new BasicDBObject("$first", "$discarded"))
@@ -691,6 +705,22 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+						
+						new CustomAggregationOperation(new BasicDBObject("$project", 
+								new BasicDBObject("_id", "$testId")
+								.append("testName", "$testName")
+								.append("insensitiveTestName", "$insensitiveTestName")
+								.append("explanation", "$explanation")
+								.append("discarded", "$discarded")
+								.append("specimen", "$specimen")
+								.append("diagnosticTestCode", "$diagnosticTestCode")
+								.append("diagnosticTestCost", "$diagnosticTestCost")
+								.append("diagnosticTestComission", "$diagnosticTestComission")
+								.append("diagnosticTestCostForPatient", "$diagnosticTestCostForPatient")
+								.append("createdTime", "$createdTime")
+								.append("updatedTime", "$updatedTime")
+								.append("adminCreatedTime", "$adminCreatedTime")
+								.append("createdBy", "$createdBy"))),
 						
 						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("insensitiveTestName", 1))),
 						Aggregation.skip(page * size),
@@ -716,6 +746,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 								
 						new CustomAggregationOperation(new BasicDBObject("$group", 
 								new BasicDBObject("_id", new BasicDBObject("testName", "$testName"))
+								.append("id", new BasicDBObject("$first", "$id"))
 								.append("insensitiveTestName", new BasicDBObject("$first", "$testName"))
 								.append("explanation", new BasicDBObject("$first", "$explanation"))
 								.append("discarded", new BasicDBObject("$first", "$discarded"))
