@@ -237,4 +237,6 @@ public class Drug extends GenericCollection {
 	public void setDrugQuantity(Integer drugQuantity) {
 		this.drugQuantity = drugQuantity;
 	}
+
 }
+

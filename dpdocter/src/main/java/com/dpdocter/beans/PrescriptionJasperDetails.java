@@ -102,4 +102,6 @@ public class PrescriptionJasperDetails {
 		this.drugQuantity = drugQuantity;
 	}
 
+
 }
+
