@@ -572,7 +572,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 		String pattern = "dd/MM/yyyy";
 		String labName = "";
 		String locationId = null, hospitalId = null;
-		int sNo = 0;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		UserCollection userCollection = null;
@@ -625,7 +624,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 						.getPatientLabTestSamples()) {
 					labSubReportJasperDetail = new LabSubReportJasperDetails();
 
-					labSubReportJasperDetail.setNo(labSubReportJasperDetail.getNo() + 1);
+					labSubReportJasperDetail.setNo(labSubReportJasperDetails.size() + 1);
 					if (!DPDoctorUtils.anyStringEmpty(patientLabTestSample.getPatientName())) {
 						labSubReportJasperDetail.setPatientName(patientLabTestSample.getPatientName());
 					} else {
