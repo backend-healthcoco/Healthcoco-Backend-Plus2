@@ -1,11 +1,16 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
@@ -24,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DentalLabDentalStageSubReport;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalStage;
@@ -31,8 +37,11 @@ import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorksSample;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
+import com.dpdocter.beans.LabSubReportJasperDetails;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
+import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.PatientLabTestSample;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -57,6 +66,7 @@ import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LabType;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -88,11 +98,14 @@ import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -148,6 +161,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private FileManager fileManager;
+	
+	@Autowired
+	private JasperReportService jasperReportService;
 
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
@@ -167,9 +183,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Value("${dental.lab.accepted.message}")
 	private String ACCEPTED_NOTIFICATION;
 	
-
+	@Value(value = "${pdf.footer.text}")
+	private String footerText;
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
+	
+	@Value(value = "${jasper.print.labRequisationForm.a4.fileName}")
+	private String dentalWorksFormA4FileName;
 
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -1709,6 +1730,187 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return dentalLabPickupResponse;
 	}
 	
+	@Override
+	public String downloadDentalLabReportPrint(String id) {
+		String response = null;
+		DentalLabPickupResponse dentalLabPickupResponse = null;
+		List<ObjectId> pickupRequestIds = null;
+		JasperReportResponse jasperReportResponse = null;
+		try {
+			
+			dentalLabPickupResponse = getRequestById(id);
+			if (dentalLabPickupResponse == null) {
+				throw new BusinessException(ServiceError.NoRecord, " No Lab Report found with ids");
+			}
+
+			jasperReportResponse = createJasper(dentalLabPickupResponse);
+
+			if (jasperReportResponse != null)
+				response = getFinalImageURL(jasperReportResponse.getPath());
+			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+				if (jasperReportResponse.getFileSystemResource().getFile().exists())
+					jasperReportResponse.getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Lab Report PDF for Parent");
+			throw new BusinessException(ServiceError.Unknown, " Error while getting Lab Report PDF for Parent");
+		}
+		return response;
+
+	}
+	
+	private JasperReportResponse createJasper(DentalLabPickupResponse dentalLabPickupResponse)
+			throws IOException, ParseException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		String pattern = "dd/MM/yyyy";
+		String labName = "";
+		String locationId = null, hospitalId = null;
+		int sNo = 0;
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+		UserCollection userCollection = null;
+
+		LabSubReportJasperDetails labSubReportJasperDetail = null;
+		DBObject labReportItems = null;
+		List<DBObject> labreports = new ArrayList<DBObject>();
+		List<DentalLabDentalStageSubReport> dentalLabDentalStageSubReports = null;
+
+			labReportItems = new BasicDBObject();
+
+			if (dentalLabPickupResponse.getDentalLab() != null) {
+				locationId = dentalLabPickupResponse.getDentalLab().getId();
+				hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
+				labName =  dentalLabPickupResponse.getDentalLab().getLocationName();
+				labReportItems.put("dentalLab", "<b>Dental Lab :- </b> " + labName);
+			}
+			
+
+			if(dentalLabPickupResponse.getDoctor() != null)
+			{
+				labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
+			}
+			else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
+				userCollection = userRepository.findOne(new ObjectId(dentalLabPickupResponse.getDoctorId()));
+				if (userCollection != null)
+					labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
+				else
+
+					labReportItems.put("doctor", "<b>Doctor :- </b> ");
+			} else {
+				labReportItems.put("doctor", "<b>Doctor :- </b> ");
+
+			}
+			
+			if (dentalLabPickupResponse.getPatientName() != null) {
+				labReportItems.put("patientName", "<b>Patient Name :- </b> " + dentalLabPickupResponse.getPatientName());
+			}
+			
+			if (dentalLabPickupResponse.getGender() != null) {
+				labReportItems.put("gender", "<b>Gender :- </b> " + dentalLabPickupResponse.getGender());
+			}
+			
+			if (dentalLabPickupResponse.getAge() != null) {
+				labReportItems.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getGender());
+			}
+			
+			if (dentalLabPickupResponse.getRequestId() != null) {
+				labReportItems.put("id", "<b>Id :- </b> " + dentalLabPickupResponse.getRequestId());
+			}
+			
+			
+
+			if (dentalLabPickupResponse.getDentalWorksSamples() != null
+					&& !dentalLabPickupResponse.getDentalWorksSamples().isEmpty()) {
+
+					DentalWorksSampleRequest dentalWorksSample = dentalLabPickupResponse.getDentalWorksSamples().get(0);
+
+					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getCollarAndMetalDesign())) {
+						labReportItems.put("collarAndMetalDesign", "<b>Collar and Metal Design :- </b> " + dentalWorksSample.getCollarAndMetalDesign());
+					}
+					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getOcclusalStaining())) {
+						labReportItems.put("occlusalStaining", "<b>Occlusal Design :- </b> " + dentalWorksSample.getOcclusalStaining());
+					}
+					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getInstructions())) {
+						labReportItems.put("instructions", "<b>Instructions :- </b> " + dentalWorksSample.getInstructions());
+					}
+					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getPonticDesign())) {
+						labReportItems.put("ponticDesign", "<b>Pontic Desing :- </b> " + dentalWorksSample.getPonticDesign());
+					}
+					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getShade())) {
+						labReportItems.put("shade", "<b>Shade :- </b> " + dentalWorksSample.getShade());
+					}
+					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getUniqueWorkId())) {
+						labReportItems.put("uniqueWorkId", "<b>Unique Work Id :- </b> " + dentalWorksSample.getUniqueWorkId());
+					}
+					if (dentalWorksSample.getDentalWork() != null) {
+						labReportItems.put("dentalWork", "<b>Work Name :- </b> " + dentalWorksSample.getDentalWork().getWorkName());
+					}
+					if(dentalWorksSample.getDentalImages() != null)
+					{
+						labReportItems.put("dentalImages" , dentalWorksSample.getDentalImages());
+					}
+					if(dentalWorksSample.getDentalWorkCardValues() != null)
+					{
+						labReportItems.put("dentalWorkCards" , dentalWorksSample.getDentalWorkCardValues());
+					}
+					if(dentalWorksSample.getDentalStagesForDoctor() != null)
+					{
+						labReportItems.put("dentalStages" , dentalWorksSample.getDentalStagesForDoctor());
+					}
+					if(dentalWorksSample.getMaterial() != null)
+					{
+						labReportItems.put("material" , dentalWorksSample.getMaterial());
+					}
+	
+			}
+			
+			labreports.add(labReportItems);
+		userCollection = null;
+
+		parameters.put("items", labreports);
+		parameters.put("title", "DENTAL WORKS" + labName.toUpperCase());
+		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
+
+		String pdfName = locationId + "DENTAL-WORKS" + new Date().getTime();
+
+		String layout = "PORTRAIT";
+		String pageSize = "A4";
+		Integer topMargin = 20;
+		Integer bottonMargin = 20;
+		Integer leftMargin = 20;
+		Integer rightMargin = 20;
+
+		parameters.put("footerSignature", "");
+		parameters.put("bottomSignText", "");
+		parameters.put("contentFontSize", 11);
+		parameters.put("headerLeftText", "");
+		parameters.put("headerRightText", "");
+		parameters.put("footerBottomText", "");
+		parameters.put("logoURL", "");
+
+		parameters.put("showTableOne", false);
+
+		parameters.put("poweredBy", footerText);
+
+		parameters.put("contentLineSpace", LineSpace.SMALL.name());
+		response = jasperReportService.createPDF(ComponentType.DENTAL_WORKS, parameters,
+				dentalWorksFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+
+	}
+	
+	
+	
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
+
 	
 	
 }

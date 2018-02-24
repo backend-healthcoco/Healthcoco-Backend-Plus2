@@ -108,6 +108,8 @@ public interface DentalLabService {
 
 	Boolean changeStatus(DentalLabPickupChangeStatusRequest request);
 
+	String downloadDentalLabReportPrint(String id);
+
 
 	/*
 	 * DentalLabDoctorAssociation

@@ -1,15 +1,17 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class DentalToothNumber {
 
-	private String toothNumber;
+	private List<String> toothNumber;
 	private String type;
 
-	public String getToothNumber() {
+	public List<String> getToothNumber() {
 		return toothNumber;
 	}
 
-	public void setToothNumber(String toothNumber) {
+	public void setToothNumber(List<String> toothNumber) {
 		this.toothNumber = toothNumber;
 	}
 
