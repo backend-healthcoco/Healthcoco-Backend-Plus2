@@ -1822,6 +1822,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
+			int testsize = parameter.get("footerBottomText").toString().split("\r\n|\r|\n").length;
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
 			jrDesignLine.setX(0);
@@ -1834,7 +1835,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
 			jrDesignTextField.setX(0);
 			jrDesignTextField.setY(Startwith + 2);
-			jrDesignTextField.setHeight(40);
+			jrDesignTextField.setHeight(testsize);
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setStretchWithOverflow(true);
