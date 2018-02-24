@@ -50,13 +50,28 @@ public class ESDrugDocument {
 	private Date updatedTime = new Date();
 
 	@Field(type = FieldType.String)
+	private String packForm;
+
+	@Field(type = FieldType.String)
+	private String prizePerPack;
+
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialities;
+	
+	@Field(type = FieldType.Long)
+	private long companyRankingCount = 0;
+
+	@Field(type = FieldType.String)
+	private String rxRequired;
+
+	@Field(type = FieldType.String)
+	private String unsafeWith;
+
+	@Field(type = FieldType.String)
 	private String companyName;
 
 	@Field(type = FieldType.String)
 	private String packSize;
-
-	@Field(type = FieldType.Long)
-	private long companyRankingCount = 0;
 
 	@Field(type = FieldType.String)
 	private String MRP;
@@ -87,6 +102,9 @@ public class ESDrugDocument {
 
 	@Field(type = FieldType.Long)
 	private Long totalStock;
+	
+	@Field(type = FieldType.Long)
+	private Long retailPrice;
 
 	public String getId() {
 		return id;
@@ -112,70 +130,6 @@ public class ESDrugDocument {
 		this.explanation = explanation;
 	}
 
-	public String getDrugCode() {
-		return drugCode;
-	}
-
-	public void setDrugCode(String drugCode) {
-		this.drugCode = drugCode;
-	}
-
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
-
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
-
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
-
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
-
-	public String getDrugTypeId() {
-		return drugTypeId;
-	}
-
-	public void setDrugTypeId(String drugTypeId) {
-		this.drugTypeId = drugTypeId;
-	}
-
-	public String getDrugType() {
-		return drugType;
-	}
-
-	public void setDrugType(String drugType) {
-		this.drugType = drugType;
-	}
-
 	public String getCompanyName() {
 		return companyName;
 	}
@@ -190,6 +144,22 @@ public class ESDrugDocument {
 
 	public void setPackSize(String packSize) {
 		this.packSize = packSize;
+	}
+
+	public String getPackForm() {
+		return packForm;
+	}
+
+	public void setPackForm(String packForm) {
+		this.packForm = packForm;
+	}
+
+	public String getPrizePerPack() {
+		return prizePerPack;
+	}
+
+	public void setPrizePerPack(String prizePerPack) {
+		this.prizePerPack = prizePerPack;
 	}
 
 	public String getMRP() {
@@ -256,10 +226,78 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
+	
+
+	public String getDrugCode() {
+		return drugCode;
+	}
+
+	public void setDrugCode(String drugCode) {
+		this.drugCode = drugCode;
+	}
+
+	
+	public String getDrugTypeId() {
+		return drugTypeId;
+	}
+
+	public void setDrugTypeId(String drugTypeId) {
+		this.drugTypeId = drugTypeId;
+	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
 	public long getCompanyRankingCount() {
 		return companyRankingCount;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		ESDrugDocument drugDocument = (ESDrugDocument) obj;
 		return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
@@ -300,4 +338,39 @@ public class ESDrugDocument {
 				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
 				+ categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
 	}
+
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public String getRxRequired() {
+		return rxRequired;
+	}
+
+	public void setRxRequired(String rxRequired) {
+		this.rxRequired = rxRequired;
+	}
+
+	public String getUnsafeWith() {
+		return unsafeWith;
+	}
+
+	public void setUnsafeWith(String unsafeWith) {
+		this.unsafeWith = unsafeWith;
+	}
+
+	public Long getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Long retailPrice) {
+		this.retailPrice = retailPrice;
+	}
+
+	
+	
 }

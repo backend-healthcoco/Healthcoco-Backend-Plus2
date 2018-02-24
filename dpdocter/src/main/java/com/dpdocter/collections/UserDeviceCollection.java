@@ -11,29 +11,32 @@ import com.dpdocter.enums.DeviceType;
 import com.dpdocter.enums.RoleEnum;
 
 @Document(collection = "user_device_cl")
-public class UserDeviceCollection extends GenericCollection{
-	
+public class UserDeviceCollection extends GenericCollection {
+
 	@Id
-    private ObjectId id;
+	private ObjectId id;
 
-    @Field
-    private List<ObjectId> userIds;
+	@Field
+	private List<ObjectId> userIds;
 
-    @Field
-    private DeviceType deviceType;
+	@Field
+	private DeviceType deviceType;
 
-    @Field
-    private String deviceId;
+	@Field
+	private ObjectId localeId;
 
-    @Field
-    private String pushToken;
+	@Field
+	private String deviceId;
 
-    @Field
-    private RoleEnum role;
+	@Field
+	private String pushToken;
 
-    @Field
-    private int batchCount = 0;
-    
+	@Field
+	private RoleEnum role;
+
+	@Field
+	private int batchCount = 0;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -88,6 +91,14 @@ public class UserDeviceCollection extends GenericCollection{
 
 	public void setBatchCount(int batchCount) {
 		this.batchCount = batchCount;
+	}
+
+	public ObjectId getLocaleId() {
+		return localeId;
+	}
+
+	public void setLocaleId(ObjectId localeId) {
+		this.localeId = localeId;
 	}
 
 	@Override

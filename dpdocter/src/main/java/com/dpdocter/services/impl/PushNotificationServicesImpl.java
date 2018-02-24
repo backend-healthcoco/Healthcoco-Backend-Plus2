@@ -270,6 +270,15 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setRi(componentTypeId);
 					notification.setNotificationType(componentType);
 				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
+				
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
@@ -715,10 +724,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 		try {
 
-			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY) || role.equals(RoleEnum.REFRESH)) {
+			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY) || role.equals(RoleEnum.REFRESH) || role.equals(RoleEnum.DENTAL_COLLECTION_BOY)) {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
-
 			if (role.equals(RoleEnum.PATIENT)) {
 				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
 			}
@@ -736,6 +744,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
 										ComponentType.REFRESH.getType(), null, null, role.getRole());
+							}
+							else if (role.equals(RoleEnum.DENTAL_COLLECTION_BOY)) {
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message,
+										ComponentType.DENTAL_LAB_REQUEST.getType(), null, null, role.getRole());
 							} else {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
@@ -760,7 +773,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			Sender sender = null;
 
 			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString())
-					|| role.equals(RoleEnum.COLLECTION_BOY.getRole()) || role.equals(RoleEnum.REFRESH.getRole())) {
+					|| role.equals(RoleEnum.COLLECTION_BOY.getRole()) || role.equals(RoleEnum.REFRESH.getRole()) || role.equals(RoleEnum.DENTAL_COLLECTION_BOY.getRole())) {
 				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
 			} else {

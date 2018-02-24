@@ -256,6 +256,19 @@ public class BillingServiceImpl implements BillingService {
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
 
+				if (request.getCreatedTime() != null) {
+					doctorPatientInvoiceCollection.setCreatedTime(request.getCreatedTime());
+				}
+				
+				if (!doctorPatientInvoiceCollection.getDoctorId().toString().equalsIgnoreCase(request.toString())) {
+					if (doctorPatientInvoiceCollection.getReceiptIds() == null
+							|| doctorPatientInvoiceCollection.getReceiptIds().isEmpty()) {
+						doctorPatientInvoiceCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					} else {
+						throw new BusinessException(ServiceError.Unknown,
+								"Doctor cannot be updated as Receipt is already created.");
+					}
+				}
 				dueAmount = -doctorPatientInvoiceCollection.getBalanceAmount();
 
 				if (request.getCreatedTime() != null) {
@@ -276,8 +289,12 @@ public class BillingServiceImpl implements BillingService {
 				}
 				dueAmount = dueAmount + doctorPatientInvoiceCollection.getBalanceAmount();
 			}
+			
+			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
+				InventoryStock inventoryStock = null;
+				Long quantity = null;
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
 					invoiceItemResponse.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
@@ -296,14 +313,91 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-						request.getHospitalId(), invoiceItemResponse.getItemId());
-				if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
-					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-							invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
-							request.getLocationId(), request.getHospitalId(),
-							invoiceItemResponse.getInventoryQuantity());
+				if (!DPDoctorUtils.anyStringEmpty(doctorPatientInvoiceCollection.getId())) {
+					inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
+							request.getHospitalId(), invoiceItemResponse.getItemId(),
+							doctorPatientInvoiceCollection.getId().toString());
+					quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
+							request.getHospitalId(), invoiceItemResponse.getItemId(),
+							doctorPatientInvoiceCollection.getId().toString());
+					System.out.println(quantity);
+					
+				}
 
+				if (quantity != null && quantity > 0 && invoiceItemResponse.getInventoryBatch() != null) {
+					if (inventoryStock.getBatchId().equals(invoiceItemResponse.getInventoryBatch().getId())) {
+						if (quantity > invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = quantity - invoiceItemResponse.getQuantity().getValue();
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
+							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+										invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+										request.getLocationId(), request.getHospitalId(),
+										diff.intValue() , doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+							}
+						} else if (quantity < invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = invoiceItemResponse.getQuantity().getValue() - quantity;
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
+							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+										invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+										request.getLocationId(), request.getHospitalId(),
+										diff.intValue() , doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+							}
+						}
+
+					} else {
+					
+						InventoryBatch oldInventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
+						//InventoryBatch newInventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
+						
+						if (quantity > invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = quantity - invoiceItemResponse.getQuantity().getValue();
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
+							if (oldInventoryBatch != null && inventoryItem != null) {
+								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+										oldInventoryBatch, request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+							}
+							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+							}
+
+						} else if (quantity < invoiceItemResponse.getQuantity().getValue()) {
+							Long diff = invoiceItemResponse.getQuantity().getValue() - quantity;
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+									request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
+							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+							}
+							if (oldInventoryBatch != null && inventoryItem != null) {
+								createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+										oldInventoryBatch, request.getPatientId(),
+										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+							}
+						}
+					}
+					
+				} else {
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+							request.getHospitalId(), invoiceItemResponse.getItemId());
+					if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+						createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+								invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+								request.getLocationId(), request.getHospitalId(),
+								invoiceItemResponse.getQuantity().getValue() , doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+					}
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 
@@ -983,20 +1077,26 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
-
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-						request.getHospitalId(), invoiceItemResponse.getItemId());
-				if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
-					createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-							invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
-							request.getLocationId(), request.getHospitalId(),
-							invoiceItemResponse.getInventoryQuantity());
+				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
+				/*if (DPDoctorUtils.anyStringEmpty(request.getId()))
+				{
+					 inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
 				}
-				// createInventoryStock(invoiceItemResponse.getItemId(),
-				// invoiceItemResponse.getBatchId(), request.getPatientId(),
-				// request.getDoctorId(), request.getLocationId(),
-				// request.getHospitalId());
+			//	InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
+				
+				if (inventoryStock != null) {
 
+				} else {
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+							request.getHospitalId(), invoiceItemResponse.getItemId());
+					if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+						createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+								invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+								request.getLocationId(), request.getHospitalId(),
+								invoiceItemResponse.getInventoryQuantity() , doctorPatientInvoiceCollection.getId().toString());
+					}
+				}*/
+				//createInventoryStock(invoiceItemResponse.getItemId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
@@ -1870,9 +1970,9 @@ public class BillingServiceImpl implements BillingService {
 	 * stockCount = inventoryStockCollection.g } }
 	 */
 
-	private void createInventoryStock(String resourceId, String itemId, InventoryBatch inventoryBatch, String patientId,
-			String doctorId, String locationId, String hospitalId, Long inventoryQuantity) {
 
+	private void createInventoryStock(String resourceId, String itemId ,InventoryBatch inventoryBatch, String patientId, String doctorId,
+			String locationId, String hospitalId , Integer inventoryQuantity ,String invoiceId , String stockType) {
 		InventoryStock inventoryStock = new InventoryStock();
 		inventoryStock.setInventoryBatch(inventoryBatch);
 		inventoryStock.setItemId(itemId);
@@ -1881,10 +1981,13 @@ public class BillingServiceImpl implements BillingService {
 		inventoryStock.setDoctorId(doctorId);
 		inventoryStock.setLocationId(locationId);
 		inventoryStock.setHospitalId(hospitalId);
+		inventoryStock.setInvoiceId(invoiceId);
 
-		inventoryStock.setStockType("CONSUMED");
-		inventoryStock.setQuantity(inventoryQuantity);
-
+		inventoryStock.setStockType(stockType);
+		if(inventoryQuantity != null)
+		{
+			inventoryStock.setQuantity(inventoryQuantity.longValue());
+		}
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
 

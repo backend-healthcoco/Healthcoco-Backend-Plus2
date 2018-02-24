@@ -44,6 +44,7 @@ import com.dpdocter.services.InventoryService;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
+import io.swagger.models.auth.In;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
@@ -411,7 +412,6 @@ public class InventoryServiceImpl implements InventoryService {
 
 			}
 			
-			
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -718,8 +718,7 @@ public class InventoryServiceImpl implements InventoryService {
 				response.setHospitalId(hospitalId);
 				response.setSaveToInventory(false);
 				response.setShowInventoryCount(false);
-			}
-
+			} 
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while getting inventory setting");
@@ -727,6 +726,8 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
+
+	
 	
 	@Override
 	@Transactional
@@ -743,6 +744,73 @@ public class InventoryServiceImpl implements InventoryService {
 			// TODO: handle exception
 		}
 		return inventoryBatchs;
+	}
+	
+
+	@Override
+	@Transactional
+	public InventoryStock getInventoryStockByInvoiceIdResourceId(String locationId, String hospitalId, String resourceId , String invoiceId)
+	{
+		InventoryStock inventoryStock = null;
+		try {
+			InventoryStockCollection inventoryStockCollection = inventoryStockRepository.findByLocationIdHospitalIdResourceIdInvoiceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId), new ObjectId(invoiceId));
+			if(inventoryStockCollection != null) {
+				inventoryStock = new InventoryStock();
+				BeanUtil.map(inventoryStockCollection, inventoryStock);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return inventoryStock;
+	}
+	
+	@Override
+	@Transactional
+	public Long getInventoryStockItemCount(String locationId, String hospitalId, String resourceId , String invoiceId)
+	{
+		Long quantity = 0l;
+		try {
+			List<InventoryStockCollection> inventoryStockCollections = inventoryStockRepository.findListByLocationIdHospitalIdResourceIdInvoiceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId), new ObjectId(invoiceId));
+			if(inventoryStockCollections != null) {
+				for (InventoryStockCollection inventoryStockCollection : inventoryStockCollections) {
+					if(inventoryStockCollection.getStockType().equalsIgnoreCase("CONSUMED"))
+					{
+						quantity = quantity + inventoryStockCollection.getQuantity();
+					}
+					else if(inventoryStockCollection.getStockType().equalsIgnoreCase("ADDED"))
+					{
+						quantity = quantity - inventoryStockCollection.getQuantity();
+					}
+				}
+			
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return quantity;
+	}
+	
+	@Override
+	@Transactional
+	public InventoryBatch getInventoryBatchById(String id)
+	{
+		InventoryBatch inventoryBatch = null;
+		try {
+				InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
+				if(inventoryBatchCollection != null)
+				{
+				 BeanUtil.map(inventoryBatchCollection, inventoryBatch);
+				}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return inventoryBatch;
+	}
+
+	@Override
+	public InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

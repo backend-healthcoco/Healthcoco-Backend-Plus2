@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
@@ -30,8 +31,10 @@ import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Specimen;
+import com.dpdocter.enums.LabType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.DoctorRecordUploadRequest;
 import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
@@ -134,8 +137,8 @@ public class LabApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Object> response = new Response<Object>();
-		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm));
-		response.setData(locationServices.getCBCount(locationId, searchTerm));
+		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm ,LabType.DIAGNOSTIC.getType()));
+		response.setData(locationServices.getCBCount(locationId, searchTerm , LabType.DIAGNOSTIC.getType()));
 
 		return response;
 	}
@@ -354,10 +357,10 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_CLINICS_AND_LABS, notes = PathProxy.LabUrls.GET_CLINICS_AND_LABS)
 	public Response<Location> getClinics(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "isClinic") Boolean isClinic,
-			@QueryParam(value = "isLab") Boolean isLab, @QueryParam(value = "isParent") Boolean isParent,
+			@QueryParam(value = "isLab") Boolean isLab, @QueryParam(value = "isDentalWorksLab") Boolean isDentalWorksLab ,  @QueryParam(value = "isDentalImagingLab") Boolean isDentalImagingLab ,  @QueryParam(value = "isParent") Boolean isParent,
 			@QueryParam(value = "searchTerm") String searchTerm) {
 
-		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent,
+		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent, isDentalWorksLab , isDentalImagingLab,
 				searchTerm);
 
 		Response<Location> response = new Response<Location>();
@@ -743,4 +746,34 @@ public class LabApi {
 		return response;
 	}
 
+	
+	@Path(value = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS)
+	@POST
+	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS, notes = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS)
+	public Response<DentalWork> addEditPickupRequest(AddEditCustomWorkRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWork> response = new Response<DentalWork>();
+		response.setData(locationServices.addEditCustomWork(request));
+
+		return response;
+	}
+
+	@Path(value = PathProxy.LabUrls.GET_DENTAL_WORKS)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_DENTAL_WORKS, notes = PathProxy.LabUrls.GET_DENTAL_WORKS)
+	public Response<Object> getDentalWorks(@QueryParam("locationId") String locationId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+		if (locationId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Object> response = new Response<Object>();
+		response.setDataList(locationServices.getCustomWorks(page, size, searchTerm));
+		return response;
+	}
+	
+	
 }

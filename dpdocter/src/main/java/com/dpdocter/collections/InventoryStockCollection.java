@@ -34,6 +34,8 @@ public class InventoryStockCollection extends GenericCollection {
 	private Long totalPrice;
 	@Field
 	private ObjectId resourceId;
+	@Field
+	private ObjectId invoiceId;
 
 	public ObjectId getId() {
 		return id;
@@ -145,6 +147,14 @@ public class InventoryStockCollection extends GenericCollection {
 
 	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
+	}
+
+	public ObjectId getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(ObjectId invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 
 	@Override

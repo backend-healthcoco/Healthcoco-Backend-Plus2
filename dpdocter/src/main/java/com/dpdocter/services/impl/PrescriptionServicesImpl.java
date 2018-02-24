@@ -1,5 +1,7 @@
 package com.dpdocter.services.impl;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -97,6 +99,7 @@ import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
+import com.dpdocter.collections.GenericCodeCollection;
 import com.dpdocter.collections.GenericCodesAndReactionsCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.InstructionsCollection;
@@ -331,18 +334,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private GenericCodesAndReactionsRepository genericCodesAndReactionsRepository;
 
+	@Value(value = "${update.generic.codes.data.file}")
+	private String UPDATE_GENERIC_CODES_DATA_FILE;
+	
+	@Value(value = "${drug.company.data.file}")
+	private String DRUG_COMPANY_LIST;
+	
+	@Value(value = "${upload.drugs.file}")
+	private String UPLOAD_DRUGS;
+	
+	@Value(value = "${update.drug.interaction.file}")
+	private String UPDATE_DRUG_INTERACTION_DATA_FILE;
+	
 	@Autowired
 	private GenericCodeRepository genericCodeRepository;
-
-	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100) // maximum
-																						// 100
-																						// records
-																						// can
-																						// be
-																						// cached
-			.expireAfterAccess(30, TimeUnit.MINUTES) // cache will expire after
-														// 30 minutes of access
-
+	
+	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100)
+			// maximum 100 records can be cached
+			.expireAfterAccess(30, TimeUnit.MINUTES)
+			// cache will expire after 30 minutes of access
 			.build(new CacheLoader<String, List<Code>>() { // build the
 															// cacheloader
 
@@ -833,7 +843,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
-
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
 					Fields.field("updatedTime", "$updatedTime")));
@@ -1056,7 +1065,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
 						sendMessage(prescriptionCollection);
-
 				}
 			});
 
@@ -1083,51 +1091,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 	}
 
-	private Drug addDrugWhileAddingRX(DrugCollection drugCollection, PrescriptionAddEditRequest request,
-			PrescriptionItem item) {
-		Drug drug = null;
-		drugCollection.setLocationId(new ObjectId(request.getLocationId()));
-		drugCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-		drugCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-		drugCollection.setRankingCount(1);
-		drugCollection.setId(null);
-		drugCollection.setUpdatedTime(new Date());
-		drugCollection.setDuration(item.getDuration());
-		drugCollection.setDosage(item.getDosage());
-		drugCollection.setDosageTime(item.getDosageTime());
-		drugCollection.setDirection(item.getDirection());
-
-		if (drugCollection.getDrugType() != null) {
-			if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
-				drugCollection.setDrugType(null);
-			else {
-				DrugTypeCollection drugTypeCollection = drugTypeRepository
-						.findOne(new ObjectId(drugCollection.getDrugType().getId()));
-				if (drugTypeCollection != null) {
-					DrugType drugType = new DrugType();
-					BeanUtil.map(drugTypeCollection, drugType);
-					drugCollection.setDrugType(drugType);
-				}
-			}
-		}
-		drugCollection = drugRepository.save(drugCollection);
-
-		transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-		if (drugCollection != null) {
-			ESDrugDocument esDrugDocument = new ESDrugDocument();
-			BeanUtil.map(drugCollection, esDrugDocument);
-			if (drugCollection.getDrugType() != null) {
-				esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-				esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-			}
-			esPrescriptionService.addDrug(esDrugDocument);
-		}
-		if (drugCollection != null) {
-			drug = new Drug();
-			BeanUtil.map(drugCollection, drug);
-		}
-		return drug;
-	}
 
 	private void sendDownloadAppMessage(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 			String doctorName) {
@@ -1639,11 +1602,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										.getInventoryItem(inventoryItem.getId());
 								prescriptionItemDetail.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 								List<PrescriptionInventoryBatchResponse> inventoryBatchs = null;
-								if (inventoryItemLookupResposne.getInventoryBatchs() != null) {
+								if(inventoryItemLookupResposne.getInventoryBatchs() != null)
+								{
 									inventoryBatchs = new ArrayList<>();
-									for (InventoryBatch inventoryBatch : inventoryItemLookupResposne
-											.getInventoryBatchs()) {
-										PrescriptionInventoryBatchResponse response = new PrescriptionInventoryBatchResponse();
+									for (InventoryBatch inventoryBatch : inventoryItemLookupResposne.getInventoryBatchs()) {
+										PrescriptionInventoryBatchResponse response =  new PrescriptionInventoryBatchResponse();
 										BeanUtil.map(inventoryBatch, response);
 										inventoryBatchs.add(response);
 									}
@@ -1682,7 +1645,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
-
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -4621,77 +4583,165 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	// return true;
 	// }
 
+//	@Override
+//	public Boolean addGenericsWithReaction() {
+//		String csvFile = "/home/ubuntu/OnlinegenericCodes.csv";
+//		BufferedReader br = null;
+//		String line = "";
+//		String cvsSplitBy = ",";
+//		try {
+//			br = new BufferedReader(new FileReader(csvFile));
+//			while ((line = br.readLine()) != null) {
+//				String[] codes = line.split(cvsSplitBy);
+//				if (codes.length > 4 && codes[4] != null && !codes[4].isEmpty() && (codes[4].equalsIgnoreCase("MAJOR")
+//						|| codes[4].equalsIgnoreCase("MINOR") || codes[4].equalsIgnoreCase("MODERATE"))) {
+//					String genericCodeOne = codes[0], genericCodeTwo = codes[2];
+//
+//					List<GenericCodesAndReactionsCollection> genericCodesAndReactionsCollections = genericCodesAndReactionsRepository
+//							.findbyGenericCodes(Arrays.asList(codes[0], codes[1]));
+//					for (GenericCodesAndReactionsCollection codesAndReactionsCollection : genericCodesAndReactionsCollections) {
+//						if (codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(genericCodeOne)) {
+//							for (Code code : codesAndReactionsCollection.getCodes()) {
+//								if (code.getGenericCode().equalsIgnoreCase(genericCodeTwo)) {
+//									code.setReaction(codes[4]);
+//									if (codes.length > 5)
+//										code.setExplanation(codes[5]);
+//								}
+//							}
+//							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+//
+//							ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
+//							BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+//							esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+//							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+//						}
+//						if (codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(genericCodeTwo)) {
+//							for (Code code : codesAndReactionsCollection.getCodes()) {
+//								if (code.getGenericCode().equalsIgnoreCase(genericCodeOne)) {
+//									code.setReaction(codes[4]);
+//									if (codes.length > 5)
+//										code.setExplanation(codes[5]);
+//								}
+//							}
+//							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+//
+//							ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
+//							BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+//							esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+//							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+//						}
+//					}
+//				}
+//			}
+//
+//			List<GenericCodesAndReactionsCollection> codesAndReactionsCollections = genericCodesAndReactionsRepository
+//					.findByReaction("");
+//			for (GenericCodesAndReactionsCollection codesAndReactionsCollection : codesAndReactionsCollections) {
+//				List<Code> codes = new ArrayList<Code>();
+//				for (Code code : codesAndReactionsCollection.getCodes()) {
+//					if (!DPDoctorUtils.anyStringEmpty(code.getReaction()))
+//						codes.add(code);
+//				}
+//				if (codes == null || codes.isEmpty()) {
+//					esGenericCodesAndReactionsRepository.delete(codesAndReactionsCollection.getGenericCode());
+//					genericCodesAndReactionsRepository.delete(codesAndReactionsCollection);
+//				} else {
+//					codesAndReactionsCollection.setCodes(codes);
+//					genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+//
+//					ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
+//					BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+//					esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+//					esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			if (br != null) {
+//				try {
+//					br.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//
+//		
+//		return true;
+//	}
+
+	
 	@Override
 	public Boolean addGenericsWithReaction() {
-		String csvFile = "/home/ubuntu/OnlinegenericCodes.csv";
+		String csvFile = "/home/ubuntu/genericCodesWithReaction.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
+
 		try {
 			br = new BufferedReader(new FileReader(csvFile));
 			while ((line = br.readLine()) != null) {
 				String[] codes = line.split(cvsSplitBy);
-				if (codes.length > 4 && codes[4] != null && !codes[4].isEmpty() && (codes[4].equalsIgnoreCase("MAJOR")
-						|| codes[4].equalsIgnoreCase("MINOR") || codes[4].equalsIgnoreCase("MODERATE"))) {
-					String genericCodeOne = codes[0], genericCodeTwo = codes[2];
 
-					List<GenericCodesAndReactionsCollection> genericCodesAndReactionsCollections = genericCodesAndReactionsRepository
-							.findbyGenericCodes(Arrays.asList(codes[0], codes[1]));
-					for (GenericCodesAndReactionsCollection codesAndReactionsCollection : genericCodesAndReactionsCollections) {
-						if (codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(genericCodeOne)) {
-							for (Code code : codesAndReactionsCollection.getCodes()) {
-								if (code.getGenericCode().equalsIgnoreCase(genericCodeTwo)) {
-									code.setReaction(codes[4]);
-									if (codes.length > 5)
-										code.setExplanation(codes[5]);
-								}
+				Code codeOfId = new Code(codes[0], "");
+
+				ESGenericCodesAndReactions esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
+						.findOne(codes[0]);
+				if (esGenericCodesAndReactionsOfZeroIndex == null) {
+					esGenericCodesAndReactionsOfZeroIndex = new ESGenericCodesAndReactions();
+					esGenericCodesAndReactionsOfZeroIndex.setId(codes[0]);
+				}
+				List<Code> codesList = esGenericCodesAndReactionsOfZeroIndex.getCodes();
+				if (codesList == null)
+					codesList = new ArrayList<Code>();
+
+				for (int i = 1; i < codes.length; i++) {
+					Code code = new Code(codes[i], null);
+					if (!codesList.contains(code))
+						codesList.add(code);
+
+					ESGenericCodesAndReactions esGenericCodesAndReactions = esGenericCodesAndReactionsRepository
+							.findOne(codes[i]);
+					if (esGenericCodesAndReactions == null) {
+						esGenericCodesAndReactions = new ESGenericCodesAndReactions();
+						esGenericCodesAndReactions.setId(codes[i]);
+						esGenericCodesAndReactions.setCodes(Arrays.asList(codeOfId));
+					} else {
+						List<Code> codesListOfOther = esGenericCodesAndReactions.getCodes();
+						if (!codesListOfOther.contains(codeOfId))
+							codesListOfOther.add(codeOfId);
+
+						Collections.sort(codesListOfOther, new Comparator<Code>() {
+							public int compare(Code one, Code other) {
+								return one.getGenericCode().compareTo(other.getGenericCode());
 							}
-							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
-
-							ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
-							BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
-							esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
-							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
-						}
-						if (codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(genericCodeTwo)) {
-							for (Code code : codesAndReactionsCollection.getCodes()) {
-								if (code.getGenericCode().equalsIgnoreCase(genericCodeOne)) {
-									code.setReaction(codes[4]);
-									if (codes.length > 5)
-										code.setExplanation(codes[5]);
-								}
-							}
-							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
-
-							ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
-							BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
-							esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
-							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
-						}
+						});
+						esGenericCodesAndReactions.setCodes(codesListOfOther);
 					}
+					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);
 				}
+
+				Collections.sort(codesList, new Comparator<Code>() {
+					public int compare(Code one, Code other) {
+						return one.getGenericCode().compareTo(other.getGenericCode());
+					}
+				});
+				esGenericCodesAndReactionsOfZeroIndex.setCodes(codesList);
+				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
+						.save(esGenericCodesAndReactionsOfZeroIndex);
 			}
-
-			List<GenericCodesAndReactionsCollection> codesAndReactionsCollections = genericCodesAndReactionsRepository
-					.findByReaction("");
-			for (GenericCodesAndReactionsCollection codesAndReactionsCollection : codesAndReactionsCollections) {
-				List<Code> codes = new ArrayList<Code>();
-				for (Code code : codesAndReactionsCollection.getCodes()) {
-					if (!DPDoctorUtils.anyStringEmpty(code.getReaction()))
-						codes.add(code);
-				}
-				if (codes == null || codes.isEmpty()) {
-					esGenericCodesAndReactionsRepository.delete(codesAndReactionsCollection.getGenericCode());
-					genericCodesAndReactionsRepository.delete(codesAndReactionsCollection);
-				} else {
-					codesAndReactionsCollection.setCodes(codes);
-					genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
-
-					ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
-					BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
-					esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
-					esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
-				}
+			
+			
+			Iterable<ESGenericCodesAndReactions> esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.findAll();
+			for(ESGenericCodesAndReactions genericCodesAndReaction : esGenericCodesAndReactions){
+				GenericCodesAndReactionsCollection codesAndReactionsCollection = new GenericCodesAndReactionsCollection();
+				codesAndReactionsCollection.setGenericCode(genericCodesAndReaction.getId());
+				genericCodesAndReaction.setId(null);
+				BeanUtil.map(genericCodesAndReaction, codesAndReactionsCollection);
+				codesAndReactionsCollection.setCreatedTime(new Date());
+				codesAndReactionsCollection.setUpdatedTime(new Date());
+				genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4704,46 +4754,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			}
 		}
-
-		// String outputFile = "/home/healthcoco-neha/genericCodes.csv";
-		// boolean alreadyExists = new File(outputFile).exists();
-		//
-		// try {
-		// CSVWriter csvOutput = new CSVWriter(new FileWriter(outputFile, true),
-		// ',');
-		//
-		// if (!alreadyExists)
-		// {
-		// String[] hesaders = {"Code 1", "Code 1 Generic Name", "Code 2", "Code
-		// 2 Generic Name", "Reaction","Explanation"};
-		// csvOutput.writeNext(hesaders);
-		// }
-		//
-		// Iterable<ESGenericCodesAndReactions> esGenericCodesAndReactions =
-		// esGenericCodesAndReactionsRepository.findAll();
-		// for(ESGenericCodesAndReactions esGenericCodesAndReaction :
-		// esGenericCodesAndReactions){
-		// GenericCodeCollection code =
-		// genericCodeRepository.findByCode(esGenericCodesAndReaction.getId());
-		// List<Code> codes = esGenericCodesAndReaction.getCodes();
-		// Collection<String> genericCodes = CollectionUtils.collect(codes, new
-		// BeanToPropertyValueTransformer("genericCode"));
-		// List<GenericCodeCollection> genericCodeCollections =
-		// genericCodeRepository.findByCodes(genericCodes);
-		// for(GenericCodeCollection codeCollection : genericCodeCollections){
-		//
-		// String[] hesaders = {code.getCode(), code.getName(),
-		// codeCollection.getCode(), codeCollection.getName()};
-		// csvOutput.writeNext(hesaders);
-		// }
-		// }
-		// csvOutput.close();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
 		return true;
 	}
-
 	private List<Code> getDataFromElasticSearch(String id) {
 		BoolQueryBuilder booleanQueryBuilder = new BoolQueryBuilder();
 		booleanQueryBuilder.must(QueryBuilders.termQuery("_id", id));
@@ -5918,33 +5930,213 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public Boolean removeDuplicateDrugs() {
+	public Boolean updateGenericCodes() {
 		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = "%";
+		int lineCount = 0;
 		try {
-			List<DrugCollection> drugCollections = mongoTemplate.aggregate(
-					Aggregation.newAggregation(
-							Aggregation.match(new Criteria("doctorId").is(null).and("locationId").is(null)),
-							Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id",
-											new BasicDBObject("drugName", "$drugName").append("drugType",
-													"$drugType.id")).append("count", new BasicDBObject("$sum", 1)))),
-							new CustomAggregationOperation(new BasicDBObject("$project",
-									new BasicDBObject("drugName", "$drugName").append("drugType", "$drugType")
-											.append("keep",
-													new BasicDBObject("$cond",
-															new BasicDBObject("if",
-																	new BasicDBObject("$gt",
-																			Arrays.asList("$count", 1)))
-																					.append("then", "$count")
-																					.append("else", 0))))),
-							Aggregation.match(new Criteria("keep").gt(1))),
-					DrugCollection.class, DrugCollection.class).getMappedResults();
-		} catch (Exception e) {
+			br = new BufferedReader(new FileReader(UPDATE_GENERIC_CODES_DATA_FILE));
+				
+			while ((line = br.readLine()) != null) {
+
+					if (lineCount > 0) {
+						String[] fields = line.split(cvsSplitBy);
+						if(fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
+							String reason = fields[3];
+							System.out.println(fields[0]+ fields[3]);
+							if(reason.equalsIgnoreCase("SPELLING MISTAKE")){
+								updateSpellingOfGenericCodes(fields[0].trim(), fields[2].trim());
+							}else if(reason.equalsIgnoreCase("REPEAT")){
+								removeRepeatedGenericCodes(fields[0].trim(), fields[2].trim());
+							}else if(reason.equalsIgnoreCase("REMOVE")){
+								removeGenericCodes(fields[0].trim());
+							}
+						}
+					}
+					lineCount = lineCount +1;
+			}
+		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+		}finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return response;
+	}
+
+	@SuppressWarnings("unused")
+	private void removeGenericCodes(String code) {
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByCode(code);
+		if(genericCodeCollection != null) {
+			List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("genericNames.id").is(genericCodeCollection.getId()))), DrugCollection.class, DrugCollection.class).getMappedResults();
+			
+			
+			if(drugCollections != null) {
+				for (DrugCollection drugCollection : drugCollections) {
+					for(GenericCode genericCode : drugCollection.getGenericNames()) {
+						if(genericCode.getId().equalsIgnoreCase(genericCodeCollection.getId().toString())) {
+							
+							drugCollection.getGenericNames().remove(genericCode);
+							drugCollection = drugRepository.save(drugCollection);
+							
+							transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+							if (drugCollection != null) {
+								ESDrugDocument esDrugDocument = new ESDrugDocument();
+								BeanUtil.map(drugCollection, esDrugDocument);
+								if (drugCollection.getDrugType() != null) {
+									esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+									esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+								}
+								esPrescriptionService.addDrug(esDrugDocument);
+							}
+							break;
+						}
+					}
+				}
+				
+				//remove generic code and reaction
+				ESGenericCodesAndReactions codesAndReactions = esGenericCodesAndReactionsRepository.findOne(code);
+				if(codesAndReactions != null) {
+						esGenericCodesAndReactionsRepository.delete(codesAndReactions);
+				}
+				
+				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.nestedQuery("codes",
+						boolQuery().must(QueryBuilders.matchQuery("codes.genericCode", code))));
+				SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+				List<ESGenericCodesAndReactions> codesAndReactions2 = elasticsearchTemplate.queryForList(searchQuery, ESGenericCodesAndReactions.class);
+				if(codesAndReactions2 != null) {
+					for(ESGenericCodesAndReactions reactions : codesAndReactions2) {
+						for(Code codeFromCodesAndReaction : reactions.getCodes()) {
+							if(codeFromCodesAndReaction.getGenericCode().equalsIgnoreCase(code)) {
+								reactions.getCodes().remove(codeFromCodesAndReaction);
+								esGenericCodesAndReactionsRepository.save(reactions);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}	
+	}
+
+	@SuppressWarnings("unchecked")
+	private void removeRepeatedGenericCodes(String code, String similarToCode) {
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByCode(code);
+		if(genericCodeCollection != null) {
+			GenericCodeCollection similarGenericCodeCollection = genericCodeRepository.findByCode(similarToCode);
+			
+			
+			//update drugs
+			List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("genericNames.id").is(genericCodeCollection.getId()))), DrugCollection.class, DrugCollection.class).getMappedResults();
+			
+			if(drugCollections != null) {
+				for (DrugCollection drugCollection : drugCollections) {
+					for(GenericCode genericCode : drugCollection.getGenericNames()) {
+						if(genericCode.getId().equalsIgnoreCase(genericCodeCollection.getId().toString())) {
+							genericCode.setId(similarGenericCodeCollection.getId().toString());
+							genericCode.setCode(similarGenericCodeCollection.getCode());
+							genericCode.setName(similarGenericCodeCollection.getName());
+							drugCollection = drugRepository.save(drugCollection);
+							
+							transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+							if (drugCollection != null) {
+								ESDrugDocument esDrugDocument = new ESDrugDocument();
+								BeanUtil.map(drugCollection, esDrugDocument);
+								if (drugCollection.getDrugType() != null) {
+									esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+									esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+								}
+								esPrescriptionService.addDrug(esDrugDocument);
+							}
+							break;
+						}
+					}
+				}
+			}
+			
+		 //update generic code and reactions
+			
+			ESGenericCodesAndReactions codesAndReactions = esGenericCodesAndReactionsRepository.findOne(code);
+			if(codesAndReactions != null && codesAndReactions.getCodes() != null && !codesAndReactions.getCodes().isEmpty()) {
+				ESGenericCodesAndReactions similarCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(similarToCode);
+				if(similarCodesAndReactions != null) {
+					if(similarCodesAndReactions.getCodes() != null && !similarCodesAndReactions.getCodes().isEmpty()) {
+						Collection<String> codes = CollectionUtils.collect(similarCodesAndReactions.getCodes(), new BeanToPropertyValueTransformer("genericCode"));
+						for(Code codeFromCodesAndReaction : codesAndReactions.getCodes()) {
+							if(!codes.contains(codeFromCodesAndReaction.getGenericCode())) {
+								similarCodesAndReactions.getCodes().add(codeFromCodesAndReaction);
+							}
+						}
+						esGenericCodesAndReactionsRepository.save(similarCodesAndReactions);
+					}else {
+						similarCodesAndReactions.setCodes(codesAndReactions.getCodes());
+						esGenericCodesAndReactionsRepository.save(similarCodesAndReactions);
+					}
+				}else {
+					esGenericCodesAndReactionsRepository.delete(codesAndReactions);
+				}
+			}
+			
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.nestedQuery("codes",
+							boolQuery().must(QueryBuilders.matchQuery("codes.genericCode", code))));
+			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+			List<ESGenericCodesAndReactions> codesAndReactions2 = elasticsearchTemplate.queryForList(searchQuery, ESGenericCodesAndReactions.class);
+			if(codesAndReactions2 != null) {
+				for(ESGenericCodesAndReactions reactions : codesAndReactions2) {
+					for(Code codeFromCodesAndReaction : reactions.getCodes()) {
+						if(codeFromCodesAndReaction.getGenericCode().equalsIgnoreCase(code)) {
+							codeFromCodesAndReaction.setGenericCode(similarToCode);
+							esGenericCodesAndReactionsRepository.save(reactions);
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+	}
+
+	private void updateSpellingOfGenericCodes(String code, String name) {
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByCode(code);
+		if(genericCodeCollection != null) {
+			genericCodeCollection.setName(name);
+			genericCodeCollection = genericCodeRepository.save(genericCodeCollection);
+			
+			List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("genericNames.id").is(genericCodeCollection.getId()))), DrugCollection.class, DrugCollection.class).getMappedResults();
+			if(drugCollections != null) {
+				for (DrugCollection drugCollection : drugCollections) {
+					for(GenericCode genericCode : drugCollection.getGenericNames()) {
+						if(genericCode.getId().equalsIgnoreCase(genericCodeCollection.getId().toString())) {
+							genericCode.setName(genericCodeCollection.getName());
+							drugCollection = drugRepository.save(drugCollection);
+							
+							transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+							if (drugCollection != null) {
+								ESDrugDocument esDrugDocument = new ESDrugDocument();
+								BeanUtil.map(drugCollection, esDrugDocument);
+								if (drugCollection.getDrugType() != null) {
+									esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+									esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+								}
+								esPrescriptionService.addDrug(esDrugDocument);
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -6408,18 +6600,249 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+	
+	@Override
+	public Boolean updateDrugRankingOnBasisOfRanking() {
+		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		int rankingCount= 75;
+		try {
+			br = new BufferedReader(new FileReader(DRUG_COMPANY_LIST));
+			
+			while ((line = br.readLine()) != null) {
 
-	private List<Drug> addStockToDrug(List<Drug> drugs) {
+					String companyName = line.split(",")[0];
+					List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("companyName").regex(companyName, "i"))), 
+							DrugCollection.class, DrugCollection.class).getMappedResults();
+					if(drugCollections != null) {
+						for(DrugCollection drugCollection : drugCollections) {
+							drugCollection.setRankingCount(drugCollection.getRankingCount() + rankingCount);
+							drugRepository.save(drugCollection);
+						}
+					}
+					rankingCount = rankingCount--;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred updating ranking on basis of company ranking");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred updating ranking on basis of company ranking");
+		}finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean uploadDrugs() {
+		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		int lineCount = 0;
+		try {
+			br = new BufferedReader(new FileReader(UPLOAD_DRUGS));
+			Map<String, DrugType> drugTypesMap = new HashMap<String, DrugType>();
+			List<DrugType> drugTypes = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria())), DrugTypeCollection.class, DrugType.class).getMappedResults();
+			if(drugTypes!= null && !drugTypes.isEmpty()) {
+				for(DrugType drugType : drugTypes)drugTypesMap.put(drugType.getType(), drugType);
+			}
+			
+			while ((line = br.readLine()) != null) {
+				if(lineCount > 0) {
+					String[] fields = line.split(",");
+					
+					String drugName = fields[0], drugType=fields[1], companyName = fields[5];
+					
+					if(drugType.equalsIgnoreCase("TABLET"))drugType = "TAB";
+					if(drugType.equalsIgnoreCase("CAPSULE"))drugType = "CAP";
+					if(drugType.equalsIgnoreCase("OINTMENT"))drugType = "OINT";
+					if(drugType.equalsIgnoreCase("SYRUP"))drugType = "SYP";
+					
+					List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+							Aggregation.match(new Criteria("drugName").is(drugName).and("drugType.type").is(drugType).and("companyName").is(companyName))), DrugCollection.class, DrugCollection.class).getMappedResults();
+					
+					if(drugCollections != null) {
+						DrugCollection drugCollection = new DrugCollection();
+						
+						String drugCode = generateDrugCode(drugName, drugType);
+						drugCollection.setDrugCode(drugCode);
+						
+						Date createdTime = new Date();
+						drugCollection.setCreatedTime(createdTime);
+						drugCollection.setCreatedBy("ADMIN");
+						drugCollection.setRankingCount(1);
+						
+						drugCollection.setDrugName(drugName);
+						drugCollection.setDrugType(drugTypesMap.get(drugType));
+						drugCollection.setCompanyName(companyName);
+						
+						if(!DPDoctorUtils.anyStringEmpty(fields[2])) {
+							String specialities[] = fields[2].split("\\+");
+							drugCollection.setSpecialities(Arrays.asList(specialities));
+						}
+						
+						if(!DPDoctorUtils.anyStringEmpty(fields[3])) {
+							drugCollection.setPackForm(fields[3]);
+						}
+						if(!DPDoctorUtils.anyStringEmpty(fields[4])) {
+							drugCollection.setPackSize(fields[4]);
+						}
+						
+						if(!DPDoctorUtils.anyStringEmpty(fields[8]) && !(fields[8].equalsIgnoreCase("NOT AVAILABLE"))) {
+							String genericsList[] = fields[8].split("\\+");
+							
+							Map<String, String> generics = new HashMap<String, String>();
+							
+							for(String genericName : genericsList) {
+								String key="", value=null;
+								int indexOfStart = genericName.indexOf("("), indexOfEnd = genericName.indexOf(")");
+								System.out.println(genericName);
+								if(indexOfStart > -1 && indexOfEnd > -1) {
+									System.out.println(indexOfStart + "..."+indexOfEnd);
+									key = genericName.substring(0, indexOfStart - 1);
+									value = genericName.substring(indexOfStart + 1, indexOfEnd - 1);
+									if(!DPDoctorUtils.anyStringEmpty(value) && value.equalsIgnoreCase("NA"))value = null;
+								}else {
+									key = genericName;
+								}
+								generics.put(key, value);
+							}
+							List<GenericCode> genericCodes = mongoTemplate.aggregate(Aggregation.newAggregation(
+									Aggregation.match(new Criteria("name").in(generics.keySet()))), 
+									GenericCodeCollection.class, GenericCode.class).getMappedResults();
+							for(GenericCode genericCode : genericCodes) {
+								genericCode.setStrength(generics.get(genericCode.getName()));
+							}
+							drugCollection.setGenericNames(genericCodes);
+						}
+
+						if(!DPDoctorUtils.anyStringEmpty(fields[7])) {
+							String categories[] = fields[7].split("\\+");
+							drugCollection.setCategories(Arrays.asList(categories));
+						}
+						
+						if(fields.length > 9 && !DPDoctorUtils.anyStringEmpty(fields[9])) {
+							drugCollection.setMRP(fields[9] + " INR");
+						}
+						
+						if(fields.length > 10 && !DPDoctorUtils.anyStringEmpty(fields[10])) {
+							drugCollection.setPrizePerPack(fields[10] + " INR");
+						}
+						
+						if(fields.length > 11 && !DPDoctorUtils.anyStringEmpty(fields[11])) {
+							drugCollection.setRxRequired(fields[11]);
+						}
+						
+						if(fields.length > 12 &&!DPDoctorUtils.anyStringEmpty(fields[12])) {
+							drugCollection.setUnsafeWith(fields[12]);
+						}
+						System.out.println(drugCollection.toString());
+						drugCollection = drugRepository.save(drugCollection);
+						
+						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+						if (drugCollection != null) {
+							ESDrugDocument esDrugDocument = new ESDrugDocument();
+							BeanUtil.map(drugCollection, esDrugDocument);
+							if (drugCollection.getDrugType() != null) {
+								esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+								esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+							}
+							esPrescriptionService.addDrug(esDrugDocument);
+						}
+					}else {
+						System.out.println("Already present: "+lineCount+" .. "+drugName);
+					}
+				}
+			lineCount = lineCount + 1;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred uploading drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred uploading drugs");
+		}finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
+	}
+	
+	private List<Drug> addStockToDrug(List<Drug> drugs)
+	{
 		for (Drug drug : drugs) {
-			InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
-					drug.getHospitalId(), drug.getId());
-			if (inventoryItem != null) {
-				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
-						.getInventoryItem(inventoryItem.getId());
+			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
+			if(inventoryItem != null)	
+			{
+				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
 				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+				drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
 			}
 		}
 		return drugs;
 	}
 
+
+	private String generateDrugCode(String drugName, String drugType) {
+		
+		String drugCode = null;
+		if(drugName.length()>2)drugCode = drugType.substring(0, 2)+drugName.substring(0, 3);
+		else drugCode = drugType.substring(0, 2)+drugName.substring(0, 2);
+		
+		DrugCollection drugCollection = drugRepository.findByStartWithDrugCode(drugCode, null, null, null, new Sort(Sort.Direction.DESC, "createdTime"));
+		if(drugCollection != null) {
+			long count = Long.parseLong(drugCollection.getDrugCode().replace(drugCode, "")) + 1;
+			if(count < 1000) {
+				drugCode = drugCode + String.format("%04d", count);
+			}else {
+				drugCode = drugCode + count;
+			}
+		}else {
+			drugCode = drugCode + "0001";
+		}
+		
+		return drugCode;
+	}
+
+	@Override
+	public Boolean updateDrugInteraction() {
+		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		int lineCount = 0;
+		try {
+			br = new BufferedReader(new FileReader(UPDATE_DRUG_INTERACTION_DATA_FILE));
+			
+			while ((line = br.readLine()) != null) {
+				if(lineCount > 0) {
+					String[] fields = line.split(",");
+					
+					
+				}
+			lineCount = lineCount + 1;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred uploading drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred uploading drugs");
+		}finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
+	}
 }

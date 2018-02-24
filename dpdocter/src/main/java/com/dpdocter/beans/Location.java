@@ -86,7 +86,7 @@ public class Location {
 	private int noOfClinicRecommendations = 0;
 
 	private Boolean isClinicRecommended = false;
-	
+
 	private Boolean isFavourite = false;
 
 	private Hospital hospital;
@@ -101,6 +101,11 @@ public class Location {
 
 	private List<String> associatedLabs;
 
+	private String locationSlugUrl;
+
+	private Boolean isDentalWorksLab = false;
+
+	private Boolean isDentalImagingLab = false;
 	/* private String defaultParentLabId; */
 
 	public String getId() {
@@ -483,4 +488,30 @@ public class Location {
 				+ invoiceInitial + ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview
 				+ ", isParent=" + isParent + ", associatedLabs=" + associatedLabs + "]";
 	}
+
+
+	public String getLocationSlugUrl() {
+		return locationSlugUrl;
+	}
+
+	public void setLocationSlugUrl(String locationSlugUrl) {
+		this.locationSlugUrl = locationSlugUrl;
+	}
+
+	public Boolean getIsDentalWorksLab() {
+		return isDentalWorksLab;
+	}
+
+	public void setIsDentalWorksLab(Boolean isDentalWorksLab) {
+		this.isDentalWorksLab = isDentalWorksLab;
+	}
+
+	public Boolean getIsDentalImagingLab() {
+		return isDentalImagingLab;
+	}
+
+	public void setIsDentalImagingLab(Boolean isDentalImagingLab) {
+		this.isDentalImagingLab = isDentalImagingLab;
+	}
+
 }

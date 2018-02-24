@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.Age;
+import com.dpdocter.enums.LabType;
 
 @Document(collection = "collection_boy_cl")
 public class CollectionBoyCollection extends GenericCollection {
@@ -33,6 +34,8 @@ public class CollectionBoyCollection extends GenericCollection {
 	private Boolean discarded;
 	@Field
 	private Boolean isAvailable;
+	@Field
+	private String labType = LabType.DIAGNOSTIC.getType();
 
 	//@Field
 	//private String labType = LabType.DIAGNOSTIC.getType();
@@ -123,6 +126,15 @@ public class CollectionBoyCollection extends GenericCollection {
 
 	public void setUserId(ObjectId userId) {
 		this.userId = userId;
+	}
+
+
+	public String getLabType() {
+		return labType;
+	}
+
+	public void setLabType(String labType) {
+		this.labType = labType;
 	}
 
 	@Override

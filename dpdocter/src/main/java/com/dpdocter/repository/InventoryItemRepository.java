@@ -9,8 +9,8 @@ import com.dpdocter.collections.InventorySettingsCollection;
 
 public interface InventoryItemRepository extends MongoRepository<InventoryItemCollection, ObjectId>{
 
-
 	@Query("{ 'locationId': ?0, 'hospitalId': ?1 , 'resourceId': ?2}")
     public InventoryItemCollection findByLocationIdHospitalIdResourceId( ObjectId locationId, ObjectId hospitalId ,ObjectId resourceId);
+	
 	
 }

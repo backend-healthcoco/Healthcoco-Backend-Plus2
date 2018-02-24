@@ -19,6 +19,7 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.PharmacyFeedback;
@@ -490,6 +491,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 		UserCollection userCollection = null;
 		PatientCollection patientCollection = null;
 		Aggregation aggregation = null;
+
 		try {
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(type))
@@ -522,6 +524,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 				locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			}
 			
+
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 			{
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
