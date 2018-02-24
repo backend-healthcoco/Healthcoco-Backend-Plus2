@@ -1008,6 +1008,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 									.append("cancelledBy", new BasicDBObject("$first", "$cancelledBy"))
 									.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
 									.append("dentalLab", new BasicDBObject("$first", "$dentalLab"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
 									.append("doctor", new BasicDBObject("$first", "$doctor"))));
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
