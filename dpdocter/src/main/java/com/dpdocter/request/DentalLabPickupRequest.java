@@ -32,6 +32,7 @@ public class DentalLabPickupRequest {
 	private String cancelledBy;
 	private Integer feedBackRating;
 	private String feedBackComment;
+	private String requestCreatedBy;
 
 	public String getId() {
 		return id;
@@ -239,6 +240,14 @@ public class DentalLabPickupRequest {
 
 	public void setFeedBackComment(String feedBackComment) {
 		this.feedBackComment = feedBackComment;
+	}
+
+	public String getRequestCreatedBy() {
+		return requestCreatedBy;
+	}
+
+	public void setRequestCreatedBy(String requestCreatedBy) {
+		this.requestCreatedBy = requestCreatedBy;
 	}
 
 	@Override
