@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,9 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalStage;
+import com.dpdocter.beans.DentalToothNumber;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorkCardValue;
 import com.dpdocter.beans.DentalWorksSample;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
@@ -59,10 +62,12 @@ import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.LineSpace;
@@ -83,6 +88,7 @@ import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
 import com.dpdocter.repository.RateCardDoctorAssociationRepository;
+import com.dpdocter.repository.UserDeviceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
@@ -103,6 +109,7 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
@@ -155,6 +162,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Autowired
 	private LocationServices locationServices;
 	
+
+	@Autowired
+	private UserDeviceRepository userDeviceRepository;
+
 	@Autowired
 	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
 
@@ -164,6 +175,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private JasperReportService jasperReportService;
+	
+	@Autowired
+	private SMSServices smsServices;
 
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
@@ -193,6 +207,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Value(value = "${jasper.print.labRequisationForm.a4.fileName}")
 	private String dentalWorksFormA4FileName;
+	
+	
+	@Value(value = "${dental.lab.add.request.to.doctor}")
+	private String dentalLabSMSToDoctor;
+
 
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -586,6 +605,22 @@ public class DentalLabServiceImpl implements DentalLabService {
 							.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
 					pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
 							RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+				}
+			}
+			if(request.getRequestCreatedBy() != null)
+			{
+				if(request.getRequestCreatedBy().equals("DENTAL_LAB"))
+				{
+					List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(request.getDoctorId()));
+					if (userDeviceCollections != null) {
+						String message = locationCollection.getLocationName() + " has created a request for you.";
+						pushNotificationServices.notifyUser(request.getDoctorId(), message,
+								ComponentType.DENTAL_WORKS.getType(), null, userDeviceCollections);
+					}
+					else
+					{
+						sendDownloadAppMessage(new ObjectId(request.getDoctorId()), locationCollection.getLocationName());
+					}
 				}
 			}
 			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
@@ -1278,6 +1313,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 				{
 					dentalLabPickupCollection.setFeedBackComment(request.getFeedbackComment());
 				}
+				if(request.getDiscarded() != null)
+				{
+					dentalLabPickupCollection.setDiscarded(request.getDiscarded());
+				}
 				dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 				System.out.println(dentalLabPickupCollection);
 				response = true;
@@ -1687,10 +1726,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		UserCollection userCollection = null;
 
-		LabSubReportJasperDetails labSubReportJasperDetail = null;
 		DBObject labReportItems = null;
 		List<DBObject> labreports = new ArrayList<DBObject>();
-	//	List<DentalLabDentalStageSubReport> dentalLabDentalStageSubReports = null;
 
 			labReportItems = new BasicDBObject();
 
@@ -1704,87 +1741,95 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			if(dentalLabPickupResponse.getDoctor() != null)
 			{
-				labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
+				parameters.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
 			}
 			else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
 				userCollection = userRepository.findOne(new ObjectId(dentalLabPickupResponse.getDoctorId()));
 				if (userCollection != null)
-					labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
+					parameters.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 				else
 
-					labReportItems.put("doctor", "<b>Doctor :- </b> ");
+					parameters.put("doctor", "<b>Doctor :- </b> ");
 			} else {
-				labReportItems.put("doctor", "<b>Doctor :- </b> ");
+				parameters.put("doctor", "<b>Doctor :- </b> ");
 
 			}
 			
 			if (dentalLabPickupResponse.getPatientName() != null) {
-				labReportItems.put("patientName", "<b>Patient Name :- </b> " + dentalLabPickupResponse.getPatientName());
+				parameters.put("patientName", "<b>Patient Name :- </b> " + dentalLabPickupResponse.getPatientName());
 			}
 			
 			if (dentalLabPickupResponse.getGender() != null) {
-				labReportItems.put("gender", "<b>Gender :- </b> " + dentalLabPickupResponse.getGender());
+				parameters.put("gender", "<b>Gender :- </b> " + dentalLabPickupResponse.getGender());
 			}
 			
 			if (dentalLabPickupResponse.getAge() != null) {
-				labReportItems.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getGender());
+				parameters.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getGender());
 			}
 			
 			if (dentalLabPickupResponse.getRequestId() != null) {
-				labReportItems.put("id", "<b>Id :- </b> " + dentalLabPickupResponse.getRequestId());
+				parameters.put("requestId", "<b>Id :- </b> " + dentalLabPickupResponse.getRequestId());
 			}
 			
 			
 
 			if (dentalLabPickupResponse.getDentalWorksSamples() != null
 					&& !dentalLabPickupResponse.getDentalWorksSamples().isEmpty()) {
+				String toothNumbers = "<br>";
 
 					DentalWorksSampleRequest dentalWorksSample = dentalLabPickupResponse.getDentalWorksSamples().get(0);
 
 					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getCollarAndMetalDesign())) {
-						labReportItems.put("collarAndMetalDesign", "<b>Collar and Metal Design :- </b> " + dentalWorksSample.getCollarAndMetalDesign());
+						parameters.put("collarAndMetalDesign", "<b>Collar and Metal Design :- </b> " + dentalWorksSample.getCollarAndMetalDesign());
 					}
 					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getOcclusalStaining())) {
-						labReportItems.put("occlusalStaining", "<b>Occlusal Design :- </b> " + dentalWorksSample.getOcclusalStaining());
+						parameters.put("occlusalStaining", "<b>Occlusal Design :- </b> " + dentalWorksSample.getOcclusalStaining());
 					}
 					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getInstructions())) {
-						labReportItems.put("instructions", "<b>Instructions :- </b> " + dentalWorksSample.getInstructions());
+						parameters.put("instructions", "<b>Instructions :- </b> " + dentalWorksSample.getInstructions());
 					}
 					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getPonticDesign())) {
-						labReportItems.put("ponticDesign", "<b>Pontic Desing :- </b> " + dentalWorksSample.getPonticDesign());
+						parameters.put("ponticDesign", "<b>Pontic Desing :- </b> " + dentalWorksSample.getPonticDesign());
 					}
 					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getShade())) {
-						labReportItems.put("shade", "<b>Shade :- </b> " + dentalWorksSample.getShade());
+						parameters.put("shade", "<b>Shade :- </b> " + dentalWorksSample.getShade());
 					}
 					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getUniqueWorkId())) {
-						labReportItems.put("uniqueWorkId", "<b>Unique Work Id :- </b> " + dentalWorksSample.getUniqueWorkId());
+						parameters.put("uniqueWorkId", "<b>Unique Work Id :- </b> " + dentalWorksSample.getUniqueWorkId());
 					}
 					if (dentalWorksSample.getDentalWork() != null) {
-						labReportItems.put("dentalWork", "<b>Work Name :- </b> " + dentalWorksSample.getDentalWork().getWorkName());
+						parameters.put("dentalWork", "<b>Work Name :- </b> " + dentalWorksSample.getDentalWork().getWorkName());
 					}
 					if(dentalWorksSample.getDentalImages() != null)
 					{
-						labReportItems.put("dentalImages" , dentalWorksSample.getDentalImages());
+						parameters.put("dentalImages" , dentalWorksSample.getDentalImages());
 					}
 					if(dentalWorksSample.getDentalWorkCardValues() != null)
-					{
-						labReportItems.put("dentalWorkCards" , dentalWorksSample.getDentalWorkCardValues());
+					{						
+						parameters.put("dentalWorkCards" , dentalWorksSample.getDentalWorkCardValues());
 					}
 					if(dentalWorksSample.getDentalStagesForDoctor() != null)
 					{
-						labReportItems.put("dentalStages" , dentalWorksSample.getDentalStagesForDoctor());
+						parameters.put("dentalStages" , dentalWorksSample.getDentalStagesForDoctor());
 					}
 					if(dentalWorksSample.getMaterial() != null)
 					{
-						labReportItems.put("material" , dentalWorksSample.getMaterial());
+						parameters.put("material" ,"<b>Material :- </b> " + StringUtils.join(dentalWorksSample.getMaterial(), ','));
+					}
+					if(dentalWorksSample.getDentalToothNumbers() != null)
+					{
+						for(DentalToothNumber dentalToothNumber :  dentalWorksSample.getDentalToothNumbers())
+						{
+							toothNumbers = toothNumbers + StringUtils.join(dentalToothNumber.getToothNumber() , ',') + " - " + dentalToothNumber.getType() + "<br>";
+						}
+						parameters.put("toothNumbers", "<b>ToothNumber :- </b> " + toothNumbers);
+						
 					}
 	
 			}
 			
-			labreports.add(labReportItems);
 		userCollection = null;
 
-		parameters.put("items", labreports);
 		parameters.put("title", "DENTAL WORKS" + labName.toUpperCase());
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
 
@@ -1827,6 +1872,40 @@ public class DentalLabServiceImpl implements DentalLabService {
 			return null;
 	}
 
+	
+	private void sendDownloadAppMessage(ObjectId doctorId, String locationName) {
+		try {
+			UserCollection userCollection = userRepository.findOne(doctorId);
+
+			if (userCollection != null) {
+				String message = dentalLabSMSToDoctor;
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(doctorId);
+				// smsTrackDetail.setLocationId(locationId);
+				// smsTrackDetail.setHospitalId(hospitalId);
+				smsTrackDetail.setType("APP_LINK_THROUGH_DENTAL_LAB");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(userCollection.getId());
+				SMS sms = new SMS();
+				smsDetail.setUserName(userCollection.getFirstName());
+				sms.setSmsText(message.replace("{clinicName}", locationName));
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(userCollection.getMobileNumber());
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 	
 	
 }

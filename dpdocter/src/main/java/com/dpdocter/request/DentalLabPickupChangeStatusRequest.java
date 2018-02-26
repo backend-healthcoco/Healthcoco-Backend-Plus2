@@ -11,6 +11,7 @@ public class DentalLabPickupChangeStatusRequest {
 	private Boolean isAcceptedAtLab;
 	private Integer feedbackRating;
 	private String feedbackComment;
+	private Boolean discarded;
 
 	public String getDentalLabPickupId() {
 		return dentalLabPickupId;
@@ -67,9 +68,13 @@ public class DentalLabPickupChangeStatusRequest {
 	public void setFeedbackComment(String feedbackComment) {
 		this.feedbackComment = feedbackComment;
 	}
-	
-	public static void main(String[] args) {
-		System.out.println(JacksonUtil.obj2Json(new DentalLabPickupChangeStatusRequest()));
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 }
