@@ -47,6 +47,7 @@ import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.SharedReportCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
@@ -64,6 +65,7 @@ import com.dpdocter.repository.DoctorLabFevouriteDoctorRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.SharedReportRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorLabDoctorReferenceRequest;
 import com.dpdocter.request.DoctorLabFavouriteDoctorRequest;
@@ -135,6 +137,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+	
+	@Autowired
+	private SharedReportRepository sharedReportRepository;
 
 	@Value(value = "${sms.add.doctor.Lab.report.to.patient}")
 	private String patientSMSText;

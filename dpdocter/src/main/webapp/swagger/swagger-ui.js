@@ -5399,7 +5399,7 @@ Buffer.TYPED_ARRAY_SUPPORT = (function () {
   function Bar () {}
   try {
     var arr = new Uint8Array(1)
-    arr.foo = function () { return 42 }
+    arr.foo = function () { return 42 
     arr.constructor = Bar
     return arr.foo() === 42 && // typed array instances can be augmented
         arr.constructor === Bar && // constructor can be set
@@ -6884,7 +6884,7 @@ function blitBuffer (src, dst, offset, length) {
   return i
 }
 
-},{"base64-js":16,"ieee754":17,"is-array":18}],16:[function(require,module,exports){
+},{"base64-js":16,"ieee754":17,"is-array":18},16:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
