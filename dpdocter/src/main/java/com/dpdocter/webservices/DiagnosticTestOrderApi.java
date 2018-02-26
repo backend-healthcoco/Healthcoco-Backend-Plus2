@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
@@ -42,12 +43,13 @@ public class DiagnosticTestOrderApi {
 	@Path(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS)
 	@GET
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS, notes = DiagnosticTestOrderUrls.SEARCH_LABS)
-	public Response<LabSearchResponse> searchLabsByTest(@QueryParam("city") String city,
+	public Response<LabSearchResponse> searchLabs(@QueryParam("city") String city,
 			@QueryParam("location") String location, @QueryParam(value = "latitude") String latitude,
 			@QueryParam(value = "longitude") String longitude, @QueryParam("searchTerm") String searchTerm, 
-			@MatrixParam(value = "test") List<String> testNames) {
+			@MatrixParam(value = "test") List<String> testNames, @QueryParam("page") int page, @QueryParam("size") int size,
+			@DefaultValue(value = "false") @QueryParam("havePackage") Boolean havePackage) {
 
-		List<LabSearchResponse> labSearchResponses = diagnosticTestOrderService.searchLabsByTest(city, location, latitude, longitude, searchTerm, testNames);
+		List<LabSearchResponse> labSearchResponses = diagnosticTestOrderService.searchLabs(city, location, latitude, longitude, searchTerm, testNames, page, size, havePackage);
 
 		Response<LabSearchResponse> response = new Response<LabSearchResponse>();
 		response.setDataList(labSearchResponses);

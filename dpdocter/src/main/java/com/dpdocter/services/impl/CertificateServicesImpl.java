@@ -295,6 +295,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("inputElements", "$inputElements")
 					.append("templateHtmlText", "$certificateTemplate.htmlText")
 					.append("type", "$certificateTemplate.type")
+					.append("localPatientName", "$patient.localPatientName")
+					.append("mobileNumber", "$user.mobileNumber")
 					.append("createdTime", "$createdTime")
 					.append("updatedTime", "$updatedTime")
 					.append("createdBy", "$createdBy")));
@@ -310,6 +312,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("inputElements", new BasicDBObject("$first", "$inputElements"))
 					.append("templateHtmlText", new BasicDBObject("$first", "$templateHtmlText"))
 					.append("type", new BasicDBObject("$first", "$type"))
+					.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
+					.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 					.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 					.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 					.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
@@ -324,7 +328,18 @@ public class CertificateServicesImpl implements CertificatesServices {
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
 													Arrays.asList("$certificateTemplate.type", type)))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))), project, group,
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))), 
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond", new BasicDBObject("if", 
+											new BasicDBObject("$eq", 
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))), 
+							Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"),
+							
+							project, group,
 							Aggregation.skip((page) * size),
 							Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime")
 							), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
@@ -337,6 +352,15 @@ public class CertificateServicesImpl implements CertificatesServices {
 											new BasicDBObject("$eq", 
 													Arrays.asList("$certificateTemplate.type", type)))
 															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond", new BasicDBObject("if", 
+											new BasicDBObject("$eq", 
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))), 
+							Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"),
 							project, group, Aggregation.sort(Sort.Direction.DESC, "createdTime")), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
 				}
 			}else {
@@ -344,6 +368,15 @@ public class CertificateServicesImpl implements CertificatesServices {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
 							Aggregation.unwind("certificateTemplate"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond", new BasicDBObject("if", 
+											new BasicDBObject("$eq", 
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))), 
+							Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"),
 							project, group,
 							Aggregation.skip((page) * size),
 							Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime")
@@ -352,6 +385,15 @@ public class CertificateServicesImpl implements CertificatesServices {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
 							Aggregation.unwind("certificateTemplate"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond", new BasicDBObject("if", 
+											new BasicDBObject("$eq", 
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))), 
+							Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"),
 							project, group, Aggregation.sort(Sort.Direction.DESC, "createdTime")), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
 				}
 			}

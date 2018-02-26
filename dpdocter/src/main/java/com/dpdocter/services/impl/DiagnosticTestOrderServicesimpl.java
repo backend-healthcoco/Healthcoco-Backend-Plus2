@@ -24,6 +24,7 @@ import com.dpdocter.beans.OrderDiagnosticTest;
 import com.dpdocter.beans.PickUpSlot;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagnosticTestPickUpSlotCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.OrderDiagnosticTestCollection;
 import com.dpdocter.enums.Day;
 import com.dpdocter.enums.OrderStatus;
@@ -54,9 +55,81 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 	private OrderDiagnosticTestRepository orderDiagnosticTestRepository;
 	
 	@Override
-	public List<LabSearchResponse> searchLabsByTest(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames) {
+	public List<LabSearchResponse> searchLabs(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames, int page, int size, Boolean havePackage) {
 		List<LabSearchResponse> response = null;
 		try{
+			if(havePackage) {
+				response = getLabsHavingTestPackages(city, location, latitude, longitude, page, size);
+			}else {
+				response = serachLabsByTest(city, location, latitude, longitude, searchTerm, testNames, page, size);
+			}
+		}catch(Exception e){
+			logger.error("Error while searching labss "+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while searching labs.");
+		}
+		return response;
+	}
+
+	private List<LabSearchResponse> getLabsHavingTestPackages(String city, String location, String latitude,
+			String longitude, int page, int size) {
+		List<LabSearchResponse> response = null;
+		try{
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("isLab").is(true)),
+					
+					Aggregation.lookup("diagnostic_test_package_cl", "_id", "locationId", "package"), 
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$package").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.match(new Criteria("package.discarded").is(false)),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project", 
+							new BasicDBObject("_id", "$_id")
+							.append("hospitalId", "$hospitalId")
+							.append("locationName", "$locationName")
+							.append("isNABLAccredited", "$isNABLAccredited")
+							.append("package", "$package"))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group", 
+							new BasicDBObject("_id", "$_id")
+							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+							.append("locationName", new BasicDBObject("$first", "$locationName"))
+							.append("isNABLAccredited", new BasicDBObject("$first", "$isNABLAccredited"))
+							.append("packages", new BasicDBObject("$push", "$package")))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project", 
+							new BasicDBObject("_id", "$_id")
+							.append("hospitalId", "$hospitalId")
+							.append("locationName", "$locationName")
+							.append("isNABLAccredited", "$isNABLAccredited")
+							.append("isLocationRequired", new BasicDBObject("$cond", new BasicDBObject(
+							          "if", new BasicDBObject("$gt", Arrays.asList(new BasicDBObject("$size", "$packages"), 0)))
+							        .append("then", 1)
+							        .append("else", 0))))),
+					
+					Aggregation.match(new Criteria("isLocationRequired").is(1)),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group", 
+							new BasicDBObject("_id", "$_id")
+							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+							.append("locationName", new BasicDBObject("$first", "$locationName"))
+							.append("isNABLAccredited", new BasicDBObject("$first", "$isNABLAccredited")))),
+					(size > 0) ? Aggregation.skip(page * size) : Aggregation.match(new Criteria()),
+					(size > 0) ? Aggregation.limit(size) : Aggregation.match(new Criteria()),		
+					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("localeRankingCount", -1))));
+			
+			response  = mongoTemplate.aggregate(aggregation, LocationCollection.class, LabSearchResponse.class).getMappedResults();
+		}catch(Exception e){
+			logger.error("Error while searching labs having test packages "+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while searching labs having test packages");
+		}
+		return response;
+	}
+
+	private List<LabSearchResponse> serachLabsByTest(String city, String location, String latitude, String longitude,
+			String searchTerm, List<String> testNames, int page, int size) {
+		List<LabSearchResponse> response = null;
+		try {
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("testName").in(testNames).and("locationId").ne(null)),
 					new CustomAggregationOperation(new BasicDBObject("$project", 

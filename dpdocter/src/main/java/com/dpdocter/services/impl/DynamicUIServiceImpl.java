@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicalNotesDynamicField;
 import com.dpdocter.beans.DataDynamicField;
-
 import com.dpdocter.beans.DataDynamicUI;
 import com.dpdocter.beans.DentalLabDynamicField;
 import com.dpdocter.beans.DentalLabDynamicUi;
@@ -22,9 +21,6 @@ import com.dpdocter.beans.DischargeSummaryDynamicFields;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.PrescriptionDynamicField;
 import com.dpdocter.beans.TreatmentDynamicFields;
-import com.dpdocter.beans.DataDynamicUI;
-import com.dpdocter.beans.DynamicUI;
-import com.dpdocter.beans.PrescriptionDynamicField;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.collections.DataDynamicUICollection;
 import com.dpdocter.collections.DentalLabDynamicUICollection;
