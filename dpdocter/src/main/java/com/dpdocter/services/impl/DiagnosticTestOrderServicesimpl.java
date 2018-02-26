@@ -108,7 +108,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("locationName", "$locationName")
 							.append("isNABLAccredited", "$isNABLAccredited")
 							.append("isLocationRequired", new BasicDBObject("$cond", new BasicDBObject(
-							          "if", new BasicDBObject("$gte", Arrays.asList(new BasicDBObject("$size", "$packages"), 0)))
+							          "if", new BasicDBObject("$gt", Arrays.asList(new BasicDBObject("$size", "$packages"), 0)))
 							        .append("then", 1)
 							        .append("else", 0))))),
 					
