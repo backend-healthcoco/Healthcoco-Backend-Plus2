@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -34,6 +33,7 @@ import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PrescriptionItem;
@@ -66,7 +66,6 @@ import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
-import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AppointmentState;
@@ -330,7 +329,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
 					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
 			for (PatientCollection patientCollection : patientCollections) {
-
 
 				ESPatientDocument document = esPatientRepository.findOne(patientCollection.getId().toString());
 				if (document != null)
@@ -1315,15 +1313,15 @@ System.out.println(fields[0] +""+ fields[1]);
 							BeanUtil.map(treatmentService, treatment);
 							treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
 
-						/*	if (checkIfNotNullOrNone(fields[4])) {
-								List<TreatmentFields> treatmentFieldList = new ArrayList<>();
-								TreatmentFields treatmentFields = new TreatmentFields();
+							if (checkIfNotNullOrNone(fields[4])) {
+								List<Fields> treatmentFieldList = new ArrayList<>();
+								Fields treatmentFields = new Fields();
 								treatmentFields.setKey("toothNumber");
 								treatmentFields.setValue(fields[4].replace("'", ""));
 								treatmentFieldList.add(treatmentFields);
 								treatment.setTreatmentFields(treatmentFieldList);
 							}
-*/
+
 							if (checkIfNotNullOrNone(fields[5]))
 								treatment.setNote(fields[5].replace("'", ""));
 

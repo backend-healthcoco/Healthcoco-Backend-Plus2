@@ -35,7 +35,6 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
@@ -1450,7 +1449,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				String fieldName = "";
 				if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
 					String key = "";
-					for (TreatmentFields treatmentFile : treatment.getTreatmentFields()) {
+					for (com.dpdocter.beans.Fields treatmentFile : treatment.getTreatmentFields()) {
 						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {

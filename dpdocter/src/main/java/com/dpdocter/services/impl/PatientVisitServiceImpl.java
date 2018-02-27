@@ -59,7 +59,7 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.TreatmentFields;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -2115,7 +2115,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							String fieldName = "";
 							if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
 								String key = "";
-								for (TreatmentFields treatmentFile : treatment.getTreatmentFields()) {
+								for (Fields treatmentFile : treatment.getTreatmentFields()) {
 									key = treatmentFile.getKey();
 									if (!DPDoctorUtils.anyStringEmpty(key)) {
 										if (key.equalsIgnoreCase("toothNumber")) {

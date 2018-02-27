@@ -39,16 +39,7 @@ public class InvoiceItem {
 
 	private String note;
 	
-	public List<TreatmentFields> getTreatmentFields() {
-		return treatmentFields;
-	}
-
-	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
-		this.treatmentFields = treatmentFields;
-	}
-
-	private List<TreatmentFields> treatmentFields;
-	
+	private List<Fields> treatmentFields;
 
 	public ObjectId getItemId() {
 		return itemId;
@@ -168,6 +159,14 @@ public class InvoiceItem {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
 	}
 
 	@Override

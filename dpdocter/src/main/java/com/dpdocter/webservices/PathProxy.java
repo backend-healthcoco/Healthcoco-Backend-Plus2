@@ -1542,25 +1542,9 @@ public interface PathProxy {
 		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
-
-		public static final String GET_LAB_ORDERS = "/orders/lab/{locationId}";
-
-		public static final String GET_CERTIFICATE_TEMPLATE_BY_ID = "/template/{templateId}/view";
-
-		public static final String GET_CERTIFICATE_TEMPLATES = "template";
-
-		public static final String DELETE_CERTIFICATE_TEMPLATES = "/template/{templateId}/delete";
-
-		public static final String ADD_PATIENT_CERTIFICATE = "/patient/add";
-
-		public static final String GET_PATIENT_CERTIFICATES = "/patient/";
-
+	
 		public static final String UPDATE_EMR = "/update/EMR";
-
-		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
-
-		public static final String DOWNLOAD_PATIENT_CERTIFICATE = "/patient/{certificateId}/download";
-
+		
 		public static final String TREATMENT_SERVICES = "/treatments/services/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String CLINICAL_NOTES = "/clinicalnotes/{doctorId}/{locationId}/{hospitalId}";
@@ -1626,6 +1610,7 @@ public interface PathProxy {
 		public static final String DELETE_PATIENT_CERTIFICATE = "/patient/{certificateId}/delete";
 
 		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
+		
 
 	}
 
