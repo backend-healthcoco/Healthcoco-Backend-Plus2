@@ -807,7 +807,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getObservation())) {
-			parameters.put("observation", dischargeSummaryCollection.getObservation());
+			parameters.put("observations", dischargeSummaryCollection.getObservation());
 		}
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getInvestigation())) {

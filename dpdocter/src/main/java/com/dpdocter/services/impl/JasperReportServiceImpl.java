@@ -1903,12 +1903,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
 			jrDesignTextField.setX(0);
 			jrDesignTextField.setY(Startwith + 2);
-			jrDesignTextField.setHeight(testsize);
+			jrDesignTextField.setHeight(60);
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			Startwith = Startwith + testsize + 2;
+			Startwith = Startwith + 62;
 		}
 		band.setHeight(Startwith);
 		return band;
