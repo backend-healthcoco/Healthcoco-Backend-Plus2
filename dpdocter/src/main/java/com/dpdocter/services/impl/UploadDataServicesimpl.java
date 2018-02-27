@@ -1550,52 +1550,52 @@ System.out.println(fields[0] +""+ fields[1]);
 
 	@Override
 	public Boolean uploadTreatmentServicesData(String doctorId, String locationId, String hospitalId) {
-		Boolean response = false;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = ",";
-		int dataCountNotUploaded = 0;
-		int lineCount = 0;
-		try {
-
-			br = new BufferedReader(new FileReader(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
-
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
-			
-			TreatmentServicesCollection treatmentServicesCollection = null;
-
-			while ((line = br.readLine()) != null) {
-
-				if (lineCount > 0) {
-					String[] fields = line.split(cvsSplitBy);
-					
-//					treatmentServicesCollection = treatmentServicesRepository.fin
-						
-					
-				}
-				lineCount++;
-				response = true;
-			}
-			System.out.println("Treatments Done. dataCountNotUploaded: " + dataCountNotUploaded);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+//		Boolean response = false;
+//		BufferedReader br = null;
+//		String line = "";
+//		String cvsSplitBy = ",";
+//		int dataCountNotUploaded = 0;
+//		int lineCount = 0;
+//		try {
+//
+//			br = new BufferedReader(new FileReader(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
+//
+//			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+//			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+//				doctorObjectId = new ObjectId(doctorId);
+//			if (!DPDoctorUtils.anyStringEmpty(locationId))
+//				locationObjectId = new ObjectId(locationId);
+//			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+//				hospitalObjectId = new ObjectId(hospitalId);
+//
+//			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+//			
+//			TreatmentServicesCollection treatmentServicesCollection = null;
+//
+//			while ((line = br.readLine()) != null) {
+//
+//				if (lineCount > 0) {
+//					String[] fields = line.split(cvsSplitBy);
+//					
+////					treatmentServicesCollection = treatmentServicesRepository.fin
+//						
+//					
+//				}
+//				lineCount++;
+//				response = true;
+//			}
+//			System.out.println("Treatments Done. dataCountNotUploaded: " + dataCountNotUploaded);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			if (br != null) {
+//				try {
+//					br.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
 		return null;
 	}
 
