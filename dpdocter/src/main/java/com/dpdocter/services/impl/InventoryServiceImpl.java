@@ -814,10 +814,10 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryBatch inventoryBatch = null;
 		try {
 				InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
-				if(inventoryBatchCollection != null)
-				{
-				 BeanUtil.map(inventoryBatchCollection, inventoryBatch);
-				}
+			if (inventoryBatchCollection != null) {
+				inventoryBatch = new InventoryBatch();
+				BeanUtil.map(inventoryBatchCollection, inventoryBatch);
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
