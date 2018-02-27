@@ -1575,7 +1575,17 @@ public interface PathProxy {
 		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
+	
 		public static final String UPDATE_EMR = "/update/EMR";
+		
+		public static final String TREATMENT_SERVICES = "/treatments/services/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String CLINICAL_NOTES = "/clinicalnotes/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String INVOICES = "/invoices/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
+
 	}
 
 	public static final String DENTAL_LAB_BASE_URL = BASE_URL + "/dentalLab";

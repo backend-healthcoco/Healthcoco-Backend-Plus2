@@ -144,4 +144,65 @@ public class UploadDataApi {
 		response.setData(uploadDataService.updateEMR());
 		return response;
 	}
+
+	@Path(value = PathProxy.UploadDataUrls.TREATMENT_SERVICES)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.TREATMENT_SERVICES, notes = PathProxy.UploadDataUrls.TREATMENT_SERVICES)
+	public Response<Boolean> uploadTreatmentServicesData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(uploadDataService.uploadTreatmentServicesData(doctorId, locationId, hospitalId));
+		return response;
+	}
+
+	@Path(value = PathProxy.UploadDataUrls.CLINICAL_NOTES)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.CLINICAL_NOTES, notes = PathProxy.UploadDataUrls.CLINICAL_NOTES)
+	public Response<Boolean> uploadClinicalNotesData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(uploadDataService.uploadClinicalNotesData(doctorId, locationId, hospitalId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.UploadDataUrls.INVOICES)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.INVOICES, notes = PathProxy.UploadDataUrls.INVOICES)
+	public Response<Boolean> uploadInvoicesData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(uploadDataService.uploadInvoicesData(doctorId, locationId, hospitalId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.UploadDataUrls.PAYMENTS)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.PAYMENTS, notes = PathProxy.UploadDataUrls.PAYMENTS)
+	public Response<Boolean> uploadPaymentsData(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(uploadDataService.uploadPaymentsData(doctorId, locationId, hospitalId));
+		return response;
+	}
+	
 }

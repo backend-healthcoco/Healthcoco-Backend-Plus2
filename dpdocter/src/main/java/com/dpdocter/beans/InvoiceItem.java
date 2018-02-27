@@ -37,14 +37,8 @@ public class InvoiceItem {
 
 	private InventoryBatch inventoryBatch;
 
-	public List<Fields> getTreatmentFields() {
-		return treatmentFields;
-	}
-
-	public void setTreatmentFields(List<Fields> treatmentFields) {
-		this.treatmentFields = treatmentFields;
-	}
-
+	private String note;
+	
 	private List<Fields> treatmentFields;
 
 	public ObjectId getItemId() {
@@ -159,10 +153,28 @@ public class InvoiceItem {
 		this.saveToInventory = saveToInventory;
 	}
 
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
 	@Override
 	public String toString() {
-		return "InvoiceItems [itemId=" + itemId + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", name="
-				+ name + ", type=" + type + ", quantity=" + quantity + ", status=" + status + ", cost=" + cost
-				+ ", discount=" + discount + ", tax=" + tax + ", finalCost=" + finalCost + "]";
+		return "InvoiceItem [itemId=" + itemId + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", name="
+				+ name + ", type=" + type + ", quantity=" + quantity + ", inventoryQuantity=" + inventoryQuantity
+				+ ", saveToInventory=" + saveToInventory + ", status=" + status + ", cost=" + cost + ", discount="
+				+ discount + ", tax=" + tax + ", finalCost=" + finalCost + ", inventoryBatch=" + inventoryBatch
+				+ ", note=" + note + ", treatmentFields=" + treatmentFields + "]";
 	}
 }

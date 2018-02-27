@@ -17,4 +17,12 @@ public interface UploadDateService {
 	Boolean deletePatients(String doctorId, String locationId, String hospitalId);
 
 	Boolean updateEMR();
+
+	Boolean uploadTreatmentServicesData(String doctorId, String locationId, String hospitalId);
+
+	Boolean uploadClinicalNotesData(String doctorId, String locationId, String hospitalId);
+
+	Boolean uploadInvoicesData(String doctorId, String locationId, String hospitalId);
+
+	Boolean uploadPaymentsData(String doctorId, String locationId, String hospitalId);
 }

@@ -64,4 +64,8 @@ public interface ClinicalNotesRepository extends MongoRepository<ClinicalNotesCo
 
 	@Query("{'id': {$in: ?0}}")
 	List<ClinicalNotesCollection> getClinicalNotesByIds(List<ObjectId> ids);
+
+	@Query("{'doctorId' : ?0, 'locationId' : ?1, 'hospitalId' : ?2, 'patientId' : ?3, 'createdTime' : ?4}")
+	ClinicalNotesCollection find(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
+			ObjectId userId, Date createdTime);
 }
