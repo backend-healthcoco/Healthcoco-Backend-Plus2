@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface CertificatesServices {
 
@@ -25,5 +26,7 @@ public interface CertificatesServices {
 	ConsentForm deletePatientCertificate(String certificateId, Boolean discarded);
 
 	String downloadPatientCertificate(String certificateId);
+
+	String saveCertificateSignImage(FormDataBodyPart file, String certificateIdStr);
 
 }

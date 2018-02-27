@@ -52,7 +52,6 @@ import com.dpdocter.beans.Tags;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.UserAllowanceDetails;
 import com.dpdocter.beans.UserRecords;
-import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;

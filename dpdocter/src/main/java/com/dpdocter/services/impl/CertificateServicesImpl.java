@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +42,12 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.ConsentFormCollectionLookupResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.CertificatesServices;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.PatientVisitService;
 import com.mongodb.BasicDBObject;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -77,6 +82,9 @@ public class CertificateServicesImpl implements CertificatesServices {
 
 	@Autowired
 	MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private FileManager fileManager;
 	
 	@Override
 	public Boolean addCertificateTemplates(CertificateTemplate request) {
@@ -532,5 +540,28 @@ public class CertificateServicesImpl implements CertificatesServices {
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		return response;
+	}
+
+	@Override
+	public String saveCertificateSignImage(FormDataBodyPart file, String certificateIdStr) {
+		String recordPath = null;
+		try {
+
+			Date createdTime = new Date();
+			if (file != null) {
+				String path = "certificateSigns" + File.separator + certificateIdStr;
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+
+				recordPath = path + File.separator + fileName + createdTime.getTime() + fileExtension;
+				fileManager.saveRecord(file, recordPath, 0.0, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return recordPath;
 	}
 }
