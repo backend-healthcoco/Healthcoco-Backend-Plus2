@@ -431,7 +431,7 @@ public class BillingServiceImpl implements BillingService {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
 						request.getHospitalId(), itemId.toString());
 				System.out.println(inventoryItem);
-				
+				System.out.println("Batch id :: " + inventoryStock.getBatchId());
 				InventoryBatch inventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
 				System.out.println(inventoryBatch);
 				if (inventoryBatch != null && inventoryItem != null) {

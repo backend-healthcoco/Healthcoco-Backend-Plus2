@@ -820,6 +820,7 @@ public class InventoryServiceImpl implements InventoryService {
 				}
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return inventoryBatch;
 	}
