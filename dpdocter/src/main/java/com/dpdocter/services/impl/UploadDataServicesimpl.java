@@ -1552,182 +1552,52 @@ System.out.println(fields[0] +""+ fields[1]);
 
 	@Override
 	public Boolean uploadTreatmentServicesData(String doctorId, String locationId, String hospitalId) {
-//		Boolean response = false;
-//		BufferedReader br = null;
-//		String line = "";
-//		String cvsSplitBy = ",";
-//		int dataCountNotUploaded = 0;
-//		int lineCount = 0;
-//		try {
-//
-//			br = new BufferedReader(new FileReader(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
-//
-//			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-//			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-//				doctorObjectId = new ObjectId(doctorId);
-//			if (!DPDoctorUtils.anyStringEmpty(locationId))
-//				locationObjectId = new ObjectId(locationId);
-//			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-//				hospitalObjectId = new ObjectId(hospitalId);
-//
-//			UserCollection drCollection = userRepository.findOne(doctorObjectId);
-//			
-//			TreatmentServicesCollection treatmentServicesCollection = null;
-//
-//			while ((line = br.readLine()) != null) {
-//
-//				if (lineCount > 0) {
-//					String[] fields = line.split(cvsSplitBy);
-//					Boolean createVisit = false;
-//					if (!DPDoctorUtils.anyStringEmpty(fields[0])) {
-//						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-//								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
-//						if (patientCollection != null) {
-//
-//							SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy hh:mm:ss");
-//							String dateSTri = fields[0].replace("'", "") + " 13:00:00";
-//							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-//							Date fromDate = dateFormat.parse(dateSTri);
-//
-//							patientTreatmentCollection = patientTreamentRepository.find(doctorObjectId,
-//									locationObjectId, hospitalObjectId, patientCollection.getUserId(), fromDate);
-//
-//							Discount totalDiscount = null;
-//							double totalCost = 0.0;
-//							double grandTotal = 0.0;
-//
-//							if (patientTreatmentCollection == null) {
-//								createVisit = true;
-//								patientTreatmentCollection = new PatientTreatmentCollection();
-//
-//								patientTreatmentCollection.setCreatedTime(fromDate);
-//								patientTreatmentCollection.setUpdatedTime(fromDate);
-//								patientTreatmentCollection.setFromDate(fromDate);
-//								patientTreatmentCollection.setUniqueEmrId(
-//										UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
-//								patientTreatmentCollection.setLocationId(locationObjectId);
-//								patientTreatmentCollection.setHospitalId(hospitalObjectId);
-//								patientTreatmentCollection.setPatientId(patientCollection.getUserId());
-//
-//								patientTreatmentCollection
-//										.setCreatedBy(drCollection.getTitle() + " " + drCollection.getFirstName());
-//								patientTreatmentCollection.setDoctorId(drCollection.getId());
-//							} else {
-//								totalDiscount = patientTreatmentCollection.getTotalDiscount();
-//								totalCost = patientTreatmentCollection.getTotalCost();
-//								grandTotal = patientTreatmentCollection.getGrandTotal();
-//							}
-//							List<Treatment> treatments = patientTreatmentCollection.getTreatments();
-//
-//							String treatmentName = fields[3].replace("'", "");
-//							List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository
-//									.findByNameAndDoctorLocationHospital(treatmentName, doctorObjectId,
-//											locationObjectId, hospitalObjectId);
-//
-//							TreatmentServicesCollection treatmentServicesCollection = null;
-//							TreatmentService treatmentService = new TreatmentService();
-//							if (treatmentServicesCollections != null && !treatmentServicesCollections.isEmpty()) {
-//								treatmentServicesCollection = treatmentServicesCollections.get(0);
-//								BeanUtil.map(treatmentServicesCollection, treatmentService);
-//							} else {
-//								treatmentService.setName(treatmentName);
-//							}
-//
-//							if (checkIfNotNullOrNone(fields[6]))
-//								treatmentService.setCost(Double.parseDouble(fields[6].replace("'", "")));
-//
-//							treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
-//							treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
-//							treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
-//							treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService,
-//									patientTreatmentCollection.getCreatedBy());
-//
-//							Treatment treatment = new Treatment();
-//							BeanUtil.map(treatmentService, treatment);
-//							treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
-//
-//							if (checkIfNotNullOrNone(fields[4])) {
-//								List<TreatmentFields> treatmentFieldList = new ArrayList<>();
-//								TreatmentFields treatmentFields = new TreatmentFields();
-//								treatmentFields.setKey("toothNumber");
-//								treatmentFields.setValue(fields[4].replace("'", ""));
-//								treatmentFieldList.add(treatmentFields);
-//								treatment.setTreatmentFields(treatmentFieldList);
-//							}
-//
-//							if (checkIfNotNullOrNone(fields[5]))
-//								treatment.setNote(fields[5].replace("'", ""));
-//
-//							treatment.setFinalCost(treatment.getCost());
-//
-//							if (checkIfNotNullOrNone(fields[7])) {
-//								Discount discount = new Discount();
-//								if (!checkIfNotNullOrNone(fields[8])) {
-//									discount.setUnit(UnitType.INR);
-//								} else if ((fields[8].replace("'", "")).equalsIgnoreCase("NUMBER")) {
-//									discount.setUnit(UnitType.INR);
-//								} else {
-//									discount.setUnit(UnitType.valueOf(fields[8].replace("'", "")));
-//								}
-//								discount.setValue(Double.parseDouble(fields[7].replace("'", "")));
-//								treatment.setDiscount(discount);
-//
-//								if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-//									treatment.setFinalCost(
-//											treatment.getCost() - (treatment.getCost() * (discount.getValue() / 100)));
-//								} else {
-//									treatment.setFinalCost(treatment.getCost() - (discount.getValue() / 100));
-//								}
-//
-//								if (totalDiscount == null) {
-//									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-//										totalDiscount = new Discount();
-//										totalDiscount.setUnit(UnitType.INR);
-//										totalDiscount.setValue(treatment.getCost() * (discount.getValue() / 100));
-//									} else {
-//										totalDiscount = discount;
-//									}
-//								} else {
-//									totalDiscount.setValue(totalDiscount.getValue() + discount.getValue());
-//								}
-//							}
-//
-//							if (treatments == null)
-//								treatments = new ArrayList<Treatment>();
-//							treatments.add(treatment);
-//							patientTreatmentCollection.setTreatments(treatments);
-//
-//							patientTreatmentCollection.setTotalCost(totalCost + treatment.getCost());
-//							patientTreatmentCollection.setGrandTotal(grandTotal + treatment.getFinalCost());
-//							patientTreatmentCollection.setTotalDiscount(totalDiscount);
-//
-//							patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
-//							if (createVisit)
-//								addRecord(patientTreatmentCollection, VisitedFor.TREATMENT, null,
-//										patientTreatmentCollection.getPatientId(),
-//										patientTreatmentCollection.getDoctorId(),
-//										patientTreatmentCollection.getLocationId(),
-//										patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getId());
-//						} else {
-//							dataCountNotUploaded++;
-//						}
-//					}
-//				}
-//				lineCount++;
-//				response = true;
-//			}
-//			System.out.println("Treatments Done. dataCountNotUploaded: " + dataCountNotUploaded);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (br != null) {
-//				try {
-//					br.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
+		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+		int dataCountNotUploaded = 0;
+		int lineCount = 0;
+		try {
+
+			br = new BufferedReader(new FileReader(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
+
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			
+			TreatmentServicesCollection treatmentServicesCollection = null;
+
+			while ((line = br.readLine()) != null) {
+
+				if (lineCount > 0) {
+					String[] fields = line.split(cvsSplitBy);
+					
+//					treatmentServicesCollection = treatmentServicesRepository.fin
+						
+					
+				}
+				lineCount++;
+				response = true;
+			}
+			System.out.println("Treatments Done. dataCountNotUploaded: " + dataCountNotUploaded);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		return null;
 	}
 
