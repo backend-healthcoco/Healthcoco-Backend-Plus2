@@ -307,7 +307,7 @@ public class BillingServiceImpl implements BillingService {
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
 				InventoryStock inventoryStock = null;
 				Long quantity = null;
-				itemIds.remove(invoiceItemResponse.getItemId());
+				itemIds.remove(new ObjectId(invoiceItemResponse.getItemId()));
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
 					invoiceItemResponse.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
@@ -419,20 +419,24 @@ public class BillingServiceImpl implements BillingService {
 			}
 			
 			for (ObjectId itemId : itemIds) {
+				System.out.println("inside added section . item id :: " + itemId);
 				InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
 						request.getHospitalId(), itemId.toString(),
 						doctorPatientInvoiceCollection.getId().toString());
+				System.out.println(inventoryStock);
 				Long quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
 						request.getHospitalId(), itemId.toString(),
 						doctorPatientInvoiceCollection.getId().toString());
+				System.out.println("Added quantity :: " + quantity);
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
 						request.getHospitalId(), itemId.toString());
+				System.out.println(inventoryItem);
 				if (inventoryStock.getInventoryBatch() != null && inventoryItem != null) {
 					createInventoryStock(itemId.toString(), inventoryItem.getId(),
 							inventoryStock.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(),
 							quantity.intValue(),
-							doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
+							doctorPatientInvoiceCollection.getId().toString(), "ADDED");
 				}
 				
 				
