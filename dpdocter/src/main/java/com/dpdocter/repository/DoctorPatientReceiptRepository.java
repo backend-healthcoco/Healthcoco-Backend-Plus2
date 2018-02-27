@@ -30,4 +30,7 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 
 	@Query("{'invoiceId': ?0, 'discarded' : ?1}")
 	List<DoctorPatientReceiptCollection> findByInvoiceId(ObjectId invoiceId, boolean discarded);
+
+	@Query("{'uniqueReceiptId' : ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3}")
+	DoctorPatientReceiptCollection find(String uniqueReceiptId, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 }

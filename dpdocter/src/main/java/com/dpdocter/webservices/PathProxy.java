@@ -1556,6 +1556,14 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_PATIENT_CERTIFICATE = "/patient/{certificateId}/download";
 
+		public static final String TREATMENT_SERVICES = "/treatments/services/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String CLINICAL_NOTES = "/clinicalnotes/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String INVOICES = "/invoices/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
+
 	}
 
 	public static final String DOCTOR_LAB_URL = BASE_URL + "/doctorLab";

@@ -16,4 +16,7 @@ public interface DoctorPatientInvoiceRepository extends MongoRepository<DoctorPa
 
 	@Query(value = "{'patientId' : ?0,'discarded' : false}", count = true)
 	Integer countByPatientId(ObjectId patientId);
+
+	@Query("{'uniqueInvoiceId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3}")
+	DoctorPatientInvoiceCollection find(String uniqueInvoiceId, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 }
