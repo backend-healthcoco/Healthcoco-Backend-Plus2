@@ -1494,7 +1494,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 						opdReportsCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
 								? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
 					}
-					opdReportsCollection.setAdminCreatedTime(new Date());
+					opdReportsCollection.setAdminCreatedTime(prescriptionCollection.getAdminCreatedTime());
+					if (prescriptionCollection.getAdminCreatedTime() == null) {
+						opdReportsCollection.setAdminCreatedTime(new Date());
+					}
 					if (opdReports.getCreatedTime() == null) {
 						opdReportsCollection.setCreatedTime(new Date());
 					}
