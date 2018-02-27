@@ -1634,6 +1634,8 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_PATIENT_CERTIFICATE = "/patient/{certificateId}/download";
 
+		public static final String SAVE_CERTIFICATE_SIGN_IMAGE = "/patient/saveCertifcateSign";
+
 	}
 
 	public static final String DOCTOR_LAB_URL = BASE_URL + "/doctorLab";

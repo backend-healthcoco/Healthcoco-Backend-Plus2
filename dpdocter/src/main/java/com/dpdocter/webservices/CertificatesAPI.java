@@ -23,7 +23,6 @@ import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.request.CertificateSignRequest;
 import com.dpdocter.services.CertificatesServices;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
