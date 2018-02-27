@@ -437,5 +437,17 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.getRequestById(requestId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT, notes = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT)
+	public Response<String> getReportById(@PathParam("requestId") String requestId) {
+		if (requestId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(dentalLabService.downloadDentalLabReportPrint(requestId));
+		return response;
+	}
 
 }
