@@ -508,6 +508,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				for (DentalWorksSampleRequest dentalWorksSampleRequest : request.getDentalWorksSamples()) {
 					DentalWorksSample dentalWorksSample = new DentalWorksSample();
 					BeanUtil.map(dentalWorksSampleRequest, dentalWorksSample);
+					dentalWorksSample.setDentalToothNumbers(dentalWorksSampleRequest.getDentalToothNumbers());
 					if (dentalWorksSampleRequest.getDentalStagesForDoctor() != null) {
 						dentalStages = new ArrayList<>();
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
@@ -551,6 +552,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalWorksSampleRequest.setUniqueWorkId(uniqueWorkId);
 					DentalWorksSample dentalWorksSample = new DentalWorksSample();
 					BeanUtil.map(dentalWorksSampleRequest, dentalWorksSample);
+					dentalWorksSample.setDentalToothNumbers(dentalWorksSampleRequest.getDentalToothNumbers());
 					if (dentalWorksSampleRequest.getDentalStagesForDoctor() != null) {
 						dentalStages = new ArrayList<>();
 						for (DentalStageRequest dentalStageRequest : dentalWorksSampleRequest
