@@ -169,6 +169,14 @@ public class DentalWorksSample {
 		this.processStatus = processStatus;
 	}
 
+	public List<DentalToothNumber> getDentalToothNumbers() {
+		return dentalToothNumbers;
+	}
+
+	public void setDentalToothNumbers(List<DentalToothNumber> dentalToothNumbers) {
+		this.dentalToothNumbers = dentalToothNumbers;
+	}
+
 	@Override
 	public String toString() {
 		return "DentalWorksSample [dentalWork=" + dentalWork + ", dentalToothNumbers=" + dentalToothNumbers
