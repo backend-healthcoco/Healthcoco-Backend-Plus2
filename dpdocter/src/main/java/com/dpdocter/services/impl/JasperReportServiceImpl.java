@@ -162,7 +162,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
 		} 
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
-			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-lab-dental-works-a4.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-lab-requisation-form-a4.jrxml");
 		} else {
@@ -200,7 +200,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
 		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())) {
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType()) &&
+				!componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
 			dsr.setDatasetName("mongo-print-settings-dataset_1");
 
 			expression = new JRDesignExpression();
@@ -280,9 +281,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 			createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
 
+		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
+				 && !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType()))
+			addsignature(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())) {
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
 			band = new JRDesignBand();
 			band.setHeight(21);
 			jrDesignTextField = new JRDesignTextField();
@@ -298,7 +304,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 
 		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType()))
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
+				 && !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType()))
 			jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 		// dsr.setDataSourceExpression(new JRDesignExpression("new
 		// net.sf.jasperreports.engine.JREmptyDataSource(1)"));

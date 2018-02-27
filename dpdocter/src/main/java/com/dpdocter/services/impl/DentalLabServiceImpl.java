@@ -205,7 +205,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	private String footerText;
 	
 	
-	@Value(value = "${jasper.print.labRequisationForm.a4.fileName}")
+	@Value(value = "${jasper.print.dental.works.reports.fileName}")
 	private String dentalWorksFormA4FileName;
 	
 	
@@ -1689,7 +1689,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public String downloadDentalLabReportPrint(String id) {
 		String response = null;
 		DentalLabPickupResponse dentalLabPickupResponse = null;
-		List<ObjectId> pickupRequestIds = null;
 		JasperReportResponse jasperReportResponse = null;
 		try {
 			
