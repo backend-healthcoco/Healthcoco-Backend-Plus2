@@ -1,12 +1,10 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -1343,10 +1341,8 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("mobileNumber").regex("^" + searchTerm, "i"),
-						new Criteria("mobileNumber").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("name").regex("^" + searchTerm, "i"),
-						new Criteria("name").regex(".* " + searchTerm + ".*", "i"));
+				criteria = criteria.orOperator(new Criteria("mobileNumber").regex(searchTerm, "i"),
+						new Criteria("name").regex(searchTerm, "i"));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(labType)) {
 				criteria.and("labType").is(labType);
@@ -1384,10 +1380,8 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("mobileNumber").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("mobileNumber").regex("^" + searchTerm, "i"),
-						new Criteria("name").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("name").regex("^" + searchTerm, "i"));
+				criteria = criteria.orOperator(new Criteria("mobileNumber").regex(searchTerm, "i"),
+						new Criteria("name").regex(searchTerm, "i"));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(labType)) {
@@ -1547,8 +1541,7 @@ public class LocationServiceImpl implements LocationServices {
 			Criteria criteria = new Criteria();
 			criteria.and("isActive").is(Boolean.TRUE);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("location.locationName").regex(".* " + searchTerm + ".*", "i"));
+				criteria = criteria.orOperator(new Criteria("location.locationName").regex(searchTerm, "i"));
 			}
 			Aggregation aggregation = null;
 
@@ -1637,8 +1630,9 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("name").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("name").regex("^" + searchTerm, "i"));
+
+				criteria = criteria.orOperator(new Criteria("name").regex(searchTerm, "i"));
+
 			}
 			criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -1668,8 +1662,7 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
-						new Criteria("name").regex(".* " + searchTerm + ".*", "i"));
+				criteria = criteria.orOperator(new Criteria("name").regex(searchTerm, "i"));
 			}
 			criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -1731,9 +1724,7 @@ public class LocationServiceImpl implements LocationServices {
 
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(
-						new Criteria("diagnosticTest.testName").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("diagnosticTest.testName").regex("^" + searchTerm, "i"));
+				criteria = criteria.orOperator(new Criteria("diagnosticTest.testName").regex(searchTerm, "i"));
 			}
 			criteria.and("rateCardId").is(new ObjectId(rateCardId));
 			criteria.and("isAvailable").is(true);
@@ -1799,15 +1790,13 @@ public class LocationServiceImpl implements LocationServices {
 
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("testName").regex("^" + searchTerm, "i"),
-						new Criteria("testName").regex(".* " + searchTerm + ".*", "i"));
+				criteria = criteria.orOperator(new Criteria("testName").regex(searchTerm, "i"));
 			}
 			criteria.and("rateCardTest.rateCardId").is(rateCardId);
 			criteria.and("rateCardTest.discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
 				criteria = criteria
-						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
-								new Criteria("specimen").regex(".* " + searchTerm + ".*", "i")));
+						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex(specimen, "i")));
 			}
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("specimen", "$specimen"),
 					Fields.field("rateCardTest._id", "$rateCardTest._id"),
@@ -1963,8 +1952,7 @@ public class LocationServiceImpl implements LocationServices {
 				criteria = criteria.andOperator(new Criteria("hospitalId").is(new ObjectId(hospitalId)));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("locationName").regex("^" + searchTerm, "i"),
-						new Criteria("locationName").regex(".* " + searchTerm + ".*", "i"));
+				criteria = criteria.orOperator(new Criteria("locationName").regex(searchTerm, "i"));
 			}
 
 			if (isClinic != null) {
@@ -2015,8 +2003,7 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("specimen").regex("^" + searchTerm, "i"),
-						new Criteria("specimen").regex(".* " + searchTerm + ".*", "i"));
+				criteria = criteria.orOperator(new Criteria("specimen").regex(searchTerm, "i"));
 			}
 
 			if (size > 0)
@@ -2107,10 +2094,8 @@ public class LocationServiceImpl implements LocationServices {
 			if (isParent) {
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					criteria = criteria.orOperator(
-							new Criteria("patientLabTestSamples.patientName").regex(".* " + searchTerm + ".*", "i"),
-							new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
-							new Criteria("daughterLabLocation.locationName").regex(".* " + searchTerm + ".*", "i"),
-							new Criteria("daughterLabLocation.locationName").regex("^" + searchTerm, "i"));
+							new Criteria("patientLabTestSamples.patientName").regex(searchTerm, "i"),
+							new Criteria("daughterLabLocation.locationName").regex(searchTerm, "i"));
 				}
 
 				criteria.and("labTestSamples.parentLabLocationId").is(locationObjectId);
@@ -2119,10 +2104,8 @@ public class LocationServiceImpl implements LocationServices {
 
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					criteria = criteria.orOperator(
-							new Criteria("patientLabTestSamples.patientName").regex(".* " + searchTerm + ".*", "i"),
-							new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
-							new Criteria("parentLabLocation.locationName").regex(".* " + searchTerm + ".*", "i"),
-							new Criteria("parentLabLocation.locationName").regex("^" + searchTerm, "i"));
+							new Criteria("patientLabTestSamples.patientName").regex(searchTerm, "i"),
+							new Criteria("parentLabLocation.locationName").regex(searchTerm, "i"));
 				}
 
 				criteria.and("labTestSamples.daughterLabLocationId").is(locationObjectId);
@@ -2249,8 +2232,7 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("labTestSamples.isCollectedAtLab").is(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("patientName").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("patientName").regex("^" + searchTerm, "i"));
+				criteria = criteria.orOperator(new Criteria("patientName").regex(searchTerm, "i"));
 			}
 
 			if (isParent) {
@@ -2361,8 +2343,7 @@ public class LocationServiceImpl implements LocationServices {
 
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("diagnosticTest.testName").regex("^" + searchTerm, "i"),
-						new Criteria("diagnosticTest.testName").regex(".* " + searchTerm + ".*", "i"));
+				criteria = criteria.orOperator(new Criteria("diagnosticTest.testName").regex(searchTerm, "i"));
 			}
 			criteria.and("rateCardId").is(rateCardId);
 
@@ -2427,8 +2408,7 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("workName").regex("^" + searchTerm, "i"),
-						new Criteria("workName").regex(".* " + searchTerm + ".*", "i"));
+				criteria = criteria.orOperator(new Criteria("workName").regex(searchTerm, "i"));
 			}
 
 			if (size > 0)
