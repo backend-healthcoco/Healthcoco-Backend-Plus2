@@ -448,6 +448,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm));
 			}
+			criteria.and("dentalLab.isDentalWorksLab").is(true);
 			criteria.and("isActive").is(true);
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -745,7 +746,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("dentalWork.workName").regex("^" + searchTerm));
 			}
 			criteria.and("rateCardId").is(new ObjectId(rateCardId));
-			criteria.and("isAvailable").is(true);
+			criteria.and("dentalWork.isAvailable").is(true);
 			criteria.and("discarded").is(discarded);
 
 			if (size > 0) {
