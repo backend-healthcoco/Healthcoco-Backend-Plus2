@@ -114,6 +114,7 @@ public class InventoryServiceImpl implements InventoryService {
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
 			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 				Drug drug =prescriptionServices.makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+				System.out.println(drug);
 				transnationalService.addResource(new ObjectId(drug.getId()), Resource.DRUG, false);
 				if (drug != null) {
 					ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -122,8 +123,10 @@ public class InventoryServiceImpl implements InventoryService {
 						esDrugDocument.setDrugTypeId(drug.getDrugType().getId());
 						esDrugDocument.setDrugType(drug.getDrugType().getType());
 					}
+					System.out.println(esDrugDocument);
 					esPrescriptionService.addDrug(esDrugDocument);
 				}
+				
 			}
 			
 		} catch (Exception e) {
@@ -428,6 +431,7 @@ public class InventoryServiceImpl implements InventoryService {
 						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
 						if (drugCollection != null) {
 							ESDrugDocument esDrugDocument = new ESDrugDocument();
+							//esDrugDocument.setTotalStock(inventoryItemCollection.get);
 							BeanUtil.map(drugCollection, esDrugDocument);
 							if (drugCollection.getDrugType() != null) {
 								esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
