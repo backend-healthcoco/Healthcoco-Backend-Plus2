@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -672,14 +673,14 @@ public class LocationServiceImpl implements LocationServices {
 				criteria.and("updatedTime").lte(DPDoctorUtils.getEndTime(new Date(to)));
 			}
 
+			Criteria orOperator = new Criteria();
+			;
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm),
-						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm));
+				orOperator.orOperator(new Criteria("daughterLab.locationName").regex(searchTerm, "i"),
+						new Criteria("parentLab.locationName").regex(searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex(searchTerm, "i"));
 			}
+
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("daughterLabCRN", "$daughterLabCRN"), Fields.field("pickupTime", "$pickupTime"),
 					Fields.field("deliveryTime", "$deliveryTime"),
@@ -757,7 +758,8 @@ public class LocationServiceImpl implements LocationServices {
 									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 									.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.unwind("patientLabTestSamples"),
 						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
 								"labTestSamples"),
@@ -765,12 +767,13 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
-						aggregationOperation1, projectList, aggregationOperation2,
+						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"),
+						Aggregation.match(orOperator), aggregationOperation1, projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.unwind("patientLabTestSamples"),
 						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
 								"labTestSamples"),
@@ -778,8 +781,8 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
-						aggregationOperation1, projectList, aggregationOperation2,
+						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"),
+						Aggregation.match(orOperator), aggregationOperation1, projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
@@ -814,13 +817,12 @@ public class LocationServiceImpl implements LocationServices {
 				criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to)));
 			}
 
+			Criteria orOperator = new Criteria();
+			;
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 
-				criteria = criteria.orOperator(
-						new Criteria("parentLab.locationName").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("patientLabTestSamples.patientName").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"));
+				orOperator.orOperator(new Criteria("parentLab.locationName").regex(searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex(searchTerm, "i"));
 
 			}
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
@@ -901,7 +903,8 @@ public class LocationServiceImpl implements LocationServices {
 									.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.unwind("patientLabTestSamples"),
 						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
 								"labTestSamples"),
@@ -909,12 +912,13 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
-						aggregationOperation1, projectList, aggregationOperation2,
+						Aggregation.unwind("parentLab"), Aggregation.match(orOperator), aggregationOperation1,
+						projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.unwind("patientLabTestSamples"),
 						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
 								"labTestSamples"),
@@ -922,8 +926,8 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("daughterLab"), Aggregation.unwind("parentLab"), Aggregation.match(criteria),
-						aggregationOperation1, projectList, aggregationOperation2,
+						Aggregation.unwind("parentLab"), Aggregation.match(orOperator), aggregationOperation1,
+						projectList, aggregationOperation2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			}
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -963,15 +967,15 @@ public class LocationServiceImpl implements LocationServices {
 				criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to)));
 			}
 
+			Criteria orOperator = new Criteria();
+			;
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 
-				criteria = criteria.orOperator(
-						new Criteria("daughterLab.locationName").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("patientLabTestSamples.patientName").regex(".* " + searchTerm + ".*", "i"),
-						new Criteria("patientLabTestSamples.patientName").regex("^" + searchTerm, "i"));
+				orOperator.orOperator(new Criteria("daughterLab.locationName").regex(searchTerm, "i"),
+						new Criteria("patientLabTestSamples.patientName").regex(searchTerm, "i"));
 
 			}
+
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
 							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
@@ -1059,7 +1063,8 @@ public class LocationServiceImpl implements LocationServices {
 									.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("patientLabTestSamples"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.unwind("patientLabTestSamples"),
 						Aggregation.unwind("patientLabTestSamples.labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "patientLabTestSamples.labTestSampleIds", "_id",
 								"labTestSamples"),
@@ -1067,17 +1072,18 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
 						Aggregation.unwind("daughterLab"),
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.unwind("parentLab"),
+						Aggregation.unwind("parentLab"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
-						Aggregation.match(criteria), aggregationOperation1, projectList, aggregationOperation2,
+						Aggregation.match(orOperator), aggregationOperation1, projectList, aggregationOperation2,
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.unwind("labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "labTestSampleIds", "_id", "labTestSamples"),
 						Aggregation.unwind("labTestSamples"),
 						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
@@ -1088,7 +1094,7 @@ public class LocationServiceImpl implements LocationServices {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
-						Aggregation.match(criteria), aggregationOperation1, projectList, aggregationOperation2,
+						Aggregation.match(orOperator), aggregationOperation1, projectList, aggregationOperation2,
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			// System.out.println(aggregation);
@@ -2106,8 +2112,6 @@ public class LocationServiceImpl implements LocationServices {
 							new Criteria("daughterLabLocation.locationName").regex(".* " + searchTerm + ".*", "i"),
 							new Criteria("daughterLabLocation.locationName").regex("^" + searchTerm, "i"));
 				}
-
-				
 
 				criteria.and("labTestSamples.parentLabLocationId").is(locationObjectId);
 
