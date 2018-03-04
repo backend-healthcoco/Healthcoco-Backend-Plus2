@@ -57,16 +57,16 @@ import io.swagger.annotations.ApiOperation;
 public class DentalLabAPI {
 
 	private static Logger logger = Logger.getLogger(DentalLabAPI.class.getName());
-	
+
 	@Autowired
 	private DentalLabService dentalLabService;
-	
+
 	@Autowired
 	private LocationServices locationServices;
-	
+
 	@Autowired
 	private ESDentalLabServiceImpl esDentalLabServiceImpl;
-	
+
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
@@ -79,8 +79,7 @@ public class DentalLabAPI {
 		dentalWork = new DentalWork();
 		dentalWork = dentalLabService.addEditCustomWork(request);
 		Response<DentalWork> response = new Response<DentalWork>();
-		if(dentalWork != null)
-		{
+		if (dentalWork != null) {
 			response.setData(dentalWork);
 			ESDentalWorksDocument dentalWorksDocument = new ESDentalWorksDocument();
 			BeanUtil.map(dentalWork, dentalWorksDocument);
@@ -98,23 +97,22 @@ public class DentalLabAPI {
 		response.setDataList(dentalLabService.getCustomWorks(page, size, searchTerm));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.DELETE_DENTAL_WORKS)
 	@DELETE
 	@ApiOperation(value = PathProxy.DentalLabUrls.DELETE_DENTAL_WORKS, notes = PathProxy.DentalLabUrls.DELETE_DENTAL_WORKS)
 	public Response<DentalWork> deleteDentalWork(@QueryParam("id") String id,
 			@QueryParam("discarded") boolean discarded) {
-		
+
 		DentalWork dentalWork = null;
 		if (id == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		//dentalWork = new DentalWork();
+		// dentalWork = new DentalWork();
 		dentalWork = dentalLabService.deleteCustomWork(id, discarded);
 		Response<DentalWork> response = new Response<DentalWork>();
-		if(dentalWork != null)
-		{
+		if (dentalWork != null) {
 			response.setData(dentalWork);
 			ESDentalWorksDocument dentalWorksDocument = new ESDentalWorksDocument();
 			BeanUtil.map(dentalWork, dentalWorksDocument);
@@ -122,12 +120,12 @@ public class DentalLabAPI {
 		}
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.CHANGE_LAB_TYPE)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.CHANGE_LAB_TYPE, notes = PathProxy.DentalLabUrls.CHANGE_LAB_TYPE)
-	public Response<Boolean> changeLabType(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
-			@QueryParam("labType") LabType labType) {
+	public Response<Boolean> changeLabType(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("labType") LabType labType) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -149,29 +147,30 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.addEditDentalLabDoctorAssociation(request));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
-	public Response<User> getDentalLabDoctorAssociationForLocation(@QueryParam("locationId") String locationId, @QueryParam("doctorId") String doctorId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+	public Response<User> getDentalLabDoctorAssociationForLocation(@QueryParam("locationId") String locationId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm) {
 		Response<User> response = new Response<User>();
-		response.setDataList(dentalLabService.getDentalLabDoctorAssociations(locationId, doctorId ,page, size, searchTerm));
+		response.setDataList(
+				dentalLabService.getDentalLabDoctorAssociations(locationId, doctorId, page, size, searchTerm));
 		return response;
 	}
-	
-	
 
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR)
-	public Response<Location> getDentalLabDoctorAssociationForDoctor( @QueryParam("doctorId") String doctorId,
+	public Response<Location> getDentalLabDoctorAssociationForDoctor(@QueryParam("doctorId") String doctorId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		Response<Location> response = new Response<Location>();
-		response.setDataList(dentalLabService.getDentalLabDoctorAssociationsForDoctor(doctorId, page, size, searchTerm));
+		response.setDataList(
+				dentalLabService.getDentalLabDoctorAssociationsForDoctor(doctorId, page, size, searchTerm));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
@@ -184,18 +183,21 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.addEditDentalLabPickupRequest(request));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_WORK_PICKUPS)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_WORK_PICKUPS, notes = PathProxy.DentalLabUrls.GET_DENTAL_WORK_PICKUPS)
 	public Response<DentalLabPickupResponse> getPickupRequests(@QueryParam("dentalLabId") String dentalLabId,
-			@QueryParam("doctorId") String doctorId,@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("status") String status,
-			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted, @QueryParam("isCollectedAtDoctor") Boolean isCollectedAtDoctor,
-			@QueryParam("size") int size, @QueryParam("page") int page , @QueryParam("fromETA") Long fromETA, @QueryParam("toETA") Long toETA,@QueryParam("isTrailsRequired") Boolean isTrailsRequired) {
-		
+			@QueryParam("doctorId") String doctorId, @DefaultValue("0") @QueryParam("from") Long from,
+			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("status") String status,
+			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted,
+			@QueryParam("isCollectedAtDoctor") Boolean isCollectedAtDoctor, @QueryParam("size") int size,
+			@QueryParam("page") int page, @QueryParam("fromETA") Long fromETA, @QueryParam("toETA") Long toETA,
+			@QueryParam("isTrailsRequired") Boolean isTrailsRequired) {
+
 		Response<DentalLabPickupResponse> response = new Response<DentalLabPickupResponse>();
-		response.setDataList(dentalLabService.getRequests(dentalLabId, doctorId, from, to, searchTerm, status, isAcceptedAtLab, isCompleted, isCollectedAtDoctor, size, page, fromETA, toETA, isTrailsRequired));
+		response.setDataList(dentalLabService.getRequests(dentalLabId, doctorId, from, to, searchTerm, status,
+				isAcceptedAtLab, isCompleted, isCollectedAtDoctor, size, page, fromETA, toETA, isTrailsRequired));
 		return response;
 	}
 
@@ -211,21 +213,24 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.addEditRateCardDentalWorkAssociation(request));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
-	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,@QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm , @QueryParam("dentalLabId") String dentalLabId,@QueryParam("doctorId") String doctorId ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("dentalLabId") String dentalLabId, @QueryParam("doctorId") String doctorId,
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 		if (doctorId == null || dentalLabId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
-		response.setDataList(dentalLabService.getRateCardWorks(page, size, searchTerm,dentalLabId, doctorId, discarded));
+		response.setDataList(
+				dentalLabService.getRateCardWorks(page, size, searchTerm, dentalLabId, doctorId, discarded));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION)
@@ -238,21 +243,23 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.addEditRateCardDoctorAssociation(request));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
-	public Response<RateCardDentalWorkAssociation> getRateCards(@QueryParam("page") int page,@QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm , @QueryParam("doctorId") String doctorId , @QueryParam("dentalLabId") String dentalLabId ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+	public Response<RateCardDentalWorkAssociation> getRateCards(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("doctorId") String doctorId, @QueryParam("dentalLabId") String dentalLabId,
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 		if (doctorId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
-		response.setDataList(dentalLabService.getRateCards(page, size, searchTerm, doctorId,dentalLabId, discarded));
+		response.setDataList(dentalLabService.getRateCards(page, size, searchTerm, doctorId, dentalLabId, discarded));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION)
@@ -265,21 +272,23 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.addEditCollectionBoyDoctorAssociation(request));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION)
-	public Response<RateCardDentalWorkAssociation> getCBDoctorAssociation(@QueryParam("page") int page,@QueryParam("size") int size,
-			 @QueryParam("doctorId") String doctorId , @QueryParam("dentalLabId") String dentalLabId , @QueryParam("collectionBoyId") String collectionBoyId) {
+	public Response<RateCardDentalWorkAssociation> getCBDoctorAssociation(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+			@QueryParam("dentalLabId") String dentalLabId, @QueryParam("collectionBoyId") String collectionBoyId) {
 		if (collectionBoyId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardDentalWorkAssociation> response = new Response<RateCardDentalWorkAssociation>();
-		response.setDataList(dentalLabService.getCBAssociatedDoctors(doctorId, dentalLabId, collectionBoyId, size, page));
+		response.setDataList(
+				dentalLabService.getCBAssociatedDoctors(doctorId, dentalLabId, collectionBoyId, size, page));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.GET_CB_LIST_FOR_DENTAL_LAB)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_CB_LIST_FOR_DENTAL_LAB, notes = PathProxy.DentalLabUrls.GET_CB_LIST_FOR_DENTAL_LAB)
@@ -290,17 +299,18 @@ public class DentalLabAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Object> response = new Response<Object>();
-		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm, LabType.DENTAL.getType()));
-		response.setData(locationServices.getCBCount(locationId, searchTerm ,LabType.DENTAL.getType()));
+		response.setDataList(
+				locationServices.getCollectionBoyList(size, page, locationId, searchTerm, LabType.DENTAL.getType()));
+		response.setData(locationServices.getCBCount(locationId, searchTerm, LabType.DENTAL.getType()));
 
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS, notes = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
 	public Response<Boolean> changeStatus(DentalLabPickupChangeStatusRequest request) {
-		if (DPDoctorUtils.anyStringEmpty(request.getDentalLabPickupId() , request.getStatus())) {
+		if (DPDoctorUtils.anyStringEmpty(request.getDentalLabPickupId(), request.getStatus())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -308,7 +318,7 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.changeStatus(request));
 		return response;
 	}
-	
+
 	@POST
 	@Path(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_MULTIPART)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
@@ -325,7 +335,7 @@ public class DentalLabAPI {
 		response.setData(imageURLResponse);
 		return response;
 	}
-	
+
 	@POST
 	@Path(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64, notes = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64)
@@ -341,13 +351,12 @@ public class DentalLabAPI {
 		response.setData(imageURLResponse);
 		return response;
 	}
-	
+
 	@POST
 	@Path(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR)
 	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR, notes = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR)
 	public Response<Boolean> updateDentalStagesForDoctor(UpdateDentalStagingRequest request) {
 
-	
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -355,14 +364,12 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.updateDentalStageForDoctor(request));
 		return response;
 	}
-	
-	
+
 	@POST
 	@Path(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB)
 	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB, notes = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB)
 	public Response<Boolean> updateDentalStagesForLab(UpdateDentalStagingRequest request) {
 
-	
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -371,13 +378,14 @@ public class DentalLabAPI {
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS_BY_RATE_CARD)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS_BY_RATE_CARD, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
-	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,@QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm , @QueryParam("rateCardId") String rateCardId,@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
-		if (rateCardId== null) {
+	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("rateCardId") String rateCardId,
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (rateCardId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -385,35 +393,35 @@ public class DentalLabAPI {
 		response.setDataList(dentalLabService.getRateCardWorks(page, size, searchTerm, rateCardId, discarded));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.CANCEL_REQUEST)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.CANCEL_REQUEST, notes = PathProxy.DentalLabUrls.CANCEL_REQUEST)
 	public Response<Boolean> cancelRequest(@QueryParam("requestId") String requestId,
-			@QueryParam("reasonForCancel") String reasonForCancel , @QueryParam("cancelledBy") String cancelledBy) {
+			@QueryParam("reasonForCancel") String reasonForCancel, @QueryParam("cancelledBy") String cancelledBy) {
 		if (requestId == null) {
-		//	logger.warn("Invalid Input");
+			// logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(dentalLabService.cancelRequest(requestId, reasonForCancel, cancelledBy));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.DISCARD_REQUEST)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.DISCARD_REQUEST, notes = PathProxy.DentalLabUrls.DISCARD_REQUEST)
 	public Response<Boolean> discardRequest(@PathParam("requestId") String requestId,
-			@QueryParam("discarded") Boolean discarded ) {
+			@QueryParam("discarded") Boolean discarded) {
 		if (requestId == null) {
-		//	logger.warn("Invalid Input");
+			// logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(dentalLabService.discardRequest(requestId, discarded));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.UPDATE_ETA)
 	@POST
 	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_ETA, notes = PathProxy.DentalLabUrls.UPDATE_ETA)
@@ -425,7 +433,7 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.updateETA(request));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.GET_PICKUP_REQUEST_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_PICKUP_REQUEST_BY_ID, notes = PathProxy.DentalLabUrls.GET_PICKUP_REQUEST_BY_ID)
@@ -437,11 +445,11 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.getRequestById(requestId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT, notes = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT)
-	public Response<String> getReportById(@PathParam("requestId") String requestId) {
+	public Response<String> downloadReport(@PathParam("requestId") String requestId) {
 		if (requestId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

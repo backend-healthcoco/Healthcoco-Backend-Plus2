@@ -1592,22 +1592,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		for (int i = 0; i < patientDetailList.size(); i++) {
 			String text = patientDetailList.get(i);
-			if (isItalic)
-				text = "<i>" + text + "</i>";
-			if (isBold)
-				text = "<b>" + text + "</b>";
-			text = "<span style='font-size:" + fontSize + "'>" + text + "</span>";
+			if (!DPDoctorUtils.anyStringEmpty(text)) {
+				if (isItalic)
+					text = "<i>" + text + "</i>";
+				if (isBold)
+					text = "<b>" + text + "</b>";
+				text = "<span style='font-size:" + fontSize + "'>" + text + "</span>";
 
-			if (i % 2 == 0) {
-				if (!DPDoctorUtils.anyStringEmpty(patientLeftText))
-					patientLeftText = patientLeftText + "<br>" + text;
-				else
-					patientLeftText = text;
-			} else {
-				if (!DPDoctorUtils.anyStringEmpty(patientRightText))
-					patientRightText = patientRightText + "<br>" + text;
-				else
-					patientRightText = text;
+				if (i % 2 == 0) {
+					if (!DPDoctorUtils.anyStringEmpty(patientLeftText))
+						patientLeftText = patientLeftText + "<br>" + text;
+					else
+						patientLeftText = text;
+				} else {
+					if (!DPDoctorUtils.anyStringEmpty(patientRightText))
+						patientRightText = patientRightText + "<br>" + text;
+					else
+						patientRightText = text;
+				}
 			}
 		}
 		parameters.put("patientLeftText", patientLeftText);
