@@ -88,6 +88,9 @@ public class ConsentFormCollection extends GenericCollection {
 	@Field
 	private String type;
 	
+	@Field
+	private String templateHtmlText;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -286,6 +289,27 @@ public class ConsentFormCollection extends GenericCollection {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getTemplateHtmlText() {
+		return templateHtmlText;
+	}
+
+	public void setTemplateHtmlText(String templateHtmlText) {
+		this.templateHtmlText = templateHtmlText;
+	}
+
+	@Override
+	public String toString() {
+		return "ConsentFormCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", locationName=" + locationName
+				+ ", PID=" + PID + ", formId=" + formId + ", localPatientName=" + localPatientName + ", emailAddress="
+				+ emailAddress + ", gender=" + gender + ", dob=" + dob + ", address=" + address + ", mobileNumber="
+				+ mobileNumber + ", landLineNumber=" + landLineNumber + ", bloodGroup=" + bloodGroup + ", declaration="
+				+ declaration + ", title=" + title + ", dateOfSign=" + dateOfSign + ", signImageURL=" + signImageURL
+				+ ", medicalHistory=" + medicalHistory + ", discarded=" + discarded + ", templateId=" + templateId
+				+ ", inputElements=" + inputElements + ", type=" + type + ", templateHtmlText=" + templateHtmlText
+				+ "]";
 	}
 
 }

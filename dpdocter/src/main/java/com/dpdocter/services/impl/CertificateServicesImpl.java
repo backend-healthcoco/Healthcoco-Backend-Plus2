@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,8 @@ import com.dpdocter.services.CertificatesServices;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.PatientVisitService;
 import com.mongodb.BasicDBObject;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -197,7 +201,6 @@ public class CertificateServicesImpl implements CertificatesServices {
 				consentFormCollection.setCreatedTime(oldConsentFormCollection.getCreatedTime());
 				consentFormCollection.setDiscarded(oldConsentFormCollection.getDiscarded());
 			}
-			consentFormCollection.setType("CERTIFICATE");
 			consentFormCollection = consentFormRepository.save(consentFormCollection);
 			response = new ConsentForm();
 			BeanUtil.map(consentFormCollection, response);
@@ -213,41 +216,16 @@ public class CertificateServicesImpl implements CertificatesServices {
 	public ConsentForm getPatientCertificateById(String certificateId) {
 		ConsentForm response = null;
 		try {
-			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(certificateId))),
-					Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
-					Aggregation.unwind("certificateTemplate"),
-					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$_id")
-							.append("doctorId", "$doctorId")
-							.append("locationId", "$locationId")
-							.append("hospitalId", "$hospitalId")
-							.append("patientId", "$patientId")
-							.append("dateOfSign", "$dateOfSign")
-							.append("signImageURL", "$signImageURL")
-							.append("templateId", "$templateId")
-							.append("inputElements", "$inputElements")
-							.append("templateHtmlText", "$certificateTemplate.htmlText")
-							.append("type", "$type")
-							.append("createdTime", "$createdTime")
-							.append("updatedTime", "$updatedTime")
-							.append("createdBy", "$createdBy"))),
-					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$id")
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("dateOfSign", new BasicDBObject("$first", "$dateOfSign"))
-							.append("signImageURL", new BasicDBObject("$first", "$signImageURL"))
-							.append("templateId", new BasicDBObject("$first", "$templateId"))
-							.append("inputElements", new BasicDBObject("$first", "$inputElements"))
-							.append("templateHtmlText", new BasicDBObject("$first", "$certificateTemplate.htmlText"))
-							.append("type", new BasicDBObject("$first", "$type"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))))
-					), ConsentFormCollection.class, ConsentForm.class).getUniqueMappedResult();
+			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(certificateId)))), ConsentFormCollection.class, ConsentForm.class).getUniqueMappedResult();
 			
 			if(response != null) {
 				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
+				if(response.getInputElements() != null) {
+							for(Fields inputElement : response.getInputElements()) {
+								if(!DPDoctorUtils.anyStringEmpty(inputElement.getType()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
+									inputElement.setValue(getFinalImageURL(inputElement.getValue()));
+						}
+					}
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting patient certificate By Id" + e.getMessage());
@@ -270,7 +248,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 		List<ConsentForm> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("type").is("CERTIFICATE");
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
 					
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -280,6 +258,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			if (!DPDoctorUtils.anyStringEmpty(type))
+				criteria.and("type").is(type);
 
 			
 			if (!discarded)criteria.and("discarded").is(discarded);
@@ -293,8 +273,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("signImageURL", "$signImageURL")
 					.append("templateId", "$templateId")
 					.append("inputElements", "$inputElements")
-					.append("templateHtmlText", "$certificateTemplate.htmlText")
-					.append("type", "$certificateTemplate.type")
+					.append("templateHtmlText", "$templateHtmlText")
+					.append("type", "$type")
 					.append("localPatientName", "$patient.localPatientName")
 					.append("mobileNumber", "$user.mobileNumber")
 					.append("createdTime", "$createdTime")
@@ -319,55 +299,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 			
 			
-			if(!DPDoctorUtils.anyStringEmpty(type)) {
 				if(size > 0) {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
-							Aggregation.unwind("certificateTemplate"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
-									new BasicDBObject("$cond", new BasicDBObject("if", 
-											new BasicDBObject("$eq", 
-													Arrays.asList("$certificateTemplate.type", type)))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))), 
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
-									new BasicDBObject("$cond", new BasicDBObject("if", 
-											new BasicDBObject("$eq", 
-													Arrays.asList("$patient.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))), 
-							Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-							Aggregation.unwind("user"),
-							
-							project, group,
-							Aggregation.skip((page) * size),
-							Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime")
-							), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
-				}else {
-					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
-							Aggregation.unwind("certificateTemplate"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
-									new BasicDBObject("$cond", new BasicDBObject("if", 
-											new BasicDBObject("$eq", 
-													Arrays.asList("$certificateTemplate.type", type)))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
-									new BasicDBObject("$cond", new BasicDBObject("if", 
-											new BasicDBObject("$eq", 
-													Arrays.asList("$patient.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))), 
-							Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-							Aggregation.unwind("user"),
-							project, group, Aggregation.sort(Sort.Direction.DESC, "createdTime")), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
-				}
-			}else {
-				if(size > 0) {
-					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
-							Aggregation.unwind("certificateTemplate"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
 							new CustomAggregationOperation(new BasicDBObject("$redact",
@@ -383,8 +316,6 @@ public class CertificateServicesImpl implements CertificatesServices {
 							), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
 				}else {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
-							Aggregation.unwind("certificateTemplate"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
 							new CustomAggregationOperation(new BasicDBObject("$redact",
@@ -396,11 +327,19 @@ public class CertificateServicesImpl implements CertificatesServices {
 							Aggregation.unwind("user"),
 							project, group, Aggregation.sort(Sort.Direction.DESC, "createdTime")), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
 				}
-			}
+			
 			
 			
 			if(response != null) {
-				for(ConsentForm consentForm : response)consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));
+				for(ConsentForm consentForm : response) {
+					consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));
+					if(consentForm.getInputElements() != null) {
+						for(Fields inputElement : consentForm.getInputElements()) {
+							if(!DPDoctorUtils.anyStringEmpty(inputElement.getType()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
+								inputElement.setValue(getFinalImageURL(inputElement.getValue()));
+						}
+					}
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting patient certificates" + e.getMessage());
@@ -445,9 +384,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 											.append("then", "$$KEEP")
 											.append("else", "$$PRUNE")))),
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-							Aggregation.unwind("patientUser"),
-							Aggregation.lookup("certificate_template_cl", "templateId", "_id", "certificateTemplate"),
-							Aggregation.unwind("certificateTemplate")),
+							Aggregation.unwind("patientUser")),
 					ConsentFormCollection.class, ConsentFormCollectionLookupResponse.class).getUniqueMappedResult();
 
 			if (consentFormCollection != null) {
@@ -478,9 +415,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 		
 		JasperReportResponse response = null;
 
-		String htmlText = consentFormCollection.getCertificateTemplate().getHtmlText();
+		String htmlText = consentFormCollection.getTemplateHtmlText();
 		if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
 			for(Fields field : consentFormCollection.getInputElements()) {
+				if(!DPDoctorUtils.anyStringEmpty(field.getType()) && field.getType().equalsIgnoreCase("IMAGE"))
+					field.setValue(getFinalImageURL(field.getValue()));
 				htmlText = htmlText.replace(field.getKey(), field.getValue());
 			}
 		}
@@ -532,5 +471,28 @@ public class CertificateServicesImpl implements CertificatesServices {
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		return response;
+	}
+
+	@Override
+	public String saveCertificateSignImage(FormDataBodyPart file, String certificateIdStr) {
+		String recordPath = null;
+		try {
+
+			Date createdTime = new Date();
+			if (file != null) {
+				String path = "certificateSigns" + File.separator + certificateIdStr;
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+
+				recordPath = path + File.separator + fileName + createdTime.getTime() +"." +fileExtension;
+				fileManager.saveRecord(file, recordPath, 0.0, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return recordPath;
 	}
 }

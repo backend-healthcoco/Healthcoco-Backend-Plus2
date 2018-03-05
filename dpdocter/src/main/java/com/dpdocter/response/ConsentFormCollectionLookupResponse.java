@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Fields;
@@ -69,6 +70,8 @@ public class ConsentFormCollectionLookupResponse extends GenericCollection{
 	private UserCollection patientUser;
 
 	private CertificateTemplateCollection certificateTemplate;
+	
+	private String templateHtmlText;
 	
 	public String getId() {
 		return id;
@@ -294,6 +297,14 @@ public class ConsentFormCollectionLookupResponse extends GenericCollection{
 		this.certificateTemplate = certificateTemplate;
 	}
 
+	public String getTemplateHtmlText() {
+		return templateHtmlText;
+	}
+
+	public void setTemplateHtmlText(String templateHtmlText) {
+		this.templateHtmlText = templateHtmlText;
+	}
+
 	@Override
 	public String toString() {
 		return "ConsentFormCollectionLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -304,6 +315,7 @@ public class ConsentFormCollectionLookupResponse extends GenericCollection{
 				+ declaration + ", title=" + title + ", dateOfSign=" + dateOfSign + ", signImageURL=" + signImageURL
 				+ ", medicalHistory=" + medicalHistory + ", discarded=" + discarded + ", templateId=" + templateId
 				+ ", inputElements=" + inputElements + ", type=" + type + ", patientCollection=" + patientCollection
-				+ ", patientUser=" + patientUser + ", certificateTemplate=" + certificateTemplate + "]";
+				+ ", patientUser=" + patientUser + ", certificateTemplate=" + certificateTemplate
+				+ ", templateHtmlText=" + templateHtmlText + "]";
 	}
 }
