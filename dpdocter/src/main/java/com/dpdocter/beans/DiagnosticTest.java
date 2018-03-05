@@ -31,6 +31,8 @@ public class DiagnosticTest extends GenericCollection {
 
     private long rankingCount = 0;
 
+    private Integer turnaroundTime;
+    
 	public String getId() {
 		return id;
 	}
@@ -127,14 +129,22 @@ public class DiagnosticTest extends GenericCollection {
 		this.rankingCount = rankingCount;
 	}
 
+	public Integer getTurnaroundTime() {
+		return turnaroundTime;
+	}
+
+	public void setTurnaroundTime(Integer turnaroundTime) {
+		this.turnaroundTime = turnaroundTime;
+	}
+
 	@Override
 	public String toString() {
 		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", specimen=" + specimen
 				+ ", diagnosticTestCode=" + diagnosticTestCode + ", diagnosticTestCost=" + diagnosticTestCost
 				+ ", diagnosticTestComission=" + diagnosticTestComission + ", diagnosticTestCostForPatient="
-				+ diagnosticTestCostForPatient + ", rankingCount=" + rankingCount + "]";
+				+ diagnosticTestCostForPatient + ", rankingCount=" + rankingCount + ", turnaroundTime=" + turnaroundTime
+				+ "]";
 	}
-
 
 }

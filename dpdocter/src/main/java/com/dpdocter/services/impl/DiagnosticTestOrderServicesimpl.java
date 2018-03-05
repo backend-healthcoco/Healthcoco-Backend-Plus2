@@ -13,8 +13,6 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -232,17 +230,18 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			int currentDay = localCalendar.get(Calendar.DATE);
 			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 			int currentYear = localCalendar.get(Calendar.YEAR);
-
-			DateTime slotStartDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			
-			DateTime slotEndDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			
 			DiagnosticTestPickUpSlotCollection pickUpSlotCollection = diagnosticTestPickUpSlotRepository.findAll().get(0);
-			
+			if(pickUpSlotCollection != null)
 			for(int i=0 ; i<7; i++) {
 				
+				
+				DateTime slotStartDateTime = new DateTime(currentYear, currentMonth, currentDay + i, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			
+				DateTime slotEndDateTime = new DateTime(currentYear, currentMonth, currentDay + i, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			
 				DiagnosticTestSamplePickUpSlot slot = new DiagnosticTestSamplePickUpSlot();
 				slot.setDay(Day.valueOf(slotStartDateTime.dayOfWeek().getAsText().toUpperCase()));
 				slot.setSlotDate(slotStartDateTime.getMillis());
@@ -252,7 +251,10 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 				if(pickUpSlots != null && !pickUpSlots.isEmpty()) {
 					for(PickUpSlot pickUpSlot : pickUpSlots) {
 						Integer noOfBookedSlots = orderDiagnosticTestRepository.countByDateAndTime(slotStartDateTime.getMillis(), slotEndDateTime.getMillis(), pickUpSlot.getFromTime());
-						if(noOfBookedSlots != null && noOfBookedSlots >= pickUpSlot.getNoOfAppointmentsAllowed())pickUpSlot.setIsAvailable(false);
+						if(noOfBookedSlots != null) {
+							pickUpSlot.setNoOfAppointmentsAllowed(pickUpSlot.getNoOfAppointmentsAllowed()-noOfBookedSlots);
+							if((noOfBookedSlots >= pickUpSlot.getNoOfAppointmentsAllowed()))pickUpSlot.setIsAvailable(false);
+						}
 					}
 					
 					slot.setSlot(pickUpSlots);
@@ -455,7 +457,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 						.append("isCancelled","$isCancelled")
 						.append("createdTime","$createdTime")
 						.append("updatedTime","$updatedTime")
-						.append("patientName","$patient.localPatientName")
+						.append("patientName","$user.firstName")
 						.append("locationName","$location.locationName")
 						.append("isNABLAccredited","$location.isNABLAccredited")
 						.append("testsPackage.packageName", "$testsPackage.packageName")
@@ -541,11 +543,11 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			
 			if(isLab) {
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(orderId))),
-						Aggregation.lookup("patient_cl", "userId", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-								new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-								.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+						Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
+//						new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+//								new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
+//								.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						
 						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$testsPackageIds").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("diagnostic_test_package_cl", "testsPackageIds", "_id", "testsPackage"),

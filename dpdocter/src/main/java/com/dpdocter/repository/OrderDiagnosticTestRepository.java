@@ -9,7 +9,7 @@ import com.dpdocter.collections.OrderDiagnosticTestCollection;
 
 public interface OrderDiagnosticTestRepository extends MongoRepository<OrderDiagnosticTestCollection, ObjectId>, PagingAndSortingRepository<OrderDiagnosticTestCollection, ObjectId>{
 
-	@Query(value = "{'pickUpDate': {'$gt' : ?0, '$lte' : ?1}, 'pickUpTime.fromTime' : ?2}", count = true)
+	@Query(value = "{'pickUpDate': {'$gte' : ?0, '$lt' : ?1}, 'pickUpTime.fromTime' : ?2}", count = true)
 	Integer countByDateAndTime(long slotStartTime, long slotEndTime, long fromTime);
 
 	@Query("{'id' : ?0 , 'userId' : ?1}")

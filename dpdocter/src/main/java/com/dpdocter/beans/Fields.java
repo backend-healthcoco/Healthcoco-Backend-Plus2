@@ -6,10 +6,7 @@ public class Fields {
 	
 	private String value;
 
-	@Override
-	public String toString() {
-		return "Fields [key=" + key + ", value=" + value + "]";
-	}
+	private String type;
 
 	public String getKey() {
 		return key;
@@ -26,5 +23,17 @@ public class Fields {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "Fields [key=" + key + ", value=" + value + ", type=" + type + "]";
+	}	
 }
