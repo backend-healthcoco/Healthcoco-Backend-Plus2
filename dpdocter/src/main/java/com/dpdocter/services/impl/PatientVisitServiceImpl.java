@@ -565,7 +565,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 
 			if (request.getRecord() != null) {
-				
+
 				addRecords(request, response, patientVisitCollection, visitId, appointment,
 						patientVisitCollection.getCreatedBy());
 			}
@@ -1466,16 +1466,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 					String text = str.getText();
-					if (isItalic)
-						text = "<i>" + text + "</i>";
-					if (isBold)
-						text = "<b>" + text + "</b>";
+					if (!DPDoctorUtils.allStringsEmpty(text)) {
+						if (isItalic)
+							text = "<i>" + text + "</i>";
+						if (isBold)
+							text = "<b>" + text + "</b>";
 
-					if (footerBottomText.isEmpty())
-						footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-					else
-						footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>"
-								+ text + "</span>";
+						if (footerBottomText.isEmpty())
+							footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+						else
+							footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize()
+									+ "'>" + text + "</span>";
+					}
 				}
 			}
 
