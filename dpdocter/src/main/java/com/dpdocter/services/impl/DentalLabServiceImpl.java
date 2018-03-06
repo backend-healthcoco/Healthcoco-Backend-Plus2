@@ -1005,7 +1005,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			
 			if (fromETA != null && toETA != null) {
-				criteria.and("dentalWorksSamples.etaInDate").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+				criteria.and("dentalWorksSamples.etaInDate").gte(new Date(fromETA)).lte(new Date(toETA));
 			}
 
 			/*if (from != 0 && {
@@ -1052,7 +1052,53 @@ public class DentalLabServiceImpl implements DentalLabService {
 									.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
 									.append("dentalLab", new BasicDBObject("$first", "$dentalLab"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("doctor", new BasicDBObject("$first", "$doctor"))));
+									.append("doctor", new BasicDBObject("$first", "$doctor"))
+									.append("feedBackRating", new BasicDBObject("$first", "$feedBackRating"))
+									.append("feedBackComment", new BasicDBObject("$first", "$feedBackComment"))));
+			
+			/*private DentalWork dentalWork;
+			private List<DentalToothNumber> dentalToothNumbers;
+			private List<DentalStage> dentalStagesForLab;
+			private Long etaInDate;
+			private Integer etaInHour;
+			private Boolean isCompleted = false;
+			private Boolean isUrgent = false;
+			private String instructions;
+			private String occlusalStaining;
+			private String ponticDesign;
+			private String collarAndMetalDesign;
+			private String uniqueWorkId;
+			private List<ImageURLResponse> dentalImages;
+			private List<DentalWorkCardValue> dentalWorkCardValues;
+			private String shade;
+			private List<String> material;
+			private List<DentalStage> dentalStagesForDoctor;
+			private RateCardDentalWorkAssociation rateCardDentalWorkAssociation;
+			private String processStatus;*/
+			
+			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
+					new BasicDBObject("$group",
+							new BasicDBObject("uniqueWorkId", "$uniqueWorkId")
+									.append("dentalWork", new BasicDBObject("$first", "$dentalWork"))
+									.append("dentalToothNumbers", new BasicDBObject("$first", "$dentalToothNumbers"))
+									.append("dentalStagesForLab", new BasicDBObject("$first", "$dentalStagesForLab"))
+									.append("dentalStagesForDoctor",
+											new BasicDBObject("$push", "$dentalStagesForDoctor"))
+									.append("etaInDate", new BasicDBObject("$first", "$etaInDate"))
+									.append("etaInHour", new BasicDBObject("$first", "$etaInHour"))
+									.append("instructions", new BasicDBObject("$first", "$instructions"))
+									.append("occlusalStaining", new BasicDBObject("$first", "$occlusalStaining"))
+									.append("ponticDesign", new BasicDBObject("$first", "$ponticDesign"))
+									.append("collarAndMetalDesign", new BasicDBObject("$first", "$collarAndMetalDesign"))
+									.append("dentalImages",
+											new BasicDBObject("$first", "$dentalImages"))
+									.append("dentalWorkCardValues", new BasicDBObject("$first", "$dentalWorkCardValues"))
+									.append("shade",
+											new BasicDBObject("$first", "$shade"))
+									.append("material",
+											new BasicDBObject("$first", "$material"))
+									.append("rateCardDentalWorkAssociation", new BasicDBObject("$first", "$rateCardDentalWorkAssociation"))
+									.append("processStatus", new BasicDBObject("$first", "$processStatus"))));
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
@@ -1070,6 +1116,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.unwind("dentalWorksSamples"),
+						//Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -1083,6 +1130,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			else
 				aggregation = Aggregation.newAggregation(
 						Aggregation.unwind("dentalWorksSamples"),
+						//Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -1208,7 +1256,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 										.findOne(dentalLabPickupCollection.getCollectionBoyId());
 								if (collectionBoyCollection != null) {
 									pushNotificationServices.notifyPharmacy(
-											collectionBoyCollection.getUserId().toString(), null, null,
+											collectionBoyCollection.getUserId().toString(), dentalLabPickupCollection.getId().toString(), null,
 											RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 								}
 							}
@@ -1320,8 +1368,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 				{
 					dentalLabPickupCollection.setDiscarded(request.getDiscarded());
 				}
+				dentalLabPickupCollection.setUpdatedTime(new Date());
 				dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
-				System.out.println(dentalLabPickupCollection);
 				response = true;
 			} else {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
