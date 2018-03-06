@@ -155,14 +155,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-discharge-summary.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
-		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType())) {
-			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType())) {			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
 
 		}
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-lab-dental-works-a4.jrxml");
-		}else if (componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())) {
-
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.CERTIFICATE.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
 		}else if (componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())) {
@@ -4495,7 +4492,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$p{dentalLab}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{dentalLab}"));
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
@@ -4509,7 +4506,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{doctor}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{doctor}"));
 		jrDesignTextField.setX(251);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
@@ -4527,7 +4524,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$p{patientName}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{patientName}"));
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
@@ -4541,7 +4538,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{gender}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{gender}"));
 		jrDesignTextField.setX(251);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
@@ -4559,7 +4556,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$p{age}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{age}"));
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
