@@ -1046,7 +1046,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 									.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
 									.append("dentalLab", new BasicDBObject("$first", "$dentalLab"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("doctor", new BasicDBObject("$first", "$doctor"))));
+									.append("doctor", new BasicDBObject("$first", "$doctor"))
+									.append("feedBackRating", new BasicDBObject("$first", "$feedBackRating"))
+									.append("feedBackComment", new BasicDBObject("$first", "$feedBackComment"))));
 			
 			/*private DentalWork dentalWork;
 			private List<DentalToothNumber> dentalToothNumbers;
@@ -1108,6 +1110,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.unwind("dentalWorksSamples"),
+						//Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
@@ -1120,6 +1123,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			else
 				aggregation = Aggregation.newAggregation(
 						Aggregation.unwind("dentalWorksSamples"),
+						//Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
@@ -1241,7 +1245,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
 								if (collectionBoyCollection != null && collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
-											collectionBoyCollection.getUserId().toString(), null, null,
+											collectionBoyCollection.getUserId().toString(), dentalLabPickupCollection.getId().toString(), null,
 											RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 								}
 							}
@@ -1357,8 +1361,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 				{
 					dentalLabPickupCollection.setDiscarded(request.getDiscarded());
 				}
+				dentalLabPickupCollection.setUpdatedTime(new Date());
 				dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
-				System.out.println(dentalLabPickupCollection);
 				response = true;
 			} else {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
