@@ -1233,7 +1233,7 @@ public class RecordsServiceImpl implements RecordsService {
 				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("patientId")
 
 
-						.is(patientObjectId).and("isPatientDiscarded").is(false).and("shareWithPatient").is(true);
+						.is(patientObjectId).and("isPatientDiscarded").is(false);
 
 
 				if (!discarded)
