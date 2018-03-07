@@ -31,6 +31,7 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.InventoryStock;
@@ -1509,9 +1510,9 @@ public class BillingServiceImpl implements BillingService {
 
 				String serviceName = invoiceItem.getName() != null ? invoiceItem.getName() : "";
 				String fieldName = "";
-				/*if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
+				if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
 					String key = "";
-					for (TreatmentFields treatmentFile : invoiceItem.getTreatmentFields()) {
+					for (Fields treatmentFile : invoiceItem.getTreatmentFields()) {
 						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {
@@ -1527,7 +1528,7 @@ public class BillingServiceImpl implements BillingService {
 							}
 						}
 					}
-				}*/
+				}
 				serviceName = serviceName == "" ? "--" : serviceName + fieldName;
 				invoiceItemJasperDetail.setServiceName(serviceName);
 
