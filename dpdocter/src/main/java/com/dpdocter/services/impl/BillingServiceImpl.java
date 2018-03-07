@@ -41,7 +41,6 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.Fields;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
@@ -124,10 +123,10 @@ public class BillingServiceImpl implements BillingService {
 	private EmailTackService emailTackService;
 
 	@Autowired
-	private MailService mailService;
+	private InventoryService inventoryService;
 
 	@Autowired
-	private InventoryService inventoryService;
+	private MailService mailService;
 
 	@Value(value = "${jasper.print.receipt.a4.fileName}")
 	private String receiptA4FileName;
@@ -207,7 +206,6 @@ public class BillingServiceImpl implements BillingService {
 		}
 		return response;
 	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request) {
@@ -520,8 +518,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
-					.is(false);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -857,8 +854,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
-					.is(false);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -1038,7 +1034,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
 					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)).and("discarded")
-					.is(false).and("isPatientDiscarded").is(false);
+					.is(false);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
@@ -1111,39 +1107,20 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
+
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
 						request.getHospitalId(), invoiceItemResponse.getItemId());
-				/*
-				 * if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				 * inventoryStock =
-				 * inventoryService.getInventoryStockByInvoiceIdResourceId(
-				 * request.getLocationId(), request.getHospitalId(),
-				 * invoiceItemResponse.getItemId(), request.getId()); } //
-				 * InventoryStock inventoryStock =
-				 * inventoryService.getInventoryStockByInvoiceIdResourceId(
-				 * request.getLocationId(), request.getHospitalId(),
-				 * invoiceItemResponse.getItemId(), request.getId());
-				 * 
-				 * if (inventoryStock != null) {
-				 * 
-				 * } else { InventoryItem inventoryItem =
-				 * inventoryService.getInventoryItemByResourceId(request.
-				 * getLocationId(), request.getHospitalId(),
-				 * invoiceItemResponse.getItemId()); if
-				 * (invoiceItemResponse.getInventoryBatch() != null &&
-				 * inventoryItem != null) {
-				 * createInventoryStock(invoiceItemResponse.getItemId(),
-				 * inventoryItem.getId(),
-				 * invoiceItemResponse.getInventoryBatch(),
-				 * request.getPatientId(), request.getDoctorId(),
-				 * request.getLocationId(), request.getHospitalId(),
-				 * invoiceItemResponse.getInventoryQuantity() ,
-				 * doctorPatientInvoiceCollection.getId().toString()); } }
-				 */
+				if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+					/*createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+							invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+							request.getLocationId(), request.getHospitalId(),
+							invoiceItemResponse.getInventoryQuantity());*/
+				}
 				// createInventoryStock(invoiceItemResponse.getItemId(),
 				// invoiceItemResponse.getBatchId(), request.getPatientId(),
 				// request.getDoctorId(), request.getLocationId(),
 				// request.getHospitalId());
+
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
@@ -1318,8 +1295,8 @@ public class BillingServiceImpl implements BillingService {
 		AmountResponse dueAmount = null;
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
-					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
-					.and("isPatientDiscarded").is(false);
+
+					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -1352,7 +1329,7 @@ public class BillingServiceImpl implements BillingService {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("patientId")
 					.is(new ObjectId(patientId)).and("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+					.is(new ObjectId(hospitalId));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -1428,8 +1405,9 @@ public class BillingServiceImpl implements BillingService {
 		AmountResponse response = null;
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
-					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
-					.and("isPatientDiscarded").is(false);
+
+					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
@@ -1531,9 +1509,9 @@ public class BillingServiceImpl implements BillingService {
 
 				String serviceName = invoiceItem.getName() != null ? invoiceItem.getName() : "";
 				String fieldName = "";
-				if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
+				/*if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
 					String key = "";
-					for (Fields treatmentFile : invoiceItem.getTreatmentFields()) {
+					for (TreatmentFields treatmentFile : invoiceItem.getTreatmentFields()) {
 						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {
@@ -1549,7 +1527,7 @@ public class BillingServiceImpl implements BillingService {
 							}
 						}
 					}
-				}
+				}*/
 				serviceName = serviceName == "" ? "--" : serviceName + fieldName;
 				invoiceItemJasperDetail.setServiceName(serviceName);
 
@@ -2034,5 +2012,7 @@ public class BillingServiceImpl implements BillingService {
 		}
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
+
+	
 
 }
