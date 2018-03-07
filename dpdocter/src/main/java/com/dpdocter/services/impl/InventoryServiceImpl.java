@@ -14,11 +14,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.InventorySettings;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.InventoryBatchCollection;
 import com.dpdocter.collections.InventoryItemCollection;
@@ -31,6 +33,7 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.InventoryBatchRepository;
 import com.dpdocter.repository.InventoryItemRepository;
@@ -41,9 +44,11 @@ import com.dpdocter.request.InventorySettingRequest;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 import com.dpdocter.services.InventoryService;
+import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
+import io.swagger.models.auth.In;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
@@ -76,6 +81,12 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Autowired
 	private ESPrescriptionService esPrescriptionService;
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+	
+	@Autowired
+	private PrescriptionServices prescriptionServices;
 
 	@Override
 	@Transactional
@@ -99,6 +110,13 @@ public class InventoryServiceImpl implements InventoryService {
 				response = new InventoryItem();
 				BeanUtil.map(inventoryItemCollection, response);
 			}
+			
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
+			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+				Drug drug =prescriptionServices.makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+				System.out.println(drug);
+			}
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while adding inventory item");
@@ -391,27 +409,27 @@ public class InventoryServiceImpl implements InventoryService {
 			response = new InventoryStock();
 			BeanUtil.map(inventoryStockCollection, response);
 			
-			DrugCollection drugCollection =  drugRepository.find(inventoryStockCollection.getResourceId() , inventoryStockCollection.getDoctorId(), inventoryStockCollection.getLocationId(), inventoryStockCollection.getHospitalId());
+			List<DrugCollection> drugCollections =  drugRepository.findByIdLocationIdHospitalId(inventoryStockCollection.getResourceId() , inventoryStockCollection.getLocationId(), inventoryStockCollection.getHospitalId());
 			
-			if(drugCollection != null)
-			{
-				InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findOne(inventoryStockCollection.getItemId());
-				if (inventoryItemCollection != null) {
-					transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-					if (drugCollection != null) {
-						ESDrugDocument esDrugDocument = new ESDrugDocument();
-						BeanUtil.map(drugCollection, esDrugDocument);
-						if (drugCollection.getDrugType() != null) {
-							esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-							esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+			for (DrugCollection drugCollection : drugCollections) {
+				{
+					InventoryItemCollection inventoryItemCollection = inventoryItemRepository
+							.findOne(inventoryStockCollection.getItemId());
+					if (inventoryItemCollection != null) {
+						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+						if (drugCollection != null) {
+							ESDrugDocument esDrugDocument = new ESDrugDocument();
+							BeanUtil.map(drugCollection, esDrugDocument);
+							if (drugCollection.getDrugType() != null) {
+								esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+								esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+							}
+							esPrescriptionService.addDrug(esDrugDocument);
 						}
-						esPrescriptionService.addDrug(esDrugDocument);
 					}
-				}
 
+				}
 			}
-			
-			
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -682,13 +700,13 @@ public class InventoryServiceImpl implements InventoryService {
 			if (inventoryItemCollection != null) {
 				response = new InventoryItem();
 				BeanUtil.map( inventoryItemCollection, response);
-			} /*else {
-				throw new BusinessException(ServiceError.NoRecord , "Inventory item not found");
-			}*/
+			} else {
+				logger.warn("Inventory item not found");
+			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.warn("Error while getting inventory item");
+			logger.warn("Error while getting inventory setting");
 			e.printStackTrace();
 		}
 		return response;
@@ -743,6 +761,67 @@ public class InventoryServiceImpl implements InventoryService {
 			// TODO: handle exception
 		}
 		return inventoryBatchs;
+	}
+	
+
+	@Override
+	@Transactional
+	public InventoryStock getInventoryStockByInvoiceIdResourceId(String locationId, String hospitalId, String resourceId , String invoiceId)
+	{
+		InventoryStock inventoryStock = null;
+		try {
+			InventoryStockCollection inventoryStockCollection = inventoryStockRepository.findByLocationIdHospitalIdResourceIdInvoiceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId), new ObjectId(invoiceId));
+			if(inventoryStockCollection != null) {
+				inventoryStock = new InventoryStock();
+				BeanUtil.map(inventoryStockCollection, inventoryStock);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return inventoryStock;
+	}
+	
+	@Override
+	@Transactional
+	public Long getInventoryStockItemCount(String locationId, String hospitalId, String resourceId , String invoiceId)
+	{
+		Long quantity = 0l;
+		try {
+			List<InventoryStockCollection> inventoryStockCollections = inventoryStockRepository.findListByLocationIdHospitalIdResourceIdInvoiceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId), new ObjectId(invoiceId));
+			if(inventoryStockCollections != null) {
+				for (InventoryStockCollection inventoryStockCollection : inventoryStockCollections) {
+					if(inventoryStockCollection.getStockType().equalsIgnoreCase("CONSUMED"))
+					{
+						quantity = quantity + inventoryStockCollection.getQuantity();
+					}
+					else if(inventoryStockCollection.getStockType().equalsIgnoreCase("ADDED"))
+					{
+						quantity = quantity - inventoryStockCollection.getQuantity();
+					}
+				}
+			
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return quantity;
+	}
+	
+	@Override
+	@Transactional
+	public InventoryBatch getInventoryBatchById(String id)
+	{
+		InventoryBatch inventoryBatch = null;
+		try {
+				InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
+				if(inventoryBatchCollection != null)
+				{
+				 BeanUtil.map(inventoryBatchCollection, inventoryBatch);
+				}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return inventoryBatch;
 	}
 
 }

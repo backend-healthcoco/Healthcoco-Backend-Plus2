@@ -798,6 +798,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	
 	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs)
 	{
+		List<ESDrugDocument> response= new ArrayList<>();
 		for (ESDrugDocument drug : drugs) {
 			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
 			if(inventoryItem != null)	
@@ -805,12 +806,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
 				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 			}
+			response.add(drug);
 		}
-		return drugs;
+		return response;
 	}
 	
 	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs)
 	{
+		List<DrugDocument> response= new ArrayList<>();
 		for (DrugDocument drug : drugs) {
 			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
 			if(inventoryItem != null)	
@@ -818,7 +821,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
 				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 			}
+			response.add(drug);
 		}
-		return drugs;
+		return response;
 	}
 }
