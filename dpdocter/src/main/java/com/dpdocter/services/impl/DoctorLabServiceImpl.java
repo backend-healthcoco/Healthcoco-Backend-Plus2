@@ -137,7 +137,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Autowired
 	private SharedReportRepository sharedReportRepository;
 
@@ -887,6 +887,13 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 								doctorLabReportCollection.getId().toString(), null);
 					}
 				}
+			} else {
+				if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getDoctorId())) {
+					pushNotificationServices.notifyUser(doctorLabReportCollection.getDoctorId().toString(), "",
+							ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType(),
+							doctorLabReportCollection.getId().toString(), null);
+				}
+
 			}
 			response = true;
 
