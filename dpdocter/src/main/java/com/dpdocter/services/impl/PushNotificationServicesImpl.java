@@ -269,7 +269,15 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 					notification.setRi(componentTypeId);
 					notification.setNotificationType(componentType);
+
+				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
+				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
+					notification.setRi(componentTypeId);
+					notification.setNotificationType(componentType);
 				}
+
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
@@ -409,6 +417,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				} else if (componentType.equalsIgnoreCase(ComponentType.USER_RECORD.getType())) {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "UR");
+				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
+					customValues.put("RI", componentTypeId);
+					customValues.put("T", "SI");
 				}
 			}
 			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
@@ -715,7 +726,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 		try {
 
-			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY) || role.equals(RoleEnum.REFRESH)) {
+			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY)
+					|| role.equals(RoleEnum.REFRESH)) {
+
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
 
@@ -731,17 +744,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
 										ComponentType.LAB_REQUEST.getType(), null, null, role.getRole());
-							} 
-							else if (role.equals(RoleEnum.REFRESH)) {
+
+							} else if (role.equals(RoleEnum.REFRESH)) {
+
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
-										userDeviceCollection.getPushToken(), message,
-										ComponentType.REFRESH.getType(), null, null, role.getRole());
+										userDeviceCollection.getPushToken(), message, ComponentType.REFRESH.getType(),
+										null, null, role.getRole());
 							} else {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
 										ComponentType.USER_ORDER.getType(), requestId, responseId, role.getRole());
 							}
-							
 
 						}
 					}
@@ -760,7 +773,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			Sender sender = null;
 
 			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString())
+
 					|| role.equals(RoleEnum.COLLECTION_BOY.getRole()) || role.equals(RoleEnum.REFRESH.getRole())) {
+
 				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
 			} else {
@@ -814,6 +829,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		try {
 			if (role.equals(RoleEnum.PHARMIST)) {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
+			}
+			if (role.equals(RoleEnum.PATIENT)) {
+				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
 			}
 			if (role.equals(RoleEnum.PATIENT)) {
 				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));

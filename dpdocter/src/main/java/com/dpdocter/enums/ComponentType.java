@@ -17,8 +17,11 @@ public enum ComponentType {
 																							"DELIVERY_REPORTS"), DOCTOR_LAB_REPORTS(
 																									"DOCTOR_LAB_REPORTS"), CERTIFICATE(
 																											"CERTIFICATE"), DOCTOR_REFERNCE(
+
 																													"DOCTOR_REFERNCE"), LAB_REQUISATION_FORM(
-																															"LAB_REQUISATION_FORM");
+																															"LAB_REQUISATION_FORM"),
+
+	REFRESH_DOCTOR_LAB_REPORTS("REFRESH_DOCTOR_LAB_REPORTS");
 
 	private String type;
 

@@ -967,6 +967,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 					registeredPatientDetails.setGroups(groups);
 				}
 			}
+			if (request.getRecordType() != null && !DPDoctorUtils.anyStringEmpty(request.getRecordId())) {
+				if (request.getRecordType().equals(ComponentType.DOCTOR_LAB_REPORTS)) {
+					DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
+							.findOne(new ObjectId(request.getRecordId()));
+					doctorLabReportCollection.setPatientId(new ObjectId(registeredPatientDetails.getUserId()));
+					doctorLabReportRepository.save(doctorLabReportCollection);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
