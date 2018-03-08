@@ -136,9 +136,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Autowired
 	private LocationRepository locationRepository;
 
-	@Autowired
-	private SharedReportRepository sharedReportRepository;
-
 	@Value(value = "${sms.add.doctor.Lab.report.to.patient}")
 	private String patientSMSText;
 
