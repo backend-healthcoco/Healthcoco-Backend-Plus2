@@ -76,6 +76,7 @@ import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.NutritionReferral;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
@@ -117,6 +118,7 @@ import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESGenericCodesAndReactions;
 import com.dpdocter.elasticsearch.repository.ESGenericCodesAndReactionsRepository;
+import com.dpdocter.elasticsearch.repository.NutritionReferralCollection;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FieldAlign;
@@ -145,6 +147,7 @@ import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.InstructionsRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.NutritionReferralRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -157,6 +160,7 @@ import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
+import com.dpdocter.request.NutritionReferralRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
@@ -294,6 +298,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private InventoryService inventoryService;
+	
+	@Autowired
+	private NutritionReferralRepository nutritionReferralRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -6821,4 +6828,41 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public NutritionReferral addNutritionReferral(NutritionReferralRequest request)
+	{
+		NutritionReferral response = null;
+		
+		try {
+			if (request != null) {
+				NutritionReferralCollection nutritionReferralCollection = new NutritionReferralCollection();
+				BeanUtil.map(request, nutritionReferralCollection);
+				nutritionReferralCollection = nutritionReferralRepository.save(nutritionReferralCollection);
+				if(nutritionReferralCollection != null)
+				{
+					response = new NutritionReferral();
+					BeanUtil.map(nutritionReferralCollection , response);
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(nutritionReferralCollection.getPatientId(), nutritionReferralCollection.getLocationId(), nutritionReferralCollection.getHospitalId());
+					if(patientCollection != null)
+					{
+						patientCollection.setIsNutritionActive(true);
+					}
+				}
+				
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

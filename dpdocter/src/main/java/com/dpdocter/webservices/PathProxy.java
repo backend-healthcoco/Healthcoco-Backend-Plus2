@@ -611,6 +611,8 @@ public interface PathProxy {
 		public static final String UPLOAD_DRUGS = "drugs/upload";
 
 		public static final String UPDATE_DRUG_INTERACTION = "drugInteraction/update";
+		
+		public static final String ADD_NUTRITION_REFERRAL = "/addNutritionReferral";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";

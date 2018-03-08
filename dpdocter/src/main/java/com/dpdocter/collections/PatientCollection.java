@@ -26,7 +26,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private String firstName;
-	
+
 	@Field
 	private String localPatientName;
 
@@ -95,7 +95,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = false;
-	
+
 	@Field
 	private Boolean isPatientDiscarded = false;
 
@@ -113,15 +113,18 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private PersonalInformation personalInformation;
-	
+
 	@Field
 	private List<QuestionAnswers> medicalQuestionAnswers;
-	
+
 	@Field
 	private List<QuestionAnswers> lifestyleQuestionAnswers;
-	
+
 	@Field
 	private String PNUM;
+
+	@Field
+	private Boolean isNutritionActive = false;
 
 	public ObjectId getId() {
 		return id;
@@ -398,6 +401,14 @@ public class PatientCollection extends GenericCollection {
 
 	public void setPNUM(String pNUM) {
 		PNUM = pNUM;
+	}
+
+	public Boolean getIsNutritionActive() {
+		return isNutritionActive;
+	}
+
+	public void setIsNutritionActive(Boolean isNutritionActive) {
+		this.isNutritionActive = isNutritionActive;
 	}
 
 	@Override

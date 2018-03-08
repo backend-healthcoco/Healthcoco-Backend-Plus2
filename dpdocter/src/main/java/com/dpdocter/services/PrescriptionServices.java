@@ -12,6 +12,7 @@ import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.Instructions;
 import com.dpdocter.beans.LabTest;
+import com.dpdocter.beans.NutritionReferral;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DrugCollection;
@@ -20,6 +21,7 @@ import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
+import com.dpdocter.request.NutritionReferralRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
@@ -226,4 +228,6 @@ public interface PrescriptionServices {
 	Boolean uploadDrugs();
 
 	Boolean updateDrugInteraction();
+
+	NutritionReferral addNutritionReferral(NutritionReferralRequest request);
 }

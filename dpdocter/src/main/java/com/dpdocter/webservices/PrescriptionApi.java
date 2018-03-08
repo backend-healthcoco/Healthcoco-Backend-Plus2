@@ -26,6 +26,7 @@ import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.Instructions;
 import com.dpdocter.beans.LabTest;
+import com.dpdocter.beans.NutritionReferral;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -42,6 +43,7 @@ import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
+import com.dpdocter.request.NutritionReferralRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
@@ -1363,6 +1365,21 @@ public class PrescriptionApi {
 		Boolean removeDuplicateDrugs = prescriptionServices.updateDrugInteraction();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(removeDuplicateDrugs);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.ADD_NUTRITION_REFERRAL)
+	@POST
+	public Response<NutritionReferral> addNutritionReferral( NutritionReferralRequest request) {
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId() , request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} 
+		NutritionReferral nutritionReferral = prescriptionServices.addNutritionReferral(request);
+		Response<NutritionReferral> response = new Response<NutritionReferral>();
+		response.setData(nutritionReferral);
 		return response;
 	}
 }
