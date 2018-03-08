@@ -800,11 +800,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	{
 		List<ESDrugDocument> response= new ArrayList<>();
 		for (ESDrugDocument drug : drugs) {
-			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
-			if(inventoryItem != null)	
-			{
-				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
-				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId())) {
+				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
+						drug.getHospitalId(), drug.getId());
+				if (inventoryItem != null) {
+					InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
+							.getInventoryItem(inventoryItem.getId());
+					drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+				}
 			}
 			response.add(drug);
 		}
@@ -815,11 +818,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	{
 		List<DrugDocument> response= new ArrayList<>();
 		for (DrugDocument drug : drugs) {
-			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
-			if(inventoryItem != null)	
-			{
-				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
-				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId())) {
+				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
+						drug.getHospitalId(), drug.getId());
+				if (inventoryItem != null) {
+					InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
+							.getInventoryItem(inventoryItem.getId());
+					drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+				}
 			}
 			response.add(drug);
 		}

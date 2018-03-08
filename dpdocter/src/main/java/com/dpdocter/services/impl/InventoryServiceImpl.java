@@ -696,6 +696,7 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryItem response = null;
 		InventoryItemCollection inventoryItemCollection = null;
 		try {
+			System.out.println( locationId + "  ---  " + hospitalId + "  ===  " + resourceId);
 			inventoryItemCollection = inventoryItemRepository.findByLocationIdHospitalIdResourceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId));
 			if (inventoryItemCollection != null) {
 				response = new InventoryItem();
@@ -809,16 +810,16 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Override
 	@Transactional
-	public InventoryBatch getInventoryBatchById(String id)
-	{
+	public InventoryBatch getInventoryBatchById(String id) {
 		InventoryBatch inventoryBatch = null;
 		try {
-				InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
-				if(inventoryBatchCollection != null)
-				{
-				 BeanUtil.map(inventoryBatchCollection, inventoryBatch);
-				}
+			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
+			if (inventoryBatchCollection != null) {
+				inventoryBatch = new InventoryBatch();
+				BeanUtil.map(inventoryBatchCollection, inventoryBatch);
+			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			// TODO: handle exception
 		}
 		return inventoryBatch;

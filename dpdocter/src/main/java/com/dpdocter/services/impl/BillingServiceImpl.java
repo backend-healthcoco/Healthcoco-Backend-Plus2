@@ -296,11 +296,11 @@ public class BillingServiceImpl implements BillingService {
 			{
 				 itemIds = CollectionUtils.collect(doctorPatientInvoiceCollection.getInvoiceItems(),
 						new BeanToPropertyValueTransformer("itemId"));
-				 System.out.println("Item ids ->");
+				/*// System.out.println("Item ids ->");
 				 for(ObjectId itemid : itemIds)
 				 {
 					 System.out.println("id :: " + itemid);
-				 }
+				 }*/
 			}
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
@@ -331,7 +331,7 @@ public class BillingServiceImpl implements BillingService {
 					quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
 							request.getHospitalId(), invoiceItemResponse.getItemId(),
 							doctorPatientInvoiceCollection.getId().toString());
-					System.out.println(quantity);
+					//System.out.println(quantity);
 					
 				}
 
@@ -418,21 +418,21 @@ public class BillingServiceImpl implements BillingService {
 			}
 			
 			for (ObjectId itemId : itemIds) {
-				System.out.println("inside added section . item id :: " + itemId);
+				//System.out.println("inside added section . item id :: " + itemId);
 				InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(),
 						request.getHospitalId(), itemId.toString(),
 						doctorPatientInvoiceCollection.getId().toString());
-				System.out.println(inventoryStock);
+				//System.out.println(inventoryStock);
 				Long quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
 						request.getHospitalId(), itemId.toString(),
 						doctorPatientInvoiceCollection.getId().toString());
-				System.out.println("Added quantity :: " + quantity);
+				//System.out.println("Added quantity :: " + quantity);
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
 						request.getHospitalId(), itemId.toString());
-				System.out.println(inventoryItem);
-				System.out.println("Batch id :: " + inventoryStock.getBatchId());
+				//System.out.println(inventoryItem);
+				//System.out.println("Batch id :: " + inventoryStock.getBatchId());
 				InventoryBatch inventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
-				System.out.println(inventoryBatch);
+			//	System.out.println(inventoryBatch);
 				if (inventoryBatch != null && inventoryItem != null) {
 					createInventoryStock(itemId.toString(), inventoryItem.getId(),
 							inventoryBatch, request.getPatientId(), request.getDoctorId(),
@@ -2011,6 +2011,7 @@ public class BillingServiceImpl implements BillingService {
 		if (inventoryQuantity != null) {
 			inventoryStock.setQuantity(inventoryQuantity.longValue());
 		}
+		//System.out.println(inventoryStock);
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
 

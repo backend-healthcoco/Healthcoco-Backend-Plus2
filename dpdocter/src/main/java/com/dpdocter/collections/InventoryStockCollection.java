@@ -2,8 +2,10 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+//@Document(collection = "inventory_stock_cl")
 public class InventoryStockCollection extends GenericCollection {
 
 	@Id
@@ -34,6 +36,8 @@ public class InventoryStockCollection extends GenericCollection {
 	private Long totalPrice;
 	@Field
 	private ObjectId resourceId;
+	@Field
+	private ObjectId invoiceId;
 
 	public ObjectId getId() {
 		return id;
@@ -145,6 +149,14 @@ public class InventoryStockCollection extends GenericCollection {
 
 	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
+	}
+
+	public ObjectId getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(ObjectId invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 
 	@Override
