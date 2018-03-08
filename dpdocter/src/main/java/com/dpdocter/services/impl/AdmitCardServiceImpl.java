@@ -43,10 +43,12 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AdmitCardRequest;
+import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.response.AdmitCardResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.services.AdmitCardService;
+import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -96,6 +98,9 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 	@Autowired
 	private MailService mailService;
+	
+	@Autowired
+	private DischargeSummaryService dischargeSummaryService;
 
 	@Value(value = "${jasper.print.admitCard.a4.fileName}")
 	private String admitCardReportA4FileName;
@@ -138,6 +143,9 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				admitCardCollection.setCreatedBy(doctor.getTitle() + " " + doctor.getFirstName());
 				admitCardCollection.setUniqueEmrId(
 						UniqueIdInitial.ADMIT_CARD.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+				DischargeSummaryRequest dischargeSummaryRequest =  new DischargeSummaryRequest();
+				BeanUtil.map(request, dischargeSummaryRequest);
+				dischargeSummaryService.addEditDischargeSummary(dischargeSummaryRequest);
 			} else {
 				AdmitCardCollection oldAdmitCardCollection = admitCardRepository.findOne(admitCardCollection.getId());
 				admitCardCollection.setAdminCreatedTime(oldAdmitCardCollection.getAdminCreatedTime());
