@@ -1943,6 +1943,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 				parameters.put("material",
 						"<b>Material :- </b> " + StringUtils.join(dentalWorksSample.getMaterial(), ','));
 			}
+			
+			if (dentalWorksSample.getEtaInDate() != null) {
+				parameters.put("eta",
+						"<b>ETA :- </b> " + simpleDateFormat.format(new Date(dentalWorksSample.getEtaInDate())));
+			}
+			
+			if (dentalWorksSample.getProcessStatus() != null) {
+				parameters.put("processingStatus",
+						"<b>Processing Status :- </b> " + dentalWorksSample.getProcessStatus());
+			}
 			if (dentalWorksSample.getDentalToothNumbers() != null) {
 				for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
 					toothNumbers = toothNumbers + StringUtils.join(dentalToothNumber.getToothNumber(), ',') + " - "
