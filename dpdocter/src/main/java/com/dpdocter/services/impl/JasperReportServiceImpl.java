@@ -4595,11 +4595,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		int fieldWidth = 118;
-		if (contentFontSize > 13)
-			fieldWidth = 145;
-		else if (contentFontSize > 11)
-			fieldWidth = 128;
+		int fieldWidth = 250;
 
 		addItem(jasperDesign, columnWidth, "$P{dentalWork}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{uniqueWorkId}", fieldWidth, true, 0, false);
