@@ -259,9 +259,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.setAppointmentId(appointment.getAppointmentId());
 
 			}
+			dischargeSummaryCollection.setFlowSheets(dischargeSummary.getFlowSheets());
 			dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 			response = new DischargeSummaryResponse();
-
 			BeanUtil.map(dischargeSummaryCollection, response);
 			response.setPrescriptions(prescription);
 

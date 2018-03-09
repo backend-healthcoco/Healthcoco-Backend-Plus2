@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
@@ -61,8 +62,9 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String surgeon;
 	private String anesthetist;
 	private String implant;
-	private String cement;	
+	private String cement;
 	private String operationName;
+	private List<FlowSheet> flowSheets;
 
 	public String getOperationName() {
 		return operationName;
@@ -480,6 +482,14 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setDoctorIncharge(String doctorIncharge) {
 		this.doctorIncharge = doctorIncharge;
+	}
+
+	public List<FlowSheet> getFlowSheets() {
+		return flowSheets;
+	}
+
+	public void setFlowSheets(List<FlowSheet> flowSheets) {
+		this.flowSheets = flowSheets;
 	}
 
 }

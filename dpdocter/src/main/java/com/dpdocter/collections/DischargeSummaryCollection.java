@@ -1,12 +1,14 @@
 package com.dpdocter.collections;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
@@ -127,9 +129,11 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String cement;
 	@Field
 	private String operationName;
-	
+
 	@Field
 	private Boolean isPatientDiscarded = false;
+	@Field
+	private List<FlowSheet> flowSheets;
 
 	public String getOperationName() {
 		return operationName;
@@ -597,6 +601,14 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	public List<FlowSheet> getFlowSheets() {
+		return flowSheets;
+	}
+
+	public void setFlowSheets(List<FlowSheet> flowSheets) {
+		this.flowSheets = flowSheets;
 	}
 
 	@Override
