@@ -454,7 +454,19 @@ public class DentalLabAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(dentalLabService.downloadDentalLabReportPrint(requestId));
+		response.setData(dentalLabService.downloadDentalLabReportPrint(requestId, false));
+		return response;
+	}
+
+	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT, notes = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT)
+	public Response<String> downloadInspectionReport(@PathParam("requestId") String requestId) {
+		if (requestId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(dentalLabService.downloadDentalLabReportPrint(requestId, true));
 		return response;
 	}
 
