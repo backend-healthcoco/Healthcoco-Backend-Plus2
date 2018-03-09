@@ -4,6 +4,7 @@ import com.dpdocter.beans.Address;
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Location;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.LabType;
 
 public class CollectionBoyResponse extends GenericCollection {
 	private String id;
@@ -19,6 +20,10 @@ public class CollectionBoyResponse extends GenericCollection {
 	private Boolean discarded = false;
 	private Boolean isAvailable = false;
 	private Location location;
+<<<<<<< HEAD
+=======
+	private String labType = LabType.DIAGNOSTIC.getType();
+>>>>>>> release-1.0.63
 
 	public String getId() {
 		return id;
@@ -122,6 +127,14 @@ public class CollectionBoyResponse extends GenericCollection {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public String getLabType() {
+		return labType;
+	}
+
+	public void setLabType(String labType) {
+		this.labType = labType;
 	}
 
 	@Override

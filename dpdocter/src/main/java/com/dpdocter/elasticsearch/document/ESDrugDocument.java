@@ -49,27 +49,39 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-    @Field(type = FieldType.String)
-    private String companyName;
- 
-    @Field(type = FieldType.String)
-    private String packSize;
-
-    @Field(type = FieldType.String)
+	@Field(type = FieldType.String)
 	private String packForm;
-	
-    @Field(type = FieldType.String)
-	private String prizePerPack;
-	
-    @Field(type = FieldType.String)
-    private String MRP;
 
-    @Field(type = FieldType.Nested)
+	@Field(type = FieldType.String)
+	private String prizePerPack;
+
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialities;
+
+	@Field(type = FieldType.Long)
+	private long companyRankingCount = 0;
+
+	@Field(type = FieldType.String)
+	private String rxRequired;
+
+	@Field(type = FieldType.String)
+	private String unsafeWith;
+
+	@Field(type = FieldType.String)
+	private String companyName;
+
+	@Field(type = FieldType.String)
+	private String packSize;
+
+	@Field(type = FieldType.String)
+	private String MRP;
+
+	@Field(type = FieldType.Nested)
 	private Duration duration;
 
-    @Field(type = FieldType.String)
+	@Field(type = FieldType.String)
 	private String dosage;
-	
+
 	@MultiField(mainField = @Field(type = FieldType.Long))
 	private List<Long> dosageTime;
 
@@ -91,15 +103,9 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private Long totalStock;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
-	private List<String> specialities;
-	 
-    @Field(type = FieldType.String)
-	private String rxRequired;
-	
-    @Field(type = FieldType.String)
-	private String unsafeWith;
-	
+	@Field(type = FieldType.Long)
+	private Long retailPrice;
+
 	@Override
 	public int hashCode() {
 		return this.drugCode.hashCode();
@@ -132,70 +138,6 @@ public class ESDrugDocument {
 
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
-	}
-
-	public String getDrugCode() {
-		return drugCode;
-	}
-
-	public void setDrugCode(String drugCode) {
-		this.drugCode = drugCode;
-	}
-
-	public String getDrugTypeId() {
-		return drugTypeId;
-	}
-
-	public void setDrugTypeId(String drugTypeId) {
-		this.drugTypeId = drugTypeId;
-	}
-
-	public String getDrugType() {
-		return drugType;
-	}
-
-	public void setDrugType(String drugType) {
-		this.drugType = drugType;
-	}
-
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
-
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
-
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
-
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
 	}
 
 	public String getCompanyName() {
@@ -294,6 +236,74 @@ public class ESDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
+	public String getDrugCode() {
+		return drugCode;
+	}
+
+	public void setDrugCode(String drugCode) {
+		this.drugCode = drugCode;
+	}
+
+	public String getDrugTypeId() {
+		return drugTypeId;
+	}
+
+	public void setDrugTypeId(String drugTypeId) {
+		this.drugTypeId = drugTypeId;
+	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -308,6 +318,19 @@ public class ESDrugDocument {
 
 	public void setTotalStock(Long totalStock) {
 		this.totalStock = totalStock;
+	}
+
+	@Override
+	public String toString() {
+		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
+				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize
+				+ ", packForm=" + packForm + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP + ", duration="
+				+ duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction
+				+ ", categories=" + categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount
+				+ ", inventoryQuantity=" + inventoryQuantity + ", totalStock=" + totalStock + ", specialities="
+				+ specialities + ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
 	}
 
 	public List<String> getSpecialities() {
@@ -334,16 +357,16 @@ public class ESDrugDocument {
 		this.unsafeWith = unsafeWith;
 	}
 
-	@Override
-	public String toString() {
-		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
-				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize
-				+ ", packForm=" + packForm + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP + ", duration="
-				+ duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction
-				+ ", categories=" + categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount
-				+ ", inventoryQuantity=" + inventoryQuantity + ", totalStock=" + totalStock + ", specialities="
-				+ specialities + ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
+	public Long getRetailPrice() {
+		return retailPrice;
 	}
+
+	public void setRetailPrice(Long retailPrice) {
+		this.retailPrice = retailPrice;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+
 }

@@ -808,6 +808,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 							.getInventoryItem(inventoryItem.getId());
 					drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 				}
+
 			}
 			response.add(drug);
 		}
@@ -826,6 +827,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 							.getInventoryItem(inventoryItem.getId());
 					drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 				}
+
 			}
 			response.add(drug);
 		}

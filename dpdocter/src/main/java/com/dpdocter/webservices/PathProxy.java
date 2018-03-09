@@ -758,11 +758,11 @@ public interface PathProxy {
 		public static final String UPDATE_PRESCRIPTION_SMS = "/{doctorId}/prescriptionSMS";
 
 		public static final String ADD_EDIT_SEO = "/addEditSEO";
-
+		
 		public static final String UPDATE_SAVE_TO_INVENTORY = "/{doctorId}/saveToInventory";
-
+		
 		public static final String UPDATE_SHOW_INVENTORY = "/{doctorId}/showInventory";
-
+		
 		public static final String UPDATE_SHOW_INVENTORY_COUNT = "/{doctorId}/showInventoryCount";
 
 	}
@@ -1565,6 +1565,61 @@ public interface PathProxy {
 		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
 
 	}
+	
+	public static final String DENTAL_LAB_BASE_URL = BASE_URL + "/dentalLab";
+
+	public interface DentalLabUrls {
+
+		public static final String ADD_EDIT_DENTAL_WORKS = "/addEditDentalWorks";
+		public static final String GET_DENTAL_WORKS = "/getDentalWorks";
+		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
+		public static final String CHANGE_LAB_TYPE = "/changeLabType";
+		public static final String ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION = "/addEditDentalLabDoctorAssociation";
+		public static final String GET_DENTAL_LAB_DOCTOR_ASSOCIATION = "/getDentalLabDoctorAssociation";
+		public static final String GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR = "/getDentalLabDoctorAssociationForDoctor";
+		public static final String ADD_EDIT_DENTAL_WORK_PICKUP = "/addEditDentalWorkPickup";
+		public static final String GET_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
+		public static final String DELETE_DENTAL_WORK_PICKUPS = "/getDentalWorkPickups";
+		public static final String ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION = "/addEditRateCardWorkAssociation";
+		public static final String GET_RATE_CARD_WORKS = "/getRateCardWork";
+		public static final String ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION = "/addEditRateCardDoctorAssociation";
+		public static final String GET_RATE_CARD_DOCTOR_ASSOCIATION = "/getRateCardDoctorAssociation";
+		public static final String ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION = "/addEditCollectionBoyDoctorAssociation";
+		public static final String GET_COLLECTION_BOY_DOCTOR_ASSOCIATION = "/getCollectionBoyDoctorAssociation";
+		public static final String GET_CB_LIST_FOR_DENTAL_LAB = "/getCBListForDentalLab";
+		public static final String CHANGE_REQUEST_STATUS = "/changeRequestStatus";
+		public static final String ADD_DENTAL_IMAGE_MULTIPART = "/addDentalImageMultipart";
+		public static final String ADD_DENTAL_IMAGE_BASE_64 = "/addDentalImageBase64";
+		public static final String UPDATE_DENTAL_STAGES_FOR_LAB = "/updateDentalStagesForLab";
+		public static final String UPDATE_DENTAL_STAGES_FOR_DOCTOR = "/updateDentalStagesForDoctor";
+		public static final String GET_RATE_CARD_WORKS_BY_RATE_CARD = "/getRateCardWorkByRateCard";
+		public static final String CANCEL_REQUEST = "/cancelRequest";
+		public static final String UPDATE_ETA = "/updateETA";
+		public static final String DISCARD_REQUEST = "/discardRequest/{requestId}";
+		
+	}
+
+
+	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";
+
+	public interface CertificateTemplatesUrls {
+		public static final String ADD_CERTIFICATE_TEMPLATES = "template/add";
+
+		public static final String GET_CERTIFICATE_TEMPLATE_BY_ID = "/template/{templateId}/view";
+
+		public static final String GET_CERTIFICATE_TEMPLATES = "template";
+
+		public static final String DELETE_CERTIFICATE_TEMPLATES = "/template/{templateId}/delete";
+
+		public static final String ADD_PATIENT_CERTIFICATE = "/patient/add";
+
+		public static final String GET_PATIENT_CERTIFICATES = "/patient/";
+
+		public static final String DELETE_PATIENT_CERTIFICATE = "/patient/{certificateId}/delete";
+
+		public static final String GET_PATIENT_CERTIFICATE_BY_ID = "/patient/{certificateId}/view";
+
+	}
 
 	public static final String DOCTOR_LAB_URL = BASE_URL + "/doctorLab";
 
@@ -1585,5 +1640,13 @@ public interface PathProxy {
 		public static final String DELETE_DOCTOR_LAB_REPORTS = "/{reportId}/delete";
 
 	}
+
+	
+	public static final String SOLR_DENTAL_WORKS_BASE_URL = BASE_URL + "/solr/dentalWorks";
+
+	public interface ESDentalLabsUrl {
+		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks/{range}";
+	}
+
 
 }

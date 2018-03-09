@@ -41,7 +41,7 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.TreatmentFields;
+import com.dpdocter.beans.TreatmentDynamicFields;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
@@ -207,6 +207,7 @@ public class BillingServiceImpl implements BillingService {
 		}
 		return response;
 	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request) {
@@ -490,6 +491,7 @@ public class BillingServiceImpl implements BillingService {
 		}
 		return response;
 	}
+
 
 	@Override
 	public DoctorPatientInvoice getInvoice(String invoiceId) {
@@ -1121,7 +1123,27 @@ public class BillingServiceImpl implements BillingService {
 				// invoiceItemResponse.getBatchId(), request.getPatientId(),
 				// request.getDoctorId(), request.getLocationId(),
 				// request.getHospitalId());
+				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId());
+				/*if (DPDoctorUtils.anyStringEmpty(request.getId()))
+				{
+					 inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
+				}
+			//	InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(request.getLocationId(), request.getHospitalId(), invoiceItemResponse.getItemId(), request.getId());
+				
+				if (inventoryStock != null) {
+>>>>>>> release-1.0.63
 
+				} else {
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+							request.getHospitalId(), invoiceItemResponse.getItemId());
+					if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
+						createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
+								invoiceItemResponse.getInventoryBatch(), request.getPatientId(), request.getDoctorId(),
+								request.getLocationId(), request.getHospitalId(),
+								invoiceItemResponse.getInventoryQuantity() , doctorPatientInvoiceCollection.getId().toString());
+					}
+				}*/
+				//createInventoryStock(invoiceItemResponse.getItemId(), invoiceItemResponse.getBatchId(), request.getPatientId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
@@ -1510,9 +1532,9 @@ public class BillingServiceImpl implements BillingService {
 
 				String serviceName = invoiceItem.getName() != null ? invoiceItem.getName() : "";
 				String fieldName = "";
-				if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
-					String key = "";
-					for (TreatmentFields treatmentFile : invoiceItem.getTreatmentFields()) {
+				//if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
+				/*	String key = "";
+					for (field treatmentFile : invoiceItem.getTreatmentFields()) {
 						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {
@@ -1528,7 +1550,7 @@ public class BillingServiceImpl implements BillingService {
 							}
 						}
 					}
-				}
+				}*/
 				serviceName = serviceName == "" ? "--" : serviceName + fieldName;
 				invoiceItemJasperDetail.setServiceName(serviceName);
 
@@ -1998,6 +2020,7 @@ public class BillingServiceImpl implements BillingService {
 	private void createInventoryStock(String resourceId, String itemId, InventoryBatch inventoryBatch, String patientId,
 			String doctorId, String locationId, String hospitalId, Integer inventoryQuantity, String invoiceId,
 			String stockType) {
+
 		InventoryStock inventoryStock = new InventoryStock();
 		inventoryStock.setInventoryBatch(inventoryBatch);
 		inventoryStock.setItemId(itemId);
@@ -2012,6 +2035,7 @@ public class BillingServiceImpl implements BillingService {
 			inventoryStock.setQuantity(inventoryQuantity.longValue());
 		}
 		//System.out.println(inventoryStock);
+
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
 

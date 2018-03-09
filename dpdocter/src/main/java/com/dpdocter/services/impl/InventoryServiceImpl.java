@@ -737,8 +737,7 @@ public class InventoryServiceImpl implements InventoryService {
 				response.setHospitalId(hospitalId);
 				response.setSaveToInventory(false);
 				response.setShowInventoryCount(false);
-			}
-
+			} 
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while getting inventory setting");
@@ -746,6 +745,8 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
+
+	
 	
 	@Override
 	@Transactional
@@ -820,9 +821,9 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
 		}
 		return inventoryBatch;
 	}
+
 
 }

@@ -75,4 +75,5 @@ public class DynamicCollectionBoyAllocationRequest {
 		this.requestId = requestId;
 	}
 
+
 }

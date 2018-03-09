@@ -13,6 +13,7 @@ import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.PackageType;
+import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
 
 @Document(collection = "doctor_clinic_profile_cl")
@@ -100,6 +101,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private boolean saveToInventory = false;
+	
+	@Field
+	private String labType = LabType.DIAGNOSTIC.getType();
 
 	public ObjectId getId() {
 		return id;
@@ -323,6 +327,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setSaveToInventory(boolean saveToInventory) {
 		this.saveToInventory = saveToInventory;
+	}
+	
+	public String getLabType() {
+		return labType;
+	}
+
+	public void setLabType(String labType) {
+		this.labType = labType;
 	}
 
 	@Override

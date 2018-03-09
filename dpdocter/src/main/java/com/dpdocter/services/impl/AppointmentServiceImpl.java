@@ -1634,7 +1634,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			List<AppointmentLookupResponse> appointmentLookupResponses = null;
 
 			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"));
-
+			
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
 				if (status.equalsIgnoreCase(QueueStatus.WAITING.toString())) {
 					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedInAt"));

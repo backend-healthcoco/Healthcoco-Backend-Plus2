@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -26,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.CustomWork;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
@@ -41,7 +42,7 @@ import com.dpdocter.beans.Specimen;
 import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
-import com.dpdocter.collections.CustomWorkCollection;
+import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LabAssociationCollection;
@@ -55,6 +56,7 @@ import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.SpecimenCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -63,7 +65,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
-import com.dpdocter.repository.CustomWorkRepository;
+import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LabAssociationRepository;
 import com.dpdocter.repository.LabReportsRepository;
@@ -146,8 +148,8 @@ public class LocationServiceImpl implements LocationServices {
 	private PushNotificationServices pushNotificationServices;
 
 	@Autowired
-	private CustomWorkRepository customWorkRepository;
-
+	private DentalWorkRepository dentalWorkRepository;
+	
 	@Autowired
 	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
 
@@ -1065,7 +1067,6 @@ public class LocationServiceImpl implements LocationServices {
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.match(orOperator), aggregationOperation1, projectList, aggregationOperation2,
-
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
@@ -1083,11 +1084,9 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.match(orOperator), aggregationOperation1, projectList, aggregationOperation2,
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			// System.out.println(aggregation);
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
 			response = aggregationResults.getMappedResults();
-			// System.out.println(response);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1154,13 +1153,7 @@ public class LocationServiceImpl implements LocationServices {
 									&& DPDoctorUtils.anyStringEmpty(OldlabTestSampleCollection.getSerialNumber())) {
 								String serialNumber = reportSerialNumberGenerator(
 										labTestSampleCollection.getParentLabLocationId().toString());
-								/*
-								 * System.out.println("/////////Serial No. is" +
-								 * serialNumber +
-								 * "///////////////////////////////////////////////////"
-								 * );
-								 */
-								labTestSampleCollection.setSerialNumber(serialNumber);
+		labTestSampleCollection.setSerialNumber(serialNumber);
 							}
 							labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 							labTestSampleIds.add(labTestSampleCollection.getId());
@@ -1267,6 +1260,7 @@ public class LocationServiceImpl implements LocationServices {
 						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
 								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 
+
 					}
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
@@ -1322,7 +1316,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm) {
+	public List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm , String labType) {
 		List<CollectionBoyResponse> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -1330,10 +1324,17 @@ public class LocationServiceImpl implements LocationServices {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("mobileNumber").regex(searchTerm, "i"),
 						new Criteria("name").regex(searchTerm, "i"));
+
+			}
+			 if (!DPDoctorUtils.anyStringEmpty(labType))
+			{
+				criteria.and("labType").is(labType);
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));
 
+			System.out.println(criteria);
+			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
@@ -1344,6 +1345,8 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<CollectionBoyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyCollection.class, CollectionBoyResponse.class);
 			response = aggregationResults.getMappedResults();
+			
+			System.out.println(aggregation);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Collection Boys");
@@ -1354,7 +1357,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public Integer getCBCount(String locationId, String searchTerm) {
+	public Integer getCBCount(String locationId, String searchTerm , String labType) {
 		Integer count = null;
 		try {
 			Aggregation aggregation = null;
@@ -1363,9 +1366,13 @@ public class LocationServiceImpl implements LocationServices {
 				criteria = criteria.orOperator(new Criteria("mobileNumber").regex(searchTerm, "i"),
 						new Criteria("name").regex(searchTerm, "i"));
 			}
-
+			
+			if (!DPDoctorUtils.anyStringEmpty(labType)) {
+				criteria.and("labType").is(labType);
+			}
 			criteria.and("locationId").is(new ObjectId(locationId));
 
+			
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<CollectionBoy> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1943,7 +1950,7 @@ public class LocationServiceImpl implements LocationServices {
 	@Override
 	@Transactional
 	public List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab,
-			Boolean isParent, String searchTerm) {
+			Boolean isParent,Boolean isDentalWorksLab ,Boolean isDentalImagingLab,  String searchTerm) {
 		List<Location> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -1967,6 +1974,14 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			if (isParent != null) {
 				criteria.and("isParent").is(isParent);
+			}
+			
+			if (isDentalWorksLab != null) {
+				criteria.and("isDentalWorksLab").is(isDentalWorksLab);
+			}
+			
+			if (isDentalImagingLab != null) {
+				criteria.and("isDentalImagingLab").is(isDentalImagingLab);
 			}
 
 			if (size > 0) {
@@ -2357,34 +2372,45 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public CustomWork addEditCustomWork(AddEditCustomWorkRequest request) {
-		CustomWork response = null;
-		CustomWorkCollection customWorkCollection = null;
+	public DentalWork addEditCustomWork(AddEditCustomWorkRequest request) {
+		DentalWork response = null;
 		try {
-			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				customWorkCollection = customWorkRepository.findOne(new ObjectId(request.getId()));
-			}
-			if (customWorkCollection != null) {
-				BeanUtil.map(request, customWorkCollection);
-				customWorkCollection = customWorkRepository.save(customWorkCollection);
+			DentalWorkCollection dentalWorkCollection = new DentalWorkCollection();
+			BeanUtil.map(request, dentalWorkCollection);
+			if (DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getId())) {
+				dentalWorkCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(dentalWorkCollection.getDoctorId());
+					if (userCollection != null) {
+						dentalWorkCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					dentalWorkCollection.setCreatedBy("ADMIN");
+				}
 			} else {
-				customWorkCollection = new CustomWorkCollection();
-				BeanUtil.map(request, customWorkCollection);
-				customWorkCollection = customWorkRepository.save(customWorkCollection);
+				DentalWorkCollection oldDentalWorkCollection = dentalWorkRepository
+						.findOne(dentalWorkCollection.getId());
+				dentalWorkCollection.setCreatedBy(oldDentalWorkCollection.getCreatedBy());
+				dentalWorkCollection.setCreatedTime(oldDentalWorkCollection.getCreatedTime());
+				dentalWorkCollection.setDiscarded(oldDentalWorkCollection.getDiscarded());
 			}
-			response = new CustomWork();
-			BeanUtil.map(customWorkCollection, response);
+			dentalWorkCollection = dentalWorkRepository.save(dentalWorkCollection);
+			response = new DentalWork();
+			BeanUtil.map(dentalWorkCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
 
 	@Override
 	@Transactional
-	public List<CustomWork> getCustomWorks(int page, int size, String searchTerm) {
-		List<CustomWork> customWorks = null;
+	public List<DentalWork> getCustomWorks(int page, int size, String searchTerm) {
+		List<DentalWork> customWorks = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -2399,8 +2425,8 @@ public class LocationServiceImpl implements LocationServices {
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<CustomWork> aggregationResults = mongoTemplate.aggregate(aggregation,
-					CustomWorkCollection.class, CustomWork.class);
+			AggregationResults<DentalWork> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalWorkCollection.class, DentalWork.class);
 			customWorks = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2409,6 +2435,31 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return customWorks;
 	}
+	
+	@Override
+	@Transactional
+	public DentalWork deleteCustomWork(String id, boolean discarded) {
+		DentalWork response = null;
+		DentalWorkCollection customWorkCollection = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(id)) {
+				customWorkCollection = dentalWorkRepository.findOne(new ObjectId(id));
+			}
+			if (customWorkCollection != null) {
+				customWorkCollection.setDiscarded(discarded);
+				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput , "Record not found");
+			}
+			response = new DentalWork();
+			BeanUtil.map(customWorkCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 
 	private String reportSerialNumberGenerator(String locationId) {
 		String generatedId = null;
@@ -2447,6 +2498,7 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return generatedId;
 	}
+
 
 	@Override
 	@Transactional
@@ -2505,6 +2557,7 @@ public class LocationServiceImpl implements LocationServices {
 				}
 			}
 		} catch (Exception e) {
+
 			e.printStackTrace();
 		}
 		return response;

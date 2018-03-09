@@ -41,7 +41,6 @@ import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
@@ -331,6 +330,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
 					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
 			for (PatientCollection patientCollection : patientCollections) {
+
 
 				ESPatientDocument document = esPatientRepository.findOne(patientCollection.getId().toString());
 				if (document != null)
@@ -1315,7 +1315,7 @@ System.out.println(fields[0] +""+ fields[1]);
 							BeanUtil.map(treatmentService, treatment);
 							treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
 
-							if (checkIfNotNullOrNone(fields[4])) {
+						/*	if (checkIfNotNullOrNone(fields[4])) {
 								List<TreatmentFields> treatmentFieldList = new ArrayList<>();
 								TreatmentFields treatmentFields = new TreatmentFields();
 								treatmentFields.setKey("toothNumber");
@@ -1323,7 +1323,7 @@ System.out.println(fields[0] +""+ fields[1]);
 								treatmentFieldList.add(treatmentFields);
 								treatment.setTreatmentFields(treatmentFieldList);
 							}
-
+*/
 							if (checkIfNotNullOrNone(fields[5]))
 								treatment.setNote(fields[5].replace("'", ""));
 

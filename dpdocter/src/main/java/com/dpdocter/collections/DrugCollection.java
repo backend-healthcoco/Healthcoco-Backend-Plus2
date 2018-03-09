@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -63,10 +62,11 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private String packForm;
-	
+
+
 	@Field
 	private String prizePerPack;
-	
+
 	@Field
 	private String MRP;
 
@@ -266,14 +266,6 @@ public class DrugCollection extends GenericCollection {
 		this.rankingCount = rankingCount;
 	}
 
-	public long getCompanyRankingCount() {
-		return companyRankingCount;
-	}
-
-	public void setCompanyRankingCount(long companyRankingCount) {
-		this.companyRankingCount = companyRankingCount;
-	}
-
 	public String getPackForm() {
 		return packForm;
 	}
@@ -290,17 +282,10 @@ public class DrugCollection extends GenericCollection {
 		this.prizePerPack = prizePerPack;
 	}
 
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
-
 	public List<String> getSpecialities() {
 		return specialities;
 	}
+
 
 	public void setSpecialities(List<String> specialities) {
 		this.specialities = specialities;
@@ -329,7 +314,23 @@ public class DrugCollection extends GenericCollection {
 	public void setTotalStock(Long totalStock) {
 		this.totalStock = totalStock;
 	}
+	
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
 
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+	
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
