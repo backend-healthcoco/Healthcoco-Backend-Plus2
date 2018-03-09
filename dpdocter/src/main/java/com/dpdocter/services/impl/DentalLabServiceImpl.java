@@ -1844,7 +1844,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 					&& !dentalLabPickupResponse.getDentalWorksSamples().isEmpty()) {
 				String toothNumbers = "<br>";
 
-					DentalWorksSampleRequest dentalWorksSample = dentalLabPickupResponse.getDentalWorksSamples().get(0);
+			DentalWorksSampleRequest dentalWorksSample = dentalLabPickupResponse.getDentalWorksSamples().get(0);
+			
 
 					if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getCollarAndMetalDesign())) {
 						parameters.put("collarAndMetalDesign", "<b>Collar and Metal Design :- </b> " + dentalWorksSample.getCollarAndMetalDesign());
@@ -1918,7 +1919,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 		
 		
 
-		userCollection = null;
 
 		parameters.put("title", "DENTAL WORKS REPORT");
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
