@@ -1951,7 +1951,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			
 			if (dentalWorksSample.getProcessStatus() != null) {
 				parameters.put("processingStatus",
-						"<b>Processing Status :- </b> " + dentalWorksSample.getProcessStatus());
+						"<b> Status :- </b> " + dentalWorksSample.getProcessStatus());
 			}
 			if (dentalWorksSample.getDentalToothNumbers() != null) {
 				for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
@@ -1982,10 +1982,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			parameters.put("items", dentalStage);
 
 		}
-		
-		
-
-		userCollection = null;
 
 		parameters.put("title", "DENTAL WORKS REPORT");
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
