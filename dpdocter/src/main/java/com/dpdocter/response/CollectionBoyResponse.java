@@ -20,10 +20,7 @@ public class CollectionBoyResponse extends GenericCollection {
 	private Boolean discarded = false;
 	private Boolean isAvailable = false;
 	private Location location;
-<<<<<<< HEAD
-=======
 	private String labType = LabType.DIAGNOSTIC.getType();
->>>>>>> release-1.0.63
 
 	public String getId() {
 		return id;

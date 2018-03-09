@@ -992,7 +992,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patientName").regex("^" + searchTerm),
 						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm, "i"),
-						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm));
+						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm),
+						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + "$", "i"),
+						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + "$" ));
 			}
 			
 			if (size > 0)
