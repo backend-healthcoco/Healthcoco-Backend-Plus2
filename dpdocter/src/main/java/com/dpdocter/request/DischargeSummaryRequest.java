@@ -1,9 +1,11 @@
 package com.dpdocter.request;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.PrescriptionItemAndAdviceAdd;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
@@ -61,6 +63,7 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private String implant;
 	private String cement;
 	private String operationName;
+	private List<FlowSheet> flowSheets;
 
 	public Date getOperationDate() {
 		return operationDate;
@@ -100,14 +103,6 @@ public class DischargeSummaryRequest extends GenericCollection {
 
 	public void setCement(String cement) {
 		this.cement = cement;
-	}
-
-	public String getOperationName() {
-		return operationName;
-	}
-
-	public void setOperationName(String operationName) {
-		this.operationName = operationName;
 	}
 
 	public VitalSigns getVitalSigns() {
@@ -461,7 +456,11 @@ public class DischargeSummaryRequest extends GenericCollection {
 				+ admissionDate + ", dischargeDate=" + dischargeDate + ", labourNotes=" + labourNotes + ", babyWeight="
 				+ babyWeight + ", babyNotes=" + babyNotes + ", conditionsAtDischarge=" + conditionsAtDischarge
 				+ ", summary=" + summary + ", discarded=" + discarded + ", indicationOfUSG=" + indicationOfUSG
-				+ ", ecgDetails=" + ecgDetails + ", holter=" + holter + "]";
+				+ ", ecgDetails=" + ecgDetails + ", holter=" + holter + ", time=" + time + ", fromDate=" + fromDate
+				+ ", procedureNote=" + procedureNote + ", doctorIncharge=" + doctorIncharge + ", vitalSigns="
+				+ vitalSigns + ", operationDate=" + operationDate + ", surgeon=" + surgeon + ", anesthetist="
+				+ anesthetist + ", implant=" + implant + ", cement=" + cement + ", operationName=" + operationName
+				+ "]";
 	}
 
 	public String getProcedureNote() {
@@ -479,5 +478,24 @@ public class DischargeSummaryRequest extends GenericCollection {
 	public void setDoctorIncharge(String doctorIncharge) {
 		this.doctorIncharge = doctorIncharge;
 	}
+
+
+	public String getOperationName() {
+		return operationName;
+	}
+
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
+	}
+
+	public List<FlowSheet> getFlowSheets() {
+		return flowSheets;
+	}
+
+	public void setFlowSheets(List<FlowSheet> flowSheets) {
+		this.flowSheets = flowSheets;
+	}
+	
+	
 
 }
