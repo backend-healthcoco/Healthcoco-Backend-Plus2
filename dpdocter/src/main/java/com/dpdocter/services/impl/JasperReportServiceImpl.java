@@ -1800,29 +1800,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 	}
 
-	private void addItem(JasperDesign jasperDesign, int columnWidth, String value, Integer fieldWidth, boolean isHTML,
-			Integer xSpaceForTitle, boolean isBold) {
-
-		band = new JRDesignBand();
-		band.setHeight(20);
-		band.setPrintWhenExpression(
-				new JRDesignExpression("!" + value + ".equals( null ) && !" + value + ".isEmpty()"));
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression(value));
-		jrDesignTextField.setX(xSpaceForTitle);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(fieldWidth);
-		jrDesignTextField.setBold(isBold);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
-		if (isHTML) {
-			jrDesignTextField.setMarkup("html");
-		}
-		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-	}
-
 	private void addsignature(JasperDesign jasperDesign, Map<String, Object> parameter, Integer contentFontSize,
 			JRDesignStyle normalStyle, int columnWidth) {
 
