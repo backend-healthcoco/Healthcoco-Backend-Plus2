@@ -4595,11 +4595,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		int fieldWidth = 118;
-		if (contentFontSize > 13)
-			fieldWidth = 145;
-		else if (contentFontSize > 11)
-			fieldWidth = 128;
+		int fieldWidth = 250;
 
 		addItem(jasperDesign, columnWidth, "$P{dentalWork}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{uniqueWorkId}", fieldWidth, true, 0, false);
@@ -4610,6 +4606,35 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItem(jasperDesign, columnWidth, "$P{shade}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{material}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{toothNumbers}", fieldWidth, true, 0, false);
+		addItem(jasperDesign, columnWidth, "$P{eta}", fieldWidth, true, 0, false);
+		addItem(jasperDesign, columnWidth, "$P{processingStatus}", fieldWidth, true, 0, false);
+		
+
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
+				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
+		
+		band = new JRDesignBand();
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+			jrDesignTextField.setFontSize(new Float(13));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(2);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+		band.setHeight(20);
+
+		jasperDesign.setPageFooter(band);
+
 
 	}
 

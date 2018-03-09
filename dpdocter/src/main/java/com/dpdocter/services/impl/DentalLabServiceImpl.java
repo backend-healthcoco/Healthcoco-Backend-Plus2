@@ -1840,6 +1840,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		UserCollection userCollection = null;
+		List<DentalStagejasperBean> dentalStage = null;
 
 		DBObject labReportItems = null;
 		List<DBObject> labreports = new ArrayList<DBObject>();
@@ -1850,9 +1851,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 			locationId = dentalLabPickupResponse.getDentalLab().getId();
 			hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
 			labName = dentalLabPickupResponse.getDentalLab().getLocationName();
-			labReportItems.put("dentalLab", "<b>Dental Lab :- </b> " + labName);
+			parameters.put("dentalLab", "<b>Dental Lab :- </b> " + labName);
+		} else {
+			parameters.put("dentalLab", "<b>Dental Lab :- </b> ");
 		}
-
 		if (dentalLabPickupResponse.getDoctor() != null) {
 			parameters.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
 		} else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
@@ -1860,27 +1862,43 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (userCollection != null)
 				parameters.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 			else
-
 				parameters.put("doctor", "<b>Doctor :- </b> ");
 		} else {
 			parameters.put("doctor", "<b>Doctor :- </b> ");
 
 		}
 
+		
+		
 		if (dentalLabPickupResponse.getPatientName() != null) {
 			parameters.put("patientName", "<b>Patient Name :- </b> " + dentalLabPickupResponse.getPatientName());
+		}
+		else
+		{
+			parameters.put("patientName", "<b>Patient Name :- </b>  -- " );
 		}
 
 		if (dentalLabPickupResponse.getGender() != null) {
 			parameters.put("gender", "<b>Gender :- </b> " + dentalLabPickupResponse.getGender());
 		}
+		else
+		{
+			parameters.put("gender", "<b>Gender :- </b> --" );
+		}
 
 		if (dentalLabPickupResponse.getAge() != null) {
 			parameters.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getGender());
 		}
+		else
+		{
+			parameters.put("age", "<b>Age :- </b> --" );
+		}
 
 		if (dentalLabPickupResponse.getRequestId() != null) {
 			parameters.put("requestId", "<b>Id :- </b> " + dentalLabPickupResponse.getRequestId());
+		}
+		else  {
+			parameters.put("requestId", "<b>Id :- </b>  --" );
 		}
 
 		if (dentalLabPickupResponse.getDentalWorksSamples() != null
@@ -1925,6 +1943,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 				parameters.put("material",
 						"<b>Material :- </b> " + StringUtils.join(dentalWorksSample.getMaterial(), ','));
 			}
+			
+			if (dentalWorksSample.getEtaInDate() != null) {
+				parameters.put("eta",
+						"<b>ETA :- </b> " + simpleDateFormat.format(new Date(dentalWorksSample.getEtaInDate())));
+			}
+			
+			if (dentalWorksSample.getProcessStatus() != null) {
+				parameters.put("processingStatus",
+						"<b> Status :- </b> " + dentalWorksSample.getProcessStatus());
+			}
 			if (dentalWorksSample.getDentalToothNumbers() != null) {
 				for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
 					toothNumbers = toothNumbers + StringUtils.join(dentalToothNumber.getToothNumber(), ',') + " - "
@@ -1933,12 +1961,29 @@ public class DentalLabServiceImpl implements DentalLabService {
 				parameters.put("toothNumbers", "<b>ToothNumber :- </b> " + toothNumbers);
 
 			}
+			if (dentalWorksSample.getDentalStagesForDoctor() != null
+					&& !dentalWorksSample.getDentalStagesForDoctor().isEmpty()) {
+				 dentalStage = new ArrayList<DentalStagejasperBean>();
+				DentalStagejasperBean stagejasperBean = null;
+				for (DentalStageRequest dentalStageRequest : dentalWorksSample.getDentalStagesForDoctor()) {
+					stagejasperBean = new DentalStagejasperBean();
+					if (dentalStageRequest.getDeliveryTime() != null)
+						stagejasperBean.setDate(simpleDateFormat.format(dentalStageRequest.getDeliveryTime()));
+
+					if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getAuthorisedPerson()))
+						stagejasperBean.setInspectedBy(dentalStageRequest.getAuthorisedPerson());
+
+					if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getStage()))
+						stagejasperBean.setProcess(dentalStageRequest.getStage());
+					dentalStage.add(stagejasperBean);
+				}
+
+			}
+			parameters.put("items", dentalStage);
 
 		}
 
-		userCollection = null;
-
-		parameters.put("title", "DENTAL WORKS" + labName.toUpperCase());
+		parameters.put("title", "DENTAL WORKS REPORT");
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
 
 		String pdfName = locationId + "DENTAL-WORKS" + new Date().getTime();
