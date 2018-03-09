@@ -158,12 +158,15 @@ public class JasperReportServiceImpl implements JasperReportService {
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
 
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-lab-dental-works-a4.jrxml");
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())) {
+			jasperDesign = JRXmlLoader
+					.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-dental-inspection-reports-a4.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.CERTIFICATE.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
-		} 
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
-			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-lab-dental-works-a4.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())) {
+
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-lab-requisation-form-a4.jrxml");
 		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
@@ -200,8 +203,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
 		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType()) &&
-				!componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())) {
+
 			dsr.setDatasetName("mongo-print-settings-dataset_1");
 
 			expression = new JRDesignExpression();
@@ -276,6 +281,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 			createDeliveryReports(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
 
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType()))
+			createDentalWorkReport(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
+					normalStyle);
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.CERTIFICATE.getType()))
+			createPatientCertificate(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
+					normalStyle);
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType()))
+			createDentalInspectionReport(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
+					normalStyle);
+
 		if (parameters.get("eyePrescriptions") != null
 				|| componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType()))
 			createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
@@ -283,12 +300,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
-				 && !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType()))
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType()))
 			addsignature(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())) {
 			band = new JRDesignBand();
 			band.setHeight(21);
 			jrDesignTextField = new JRDesignTextField();
@@ -305,7 +324,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
-				 && !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType()))
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType()))
 			jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 		// dsr.setDataSourceExpression(new JRDesignExpression("new
 		// net.sf.jasperreports.engine.JREmptyDataSource(1)"));
@@ -1782,9 +1802,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 	}
-	
-	private void addItem(JasperDesign jasperDesign, int columnWidth, String value, Integer fieldWidth,
-			boolean isHTML, Integer xSpaceForTitle, boolean isBold) {
+
+	private void addItem(JasperDesign jasperDesign, int columnWidth, String value, Integer fieldWidth, boolean isHTML,
+			Integer xSpaceForTitle, boolean isBold) {
 
 		band = new JRDesignBand();
 		band.setHeight(20);
@@ -1799,8 +1819,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setBold(isBold);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
-		if (isHTML)
-		{
+		if (isHTML) {
 			jrDesignTextField.setMarkup("html");
 		}
 		band.addElement(jrDesignTextField);
@@ -3539,9 +3558,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.setPageFooter(band);
 
 	}
-	
-	
-
 
 	private JRDesignBand addLabReportsTest(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
 			int pageWidth, int pageHeight, String itemsValue, JRDesignStyle normalStyle) throws JRException {
@@ -3620,7 +3636,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 
 	}
-	
+
 	private JRDesignBand addDentalLabWork(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
 			int pageWidth, int pageHeight, String itemsValue, JRDesignStyle normalStyle) throws JRException {
 		JasperDesign jasperDesign = JRXmlLoader
@@ -4528,7 +4544,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0, false);
 	}
 
-
 	private void createDentalWorkReport(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)
 			throws JRException {
@@ -4677,11 +4692,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItem(jasperDesign, columnWidth, "$P{toothNumbers}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{eta}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{processingStatus}", fieldWidth, true, 0, false);
-		
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
-		
+
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
@@ -4703,7 +4717,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 
 		jasperDesign.setPageFooter(band);
-
 
 	}
 
