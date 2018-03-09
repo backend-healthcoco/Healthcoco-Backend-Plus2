@@ -1991,6 +1991,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		} else {
 			parameters.put("dentalLab", "<b>Dental Lab :- </b> ");
 		}
+
 		if (dentalLabPickupResponse.getDoctor() != null) {
 			parameters.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
 		} else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
@@ -2046,16 +2047,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 			} else {
 				parameters.put("toothNumbers", "--");
 			}
-			if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getProcessStatus())) {
-				parameters.put("status", dentalWorksSample.getProcessStatus());
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getStatus())) {
+				parameters.put("status", dentalLabPickupResponse.getStatus().replace('_', ' '));
 			} else {
 				parameters.put("status", "--");
 			}
-			if (dentalWorksSample.getDentalStagesForDoctor() != null
-					&& !dentalWorksSample.getDentalStagesForDoctor().isEmpty()) {
-				dentalStage = new ArrayList<DentalStagejasperBean>();
-				DentalStagejasperBean stagejasperBean = null;
-				for (DentalStageRequest dentalStageRequest : dentalWorksSample.getDentalStagesForDoctor()) {
+			dentalStage = new ArrayList<DentalStagejasperBean>();
+			DentalStagejasperBean stagejasperBean = null;
+			if (dentalWorksSample.getDentalStagesForLab() != null
+					&& !dentalWorksSample.getDentalStagesForLab().isEmpty()) {
+				for (DentalStageRequest dentalStageRequest : dentalWorksSample.getDentalStagesForLab()) {
 					stagejasperBean = new DentalStagejasperBean();
 					if (dentalStageRequest.getDeliveryTime() != null)
 						stagejasperBean.setDate(simpleDateFormat.format(dentalStageRequest.getDeliveryTime()));
@@ -2067,6 +2068,22 @@ public class DentalLabServiceImpl implements DentalLabService {
 						stagejasperBean.setProcess(dentalStageRequest.getStage());
 					dentalStage.add(stagejasperBean);
 				}
+			} else {
+				stagejasperBean = new DentalStagejasperBean();
+				stagejasperBean.setProcess("Model Preparation");
+				dentalStage.add(stagejasperBean);
+				stagejasperBean = new DentalStagejasperBean();
+				stagejasperBean.setProcess("Wax Pattern");
+				dentalStage.add(stagejasperBean);
+				stagejasperBean = new DentalStagejasperBean();
+				stagejasperBean.setProcess("Casting/Metal Finishing");
+				dentalStage.add(stagejasperBean);
+				stagejasperBean = new DentalStagejasperBean();
+				stagejasperBean.setProcess("Buildup");
+				dentalStage.add(stagejasperBean);
+				stagejasperBean = new DentalStagejasperBean();
+				stagejasperBean.setProcess("Final Finishing");
+				dentalStage.add(stagejasperBean);
 
 			}
 			parameters.put("items", dentalStage);
@@ -2074,9 +2091,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 		userCollection = null;
 
 		parameters.put("title", "INSPECTION REPORT");
-		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
-
-		String pdfName = dentalLabPickupResponse.getRequestId() + "DENTAL-WORKS" + new Date().getTime();
+		parameters.put("date",
+				"<b>Work Date :- </b>" + simpleDateFormat.format(dentalLabPickupResponse.getUpdatedTime()));
+		String pdfName = dentalLabPickupResponse.getId() + "-DENTAL-INSPECTION-REPORT-" + new Date().getTime();
 		String layout = "PORTRAIT";
 		String pageSize = "A4";
 		Integer topMargin = 20;

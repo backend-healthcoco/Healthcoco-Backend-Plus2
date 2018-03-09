@@ -2,9 +2,9 @@ package com.dpdocter.beans;
 
 public class DentalStagejasperBean {
 
-	private String process = "--";
-	private String date = "--";
-	private String inspectedBy = "--";
+	private String process = " ";
+	private String date = " ";
+	private String inspectedBy = " ";
 
 	public String getProcess() {
 		return process;
