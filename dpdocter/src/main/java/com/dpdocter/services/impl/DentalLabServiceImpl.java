@@ -1775,6 +1775,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		UserCollection userCollection = null;
+		//List<DentalStagejasperBean> dentalStage = null;
 
 		DBObject labReportItems = null;
 		List<DBObject> labreports = new ArrayList<DBObject>();
@@ -1892,11 +1893,34 @@ public class DentalLabServiceImpl implements DentalLabService {
 						
 					}
 	
+			/*
+			if (dentalWorksSample.getDentalStagesForDoctor() != null
+					&& !dentalWorksSample.getDentalStagesForDoctor().isEmpty()) {
+				 dentalStage = new ArrayList<DentalStagejasperBean>();
+				DentalStagejasperBean stagejasperBean = null;
+				for (DentalStageRequest dentalStageRequest : dentalWorksSample.getDentalStagesForDoctor()) {
+					stagejasperBean = new DentalStagejasperBean();
+					if (dentalStageRequest.getDeliveryTime() != null)
+						stagejasperBean.setDate(simpleDateFormat.format(dentalStageRequest.getDeliveryTime()));
+
+					if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getAuthorisedPerson()))
+						stagejasperBean.setInspectedBy(dentalStageRequest.getAuthorisedPerson());
+
+					if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getStage()))
+						stagejasperBean.setProcess(dentalStageRequest.getStage());
+					dentalStage.add(stagejasperBean);
+				}
+
 			}
-			
+			parameters.put("items", dentalStage);*/
+
+		}
+		
+		
+
 		userCollection = null;
 
-		parameters.put("title", "DENTAL WORKS " + labName.toUpperCase());
+		parameters.put("title", "DENTAL WORKS REPORT");
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
 
 		String pdfName = locationId + "DENTAL-WORKS" + new Date().getTime();
