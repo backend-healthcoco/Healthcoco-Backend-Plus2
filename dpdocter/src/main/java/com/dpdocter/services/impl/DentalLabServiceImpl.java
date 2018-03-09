@@ -1005,7 +1005,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			
 			if (fromETA != null && toETA != null) {
-				criteria.and("dentalWorksSamples.etaInDate").gte(new Date(fromETA)).lte(new Date(toETA));
+				criteria.and("dentalWorksSamples.etaInDate").gte(fromETA).lte(toETA);
 			}
 
 			/*if (from != 0 && {
