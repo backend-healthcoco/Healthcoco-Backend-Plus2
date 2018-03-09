@@ -1781,46 +1781,62 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			labReportItems = new BasicDBObject();
 
-			if (dentalLabPickupResponse.getDentalLab() != null) {
-				locationId = dentalLabPickupResponse.getDentalLab().getId();
-				hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
-				labName =  dentalLabPickupResponse.getDentalLab().getLocationName();
-				labReportItems.put("dentalLab", "<b>Dental Lab :- </b> " + labName);
-			}
-			
 
-			if(dentalLabPickupResponse.getDoctor() != null)
-			{
-				parameters.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
-			}
-			else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
-				userCollection = userRepository.findOne(new ObjectId(dentalLabPickupResponse.getDoctorId()));
-				if (userCollection != null)
-					parameters.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
-				else
-
-					parameters.put("doctor", "<b>Doctor :- </b> ");
-			} else {
+		if (dentalLabPickupResponse.getDentalLab() != null) {
+			locationId = dentalLabPickupResponse.getDentalLab().getId();
+			hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
+			labName = dentalLabPickupResponse.getDentalLab().getLocationName();
+			parameters.put("dentalLab", "<b>Dental Lab :- </b> " + labName);
+		} else {
+			parameters.put("dentalLab", "<b>Dental Lab :- </b> ");
+		}
+		if (dentalLabPickupResponse.getDoctor() != null) {
+			parameters.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
+		} else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
+			userCollection = userRepository.findOne(new ObjectId(dentalLabPickupResponse.getDoctorId()));
+			if (userCollection != null)
+				parameters.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
+			else
 				parameters.put("doctor", "<b>Doctor :- </b> ");
+		} else {
+			parameters.put("doctor", "<b>Doctor :- </b> ");
 
-			}
-			
-			if (dentalLabPickupResponse.getPatientName() != null) {
-				parameters.put("patientName", "<b>Patient Name :- </b> " + dentalLabPickupResponse.getPatientName());
-			}
-			
-			if (dentalLabPickupResponse.getGender() != null) {
-				parameters.put("gender", "<b>Gender :- </b> " + dentalLabPickupResponse.getGender());
-			}
-			
-			if (dentalLabPickupResponse.getAge() != null) {
-				parameters.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getGender());
-			}
-			
-			if (dentalLabPickupResponse.getRequestId() != null) {
-				parameters.put("requestId", "<b>Id :- </b> " + dentalLabPickupResponse.getRequestId());
-			}
-			
+		}
+
+		
+		
+		if (dentalLabPickupResponse.getPatientName() != null) {
+			parameters.put("patientName", "<b>Patient Name :- </b> " + dentalLabPickupResponse.getPatientName());
+		}
+		else
+		{
+			parameters.put("patientName", "<b>Patient Name :- </b>  -- " );
+		}
+
+		if (dentalLabPickupResponse.getGender() != null) {
+			parameters.put("gender", "<b>Gender :- </b> " + dentalLabPickupResponse.getGender());
+		}
+		else
+		{
+			parameters.put("gender", "<b>Gender :- </b> --" );
+		}
+
+		if (dentalLabPickupResponse.getAge() != null) {
+			parameters.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getGender());
+		}
+		else
+		{
+			parameters.put("age", "<b>Age :- </b> --" );
+		}
+
+		if (dentalLabPickupResponse.getRequestId() != null) {
+			parameters.put("requestId", "<b>Id :- </b> " + dentalLabPickupResponse.getRequestId());
+		}
+		else  {
+			parameters.put("requestId", "<b>Id :- </b>  --" );
+		}
+
+		
 			
 
 			if (dentalLabPickupResponse.getDentalWorksSamples() != null
@@ -1880,7 +1896,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			
 		userCollection = null;
 
-		parameters.put("title", "DENTAL WORKS" + labName.toUpperCase());
+		parameters.put("title", "DENTAL WORKS " + labName.toUpperCase());
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
 
 		String pdfName = locationId + "DENTAL-WORKS" + new Date().getTime();
