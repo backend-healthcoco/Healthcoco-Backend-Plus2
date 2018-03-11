@@ -2100,15 +2100,24 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			dentalStage = new ArrayList<DentalStagejasperBean>();
 			DentalStagejasperBean stagejasperBean = null;
+
 			if (dentalWorksSample.getDentalStagesForLab() != null
 					&& !dentalWorksSample.getDentalStagesForLab().isEmpty()) {
 				for (DentalStageRequest dentalStageRequest : dentalWorksSample.getDentalStagesForLab()) {
+					userCollection = null;
 					stagejasperBean = new DentalStagejasperBean();
 					if (dentalStageRequest.getDeliveryTime() != null)
 						stagejasperBean.setDate(simpleDateFormat.format(dentalStageRequest.getDeliveryTime()));
 
-					if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getAuthorisedPerson()))
-						stagejasperBean.setInspectedBy(dentalStageRequest.getAuthorisedPerson());
+					if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getStaffId())) {
+						userCollection = userRepository.findOne(new ObjectId(dentalStageRequest.getStaffId()));
+						if (userCollection != null) {
+							stagejasperBean.setInspectedBy(
+									!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+											: "" + " " + (!DPDoctorUtils.anyStringEmpty(userCollection.getUserName())
+													? userCollection.getUserName() : " "));
+						}
+					}
 
 					if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getStage()))
 						stagejasperBean.setProcess(dentalStageRequest.getStage());
@@ -2134,7 +2143,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			parameters.put("items", dentalStage);
 		}
-		userCollection = null;
 
 		parameters.put("title", "INSPECTION REPORT");
 		parameters.put("date",
