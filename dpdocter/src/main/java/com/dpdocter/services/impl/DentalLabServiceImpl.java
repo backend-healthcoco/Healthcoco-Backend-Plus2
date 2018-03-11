@@ -2063,14 +2063,18 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 			if (dentalWorksSample.getRateCardDentalWorkAssociation() != null) {
-				if (dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork() != null)
+				if (dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork() != null) {
+					System.out.println(dentalWorksSample.getRateCardDentalWorkAssociation().toString());
 					parameters
 							.put("dentalWork",
 									!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getRateCardDentalWorkAssociation()
 											.getDentalWork().getWorkName())
-													? dentalWorksSample.getDentalWork().getWorkName() : "--");
-				else
+													? dentalWorksSample.getRateCardDentalWorkAssociation()
+															.getDentalWork().getWorkName()
+													: "--");
+				} else {
 					parameters.put("dentalWork", "--");
+				}
 			} else {
 				parameters.put("dentalWork", "--");
 			}
