@@ -4608,11 +4608,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItem(jasperDesign, columnWidth, "$P{toothNumbers}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{eta}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{processingStatus}", fieldWidth, true, 0, false);
-		
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
-		
+
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
@@ -4634,7 +4633,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 
 		jasperDesign.setPageFooter(band);
-
 
 	}
 
@@ -4832,7 +4830,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(patientWidth + 4 + toothNoWidth + shadeWidth + workWidth);
 		jrDesignTextField.setY(2);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(materialWidth-3);
+		jrDesignTextField.setWidth(materialWidth - 3);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
@@ -5047,7 +5045,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(197);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(135);
+		jrDesignTextField.setWidth(150);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(titleFontSize));
@@ -5055,7 +5053,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Date}"));
-		jrDesignTextField.setX(332);
+		jrDesignTextField.setX(347);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(135);
@@ -5108,7 +5106,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(135);
-		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
