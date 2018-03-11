@@ -2013,10 +2013,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 					if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getStaffId())) {
 						userCollection = userRepository.findOne(new ObjectId(dentalStageRequest.getStaffId()));
 						if (userCollection != null) {
-							stagejasperBean.setInspectedBy(
-									!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
-											: "" + " " + (!DPDoctorUtils.anyStringEmpty(userCollection.getUserName())
-													? userCollection.getUserName() : " "));
+							stagejasperBean.setInspectedBy(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
+									? userCollection.getTitle() : "" + " " + userCollection.getFirstName());
 						}
 					}
 
