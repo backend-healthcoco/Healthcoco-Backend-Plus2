@@ -4914,7 +4914,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(patientWidth + 4 + toothNoWidth + shadeWidth + workWidth);
 		jrDesignTextField.setY(2);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(materialWidth-3);
+		jrDesignTextField.setWidth(materialWidth - 3);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
@@ -5137,12 +5137,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Date}"));
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{date}"));
 		jrDesignTextField.setX(347);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(135);
 		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
