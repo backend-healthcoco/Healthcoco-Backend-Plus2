@@ -1610,7 +1610,7 @@ public interface PathProxy {
 		public static final String DISCARD_REQUEST = "/discardRequest/{requestId}";
 		public static final String GET_PICKUP_REQUEST_BY_ID = "/getRequestById/{requestId}";
 		public static final String DOWNLOAD_DENTAL_LAB_REPORT = "/getReportById/{requestId}";
-		public static final String DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT = "/inspectionRepport/{requestId}/download";
+		public static final String DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT = "/inspectionReport/{requestId}/download";
 
 	}
 

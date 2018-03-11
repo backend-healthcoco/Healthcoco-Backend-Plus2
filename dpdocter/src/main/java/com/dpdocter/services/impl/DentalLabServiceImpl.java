@@ -1868,37 +1868,28 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		}
 
-		
-		
 		if (dentalLabPickupResponse.getPatientName() != null) {
 			parameters.put("patientName", "<b>Patient Name :- </b> " + dentalLabPickupResponse.getPatientName());
-		}
-		else
-		{
-			parameters.put("patientName", "<b>Patient Name :- </b>  -- " );
+		} else {
+			parameters.put("patientName", "<b>Patient Name :- </b>  -- ");
 		}
 
 		if (dentalLabPickupResponse.getGender() != null) {
 			parameters.put("gender", "<b>Gender :- </b> " + dentalLabPickupResponse.getGender());
-		}
-		else
-		{
-			parameters.put("gender", "<b>Gender :- </b> --" );
+		} else {
+			parameters.put("gender", "<b>Gender :- </b> --");
 		}
 
 		if (dentalLabPickupResponse.getAge() != null) {
 			parameters.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getGender());
-		}
-		else
-		{
-			parameters.put("age", "<b>Age :- </b> --" );
+		} else {
+			parameters.put("age", "<b>Age :- </b> --");
 		}
 
 		if (dentalLabPickupResponse.getRequestId() != null) {
 			parameters.put("requestId", "<b>Id :- </b> " + dentalLabPickupResponse.getRequestId());
-		}
-		else  {
-			parameters.put("requestId", "<b>Id :- </b>  --" );
+		} else {
+			parameters.put("requestId", "<b>Id :- </b>  --");
 		}
 
 		if (dentalLabPickupResponse.getDentalWorksSamples() != null
@@ -1943,15 +1934,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 				parameters.put("material",
 						"<b>Material :- </b> " + StringUtils.join(dentalWorksSample.getMaterial(), ','));
 			}
-			
+
 			if (dentalWorksSample.getEtaInDate() != null) {
 				parameters.put("eta",
 						"<b>ETA :- </b> " + simpleDateFormat.format(new Date(dentalWorksSample.getEtaInDate())));
 			}
-			
+
 			if (dentalWorksSample.getProcessStatus() != null) {
-				parameters.put("processingStatus",
-						"<b> Status :- </b> " + dentalWorksSample.getProcessStatus());
+				parameters.put("processingStatus", "<b> Status :- </b> " + dentalWorksSample.getProcessStatus());
 			}
 			if (dentalWorksSample.getDentalToothNumbers() != null) {
 				for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
@@ -1963,7 +1953,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			if (dentalWorksSample.getDentalStagesForDoctor() != null
 					&& !dentalWorksSample.getDentalStagesForDoctor().isEmpty()) {
-				 dentalStage = new ArrayList<DentalStagejasperBean>();
+				dentalStage = new ArrayList<DentalStagejasperBean>();
 				DentalStagejasperBean stagejasperBean = null;
 				for (DentalStageRequest dentalStageRequest : dentalWorksSample.getDentalStagesForDoctor()) {
 					stagejasperBean = new DentalStagejasperBean();
@@ -2072,8 +2062,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 				parameters.put("shade", "--");
 			}
 
-			if (dentalWorksSample.getDentalWork() != null) {
-				parameters.put("dentalWork", dentalWorksSample.getDentalWork().getWorkName());
+			if (dentalWorksSample.getRateCardDentalWorkAssociation() != null) {
+				if (dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork() != null)
+					parameters
+							.put("dentalWork",
+									!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getRateCardDentalWorkAssociation()
+											.getDentalWork().getWorkName())
+													? dentalWorksSample.getDentalWork().getWorkName() : "--");
+				else
+					parameters.put("dentalWork", "--");
 			} else {
 				parameters.put("dentalWork", "--");
 			}
