@@ -730,17 +730,18 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalWork.workName").regex("^" + searchTerm, "i"),
-						new Criteria("dentalWork.workName").regex("^" + searchTerm));
+						new Criteria("dentalWork.workName").regex("^" + searchTerm),
+						new Criteria("dentalWork.workName").regex(searchTerm + ".*"));
 			}
 			criteria.and("rateCardId").is(new ObjectId(rateCardId));
-			criteria.and("dentalWork.isAvailable").is(true);
+			criteria.and("isAvailable").is(true);
 			criteria.and("discarded").is(discarded);
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("dental_work_cl", "dentalWorkId", "_id", "dentalWork"),
 						Aggregation.unwind("dentalWork"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(
@@ -749,6 +750,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			}
+			
+			System.out.println(aggregation);
 			AggregationResults<RateCardDentalWorkAssociation> aggregationResults = mongoTemplate.aggregate(aggregation,
 					RateCardDentalWorkAssociationCollection.class, RateCardDentalWorkAssociation.class);
 			rateCardTests = aggregationResults.getMappedResults();
