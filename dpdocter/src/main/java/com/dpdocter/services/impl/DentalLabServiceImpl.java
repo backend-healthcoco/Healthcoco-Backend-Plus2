@@ -1081,14 +1081,18 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("dentalLab.locationName").regex("^" + searchTerm),
+						new Criteria("dentalLab.locationName").regex( searchTerm + ".*"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm),
+						new Criteria("doctor.firstName").regex( searchTerm + ".*"),
 						new Criteria("patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patientName").regex("^" + searchTerm),
+						new Criteria("patientName").regex(  searchTerm + ".*"),
 						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm, "i"),
 						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm),
 						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + "$", "i"),
-						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + "$"));
+						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + "$"),
+						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + ".*"));
 			}
 
 			if (size > 0)
