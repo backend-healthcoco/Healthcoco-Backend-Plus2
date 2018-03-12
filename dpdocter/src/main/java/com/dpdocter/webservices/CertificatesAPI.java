@@ -75,9 +75,9 @@ public class CertificatesAPI {
 	public Response<CertificateTemplate> getCertificateTemplates(@QueryParam("page") int page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@DefaultValue("false") @QueryParam("discarded") Boolean discarded,
-			@MatrixParam("speciality") List<String> specialities) {
+			@MatrixParam("speciality") List<String> specialities, @QueryParam("type") String type) {
 		Response<CertificateTemplate> response = new Response<CertificateTemplate>();
-		response.setDataList(certificatesServices.getCertificateTemplates(page, size, doctorId, locationId, discarded, specialities));
+		response.setDataList(certificatesServices.getCertificateTemplates(page, size, doctorId, locationId, discarded, specialities, type));
 		return response;
 	}
 

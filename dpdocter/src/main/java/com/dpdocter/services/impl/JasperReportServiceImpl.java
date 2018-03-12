@@ -157,7 +157,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DELIVERY_REPORTS.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + fileName);
-
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-lab-dental-works-a4.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())) {
