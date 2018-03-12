@@ -10,7 +10,7 @@ public interface CertificatesServices {
 
 	Boolean addCertificateTemplates(CertificateTemplate request);
 
-	List<?> getCertificateTemplates(int page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities);
+	List<?> getCertificateTemplates(int page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities, String type);
 
 	Boolean discardCertificateTemplates(String templateId, Boolean discarded);
 

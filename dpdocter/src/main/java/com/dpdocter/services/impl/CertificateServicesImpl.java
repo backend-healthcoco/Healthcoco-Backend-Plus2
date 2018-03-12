@@ -131,7 +131,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	}
 
 	@Override
-	public List<CertificateTemplate> getCertificateTemplates(int page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities) {
+	public List<CertificateTemplate> getCertificateTemplates(int page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities, String type) {
 		List<CertificateTemplate> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -142,6 +142,9 @@ public class CertificateServicesImpl implements CertificatesServices {
 				criteria.and("specialities").in(specialities);
 			}
 			if(!discarded) criteria.and("discarded").is(discarded);
+			
+			if (!DPDoctorUtils.anyStringEmpty(type))
+				criteria.and("type").is(type);
 			
 			Aggregation aggregation = null;
 			
@@ -201,6 +204,14 @@ public class CertificateServicesImpl implements CertificatesServices {
 				consentFormCollection.setCreatedTime(oldConsentFormCollection.getCreatedTime());
 				consentFormCollection.setDiscarded(oldConsentFormCollection.getDiscarded());
 			}
+			
+			if(consentFormCollection.getInputElements() != null) {
+				for(Fields inputElement : consentFormCollection.getInputElements()) {
+					if(!DPDoctorUtils.anyStringEmpty(inputElement.getType()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
+						inputElement.getValue().replace(imagePath, "");
+			}
+		}
+			
 			consentFormCollection = consentFormRepository.save(consentFormCollection);
 			response = new ConsentForm();
 			BeanUtil.map(consentFormCollection, response);
@@ -418,9 +429,14 @@ public class CertificateServicesImpl implements CertificatesServices {
 		String htmlText = consentFormCollection.getTemplateHtmlText();
 		if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
 			for(Fields field : consentFormCollection.getInputElements()) {
-				if(!DPDoctorUtils.anyStringEmpty(field.getType()) && field.getType().equalsIgnoreCase("IMAGE"))
-					field.setValue(getFinalImageURL(field.getValue()));
-				htmlText = htmlText.replace(field.getKey(), field.getValue());
+				if(!DPDoctorUtils.anyStringEmpty(field.getType(), field.getValue()) && field.getType().equalsIgnoreCase("IMAGE"))
+					field.setValue("<img style='width:200px;height:200px;' src='"+getFinalImageURL(field.getValue())+"'/>");
+				
+				if(!DPDoctorUtils.anyStringEmpty(field.getValue())){
+					htmlText = htmlText.replace(field.getKey(), field.getValue());
+				}else {
+					htmlText = htmlText.replace(field.getKey(), "__________");
+				}
 			}
 		}
 		parameters.put("certificateId", consentFormCollection.getId());
