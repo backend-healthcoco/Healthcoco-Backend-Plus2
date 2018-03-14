@@ -29,8 +29,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -2390,8 +2388,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		List<String> patientDetailList = new ArrayList<String>();
 		patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
-		patientDetailList.add("<b>Patient ID: </b>"
-				+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+		
+		if(!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
+			patientDetailList.add("<b>"+patientDetails.getPIDKey()+": </b>"
+					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+		}else {
+			patientDetailList.add("<b>Patient ID: </b>"
+					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+		}
 
 		if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
 			Age ageObj = patientCard.getDob().getAge();
