@@ -888,6 +888,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
 			jrDesignImage.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty()"));
 			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
+			jrDesignImage.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
 			expression = new JRDesignExpression();
 			expression.setText("$P{logoURL}");
 			jrDesignImage.setExpression(expression);
@@ -1871,8 +1872,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			throws JRException {
 		band = new JRDesignBand();
 		int Startwith = 2;
-
-		band.setSplitType(SplitTypeEnum.STRETCH);
+		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
@@ -1880,7 +1880,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setFontSize(new Float(9));
 			jrDesignTextField.setX(0);
 			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setHeight(22);
 			jrDesignTextField.setWidth(175);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 			jrDesignTextField.setMarkup("html");
@@ -1889,21 +1889,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
+			System.out.println("test");
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
 			jrDesignTextField.setX(176);
 			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setHeight(22);
 			jrDesignTextField.setWidth(columnWidth - 176);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())
 				|| !DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
-			Startwith = Startwith + 20;
+			Startwith = Startwith + 25;
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
 			int count = parameter.get("bottomSignText").toString().split("\r\n|\r|\n").length;
