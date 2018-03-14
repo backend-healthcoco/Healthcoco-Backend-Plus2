@@ -42,6 +42,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.ConsentFormCollectionLookupResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.CertificatesServices;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.PatientVisitService;
 import com.mongodb.BasicDBObject;
@@ -73,6 +74,9 @@ public class CertificateServicesImpl implements CertificatesServices {
 	@Autowired
 	private JasperReportService jasperReportService;
 	
+	@Autowired
+	private FileManager fileManager;
+
 	@Value(value = "${jasper.print.patient.certificate.fileName}")
 	private String patientCertificateFileName;
 	
@@ -207,7 +211,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 			
 			if(consentFormCollection.getInputElements() != null) {
 				for(Fields inputElement : consentFormCollection.getInputElements()) {
-					if(!DPDoctorUtils.anyStringEmpty(inputElement.getType()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
+					if(!DPDoctorUtils.anyStringEmpty(inputElement.getType(), inputElement.getValue()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
 						inputElement.getValue().replace(imagePath, "");
 			}
 		}
@@ -233,7 +237,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
 				if(response.getInputElements() != null) {
 							for(Fields inputElement : response.getInputElements()) {
-								if(!DPDoctorUtils.anyStringEmpty(inputElement.getType()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
+								if(!DPDoctorUtils.anyStringEmpty(inputElement.getType(), inputElement.getValue()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
 									inputElement.setValue(getFinalImageURL(inputElement.getValue()));
 						}
 					}
@@ -346,7 +350,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));
 					if(consentForm.getInputElements() != null) {
 						for(Fields inputElement : consentForm.getInputElements()) {
-							if(!DPDoctorUtils.anyStringEmpty(inputElement.getType()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
+							if(!DPDoctorUtils.anyStringEmpty(inputElement.getType(), inputElement.getValue()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
 								inputElement.setValue(getFinalImageURL(inputElement.getValue()));
 						}
 					}
@@ -409,13 +413,13 @@ public class CertificateServicesImpl implements CertificatesServices {
 					if (jasperReportResponse.getFileSystemResource().getFile().exists())
 						jasperReportResponse.getFileSystemResource().getFile().delete();
 			} else {
-				logger.warn("Patient Visit Id does not exist");
-				throw new BusinessException(ServiceError.NotFound, "Prescription Id does not exist");
+				logger.warn("Patient Certificate Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Patient Certificate Id does not exist");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error while getting Patient Visits PDF");
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Prescription PDF");
+			logger.error(e + " Error while getting Patient Certificate PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Certificate PDF");
 		}
 		return response;
 	}
@@ -439,6 +443,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 				}
 			}
 		}
+		System.out.println(htmlText);
 		parameters.put("certificateId", consentFormCollection.getId());
 		parameters.put("htmlText", htmlText);
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(

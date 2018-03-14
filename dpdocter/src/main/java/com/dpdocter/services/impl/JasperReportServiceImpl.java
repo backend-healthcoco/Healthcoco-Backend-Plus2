@@ -222,10 +222,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (parameters.get("headerHtml") != null)
 				((JRDesignSection) jasperDesign.getDetailSection())
 						.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(
-					createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne, parameters.get("headerHtml")));
-			((JRDesignSection) jasperDesign.getDetailSection())
-					.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+			
+			if(parameters.get("patientLeftText") != null && parameters.get("patientRightText") != null) {
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(
+						createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne, parameters.get("headerHtml")));
+				((JRDesignSection) jasperDesign.getDetailSection())
+						.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+			}
 		}
 
 		if (parameters.get("showHistory") != null && (boolean) parameters.get("showHistory"))
@@ -287,10 +290,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType()))
 			createDentalWorkReport(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
-					normalStyle);
-
-		else if (componentType.getType().equalsIgnoreCase(ComponentType.CERTIFICATE.getType()))
-			createPatientCertificate(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
 
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_RECEIPT.getType()))

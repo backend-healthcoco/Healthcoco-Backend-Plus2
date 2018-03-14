@@ -24,6 +24,8 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.CertificatesServices;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -160,6 +162,21 @@ public class CertificatesAPI {
 		}
 		Response<String> response = new Response<String>();
 		response.setData(certificatesServices.downloadPatientCertificate(certificateId));
+		return response;
+	}
+
+	@POST
+	@Path(value = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE, notes = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE)
+	public Response<String> saveCertificateSignImage(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("certificateId") FormDataBodyPart certificateId) {
+		certificateId.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		String certificateIdStr = certificateId.getValueAs(String.class);
+
+		String imageURL = certificatesServices.saveCertificateSignImage(file, certificateIdStr);
+		Response<String> response = new Response<String>();
+		response.setData(imageURL);
 		return response;
 	}
 }
