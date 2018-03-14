@@ -1518,8 +1518,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		if(patientDetails.getShowPatientDetailsInCertificate() != null && patientDetails.getShowPatientDetailsInCertificate()) {
 			List<String> patientDetailList = new ArrayList<String>();
 			patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
-			patientDetailList.add("<b>Patient ID: </b>"
-					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			
+			if(!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
+				patientDetailList.add("<b>"+patientDetails.getPIDKey()+": </b>"
+						+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			}else {
+				patientDetailList.add("<b>Patient ID: </b>"
+						+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			}
+			
 
 			if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
 				Age ageObj = patientCard.getDob().getAge();
