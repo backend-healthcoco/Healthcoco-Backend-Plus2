@@ -1000,6 +1000,11 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
 		</dependency>
+		<dependency>
+		    <groupId>org.xhtmlrenderer</groupId>
+		    <artifactId>flying-saucer-pdf</artifactId>
+		    <version>9.1.12</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<testResources>

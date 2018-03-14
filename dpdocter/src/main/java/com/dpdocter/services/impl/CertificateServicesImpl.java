@@ -1,13 +1,10 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
+import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -20,18 +17,21 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.collections.CertificateTemplateCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -40,7 +40,6 @@ import com.dpdocter.repository.ConsentFormRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.ConsentFormCollectionLookupResponse;
-import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.CertificatesServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
@@ -74,9 +73,6 @@ public class CertificateServicesImpl implements CertificatesServices {
 	@Autowired
 	private JasperReportService jasperReportService;
 	
-	@Autowired
-	private FileManager fileManager;
-
 	@Value(value = "${jasper.print.patient.certificate.fileName}")
 	private String patientCertificateFileName;
 	
@@ -85,6 +81,24 @@ public class CertificateServicesImpl implements CertificatesServices {
 
 	@Autowired
 	MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private FileManager fileManager;
+	
+	@Value(value = "${jasper.templates.resource}")
+	private String JASPER_TEMPLATES_RESOURCE;
+	
+	@Value(value = "${jasper.templates.root.path}")
+	private String JASPER_TEMPLATES_ROOT_PATH;
+
+	@Value(value = "${bucket.name}")
+	private String bucketName;
+	
+	@Value(value = "${mail.aws.key.id}")
+	private String AWS_KEY;
+
+	@Value(value = "${mail.aws.secret.key}")
+	private String AWS_SECRET_KEY;
 	
 	@Override
 	public Boolean addCertificateTemplates(CertificateTemplate request) {
@@ -219,6 +233,12 @@ public class CertificateServicesImpl implements CertificatesServices {
 			consentFormCollection = consentFormRepository.save(consentFormCollection);
 			response = new ConsentForm();
 			BeanUtil.map(consentFormCollection, response);
+			if(response.getInputElements() != null) {
+				for(Fields inputElement : response.getInputElements()) {
+					if(!DPDoctorUtils.anyStringEmpty(inputElement.getType(), inputElement.getValue()) && inputElement.getType().equalsIgnoreCase("IMAGE") && !inputElement.getValue().matches("[\\_]+"))
+						inputElement.setValue(getFinalImageURL(inputElement.getValue()));
+			}
+		}
 		} catch (Exception e) {
 			logger.error("Error while adding consent Form" + e.getMessage());
 			e.printStackTrace();
@@ -237,7 +257,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
 				if(response.getInputElements() != null) {
 							for(Fields inputElement : response.getInputElements()) {
-								if(!DPDoctorUtils.anyStringEmpty(inputElement.getType(), inputElement.getValue()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
+								if(!DPDoctorUtils.anyStringEmpty(inputElement.getType(), inputElement.getValue()) && inputElement.getType().equalsIgnoreCase("IMAGE") && !inputElement.getValue().matches("[\\_]+"))
 									inputElement.setValue(getFinalImageURL(inputElement.getValue()));
 						}
 					}
@@ -350,7 +370,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));
 					if(consentForm.getInputElements() != null) {
 						for(Fields inputElement : consentForm.getInputElements()) {
-							if(!DPDoctorUtils.anyStringEmpty(inputElement.getType(), inputElement.getValue()) && inputElement.getType().equalsIgnoreCase("IMAGE"))
+							if(!DPDoctorUtils.anyStringEmpty(inputElement.getType(), inputElement.getValue()) && inputElement.getType().equalsIgnoreCase("IMAGE") && !inputElement.getValue().matches("[\\_]+"))
 								inputElement.setValue(getFinalImageURL(inputElement.getValue()));
 						}
 					}
@@ -383,7 +403,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while discarding patient certificate" + e.getMessage());
 		}
 		return response;
-	}	
+	}
 
 	@Override
 	public String downloadPatientCertificate(String certificateId) {
@@ -404,14 +424,61 @@ public class CertificateServicesImpl implements CertificatesServices {
 
 			if (consentFormCollection != null) {
 				PatientCollection patient = consentFormCollection.getPatientCollection();
-				UserCollection user = consentFormCollection.getPatientUser();
+//				UserCollection user = consentFormCollection.getPatientUser();
 
-				JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, patient, user);
-				if (jasperReportResponse != null)
-					response = getFinalImageURL(jasperReportResponse.getPath());
-				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
-					if (jasperReportResponse.getFileSystemResource().getFile().exists())
-						jasperReportResponse.getFileSystemResource().getFile().delete();
+				String htmlText = consentFormCollection.getTemplateHtmlText();
+				if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
+					for(Fields field : consentFormCollection.getInputElements()) {
+						if(!DPDoctorUtils.anyStringEmpty(field.getType(), field.getValue()) && field.getType().equalsIgnoreCase("IMAGE") && !field.getValue().matches("[\\_]+"))
+							field.setValue("<img style='padding-top: 12px;height:50px;' src='"+getFinalImageURL(field.getValue())+"'/>");
+						
+						if(!DPDoctorUtils.anyStringEmpty(field.getValue())){
+							htmlText = htmlText.replace(field.getKey(), field.getValue());
+						}else {
+							htmlText = htmlText.replace(field.getKey(), "__________");
+						}
+					}
+				}
+				
+				if(!htmlText.startsWith("<html>"))htmlText = "<html>"+htmlText+"</html>";
+				if(!htmlText.endsWith("</html>"))htmlText = htmlText+"</html>";
+				htmlText = "<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Strict//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\'>" + htmlText;
+				
+				
+				System.out.println(htmlText);
+				String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CERTIFICATE-"+ new Date().getTime();
+				pdfName = pdfName.replaceAll("\\s+", "");
+				
+				File file = new File(JASPER_TEMPLATES_RESOURCE+pdfName+".pdf");
+				FileOutputStream os= new FileOutputStream(file);   
+				ITextRenderer itxtrenderer = new ITextRenderer();
+		        itxtrenderer.setDocumentFromString(htmlText);
+		        itxtrenderer.layout();
+		        itxtrenderer.createPDF(os,true); 
+		        
+		        
+		        ObjectMetadata metadata = new ObjectMetadata();
+				metadata.setContentEncoding("pdf");
+				metadata.setContentType("application/pdf");
+				metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+				PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,
+						JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf",
+						file);
+				putObjectRequest.setMetadata(metadata);
+				
+				BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+				AmazonS3 s3client = new AmazonS3Client(credentials);
+				s3client.putObject(putObjectRequest);
+				
+				response = getFinalImageURL(JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf");
+				if(file != null && file.exists())file.delete();
+				
+//				JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, patient, user);
+//				if (jasperReportResponse != null)
+//					response = getFinalImageURL(jasperReportResponse.getPath());
+//				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+//					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+//						jasperReportResponse.getFileSystemResource().getFile().delete();
 			} else {
 				logger.warn("Patient Certificate Id does not exist");
 				throw new BusinessException(ServiceError.NotFound, "Patient Certificate Id does not exist");
@@ -424,75 +491,75 @@ public class CertificateServicesImpl implements CertificatesServices {
 		return response;
 	}
 
-	private JasperReportResponse createJasper(ConsentFormCollectionLookupResponse consentFormCollection, PatientCollection patient,
-			UserCollection user) throws IOException, ParseException {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		
-		JasperReportResponse response = null;
-
-		String htmlText = consentFormCollection.getTemplateHtmlText();
-		if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
-			for(Fields field : consentFormCollection.getInputElements()) {
-				if(!DPDoctorUtils.anyStringEmpty(field.getType(), field.getValue()) && field.getType().equalsIgnoreCase("IMAGE"))
-					field.setValue("<img style='width:200px;height:200px;' src='"+getFinalImageURL(field.getValue())+"'/>");
-				
-				if(!DPDoctorUtils.anyStringEmpty(field.getValue())){
-					htmlText = htmlText.replace(field.getKey(), field.getValue());
-				}else {
-					htmlText = htmlText.replace(field.getKey(), "__________");
-				}
-			}
-		}
-		System.out.println(htmlText);
-		parameters.put("certificateId", consentFormCollection.getId());
-		parameters.put("htmlText", htmlText);
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
-				new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
-				new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType());
-
-		if (printSettings == null) {
-			printSettings = new PrintSettingsCollection();
-			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
-			BeanUtil.map(defaultPrintSettings, printSettings);
-		}
-		
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient,
-				"",
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				consentFormCollection.getUpdatedTime(), printSettings.getHospitalUId());
-		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(consentFormCollection.getDoctorId()));
-		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CERTIFICATE-"
-				+ new Date().getTime();
-		String layout = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
-				: "PORTRAIT";
-		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null
-						? printSettings.getPageSetup().getTopMargin() : 20)
-				: 20;
-		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null
-						? printSettings.getPageSetup().getBottomMargin() : 20)
-				: 20;
-		Integer leftMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
-						? printSettings.getPageSetup().getLeftMargin() : 20)
-				: 20;
-		Integer rightMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
-				: 20;
-
-		response = jasperReportService.createPDF(ComponentType.CERTIFICATE, parameters, patientCertificateFileName,
-				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
-				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
-		return response;
-	}
+//	private JasperReportResponse createJasper(ConsentFormCollectionLookupResponse consentFormCollection, PatientCollection patient,
+//			UserCollection user) throws IOException, ParseException {
+//		Map<String, Object> parameters = new HashMap<String, Object>();
+//		
+//		JasperReportResponse response = null;
+//
+//		String htmlText = consentFormCollection.getTemplateHtmlText();
+//		if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
+//			for(Fields field : consentFormCollection.getInputElements()) {
+//				if(!DPDoctorUtils.anyStringEmpty(field.getType(), field.getValue()) && field.getType().equalsIgnoreCase("IMAGE"))
+//					field.setValue("<img style='width:200px;height:200px;' src='"+getFinalImageURL(field.getValue())+"'/>");
+//				
+//				if(!DPDoctorUtils.anyStringEmpty(field.getValue())){
+//					htmlText = htmlText.replace(field.getKey(), field.getValue());
+//				}else {
+//					htmlText = htmlText.replace(field.getKey(), "__________");
+//				}
+//			}
+//		}
+//		System.out.println(htmlText);
+//		parameters.put("certificateId", consentFormCollection.getId());
+//		parameters.put("htmlText", htmlText);
+//		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+//				new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
+//				new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType());
+//
+//		if (printSettings == null) {
+//			printSettings = new PrintSettingsCollection();
+//			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+//			BeanUtil.map(defaultPrintSettings, printSettings);
+//		}
+//		
+//		patientVisitService.generatePatientDetails(
+//				(printSettings != null && printSettings.getHeaderSetup() != null
+//						? printSettings.getHeaderSetup().getPatientDetails() : null),
+//				patient,
+//				"",
+//				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+//				consentFormCollection.getUpdatedTime(), printSettings.getHospitalUId());
+//		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(consentFormCollection.getDoctorId()));
+//		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CERTIFICATE-"
+//				+ new Date().getTime();
+//		String layout = printSettings != null
+//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+//				: "PORTRAIT";
+//		String pageSize = printSettings != null
+//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+//		Integer topMargin = printSettings != null
+//				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null
+//						? printSettings.getPageSetup().getTopMargin() : 20)
+//				: 20;
+//		Integer bottonMargin = printSettings != null
+//				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null
+//						? printSettings.getPageSetup().getBottomMargin() : 20)
+//				: 20;
+//		Integer leftMargin = printSettings != null
+//				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+//						? printSettings.getPageSetup().getLeftMargin() : 20)
+//				: 20;
+//		Integer rightMargin = printSettings != null
+//				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+//						? printSettings.getPageSetup().getRightMargin() : 20)
+//				: 20;
+//
+//		response = jasperReportService.createPDF(ComponentType.CERTIFICATE, parameters, patientCertificateFileName,
+//				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+//				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+//		return response;
+//	}
 
 	@Override
 	public String saveCertificateSignImage(FormDataBodyPart file, String certificateIdStr) {
