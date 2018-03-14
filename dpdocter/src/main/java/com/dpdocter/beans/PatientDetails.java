@@ -29,6 +29,8 @@ public class PatientDetails {
 
     private PrintSettingsText style;
 
+    private Boolean showPatientDetailsInCertificate = true;
+    
     public Boolean getShowCity() {
 		return showCity;
 	}
@@ -125,12 +127,21 @@ public class PatientDetails {
 		this.showHospitalId = showHospitalId;
 	}
 
+	public Boolean getShowPatientDetailsInCertificate() {
+		return showPatientDetailsInCertificate;
+	}
+
+	public void setShowPatientDetailsInCertificate(Boolean showPatientDetailsInCertificate) {
+		this.showPatientDetailsInCertificate = showPatientDetailsInCertificate;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientDetails [showName=" + showName + ", showPID=" + showPID + ", showMobileNumber="
 				+ showMobileNumber + ", showDOB=" + showDOB + ", showGender=" + showGender + ", showReferedBy="
 				+ showReferedBy + ", showDate=" + showDate + ", showBloodGroup=" + showBloodGroup + ", showResourceId="
 				+ showResourceId + ", showHospitalId=" + showHospitalId + ", showCity=" + showCity + ", style=" + style
-				+ "]";
+				+ ", showPatientDetailsInCertificate=" + showPatientDetailsInCertificate + "]";
 	}
+
 }
