@@ -999,6 +999,19 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/core-renderer -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>org.xhtmlrenderer</groupId> -->
+<!-- 		    <artifactId>core-renderer</artifactId> -->
+<!-- 		    <version>R8pre2</version> -->
+<!-- 		</dependency>	 -->
+<!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf -->
+<dependency>
+    <groupId>org.xhtmlrenderer</groupId>
+    <artifactId>flying-saucer-pdf</artifactId>
+    <version>9.1.12</version>
+</dependency>
+
 	</dependencies>
 	<build>
 		<testResources>
