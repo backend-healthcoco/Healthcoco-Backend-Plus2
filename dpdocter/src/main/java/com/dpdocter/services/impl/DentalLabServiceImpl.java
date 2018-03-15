@@ -1706,7 +1706,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
 					.findOne(new ObjectId(requestId));
 			if (dentalLabPickupCollection != null) {
-				dentalLabPickupCollection.setStatus("CANCELLED");
 				dentalLabPickupCollection.setReasonForCancel(reasonOfCancellation);
 				dentalLabPickupCollection.setCancelledBy(cancelledBy);
 				dentalLabPickupCollection.setDiscarded(true);
@@ -1951,7 +1950,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		if (dentalLabPickupResponse.getDentalWorksSamples() != null
 				&& !dentalLabPickupResponse.getDentalWorksSamples().isEmpty()) {
-			String toothNumbers = "<br>";
+			String toothNumbers = "";
 
 			DentalWorksSampleRequest dentalWorksSample = dentalLabPickupResponse.getDentalWorksSamples().get(0);
 			
