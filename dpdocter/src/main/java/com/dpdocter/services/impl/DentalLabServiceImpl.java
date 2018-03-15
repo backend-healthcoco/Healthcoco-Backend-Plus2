@@ -1925,9 +1925,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 
 		if (dentalLabPickupResponse.getPatientName() != null) {
-			parameters.put("patientName", "<b>Patient Name :- </b> " + dentalLabPickupResponse.getPatientName());
+			parameters.put("patientName", dentalLabPickupResponse.getPatientName());
 		} else {
-			parameters.put("patientName", "<b>Patient Name :- </b>  -- ");
+			parameters.put("patientName", " -- ");
 		}
 
 		if (dentalLabPickupResponse.getGender() != null) {
@@ -1948,11 +1948,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			parameters.put("requestId", "<b>Id :- </b>  --");
 		}
 		
-		if (dentalLabPickupResponse.getStatus() != null) {
-			parameters.put("status", "<b>Status :- </b> " + dentalLabPickupResponse.getStatus());
-		} else {
-			parameters.put("status", "<b>Status :- </b>  --");
-		}
 
 		if (dentalLabPickupResponse.getDentalWorksSamples() != null
 				&& !dentalLabPickupResponse.getDentalWorksSamples().isEmpty()) {
