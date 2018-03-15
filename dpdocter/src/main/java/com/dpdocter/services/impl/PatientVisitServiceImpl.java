@@ -1289,8 +1289,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								new BasicDBObject("path", "$patientTreatment.treatments")
 										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
 												"arrayIndex7"))),
-						Aggregation.lookup("drug_cl", "patientTreatment.treatments.treatmentServiceId", "_id",
-								"treatmentService"),
+						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
+								"_id", "treatmentService"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$treatmentService")
 										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
@@ -1378,8 +1378,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								new BasicDBObject("path", "$patientTreatment.treatments")
 										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
 												"arrayIndex7"))),
-						Aggregation.lookup("drug_cl", "patientTreatment.treatments.treatmentServiceId", "_id",
-								"treatmentService"),
+						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
+								"_id", "treatmentService"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$treatmentService")
 										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
@@ -1594,7 +1594,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("prescriptions", "$prescriptions").append("clinicalNotes", "$clinicalNotes")
 				.append("clinicalNotesid", "$clinicalNotes._id").append("clinicalNotesDiagrams._id", "$diagrams._id")
 				.append("clinicalNotesDiagrams.diagramUrl", "$diagrams.diagramUrl")
-				.append("clinicalNotesDiagrams.tags", "$diagrams.tags")
+				.append("clinicalNotesDiagrams.visitId", "$_id").append("clinicalNotesDiagrams.tags", "$diagrams.tags")
 				.append("clinicalNotesDiagrams.doctorId", "$diagrams.doctorId")
 				.append("clinicalNotesDiagrams.locationId", "$diagrams.locationId")
 				.append("clinicalNotesDiagrams.hospitalId", "$diagrams.hospitalId")
@@ -1700,7 +1700,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("patientTreatmenttotalDiscount", new BasicDBObject("$first", "$patientTreatmenttotalDiscount"))
 				.append("patientTreatmenttotalgrandTotal", new BasicDBObject("$first", "$patientTreatmentgrandTotal"))
 				.append("patientTreatmentappointmentId", new BasicDBObject("$first", "$patientTreatmentappointmentId"))
-				.append("patientTreatmentvisitId", new BasicDBObject("$first", "$patientTreatmentvisitId"))
+				.append("patientTreatmentvisitId", new BasicDBObject("$first", "$_id"))
 				.append("patientTreatmentcreatedTime", new BasicDBObject("$first", "$patientTreatmentcreatedTime"))
 				.append("patientTreatmentcreatedBy", new BasicDBObject("$first", "$patientTreatmentcreatedBy"))
 				.append("patientTreatmentupdatedTime", new BasicDBObject("$first", "$patientTreatmentupdatedTime"))
@@ -1741,7 +1741,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("patientTreatment.totalDiscount", "$patientTreatmenttotalDiscount")
 						.append("patientTreatment.totalgrandTotal", "$patientTreatmentgrandTotal")
 						.append("patientTreatment.appointmentId", "$patientTreatmentappointmentId")
-						.append("patientTreatment.visitId", "$patientTreatmentvisitId")
+						.append("patientTreatment.visitId", "$_id")
 						.append("patientTreatment.createdTime", "$patientTreatmentcreatedTime")
 						.append("patientTreatment.createdBy", "$patientTreatmentcreatedBy")
 						.append("patientTreatment.updatedTime", "$patientTreatmentupdatedTime")
@@ -1777,9 +1777,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
 						.append("visitedFor", "$visitedFor").append("patientTreatment", "$patientTreatment")
-						.append("records", "$records").append("eyePrescriptionId", "$eyePrescriptionId")
-						.append("appointmentId", "$appointmentId").append("time", "$time")
-						.append("fromDate", "$fromDate").append("discarded", "$discarded")
+						.append("visitId", "$_id").append("records", "$records")
+						.append("eyePrescriptionId", "$eyePrescriptionId").append("appointmentId", "$appointmentId")
+						.append("time", "$time").append("fromDate", "$fromDate").append("discarded", "$discarded")
 						.append("appointmentRequest", "$appointmentRequest").append("createdTime", "$createdTime")
 						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
 						.append("prescriptions", "$prescriptions").append("clinicalNotes", "$clinicalNotes")
