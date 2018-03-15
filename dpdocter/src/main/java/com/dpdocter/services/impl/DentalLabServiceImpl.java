@@ -1959,6 +1959,48 @@ public class DentalLabServiceImpl implements DentalLabService {
 			String toothNumbers = "<br>";
 
 			DentalWorksSampleRequest dentalWorksSample = dentalLabPickupResponse.getDentalWorksSamples().get(0);
+			
+			if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getShade())) {
+				parameters.put("shade", dentalWorksSample.getShade());
+			} else {
+				parameters.put("shade", "--");
+			}
+
+			if (dentalWorksSample.getRateCardDentalWorkAssociation() != null) {
+				if (dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork() != null) {
+					parameters
+							.put("dentalWork",
+									!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getRateCardDentalWorkAssociation()
+											.getDentalWork().getWorkName())
+													? dentalWorksSample.getRateCardDentalWorkAssociation()
+															.getDentalWork().getWorkName()
+													: "--");
+				} else {
+					parameters.put("dentalWork", "--");
+				}
+			} else {
+				parameters.put("dentalWork", "--");
+			}
+			if (dentalWorksSample.getMaterial() != null) {
+				parameters.put("material", StringUtils.join(dentalWorksSample.getMaterial(), ','));
+			} else {
+				parameters.put("material", "--");
+			}
+			if (dentalWorksSample.getDentalToothNumbers() != null) {
+				for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
+					toothNumbers = toothNumbers + StringUtils.join(dentalToothNumber.getToothNumber(), ',') + " - "
+							+ dentalToothNumber.getType() + "<br>";
+				}
+				parameters.put("toothNumbers", toothNumbers);
+
+			} else {
+				parameters.put("toothNumbers", "--");
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getStatus())) {
+				parameters.put("status", dentalLabPickupResponse.getStatus().replace('_', ' '));
+			} else {
+				parameters.put("status", "--");
+			}
 
 			if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getCollarAndMetalDesign())) {
 				parameters.put("collarAndMetalDesign",
@@ -1974,15 +2016,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getPonticDesign())) {
 				parameters.put("ponticDesign", "<b>Pontic Desing :- </b> " + dentalWorksSample.getPonticDesign());
 			}
-			if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getShade())) {
-				parameters.put("shade", "<b>Shade :- </b> " + dentalWorksSample.getShade());
-			}
+			
 			if (!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getUniqueWorkId())) {
 				parameters.put("uniqueWorkId", "<b>Unique Work Id :- </b> " + dentalWorksSample.getUniqueWorkId());
 			}
-			if (dentalWorksSample.getDentalWork() != null) {
-				parameters.put("dentalWork", "<b>Work Name :- </b> " + dentalWorksSample.getDentalWork().getWorkName());
-			}
+			
 			if (dentalWorksSample.getDentalImages() != null) {
 				parameters.put("dentalImages", dentalWorksSample.getDentalImages());
 			}
@@ -1992,24 +2030,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (dentalWorksSample.getDentalStagesForDoctor() != null) {
 				parameters.put("dentalStages", dentalWorksSample.getDentalStagesForDoctor());
 			}
-			if (dentalWorksSample.getMaterial() != null) {
-				parameters.put("material",
-						"<b>Material :- </b> " + StringUtils.join(dentalWorksSample.getMaterial(), ','));
-			}
-
+			
 			if (dentalWorksSample.getEtaInDate() != null) {
 				parameters.put("eta",
 						"<b>ETA :- </b> " + simpleDateFormat.format(new Date(dentalWorksSample.getEtaInDate())));
 			}
 
-			if (dentalWorksSample.getDentalToothNumbers() != null) {
-				for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
-					toothNumbers = toothNumbers + StringUtils.join(dentalToothNumber.getToothNumber(), ',') + " - "
-							+ dentalToothNumber.getType() + "<br>";
-				}
-				parameters.put("toothNumbers", "<b>ToothNumber :- </b> " + toothNumbers);
-
-			}
 			if (dentalWorksSample.getDentalStagesForDoctor() != null
 					&& !dentalWorksSample.getDentalStagesForDoctor().isEmpty()) {
 				dentalStage = new ArrayList<DentalStagejasperBean>();
