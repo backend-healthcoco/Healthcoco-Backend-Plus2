@@ -537,7 +537,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.group("patientId").max("visitedTime").as("visitedTime"),
+						Aggregation.group("$patientId").max("$visitedTime").as("visitedTime"),
 						new CustomAggregationOperation(
 								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))),
 						Aggregation.skip(page * size), Aggregation.limit(size),
@@ -553,7 +553,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.group("patientId").max("visitedTime").as("visitedTime"),
+						Aggregation.group("$patientId").max("$visitedTime").as("visitedTime"),
 						new CustomAggregationOperation(
 								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))),
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
@@ -729,7 +729,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria), Aggregation.group("patientId").count().as("count"),
+						.newAggregation(Aggregation.match(criteria), Aggregation.group("$patientId").count().as("count"),
 								// Aggregation.project("total").and("patientId").previousOperation(),
 								new CustomAggregationOperation(
 										new BasicDBObject("$sort", new BasicDBObject("count", -1))),
@@ -747,7 +747,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										new BasicDBObject("$sort", new BasicDBObject("count", -1))));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.group("patientId").count().as("count"),
+						Aggregation.group("$patientId").count().as("count"),
 						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))),
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -1276,7 +1276,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex6"))),
-						clinicalNotesProjectAggregationOperation(), clinicalNotesGroupAggregationOperation(),
+						clinicalNotesFirstProjectAggregationOperation(), clinicalNotesFirstGroupAggregationOperation(),
+						clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
 
 						// Treatment
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -1365,7 +1366,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex6"))),
-						clinicalNotesProjectAggregationOperation(), clinicalNotesGroupAggregationOperation(),
+						clinicalNotesFirstProjectAggregationOperation(), clinicalNotesFirstGroupAggregationOperation(),
+						clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
 
 						// Treatment
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -1413,24 +1415,47 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.TREATMENT)) {
 						patientVisitResponse.setPatientTreatment(null);
 					}
-					if (patientVisitResponse.getClinicalNotes() != null
-							&& !patientVisitResponse.getClinicalNotes().isEmpty()
-							&& patientVisitResponse.getClinicalNotesDiagrams() != null
-							&& !patientVisitResponse.getClinicalNotesDiagrams().isEmpty()) {
-						for (ClinicalNotes clinicalNote : patientVisitResponse.getClinicalNotes()) {
-							List<Diagram> diagrams = null;
-							for (Diagram diagram : patientVisitResponse.getClinicalNotesDiagrams()) {
-								if (diagram.getId() != null
-										&& diagram.getClinicalNotesId().equalsIgnoreCase(clinicalNote.getId())) {
-									if (diagrams == null)
-										diagrams = new ArrayList<Diagram>();
-									diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
-									diagrams.add(diagram);
-								}
+					if (patientVisitResponse.getPatientTreatment() != null && !patientVisitResponse.getPatientTreatment().isEmpty()) {
+						for(PatientTreatment patientTreatment : patientVisitResponse.getPatientTreatment()) {
+							if(!DPDoctorUtils.anyStringEmpty(patientTreatment.getId())) {
+								patientTreatment.setVisitId(patientVisitResponse.getId());
 							}
-							clinicalNote.setDiagrams(diagrams);
+						}
+					}
+					
+					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.CLINICAL_NOTES)) {
+						patientVisitResponse.setClinicalNotes(null);
+					}
+					if (patientVisitResponse.getClinicalNotes() != null && !patientVisitResponse.getClinicalNotes().isEmpty()) {
+						for (ClinicalNotes clinicalNote : patientVisitResponse.getClinicalNotes()) {
+							
+							if(patientVisitResponse.getClinicalNotesDiagrams() != null && !patientVisitResponse.getClinicalNotesDiagrams().isEmpty()) {
+								List<Diagram> diagrams = null;
+								for (Diagram diagram : patientVisitResponse.getClinicalNotesDiagrams()) {
+									if (diagram.getId() != null
+											&& diagram.getClinicalNotesId().equalsIgnoreCase(clinicalNote.getId())) {
+										if (diagrams == null)
+											diagrams = new ArrayList<Diagram>();
+										diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+										diagrams.add(diagram);
+									}
+								}
+								clinicalNote.setDiagrams(diagrams);
+							}
+							clinicalNote.setVisitId(patientVisitResponse.getId());
 						}
 						patientVisitResponse.setClinicalNotesDiagrams(null);
+					}
+					
+					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.REPORTS)) {
+						patientVisitResponse.setRecords(null);
+					}
+					if (patientVisitResponse.getRecords() != null && !patientVisitResponse.getRecords().isEmpty()) {
+						for(Records records : patientVisitResponse.getRecords()) {
+							if(!DPDoctorUtils.anyStringEmpty(records.getId())) {
+								records.setVisitId(patientVisitResponse.getId());
+							}
+						}
 					}
 				}
 			}
@@ -1581,7 +1606,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
-	private AggregationOperation clinicalNotesProjectAggregationOperation() {
+	private AggregationOperation clinicalNotesFirstProjectAggregationOperation() {
 		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
@@ -1604,7 +1629,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("clinicalNotesDiagrams.clinicalNotesId", "$clinicalNotes._id")));
 	}
 
-	private AggregationOperation clinicalNotesGroupAggregationOperation() {
+	private AggregationOperation clinicalNotesFirstGroupAggregationOperation() {
 		return new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -1615,7 +1640,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))
 						.append("visitedFor", new BasicDBObject("$first", "$visitedFor"))
 						.append("prescriptions", new BasicDBObject("$first", "$prescriptions"))
-						.append("clinicalNotes", new BasicDBObject("$push", "$clinicalNotes"))
+						.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
 						.append("clinicalNotesDiagrams", new BasicDBObject("$push", "$clinicalNotesDiagrams"))
 						.append("treatmentId", new BasicDBObject("$first", "$treatmentId"))
 						.append("recordId", new BasicDBObject("$first", "$recordId"))
@@ -1627,6 +1652,42 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
+	private AggregationOperation clinicalNotesSecondProjectAggregationOperation() {
+		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
+				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
+				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
+				.append("treatmentId", "$treatmentId").append("recordId", "$recordId")
+				.append("eyePrescriptionId", "$eyePrescriptionId").append("appointmentId", "$appointmentId")
+				.append("time", "$time").append("fromDate", "$fromDate").append("discarded", "$discarded")
+				.append("appointmentRequest", "$appointmentRequest").append("createdTime", "$createdTime")
+				.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+				.append("prescriptions", "$prescriptions").append("clinicalNotes", "$clinicalNotes")
+				.append("clinicalNotesDiagrams", "$clinicalNotesDiagrams")));
+	}
+
+	private AggregationOperation clinicalNotesSecondGroupAggregationOperation() {
+		return new CustomAggregationOperation(new BasicDBObject("$group",
+				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+						.append("patientId", new BasicDBObject("$first", "$patientId"))
+						.append("locationId", new BasicDBObject("$first", "$locationId"))
+						.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+						.append("discarded", new BasicDBObject("$first", "$discarded"))
+						.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))
+						.append("visitedFor", new BasicDBObject("$first", "$visitedFor"))
+						.append("prescriptions", new BasicDBObject("$first", "$prescriptions"))
+						.append("clinicalNotes", new BasicDBObject("$push", "$clinicalNotes"))
+						.append("clinicalNotesDiagrams", new BasicDBObject("$first", "$clinicalNotesDiagrams"))
+						.append("treatmentId", new BasicDBObject("$first", "$treatmentId"))
+						.append("recordId", new BasicDBObject("$first", "$recordId"))
+						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
+						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+	}
 	private AggregationOperation patientTreatmentFirstProjectAggregationOperation() {
 		return new CustomAggregationOperation(
 				new BasicDBObject("$project",
@@ -1656,7 +1717,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								.append("patientTreatmenttotalDiscount", "$patientTreatment.totalDiscount")
 								.append("patientTreatmenttotalgrandTotal", "$patientTreatment.grandTotal")
 								.append("patientTreatmentappointmentId", "$patientTreatment.appointmentId")
-								.append("patientTreatmentvisitId", "$_id")
+								.append("patientTreatmentvisitId", "$_id.id")
 								.append("patientTreatmentcreatedTime", "$patientTreatment.createdTime")
 								.append("patientTreatmentcreatedBy", "$patientTreatment.createdBy")
 								.append("patientTreatmentupdatedTime", "$patientTreatment.updatedTime")
@@ -1700,7 +1761,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("patientTreatmenttotalDiscount", new BasicDBObject("$first", "$patientTreatmenttotalDiscount"))
 				.append("patientTreatmenttotalgrandTotal", new BasicDBObject("$first", "$patientTreatmentgrandTotal"))
 				.append("patientTreatmentappointmentId", new BasicDBObject("$first", "$patientTreatmentappointmentId"))
-				.append("patientTreatmentvisitId", new BasicDBObject("$first", "$_id"))
+				.append("patientTreatmentvisitId", new BasicDBObject("$first", "$patientTreatmentvisitId"))
 				.append("patientTreatmentcreatedTime", new BasicDBObject("$first", "$patientTreatmentcreatedTime"))
 				.append("patientTreatmentcreatedBy", new BasicDBObject("$first", "$patientTreatmentcreatedBy"))
 				.append("patientTreatmentupdatedTime", new BasicDBObject("$first", "$patientTreatmentupdatedTime"))
