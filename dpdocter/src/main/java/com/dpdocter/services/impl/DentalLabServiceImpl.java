@@ -1612,6 +1612,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 									COPING_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
+						
+						if (dentalLabPickupCollection.getDoctorId() != null) {
+							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
+									COPING_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+									dentalLabPickupCollection.getId().toString(), null);
+						}
+						
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findOne(dentalLabPickupCollection.getCollectionBoyId());
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
@@ -1634,6 +1641,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 									dentalLabPickupCollection.getId().toString(), null);
 						}
+						
+						if (dentalLabPickupCollection.getDoctorId() != null) {
+							pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
+									BISQUE_TRIAL_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+									dentalLabPickupCollection.getId().toString(), null);
+						}
+						
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 								.findOne(dentalLabPickupCollection.getCollectionBoyId());
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
