@@ -77,4 +77,12 @@ public class DentalLabPickupChangeStatusRequest {
 		this.discarded = discarded;
 	}
 
+	@Override
+	public String toString() {
+		return "DentalLabPickupChangeStatusRequest [dentalLabPickupId=" + dentalLabPickupId + ", status=" + status
+				+ ", isCollectedAtDoctor=" + isCollectedAtDoctor + ", isCompleted=" + isCompleted + ", isAcceptedAtLab="
+				+ isAcceptedAtLab + ", feedbackRating=" + feedbackRating + ", feedbackComment=" + feedbackComment
+				+ ", discarded=" + discarded + "]";
+	}
+
 }
