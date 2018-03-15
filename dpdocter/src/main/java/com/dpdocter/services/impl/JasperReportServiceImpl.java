@@ -4701,7 +4701,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignLine);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("Patient Name"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{PatientName}"));
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
@@ -4715,7 +4715,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("Tooth no."));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{ToothNo}"));
 		jrDesignTextField.setX(patientWidth + 2);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
@@ -4729,7 +4729,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("Work"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{Work}"));
 		jrDesignTextField.setX(patientWidth + 4 + toothNoWidth);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
@@ -4743,7 +4743,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("Shade"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{Shade}"));
 		jrDesignTextField.setX(patientWidth + 4 + toothNoWidth + workWidth);
 		jrDesignTextField.setY(2);
 		jrDesignTextField.setHeight(15);
@@ -4757,7 +4757,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("Material"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{Material}"));
 		jrDesignTextField.setX(patientWidth + 4 + toothNoWidth + shadeWidth + workWidth);
 		jrDesignTextField.setY(2);
 		jrDesignTextField.setHeight(15);
@@ -4771,7 +4771,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("Status"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{Status}"));
 		jrDesignTextField.setX(patientWidth + 8 + toothNoWidth + shadeWidth + materialWidth + workWidth);
 		jrDesignTextField.setY(2);
 		jrDesignTextField.setHeight(15);
@@ -4783,6 +4783,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
+
 
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);

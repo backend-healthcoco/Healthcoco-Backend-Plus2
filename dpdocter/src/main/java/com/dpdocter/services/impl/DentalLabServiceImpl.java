@@ -2082,7 +2082,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		parameters.put("title", "DENTAL WORKS REPORT");
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
-
+		parameters.put("PatientName", "Patient Name");
+		parameters.put("ToothNo", "Tooth no.");
+		parameters.put("Work", "Work");
+		parameters.put("Shade", "shade");
+		parameters.put("Material", "Material");
+		parameters.put("Status", "Status");
+		
 		String pdfName = locationId + "DENTAL-WORKS" + new Date().getTime();
 
 		String layout = "PORTRAIT";
