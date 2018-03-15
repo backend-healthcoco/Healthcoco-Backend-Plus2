@@ -4545,7 +4545,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{FormNo}", "$P{formNo}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0, false);
 	}
-
 	private void createDentalWorkReport(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)
 			throws JRException {
@@ -4693,10 +4692,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItem(jasperDesign, columnWidth, "$P{material}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{toothNumbers}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{eta}", fieldWidth, true, 0, false);
-		addItem(jasperDesign, columnWidth, "$P{processingStatus}", fieldWidth, true, 0, false);
+		addItem(jasperDesign, columnWidth, "$P{status}", fieldWidth, true, 0, false);
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
+		
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDentalWorkCardValue(parameters,
+				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{cardValues}", normalStyle));
 
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
@@ -5225,6 +5227,158 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jSubreport.setExpression(new JRDesignExpression(
 				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-inspection-reports-subreport.jasper\""));
+		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
+		designSubreportParameter.setName("REPORT_CONNECTION");
+		designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+		band = new JRDesignBand();
+		band.setHeight(0);
+		band.addElement(jSubreport);
+
+		return band;
+
+	}
+	
+	private JRDesignBand addDentalWorkCardValue(Map<String, Object> parameters, Integer contentFontSize,
+			int columnWidth, int pageWidth, int pageHeight, String itemsValue, JRDesignStyle normalStyle)
+			throws JRException {
+		JasperDesign jasperDesign = JRXmlLoader
+				.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-card-subreport.jrxml");
+		jasperDesign.setName("Card Values");
+		jasperDesign.setPageWidth(pageWidth);
+		jasperDesign.setPageHeight(pageHeight);
+		jasperDesign.setColumnWidth(columnWidth);
+		jasperDesign.setColumnSpacing(0);
+		jasperDesign.setBottomMargin(0);
+		jasperDesign.setLeftMargin(0);
+		jasperDesign.setRightMargin(0);
+		jasperDesign.setTopMargin(0);
+
+		jasperDesign.addStyle(normalStyle);
+
+		Integer titleFontSize = contentFontSize;
+		if (contentFontSize > 13)
+			titleFontSize = 13;
+
+		band = new JRDesignBand();
+		band.setHeight(26);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(20);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth - 40);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{name}"));
+		jrDesignTextField.setX(22);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(175);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(titleFontSize));
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{value}"));
+		jrDesignTextField.setX(197);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(150);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(titleFontSize));
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{quantity}"));
+		jrDesignTextField.setX(347);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(135);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
+
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(20);
+		jrDesignLine.setY(22);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth - 40);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+		jasperDesign.setColumnHeader(band);
+
+		band = new JRDesignBand();
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
+			band.setHeight(22);
+		else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.MEDIUM.name()))
+			band.setHeight(27);
+		else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.LARGE.name()))
+			band.setHeight(32);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{name}"));
+		jrDesignTextField.setX(22);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(175);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{value}"));
+		jrDesignTextField.setX(197);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(150);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{quantity}"));
+		jrDesignTextField.setX(347);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(135);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
+
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		band = new JRDesignBand();
+		band.setHeight(13);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(20);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth - 40);
+		band.addElement(jrDesignLine);
+
+		jasperDesign.setColumnFooter(band);
+
+		JasperCompileManager.compileReportToFile(jasperDesign,
+				JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-card-subreport.jasper");
+		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
+		jSubreport.setUsingCache(false);
+		jSubreport.setRemoveLineWhenBlank(true);
+		jSubreport.setPrintRepeatedValues(false);
+		jSubreport.setWidth(columnWidth);
+		jSubreport.setHeight(0);
+		jSubreport.setX(0);
+		jSubreport.setY(0);
+
+		jSubreport.setDataSourceExpression(new JRDesignExpression(
+				"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + itemsValue + ")"));
+
+		jSubreport.setExpression(new JRDesignExpression(
+				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-card-subreport.jasper\""));
 		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
 		designSubreportParameter.setName("REPORT_CONNECTION");
 		designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
