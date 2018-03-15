@@ -298,10 +298,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
 
-		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType()))
-			addsignature(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
@@ -1923,7 +1919,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
-			int testsize = parameter.get("footerBottomText").toString().split("\r\n|\r|\n").length;
+
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
 			jrDesignLine.setX(0);
@@ -3535,30 +3531,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addLabReportsTest(parameters, contentFontSize,
 				columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
 
-		band = new JRDesignBand();
-		int Startwith = 2;
-
-		band.setSplitType(SplitTypeEnum.STRETCH);
-		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(new Float(13));
-			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(175);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setBold(true);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-		}
-		band.setHeight(20);
-
-		jasperDesign.setPageFooter(band);
-
 	}
 
 	private JRDesignBand addLabReportsTest(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
@@ -4545,6 +4517,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{FormNo}", "$P{formNo}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0, false);
 	}
+
 	private void createDentalWorkReport(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)
 			throws JRException {
@@ -4910,10 +4883,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
+
 		
 	/*	((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDentalWorkCardValue(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{cardValues}", normalStyle));
 */
+
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
@@ -5276,28 +5251,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
 
-		band = new JRDesignBand();
-		band.setSplitType(SplitTypeEnum.STRETCH);
-		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(new Float(13));
-			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(2);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(175);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setBold(true);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-		}
-		band.setHeight(20);
-
-		jasperDesign.setPageFooter(band);
-
 	}
 
 	private JRDesignBand addInspectionReportsItem(Map<String, Object> parameters, Integer contentFontSize,
@@ -5451,7 +5404,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 
 	}
-	
+
 	private JRDesignBand addDentalWorkCardValue(Map<String, Object> parameters, Integer contentFontSize,
 			int columnWidth, int pageWidth, int pageHeight, String itemsValue, JRDesignStyle normalStyle)
 			throws JRException {
@@ -5591,8 +5544,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jSubreport.setDataSourceExpression(new JRDesignExpression(
 				"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + itemsValue + ")"));
 
-		jSubreport.setExpression(new JRDesignExpression(
-				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-card-subreport.jasper\""));
+		jSubreport.setExpression(
+				new JRDesignExpression("\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-card-subreport.jasper\""));
 		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
 		designSubreportParameter.setName("REPORT_CONNECTION");
 		designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
