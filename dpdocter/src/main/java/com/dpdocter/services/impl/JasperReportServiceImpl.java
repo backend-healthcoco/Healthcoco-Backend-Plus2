@@ -4697,9 +4697,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
 		
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDentalWorkCardValue(parameters,
+	/*	((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDentalWorkCardValue(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{cardValues}", normalStyle));
-
+*/
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
