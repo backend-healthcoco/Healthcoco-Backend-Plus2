@@ -1949,9 +1949,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		
 		if (dentalLabPickupResponse.getStatus() != null) {
-			parameters.put("status", "<b>Id :- </b> " + dentalLabPickupResponse.getStatus());
+			parameters.put("status", "<b>Status :- </b> " + dentalLabPickupResponse.getStatus());
 		} else {
-			parameters.put("status", "<b>Id :- </b>  --");
+			parameters.put("status", "<b>Status :- </b>  --");
 		}
 
 		if (dentalLabPickupResponse.getDentalWorksSamples() != null
