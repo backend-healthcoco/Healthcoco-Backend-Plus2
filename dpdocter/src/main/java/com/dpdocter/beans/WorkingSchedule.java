@@ -13,8 +13,19 @@ public class WorkingSchedule {
 
     @Field(type = FieldType.Nested)
     private List<WorkingHours> workingHours;
+    
+    private Boolean isByAppointment=false;
+    
 
-    public Day getWorkingDay() {
+    public Boolean getIsByAppointment() {
+		return isByAppointment;
+	}
+
+	public void setIsByAppointment(Boolean isByAppointment) {
+		this.isByAppointment = isByAppointment;
+	}
+
+	public Day getWorkingDay() {
 	return workingDay;
     }
 

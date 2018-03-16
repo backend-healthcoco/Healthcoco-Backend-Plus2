@@ -4,9 +4,9 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class WorkingHours {
-    private Integer fromTime;
+	private Integer fromTime;
 
-    private Integer toTime;
+	private Integer toTime;
 
 	public Integer getFromTime() {
 		return fromTime;
