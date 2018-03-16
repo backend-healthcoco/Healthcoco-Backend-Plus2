@@ -284,6 +284,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setCi(componentTypeId);
 					notification.setNotificationType(componentType);
 				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS_CANCELLATION.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
 				
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
