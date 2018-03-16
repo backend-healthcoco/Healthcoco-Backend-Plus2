@@ -12,6 +12,7 @@ public class UpdateDentalStagingRequest {
 	private String status;
 	private String processStatus;
 	private Boolean isCompleted;
+	private Boolean isTrailChanged = false;
 
 	public String getRequestId() {
 		return requestId;
@@ -60,5 +61,15 @@ public class UpdateDentalStagingRequest {
 	public void setIsCompleted(Boolean isCompleted) {
 		this.isCompleted = isCompleted;
 	}
+
+	public Boolean getIsTrailChanged() {
+		return isTrailChanged;
+	}
+
+	public void setIsTrailChanged(Boolean isTrailChanged) {
+		this.isTrailChanged = isTrailChanged;
+	}
+	
+	
 
 }

@@ -1603,7 +1603,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalLabPickupCollection.setIsCompleted(request.getIsCompleted());
 				}
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
-				if (request.getStatus() != null) {
+				if (request.getStatus() != null && request.getIsTrailChanged() == true) {
 					if (request.getStatus().equals("COPING_TRIAL")) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
@@ -1725,6 +1725,24 @@ public class DentalLabServiceImpl implements DentalLabService {
 							CANCELLED_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
 							dentalLabPickupCollection.getId().toString(), null);
 				}
+				
+				if (dentalLabPickupCollection.getCollectionBoyId() != null) {
+					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+							.findOne(dentalLabPickupCollection.getCollectionBoyId());
+					CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
+							.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
+									dentalLabPickupCollection.getDoctorId(),
+									dentalLabPickupCollection.getCollectionBoyId());
+					if (collectionBoyDoctorAssociationCollection != null
+							&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
+						if (collectionBoyCollection != null) {
+							pushNotificationServices.notifyPharmacy(
+									collectionBoyCollection.getUserId().toString(), null, null,
+									RoleEnum.DENTAL_WORK_REFRESH, CANCELLED_NOTIFICATION);
+						}
+					}
+				}
+				
 				response = true;
 			}
 
