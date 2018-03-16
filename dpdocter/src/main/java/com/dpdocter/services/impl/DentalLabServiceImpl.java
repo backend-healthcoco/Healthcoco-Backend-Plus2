@@ -543,20 +543,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalWorksSamples.add(dentalWorksSample);
 				}
 				if (request.getRequestCreatedBy() != null) {
-					if (request.getRequestCreatedBy().equals("DENTAL_LAB")) {
-						List<UserDeviceCollection> userDeviceCollections = userDeviceRepository
-								.findByUserId(new ObjectId(request.getDoctorId()));
-						if (userDeviceCollections != null) {
-							String message = locationCollection.getLocationName() + " has created a request for you.";
-							pushNotificationServices.notifyUser(request.getDoctorId(), message,
-									ComponentType.DENTAL_WORKS.getType(), null, userDeviceCollections);
-						} else {
-							sendDownloadAppMessage(new ObjectId(request.getDoctorId()),
-									locationCollection.getLocationName());
-						}
-					}
-				}
-
+				
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				dentalLabPickupCollection.setUpdatedTime(new Date());
 				dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
@@ -601,6 +588,20 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalWorksSamples.add(dentalWorksSample);
 
 				}
+				if (request.getRequestCreatedBy().equals("DENTAL_LAB")) {
+					List<UserDeviceCollection> userDeviceCollections = userDeviceRepository
+							.findByUserId(new ObjectId(request.getDoctorId()));
+					if (userDeviceCollections != null) {
+						String message = locationCollection.getLocationName() + " has created a request for you.";
+						pushNotificationServices.notifyUser(request.getDoctorId(), message,
+								ComponentType.DENTAL_WORKS.getType(), null, userDeviceCollections);
+					} else {
+						sendDownloadAppMessage(new ObjectId(request.getDoctorId()),
+								locationCollection.getLocationName());
+					}
+				}
+			}
+
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				dentalLabPickupCollection.setCrn(saveCRN(request.getDentalLabId(), requestId, 5));
 				dentalLabPickupCollection.setSerialNumber(String.valueOf(serialNo + 1));
@@ -1603,7 +1604,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalLabPickupCollection.setIsCompleted(request.getIsCompleted());
 				}
 				dentalLabTestPickupRepository.save(dentalLabPickupCollection);
-				if (request.getStatus() != null && request.getIsTrailChanged() == true) {
+				if (request.getStatus() != null && request.getIsTrialChanged() == true) {
 					if (request.getStatus().equals("COPING_TRIAL")) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 								.findByLocationId(dentalLabPickupCollection.getDentalLabId());
@@ -2093,7 +2094,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 
 		parameters.put("title", "DENTAL WORKS REPORT");
-		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
+		parameters.put("date", "<b>Work Date :- </b>" + simpleDateFormat.format(dentalLabPickupResponse.getUpdatedTime()));
 		parameters.put("PatientName", "Patient Name");
 		parameters.put("ToothNo", "Tooth no.");
 		parameters.put("Work", "Work");

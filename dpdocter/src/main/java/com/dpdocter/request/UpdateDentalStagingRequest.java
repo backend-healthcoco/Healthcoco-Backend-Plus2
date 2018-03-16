@@ -12,7 +12,7 @@ public class UpdateDentalStagingRequest {
 	private String status;
 	private String processStatus;
 	private Boolean isCompleted;
-	private Boolean isTrailChanged = false;
+	private Boolean isTrialChanged = false;
 
 	public String getRequestId() {
 		return requestId;
@@ -62,14 +62,19 @@ public class UpdateDentalStagingRequest {
 		this.isCompleted = isCompleted;
 	}
 
-	public Boolean getIsTrailChanged() {
-		return isTrailChanged;
+	public Boolean getIsTrialChanged() {
+		return isTrialChanged;
 	}
 
-	public void setIsTrailChanged(Boolean isTrailChanged) {
-		this.isTrailChanged = isTrailChanged;
+	public void setIsTrialChanged(Boolean isTrialChanged) {
+		this.isTrialChanged = isTrialChanged;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "UpdateDentalStagingRequest [requestId=" + requestId + ", uniqueWorkId=" + uniqueWorkId
+				+ ", dentalStages=" + dentalStages + ", status=" + status + ", processStatus=" + processStatus
+				+ ", isCompleted=" + isCompleted + ", isTrialChanged=" + isTrialChanged + "]";
+	}
 
 }

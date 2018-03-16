@@ -4561,39 +4561,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{dentalLab}"));
-		jrDesignTextField.setX(2);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(250);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-		jrDesignTextField.setBold(false);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setMarkup("html");
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
-		band.addElement(jrDesignTextField);
-
-		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{doctor}"));
-		jrDesignTextField.setX(251);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(250);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
-		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-		jrDesignTextField.setBold(false);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
-		jrDesignTextField.setMarkup("html");
-		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-		band = new JRDesignBand();
-		band.setHeight(20);
-
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{age}"));
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
@@ -4607,7 +4575,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{gender}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{dentalLab}"));
 		jrDesignTextField.setX(251);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
@@ -4639,7 +4607,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{requestId}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{eta}"));
 		jrDesignTextField.setX(251);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
@@ -4879,7 +4847,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItem(jasperDesign, columnWidth, "$P{occlusalStaining}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{instructions}", fieldWidth, true, 0, false);
 		addItem(jasperDesign, columnWidth, "$P{ponticDesign}", fieldWidth, true, 0, false);
-		addItem(jasperDesign, columnWidth, "$P{eta}", fieldWidth, true, 0, false);
+		addItem(jasperDesign, columnWidth, "$P{gender}", fieldWidth, true, 0, false);
+		addItem(jasperDesign, columnWidth, "$P{age}", fieldWidth, true, 0, false);
 		
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
