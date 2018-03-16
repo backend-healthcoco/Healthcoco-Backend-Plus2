@@ -1717,12 +1717,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-								CANCELLED_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+								CANCELLED_NOTIFICATION, ComponentType.DENTAL_WORKS_CANCELLATION.getType(),
 								dentalLabPickupCollection.getId().toString(), null);
 					}
 				} else if (cancelledBy.equalsIgnoreCase("DENTAL_WORKS_LAB")) {
 					pushNotificationServices.notifyUser(dentalLabPickupCollection.getDoctorId().toString(),
-							CANCELLED_NOTIFICATION, ComponentType.DENTAL_WORKS.getType(),
+							CANCELLED_NOTIFICATION, ComponentType.DENTAL_WORKS_CANCELLATION.getType(),
 							dentalLabPickupCollection.getId().toString(), null);
 				}
 				
@@ -1738,7 +1738,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if (collectionBoyCollection != null) {
 							pushNotificationServices.notifyPharmacy(
 									collectionBoyCollection.getUserId().toString(), null, null,
-									RoleEnum.DENTAL_WORK_REFRESH, CANCELLED_NOTIFICATION);
+									RoleEnum.DENTAL_WORKS_CANCELLATION, CANCELLED_NOTIFICATION);
 						}
 					}
 				}
@@ -1954,7 +1954,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 
 		if (dentalLabPickupResponse.getAge() != null) {
-			parameters.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getGender());
+			parameters.put("age", "<b>Age :- </b> " + dentalLabPickupResponse.getAge());
 		} else {
 			parameters.put("age", "<b>Age :- </b> --");
 		}
@@ -2046,6 +2046,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (dentalWorksSample.getEtaInDate() != null) {
 				parameters.put("eta",
 						"<b>ETA :- </b> " + simpleDateFormat.format(new Date(dentalWorksSample.getEtaInDate())));
+			}
+			else
+			{
+				parameters.put("eta", "<b>ETA :- </b>  --");
 			}
 
 			if (dentalWorksSample.getDentalStagesForDoctor() != null
