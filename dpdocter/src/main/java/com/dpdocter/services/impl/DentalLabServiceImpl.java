@@ -542,8 +542,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					}
 					dentalWorksSamples.add(dentalWorksSample);
 				}
-				if (request.getRequestCreatedBy() != null) {
-				
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				dentalLabPickupCollection.setUpdatedTime(new Date());
 				dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
@@ -588,19 +586,20 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalWorksSamples.add(dentalWorksSample);
 
 				}
-				if (request.getRequestCreatedBy().equals("DENTAL_LAB")) {
-					List<UserDeviceCollection> userDeviceCollections = userDeviceRepository
-							.findByUserId(new ObjectId(request.getDoctorId()));
-					if (userDeviceCollections != null) {
-						String message = locationCollection.getLocationName() + " has created a request for you.";
-						pushNotificationServices.notifyUser(request.getDoctorId(), message,
-								ComponentType.DENTAL_WORKS.getType(), null, userDeviceCollections);
-					} else {
-						sendDownloadAppMessage(new ObjectId(request.getDoctorId()),
-								locationCollection.getLocationName());
+				if (request.getRequestCreatedBy() != null) {
+					if (request.getRequestCreatedBy().equals("DENTAL_LAB")) {
+						List<UserDeviceCollection> userDeviceCollections = userDeviceRepository
+								.findByUserId(new ObjectId(request.getDoctorId()));
+						if (userDeviceCollections != null) {
+							String message = locationCollection.getLocationName() + " has created a request for you.";
+							pushNotificationServices.notifyUser(request.getDoctorId(), message,
+									ComponentType.DENTAL_WORKS.getType(), null, userDeviceCollections);
+						} else {
+							sendDownloadAppMessage(new ObjectId(request.getDoctorId()),
+									locationCollection.getLocationName());
+						}
 					}
 				}
-			}
 
 				dentalLabPickupCollection.setDentalWorksSamples(dentalWorksSamples);
 				dentalLabPickupCollection.setCrn(saveCRN(request.getDentalLabId(), requestId, 5));
