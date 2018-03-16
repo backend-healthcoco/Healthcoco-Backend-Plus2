@@ -1738,7 +1738,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						if (collectionBoyCollection != null) {
 							pushNotificationServices.notifyPharmacy(
 									collectionBoyCollection.getUserId().toString(), null, null,
-									RoleEnum.DENTAL_WORK_REFRESH, CANCELLED_NOTIFICATION);
+									RoleEnum.DENTAL_WORKS_CANCELLATION, CANCELLED_NOTIFICATION);
 						}
 					}
 				}

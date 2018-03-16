@@ -773,7 +773,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
 										ComponentType.DENTAL_WORK_REFRESH.getType(), null, null, role.getRole());
-							} 
+							} else if (role.equals(RoleEnum.DENTAL_WORKS_CANCELLATION)) {
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message,
+										ComponentType.DENTAL_WORKS_CANCELLATION.getType(), null, null, role.getRole());
+							}
 							else {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
@@ -797,8 +801,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			Sender sender = null;
 
 			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString())
-
-					|| role.equals(RoleEnum.COLLECTION_BOY.getRole()) || role.equals(RoleEnum.REFRESH.getRole()) || role.equals(RoleEnum.DENTAL_COLLECTION_BOY.getRole()) || role.equals(RoleEnum.DENTAL_WORK_REFRESH.getRole())) {
+					|| role.equals(RoleEnum.COLLECTION_BOY.getRole()) || role.equals(RoleEnum.REFRESH.getRole()) || role.equals(RoleEnum.DENTAL_COLLECTION_BOY.getRole()) || role.equals(RoleEnum.DENTAL_WORK_REFRESH.getRole()) || role.equals(RoleEnum.DENTAL_WORKS_CANCELLATION.getRole())) {
 				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
 			} else {
