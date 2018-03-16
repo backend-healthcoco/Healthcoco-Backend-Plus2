@@ -719,6 +719,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 									? doctorDocument.getCountry() + ", " : "")
 							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
 									? doctorDocument.getPostalCode() : "");
+					
 					if (!DPDoctorUtils.anyStringEmpty(address)) {
 						if (address.charAt(address.length() - 2) == ',') {
 							address = address.substring(0, address.length() - 2);
