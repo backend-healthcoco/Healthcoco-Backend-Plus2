@@ -216,10 +216,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (parameters.get("headerHtml") != null)
 				((JRDesignSection) jasperDesign.getDetailSection())
 						.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
-			
-			if(parameters.get("patientLeftText") != null && parameters.get("patientRightText") != null) {
-				((JRDesignSection) jasperDesign.getDetailSection()).addBand(
-						createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne, parameters.get("headerHtml")));
+
+			if (parameters.get("patientLeftText") != null && parameters.get("patientRightText") != null) {
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign,
+						columnWidth, showTableOne, parameters.get("headerHtml")));
 				((JRDesignSection) jasperDesign.getDetailSection())
 						.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 			}
@@ -884,6 +884,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
 			jrDesignImage.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty()"));
 			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
+			jrDesignImage.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
 			expression = new JRDesignExpression();
 			expression.setText("$P{logoURL}");
 			jrDesignImage.setExpression(expression);
@@ -1868,7 +1869,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		int Startwith = 2;
 
-		band.setSplitType(SplitTypeEnum.STRETCH);
+		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
@@ -1876,7 +1877,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setFontSize(new Float(9));
 			jrDesignTextField.setX(0);
 			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setHeight(22);
 			jrDesignTextField.setWidth(175);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 			jrDesignTextField.setMarkup("html");
@@ -1891,7 +1892,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
 			jrDesignTextField.setX(176);
 			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setHeight(22);
 			jrDesignTextField.setWidth(columnWidth - 176);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
@@ -1899,7 +1900,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())
 				|| !DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
-			Startwith = Startwith + 20;
+			Startwith = Startwith + 25;
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("bottomSignText").toString())) {
 			int count = parameter.get("bottomSignText").toString().split("\r\n|\r|\n").length;
@@ -4639,26 +4640,28 @@ public class JasperReportServiceImpl implements JasperReportService {
 	}
 
 	private void createPatientCertificate(JasperDesign jasperDesign, Map<String, Object> parameters,
-			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle, JRDesignDatasetRun dsr) throws JRException {
+			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle,
+			JRDesignDatasetRun dsr) throws JRException {
 		band = new JRDesignBand();
 		band.setHeight(10);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
-//		band.setHeight(20);
-//
-//		jrDesignTextField = new JRDesignTextField();
-//		jrDesignTextField.setExpression(new JRDesignExpression("$P{htmlText}"));
-//		jrDesignTextField.setX(1);
-//		jrDesignTextField.setY(0);
-//		jrDesignTextField.setHeight(20);
-//		jrDesignTextField.setWidth(columnWidth);
-//		jrDesignTextField.setBold(true);
-//		jrDesignTextField.setMarkup("html");
-//		jrDesignTextField.setStretchWithOverflow(true);
-//		band.addElement(jrDesignTextField);
+		// band.setHeight(20);
+		//
+		// jrDesignTextField = new JRDesignTextField();
+		// jrDesignTextField.setExpression(new
+		// JRDesignExpression("$P{htmlText}"));
+		// jrDesignTextField.setX(1);
+		// jrDesignTextField.setY(0);
+		// jrDesignTextField.setHeight(20);
+		// jrDesignTextField.setWidth(columnWidth);
+		// jrDesignTextField.setBold(true);
+		// jrDesignTextField.setMarkup("html");
+		// jrDesignTextField.setStretchWithOverflow(true);
+		// band.addElement(jrDesignTextField);
 
-//		dsr.setDatasetName("mongo-patient-certificate");
+		// dsr.setDatasetName("mongo-patient-certificate");
 		param = new JRDesignDatasetParameter();
 		param.setName("htmlText");
 		param.setExpression(new JRDesignExpression("$P{htmlText}"));
@@ -4666,22 +4669,21 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		HtmlComponent htmlComponent = new HtmlComponent();
 		htmlComponent.setHtmlContentExpression(new JRDesignExpression("$P{htmlText}"));
-//		htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
+		// htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
 
 		JRDesignComponentElement reportElement = new JRDesignComponentElement();
-		reportElement.setComponentKey(
-				new ComponentKey("http://jasperreports.sourceforge.net/htmlcomponent", "hc", "html"));
+		reportElement
+				.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/htmlcomponent", "hc", "html"));
 		reportElement.setHeight(40);
 		reportElement.setWidth(columnWidth);
 		reportElement.setX(0);
 		reportElement.setY(0);
 		reportElement.setStyle(normalStyle);
 		reportElement.setComponent(htmlComponent);
-//		htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
+		// htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
 		band.addElement(reportElement);
 		band.setHeight(40);
-		
-		
+
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 	}

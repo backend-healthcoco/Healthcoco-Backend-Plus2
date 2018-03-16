@@ -750,7 +750,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			}
-			
+
 			System.out.println(aggregation);
 			AggregationResults<RateCardDentalWorkAssociation> aggregationResults = mongoTemplate.aggregate(aggregation,
 					RateCardDentalWorkAssociationCollection.class, RateCardDentalWorkAssociation.class);
@@ -1074,13 +1074,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("dentalLab.locationName").regex("^" + searchTerm),
-						new Criteria("dentalLab.locationName").regex( searchTerm + ".*"),
+						new Criteria("dentalLab.locationName").regex(searchTerm + ".*"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm),
-						new Criteria("doctor.firstName").regex( searchTerm + ".*"),
+						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
 						new Criteria("patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patientName").regex("^" + searchTerm),
-						new Criteria("patientName").regex(  searchTerm + ".*"),
+						new Criteria("patientName").regex(searchTerm + ".*"),
 						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm, "i"),
 						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm),
 						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + "$", "i"),
@@ -1088,7 +1088,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + ".*"));
 			}
 
-		/*	(SEVEN)*/
+			/* (SEVEN) */
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("dentalWorksSamples"),
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
@@ -2072,7 +2072,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			if (dentalWorksSample.getRateCardDentalWorkAssociation() != null) {
 				if (dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork() != null) {
-					System.out.println(dentalWorksSample.getRateCardDentalWorkAssociation().toString());
 					parameters
 							.put("dentalWork",
 									!DPDoctorUtils.anyStringEmpty(dentalWorksSample.getRateCardDentalWorkAssociation()
@@ -2121,7 +2120,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						userCollection = userRepository.findOne(new ObjectId(dentalStageRequest.getStaffId()));
 						if (userCollection != null) {
 							stagejasperBean.setInspectedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
-									? userCollection.getTitle() : "")+ " " + userCollection.getFirstName());
+									? userCollection.getTitle() : "") + " " + userCollection.getFirstName());
 						}
 					}
 
