@@ -739,7 +739,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		try {
 
 
-			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY) || role.equals(RoleEnum.DENTAL_COLLECTION_BOY) || role.equals(RoleEnum.REFRESH) || role.equals(RoleEnum.DENTAL_WORK_REFRESH)) {
+			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY) || role.equals(RoleEnum.DENTAL_COLLECTION_BOY) || role.equals(RoleEnum.REFRESH) || role.equals(RoleEnum.DENTAL_WORK_REFRESH) || role.equals(RoleEnum.DENTAL_WORKS_CANCELLATION)) {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
 			if (role.equals(RoleEnum.PATIENT)) {
@@ -756,7 +756,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 										ComponentType.LAB_REQUEST.getType(), null, null, role.getRole());
 
 							} else if (role.equals(RoleEnum.REFRESH)) {
-
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message, ComponentType.REFRESH.getType(),
 										null, null, role.getRole());
