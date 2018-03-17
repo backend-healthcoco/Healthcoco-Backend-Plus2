@@ -692,7 +692,7 @@ public class SMSServicesImpl implements SMSServices {
 			String numberString = StringUtils.join(numberlist, ',');
 			// String password = new String(loginRequest.getPassword());
 			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles="
-					+ numberString + "&message=" + URLEncoder.encode(message , "UTF-8") + "&sender="
+					+ numberString + "&message=" + UriUtils.encode(message , "UTF-8") + "&sender="
 					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE;
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
