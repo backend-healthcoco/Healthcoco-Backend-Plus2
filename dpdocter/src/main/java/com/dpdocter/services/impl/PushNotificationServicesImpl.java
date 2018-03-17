@@ -37,7 +37,6 @@ import com.dpdocter.repository.PushNotificationRepository;
 import com.dpdocter.repository.UserDeviceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.BroadcastNotificationRequest;
-import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.PushNotificationServices;

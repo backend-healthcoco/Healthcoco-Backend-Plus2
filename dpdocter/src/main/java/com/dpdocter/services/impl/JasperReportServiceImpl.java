@@ -625,24 +625,24 @@ public class JasperReportServiceImpl implements JasperReportService {
 		listComponent.setPrintOrderValue(PrintOrderEnum.HORIZONTAL);
 
 		DesignListContents contents = new DesignListContents();
-		contents.setHeight(150);
-		contents.setWidth(columnWidth - 100);
+		contents.setHeight(130);
+		contents.setWidth((columnWidth-80)/3);
 
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
 		jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
 		jrDesignImage.setExpression(new JRDesignExpression("$F{url}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(2);
-		jrDesignImage.setHeight(130);
-		jrDesignImage.setWidth(columnWidth - 120);
+		jrDesignImage.setHeight(100);
+		jrDesignImage.setWidth((columnWidth-80)/4);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		contents.addElement(jrDesignImage);
-
+		
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{tags}"));
-		jrDesignTextField.setY(130);
+		jrDesignTextField.setY(110);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(columnWidth - 120);
+		jrDesignTextField.setWidth((columnWidth-80)/4);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setStretchWithOverflow(true);
 		contents.addElement(jrDesignTextField);
@@ -1215,24 +1215,24 @@ public class JasperReportServiceImpl implements JasperReportService {
 		listComponent.setPrintOrderValue(PrintOrderEnum.HORIZONTAL);
 
 		DesignListContents contents = new DesignListContents();
-		contents.setHeight(150);
-		contents.setWidth(columnWidth - 100);
+		contents.setHeight(130);
+		contents.setWidth((columnWidth-80)/3);
 
-		JRDesignImage jrDesignImage = new JRDesignImage(null);
+	    JRDesignImage jrDesignImage = new JRDesignImage(null);
 		jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
 		jrDesignImage.setExpression(new JRDesignExpression("$F{url}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(2);
-		jrDesignImage.setHeight(130);
-		jrDesignImage.setWidth(columnWidth - 120);
+		jrDesignImage.setHeight(100);
+		jrDesignImage.setWidth((columnWidth-80)/4);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		contents.addElement(jrDesignImage);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{tags}"));
-		jrDesignTextField.setY(130);
+		jrDesignTextField.setY(110);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(columnWidth - 120);
+		jrDesignTextField.setWidth((columnWidth-80)/4);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setStretchWithOverflow(true);
 		contents.addElement(jrDesignTextField);
