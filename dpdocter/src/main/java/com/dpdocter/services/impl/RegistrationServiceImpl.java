@@ -73,6 +73,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.beans.UserReminders;
@@ -92,6 +93,7 @@ import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
+import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.EyeObservationCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
@@ -115,6 +117,7 @@ import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserAddressCollection;
 import com.dpdocter.collections.UserCollection;
@@ -126,10 +129,13 @@ import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
+import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FeedbackType;
+import com.dpdocter.enums.GynacPermissionsEnum;
+import com.dpdocter.enums.OpthoPermissionEnums;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.ReminderType;
 import com.dpdocter.enums.Resource;
@@ -146,6 +152,7 @@ import com.dpdocter.repository.ConsentFormRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -157,6 +164,7 @@ import com.dpdocter.repository.ProfessionRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserAddressRepository;
 import com.dpdocter.repository.UserLocationRepository;
@@ -167,6 +175,7 @@ import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
+import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.CheckPatientSignUpResponse;
 import com.dpdocter.response.ClinicDoctorResponse;
@@ -181,6 +190,7 @@ import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.response.UserLookupResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
+import com.dpdocter.services.DynamicUIService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
@@ -273,6 +283,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private LocationServices locationServices;
 
 	@Autowired
+	DynamicUIRepository dynamicUIRepository;
+
+	@Autowired
 	private PrescriptionRepository prescriptionRepository;
 
 	@Autowired
@@ -315,10 +328,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private UserAddressRepository userAddressRepository;
 
 	@Autowired
+	DynamicUIService dynamicUIService;
+
+	@Autowired
 	private JasperReportService jasperReportService;
 
 	@Autowired
 	private EmailTackService emailTackService;
+
+	@Autowired
+	private SpecialityRepository specialityRepository;
 
 	@Value(value = "${jasper.print.consentForm.a4.fileName}")
 	private String consentFormA4FileName;
@@ -1917,6 +1936,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(request, doctorCollection);
 			doctorCollection.setUserId(userCollection.getId());
 			doctorCollection.setCreatedTime(new Date());
+
+			if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+				List<SpecialityCollection> specialityCollections = specialityRepository
+						.findBySuperSpeciality(request.getSpeciality());
+				@SuppressWarnings("unchecked")
+				Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
+						new BeanToPropertyValueTransformer("id"));
+				if (specialityIds != null && !specialityIds.isEmpty()) {
+					doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+				} else
+					doctorCollection.setSpecialities(null);
+				assignDefaultUIPermissions(doctorCollection.getUserId().toString());
+			}
 			doctorCollection = doctorRepository.save(doctorCollection);
 
 			// assign role to doctor
@@ -2045,7 +2077,26 @@ public class RegistrationServiceImpl implements RegistrationService {
 					List<String> additionalNumbers = new ArrayList<String>();
 					additionalNumbers.add(request.getMobileNumber());
 				}
-				doctorCollection = doctorRepository.save(doctorCollection);
+
+				if (doctorCollection != null) {
+					List<ObjectId> oldSpecialities = doctorCollection.getSpecialities();
+					if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+						List<SpecialityCollection> specialityCollections = specialityRepository
+								.findBySuperSpeciality(request.getSpeciality());
+						@SuppressWarnings("unchecked")
+						Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("id"));
+						if (specialityIds != null && !specialityIds.isEmpty()) {
+							doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+							if (oldSpecialities != null && !oldSpecialities.isEmpty())
+								removeOldSpecialityPermissions(specialityIds, oldSpecialities,
+										doctorCollection.getUserId().toString());
+						} else
+							doctorCollection.setSpecialities(null);
+						assignDefaultUIPermissions(doctorCollection.getUserId().toString());
+					}
+					doctorRepository.save(doctorCollection);
+				}
 			}
 
 			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
@@ -4252,4 +4303,74 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return response;
 	}
+
+	private void assignDefaultUIPermissions(String doctorId) {
+		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+		UIPermissions uiPermissions = dynamicUIService.getDefaultPermissions();
+		dynamicUICollection.setUiPermissions(uiPermissions);
+		dynamicUIRepository.save(dynamicUICollection);
+	}
+
+	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds,
+			Collection<ObjectId> oldSpecialities, String doctorId) {
+		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+		if (dynamicUICollection != null) {
+			for (ObjectId objectId : specialityIds) {
+				if (oldSpecialities.contains(objectId))
+					oldSpecialities.remove(objectId);
+			}
+			if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
+				List<SpecialityCollection> oldSpecialityCollections = (List<SpecialityCollection>) specialityRepository
+						.findAll(oldSpecialities);
+				@SuppressWarnings("unchecked")
+				Collection<String> specialities = CollectionUtils.collect(oldSpecialityCollections,
+						new BeanToPropertyValueTransformer("speciality"));
+				UIPermissions uiPermissions = dynamicUICollection.getUiPermissions();
+				for (String speciality : specialities) {
+					if (speciality.equalsIgnoreCase("OPHTHALMOLOGIST")) {
+						if (uiPermissions.getClinicalNotesPermissions() != null)
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(OpthoPermissionEnums.OPTHO_CLINICAL_NOTES.getPermissions());
+						if (uiPermissions.getPrescriptionPermissions() != null)
+							uiPermissions.getPrescriptionPermissions()
+									.remove(OpthoPermissionEnums.OPTHO_RX.getPermissions());
+					}
+					if (speciality.equalsIgnoreCase("PEDIATRICIAN")) {
+						if (uiPermissions.getProfilePermissions() != null)
+							uiPermissions.getProfilePermissions()
+									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+					}
+					if (speciality.equalsIgnoreCase("GYNECOLOGIST/OBSTETRICIAN")) {
+						if (uiPermissions.getClinicalNotesPermissions() != null) {
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PA.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PV.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PS.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.EDD.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.LMP.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.USG_GENDER_COUNT.getPermissions());
+							uiPermissions.getProfilePermissions()
+									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+						}
+					}
+					if (speciality.equalsIgnoreCase("CARDIOLOGIST")) {
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECG.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECHO.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.XRAY.getPermissions());
+						uiPermissions.getClinicalNotesPermissions()
+								.remove(CardioPermissionEnum.HOLTER.getPermissions());
+					}
+				}
+				dynamicUIRepository.save(dynamicUICollection);
+			}
+		}
+	}
+
 }
