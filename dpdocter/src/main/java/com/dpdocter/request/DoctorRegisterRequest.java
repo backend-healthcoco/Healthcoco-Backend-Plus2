@@ -1,30 +1,42 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
 public class DoctorRegisterRequest {
 
 	private String title;
-   
+
 	private String userId;
 
-    private String firstName;
+	private String firstName;
 
-    private String emailAddress;
+	private String emailAddress;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String registerNumber;
+	private String registerNumber;
 
-    private String roleId;
+	private String roleId;
 
-    private Boolean isActivate;
+	private Boolean isActivate;
 
-    private String colorCode;
-    
-    public String getTitle() {
+	private String colorCode;
+
+	private List<String> speciality;
+
+	public List<String> getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(List<String> speciality) {
+		this.speciality = speciality;
+	}
+
+	public String getTitle() {
 		return title;
 	}
 
@@ -33,76 +45,76 @@ public class DoctorRegisterRequest {
 	}
 
 	public String getUserId() {
-	return userId;
-    }
+		return userId;
+	}
 
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getEmailAddress() {
-	return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
-    }
+	public String getEmailAddress() {
+		return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
+	}
 
-    public void setEmailAddress(String emailAddress) {
-	this.emailAddress = emailAddress;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getRegisterNumber() {
-	return registerNumber;
-    }
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
 
-    public void setRegisterNumber(String registerNumber) {
-	this.registerNumber = registerNumber;
-    }
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
 
-    public String getRoleId() {
-	return roleId;
-    }
+	public String getRoleId() {
+		return roleId;
+	}
 
-    public void setRoleId(String roleId) {
-	this.roleId = roleId;
-    }
+	public void setRoleId(String roleId) {
+		this.roleId = roleId;
+	}
 
-    public Boolean getIsActivate() {
-	return isActivate;
-    }
+	public Boolean getIsActivate() {
+		return isActivate;
+	}
 
-    public void setIsActivate(Boolean isActivate) {
-	this.isActivate = isActivate;
-    }
+	public void setIsActivate(Boolean isActivate) {
+		this.isActivate = isActivate;
+	}
 
 	public String getColorCode() {
 		return colorCode;
