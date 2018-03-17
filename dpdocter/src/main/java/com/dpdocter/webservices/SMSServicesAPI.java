@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -186,4 +187,16 @@ public class SMSServicesAPI {
     }
 
 
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path(value = PathProxy.SMSUrls.SEND_BULK_SMS)
+    @GET
+    @ApiOperation(value = PathProxy.SMSUrls.SEND_BULK_SMS, notes = PathProxy.SMSUrls.SEND_BULK_SMS)
+    public Response<String> sendBulkSMS(@MatrixParam("mobileNumbers") List<String> mobileNumbers, @PathParam(value = "message") String message) {
+    	
+	String send = smsServices.getBulkSMSResponse(mobileNumbers, message);
+	Response<String> response = new Response<String>();
+	response.setData(send);
+	return response;
+    }
 }

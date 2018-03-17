@@ -1072,6 +1072,8 @@ public interface PathProxy {
 
 		public static final String SEND_DOWNLOAD_APP_SMS_TO_PATIENT = "/sendDownloadSmsToPatient";
 
+		public static final String SEND_BULK_SMS = "bulk/{message}";
+
 	}
 
 	public static final String EMAIL_TRACK_BASE_URL = BASE_URL + "/email";
