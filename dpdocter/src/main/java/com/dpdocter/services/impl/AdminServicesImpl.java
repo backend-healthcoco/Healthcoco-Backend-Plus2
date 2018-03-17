@@ -4,16 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.bson.BSONObject;
 import org.bson.types.ObjectId;
-import org.elasticsearch.bootstrap.Elasticsearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -21,8 +18,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
-import org.springframework.data.elasticsearch.core.query.IndexQuery;
-import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -46,12 +41,14 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.InvestigationCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ObservationCollection;
-import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
@@ -62,6 +59,7 @@ import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
 import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
@@ -72,6 +70,7 @@ import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
 import com.dpdocter.elasticsearch.repository.ESInvestigationsRepository;
 import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
 import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
+import com.dpdocter.elasticsearch.repository.ESProcedureNoteRepository;
 import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.enums.AppType;
@@ -88,11 +87,15 @@ import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.EducationInstituteRepository;
 import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
+import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MedicalCouncilRepository;
+import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
+import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.response.ClinicalItemsResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AdminServices;
@@ -101,8 +104,8 @@ import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -224,6 +227,24 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Autowired
 	ESDiagnosesRepository esDiagnosesRepository;
+	
+	@Autowired
+	ProcedureNoteRepository procedureNoteRepository;
+	
+	@Autowired
+	InvestigationRepository investigationRepository;
+	
+	@Autowired
+	ESProcedureNoteRepository esProcedureNoteRepository;
+	
+	@Autowired
+	TransactionalManagementService transactionalManagementService;
+	
+	@Autowired
+	TransnationalRepositiory transnationalRepositiory;
+	
+	@Autowired
+	UserRoleRepository userRoleRepository;
 	
 	@Override
 	@Transactional
@@ -706,6 +727,109 @@ public class AdminServicesImpl implements AdminServices {
 				
 			}
 		}
+	}
+
+	@Override
+	public Boolean copyClinicalItems(String doctorId, String locationId, List<String> drIds) {
+		Boolean response = false;
+		try {
+			List<InvestigationCollection> investigationCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(
+					new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId)))), InvestigationCollection.class, InvestigationCollection.class).getMappedResults();
+			
+			List<ObjectId> drObjectIds = new ArrayList<>();
+			for(String id : drIds)drObjectIds.add(new ObjectId(id));		
+
+			if(investigationCollections != null) {
+				for(InvestigationCollection investigationCollection : investigationCollections) {
+					for(ObjectId id : drObjectIds) {
+						long count = mongoTemplate.count(new Query(new Criteria("doctorId").is(id).and("locationId").is(new ObjectId(locationId))
+								.and("investigation").is(investigationCollection.getInvestigation())), InvestigationCollection.class);
+						if(count == 0) {
+							InvestigationCollection inCollection = new InvestigationCollection();
+							BeanUtil.map(investigationCollection, inCollection);
+							inCollection.setId(null);
+							inCollection.setDoctorId(id);
+							inCollection.setLocationId(investigationCollection.getLocationId());
+							inCollection.setHospitalId(investigationCollection.getHospitalId());
+							inCollection = investigationRepository.save(inCollection);
+							
+							transactionalManagementService.addResource(inCollection.getId(), Resource.INVESTIGATION, false);
+							ESInvestigationsDocument esInvestigationsDocument = new ESInvestigationsDocument();
+							BeanUtil.map(inCollection, esInvestigationsDocument);
+							esInvestigationsRepository.save(esInvestigationsDocument);
+							response = true;
+							transactionalManagementService.addResource(inCollection.getId(), Resource.INVESTIGATION, true);
+						}
+					}
+				}
+			}
+
+			List<ProcedureNoteCollection> procedureNoteCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(
+					new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId)))), ProcedureNoteCollection.class, ProcedureNoteCollection.class).getMappedResults();
+			
+			if(procedureNoteCollections != null) {
+				for(ProcedureNoteCollection procedureNoteCollection : procedureNoteCollections) {
+					for(ObjectId id : drObjectIds) {
+						long count = mongoTemplate.count(new Query(new Criteria("doctorId").is(id).and("locationId").is(new ObjectId(locationId))
+								.and("procedureNote").is(procedureNoteCollection.getProcedureNote())), ProcedureNoteCollection.class);
+						if(count == 0) {
+							ProcedureNoteCollection prCollection = new ProcedureNoteCollection();
+							BeanUtil.map(procedureNoteCollection, prCollection);
+							prCollection.setId(null);
+							prCollection.setDoctorId(id);
+							prCollection.setLocationId(procedureNoteCollection.getLocationId());
+							prCollection.setHospitalId(procedureNoteCollection.getHospitalId());
+							prCollection = procedureNoteRepository.save(prCollection);
+							
+							transactionalManagementService.addResource(prCollection.getId(), Resource.PROCEDURE_NOTE, false);
+							ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
+							BeanUtil.map(prCollection, esProcedureNoteDocument);
+							esProcedureNoteRepository.save(esProcedureNoteDocument);
+							response = true;
+							transactionalManagementService.addResource(prCollection.getId(), Resource.PROCEDURE_NOTE, true);
+						}
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateLocationIdInRole() {
+		Boolean response = false;
+		try {
+			
+			Aggregation a = Aggregation.newAggregation(Aggregation.match(new Criteria("roleId").is(new ObjectId("5792556ee4b01207387a7a9c"))),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.match(new Criteria("location").size(0)));
+			
+			List<UserRoleCollection> userRoleCollections = mongoTemplate.aggregate(a
+					, UserRoleCollection.class, UserRoleCollection.class).getMappedResults();
+			
+			if(userRoleCollections != null) {
+				for(UserRoleCollection userRoleCollection : userRoleCollections) {
+					List<LocationCollection> locationCollections = locationRepository.findByHospitalId(userRoleCollection.getHospitalId(), new Sort(Direction.ASC, "createdTime"));
+					if(locationCollections != null && !locationCollections.isEmpty()) {
+						System.out.println(locationCollections.get(0).getLocationName());
+						userRoleCollection.setLocationId(locationCollections.get(0).getId());
+						userRoleRepository.save(userRoleCollection);
+						response = true;
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 
 }
