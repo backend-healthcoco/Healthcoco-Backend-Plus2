@@ -86,9 +86,12 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 	@Query("{'userId': ?0, 'doctorId':?1}")
 	PatientCollection findByUserIdDoctorId(ObjectId patientId, ObjectId doctorId);
 
-	@Query(value = "{'doctorId':?0, 'locationId':?1, 'PID':?2}", count = true)
-	Integer findPatientByPID(ObjectId doctorId, ObjectId locationId, String generatedId);
+	@Query(value = "{'doctorId':?0, 'locationId':?1, 'hospitalId': ?2, 'PID':?3}", count = true)
+	Integer findPatientByPID(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String generatedId);
 
+	@Query(value = "{'doctorId':?0, 'locationId':?1, 'hospitalId': ?2, 'PID':?3, 'userId': {'$ne' : ?4}}", count = true)
+	Integer findPatientByPID(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String generatedId, ObjectId userId);
+	
 	@Query(value = "{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded':{'$in': ?5}}", count = true)
 	Integer findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId doctorId,
 			ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards);

@@ -84,6 +84,8 @@ public class PatientRegistrationRequest {
 
 	private String PNUM;
 	
+	private String PID;
+	
 	private ComponentType recordType;
 	
 	private String recordId;
@@ -385,6 +387,22 @@ public class PatientRegistrationRequest {
 		PNUM = pNUM;
 	}
 
+	public String getPID() {
+		return PID;
+	}
+
+	public void setPID(String pID) {
+		PID = pID;
+	}
+
+	public ComponentType getRecordType() {
+		return recordType;
+	}
+
+	public void setRecordType(ComponentType recordType) {
+		this.recordType = recordType;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -399,15 +417,7 @@ public class PatientRegistrationRequest {
 				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", role=" + role + ", registrationDate="
 				+ registrationDate + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
-				+ personalInformation + ", PNUM=" + PNUM + "]";
+				+ personalInformation + ", PNUM=" + PNUM + ", PID=" + PID + ", recordType=" + recordType + ", recordId="
+				+ recordId + "]";
 	}
-
-	public ComponentType getRecordType() {
-		return recordType;
-	}
-
-	public void setRecordType(ComponentType recordType) {
-		this.recordType = recordType;
-	}
-
 }
