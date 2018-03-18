@@ -374,12 +374,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 				logger.warn(role);
 				throw new BusinessException(ServiceError.NoRecord, role);
 			}
+			
+			if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID());
+				if(count !=null && count > 0) {
+					logger.warn("Patient with this PID is already present. Please add patient different PID");
+					throw new BusinessException(ServiceError.InvalidInput, "Patient with this PID is already present. Please add patient different PID");
+				}
+			}
+			
 			request.setFirstName(request.getLocalPatientName());
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			Date createdTime = new Date();
 
 			CheckPatientSignUpResponse checkPatientSignUpResponse = checkIfPatientIsSignedUp(request.getMobileNumber());
-			// save user
+			// save user;
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
 			if (request.getDob() != null && request.getDob().getAge() != null
@@ -435,11 +444,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			else
 				patientCollection.setRegistrationDate(new Date().getTime());
 
-			System.out.println("registerNewPatient" + request.getRegistrationDate() + ".."
-					+ patientCollection.getRegistrationDate());
 			patientCollection.setCreatedTime(createdTime);
-			patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
-					patientCollection.getRegistrationDate()));
+			if(DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
+						patientCollection.getRegistrationDate()));
+			}
 
 			// if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
 			List<ObjectId> consultantDoctorIds = new ArrayList<ObjectId>();
@@ -667,6 +676,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<Group> groups = null;
 		try {
 
+			if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID(),
+						new ObjectId(request.getUserId()));
+				if(count !=null && count > 0) {
+					logger.warn("Patient with this PID is already present. Please add patient different PID");
+					throw new BusinessException(ServiceError.InvalidInput, "Patient with this PID is already present. Please add patient different PID");
+				}
+			}
 			if (request.getDob() != null && request.getDob().getAge() != null
 					&& request.getDob().getAge().getYears() < 0) {
 				logger.warn(DOB);
@@ -732,6 +749,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 						if (infoType.contains("MEDICAL"))
 							patientCollection.setMedicalQuestionAnswers(request.getMedicalQuestionAnswers());
 					}
+					
+					if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+						patientCollection.setPID(request.getPID());
+					}
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");
 					throw new BusinessException(ServiceError.InvalidInput,
@@ -796,7 +817,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRelations(request.getRelations());
 				patientCollection.setNotes(request.getNotes());
 
-				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
+				if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+					patientCollection.setPID(request.getPID());
+				}
+				else if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
 					patientCollection.setPID(patientCollection.getPID());
 				} else {
 					patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
