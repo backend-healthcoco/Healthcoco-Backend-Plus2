@@ -43,7 +43,6 @@ import com.dpdocter.beans.ReceiptJasperDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.TreatmentDynamicFields;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
@@ -2103,7 +2102,10 @@ public class BillingServiceImpl implements BillingService {
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
   
+		Double grandTotal = 0.0, totalPaid = 0.0, totalBalance = 0.0;
+		List<String> invoiceIds = new ArrayList<String>();
 		for(DoctorPatientReceiptLookupResponse doctorPatientReceiptLookupResponse : doctorPatientReceiptLookupResponses) {
+			totalPaid = totalPaid + doctorPatientReceiptLookupResponse.getAmountPaid();
 			ReceiptJasperDetails details = new ReceiptJasperDetails();
 			details.setDate(simpleDateFormat.format(doctorPatientReceiptLookupResponse.getReceivedDate()));
 			
@@ -2115,8 +2117,16 @@ public class BillingServiceImpl implements BillingService {
 				receiptJasperDetails.add(details);
 			}else {
 				if(doctorPatientReceiptLookupResponse.getInvoiceCollection() != null) {
+					
+					if(!invoiceIds.contains(doctorPatientReceiptLookupResponse.getInvoiceCollection().getId().toString())){
+						invoiceIds.add(doctorPatientReceiptLookupResponse.getInvoiceCollection().getId().toString());
+						grandTotal = grandTotal + doctorPatientReceiptLookupResponse.getInvoiceCollection().getGrandTotal();
+					}
 					Double total = doctorPatientReceiptLookupResponse.getInvoiceCollection().getGrandTotal();
-					Double paid = doctorPatientReceiptLookupResponse.getAmountPaid();
+					String paid = (doctorPatientReceiptLookupResponse.getAmountPaid() != null) ? doctorPatientReceiptLookupResponse.getAmountPaid()+"" : "";
+					if(doctorPatientReceiptLookupResponse.getUsedAdvanceAmount() != null && doctorPatientReceiptLookupResponse.getUsedAdvanceAmount() != 0.0) {
+						paid = ((!DPDoctorUtils.anyStringEmpty(paid) && !paid.equalsIgnoreCase("0.0")) ? paid+"+" : "") +  doctorPatientReceiptLookupResponse.getUsedAdvanceAmount()+"(From Advance)"; 
+					}
 					Double balance = doctorPatientReceiptLookupResponse.getBalanceAmount();
 					
 					details.setTotal((total == null) ? "":total+"");
@@ -2139,7 +2149,12 @@ public class BillingServiceImpl implements BillingService {
 			
 			
 		}
+		totalBalance = grandTotal - totalPaid;
 		parameters.put("receipts", receiptJasperDetails);
+		parameters.put("grandTotal", grandTotal);
+		parameters.put("totalPaid", totalPaid);
+		parameters.put("totalBalance", totalBalance);
+		System.out.println(grandTotal + " " + totalPaid +" "+totalBalance);
 		PatientCollection patient = doctorPatientReceiptLookupResponses.get(0).getPatient();
 		UserCollection user = doctorPatientReceiptLookupResponses.get(0).getPatientUser();
 		patientVisitService.generatePatientDetails(

@@ -4310,7 +4310,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							new BeanToPropertyValueTransformer("code"));
 					if (codes != null && !codes.isEmpty()) {
 						for (String word : codes) {
-							word = word.toLowerCase();
+							if(!DPDoctorUtils.anyStringEmpty(word)) {
+								word = word.toLowerCase();
+								genericCodes.add(word);
+							}
 						}
 						genericCodes.addAll(codes);
 					}
