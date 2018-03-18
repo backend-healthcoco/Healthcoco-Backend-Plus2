@@ -27,6 +27,7 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -691,9 +692,11 @@ public class SMSServicesImpl implements SMSServices {
 			List<String> numberlist = new ArrayList<String> (numbers);
 			String numberString = StringUtils.join(numberlist, ',');
 			// String password = new String(loginRequest.getPassword());
+			
+			message = StringEscapeUtils.unescapeJava(message);
 			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles="
-					+ numberString + "&message=" + UriUtils.encode(message , "UTF-8") + "&sender="
-					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE;
+					+ numberString + "&message=" + UriUtils.encode(message, "UTF-8") + "&sender="
+					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE+ "&unicode="+UNICODE;
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
