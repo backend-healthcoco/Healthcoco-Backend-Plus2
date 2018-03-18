@@ -1718,8 +1718,19 @@ public interface PathProxy {
 
 	public interface ESDentalLabsUrl {
 
-		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks/{range}";
 
+		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks";
+	}
+	
+	
+	
+	public static final String NUTRITION_BASE_URL = BASE_URL + "/nutrition";
+
+	public interface NutritionUrl {
+
+		public static final String ADD_EDIT_NUTRITION_REFERENCE = "/addEditNutritionReference";
+		public static final String GET_NUTRITION_REFERENCES = "/getNutritionReferences";
+		
 	}
 
 }
