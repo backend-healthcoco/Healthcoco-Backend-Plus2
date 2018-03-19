@@ -35,8 +35,10 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
+import com.dpdocter.response.FlowsheetResponse;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -469,6 +471,23 @@ public class DischargeSummaryAPI {
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(items);
+		return response;
+	}
+	
+	@Path(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
+	@POST
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
+	public Response<FlowsheetResponse> addEditFlowsheets(AddEditFlowSheetRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		FlowsheetResponse flowsheetResponse = dischargeSummaryService.addEditFlowSheets(request);
+
+		Response<FlowsheetResponse> response = new Response<FlowsheetResponse>();
+		response.setData(flowsheetResponse);
 		return response;
 	}
 

@@ -1,5 +1,8 @@
 package com.dpdocter.beans;
 
+
+import common.util.web.JacksonUtil;
+
 public class FlowSheet {
 
 	private Long date;
@@ -132,4 +135,15 @@ public class FlowSheet {
 		this.advice = advice;
 	}
 
+	@Override
+	public String toString() {
+		return "FlowSheet [date=" + date + ", pulse=" + pulse + ", temperature=" + temperature + ", breathing="
+				+ breathing + ", systolic=" + systolic + ", diastolic=" + diastolic + ", height=" + height + ", weight="
+				+ weight + ", spo2=" + spo2 + ", bmi=" + bmi + ", bsa=" + bsa + ", complaint=" + complaint + ", advice="
+				+ advice + "]";
+	}
+
+	public static void main(String[] args) {
+		System.out.println(JacksonUtil.obj2Json(new FlowSheet()));
+	}
 }

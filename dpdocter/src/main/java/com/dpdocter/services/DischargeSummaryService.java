@@ -6,11 +6,14 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
+import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
+import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
+import com.dpdocter.response.FlowsheetResponse;
 
 public interface DischargeSummaryService {
 
@@ -65,4 +68,6 @@ public interface DischargeSummaryService {
 
 	void emailDischargeSummaryForWeb(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
+
+	FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request);
 }
