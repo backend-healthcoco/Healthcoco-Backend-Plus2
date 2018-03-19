@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
 
@@ -48,14 +49,20 @@ public class OTReportsCollection extends GenericCollection {
 	private ObjectId locationId;
 	@Field
 	private ObjectId hospitalId;
-
 	@Field
 	private String operationalNotes;
-
 	@Field
 	private Boolean isPatientDiscarded = false;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private DoctorAndCost operatingSurgeonAndCost;
+	@Field
+	private DoctorAndCost anaesthetistAndCost;
+	@Field
+	private List<DoctorAndCost> assitingDoctorsAndCost;
+	@Field
+	private List<DoctorAndCost> assitingNursesAndCost;
 
 	public ObjectId getId() {
 		return id;
@@ -215,6 +222,38 @@ public class OTReportsCollection extends GenericCollection {
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	public DoctorAndCost getOperatingSurgeonAndCost() {
+		return operatingSurgeonAndCost;
+	}
+
+	public void setOperatingSurgeonAndCost(DoctorAndCost operatingSurgeonAndCost) {
+		this.operatingSurgeonAndCost = operatingSurgeonAndCost;
+	}
+
+	public DoctorAndCost getAnaesthetistAndCost() {
+		return anaesthetistAndCost;
+	}
+
+	public void setAnaesthetistAndCost(DoctorAndCost anaesthetistAndCost) {
+		this.anaesthetistAndCost = anaesthetistAndCost;
+	}
+
+	public List<DoctorAndCost> getAssitingDoctorsAndCost() {
+		return assitingDoctorsAndCost;
+	}
+
+	public void setAssitingDoctorsAndCost(List<DoctorAndCost> assitingDoctorsAndCost) {
+		this.assitingDoctorsAndCost = assitingDoctorsAndCost;
+	}
+
+	public List<DoctorAndCost> getAssitingNursesAndCost() {
+		return assitingNursesAndCost;
+	}
+
+	public void setAssitingNursesAndCost(List<DoctorAndCost> assitingNursesAndCost) {
+		this.assitingNursesAndCost = assitingNursesAndCost;
 	}
 
 	@Override

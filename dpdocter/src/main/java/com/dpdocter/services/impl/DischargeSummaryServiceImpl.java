@@ -47,6 +47,7 @@ import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.FlowsheetCollection;
 import com.dpdocter.collections.ImplantCollection;
 import com.dpdocter.collections.LabourNoteCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -72,6 +73,7 @@ import com.dpdocter.repository.CementRepository;
 import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.FlowsheetRepository;
 import com.dpdocter.repository.ImplantRepository;
 import com.dpdocter.repository.LabourNoteRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -81,10 +83,12 @@ import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
+import com.dpdocter.response.FlowsheetResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
@@ -172,6 +176,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private PatientVisitService patientVisitService;
+	
+	@Autowired
+	private FlowsheetRepository flowsheetRepository;
 
 	@Value(value = "${jasper.print.dischargeSummary.a4.fileName}")
 	private String dischargeSummaryReportA4FileName;
@@ -260,6 +267,16 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			}
 			dischargeSummaryCollection.setFlowSheets(dischargeSummary.getFlowSheets());
 			dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
+			if (dischargeSummary.getFlowSheets() != null) {
+				AddEditFlowSheetRequest addEditFlowSheetRequest = new AddEditFlowSheetRequest();
+				addEditFlowSheetRequest.setDoctorId(dischargeSummary.getDoctorId());
+				addEditFlowSheetRequest.setLocationId(dischargeSummary.getLocationId());
+				addEditFlowSheetRequest.setHospitalId(dischargeSummary.getHospitalId());
+				addEditFlowSheetRequest.setPatientId(dischargeSummary.getPatientId());
+				addEditFlowSheetRequest.setFlowSheets(dischargeSummary.getFlowSheets());
+				addEditFlowSheetRequest.setDischargeSummaryId(dischargeSummaryCollection.getId().toString());
+				addEditFlowSheets(addEditFlowSheetRequest);
+			}
 			response = new DischargeSummaryResponse();
 			BeanUtil.map(dischargeSummaryCollection, response);
 			response.setPrescriptions(prescription);
@@ -2329,6 +2346,67 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
+	}
+	
+	@Override
+	@Transactional
+	public FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request)
+	{
+		DischargeSummaryCollection dischargeSummaryCollection = null;
+		FlowsheetResponse response = null;
+		FlowsheetCollection flowsheetCollection = null;
+		UserCollection userCollection = null;
+		try {
+			
+			if(request.getDoctorId() != null)
+			{
+				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			}
+			if (request.getId() != null) {
+				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(request.getId()) );
+			}
+			else if(request.getDischargeSummaryId() != null) {
+				flowsheetCollection = flowsheetRepository.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
+			}
+			else
+			{
+				flowsheetCollection = new FlowsheetCollection();
+				flowsheetCollection.setCreatedTime(new Date());
+				if(userCollection != null)
+				{
+					flowsheetCollection.setCreatedBy(userCollection.getFirstName());
+				}
+			}
+			if(request.getDischargeSummaryId() != null)
+			{
+				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(request.getId()));
+			}
+			else
+			{
+				dischargeSummaryCollection = new DischargeSummaryCollection();
+				dischargeSummaryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+				dischargeSummaryCollection.setLocationId(new ObjectId(request.getLocationId()));
+				dischargeSummaryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+				dischargeSummaryCollection.setPatientId(new ObjectId(request.getPatientId()));
+				dischargeSummaryCollection.setDiscarded(false);
+				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
+				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
+			}
+			flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
+			flowsheetCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			flowsheetCollection.setLocationId(new ObjectId(request.getLocationId()));
+			flowsheetCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+			flowsheetCollection.setPatientId(new ObjectId(request.getPatientId()));
+			flowsheetCollection.setFlowSheets(request.getFlowSheets());
+			flowsheetCollection = flowsheetRepository.save(flowsheetCollection);
+			if (flowsheetCollection != null) {
+				response = new FlowsheetResponse();
+				BeanUtil.map(flowsheetCollection, response);
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 }

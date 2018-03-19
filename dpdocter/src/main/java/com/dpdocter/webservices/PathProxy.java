@@ -1351,6 +1351,7 @@ public interface PathProxy {
 		public static final String DELETE_IMPLANT = "/implant/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_DISCHARGE_SUMMARY_ITEMS = "/{type}/{range}";
 		public static final String EMAIL_DISCHARGE_SUMMARY_WEB = "/{dischargeSummeryId}/{emailAddress}/mail";
+		public static final String 	ADD_EDIT_FLOWSHEETS = "/addEditFlowsheets";
 
 	}
 

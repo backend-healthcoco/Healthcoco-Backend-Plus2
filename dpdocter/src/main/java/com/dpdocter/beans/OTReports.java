@@ -25,7 +25,7 @@ public class OTReports extends GenericCollection {
 	private String anaesthetist;
 	private List<String> assitingDoctors;
 	private List<String> assitingNurses;
-	private Boolean materialForHPE=false;
+	private Boolean materialForHPE = false;
 	private String remarks;
 	private String doctorId;
 	private String doctorName;
@@ -36,6 +36,10 @@ public class OTReports extends GenericCollection {
 	private TimeDuration timeDuration;
 	private Boolean discarded = false;
 	private String operationalNotes;
+	private DoctorAndCost operatingSurgeonAndCost;
+	private DoctorAndCost anaesthetistAndCost;
+	private List<DoctorAndCost> assitingDoctorsAndCost;
+	private List<DoctorAndCost> assitingNursesAndCost;
 
 	public String getId() {
 		return id;
@@ -52,8 +56,6 @@ public class OTReports extends GenericCollection {
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
-
-	
 
 	public Date getOperationDate() {
 		return operationDate;
@@ -231,6 +233,38 @@ public class OTReports extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public DoctorAndCost getOperatingSurgeonAndCost() {
+		return operatingSurgeonAndCost;
+	}
+
+	public void setOperatingSurgeonAndCost(DoctorAndCost operatingSurgeonAndCost) {
+		this.operatingSurgeonAndCost = operatingSurgeonAndCost;
+	}
+
+	public DoctorAndCost getAnaesthetistAndCost() {
+		return anaesthetistAndCost;
+	}
+
+	public void setAnaesthetistAndCost(DoctorAndCost anaesthetistAndCost) {
+		this.anaesthetistAndCost = anaesthetistAndCost;
+	}
+
+	public List<DoctorAndCost> getAssitingDoctorsAndCost() {
+		return assitingDoctorsAndCost;
+	}
+
+	public void setAssitingDoctorsAndCost(List<DoctorAndCost> assitingDoctorsAndCost) {
+		this.assitingDoctorsAndCost = assitingDoctorsAndCost;
+	}
+
+	public List<DoctorAndCost> getAssitingNursesAndCost() {
+		return assitingNursesAndCost;
+	}
+
+	public void setAssitingNursesAndCost(List<DoctorAndCost> assitingNursesAndCost) {
+		this.assitingNursesAndCost = assitingNursesAndCost;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReports [id=" + id + ", uniqueOTId=" + uniqueOTId + ", patientId=" + patientId + ", patient="
@@ -241,7 +275,9 @@ public class OTReports extends GenericCollection {
 				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName
 				+ ", locationId=" + locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId
 				+ ", hospitalName=" + hospitalName + ", timeDuration=" + timeDuration + ", discarded=" + discarded
-				+ ", operationalNotes=" + operationalNotes + "]";
+				+ ", operationalNotes=" + operationalNotes + ", operatingSurgeonAndCost=" + operatingSurgeonAndCost
+				+ ", anaesthetistAndCost=" + anaesthetistAndCost + ", assitingDoctorsAndCost=" + assitingDoctorsAndCost
+				+ ", assitingNursesAndCost=" + assitingNursesAndCost + "]";
 	}
 
 }
