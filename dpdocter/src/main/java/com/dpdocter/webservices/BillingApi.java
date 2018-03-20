@@ -24,6 +24,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
+import com.dpdocter.request.ListIdrequest;
 import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
@@ -359,4 +360,18 @@ public class BillingApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.BillingUrls.DOWNLOAD_MULTIPLE_RECEIPT)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.DOWNLOAD_MULTIPLE_RECEIPT, notes = PathProxy.BillingUrls.DOWNLOAD_MULTIPLE_RECEIPT)
+	public Response<String> downloadMultipleReceipt(ListIdrequest request) {
+		
+		if (request == null || request.getIds() == null || request.getIds().isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		
+		Response<String> response = new Response<String>();
+		response.setData(billingService.downloadMultipleReceipt(request.getIds()));
+		return response;
+	}
 }

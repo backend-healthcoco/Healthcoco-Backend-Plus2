@@ -1279,6 +1279,8 @@ public interface PathProxy {
 		public static final String EMAIL_RECEIPT = "receipt/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 		public static final String DUE_AMOUNT_REMAINDER = "dueAmount/{patientId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/remainder";
+
+		public static final String DOWNLOAD_MULTIPLE_RECEIPT = "receipt/downlaod";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
@@ -1542,7 +1544,7 @@ public interface PathProxy {
 		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
-	
+
 		public static final String UPDATE_EMR = "/update/EMR";
 		
 		public static final String TREATMENT_SERVICES = "/treatments/services/{doctorId}/{locationId}/{hospitalId}";
@@ -1554,7 +1556,32 @@ public interface PathProxy {
 		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
 
 	}
-	
+
+	public static final String DOWNLOAD_DATA_BASE_URL = BASE_URL + "/download";
+
+	public interface DownloadDataUrls {
+
+		public static final String PATIENTS = "/patients/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String PRESCRIPTIONS = "/prescriptions/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String APPOINTMENTS = "/appointments/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String TREATMENT_PLANS = "/treatments/plans/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String TREATMENTS = "/treatments/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String CLINICAL_NOTES = "/clinicalnotes/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String INVOICES = "/invoices/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
+	}
+
 	public static final String DENTAL_LAB_BASE_URL = BASE_URL + "/dentalLab";
 
 	public interface DentalLabUrls {

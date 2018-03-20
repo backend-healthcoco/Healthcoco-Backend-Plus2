@@ -44,6 +44,7 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.EyePrescription;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientCard;
@@ -59,7 +60,6 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -2428,18 +2428,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
 		}
 
-		patientDetailList.add(uniqueEMRId);
+		if(!DPDoctorUtils.anyStringEmpty(uniqueEMRId))patientDetailList.add(uniqueEMRId);
 		if (patientDetails.getShowDOB()) {
-			if (patientDetails.getShowDate())
-				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
-			patientDetailList
-					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+				if (patientDetails.getShowDate())
+					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+				patientDetailList
+						.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
 		} else {
-			patientDetailList
-					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-			if (patientDetails.getShowDate())
-				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
-		}
+				patientDetailList
+						.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+				if (patientDetails.getShowDate())
+					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+			}
 
 		if (patientDetails.getShowBloodGroup() && patientCard != null
 				&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
