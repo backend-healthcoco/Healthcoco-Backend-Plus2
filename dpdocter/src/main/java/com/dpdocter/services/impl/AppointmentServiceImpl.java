@@ -3702,6 +3702,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				parameters.put("generalNotes", "<b>Note :- </b> " + request.getAppointmentId());
 			}
 			patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(request.getDoctorId()));
+			
 			String pdfName = request.getPatientName() + "-PATIENT-CARD-" + new Date().getTime();
 			String layout = "PORTRAIT";
 			String pageSize = "A4";
