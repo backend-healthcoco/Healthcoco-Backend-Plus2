@@ -2409,5 +2409,87 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return response;
 	}
+	
+	
+	private JasperReportResponse createJasperForFlowSheet(DischargeSummaryCollection dischargeSummaryCollection,
+			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
+		JasperReportResponse response = null;
+		List<PrescriptionJasperDetails> prescriptionItems = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
+				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+
+		if (dischargeSummaryCollection.getAdmissionDate() != null) {
+			parameters.put("dOA", "<b>Date of Admission:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
+		}
+		if (dischargeSummaryCollection.getDischargeDate() != null) {
+			parameters.put("dOD", "<b>Date of Discharge:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
+		}
+		if (dischargeSummaryCollection.getOperationDate() != null) {
+			parameters.put("operationDate", "<b>Date of Operation:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
+		}
+		
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getDiagnosis())) {
+			parameters.put("diagnosis", dischargeSummaryCollection.getDiagnosis());
+		}
+		if(dischargeSummaryCollection.getFlowSheets() != null)
+		{
+			parameters.put("flowsheets", dischargeSummaryCollection.getFlowSheets());
+		}
+
+		parameters.put("contentLineSpace",
+				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
+						? dischargeSummaryCollection.getUniqueEmrId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				dischargeSummaryCollection.getUpdatedTime(), printSettings.getHospitalUId());
+		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-FLOWSHEET"
+				+ dischargeSummaryCollection.getUniqueEmrId() + new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.DISCHARGE_SUMMARY, parameters,
+				dischargeSummaryReportA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+
+	}
+
 
 }
