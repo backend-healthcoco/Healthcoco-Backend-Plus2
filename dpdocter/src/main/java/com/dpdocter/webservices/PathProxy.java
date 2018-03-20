@@ -995,6 +995,10 @@ public interface PathProxy {
 		public static final String GET_LAB_BY_SLUG_URL = "/lab/{slugUrl}/web";
 
 		public static final String UPDATE_APPOINTMENT_DOCTOR = "/updateDoctor/{appointmentId}/{doctorId}";
+		
+		public static final String DOWNLOAD_PATIENT_CARD= "/downloadpatientCard";
+		
+		
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";

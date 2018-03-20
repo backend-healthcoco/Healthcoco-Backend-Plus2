@@ -17,61 +17,61 @@ import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
 
 @Document(collection = "print_settings_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class PrintSettingsCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private String componentType = ComponentType.ALL.getType();
+	@Field
+	private String componentType = ComponentType.ALL.getType();
 
-    @Field
-    private PageSetup pageSetup;
+	@Field
+	private PageSetup pageSetup;
 
-    @Field
-    private HeaderSetup headerSetup;
+	@Field
+	private HeaderSetup headerSetup;
 
-    @Field
-    private FooterSetup footerSetup;
+	@Field
+	private FooterSetup footerSetup;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
-    @Field
-    private String clinicLogoUrl;
+	@Field
+	private String clinicLogoUrl;
 
-    @Field
-    private String hospitalUId;
-    
-    @Field
-    private PrintSettingsText contentSetup;
-    
-    @Field
-    private String contentLineSpace = LineSpace.SMALL.name();
-    
-    @Field
-    private String contentLineStyle = LineStyle.INLINE.getStyle();
+	@Field
+	private String hospitalUId;
 
-    @Field
-    private boolean showDrugGenericNames = false;
-    
-    @Field
-    private Boolean showPoweredBy=true;
-    
-    
-    public Boolean getShowPoweredBy() {
+	@Field
+	private PrintSettingsText contentSetup;
+
+	@Field
+	private String contentLineSpace = LineSpace.SMALL.name();
+
+	@Field
+	private String contentLineStyle = LineStyle.INLINE.getStyle();
+
+	@Field
+	private boolean showDrugGenericNames = false;
+
+	@Field
+	private Boolean showPoweredBy = true;
+
+	@Field
+	private String generalNotes;
+
+	public Boolean getShowPoweredBy() {
 		return showPoweredBy;
 	}
 
@@ -80,84 +80,84 @@ public class PrintSettingsCollection extends GenericCollection {
 	}
 
 	public ObjectId getId() {
-	return id;
-    }
+		return id;
+	}
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getComponentType() {
-	return componentType;
-    }
+	public String getComponentType() {
+		return componentType;
+	}
 
-    public void setComponentType(String componentType) {
-	this.componentType = componentType;
-    }
+	public void setComponentType(String componentType) {
+		this.componentType = componentType;
+	}
 
-    public PageSetup getPageSetup() {
-	return pageSetup;
-    }
+	public PageSetup getPageSetup() {
+		return pageSetup;
+	}
 
-    public void setPageSetup(PageSetup pageSetup) {
-	this.pageSetup = pageSetup;
-    }
+	public void setPageSetup(PageSetup pageSetup) {
+		this.pageSetup = pageSetup;
+	}
 
-    public HeaderSetup getHeaderSetup() {
-	return headerSetup;
-    }
+	public HeaderSetup getHeaderSetup() {
+		return headerSetup;
+	}
 
-    public void setHeaderSetup(HeaderSetup headerSetup) {
-	this.headerSetup = headerSetup;
-    }
+	public void setHeaderSetup(HeaderSetup headerSetup) {
+		this.headerSetup = headerSetup;
+	}
 
-    public FooterSetup getFooterSetup() {
-	return footerSetup;
-    }
+	public FooterSetup getFooterSetup() {
+		return footerSetup;
+	}
 
-    public void setFooterSetup(FooterSetup footerSetup) {
-	this.footerSetup = footerSetup;
-    }
+	public void setFooterSetup(FooterSetup footerSetup) {
+		this.footerSetup = footerSetup;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public String getClinicLogoUrl() {
-	return clinicLogoUrl;
-    }
+	public String getClinicLogoUrl() {
+		return clinicLogoUrl;
+	}
 
-    public void setClinicLogoUrl(String clinicLogoUrl) {
-	this.clinicLogoUrl = clinicLogoUrl;
-    }
+	public void setClinicLogoUrl(String clinicLogoUrl) {
+		this.clinicLogoUrl = clinicLogoUrl;
+	}
 
 	public PrintSettingsText getContentSetup() {
 		return contentSetup;
@@ -197,6 +197,14 @@ public class PrintSettingsCollection extends GenericCollection {
 
 	public void setHospitalUId(String hospitalUId) {
 		this.hospitalUId = hospitalUId;
+	}
+
+	public String getGeneralNotes() {
+		return generalNotes;
+	}
+
+	public void setGeneralNotes(String generalNotes) {
+		this.generalNotes = generalNotes;
 	}
 
 	@Override

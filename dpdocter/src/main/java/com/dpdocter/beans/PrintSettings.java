@@ -35,12 +35,14 @@ public class PrintSettings extends GenericCollection {
 	private String clinicLogoUrl;
 
 	private String hospitalUId;
-	
+
 	private String contentLineSpace = LineSpace.SMALL.name();
 
 	private String contentLineStyle = LineStyle.INLINE.getStyle();
 
 	private boolean showDrugGenericNames = false;
+
+	private String generalNotes;
 
 	public String getId() {
 		return id;
@@ -160,6 +162,14 @@ public class PrintSettings extends GenericCollection {
 
 	public void setHospitalUId(String hospitalUId) {
 		this.hospitalUId = hospitalUId;
+	}
+
+	public String getGeneralNotes() {
+		return generalNotes;
+	}
+
+	public void setGeneralNotes(String generalNotes) {
+		this.generalNotes = generalNotes;
 	}
 
 	@Override
