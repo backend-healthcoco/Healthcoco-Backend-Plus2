@@ -38,6 +38,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
@@ -53,6 +54,7 @@ import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientQueue;
+import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
@@ -74,6 +76,7 @@ import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientQueueCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSFormatCollection;
@@ -86,6 +89,9 @@ import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.FONTSTYLE;
+import com.dpdocter.enums.FieldAlign;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
@@ -106,6 +112,7 @@ import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientQueueRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSFormatRepository;
@@ -117,16 +124,19 @@ import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.request.PrintPatientCardRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.AppointmentLookupResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorWithAppointmentCount;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.UserLocationWithDoctorClinicProfile;
 import com.dpdocter.response.UserRoleResponse;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -137,6 +147,7 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.services.UserFavouriteService;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
@@ -145,6 +156,10 @@ import common.util.web.DateAndTimeUtility;
 public class AppointmentServiceImpl implements AppointmentService {
 
 	private static Logger logger = Logger.getLogger(AppointmentServiceImpl.class.getName());
+	
+	@Value(value = "${pdf.footer.text}")
+	private String footerText;
+
 
 	@Autowired
 	private CityRepository cityRepository;
@@ -193,6 +208,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private CustomAppointmentRepository customAppointmentRepository;
+	
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
 
 	@Autowired
 	private RegistrationService registrationService;
@@ -241,6 +259,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Value(value = "${patient.app.bit.link}")
 	private String patientAppBitLink;
+	
+	@Value(value = "${jasper.print.dental.works.reports.fileName}")
+	private String dentalWorksFormA4FileName;
 
 	@Autowired
 	private PatientVisitService patientVisitService;
@@ -265,6 +286,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RoleRepository roleRepository;
+	
+	@Autowired
+	private JasperReportService jasperReportService;
 
 	@Override
 	@Transactional
@@ -3599,5 +3623,117 @@ public class AppointmentServiceImpl implements AppointmentService {
 			throw new BusinessException(ServiceError.Unknown, "Error while updating appointment doctor");
 		}
 		return response;
+	}
+	
+	
+	public boolean containsIgnoreCase(String str, List<String> list) {
+		if (list != null && !list.isEmpty())
+			for (String i : list) {
+				if (i.equalsIgnoreCase(str))
+					return true;
+			}
+		return false;
+	}
+
+	
+	@Override
+	@Transactional
+	public String printPatientCard(PrintPatientCardRequest request)
+	{
+		String response = null;
+		JasperReportResponse jasperReportResponse = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		String pattern = "EEE, d MMM yyyy hh:mm aaa";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		String age = null;
+		
+		try {
+			
+			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+					new ObjectId(request.getHospitalId()), ComponentType.ALL.getType());
+			
+			if (request.getPatientName() != null) {
+				parameters.put("patientName", "<b>Patient Name :- </b> " + request.getPatientName());
+			} else {
+				parameters.put("patientName", "<b>Patient Name :- </b>  -- ");
+			}
+			if (request.getGender() != null) {
+				parameters.put("gender", "<b>Gender :- </b> " + request.getGender());
+			} else {
+				parameters.put("gender", "<b>Gender :- </b> --");
+			}
+			if (request.getDob() != null && request.getDob().getAge() != null) {
+				Age ageObj = request.getDob().getAge();
+				if (ageObj.getYears() > 14)
+					age = ageObj.getYears() + "yrs";
+				else {
+					if (ageObj.getYears() > 0)
+						age = ageObj.getYears() + "yrs";
+					if (ageObj.getMonths() > 0) {
+						if (DPDoctorUtils.anyStringEmpty(age))
+							age = ageObj.getMonths() + "months";
+						else
+							age = age + " " + ageObj.getMonths() + " months";
+					}
+					if (ageObj.getDays() > 0) {
+						if (DPDoctorUtils.anyStringEmpty(age))
+							age = ageObj.getDays() + "days";
+						else
+							age = age + " " + ageObj.getDays() + "days";
+					}
+				}
+			}
+			if (age != null) {
+				parameters.put("age", "<b>Age :- </b> " + age);
+			} else {
+				parameters.put("age", "<b>Age :- </b> --");
+			}
+			if (request.getAppointmentId() != null) {
+				parameters.put("requestId", "<b>Id :- </b> " + request.getAppointmentId());
+			} else {
+				parameters.put("requestId", "<b>Id :- </b>  --");
+			}
+			if (request.getFromDate() != null) {
+				parameters.put("fromDate",
+						"<b>Appointment Date :- </b>" + simpleDateFormat.format(request.getFromDate()));
+			}
+			if (request.getGeneralNotes() != null) {
+				parameters.put("generalNotes", "<b>Note :- </b> " + request.getAppointmentId());
+			}
+			patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(request.getDoctorId()));
+			String pdfName = request.getPatientName() + "-PATIENT-CARD-" + new Date().getTime();
+			String layout = "PORTRAIT";
+			String pageSize = "A4";
+			Integer topMargin = 20;
+			Integer bottonMargin = 20;
+			Integer leftMargin = 20;
+			Integer rightMargin = 20;
+			parameters.put("footerSignature", "");
+			parameters.put("bottomSignText", "");
+			parameters.put("contentFontSize", 11);
+			parameters.put("headerLeftText", "");
+			parameters.put("headerRightText", "");
+			parameters.put("footerBottomText", "");
+			parameters.put("logoURL", "");
+			parameters.put("showTableOne", false);
+			parameters.put("poweredBy", footerText);
+			parameters.put("contentLineSpace", LineSpace.SMALL.name());
+			jasperReportResponse = jasperReportService.createPDF(ComponentType.PATIENT_CARD, parameters,
+					dentalWorksFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+					Integer.parseInt(parameters.get("contentFontSize").toString()),
+					pdfName.replaceAll("\\s+", ""));
+			
+			if (jasperReportResponse != null)
+				response = getFinalImageURL(jasperReportResponse.getPath());
+			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+				if (jasperReportResponse.getFileSystemResource().getFile().exists())
+					jasperReportResponse.getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+		return response;
+	
 	}
 }

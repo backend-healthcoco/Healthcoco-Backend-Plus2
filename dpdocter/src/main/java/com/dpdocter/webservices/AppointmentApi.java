@@ -38,6 +38,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
+import com.dpdocter.request.PrintPatientCardRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
@@ -608,6 +609,18 @@ public class AppointmentApi {
 		Appointment appointment = appointmentService.updateAppointmentDoctor(appointmentId, doctorId);
 		Response<Appointment> response = new Response<Appointment>();
 		response.setData(appointment);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AppointmentUrls.DOWNLOAD_PATIENT_CARD)
+	@POST
+	@ApiOperation(value = PathProxy.AppointmentUrls.DOWNLOAD_PATIENT_CARD, notes = PathProxy.AppointmentUrls.DOWNLOAD_PATIENT_CARD)
+	public Response<String> downloadReport(PrintPatientCardRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(appointmentService.printPatientCard(request));
 		return response;
 	}
 }

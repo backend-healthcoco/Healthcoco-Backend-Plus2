@@ -39,6 +39,8 @@ public class PrintSettings extends GenericCollection {
     
     private boolean showDrugGenericNames = false;
     
+    private String generalNotes;
+    
     public String getId() {
 	return id;
     }
@@ -62,6 +64,7 @@ public class PrintSettings extends GenericCollection {
     public void setLocationId(String locationId) {
 	this.locationId = locationId;
     }
+	
 
     public String getHospitalId() {
 	return hospitalId;
@@ -157,6 +160,14 @@ public class PrintSettings extends GenericCollection {
 
 	public void setHospitalUId(String hospitalUId) {
 		this.hospitalUId = hospitalUId;
+	}
+
+	public String getGeneralNotes() {
+		return generalNotes;
+	}
+
+	public void setGeneralNotes(String generalNotes) {
+		this.generalNotes = generalNotes;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -12,9 +13,11 @@ import com.dpdocter.beans.CustomAppointment;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.PatientQueue;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
+import com.dpdocter.request.PrintPatientCardRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
@@ -97,5 +100,7 @@ public interface AppointmentService {
 	Clinic getClinic(String slugUrl);
 
 	Appointment updateAppointmentDoctor(String appointmentId, String doctorId);
+
+	String printPatientCard(PrintPatientCardRequest request);
 
 }
