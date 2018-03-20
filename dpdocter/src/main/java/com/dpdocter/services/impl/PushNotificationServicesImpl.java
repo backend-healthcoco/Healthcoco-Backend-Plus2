@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -178,6 +179,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 	@Override
 	@Transactional
+	@Async
 	public void notifyUser(String userId, String message, String componentType, String componentTypeId,
 			List<UserDeviceCollection> userDevices) {
 		List<UserDeviceCollection> userDeviceCollections = null;
@@ -733,6 +735,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	}
 
 	@Override
+	@Async
 	public void notifyPharmacy(String id, String requestId, String responseId, RoleEnum role, String message) {
 		List<UserDeviceCollection> userDeviceCollections = null;
 
