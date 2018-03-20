@@ -35,7 +35,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -80,8 +79,6 @@ import com.dpdocter.beans.UserReminders;
 import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
-import com.dpdocter.collections.BirthDetailsCollection;
-import com.dpdocter.collections.BirthHistoryCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DeliveryReportsCollection;
@@ -95,8 +92,6 @@ import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EmailTrackCollection;
-import com.dpdocter.collections.EyeObservationCollection;
-import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FormContentCollection;
 import com.dpdocter.collections.GroupCollection;
@@ -175,7 +170,6 @@ import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
-import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.CheckPatientSignUpResponse;
 import com.dpdocter.response.ClinicDoctorResponse;
@@ -204,12 +198,10 @@ import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
-import common.util.web.Response;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
@@ -432,8 +424,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			Date createdTime = new Date();
 
-			CheckPatientSignUpResponse checkPatientSignUpResponse = checkIfPatientIsSignedUp(request.getMobileNumber());
-			// save user;
+			CheckPatientSignUpResponse checkPatientSignUpResponse = null;
+			if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))checkPatientSignUpResponse = checkIfPatientIsSignedUp(request.getMobileNumber());
+			// save user
+
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
 			if (request.getDob() != null && request.getDob().getAge() != null
@@ -548,15 +542,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patientGroupCollection = patientGroupRepository.save(patientGroupCollection);
 				}
 			}
-			/*
-			 * if (patientCollection.getEmailAddress() != null) { // send
-			 * activation email String body =
-			 * mailBodyGenerator.generatePatientRegistrationEmailBody
-			 * (userCollection.getUserName(), userCollection.getPassword(),
-			 * userCollection.getFirstName(), userCollection.getLastName());
-			 * mailService.sendEmail(patientCollection.getEmailAddress(),
-			 * signupSubject, body, null); }
-			 */
+
 			// send SMS logic
 			BeanUtil.map(userCollection, registeredPatientDetails);
 			registeredPatientDetails.setUserId(userCollection.getId().toString());
@@ -629,29 +615,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					"Welcome to " + locationCollection.getLocationName()
 							+ ", let us know about your visit. We will be happy to serve you again.",
 					ComponentType.PATIENT.getType(), patientCollection.getUserId().toString(), null);
-			if (userCollection.getMobileNumber() != null) {
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());
-				smsTrackDetail.setHospitalId(patientCollection.getHospitalId());
-				smsTrackDetail.setLocationId(patientCollection.getLocationId());
-
-				SMSDetail smsDetail = new SMSDetail();
-				smsDetail.setUserId(patientCollection.getUserId());
-				smsDetail.setUserName(patientCollection.getFirstName());
-				SMS sms = new SMS();
-				sms.setSmsText("OTP Verification");
-
-				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(userCollection.getMobileNumber());
-				sms.setSmsAddress(smsAddress);
-
-				smsDetail.setSms(sms);
-				// List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				// smsDetails.add(smsDetail);
-				// smsTrackDetail.setSmsDetails(smsDetails);
-				// sMSServices.sendSMS(smsTrackDetail, false);
-
-			}
 
 			if (request.getRecordType() != null && !DPDoctorUtils.anyStringEmpty(request.getRecordId())) {
 				if (request.getRecordType().equals(ComponentType.DOCTOR_LAB_REPORTS)) {
@@ -673,15 +636,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private CheckPatientSignUpResponse checkIfPatientIsSignedUp(String mobileNumber) {
 		CheckPatientSignUpResponse response = null;
 		try {
-			// Aggregation aggregation =
-			// Aggregation.newAggregation(Aggregation.match(new
-			// Criteria("mobileNumber").is(MobileNumber)), new
-			// CustomAggregationOperation(new BasicDBObject("$redact",new
-			// BasicDBObject("$cond",new BasicDBObject()
-			// .append("if", new BasicDBObject("$neq",
-			// Arrays.asList("$emailAddress", "$userName"))).append("then",
-			// "$$KEEP").append("else", "$$PRUNE")))));
-
 			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
@@ -701,9 +655,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 						break;
 					}
 				}
-
-				// mongoTemplate.aggregate(aggregation, UserCollection.class,
-				// UserCollection.class).getMappedResults();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
