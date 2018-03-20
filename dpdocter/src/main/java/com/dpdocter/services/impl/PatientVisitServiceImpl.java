@@ -1559,7 +1559,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
 			}
 
-			patientDetailList.add(uniqueEMRId);
+			if(!DPDoctorUtils.anyStringEmpty(uniqueEMRId))patientDetailList.add(uniqueEMRId);
 			if (patientDetails.getShowDOB()) {
 				if (patientDetails.getShowDate())
 					patientDetailList.add("<b>Date: </b>" + sdf.format(date));

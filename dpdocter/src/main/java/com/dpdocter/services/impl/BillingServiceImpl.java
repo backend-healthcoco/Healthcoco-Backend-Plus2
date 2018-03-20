@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.ReceiptJasperDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -73,6 +75,7 @@ import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
 import com.dpdocter.response.DoctorPatientReceiptAddEditResponse;
+import com.dpdocter.response.DoctorPatientReceiptLookupResponse;
 import com.dpdocter.response.InvoiceItemResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
@@ -159,6 +162,9 @@ public class BillingServiceImpl implements BillingService {
 	@Value(value = "${sms.add.dueAmount.to.patient}")
 	private String dueAmountRemainderSMS;
 
+	@Value(value = "${jasper.print.multiple.receipt.fileName}")
+	private String multipleReceiptFileName;
+	
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
 		InvoiceAndReceiptInitials response = null;
@@ -2014,6 +2020,121 @@ public class BillingServiceImpl implements BillingService {
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
 
-	
+	@Override
+	public String downloadMultipleReceipt(List<String> ids) {
+		String response = null;
+		try {
+			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").in(ids)),
+					Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"), Aggregation.unwind("invoiceCollection"),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId",
+															"$locationId"))).append("then", "$$KEEP")
+																	.append("else", "$$PRUNE")))),
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), 
+					DoctorPatientReceiptCollection.class, DoctorPatientReceiptLookupResponse.class).getMappedResults();
+			if (doctorPatientReceiptLookupResponses != null && !doctorPatientReceiptLookupResponses.isEmpty()) {
+				
+				JasperReportResponse jasperReportResponse = createJasperForMultipleReceipt(doctorPatientReceiptLookupResponses);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Reciept Ids does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Reciept Ids does not exist");
+			}
 
+		} catch (Exception e) {
+
+			logger.error("Error while getting download Reciept" + e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting download Reciept " + e);
+		}
+		return response;
+	}
+
+	private JasperReportResponse createJasperForMultipleReceipt(List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses) throws NumberFormatException, IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		List<ReceiptJasperDetails> receiptJasperDetails = new ArrayList<ReceiptJasperDetails>();
+		
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()), new ObjectId(doctorPatientReceiptLookupResponses.get(0).getLocationId()),
+						new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+  
+		for(DoctorPatientReceiptLookupResponse doctorPatientReceiptLookupResponse : doctorPatientReceiptLookupResponses) {
+			ReceiptJasperDetails details = new ReceiptJasperDetails();
+			details.setDate(" "+simpleDateFormat.format(doctorPatientReceiptLookupResponse.getCreatedTime()));
+			details.setReceiptId(" "+doctorPatientReceiptLookupResponse.getUniqueReceiptId());
+			
+			if(doctorPatientReceiptLookupResponse.getInvoiceCollection() != null) {
+				Double total = doctorPatientReceiptLookupResponse.getInvoiceCollection().getGrandTotal();
+				Double balance = doctorPatientReceiptLookupResponse.getBalanceAmount();
+				Double paid = total - balance;
+				details.setTotal((total == null || total == 0) ? "":" "+total+"");
+				details.setBalance((balance == null || balance == 0) ? "":" "+balance+"");
+				details.setPaid((paid == null || paid == 0) ? "":" "+paid+"");
+				if(doctorPatientReceiptLookupResponse.getInvoiceCollection().getInvoiceItems() != null) {
+					for(InvoiceItem invoiceItem : doctorPatientReceiptLookupResponse.getInvoiceCollection().getInvoiceItems()) {
+						details.setProcedure(" "+invoiceItem.getName() + " ("+doctorPatientReceiptLookupResponse.getUniqueInvoiceId()+")");
+						receiptJasperDetails.add(details);
+						details = new ReceiptJasperDetails();	
+						details.setTotal(" ");
+						details.setBalance(" ");
+						details.setPaid(" ");
+					}
+				}
+				
+			}
+		}
+		parameters.put("receipts", receiptJasperDetails);
+		PatientCollection patient = doctorPatientReceiptLookupResponses.get(0).getPatient();
+		UserCollection user = doctorPatientReceiptLookupResponses.get(0).getPatientUser();
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				null,
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
+				printSettings.getHospitalUId());
+		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()));
+		String pdfName = (user != null ? user.getFirstName() : "") + "MULTIPLERECEIPT-" + new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.MULTIPLE_RECEIPT, parameters, multipleReceiptFileName, layout, pageSize,
+				topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+	}
 }

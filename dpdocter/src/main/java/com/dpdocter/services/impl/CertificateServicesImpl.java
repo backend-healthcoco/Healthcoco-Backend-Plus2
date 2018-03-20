@@ -430,7 +430,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 				if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
 					for(Fields field : consentFormCollection.getInputElements()) {
 						if(!DPDoctorUtils.anyStringEmpty(field.getType(), field.getValue()) && field.getType().equalsIgnoreCase("IMAGE") && !field.getValue().matches("[\\_]+"))
-							field.setValue("<img style='width:200px;height:200px;' src='"+getFinalImageURL(field.getValue())+"'/>");
+							field.setValue("<img style='padding-top: 12px;height:50px;' src='"+getFinalImageURL(field.getValue())+"'/>");
 						
 						if(!DPDoctorUtils.anyStringEmpty(field.getValue())){
 							htmlText = htmlText.replace(field.getKey(), field.getValue());
