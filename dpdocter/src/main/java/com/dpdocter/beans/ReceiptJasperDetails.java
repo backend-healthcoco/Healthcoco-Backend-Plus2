@@ -4,8 +4,6 @@ public class ReceiptJasperDetails {
 
 	private String date;
 	
-	private String receiptId;
-	
 	private String procedure;
 	
 	private String total;
@@ -20,14 +18,6 @@ public class ReceiptJasperDetails {
 
 	public void setDate(String date) {
 		this.date = date;
-	}
-
-	public String getReceiptId() {
-		return receiptId;
-	}
-
-	public void setReceiptId(String receiptId) {
-		this.receiptId = receiptId;
 	}
 
 	public String getProcedure() {
@@ -64,7 +54,7 @@ public class ReceiptJasperDetails {
 
 	@Override
 	public String toString() {
-		return "ReceiptJasperDetails [date=" + date + ", receiptId=" + receiptId + ", procedure=" + procedure
+		return "ReceiptJasperDetails [date=" + date + ", procedure=" + procedure
 				+ ", total=" + total + ", paid=" + paid + ", balance=" + balance + "]";
 	}
 }

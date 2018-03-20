@@ -2051,7 +2051,8 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("id").in(ids)),
-					Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"), Aggregation.unwind("invoiceCollection"),
+					Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"), 
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path","$invoiceCollection").append("preserveNullAndEmptyArrays",true))),
 					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
 					new CustomAggregationOperation(new BasicDBObject("$redact",
 							new BasicDBObject("$cond",
@@ -2060,7 +2061,7 @@ public class BillingServiceImpl implements BillingService {
 													Arrays.asList("$patient.locationId",
 															"$locationId"))).append("then", "$$KEEP")
 																	.append("else", "$$PRUNE")))),
-					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), 
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), Aggregation.sort(new Sort(Direction.ASC, "receivedDate"))), 
 					DoctorPatientReceiptCollection.class, DoctorPatientReceiptLookupResponse.class).getMappedResults();
 			if (doctorPatientReceiptLookupResponses != null && !doctorPatientReceiptLookupResponses.isEmpty()) {
 				
@@ -2089,6 +2090,7 @@ public class BillingServiceImpl implements BillingService {
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		List<ReceiptJasperDetails> receiptJasperDetails = new ArrayList<ReceiptJasperDetails>();
 		
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
@@ -2103,28 +2105,39 @@ public class BillingServiceImpl implements BillingService {
   
 		for(DoctorPatientReceiptLookupResponse doctorPatientReceiptLookupResponse : doctorPatientReceiptLookupResponses) {
 			ReceiptJasperDetails details = new ReceiptJasperDetails();
-			details.setDate(" "+simpleDateFormat.format(doctorPatientReceiptLookupResponse.getCreatedTime()));
-			details.setReceiptId(" "+doctorPatientReceiptLookupResponse.getUniqueReceiptId());
+			details.setDate(simpleDateFormat.format(doctorPatientReceiptLookupResponse.getReceivedDate()));
 			
-			if(doctorPatientReceiptLookupResponse.getInvoiceCollection() != null) {
-				Double total = doctorPatientReceiptLookupResponse.getInvoiceCollection().getGrandTotal();
-				Double balance = doctorPatientReceiptLookupResponse.getBalanceAmount();
-				Double paid = total - balance;
-				details.setTotal((total == null || total == 0) ? "":" "+total+"");
-				details.setBalance((balance == null || balance == 0) ? "":" "+balance+"");
-				details.setPaid((paid == null || paid == 0) ? "":" "+paid+"");
-				if(doctorPatientReceiptLookupResponse.getInvoiceCollection().getInvoiceItems() != null) {
-					for(InvoiceItem invoiceItem : doctorPatientReceiptLookupResponse.getInvoiceCollection().getInvoiceItems()) {
-						details.setProcedure(" "+invoiceItem.getName() + " ("+doctorPatientReceiptLookupResponse.getUniqueInvoiceId()+")");
-						receiptJasperDetails.add(details);
-						details = new ReceiptJasperDetails();	
-						details.setTotal(" ");
-						details.setBalance(" ");
-						details.setPaid(" ");
+			if(doctorPatientReceiptLookupResponse.getReceiptType().name().equalsIgnoreCase(ReceiptType.ADVANCE.name())) {
+				details.setTotal("--");
+				details.setBalance("--");
+				details.setPaid(doctorPatientReceiptLookupResponse.getAmountPaid()+"");
+				details.setProcedure("ADVANCE");
+				receiptJasperDetails.add(details);
+			}else {
+				if(doctorPatientReceiptLookupResponse.getInvoiceCollection() != null) {
+					Double total = doctorPatientReceiptLookupResponse.getInvoiceCollection().getGrandTotal();
+					Double paid = doctorPatientReceiptLookupResponse.getAmountPaid();
+					Double balance = doctorPatientReceiptLookupResponse.getBalanceAmount();
+					
+					details.setTotal((total == null) ? "":total+"");
+					details.setBalance((balance == null) ? "":balance+"");
+					details.setPaid((paid == null) ? "":paid+"");
+					if(doctorPatientReceiptLookupResponse.getInvoiceCollection().getInvoiceItems() != null) {
+						for(InvoiceItem invoiceItem : doctorPatientReceiptLookupResponse.getInvoiceCollection().getInvoiceItems()) {
+							details.setProcedure(invoiceItem.getName() + " ("+doctorPatientReceiptLookupResponse.getUniqueInvoiceId()+")");
+							receiptJasperDetails.add(details);
+							details = new ReceiptJasperDetails();	
+							details.setTotal("");
+							details.setBalance("");
+							details.setPaid("");
+							details.setDate("");
+						}
 					}
+					
 				}
-				
 			}
+			
+			
 		}
 		parameters.put("receipts", receiptJasperDetails);
 		PatientCollection patient = doctorPatientReceiptLookupResponses.get(0).getPatient();
