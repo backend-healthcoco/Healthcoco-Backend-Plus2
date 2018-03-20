@@ -33,6 +33,8 @@ public class ClinicDoctorResponse {
 	private String colorCode;
 
 	private String webRole;
+	
+	private Boolean isSuperAdmin = false;
 
 	public String getUserId() {
 		return userId;
@@ -136,6 +138,14 @@ public class ClinicDoctorResponse {
 
 	public void setWebRole(String webRole) {
 		this.webRole = webRole;
+	}
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
 	}
 
 	@Override
