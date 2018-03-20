@@ -2584,13 +2584,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 							clinicDoctorResponse
 									.setColorCode(doctorClinicProfileLookupResponse.getUser().getColorCode());
 							if (clinicDoctorResponse.getRole() != null) {
+								List<String> roleList = new ArrayList<>();
 								for (Role userRole : clinicDoctorResponse.getRole()) {
 									if (userRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 											|| userRole.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())) {
 										clinicDoctorResponse.setWebRole(RoleEnum.ADMIN.getRole());
 									}
-
+									roleList.add(userRole.getRole());
 								}
+								
+								if(roleList.contains(RoleEnum.HOSPITAL_ADMIN.getRole()) && roleList.contains(RoleEnum.LOCATION_ADMIN.getRole())) {
+									clinicDoctorResponse.setIsSuperAdmin(true);
+								}
+								
 							}
 							if (clinicDoctorResponse.getWebRole() == null
 									|| clinicDoctorResponse.getWebRole().isEmpty()) {
