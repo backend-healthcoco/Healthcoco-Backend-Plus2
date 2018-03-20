@@ -6,6 +6,8 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.DOB;
 
+import common.util.web.JacksonUtil;
+
 public class PrintPatientCardRequest {
 
 	private String patientName;
@@ -114,6 +116,11 @@ public class PrintPatientCardRequest {
 				+ ", fromDate=" + fromDate + ", toDate=" + toDate + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", gender=" + gender + ", dob=" + dob + ", generalNotes="
 				+ generalNotes + "]";
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(JacksonUtil.obj2Json(new PrintPatientCardRequest()));
+		System.out.println(new Date());
 	}
 
 }

@@ -299,6 +299,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType()))
 			createDentalInspectionReport(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
 					normalStyle);
+		
+
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.PATIENT_CARD.getType()))
+			createPatientCardPrint(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
 
 		if (parameters.get("eyePrescriptions") != null
 				|| componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType()))
@@ -327,7 +331,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType()))
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.PATIENT_CARD.getType()))
 			jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 		// dsr.setDataSourceExpression(new JRDesignExpression("new
 		// net.sf.jasperreports.engine.JREmptyDataSource(1)"));
