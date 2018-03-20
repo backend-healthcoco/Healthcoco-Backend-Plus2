@@ -42,6 +42,7 @@ public class UserCollection extends GenericCollection {
 
 	@Indexed
 	private String emailAddress;
+	
 	@Field
 	private String countryCode;
 
