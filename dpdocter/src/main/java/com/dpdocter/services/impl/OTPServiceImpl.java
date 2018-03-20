@@ -91,8 +91,8 @@ public class OTPServiceImpl implements OTPService {
 		ObjectId patientObjectId =null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
 		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
-    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
-    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+		if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    		if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
 	    OTP = LoginUtils.generateOTP();
 	    UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
@@ -106,40 +106,44 @@ public class OTPServiceImpl implements OTPService {
 	    if(patientCards != null && !patientCards.isEmpty())patientCard = patientCards.get(0);
 	    if (userCollection != null && patientCard != null) {
 
-		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
-
-		OTPCollection otpCollection = new OTPCollection();
-		otpCollection.setCreatedTime(new Date());
-		otpCollection.setOtpNumber(OTP);
-
-		if (userCollection != null)
-		    otpCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
-		otpCollection.setGeneratorId(doctorId);
-		otpCollection = otpRepository.save(otpCollection);
-
-		DoctorOTPCollection doctorOTPCollection = new DoctorOTPCollection();
-		doctorOTPCollection.setCreatedTime(new Date());
-		doctorOTPCollection.setOtpId(otpCollection.getId());
-		doctorOTPCollection.setDoctorId(doctorObjectId);
-		doctorOTPCollection.setLocationId(locationObjectId);
-		doctorOTPCollection.setPatientId(new ObjectId(patientId));
-		doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
-
-		SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patientCard.getLocalPatientName(),
-				"OTP to share Healthcoco records with "+doctorName+" is "+OTP+". Pls don't share this with anyone. Stay Healthy and Happy!!",
-				patientCard.getUser().getMobileNumber(), "OTPVerification");
-		System.out.println("Mobile Number :: "+patientCard.getUser().getMobileNumber());
-		sMSServices.sendSMS(smsTrackDetail, false);
-
-		if (patientCard != null && patientCard.getEmailAddress() != null && !patientCard.getEmailAddress().isEmpty()) {
-		    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patientCard.getEmailAddress(),
-		    		patientCard.getLocalPatientName(), doctorName);
-		    mailService.sendEmail(patientCard.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
-		}
-		pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null, null);
+		    	if(DPDoctorUtils.anyStringEmpty(patientCard.getUser().getMobileNumber())) {
+		    		logger.error("Patient Mobile Number is not available");
+				throw new BusinessException(ServiceError.InvalidInput, "Patient Mobile Number is not available");
+		    	}
+			String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
+	
+			OTPCollection otpCollection = new OTPCollection();
+			otpCollection.setCreatedTime(new Date());
+			otpCollection.setOtpNumber(OTP);
+	
+			if (userCollection != null)
+			    otpCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+			otpCollection.setGeneratorId(doctorId);
+			otpCollection = otpRepository.save(otpCollection);
+	
+			DoctorOTPCollection doctorOTPCollection = new DoctorOTPCollection();
+			doctorOTPCollection.setCreatedTime(new Date());
+			doctorOTPCollection.setOtpId(otpCollection.getId());
+			doctorOTPCollection.setDoctorId(doctorObjectId);
+			doctorOTPCollection.setLocationId(locationObjectId);
+			doctorOTPCollection.setPatientId(new ObjectId(patientId));
+			doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
+	
+			SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patientCard.getLocalPatientName(),
+					"OTP to share Healthcoco records with "+doctorName+" is "+OTP+". Pls don't share this with anyone. Stay Healthy and Happy!!",
+					patientCard.getUser().getMobileNumber(), "OTPVerification");
+			
+			sMSServices.sendSMS(smsTrackDetail, false);
+	
+			if (patientCard != null && patientCard.getEmailAddress() != null && !patientCard.getEmailAddress().isEmpty()) {
+			    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patientCard.getEmailAddress(),
+			    		patientCard.getLocalPatientName(), doctorName);
+			    mailService.sendEmail(patientCard.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
+			}
+			pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null, null);
 	    } else {
-		logger.error("Invalid doctorId or patientId");
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
+			logger.error("Invalid doctorId or patientId");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
