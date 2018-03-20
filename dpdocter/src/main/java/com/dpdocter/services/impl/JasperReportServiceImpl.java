@@ -5362,83 +5362,82 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (contentFontSize > 13)
 				titleFontSize = 13;
 
-			int xPoint = 0;
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(0);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+			band.addElement(jrDesignLine);
+			
+			int xPoint = 1;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Date}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth((20 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((15 * (columnWidth)) / 100);
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 
-			xPoint = xPoint + (20 * (columnWidth)) / 100;
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{ReceiptId}"));
-			jrDesignTextField.setX(xPoint);
-			jrDesignTextField.setY(4);
-			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth((20 * (columnWidth)) / 100);
-			jrDesignTextField.setBold(true);
-			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
-			band.addElement(jrDesignTextField);
-
-			xPoint = xPoint + (20 * (columnWidth)) / 100;
+			xPoint = xPoint + (15 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Procedure}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth((30 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((50 * (columnWidth)) / 100);
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 
-			xPoint = xPoint + (30 * (columnWidth)) / 100;
+			xPoint = xPoint + (50 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Total}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth((10 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((11 * (columnWidth)) / 100);
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 			
-			xPoint = xPoint + (10 * (columnWidth)) / 100;
+			xPoint = xPoint + (11* (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Paid}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth((10 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 			
-			xPoint = xPoint + (10 * (columnWidth)) / 100;
+			xPoint = xPoint + (12 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Balance}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth((10 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
+			
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(22);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+			band.addElement(jrDesignLine);
+			
 			jasperDesignForSubreport.setColumnHeader(band);
 			
 			band = new JRDesignBand();
@@ -5451,86 +5450,70 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth((20 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((15 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 
-			xPoint = xPoint + (20 * (columnWidth)) / 100;
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$F{receiptId}"));
-			jrDesignTextField.setX(xPoint);
-			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth((20 * (columnWidth)) / 100);
-			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
-			band.addElement(jrDesignTextField);
-
-			xPoint = xPoint + (20 * (columnWidth)) / 100;
+			xPoint = xPoint + (15 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{procedure}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth((30 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((50 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 
-			xPoint = xPoint + (30 * (columnWidth)) / 100;
+			xPoint = xPoint + (50 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{total}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth((10 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((11 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 			
-			xPoint = xPoint + (10 * (columnWidth)) / 100;
+			xPoint = xPoint + (11 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{paid}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth((10 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 			
-			xPoint = xPoint + (10 * (columnWidth)) / 100;
+			xPoint = xPoint + (12 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{balance}"));
 			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth((10 * (columnWidth)) / 100);
+			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.getLineBox().getPen().setLineWidth(1);
 			band.addElement(jrDesignTextField);
 			
 			((JRDesignSection) jasperDesignForSubreport.getDetailSection()).addBand(band);
 
-//			band = new JRDesignBand();
-//			band.setHeight(13);
-//			jrDesignLine = new JRDesignLine();
-//			jrDesignLine.setX(0);
-//			jrDesignLine.setY(0);
-//			jrDesignLine.setHeight(1);
-//			jrDesignLine.setWidth(columnWidth);
-//			band.addElement(jrDesignLine);
-//
-//			jrDesignTextField = new JRDesignTextField();
-//			jrDesignTextField.setX(0);
-//			jrDesignTextField.setY(0);
-//			jrDesignTextField.setHeight(12);
-//			jrDesignTextField.setWidth(columnWidth);
-//			jrDesignTextField.setStretchWithOverflow(true);
-//			jrDesignTextField.setBlankWhenNull(true);
-//			band.addElement(jrDesignTextField);
-//			jasperDesign.setColumnFooter(band);
+			band = new JRDesignBand();
+			band.setHeight(13);
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(0);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			band.addElement(jrDesignLine);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(12);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setBlankWhenNull(true);
+			band.addElement(jrDesignTextField);
+			jasperDesignForSubreport.setColumnFooter(band);
 	
 			JasperCompileManager.compileReportToFile(jasperDesignForSubreport, JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-receipts_subreport.jasper");
 			JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesignForSubreport);
