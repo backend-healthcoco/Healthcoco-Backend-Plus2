@@ -611,7 +611,7 @@ public interface PathProxy {
 		public static final String UPLOAD_DRUGS = "drugs/upload";
 
 		public static final String UPDATE_DRUG_INTERACTION = "drugInteraction/update";
-		
+
 		public static final String ADD_NUTRITION_REFERRAL = "/addNutritionReferral";
 	}
 
@@ -995,9 +995,9 @@ public interface PathProxy {
 		public static final String GET_LAB_BY_SLUG_URL = "/lab/{slugUrl}/web";
 
 		public static final String UPDATE_APPOINTMENT_DOCTOR = "/updateDoctor/{appointmentId}/{doctorId}";
-		
-		public static final String DOWNLOAD_PATIENT_CARD= "/downloadpatientCard";
-		
+
+		public static final String DOWNLOAD_PATIENT_CARD = "/downloadpatientCard";
+
 		public static final String DOWNLOAD_APPOINTMENT_CALENDER = "/calender/{locationId}/{hospitalId}/download";
 	}
 
@@ -1503,6 +1503,9 @@ public interface PathProxy {
 		public static final String GET_PAYMENT_ANALYTICS_DATA = "/payment";
 		public static final String GET_AMOUNT_DUE_ANALYTICS_DATA = "/amountDue";
 		public static final String GET_TREATMENTS_ANALYTICS_DATA = "/treatments";
+		public static final String GET_PATIENT_ANALYTIC = "/doctor/patient";
+		public static final String GET_TREATMENT_ANALYTIC = "/doctor/treatmentService";
+		public static final String GET_APPOINTMENT_ANALYTIC = "/doctor/appointment";
 
 	}
 

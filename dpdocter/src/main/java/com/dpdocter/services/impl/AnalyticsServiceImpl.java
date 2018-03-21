@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,7 +34,6 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
-import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.PatientQueueCollection;
@@ -53,6 +53,9 @@ import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.AppointmentCountAnalyticResponse;
 import com.dpdocter.response.AppointmentDeatilAnalyticResponse;
 import com.dpdocter.response.DiagnosticTestsAnalyticsData;
+import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
+import com.dpdocter.response.DoctorPatientAnalyticResponse;
+import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.response.DrugsAnalyticsData;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
@@ -74,6 +77,30 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	Logger logger = Logger.getLogger(AnalyticsServiceImpl.class);
 
 	@Override
+	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate) {
+		DoctorAppointmentAnalyticResponse data = new DoctorAppointmentAnalyticResponse();
+		Date date = new Date();
+		return data;
+	}
+
+	@Override
+	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate) {
+		DoctorPatientAnalyticResponse data = new DoctorPatientAnalyticResponse();
+		Date date = new Date();
+		return data;
+	}
+
+	@Override
+	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate, String searchTerm) {
+		List<DoctorTreatmentAnalyticResponse> data = new ArrayList<DoctorTreatmentAnalyticResponse>();
+		Date date = new Date();
+		return data;
+	}
+
+	@Override
 	public List<PatientAnalyticResponse> getPatientCount(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String queryType, String searchType, String searchTerm) {
 		List<PatientAnalyticResponse> response = null;
@@ -88,7 +115,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
 				criteria.and("fromDate").gte(fromTime);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {

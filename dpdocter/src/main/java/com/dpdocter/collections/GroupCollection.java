@@ -24,7 +24,7 @@ public class GroupCollection extends GenericCollection {
     private String explanation;
 
     @Indexed
-    private ObjectId doctorId;
+	private ObjectId doctorId;
 
     @Field
     private ObjectId locationId;
