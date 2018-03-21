@@ -4037,7 +4037,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					calenderJasperBean.setGroupName(" ");
 					if (groupCollections != null && !groupCollections.isEmpty()) {
 
-						showPatientGroups = true;
 
 						for (GroupCollection groupCollection : groupCollections) {
 							i++;
@@ -4048,16 +4047,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 						}
 					}
-				} else {
-					showPatientGroups = false;
-				}
+				} 
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getNotes()) && showNotes) {
 					calenderJasperBean.setNotes("<b>Note :- </b>" + calenderResponse.getNotes());
-					showNotes = true;
-
-				} else {
-					showNotes = false;
+					
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientName())) {
@@ -4071,17 +4065,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getMobileNumber()) && showMobileNo) {
 					calenderJasperBean.setMobileNumber(calenderResponse.getMobileNumber());
-					showMobileNo = true;
-				} else {
-					showMobileNo = false;
+					System.out.println(calenderResponse.getMobileNumber());
+					
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getStatus()) && showAppointmentStatus) {
 					calenderJasperBean.setStatus(calenderResponse.getStatus());
-					showAppointmentStatus = true;
 
-				} else {
-					showAppointmentStatus = false;
 				}
 				calenderJasperBeans.add(calenderJasperBean);
 			}
