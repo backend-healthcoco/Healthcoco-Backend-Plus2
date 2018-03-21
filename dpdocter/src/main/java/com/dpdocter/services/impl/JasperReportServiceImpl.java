@@ -5759,7 +5759,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField
 				.setPrintWhenExpression(new JRDesignExpression("!$F{timing}.equals(null) && !$F{timing}.isEmpty() "));
 		jrDesignTextField.setX(5);
-		jrDesignTextField.setY(3);
+		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(timeWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
@@ -5782,7 +5782,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		timeWidth = timeWidth + nameWidth + 2;
 
-		if (showGroups) {
+		if (showMobileNo) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{mobileNumber}"));
 			jrDesignTextField.setPrintWhenExpression(

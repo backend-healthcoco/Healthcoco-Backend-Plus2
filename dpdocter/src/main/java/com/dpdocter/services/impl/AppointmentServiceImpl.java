@@ -4031,7 +4031,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				}
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId()) && showPatientGroups) {
-					System.out.println(calenderResponse.getPatientId());
 					List<GroupCollection> groupCollections = getPatientGroup(locationId, calenderResponse.getDoctorId(),
 							calenderResponse.getPatientId());
 					int i = 0;
