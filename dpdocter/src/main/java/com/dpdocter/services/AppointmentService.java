@@ -75,9 +75,9 @@ public interface AppointmentService {
 
 	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
 			String from, String to);
-
-	Boolean changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
-			String appointmentId, String status);
+/*
+	Object changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
+			String appointmentId, String status);*/
 
 	public void updateQueue();
 
@@ -102,5 +102,8 @@ public interface AppointmentService {
 	Appointment updateAppointmentDoctor(String appointmentId, String doctorId);
 
 	String printPatientCard(PrintPatientCardRequest request);
+
+	Object changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
+			String appointmentId, String status, Boolean isObjectRequired);
 
 }

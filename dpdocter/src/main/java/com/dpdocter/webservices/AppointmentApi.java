@@ -471,10 +471,10 @@ public class AppointmentApi {
 	@Path(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_APPOINTMENT)
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_APPOINTMENT, notes = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_APPOINTMENT)
-	public Response<Boolean> changeStatusInAppointment(@PathParam(value = "doctorId") String doctorId,
+	public Response<Object> changeStatusInAppointment(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "patientId") String patientId, @PathParam(value = "appointmentId") String appointmentId,
-			@PathParam(value = "status") String status) throws MessagingException {
+			@PathParam(value = "status") String status , @QueryParam(value = "isObjectRequired") @DefaultValue("false") Boolean isObjectRequired) throws MessagingException {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId, appointmentId, status)) {
 			logger.warn("DoctorId, Location Id, Hospital Id, Patient Id, AppointmentId, status cannot be empty");
@@ -483,9 +483,9 @@ public class AppointmentApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"DoctorId, Location Id, Hospital Id, Patient Id, AppointmentId, status cannot be empty");
 		}
-		Boolean changeStatus = appointmentService.changeStatusInAppointment(doctorId, locationId, hospitalId, patientId,
-				appointmentId, status);
-		Response<Boolean> response = new Response<Boolean>();
+		Object changeStatus = appointmentService.changeStatusInAppointment(doctorId, locationId, hospitalId, patientId,
+				appointmentId, status , isObjectRequired);
+		Response<Object> response = new Response<Object>();
 		response.setData(changeStatus);
 		return response;
 

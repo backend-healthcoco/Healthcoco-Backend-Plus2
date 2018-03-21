@@ -3083,9 +3083,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public Boolean changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
-			String appointmentId, String status) {
-		Boolean response = false;
+	public Object changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
+			String appointmentId, String status, Boolean isObjectRequired) {
+		Object response = null;
+		if(isObjectRequired == false)
+		{
+			response = false;
+		}
 		try {
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null, patientObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -3122,8 +3126,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			appointmentCollection.setStatus(QueueStatus.valueOf(status));
 			appointmentCollection.setUpdatedTime(new Date());
-			appointmentRepository.save(appointmentCollection);
-			response = true;
+			appointmentCollection = appointmentRepository.save(appointmentCollection);
+			if (isObjectRequired == true) {
+				if (appointmentCollection != null) {
+					response = new Appointment();
+					BeanUtil.map(appointmentCollection, response);
+				}
+			}
+			else
+			{
+				response = true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
