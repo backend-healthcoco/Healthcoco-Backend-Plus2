@@ -5371,7 +5371,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setWidth(columnWidth);
 			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
 			band.addElement(jrDesignLine);
-			
+
 			int xPoint = 1;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Date}"));
@@ -5408,8 +5408,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
 			band.addElement(jrDesignTextField);
 
-			
-			xPoint = xPoint + (11* (columnWidth)) / 100;
+			xPoint = xPoint + (11 * (columnWidth)) / 100;
 
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Paid}"));
@@ -5434,7 +5433,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
 			band.addElement(jrDesignTextField);
-			
+
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setX(0);
 			jrDesignLine.setY(22);
@@ -5442,7 +5441,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setWidth(columnWidth);
 			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
 			band.addElement(jrDesignLine);
-			
+
 			jasperDesignForSubreport.setColumnHeader(band);
 
 			band = new JRDesignBand();
@@ -5488,8 +5487,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			
-		xPoint = xPoint + (12 * (columnWidth)) / 100;
+
+			xPoint = xPoint + (12 * (columnWidth)) / 100;
 
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{balance}"));
@@ -5501,7 +5500,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 
 			((JRDesignSection) jasperDesignForSubreport.getDetailSection()).addBand(band);
-
 
 			band = new JRDesignBand();
 			band.setHeight(13);
@@ -5521,9 +5519,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setBlankWhenNull(true);
 			band.addElement(jrDesignTextField);
 			jasperDesignForSubreport.setColumnFooter(band);
-	
-			JasperCompileManager.compileReportToFile(jasperDesignForSubreport, JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-receipts_subreport.jasper");
 
+			JasperCompileManager.compileReportToFile(jasperDesignForSubreport,
+					JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-receipts_subreport.jasper");
 
 			JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesignForSubreport);
 			jSubreport.setUsingCache(false);
@@ -5723,7 +5721,30 @@ public class JasperReportServiceImpl implements JasperReportService {
 		Boolean showGroups = (Boolean) parameters.get("showGroups") != null ? (Boolean) parameters.get("showGroups")
 				: false;
 
-		int timeWidth = 120, nameWidth = 130, mNoWidth = 90, statusWidth = 80, groupWidth = 80;
+		int timeWidth = 0, nameWidth = 0, mNoWidth = 0, statusWidth = 0, groupWidth = 0;
+
+		if (showMobileNo && showStatus && showGroups) {
+			timeWidth = 120;
+			nameWidth = 130;
+			mNoWidth = 90;
+			statusWidth = 80;
+			groupWidth = 80;
+		} else if (showMobileNo && showStatus) {
+			timeWidth = 140;
+			nameWidth = 180;
+			mNoWidth = 100;
+			statusWidth = 100;
+		} else if (showMobileNo && showGroups) {
+			timeWidth = 140;
+			nameWidth = 180;
+			mNoWidth = 100;
+			groupWidth = 100;
+		} else if (showStatus && showGroups) {
+			timeWidth = 140;
+			nameWidth = 180;
+			statusWidth = 100;
+			groupWidth = 100;
+		}
 
 		Integer titleFontSize = contentFontSize;
 		if (contentFontSize > 13)
@@ -5742,7 +5763,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(timeWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setFontSize(new Float(titleFontSize));
 		band.addElement(jrDesignTextField);
