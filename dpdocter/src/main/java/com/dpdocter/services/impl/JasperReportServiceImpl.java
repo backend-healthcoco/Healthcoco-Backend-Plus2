@@ -4750,14 +4750,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 		jrDesignTextField.setMarkup("html");
-		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);*/
+		band.addElement(jrDesignTextField);*/
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+		((JRDesignSection) jasperDesign.getDetailSection())
+		.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+		
 		int fieldWidth = 250;
 
 		addItem(jasperDesign, columnWidth, "$P{generalNotes}", fieldWidth, true, 0, false);
 		
-
+		((JRDesignSection) jasperDesign.getDetailSection())
+		.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+		
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
@@ -4777,8 +4782,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 		}
 		band.setHeight(20);
-
-		jasperDesign.setPageFooter(band);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
 
 	}
 
