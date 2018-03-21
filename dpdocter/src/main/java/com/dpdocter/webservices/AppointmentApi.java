@@ -233,8 +233,9 @@ public class AppointmentApi {
 
 	@POST
 	@ApiOperation(value = "ADD_APPOINTMENT", notes = "ADD_APPOINTMENT")
-	public Response<Appointment> BookAppoinment(AppointmentRequest request, 
-			@DefaultValue(value = "false") @QueryParam(value = "isStatusChange") Boolean isStatusChange) throws MessagingException {
+	public Response<Appointment> BookAppoinment(AppointmentRequest request,
+			@DefaultValue(value = "false") @QueryParam(value = "isStatusChange") Boolean isStatusChange)
+			throws MessagingException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
 			logger.warn("Invalid Input");
@@ -244,13 +245,14 @@ public class AppointmentApi {
 			logger.warn("Invalid Time");
 			mailService.sendExceptionMail("Invalid input :: Time");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Time");
-		}else if (request.getTime() != null && ((request.getTime().getToTime() - request.getTime().getFromTime()) > 120)) {
+		} else if (request.getTime() != null
+				&& ((request.getTime().getToTime() - request.getTime().getFromTime()) > 120)) {
 			logger.warn("Invalid Time");
 			mailService.sendExceptionMail("Invalid input : Appointment duration cannot be greater than 120 mins");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Time : Appointment duration cannot be greater than 120 mins");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Time : Appointment duration cannot be greater than 120 mins");
 		}
-		
-		
+
 		Appointment appointment = null;
 		if (request.getAppointmentId() == null) {
 			appointment = appointmentService.addAppointment(request, true);
@@ -301,8 +303,9 @@ public class AppointmentApi {
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_TIME_SLOTS, notes = PathProxy.AppointmentUrls.GET_TIME_SLOTS)
 	public Response<SlotDataResponse> getTimeSlots(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("date") String date, 
-			@DefaultValue(value="true") @QueryParam(value = "isPatient") Boolean isPatient) throws MessagingException {
+			@PathParam("locationId") String locationId, @PathParam("date") String date,
+			@DefaultValue(value = "true") @QueryParam(value = "isPatient") Boolean isPatient)
+			throws MessagingException {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
@@ -431,8 +434,8 @@ public class AppointmentApi {
 	@GET
 	@ApiOperation(value = "PATIENT_COUNT", notes = "PATIENT_COUNT")
 	public Response<LocationWithPatientQueueDetails> getNoOfPatientInQueue(
-			@PathParam(value = "locationId") String locationId, @MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "from") String from, @QueryParam(value = "to") String to)
-			throws MessagingException {
+			@PathParam(value = "locationId") String locationId, @MatrixParam(value = "doctorId") List<String> doctorId,
+			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to) throws MessagingException {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn("Invalid Input");
 			mailService.sendExceptionMail("Invalid input :: Location Id cannot be null");
@@ -594,19 +597,29 @@ public class AppointmentApi {
 		response.setData(appointment);
 		return response;
 	}
-	
-	@Path(value = PathProxy.AppointmentUrls.UPDATE_APPOINTMENT_DOCTOR)
+
+	@Path(value = PathProxy.AppointmentUrls.DOWNLOAD_APPOINTMENT_CALENDER)
 	@GET
-	@ApiOperation(value = PathProxy.AppointmentUrls.UPDATE_APPOINTMENT_DOCTOR, notes = PathProxy.AppointmentUrls.UPDATE_APPOINTMENT_DOCTOR)
-	public Response<Appointment> updateAppointmentDoctor(@PathParam(value = "appointmentId") String appointmentId,
-			@PathParam(value = "doctorId") String doctorId) {
-		if (DPDoctorUtils.anyStringEmpty(appointmentId, doctorId)) {
+	@ApiOperation(value = PathProxy.AppointmentUrls.DOWNLOAD_APPOINTMENT_CALENDER, notes = PathProxy.AppointmentUrls.DOWNLOAD_APPOINTMENT_CALENDER)
+	public Response<String> downloadCalender(@MatrixParam(value = "doctorIds") List<String> doctorIds,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
+			@QueryParam(value = "updatedTime") String updatedTime,
+			@QueryParam("groupByDoctor") @DefaultValue("true") Boolean isGroupByDoctor,
+			@QueryParam("showMobileNo") @DefaultValue("true") Boolean showMobileNo,
+			@QueryParam("showAppointmentStatus") @DefaultValue("true") Boolean showAppointmentStatus,
+			@QueryParam("showNotes") @DefaultValue("true") Boolean showNotes,
+			@QueryParam("showPatientGroups") @DefaultValue("true") Boolean showPatientGroups) {
+		
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
 		}
-		Appointment appointment = appointmentService.updateAppointmentDoctor(appointmentId, doctorId);
-		Response<Appointment> response = new Response<Appointment>();
-		response.setData(appointment);
+		Response<String> response = new Response<String>();
+		response.setData(appointmentService.downloadCalender(doctorIds, locationId, hospitalId, from, to, updatedTime,
+				isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups));
+
 		return response;
 	}
 	

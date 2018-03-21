@@ -1,3 +1,12 @@
+package com.dpdocter.test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
+import com.dpdocter.reflections.BeanUtil;
+
 //package com.dpdocter.test;
 //
 //import static org.junit.Assert.assertEquals;
@@ -235,3 +244,14 @@
 ////    }
 //
 // }
+public class DrugTypeTests {
+	public static void main(String arg[]) {
+		List<String> list1 = new ArrayList<String>();
+		list1.add("5794afade4b01f1d73f9b7e7");
+		list1.add("5794afade4b01f1d73f9b7e8");
+		List<ObjectId> list2 = new ArrayList<ObjectId>();
+		BeanUtil.map(list1, list2);
+		System.out.println(list2.get(0));
+		System.out.println(list2.get(1));
+	}
+}

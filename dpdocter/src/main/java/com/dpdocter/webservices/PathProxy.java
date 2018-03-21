@@ -998,7 +998,7 @@ public interface PathProxy {
 		
 		public static final String DOWNLOAD_PATIENT_CARD= "/downloadpatientCard";
 		
-		
+		public static final String DOWNLOAD_APPOINTMENT_CALENDER = "/calender/{locationId}/{hospitalId}/download";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
@@ -1385,7 +1385,7 @@ public interface PathProxy {
 		public static final String DELETE_IMPLANT = "/implant/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_DISCHARGE_SUMMARY_ITEMS = "/{type}/{range}";
 		public static final String EMAIL_DISCHARGE_SUMMARY_WEB = "/{dischargeSummeryId}/{emailAddress}/mail";
-		public static final String 	ADD_EDIT_FLOWSHEETS = "/addEditFlowsheets";
+		public static final String ADD_EDIT_FLOWSHEETS = "/addEditFlowsheets";
 
 	}
 
@@ -1586,7 +1586,7 @@ public interface PathProxy {
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPDATE_EMR = "/update/EMR";
-		
+
 		public static final String TREATMENT_SERVICES = "/treatments/services/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String CLINICAL_NOTES = "/clinicalnotes/{doctorId}/{locationId}/{hospitalId}";
@@ -1614,7 +1614,7 @@ public interface PathProxy {
 		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String CLINICAL_NOTES = "/clinicalnotes/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String INVOICES = "/invoices/{doctorId}/{locationId}/{hospitalId}";
