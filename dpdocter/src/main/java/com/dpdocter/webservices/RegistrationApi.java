@@ -117,10 +117,8 @@ public class RegistrationApi {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		} else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-			logger.warn(mobileNumberValidaton);
-			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
-		} else if (request.getLocalPatientName().length() < 2) {
+		} 
+		else if (request.getLocalPatientName().length() < 2) {
 			logger.warn(firstNameValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 		}
@@ -131,7 +129,8 @@ public class RegistrationApi {
 		RegisteredPatientDetails registeredPatientDetails = null;
 
 		if (request.getUserId() == null) {
-			registrationService.checkPatientCount(request.getMobileNumber());
+			if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))
+				registrationService.checkPatientCount(request.getMobileNumber());
 			registeredPatientDetails = registrationService.registerNewPatient(request);
 			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
 					false);
@@ -166,9 +165,6 @@ public class RegistrationApi {
 				logger.warn(firstNameValidaton);
 				throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 			}
-		} else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-			logger.warn(mobileNumberValidaton);
-			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
 		}
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request, infoType);
