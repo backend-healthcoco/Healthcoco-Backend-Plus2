@@ -4750,10 +4750,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		
 		((JRDesignSection) jasperDesign.getDetailSection())
-		.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
-		
+				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+
 		band = new JRDesignBand();
 		band.setHeight(30);
 
@@ -4771,7 +4770,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		((JRDesignSection) jasperDesign.getDetailSection())
 				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 
@@ -5614,28 +5613,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addCalenderAppointments(parameters, contentFontSize,
 				columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
 
-		band = new JRDesignBand();
-		band.setSplitType(SplitTypeEnum.STRETCH);
-		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(new Float(13));
-			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(2);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(175);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setBold(true);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-		}
-		band.setHeight(20);
-
-		jasperDesign.setPageFooter(band);
-
 	}
 
 	private JRDesignBand addCalenderAppointments(Map<String, Object> parameters, Integer contentFontSize,
@@ -5840,6 +5817,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(statusWidth);
 			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setFontSize(new Float(titleFontSize));
 			band.addElement(jrDesignTextField);

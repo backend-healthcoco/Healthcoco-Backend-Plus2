@@ -3913,8 +3913,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (isGroup) {
 				secondGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 						new BasicDBObject("_id", "$doctorId")
-								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-								.append("calenderResponse", new BasicDBObject("$push", "$calenderResponse"))));
+								.append("doctorId", new BasicDBObject("$first", "$doctorId")).append("calenderResponse",
+										new BasicDBObject("$push", "$calenderResponse"))));
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
@@ -4032,11 +4032,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 
 				}
-				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId())) {
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId()) && showPatientGroups) {
 					List<GroupCollection> groupCollections = getPatientGroup(locationId, calenderResponse.getDoctorId(),
 							calenderResponse.getPatientId());
 					int i = 0;
-					calenderJasperBean.setGroupName(" ");
+					calenderJasperBean.setGroupName("");
 					if (groupCollections != null && !groupCollections.isEmpty()) {
 
 						for (GroupCollection groupCollection : groupCollections) {
@@ -4047,7 +4047,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									+ groupCollection.getName());
 
 						}
-						if (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) && showPatientGroups) {
+						if (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName())) {
 							groupAvailble = true;
 
 						}
@@ -4078,7 +4078,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					statusAvailable = true;
 				}
 
-				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getDoctorId()) && isGroupByDoctor) {
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getDoctorId()) && !isGroupByDoctor) {
 					doctorList = new ArrayList<String>();
 					if (!doctorList.contains(calenderResponse.getDoctorId())) {
 						doctorList.add(calenderResponse.getDoctorId());
@@ -4086,10 +4086,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				calenderJasperBeans.add(calenderJasperBean);
 			}
-
-			calenderJasperBeanList.setCalenders(calenderJasperBeans);
-			calenderJasperBeanList.setDoctor("<b>Doctor:- </b>" + doctors);
-			beanLists.add(calenderJasperBeanList);
 
 			if (isGroupByDoctor) {
 				if (doctorList.contains(calenderResponseForJasper.getDoctorId())) {
@@ -4104,23 +4100,26 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 					doctorList.remove(doctorList.indexOf(calenderResponseForJasper.getDoctorId()));
 				}
-			}
-		}
-		if (!isGroupByDoctor) {
-			for (String doctorId : doctorList) {
+			} else {
+				for (String doctorId : doctorList) {
 
-				UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
-				if (userCollection != null) {
-					doctors = doctors + (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
-							+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
-									: "DR.")
-							+ " " + userCollection.getFirstName();
+					UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
+					if (userCollection != null) {
+						doctors = doctors + (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
+								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+										: "DR.")
+								+ " " + userCollection.getFirstName();
+
+					}
 
 				}
-
 			}
 
+			calenderJasperBeanList.setCalenders(calenderJasperBeans);
+			calenderJasperBeanList.setDoctor("<b>Doctor:- </b>" + doctors);
+			beanLists.add(calenderJasperBeanList);
 		}
+
 		parameters.put("items", beanLists);
 		parameters.put("title", "Schedules For All Doctors");
 		String layout = "PORTRAIT";
