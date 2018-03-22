@@ -6,7 +6,7 @@ public class DoctorAppointmentAnalyticResponse {
 	private Double bookedAppointmentInPercent = 0.0;
 	private Double scheduledAppointmentInPercent = 0.0;
 	private Double cancelledAppointmentInPercent = 0.0;
-	private Double newPatientAppointmentInPercen = 0.0;
+	private Double newPatientAppointmentInPercent = 0.0;
 	private Double oldPatientAppointmentInPercent = 0.0;
 	private Double increseAppointmentInPercent = 0.0;
 	private Double decreaseAppointmentInPercent = 0.0;
@@ -45,12 +45,12 @@ public class DoctorAppointmentAnalyticResponse {
 		this.cancelledAppointmentInPercent = cancelledAppointmentInPercent;
 	}
 
-	public Double getNewPatientAppointmentInPercen() {
-		return newPatientAppointmentInPercen;
+	public Double getNewPatientAppointmentInPercent() {
+		return newPatientAppointmentInPercent;
 	}
 
-	public void setNewPatientAppointmentInPercen(Double newPatientAppointmentInPercen) {
-		this.newPatientAppointmentInPercen = newPatientAppointmentInPercen;
+	public void setNewPatientAppointmentInPercent(Double newPatientAppointmentInPercent) {
+		this.newPatientAppointmentInPercent = newPatientAppointmentInPercent;
 	}
 
 	public Double getOldPatientAppointmentInPercent() {
