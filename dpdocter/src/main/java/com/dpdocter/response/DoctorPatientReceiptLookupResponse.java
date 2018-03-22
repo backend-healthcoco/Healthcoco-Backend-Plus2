@@ -3,11 +3,6 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.beans.Discount;
-import com.dpdocter.beans.InvoiceItem;
-import com.dpdocter.beans.Tax;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.PatientCollection;

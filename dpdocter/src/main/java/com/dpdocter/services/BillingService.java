@@ -71,4 +71,6 @@ public interface BillingService {
 
 	Boolean changeInvoiceTreatmentStatus(InvoiceItemChangeStatusRequest request);
 
+	void emailMultipleReceipt(List<String> ids, String emailAddress);
+
 }

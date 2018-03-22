@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.ClinicalNotesJasperDetails;
 import com.dpdocter.beans.ClinicalnoteLookupBean;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.CustomAggregationOperation;
@@ -110,6 +113,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineStyle;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VitalSignsUnit;
@@ -337,8 +341,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Value(value = "${jasper.print.clinicalnotes.a4.fileName}")
 	private String clinicalNotesA4FileName;
 
-	@Value(value = "${jasper.print.clinicalnotes.a5.fileName}")
-	private String clinicalNotesA5FileName;
+	@Value(value = "${jasper.print.visit.a4.fileName}")
+	private String visitA4FileName;
+
+	@Value(value = "${jasper.print.visit.clinicalnotes.a4.fileName}")
+	private String visitClinicalNotesA4FileName;
+
+	@Value(value = "${jasper.print.visit.diagrams.a4.fileName}")
+	private String visitDiagramsA4FileName;
 
 	@Override
 	@Transactional
@@ -3998,9 +4008,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (clinicalNotesCollection != null) {
 				if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
 						&& clinicalNotesCollection.getLocationId() != null) {
-					if (clinicalNotesCollection.getDoctorId().equals(doctorId)
-							&& clinicalNotesCollection.getHospitalId().equals(hospitalId)
-							&& clinicalNotesCollection.getLocationId().equals(locationId)) {
+					if (clinicalNotesCollection.getDoctorId().toString().equals(doctorId)
+							&& clinicalNotesCollection.getHospitalId().toString().equals(hospitalId)
+							&& clinicalNotesCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findOne(clinicalNotesCollection.getPatientId());
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
@@ -4186,13 +4196,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					if (jasperReportResponse.getFileSystemResource().getFile().exists())
 						jasperReportResponse.getFileSystemResource().getFile().delete();
 			} else {
-				logger.warn("Patient Visit Id does not exist");
-				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+				logger.warn("Clinical Notes Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Clinical Notes Id does not exist");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error while getting Patient Visits PDF");
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+			logger.error(e + " Error while getting Clinical Notes PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Clinical Notes PDF");
 		}
 		return response;
 	}
@@ -8525,5 +8535,201 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 
 		return response;
+	}
+
+	@Override
+	public String downloadMultipleClinicalNotes(List<String> ids) {
+		String response = null;
+		try {
+			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").in(ids)),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId",
+															"$locationId"))).append("then", "$$KEEP")
+																	.append("else", "$$PRUNE")))),
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), 
+					ClinicalNotesCollection.class, ClinicalnoteLookupBean.class).getMappedResults();
+
+			
+			if (clinicalnoteLookupBeans != null && !clinicalnoteLookupBeans.isEmpty()) {
+				PatientCollection patient = clinicalnoteLookupBeans.get(0).getPatient();
+				UserCollection user = clinicalnoteLookupBeans.get(0).getPatientUser();
+				
+				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(clinicalnoteLookupBeans, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Clinical Notes Ids does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Clinical Notes Ids does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Clinical Notes PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Clinical Notes PDF");
+		}
+		return response;
+	}
+
+	private JasperReportResponse createJasperForMultipleClinicalNotes(List<ClinicalnoteLookupBean> clinicalnoteLookupBeans, PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
+		
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		List<ClinicalNotesJasperDetails> clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+		
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(clinicalnoteLookupBeans.get(0).getDoctorId(), clinicalnoteLookupBeans.get(0).getLocationId(),
+						clinicalnoteLookupBeans.get(0).getHospitalId(), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+				
+		String contentLineStyle = (printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ? printSettings.getContentLineStyle() : LineStyle.INLINE.name();
+				
+		for (ClinicalnoteLookupBean clinicalnote : clinicalnoteLookupBeans) {
+			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
+			BeanUtil.map(clinicalnote, clinicalNotesCollection);
+			ClinicalNotesJasperDetails clinicalJasperDetails = patientVisitService.getClinicalNotesJasperDetails(clinicalnote.getId().toString(), contentLineStyle, parameters, 
+									false, false, false, false, false, clinicalNotesCollection);
+			clinicalJasperDetails.setTitle(simpleDateFormat.format(clinicalNotesCollection.getCreatedTime()) + "(Clinical Notes : " + clinicalNotesCollection.getUniqueEmrId() +")");
+			clinicalNotes.add(clinicalJasperDetails);
+		}
+		parameters.put("clinicalNotes", clinicalNotes);	
+		
+		patientVisitService.generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				new Date(), printSettings.getHospitalUId());
+		
+		patientVisitService.generatePrintSetup(parameters, printSettings, printSettings.getDoctorId());
+		
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? (printSettings.getPageSetup().getPageSize() != null
+						? printSettings.getPageSetup().getPageSize() : "A4") : "A4")
+				: "A4";
+
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "MULTIPLECLINICALNOTES-"
+				 + new Date().getTime();
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+
+		response = jasperReportService.createPDF(ComponentType.VISITS, parameters, visitA4FileName, layout, pageSize,
+				topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""),
+				visitClinicalNotesA4FileName, null, visitDiagramsA4FileName, null);
+		return response;
+	}
+
+	@Override
+	public void emailMultipleClinicalNotes(List<String> ids, String emailAddress) {
+		MailResponse mailResponse = null;
+		MailAttachment mailAttachment = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").in(ids)),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId",
+															"$locationId"))).append("then", "$$KEEP")
+																	.append("else", "$$PRUNE")))),
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), 
+					ClinicalNotesCollection.class, ClinicalnoteLookupBean.class).getMappedResults();
+
+			
+			if (clinicalnoteLookupBeans != null && !clinicalnoteLookupBeans.isEmpty()) {
+				PatientCollection patient = clinicalnoteLookupBeans.get(0).getPatient();
+				UserCollection user = clinicalnoteLookupBeans.get(0).getPatientUser();
+				
+				emailTrackCollection.setDoctorId(clinicalnoteLookupBeans.get(0).getDoctorId());
+				emailTrackCollection.setHospitalId(clinicalnoteLookupBeans.get(0).getHospitalId());
+				emailTrackCollection.setLocationId(clinicalnoteLookupBeans.get(0).getLocationId());
+				emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
+				emailTrackCollection.setSubject("Clinical Notes");
+				if (user != null) {
+					emailTrackCollection.setPatientName(user.getFirstName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
+				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(clinicalnoteLookupBeans, patient, user);
+				
+				mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+				UserCollection doctorUser = userRepository.findOne(clinicalnoteLookupBeans.get(0).getDoctorId());
+				LocationCollection locationCollection = locationRepository.findOne(clinicalnoteLookupBeans.get(0).getLocationId());
+
+				mailResponse = new MailResponse();
+				mailResponse.setMailAttachment(mailAttachment);
+				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
+
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				mailResponse.setClinicAddress(address);
+				mailResponse.setClinicName(locationCollection.getLocationName());
+				mailResponse.setPatientName(user.getFirstName());
+
+				emailTackService.saveEmailTrack(emailTrackCollection);
+				String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+						mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+						"", "Clinical Notes", "multipleEmrMailTemplate.vm");
+				mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Clinical Notes", body,
+						mailResponse.getMailAttachment());
+
+				if (mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
+					if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+						mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();				
+			}else {
+				logger.warn("Clinical Notes Ids does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Clinical Notes Ids does not exist");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while emailing Clinical Notes PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while emailing Clinical Notes PDF");
+		}
 	}
 }

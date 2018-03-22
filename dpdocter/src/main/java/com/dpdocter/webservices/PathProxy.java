@@ -354,6 +354,10 @@ public interface PathProxy {
 
 		public static final String EMAIL_CLINICAL_NOTES_WEB = "/{clinicalNotesId}/{emailAddress}/mail";
 
+		public static final String DOWNLOAD_MULTIPLE_CLINICAL_NOTES = "/download";
+
+		public static final String EMAIL_MULTIPLE_CLINICAL_NOTES = "/email";
+
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -1321,6 +1325,8 @@ public interface PathProxy {
 		public static final String DOWNLOAD_MULTIPLE_RECEIPT = "receipt/download";
 
 		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
+
+		public static final String EMAIL_MULTIPLE_RECEIPT = "receipt/email";;
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";

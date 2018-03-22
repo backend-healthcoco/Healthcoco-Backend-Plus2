@@ -9,6 +9,8 @@ import com.mongodb.DBObject;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotesJasperDetails {
 
+	private String title;
+	
 	private String complaints;
 
 	private String observations;
@@ -390,19 +392,6 @@ public class ClinicalNotesJasperDetails {
 		this.noOfChildren = noOfChildren;
 	}
 
-	@Override
-	public String toString() {
-		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
-				+ ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams="
-				+ diagrams + ", vitalSigns=" + vitalSigns + ", presentComplaint=" + presentComplaint
-				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
-				+ systemExam + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
-				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
-				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
-				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", lmp=" + lmp + ", edd=" + edd
-				+ ", noOfChildren=" + noOfChildren + "]";
-	}
-
 	public String getNoseExam() {
 		return noseExam;
 	}
@@ -481,5 +470,36 @@ public class ClinicalNotesJasperDetails {
 
 	public void setProcedureNote(String procedureNote) {
 		this.procedureNote = procedureNote;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotesJasperDetails [title=" + title + ", complaints=" + complaints + ", observations="
+				+ observations + ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes
+				+ ", diagrams=" + diagrams + ", vitalSigns=" + vitalSigns + ", presentComplaint=" + presentComplaint
+				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
+				+ systemExam + ", noseExam=" + noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam
+				+ ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam="
+				+ earsExam + ", pcNose=" + pcNose + ", pcOralCavity=" + pcOralCavity + ", pcThroat=" + pcThroat
+				+ ", pcEars=" + pcEars + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
+				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
+				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
+				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", lmp=" + lmp + ", edd=" + edd
+				+ ", noOfChildren=" + noOfChildren + ", procedureNote=" + procedureNote + ", pastHistory=" + pastHistory
+				+ ", familyHistory=" + familyHistory + ", personalHistoryTobacco=" + personalHistoryTobacco
+				+ ", personalHistoryAlcohol=" + personalHistoryAlcohol + ", personalHistorySmoking="
+				+ personalHistorySmoking + ", personalHistoryDiet=" + personalHistoryDiet
+				+ ", personalHistoryOccupation=" + personalHistoryOccupation + ", generalHistoryDrugs="
+				+ generalHistoryDrugs + ", generalHistoryMedicine=" + generalHistoryMedicine
+				+ ", generalHistoryAllergies=" + generalHistoryAllergies + ", generalHistorySurgical="
+				+ generalHistorySurgical + ", painScale=" + painScale + "]";
 	}
 }

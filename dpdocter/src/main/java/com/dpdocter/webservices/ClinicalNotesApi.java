@@ -93,6 +93,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
+import com.dpdocter.request.ListIdrequest;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.OphthalmologyService;
@@ -1910,6 +1911,37 @@ public class ClinicalNotesApi {
 					"Invalid Input. Clinical Notes Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 		}
 		clinicalNotesService.emailClinicalNotes(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
+	@Path(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES)
+	public Response<String> downloadMultipleClinicalNotes(ListIdrequest request) {
+		
+		if (request == null || request.getIds() == null || request.getIds().isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		
+		Response<String> response = new Response<String>();
+		response.setData(clinicalNotesService.downloadMultipleClinicalNotes(request.getIds()));
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES)
+	public Response<Boolean> emailMultipleClinicalNotes(ListIdrequest request) {
+
+		if (request == null || request.getIds() == null || request.getIds().isEmpty() || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput,"Invalid Input");
+		}
+		clinicalNotesService.emailMultipleClinicalNotes(request.getIds(), request.getEmailAddress());
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);

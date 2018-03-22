@@ -149,9 +149,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private HistoryRepository historyRepository;
 
 	@Autowired
-	private ContactsService contactsService;
-
-	@Autowired
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
@@ -1045,7 +1042,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 						ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
 								clinicalNotesId.toString(), contentLineStyle, parameters, showUSG, isCustomPDF, showLMP,
-								showEDD, showNoOfChildren);
+								showEDD, showNoOfChildren, null);
 						clinicalNotes.add(clinicalJasperDetails);
 					}
 				}
@@ -1647,14 +1644,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 	}
 
-	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
+	@Override
+	public ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
 			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
-			Boolean showNoOfChildren) {
-		ClinicalNotesCollection clinicalNotesCollection = null;
+			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection) {
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		Boolean showTitle = false;
 		try {
-			clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
+			if(clinicalNotesCollection == null)clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
 			if (clinicalNotesCollection != null) {
 				if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
 						&& clinicalNotesCollection.getLocationId() != null) {
@@ -1876,6 +1873,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								if (diagramsCollection.getDiagramUrl() != null) {
 									diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
 								}
+								System.out.println(diagram.get("url"));
 								diagram.put("tags", diagramsCollection.getTags());
 								diagramIds.add(diagram);
 							}
