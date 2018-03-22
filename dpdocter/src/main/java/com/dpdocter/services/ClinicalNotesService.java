@@ -216,4 +216,8 @@ public interface ClinicalNotesService {
 
 	List<Diagnoses> getDiagnosesListBySpeciality(String speciality, String searchTerm);
 
+	String downloadMultipleClinicalNotes(List<String> ids);
+
+	void emailMultipleClinicalNotes(List<String> ids, String emailAddress);
+
 }

@@ -6,6 +6,8 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.UserCollection;
 
 public class ClinicalnoteLookupBean extends GenericCollection {
 
@@ -125,6 +127,10 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private String generalHistorySurgical;
 	private String painScale;
 
+	private PatientCollection patient;
+	
+	private UserCollection patientUser;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -617,8 +623,52 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 		return painScale;
 	}
 
+	public PatientCollection getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientCollection patient) {
+		this.patient = patient;
+	}
+
+	public UserCollection getPatientUser() {
+		return patientUser;
+	}
+
+	public void setPatientUser(UserCollection patientUser) {
+		this.patientUser = patientUser;
+	}
+
 	public void setPainScale(String painScale) {
 		this.painScale = painScale;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalnoteLookupBean [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
+				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
+				+ ", complaints=" + complaints + ", diagrams=" + diagrams + ", note=" + note + ", observation="
+				+ observation + ", investigation=" + investigation + ", diagnosis=" + diagnosis
+				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
+				+ systemExam + ", complaint=" + complaint + ", presentComplaint=" + presentComplaint
+				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
+				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", procedureNote="
+				+ procedureNote + ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails
+				+ ", xRayDetails=" + xRayDetails + ", echo=" + echo + ", holter=" + holter + ", pcNose=" + pcNose
+				+ ", pcOralCavity=" + pcOralCavity + ", pcThroat=" + pcThroat + ", pcEars=" + pcEars + ", noseExam="
+				+ noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam + ", indirectLarygoscopyExam="
+				+ indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam=" + earsExam + ", comments="
+				+ comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", patientId=" + patientId + ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns="
+				+ vitalSigns + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate
+				+ ", appointmentRequest=" + appointmentRequest + ", pastHistory=" + pastHistory + ", familyHistory="
+				+ familyHistory + ", personalHistoryTobacco=" + personalHistoryTobacco + ", personalHistoryAlcohol="
+				+ personalHistoryAlcohol + ", personalHistorySmoking=" + personalHistorySmoking
+				+ ", personalHistoryDiet=" + personalHistoryDiet + ", personalHistoryOccupation="
+				+ personalHistoryOccupation + ", generalHistoryDrugs=" + generalHistoryDrugs
+				+ ", generalHistoryMedicine=" + generalHistoryMedicine + ", generalHistoryAllergies="
+				+ generalHistoryAllergies + ", generalHistorySurgical=" + generalHistorySurgical + ", painScale="
+				+ painScale + ", patient=" + patient + ", patientUser=" + patientUser + "]";
 	}
 
 }

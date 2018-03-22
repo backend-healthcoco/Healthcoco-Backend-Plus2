@@ -981,8 +981,34 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(20);
-		band.setPrintWhenExpression(
-				new JRDesignExpression("!$F{indicationOfUSG}.equals( null ) && !$F{indicationOfUSG}.isEmpty()"));
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{title}.equals( null ) && !$F{title}.isEmpty()"));
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{title}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+		band = new JRDesignBand();
+		band.setHeight(2);
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{title}.equals( null ) && !$F{title}.isEmpty()"));
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		band.addElement(jrDesignLine);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+		band = new JRDesignBand();
+		band.setHeight(20);
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{indicationOfUSG}.equals( null ) && !$F{indicationOfUSG}.isEmpty()"));
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{USGTITLE}"));
@@ -1148,6 +1174,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$F{procedureNote}", fieldWidth, false, 0, false);
+		
+		band = new JRDesignBand();
+		band.setHeight(2);
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{title}.equals( null ) && !$F{title}.isEmpty()"));
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		band.addElement(jrDesignLine);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
 		JasperCompileManager.compileReportToFile(jasperDesign,
 				JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_subreport-A4.jasper");
 
@@ -2907,10 +2945,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 
 		int xSpace = 0;
-
-		Integer titleFontSize = contentFontSize;
-		if (contentFontSize > 13)
-			titleFontSize = 13;
 
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);

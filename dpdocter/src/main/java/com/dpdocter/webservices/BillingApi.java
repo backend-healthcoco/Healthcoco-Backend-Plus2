@@ -374,4 +374,20 @@ public class BillingApi {
 		response.setData(billingService.downloadMultipleReceipt(request.getIds()));
 		return response;
 	}
+	
+	@Path(value = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT, notes = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT)
+	public Response<Boolean> emailMultipleReceipt(ListIdrequest request) {
+		
+		if (request == null || request.getIds() == null || request.getIds().isEmpty() || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput,"Invalid Input");
+		}
+		billingService.emailMultipleReceipt(request.getIds(), request.getEmailAddress());
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
 }

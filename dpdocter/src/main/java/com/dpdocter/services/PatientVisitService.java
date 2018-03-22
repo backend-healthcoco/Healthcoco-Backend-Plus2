@@ -6,10 +6,12 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.ClinicalNotesJasperDetails;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -66,4 +68,8 @@ public interface PatientVisitService {
 			Boolean showDA, Map<String, Object> parameters);
 
 	PatientVisitResponse getPatientLastVisit(String doctorId, String locationId, String hospitalId, String patientId);
+	
+	ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
+			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
+			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection);
 }

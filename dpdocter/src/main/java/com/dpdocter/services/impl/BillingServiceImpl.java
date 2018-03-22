@@ -945,6 +945,7 @@ public class BillingServiceImpl implements BillingService {
 		return response;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded) {
 		DoctorPatientReceipt response = null;
@@ -1973,7 +1974,6 @@ public class BillingServiceImpl implements BillingService {
 					new ObjectId(hospitalId));
 
 			UserCollection patient = userRepository.findOne(new ObjectId(patientId));
-			UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
 			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 			smsTrackDetail.setDoctorId(new ObjectId(doctorId));
@@ -2060,7 +2060,8 @@ public class BillingServiceImpl implements BillingService {
 													Arrays.asList("$patient.locationId",
 															"$locationId"))).append("then", "$$KEEP")
 																	.append("else", "$$PRUNE")))),
-					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), Aggregation.sort(new Sort(Direction.ASC, "receivedDate"))), 
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), 
+					Aggregation.sort(new Sort(Direction.ASC, "receivedDate"))), 
 					DoctorPatientReceiptCollection.class, DoctorPatientReceiptLookupResponse.class).getMappedResults();
 			if (doctorPatientReceiptLookupResponses != null && !doctorPatientReceiptLookupResponses.isEmpty()) {
 				
@@ -2076,10 +2077,9 @@ public class BillingServiceImpl implements BillingService {
 			}
 
 		} catch (Exception e) {
-
-			logger.error("Error while getting download Reciept" + e);
+			logger.error("Error while downloading Reciepts" + e);
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while getting download Reciept " + e);
+			throw new BusinessException(ServiceError.Unknown, "Error while downloading Reciepts" + e);
 		}
 		return response;
 	}
@@ -2154,7 +2154,6 @@ public class BillingServiceImpl implements BillingService {
 		parameters.put("grandTotal", grandTotal);
 		parameters.put("totalPaid", totalPaid);
 		parameters.put("totalBalance", totalBalance);
-		System.out.println(grandTotal + " " + totalPaid +" "+totalBalance);
 		PatientCollection patient = doctorPatientReceiptLookupResponses.get(0).getPatient();
 		UserCollection user = doctorPatientReceiptLookupResponses.get(0).getPatientUser();
 		patientVisitService.generatePatientDetails(
@@ -2189,5 +2188,100 @@ public class BillingServiceImpl implements BillingService {
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
+	}
+
+	@Override
+	public void emailMultipleReceipt(List<String> ids, String emailAddress) {
+		MailResponse mailResponse = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			
+			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").in(ids)),
+					Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"), 
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path","$invoiceCollection").append("preserveNullAndEmptyArrays",true))),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId",
+															"$locationId"))).append("then", "$$KEEP")
+																	.append("else", "$$PRUNE")))),
+					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), 
+					Aggregation.sort(new Sort(Direction.ASC, "receivedDate"))), 
+					DoctorPatientReceiptCollection.class, DoctorPatientReceiptLookupResponse.class).getMappedResults();
+		
+			
+			if (doctorPatientReceiptLookupResponses != null && !doctorPatientReceiptLookupResponses.isEmpty()) {
+				user = doctorPatientReceiptLookupResponses.get(0).getPatientUser();
+				patient = doctorPatientReceiptLookupResponses.get(0).getPatient();
+				user.setFirstName(patient.getLocalPatientName());
+				emailTrackCollection.setDoctorId(new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()));
+				emailTrackCollection.setHospitalId(new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()));
+				emailTrackCollection.setLocationId(new ObjectId(doctorPatientReceiptLookupResponses.get(0).getLocationId()));
+				emailTrackCollection.setType(ComponentType.RECEIPT.getType());
+				emailTrackCollection.setSubject("Receipts");
+				if (user != null) {
+					emailTrackCollection.setPatientName(patient.getLocalPatientName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
+
+				JasperReportResponse jasperReportResponse = createJasperForMultipleReceipt(doctorPatientReceiptLookupResponses);
+			
+				mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+				UserCollection doctorUser = userRepository.findOne(emailTrackCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository.findOne(emailTrackCollection.getLocationId());
+
+				mailResponse = new MailResponse();
+				mailResponse.setMailAttachment(mailAttachment);
+				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
+
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				mailResponse.setClinicAddress(address);
+				mailResponse.setClinicName(locationCollection.getLocationName());
+				mailResponse.setPatientName(user.getFirstName());
+				emailTackService.saveEmailTrack(emailTrackCollection);
+
+				String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+						mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+						"", "Receipts", "multipleEmrMailTemplate.vm");
+				mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipts", body,
+						mailResponse.getMailAttachment());
+				if (mailResponse.getMailAttachment() != null
+						&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+					if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+						mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+			}else {
+				logger.warn("Reciept Ids does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Reciept Ids does not exist");
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error while emailing Reciepts" + e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while emailing Reciepts" + e);
+		}
 	}
 }

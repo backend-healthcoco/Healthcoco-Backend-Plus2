@@ -9,6 +9,8 @@ import com.mongodb.DBObject;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotesJasperDetails {
 
+	private String title;
+	
 	private String complaints;
 
 	private String observations;
@@ -470,11 +472,19 @@ public class ClinicalNotesJasperDetails {
 		this.painScale = painScale;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	@Override
 	public String toString() {
-		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
-				+ ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams="
-				+ diagrams + ", vitalSigns=" + vitalSigns + ", presentComplaint=" + presentComplaint
+		return "ClinicalNotesJasperDetails [title=" + title + ", complaints=" + complaints + ", observations="
+				+ observations + ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes
+				+ ", diagrams=" + diagrams + ", vitalSigns=" + vitalSigns + ", presentComplaint=" + presentComplaint
 				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
 				+ systemExam + ", noseExam=" + noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam
 				+ ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam="
@@ -492,5 +502,4 @@ public class ClinicalNotesJasperDetails {
 				+ ", generalHistoryAllergies=" + generalHistoryAllergies + ", generalHistorySurgical="
 				+ generalHistorySurgical + ", painScale=" + painScale + "]";
 	}
-
 }

@@ -68,4 +68,6 @@ public interface BillingService {
 
 	String downloadMultipleReceipt(List<String> ids);
 
+	void emailMultipleReceipt(List<String> ids, String emailAddress);
+
 }
