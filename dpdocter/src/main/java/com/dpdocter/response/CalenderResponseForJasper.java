@@ -4,15 +4,15 @@ import java.util.List;
 
 public class CalenderResponseForJasper {
 
-	private List<String> doctorId;
+	private String doctorId;
 
 	private List<CalenderResponse> calenderResponse;
 
-	public List<String> getDoctorId() {
+	public  String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(List<String> doctorId) {
+	public void setDoctorId( String doctorId) {
 		this.doctorId = doctorId;
 	}
 

@@ -998,7 +998,7 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_PATIENT_CARD = "/downloadpatientCard";
 
-		public static final String DOWNLOAD_APPOINTMENT_CALENDER = "/calender/{locationId}/{hospitalId}/download";
+		public static final String DOWNLOAD_APPOINTMENT_CALENDER = "/calendar/{locationId}/{hospitalId}/download";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";

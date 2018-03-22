@@ -3811,7 +3811,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (isGroupByDoctor) {
 				for (ObjectId doctorId : doctorList) {
 					List<CalenderResponseForJasper> calenderResponseForJasper = getCalenderAppointments(null, doctorId,
-							locationId, hospitalId, fromTime, toTime, updatedTime);
+							locationId, hospitalId, fromTime, toTime, updatedTime, isGroupByDoctor);
 					if (calenderResponseForJasper != null && !calenderResponseForJasper.isEmpty()) {
 						calenderResponseForJaspers.addAll(calenderResponseForJasper);
 					}
@@ -3819,7 +3819,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			} else {
 				calenderResponseForJaspers = getCalenderAppointments(doctorList, null, locationId, hospitalId, fromTime,
-						toTime, updatedTime);
+						toTime, updatedTime, isGroupByDoctor);
 			}
 			if (calenderResponseForJaspers == null || calenderResponseForJaspers.isEmpty()) {
 				return response;
@@ -3842,7 +3842,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	private List<CalenderResponseForJasper> getCalenderAppointments(List<ObjectId> doctorIds, ObjectId doctorId,
-			String locationId, String hospitalId, String fromTime, String toTime, String updatedTime) {
+			String locationId, String hospitalId, String fromTime, String toTime, String updatedTime, Boolean isGroup) {
 		List<CalenderResponseForJasper> response = null;
 		try {
 
@@ -3884,7 +3884,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Fields.field("time", "$time"), Fields.field("PID", "$patientCard.PID"),
 					Fields.field("fromDate", "$fromDate"), Fields.field("patientName", "$patientCard.localPatientName"),
 					Fields.field("patientId", "$patientId"), Fields.field("mobileNumber", "$user.mobileNumber"),
-					Fields.field("status", "$status"), Fields.field("explanation", "$explanation"),
+					Fields.field("status", "$status"), Fields.field("notes", "$explanation"),
 					Fields.field("doctorId", "$doctorId")));
 
 			CustomAggregationOperation firstGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -3894,7 +3894,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 							.append("patientId", new BasicDBObject("$first", "$patientId"))
 							.append("status", new BasicDBObject("$first", "$status"))
-							.append("explanation", new BasicDBObject("$first", "$explanation"))
+							.append("notes", new BasicDBObject("$first", "$notes"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))));
 
@@ -3904,37 +3904,65 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Fields.field("calenderResponse.PID", "$PID"), Fields.field("calenderResponse.time", "$time"),
 					Fields.field("calenderResponse.mobileNumber", "$mobileNumber"),
 					Fields.field("calenderResponse.status", "$status"),
-					Fields.field("calenderResponse.notes", "$explanation"),
+					Fields.field("calenderResponse.notes", "$notes"),
 					Fields.field("calenderResponse.patientId", "$patientId"),
 					Fields.field("calenderResponse.doctorId", "$doctorId"), Fields.field("doctorId", "$doctorId")));
 
-			CustomAggregationOperation secondGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$doctorId")
-							.append("doctorId", new BasicDBObject("$addToSet", "$doctorId")).append("calenderResponse",
-									new BasicDBObject("$push", "$calenderResponse"))));
+			CustomAggregationOperation secondGroupOperation = null;
+			Aggregation aggregation = null;
+			if (isGroup) {
+				secondGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("_id", "$doctorId")
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("calenderResponse", new BasicDBObject("$push", "$calenderResponse"))));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$redact",
+										new BasicDBObject("$cond",
+												new BasicDBObject("if",
+														new BasicDBObject("$eq",
+																Arrays.asList("$patientCard.locationId",
+																		"$locationId"))).append("then", "$$KEEP")
+																				.append("else", "$$PRUNE")))),
+						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+						projectListFirst, firstGroupOperation, sortOperation, projectListsecond, secondGroupOperation);
+				response = mongoTemplate
+						.aggregate(aggregation, AppointmentCollection.class, CalenderResponseForJasper.class)
+						.getMappedResults();
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$redact",
+										new BasicDBObject("$cond",
+												new BasicDBObject("if",
+														new BasicDBObject("$eq",
+																Arrays.asList("$patientCard.locationId",
+																		"$locationId"))).append("then", "$$KEEP")
+																				.append("else", "$$PRUNE")))),
+						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+						projectListFirst, firstGroupOperation, sortOperation);
 
-			Aggregation aggregation = Aggregation
-					.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path",
-									"$patientCard").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject("if",
-															new BasicDBObject("$eq",
-																	Arrays.asList("$patientCard.locationId",
-																			"$locationId"))).append("then", "$$KEEP")
-																					.append("else", "$$PRUNE")))),
-							Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
-							projectListFirst, firstGroupOperation, sortOperation, projectListsecond,
-							secondGroupOperation);
-			response = mongoTemplate
-					.aggregate(aggregation, AppointmentCollection.class, CalenderResponseForJasper.class)
-					.getMappedResults();
+				List<CalenderResponse> calenderResponses = mongoTemplate
+						.aggregate(aggregation, AppointmentCollection.class, CalenderResponse.class).getMappedResults();
+				if (calenderResponses != null && !calenderResponses.isEmpty()) {
+					response = new ArrayList<CalenderResponseForJasper>();
+					CalenderResponseForJasper calenderResponseForJasper = new CalenderResponseForJasper();
+					calenderResponseForJasper.setCalenderResponse(calenderResponses);
+					response.add(calenderResponseForJasper);
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3964,33 +3992,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<CalenderJasperBeanList> beanLists = new ArrayList<CalenderJasperBeanList>();
 		for (CalenderResponseForJasper calenderResponseForJasper : calenderResponseForJaspers) {
 			CalenderJasperBeanList calenderJasperBeanList = new CalenderJasperBeanList();
-			if (!isGroupByDoctor) {
-				for (String doctorId : calenderResponseForJasper.getDoctorId()) {
-					UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
-					if (userCollection != null) {
-						doctors = (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
-								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
-										: "DR.")
-								+ " " + userCollection.getFirstName();
 
-					}
-
-				}
-
-			} else {
-				if (doctorList.contains(calenderResponseForJasper.getDoctorId().get(0))) {
-					doctors = "";
-					UserCollection userCollection = userRepository
-							.findOne(new ObjectId(calenderResponseForJasper.getDoctorId().get(0)));
-					if (userCollection != null) {
-						doctors = (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
-								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
-										: "DR.")
-								+ " " + userCollection.getFirstName();
-					}
-					doctorList.remove(doctorList.indexOf(calenderResponseForJasper.getDoctorId().get(0)));
-				}
-			}
 			calenderJasperBeans = new ArrayList<CalenderJasperBean>();
 			for (CalenderResponse calenderResponse : calenderResponseForJasper.getCalenderResponse()) {
 
@@ -4030,7 +4032,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 
 				}
-				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId()) && showPatientGroups) {
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId())) {
 					List<GroupCollection> groupCollections = getPatientGroup(locationId, calenderResponse.getDoctorId(),
 							calenderResponse.getPatientId());
 					int i = 0;
@@ -4040,12 +4042,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 						for (GroupCollection groupCollection : groupCollections) {
 							i++;
 
-							calenderJasperBean.setGroupName(
-									(!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) ? "," : "")
-											+ groupCollection.getName());
+							calenderJasperBean.setGroupName(calenderJasperBean.getGroupName()
+									+ (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) ? "," : "")
+									+ groupCollection.getName());
 
 						}
-						if (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName())) {
+						if (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) && showPatientGroups) {
 							groupAvailble = true;
 
 						}
@@ -4068,7 +4070,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getMobileNumber()) && showMobileNo) {
 					calenderJasperBean.setMobileNumber(calenderResponse.getMobileNumber());
-					System.out.println(calenderResponse.getMobileNumber());
 					mbnoAvailable = true;
 				}
 
@@ -4076,11 +4077,48 @@ public class AppointmentServiceImpl implements AppointmentService {
 					calenderJasperBean.setStatus(calenderResponse.getStatus());
 					statusAvailable = true;
 				}
+
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getDoctorId()) && isGroupByDoctor) {
+					doctorList = new ArrayList<String>();
+					if (!doctorList.contains(calenderResponse.getDoctorId())) {
+						doctorList.add(calenderResponse.getDoctorId());
+					}
+				}
 				calenderJasperBeans.add(calenderJasperBean);
 			}
+
 			calenderJasperBeanList.setCalenders(calenderJasperBeans);
 			calenderJasperBeanList.setDoctor("<b>Doctor:- </b>" + doctors);
 			beanLists.add(calenderJasperBeanList);
+
+			if (isGroupByDoctor) {
+				if (doctorList.contains(calenderResponseForJasper.getDoctorId())) {
+					doctors = "";
+					UserCollection userCollection = userRepository
+							.findOne(new ObjectId(calenderResponseForJasper.getDoctorId()));
+					if (userCollection != null) {
+						doctors = (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
+								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+										: "DR.")
+								+ " " + userCollection.getFirstName();
+					}
+					doctorList.remove(doctorList.indexOf(calenderResponseForJasper.getDoctorId()));
+				}
+			}
+		}
+		if (!isGroupByDoctor) {
+			for (String doctorId : doctorList) {
+
+				UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
+				if (userCollection != null) {
+					doctors = doctors + (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
+							+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+									: "DR.")
+							+ " " + userCollection.getFirstName();
+
+				}
+
+			}
 
 		}
 		parameters.put("items", beanLists);
