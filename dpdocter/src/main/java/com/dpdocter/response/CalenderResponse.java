@@ -24,6 +24,8 @@ public class CalenderResponse {
 
 	private String status;
 
+	private String state = "NEW";
+
 	private String doctorId;
 
 	public String getDoctorId() {
@@ -90,8 +92,6 @@ public class CalenderResponse {
 		this.notes = notes;
 	}
 
-
-
 	public String getPatientId() {
 		return patientId;
 	}
@@ -106,6 +106,14 @@ public class CalenderResponse {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 
 }

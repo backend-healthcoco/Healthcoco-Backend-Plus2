@@ -3777,19 +3777,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public String downloadCalender(List<String> doctorIds, String locationId, String hospitalId, String fromTime,
-			String toTime, String updatedTime, Boolean isGroupByDoctor, Boolean showMobileNo,
-			Boolean showAppointmentStatus, Boolean showNotes, Boolean showPatientGroups) {
+			String toTime, Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus,
+			Boolean showNotes, Boolean showPatientGroups) {
 		String response = null;
 		JasperReportResponse jasperReportResponse = null;
 		Date date = null;
 		try {
 			List<CalenderResponseForJasper> calenderResponseForJaspers = new LinkedList<CalenderResponseForJasper>();
 			List<ObjectId> doctorList = null;
-			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
-				date = new Date(Long.parseLong(updatedTime));
-			} else {
-				date = new Date();
-			}
 
 			if (doctorIds != null && !doctorIds.isEmpty()) {
 				doctorList = new ArrayList<ObjectId>();
@@ -3811,7 +3806,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (isGroupByDoctor) {
 				for (ObjectId doctorId : doctorList) {
 					List<CalenderResponseForJasper> calenderResponseForJasper = getCalenderAppointments(null, doctorId,
-							locationId, hospitalId, fromTime, toTime, updatedTime, isGroupByDoctor);
+							locationId, hospitalId, fromTime, toTime, isGroupByDoctor);
 					if (calenderResponseForJasper != null && !calenderResponseForJasper.isEmpty()) {
 						calenderResponseForJaspers.addAll(calenderResponseForJasper);
 					}
@@ -3819,7 +3814,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			} else {
 				calenderResponseForJaspers = getCalenderAppointments(doctorList, null, locationId, hospitalId, fromTime,
-						toTime, updatedTime, isGroupByDoctor);
+						toTime, isGroupByDoctor);
 			}
 			if (calenderResponseForJaspers == null || calenderResponseForJaspers.isEmpty()) {
 				return response;
@@ -3842,7 +3837,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	private List<CalenderResponseForJasper> getCalenderAppointments(List<ObjectId> doctorIds, ObjectId doctorId,
-			String locationId, String hospitalId, String fromTime, String toTime, String updatedTime, Boolean isGroup) {
+			String locationId, String hospitalId, String fromTime, String toTime, Boolean isGroup) {
 		List<CalenderResponseForJasper> response = null;
 		try {
 
@@ -3856,36 +3851,77 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("doctorId").is(doctorId);
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromTime))
-				criteria.and("time.fromTime").is(Integer.parseInt(fromTime));
-
-			if (!DPDoctorUtils.anyStringEmpty(toTime))
-				criteria.and("time.toTime").is(Integer.parseInt(toTime));
-
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
-				localCalendar.setTime(new Date(Long.parseLong(updatedTime)));
+			DateTime todate = null;
+			DateTime fromdate = null;
+			SortOperation sortOperation = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromTime, toTime)) {
+				localCalendar.setTime(new Date(Integer.parseInt(fromTime)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+				fromdate = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("fromDate").gte(fromdate);
+
+				localCalendar.setTime(new Date(Integer.parseInt(toTime)));
+				currentDay = localCalendar.get(Calendar.DATE);
+				currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				currentYear = localCalendar.get(Calendar.YEAR);
+				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("toDate").lte(todate);
+				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime"));
+			} else if (!DPDoctorUtils.anyStringEmpty(fromTime)) {
+
+				localCalendar.setTime(new Date(Integer.parseInt(fromTime)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+				fromdate = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("fromDate").gte(fromdate);
+
+				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("toDate").lte(todate);
+				sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(toTime)) {
+
+				localCalendar.setTime(new Date(Integer.parseInt(toTime)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+				fromdate = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("fromDate").gte(fromdate);
+
+				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("toDate").lte(todate);
+				sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
+
 			} else {
 				localCalendar.setTime(new Date());
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+				fromdate = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("fromDate").gte(fromdate);
+				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("toDate").lte(todate);
+				sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
 			}
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
-			DateTime dateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			criteria.and("fromDate").gte(dateTime);
 
-			dateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			criteria.and("toDate").lte(dateTime);
-
-			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime"));
 			ProjectionOperation projectListFirst = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("time", "$time"), Fields.field("PID", "$patientCard.PID"),
 					Fields.field("fromDate", "$fromDate"), Fields.field("patientName", "$patientCard.localPatientName"),
 					Fields.field("patientId", "$patientId"), Fields.field("mobileNumber", "$user.mobileNumber"),
 					Fields.field("status", "$status"), Fields.field("notes", "$explanation"),
-					Fields.field("doctorId", "$doctorId")));
+					Fields.field("state", "$state"), Fields.field("doctorId", "$doctorId")));
 
 			CustomAggregationOperation firstGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("time", new BasicDBObject("$first", "$time"))
@@ -3895,6 +3931,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("patientId", new BasicDBObject("$first", "$patientId"))
 							.append("status", new BasicDBObject("$first", "$status"))
 							.append("notes", new BasicDBObject("$first", "$notes"))
+							.append("state", new BasicDBObject("$first", "$state"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))));
 
@@ -3906,6 +3943,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Fields.field("calenderResponse.status", "$status"),
 					Fields.field("calenderResponse.notes", "$notes"),
 					Fields.field("calenderResponse.patientId", "$patientId"),
+					Fields.field("calenderResponse.state", "$state"),
 					Fields.field("calenderResponse.doctorId", "$doctorId"), Fields.field("doctorId", "$doctorId")));
 
 			CustomAggregationOperation secondGroupOperation = null;
@@ -3979,6 +4017,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		DBObject items = new BasicDBObject();
 		JasperReportResponse response = null;
+		UserCollection userCollection = null;
 		String pattern = "dd/MM/yyyy";
 		String clinicName = "";
 		String doctors = "";
@@ -4074,7 +4113,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getStatus()) && showAppointmentStatus) {
-					calenderJasperBean.setStatus(calenderResponse.getStatus());
+					if (calenderResponse.getState().equals("CANCEL"))
+						calenderJasperBean.setStatus("<del>" + calenderResponse.getStatus() + "</del>");
+
 					statusAvailable = true;
 				}
 
@@ -4090,8 +4131,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (isGroupByDoctor) {
 				if (doctorList.contains(calenderResponseForJasper.getDoctorId())) {
 					doctors = "";
-					UserCollection userCollection = userRepository
-							.findOne(new ObjectId(calenderResponseForJasper.getDoctorId()));
+					userCollection = userRepository.findOne(new ObjectId(calenderResponseForJasper.getDoctorId()));
 					if (userCollection != null) {
 						doctors = (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
 								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
@@ -4103,7 +4143,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else {
 				for (String doctorId : doctorList) {
 
-					UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
+					userCollection = userRepository.findOne(new ObjectId(doctorId));
 					if (userCollection != null) {
 						doctors = doctors + (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
 								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()

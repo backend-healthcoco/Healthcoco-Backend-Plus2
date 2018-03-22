@@ -114,7 +114,7 @@ public interface AppointmentService {
 			String appointmentId, String status, Boolean isObjectRequired);
 
 	public String downloadCalender(List<String> doctorIds, String locationId, String hospitalId, String from, String to,
-			String updatedTime, Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus,
-			Boolean showNotes, Boolean showPatientGroups);
+			Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes,
+			Boolean showPatientGroups);
 
 }

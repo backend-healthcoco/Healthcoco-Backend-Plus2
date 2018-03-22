@@ -5735,7 +5735,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			groupWidth = 100;
 		} else if (showStatus && showGroups) {
 			timeWidth = 140;
-			nameWidth = 180;
+			nameWidth = 170;
 			statusWidth = 100;
 			groupWidth = 100;
 		} else if (showGroups) {
@@ -5756,7 +5756,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		} else {
 			timeWidth = 230;
-			nameWidth = 260;
+			nameWidth = 230;
 
 		}
 
