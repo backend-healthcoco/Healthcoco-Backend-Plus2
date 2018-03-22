@@ -3781,8 +3781,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 			Boolean showNotes, Boolean showPatientGroups) {
 		String response = null;
 		JasperReportResponse jasperReportResponse = null;
-		Date date = null;
+		Date fromDate = null;
+		Date toDate = null;
 		try {
+			if (!DPDoctorUtils.anyStringEmpty(fromTime, toTime)) {
+				fromDate = new Date(Integer.parseInt(fromTime));
+				toDate = new Date(Integer.parseInt(toTime));
+			} else if (!DPDoctorUtils.anyStringEmpty(fromTime)) {
+				fromDate = new Date(Integer.parseInt(fromTime));
+			} else if (!DPDoctorUtils.anyStringEmpty(toTime)) {
+				fromDate = new Date(Integer.parseInt(toTime));
+			} else {
+				fromDate = new Date();
+			}
 			List<CalenderResponseForJasper> calenderResponseForJaspers = new LinkedList<CalenderResponseForJasper>();
 			List<ObjectId> doctorList = null;
 
@@ -3806,22 +3817,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (isGroupByDoctor) {
 				for (ObjectId doctorId : doctorList) {
 					List<CalenderResponseForJasper> calenderResponseForJasper = getCalenderAppointments(null, doctorId,
-							locationId, hospitalId, fromTime, toTime, isGroupByDoctor);
+							locationId, hospitalId, fromDate, toDate, isGroupByDoctor);
 					if (calenderResponseForJasper != null && !calenderResponseForJasper.isEmpty()) {
 						calenderResponseForJaspers.addAll(calenderResponseForJasper);
 					}
 				}
 
 			} else {
-				calenderResponseForJaspers = getCalenderAppointments(doctorList, null, locationId, hospitalId, fromTime,
-						toTime, isGroupByDoctor);
+				calenderResponseForJaspers = getCalenderAppointments(doctorList, null, locationId, hospitalId, fromDate,
+						toDate, isGroupByDoctor);
 			}
 			if (calenderResponseForJaspers == null || calenderResponseForJaspers.isEmpty()) {
 				return response;
 			}
 
 			jasperReportResponse = createCalenderJasper(calenderResponseForJaspers, doctorIds, locationId, hospitalId,
-					isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, date);
+					isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, fromDate,
+					toDate);
 
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
@@ -3837,7 +3849,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	private List<CalenderResponseForJasper> getCalenderAppointments(List<ObjectId> doctorIds, ObjectId doctorId,
-			String locationId, String hospitalId, String fromTime, String toTime, Boolean isGroup) {
+			String locationId, String hospitalId, Date fromTime, Date toTime, Boolean isGroup) {
 		List<CalenderResponseForJasper> response = null;
 		try {
 
@@ -3855,8 +3867,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			DateTime todate = null;
 			DateTime fromdate = null;
 			SortOperation sortOperation = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromTime, toTime)) {
-				localCalendar.setTime(new Date(Integer.parseInt(fromTime)));
+			if (fromTime != null && toTime != null) {
+				localCalendar.setTime(fromTime);
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
@@ -3864,7 +3876,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				criteria.and("fromDate").gte(fromdate);
 
-				localCalendar.setTime(new Date(Integer.parseInt(toTime)));
+				localCalendar.setTime(toTime);
 				currentDay = localCalendar.get(Calendar.DATE);
 				currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				currentYear = localCalendar.get(Calendar.YEAR);
@@ -3872,38 +3884,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				criteria.and("toDate").lte(todate);
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime"));
-			} else if (!DPDoctorUtils.anyStringEmpty(fromTime)) {
-
-				localCalendar.setTime(new Date(Integer.parseInt(fromTime)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-				fromdate = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("fromDate").gte(fromdate);
-
-				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("toDate").lte(todate);
-				sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(toTime)) {
-
-				localCalendar.setTime(new Date(Integer.parseInt(toTime)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-				fromdate = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("fromDate").gte(fromdate);
-
-				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("toDate").lte(todate);
-				sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
-
 			} else {
-				localCalendar.setTime(new Date());
+				localCalendar.setTime(fromTime);
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
@@ -4013,7 +3995,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	private JasperReportResponse createCalenderJasper(List<CalenderResponseForJasper> calenderResponseForJaspers,
 			List<String> doctorList, String locationId, String hospitalId, Boolean isGroupByDoctor,
 			Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes, Boolean showPatientGroups,
-			Date updatedTime) throws IOException, ParseException {
+			Date fromDate, Date toDate) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		DBObject items = new BasicDBObject();
 		JasperReportResponse response = null;
@@ -4027,7 +4009,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 
-		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(updatedTime));
+		parameters.put("date", "<b>Date :- </b>" + (fromDate != null ? simpleDateFormat.format(fromDate) : "")
+				+ (toDate != null ? " To " + simpleDateFormat.format(toDate) : ""));
 		List<CalenderJasperBeanList> beanLists = new ArrayList<CalenderJasperBeanList>();
 		for (CalenderResponseForJasper calenderResponseForJasper : calenderResponseForJaspers) {
 			CalenderJasperBeanList calenderJasperBeanList = new CalenderJasperBeanList();
@@ -4113,9 +4096,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getStatus()) && showAppointmentStatus) {
-					if (calenderResponse.getState().equals("CANCEL"))
+					if (calenderResponse.getState().equals("CANCEL")) {
 						calenderJasperBean.setStatus("<del>" + calenderResponse.getStatus() + "</del>");
-
+					} else {
+						calenderJasperBean.setStatus(calenderResponse.getStatus());
+					}
 					statusAvailable = true;
 				}
 

@@ -113,9 +113,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			criteria.and("updatedTime").gte(fromTime);
 
 			localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-			currentDay = localCalendar.get(Calendar.DATE);
-			currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			currentYear = localCalendar.get(Calendar.YEAR);
 			toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			criteria.and("updatedTime").lte(toTime);
@@ -128,10 +125,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			criteria.and("updatedTime").gte(fromTime);
-
-			currentDay = localCalendar.get(Calendar.DATE);
-			currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			currentYear = localCalendar.get(Calendar.YEAR);
 			toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			criteria.and("updatedTime").lte(toTime);
@@ -150,10 +143,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				AppointmentCollection.class));
 		int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
 				AppointmentCollection.class);
-		data.setBookedAppointmentInPercent((double) ((100 * appointmentCount) / data.getTotalNoOfAppointment()));
+		data.setBookedAppointmentInPercent(
+				((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment()));
 		appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("status").is("SCHEDULED")),
 				AppointmentCollection.class);
-		data.setBookedAppointmentInPercent((double) ((100 * appointmentCount) / data.getTotalNoOfAppointment()));
+		data.setBookedAppointmentInPercent((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment());
 		return data;
 	}
 
