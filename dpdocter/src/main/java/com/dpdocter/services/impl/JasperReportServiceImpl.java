@@ -4748,32 +4748,49 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+		
 		((JRDesignSection) jasperDesign.getDetailSection())
-				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+		.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+		
+		band = new JRDesignBand();
+		band.setHeight(30);
 
-		int fieldWidth = 250;
-
-		addItem(jasperDesign, columnWidth, "$P{generalNotes}", fieldWidth, true, 0, false);
-
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{generalNotes}"));
+		jrDesignTextField.setX(2);
+		jrDesignTextField.setY(5);
+		jrDesignTextField.setHeight(25);
+		jrDesignTextField.setWidth(250);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setBold(false);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
 		((JRDesignSection) jasperDesign.getDetailSection())
 				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 
 		band = new JRDesignBand();
-		band.setSplitType(SplitTypeEnum.STRETCH);
+		int Startwith = 2;
+
+		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(new Float(13));
+			jrDesignTextField.setFontSize(new Float(9));
 			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(2);
-			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(22);
 			jrDesignTextField.setWidth(175);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setBold(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
