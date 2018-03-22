@@ -152,7 +152,6 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.services.UserFavouriteService;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
@@ -3997,11 +3996,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes, Boolean showPatientGroups,
 			Date fromDate, Date toDate) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		DBObject items = new BasicDBObject();
 		JasperReportResponse response = null;
 		UserCollection userCollection = null;
 		String pattern = "dd/MM/yyyy";
-		String clinicName = "";
 		String doctors = "";
 		Boolean mbnoAvailable = false, noteAvailable = false, statusAvailable = false, groupAvailble = false;
 		List<CalenderJasperBean> calenderJasperBeans = null;
@@ -4057,13 +4054,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId()) && showPatientGroups) {
 					List<GroupCollection> groupCollections = getPatientGroup(locationId, calenderResponse.getDoctorId(),
 							calenderResponse.getPatientId());
-					int i = 0;
 					calenderJasperBean.setGroupName("");
 					if (groupCollections != null && !groupCollections.isEmpty()) {
 
 						for (GroupCollection groupCollection : groupCollections) {
-							i++;
-
 							calenderJasperBean.setGroupName(calenderJasperBean.getGroupName()
 									+ (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) ? "," : "")
 									+ groupCollection.getName());
