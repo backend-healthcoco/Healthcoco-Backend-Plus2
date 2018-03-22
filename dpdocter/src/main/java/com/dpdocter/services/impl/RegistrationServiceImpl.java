@@ -411,21 +411,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 				logger.warn(role);
 				throw new BusinessException(ServiceError.NoRecord, role);
 			}
-			
-			if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
-				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID());
-				if(count !=null && count > 0) {
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID());
+				if (count != null && count > 0) {
 					logger.warn("Patient with this PID is already present. Please add patient different PID");
-					throw new BusinessException(ServiceError.InvalidInput, "Patient with this PID is already present. Please add patient different PID");
+					throw new BusinessException(ServiceError.InvalidInput,
+							"Patient with this PID is already present. Please add patient different PID");
 				}
 			}
-			
+
 			request.setFirstName(request.getLocalPatientName());
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			Date createdTime = new Date();
 
 			CheckPatientSignUpResponse checkPatientSignUpResponse = null;
-			if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))checkPatientSignUpResponse = checkIfPatientIsSignedUp(request.getMobileNumber());
+			if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))
+				checkPatientSignUpResponse = checkIfPatientIsSignedUp(request.getMobileNumber());
 			// save user
 
 			UserCollection userCollection = new UserCollection();
@@ -484,7 +487,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRegistrationDate(new Date().getTime());
 
 			patientCollection.setCreatedTime(createdTime);
-			if(DPDoctorUtils.anyStringEmpty(request.getPID())) {
+			if (DPDoctorUtils.anyStringEmpty(request.getPID())) {
 				patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
 						patientCollection.getRegistrationDate()));
 			}
@@ -672,12 +675,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<Group> groups = null;
 		try {
 
-			if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
-				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID(),
+			if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID(),
 						new ObjectId(request.getUserId()));
-				if(count !=null && count > 0) {
+				if (count != null && count > 0) {
 					logger.warn("Patient with this PID is already present. Please add patient different PID");
-					throw new BusinessException(ServiceError.InvalidInput, "Patient with this PID is already present. Please add patient different PID");
+					throw new BusinessException(ServiceError.InvalidInput,
+							"Patient with this PID is already present. Please add patient different PID");
 				}
 			}
 			if (request.getDob() != null && request.getDob().getAge() != null
@@ -743,8 +748,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 						if (infoType.contains("MEDICAL"))
 							patientCollection.setMedicalQuestionAnswers(request.getMedicalQuestionAnswers());
 					}
-					
-					if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+
+					if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 						patientCollection.setPID(request.getPID());
 					}
 				} else {
@@ -811,10 +816,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRelations(request.getRelations());
 				patientCollection.setNotes(request.getNotes());
 
-				if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 					patientCollection.setPID(request.getPID());
-				}
-				else if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
+				} else if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
 					patientCollection.setPID(patientCollection.getPID());
 				} else {
 					patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
@@ -1922,6 +1926,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 				} else
 					doctorCollection.setSpecialities(null);
+
 				assignDefaultUIPermissions(doctorCollection.getUserId().toString());
 			}
 			doctorCollection = doctorRepository.save(doctorCollection);
@@ -2034,7 +2039,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationIdHospitalId(
 					userCollection.getId(), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()));
-			if (userRoleCollection == null) {
+			if (userRoleCollection != null) {
 				userRoleCollection = new UserRoleCollection(userCollection.getId(), new ObjectId(request.getRoleId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 				userRoleCollection.setCreatedTime(new Date());
@@ -2304,12 +2309,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 					if (size > 0)
 						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
-								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole() , RoleEnum.LOCATION_ADMIN.getRole()),
+								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),
+										RoleEnum.LOCATION_ADMIN.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
-								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),RoleEnum.LOCATION_ADMIN.getRole()),
+								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),
+										RoleEnum.LOCATION_ADMIN.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				} else if (role.equalsIgnoreCase(RoleEnum.STAFF.getRole())) {
 					if (size > 0)
@@ -2567,11 +2574,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 									}
 									roleList.add(userRole.getRole());
 								}
-								
-								if(roleList.contains(RoleEnum.HOSPITAL_ADMIN.getRole()) && roleList.contains(RoleEnum.LOCATION_ADMIN.getRole())) {
+
+								if (roleList.contains(RoleEnum.HOSPITAL_ADMIN.getRole())
+										&& roleList.contains(RoleEnum.LOCATION_ADMIN.getRole())) {
 									clinicDoctorResponse.setIsSuperAdmin(true);
 								}
-								
+
 							}
 							if (clinicDoctorResponse.getWebRole() == null
 									|| clinicDoctorResponse.getWebRole().isEmpty()) {
@@ -4287,6 +4295,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	private void assignDefaultUIPermissions(String doctorId) {
 		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+
+		if (dynamicUICollection == null) {
+			dynamicUICollection = new DynamicUICollection();
+			dynamicUICollection.setDoctorId(new ObjectId(doctorId));
+		}
 		UIPermissions uiPermissions = dynamicUIService.getDefaultPermissions();
 		dynamicUICollection.setUiPermissions(uiPermissions);
 		dynamicUIRepository.save(dynamicUICollection);
