@@ -282,9 +282,9 @@ public class AnalyticsAPI {
 	@Path(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTIC)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTIC)
-	public Response<DoctorAppointmentAnalyticResponse> getAppointmentAnalytic(@QueryParam("locationId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("locationId") String hospitalId,
-			@QueryParam("locationId") String fromDate, @QueryParam("locationId") String toDate) {
+	public Response<DoctorAppointmentAnalyticResponse> getAppointmentAnalytic(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
@@ -298,9 +298,9 @@ public class AnalyticsAPI {
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTIC)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTIC)
-	public Response<DoctorPatientAnalyticResponse> getPatientAnalytic(@QueryParam("locationId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("locationId") String hospitalId,
-			@QueryParam("locationId") String fromDate, @QueryParam("locationId") String toDate) {
+	public Response<DoctorPatientAnalyticResponse> getPatientAnalytic(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
@@ -314,9 +314,9 @@ public class AnalyticsAPI {
 	@Path(value = PathProxy.AnalyticsUrls.GET_TREATMENT_ANALYTIC)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_TREATMENT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_TREATMENT_ANALYTIC)
-	public Response<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(@QueryParam("locationId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("locationId") String hospitalId,
-			@QueryParam("locationId") String fromDate, @QueryParam("locationId") String toDate,
+	public Response<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam("searchTerm") String searchTerm) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");

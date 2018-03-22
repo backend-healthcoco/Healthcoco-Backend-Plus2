@@ -3808,7 +3808,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 
 			}
-
 			if (isGroupByDoctor) {
 				for (ObjectId doctorId : doctorList) {
 					List<CalenderResponseForJasper> calenderResponseForJasper = getCalenderAppointments(null, doctorId,
@@ -3955,6 +3954,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		String pattern = "dd/MM/yyyy";
 		String clinicName = "";
 		String doctors = "";
+		Boolean mbnoAvailable = false, noteAvailable = false, statusAvailable = false, groupAvailble = false;
 		List<CalenderJasperBean> calenderJasperBeans = null;
 		CalenderJasperBean calenderJasperBean = null;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -4037,21 +4037,24 @@ public class AppointmentServiceImpl implements AppointmentService {
 					calenderJasperBean.setGroupName(" ");
 					if (groupCollections != null && !groupCollections.isEmpty()) {
 
-
 						for (GroupCollection groupCollection : groupCollections) {
 							i++;
 
 							calenderJasperBean.setGroupName(
-									(!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) ? "," : " ")
+									(!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) ? "," : "")
 											+ groupCollection.getName());
 
 						}
+						if (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName())) {
+							groupAvailble = true;
+
+						}
 					}
-				} 
+				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getNotes()) && showNotes) {
 					calenderJasperBean.setNotes("<b>Note :- </b>" + calenderResponse.getNotes());
-					
+					noteAvailable = true;
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientName())) {
@@ -4066,12 +4069,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getMobileNumber()) && showMobileNo) {
 					calenderJasperBean.setMobileNumber(calenderResponse.getMobileNumber());
 					System.out.println(calenderResponse.getMobileNumber());
-					
+					mbnoAvailable = true;
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getStatus()) && showAppointmentStatus) {
 					calenderJasperBean.setStatus(calenderResponse.getStatus());
-
+					statusAvailable = true;
 				}
 				calenderJasperBeans.add(calenderJasperBean);
 			}
@@ -4089,10 +4092,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Integer leftMargin = 20;
 		Integer rightMargin = 20;
 
-		parameters.put("showMobileNo", showMobileNo);
-		parameters.put("showStatus", showAppointmentStatus);
-		parameters.put("showNotes", showNotes);
-		parameters.put("showGroups", showPatientGroups);
+		parameters.put("showMobileNo", showMobileNo && mbnoAvailable);
+		parameters.put("showStatus", showAppointmentStatus && statusAvailable);
+		parameters.put("showNotes", showNotes && noteAvailable);
+		parameters.put("showGroups", showPatientGroups && groupAvailble);
 		parameters.put("isGroup", isGroupByDoctor);
 
 		parameters.put("footerSignature", "");
@@ -4102,9 +4105,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		parameters.put("headerRightText", "");
 		parameters.put("footerBottomText", "");
 		parameters.put("logoURL", "");
-
 		parameters.put("showTableOne", false);
-
 		parameters.put("poweredBy", footerText);
 		String pdfName = locationId + "calender-appointments" + new Date().getTime();
 		parameters.put("contentLineSpace", LineSpace.SMALL.name());
