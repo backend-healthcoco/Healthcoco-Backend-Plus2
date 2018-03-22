@@ -39,6 +39,7 @@ import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.PatientAnalyticType;
@@ -80,7 +81,79 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate) {
 		DoctorAppointmentAnalyticResponse data = new DoctorAppointmentAnalyticResponse();
-		Date date = new Date();
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+				.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+		DateTime fromTime = null;
+		DateTime toTime = null;
+		if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+			localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+			fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			criteria.and("updatedTime").gte(fromTime);
+
+			localCalendar.setTime(new Date(Long.parseLong(toDate)));
+			currentDay = localCalendar.get(Calendar.DATE);
+			currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			currentYear = localCalendar.get(Calendar.YEAR);
+			toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			criteria.and("updatedTime").lte(toTime);
+
+		} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+			localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+			fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			criteria.and("updatedTime").gte(fromTime);
+
+			localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+			currentDay = localCalendar.get(Calendar.DATE);
+			currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			currentYear = localCalendar.get(Calendar.YEAR);
+			toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			criteria.and("updatedTime").lte(toTime);
+
+		} else {
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+			fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			criteria.and("updatedTime").gte(fromTime);
+
+			currentDay = localCalendar.get(Calendar.DATE);
+			currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			currentYear = localCalendar.get(Calendar.YEAR);
+			toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			criteria.and("updatedTime").lte(toTime);
+
+		}
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
+
+		data.setTotalNoOfAppointment((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+		data.setCancelBydoctor((int) mongoTemplate.count(
+				new Query(criteria.and("cancelledBy").is(AppointmentCreatedBy.DOCTOR.getType())),
+				AppointmentCollection.class));
+		data.setCancelByPatient((int) mongoTemplate.count(
+				new Query(criteria.and("cancelledBy").is(AppointmentCreatedBy.PATIENT.getType())),
+				AppointmentCollection.class));
+		int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
+				AppointmentCollection.class);
+		data.setBookedAppointmentInPercent((double) ((100 * appointmentCount) / data.getTotalNoOfAppointment()));
+		appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("status").is("SCHEDULED")),
+				AppointmentCollection.class);
+		data.setBookedAppointmentInPercent((double) ((100 * appointmentCount) / data.getTotalNoOfAppointment()));
 		return data;
 	}
 
@@ -93,8 +166,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	@Override
-	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchTerm) {
+	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String searchTerm) {
 		List<DoctorTreatmentAnalyticResponse> data = new ArrayList<DoctorTreatmentAnalyticResponse>();
 		Date date = new Date();
 		return data;
