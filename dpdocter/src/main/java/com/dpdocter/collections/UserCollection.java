@@ -313,7 +313,6 @@ public class UserCollection extends GenericCollection {
 
 	public UserCollection(DBObject dbObject) {
 		this.title = (String) dbObject.get("title");
-		;
 		this.firstName = (String) dbObject.get("firstName");
 		this.lastName = (String) dbObject.get("lastName");
 		this.middleName = (String) dbObject.get("middleName");
