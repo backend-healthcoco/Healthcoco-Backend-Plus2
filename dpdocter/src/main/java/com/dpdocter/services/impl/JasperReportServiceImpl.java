@@ -5729,31 +5729,27 @@ public class JasperReportServiceImpl implements JasperReportService {
 			mNoWidth = 100;
 			statusWidth = 100;
 		} else if (showMobileNo && showGroups) {
-			timeWidth = 140;
-			nameWidth = 180;
+			timeWidth = 120;
+			nameWidth = 130;
 			mNoWidth = 100;
-			groupWidth = 100;
+			groupWidth = 180;
 		} else if (showStatus && showGroups) {
-			timeWidth = 140;
-			nameWidth = 170;
+			timeWidth = 120;
+			nameWidth = 130;
 			statusWidth = 100;
-			groupWidth = 100;
+			groupWidth = 180;
 		} else if (showGroups) {
 			timeWidth = 140;
 			nameWidth = 160;
-			mNoWidth = 110;
-			statusWidth = 100;
+			groupWidth = 230;
 		} else if (showStatus) {
 			timeWidth = 140;
 			nameWidth = 160;
-			mNoWidth = 110;
-			groupWidth = 100;
+			statusWidth = 110;
 		} else if (showMobileNo) {
 			timeWidth = 140;
 			nameWidth = 160;
-			statusWidth = 110;
-			groupWidth = 110;
-
+			mNoWidth = 100;
 		} else {
 			timeWidth = 230;
 			nameWidth = 230;
