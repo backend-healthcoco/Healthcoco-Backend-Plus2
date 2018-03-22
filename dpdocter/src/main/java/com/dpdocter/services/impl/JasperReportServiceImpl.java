@@ -5738,6 +5738,26 @@ public class JasperReportServiceImpl implements JasperReportService {
 			nameWidth = 180;
 			statusWidth = 100;
 			groupWidth = 100;
+		} else if (showGroups) {
+			timeWidth = 140;
+			nameWidth = 160;
+			mNoWidth = 110;
+			statusWidth = 100;
+		} else if (showStatus) {
+			timeWidth = 140;
+			nameWidth = 160;
+			mNoWidth = 110;
+			groupWidth = 100;
+		} else if (showMobileNo) {
+			timeWidth = 140;
+			nameWidth = 160;
+			statusWidth = 110;
+			groupWidth = 110;
+
+		} else {
+			timeWidth = 230;
+			nameWidth = 260;
+
 		}
 
 		Integer titleFontSize = contentFontSize;
