@@ -3784,12 +3784,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Date toDate = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(fromTime, toTime)) {
-				fromDate = new Date(Integer.parseInt(fromTime));
-				toDate = new Date(Integer.parseInt(toTime));
+				fromDate = new Date(Long.parseLong(fromTime));
+				toDate = new Date(Long.parseLong(toTime));
 			} else if (!DPDoctorUtils.anyStringEmpty(fromTime)) {
-				fromDate = new Date(Integer.parseInt(fromTime));
+				fromDate = new Date(Long.parseLong(fromTime));
 			} else if (!DPDoctorUtils.anyStringEmpty(toTime)) {
-				fromDate = new Date(Integer.parseInt(toTime));
+				fromDate = new Date(Long.parseLong(toTime));
 			} else {
 				fromDate = new Date();
 			}
