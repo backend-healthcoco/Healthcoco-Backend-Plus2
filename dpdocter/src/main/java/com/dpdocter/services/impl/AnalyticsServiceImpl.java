@@ -294,7 +294,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Override
 	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String searchTerm) {
-		List<DoctorTreatmentAnalyticResponse> data = new ArrayList<DoctorTreatmentAnalyticResponse>();
+		List<DoctorTreatmentAnalyticResponse> data = null;
 		try {
 			Criteria criteria = null;
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -410,7 +410,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 											new BasicDBObject("$first", "$totalTreatmentServiceCompleted"))
 									.append("totalTreatmentService",
 											new BasicDBObject("$first", "$totalTreatmentService")))));
-			mongoTemplate
+			data = mongoTemplate
 					.aggregate(aggregation, PatientTreatmentCollection.class, DoctorTreatmentAnalyticResponse.class)
 					.getMappedResults();
 
