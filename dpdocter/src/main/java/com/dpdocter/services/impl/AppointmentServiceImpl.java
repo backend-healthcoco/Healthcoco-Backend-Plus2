@@ -3882,7 +3882,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				criteria.and("toDate").lte(todate);
-				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime"));
+				if (todate.toDate().equals(fromdate.toDate()))
+					sortOperation = Aggregation.sort(new Sort(Direction.DESC, "time.fromTime"));
+				else {
+					sortOperation = Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime"));
+				}
 			} else {
 				localCalendar.setTime(fromTime);
 				int currentDay = localCalendar.get(Calendar.DATE);
@@ -4090,10 +4094,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getStatus()) && showAppointmentStatus) {
+
 					if (calenderResponse.getState().equals("CANCEL")) {
-						calenderJasperBean.setStatus("<del>" + calenderResponse.getStatus() + "</del>");
+						calenderJasperBean
+								.setStatus("<del>" + calenderResponse.getStatus().replace("_", " ") + "</del>");
 					} else {
-						calenderJasperBean.setStatus(calenderResponse.getStatus());
+						calenderJasperBean.setStatus(calenderResponse.getStatus().replace("_", " "));
 					}
 					statusAvailable = true;
 				}
