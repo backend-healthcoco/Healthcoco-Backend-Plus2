@@ -7,12 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
-import org.apache.struts.chain.commands.servlet.CreateAction;
-import org.bson.BSONObject;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -70,11 +67,8 @@ import com.dpdocter.response.PaymentAnalyticsDataResponse;
 import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 import com.dpdocter.services.AnalyticsService;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
-import common.util.web.DateUtil;
-import common.util.web.DateUtil.TIME_RESET_ENUM;
 
 @Service
 @Transactional
@@ -186,7 +180,35 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				data.setDecreaseAppointmentInPercent(
 						(100 * ((double) data.getTotalNoOfAppointment() - (double) appointmentCount))
 								/ (double) data.getTotalNoOfAppointment());
+				// new Patient Appointment
+				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
+				Criteria secondCriteria = new Criteria("appointment.locationId").is(new ObjectId(locationId))
+						.and("appointment.hospitalId").is(new ObjectId(hospitalId)).and("appointment.updatedTime")
+						.gte(fromTime).lte(toTime);
+				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+					secondCriteria.and("doctorId").is(new ObjectId(doctorId));
+				}
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
+						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), Aggregation.group("_id"));
+				double total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
+						.getMappedResults().size();
 
+				data.setNewPatientAppointmentInPercent((100 * (total)) / (double) data.getTotalNoOfAppointment());
+
+				// old Patient Appointment count
+
+				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").lte(fromTime);
+				secondCriteria = new Criteria("appointment.locationId").is(new ObjectId(locationId))
+						.and("appointment.hospitalId").is(new ObjectId(hospitalId)).and("appointment.updatedTime")
+						.gte(fromTime).lte(toTime);
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
+						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), Aggregation.group("_id"));
+				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
+						.getMappedResults().size();
+
+				data.setOldPatientAppointmentInPercent((100 * (total)) / (double) data.getTotalNoOfAppointment());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -240,12 +262,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			fromYear = localCalendar.get(Calendar.YEAR);
 			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
 
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").is(new ObjectId(doctorId));
-			}
+			criteria = getCriteria(null, locationId, hospitalId);
 			data.setTotalPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
 
 			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
@@ -260,7 +278,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						.and("visit.locationId").is(new ObjectId(locationId));
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"));
+						Aggregation.unwind("visit"), Aggregation.group("_id"));
 				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 						.getMappedResults().size();
 			}
@@ -278,6 +296,124 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			String hospitalId, String fromDate, String toDate, String searchTerm) {
 		List<DoctorTreatmentAnalyticResponse> data = new ArrayList<DoctorTreatmentAnalyticResponse>();
 		try {
+			Criteria criteria = null;
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
+			}
+
+			localCalendar.setTime(from);
+			int fromDay = localCalendar.get(Calendar.DATE);
+			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int fromYear = localCalendar.get(Calendar.YEAR);
+			fromTime = new DateTime(fromYear, fromMonth, fromDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			localCalendar.setTime(to);
+			fromDay = localCalendar.get(Calendar.DATE);
+			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
+			fromYear = localCalendar.get(Calendar.YEAR);
+			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
+
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.unwind("treatments"), Aggregation.lookup("treatment_services_cl",
+							"treatments.treatmentServiceId", "_id", "totalTreatmentService"),
+
+					Aggregation.unwind("totalTreatmentService"),
+					Aggregation.match(new Criteria("totalTreatmentService.name").regex(searchTerm, "i")),
+
+					new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id", new BasicDBObject("id", "$treatmentServiceId"))
+											.append("treatmentServiceId",
+													new BasicDBObject("$first", "$treatmentServiceId"))
+											.append("totalTreatmentService",
+													new BasicDBObject("$first", "$totalTreatmentService.name"))
+
+											.append("totalTreatmentServiceNotStarted",
+													new BasicDBObject("$push", "$status"))
+											.append("totalTreatmentServiceProgress",
+													new BasicDBObject("$push", "$status"))
+											.append("totalTreatmentServiceCompleted",
+													new BasicDBObject("$push", "$status"))
+											.append("totalTreatmentService", new BasicDBObject("$sum", 1)))),
+
+					Aggregation.unwind("totalTreatmentServiceCompleted"),
+					Aggregation.match(new Criteria("totalTreatmentServiceCompleted").is("COMPLETED"))
+
+					,
+					new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id", new BasicDBObject("id", "$treatmentServiceId"))
+											.append("treatmentServiceId",
+													new BasicDBObject("$first", "$treatmentServiceId"))
+											.append("totalTreatmentService",
+													new BasicDBObject("$first", "$totalTreatmentService.name"))
+
+											.append("totalTreatmentServiceNotStarted",
+													new BasicDBObject("$first", "$totalTreatmentServiceNotStarted"))
+											.append("totalTreatmentServiceProgress",
+													new BasicDBObject("$first", "$totalTreatmentServiceProgress"))
+											.append("totalTreatmentServiceCompleted", new BasicDBObject("$sum", 1))
+											.append("totalTreatmentService",
+													new BasicDBObject("$first", "$totalTreatmentService")))),
+					Aggregation.unwind("totalTreatmentServiceProgress"),
+
+					Aggregation.match(new Criteria("totalTreatmentServiceProgress").is("IN_PROGRESS"))
+
+					,
+					new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id", new BasicDBObject("id", "$treatmentServiceId"))
+											.append("treatmentServiceId",
+													new BasicDBObject("$first", "$treatmentServiceId"))
+											.append("totalTreatmentService",
+													new BasicDBObject("$first", "$totalTreatmentService.name"))
+
+											.append("totalTreatmentServiceNotStarted",
+													new BasicDBObject("$first", "$totalTreatmentServiceNotStarted"))
+											.append("totalTreatmentServiceProgress", new BasicDBObject("$sum", 1))
+											.append("totalTreatmentServiceCompleted",
+													new BasicDBObject("$first", "$totalTreatmentServiceCompleted"))
+											.append("totalTreatmentService",
+													new BasicDBObject("$first", "$totalTreatmentService")))),
+
+					Aggregation.unwind("totalTreatmentServiceNotStarted"),
+
+					Aggregation.match(new Criteria("totalTreatmentServiceNotStarted").is("NOT_STARTED")),
+
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("id", "$treatmentServiceId"))
+									.append("totalTreatmentService",
+											new BasicDBObject("$first", "$totalTreatmentService.name"))
+
+									.append("totalTreatmentServiceNotStarted", new BasicDBObject("$sum", 1))
+									.append("totalTreatmentServiceProgress",
+											new BasicDBObject("$first", "$totalTreatmentServiceProgress"))
+									.append("totalTreatmentServiceCompleted",
+											new BasicDBObject("$first", "$totalTreatmentServiceCompleted"))
+									.append("totalTreatmentService",
+											new BasicDBObject("$first", "$totalTreatmentService")))));
+			mongoTemplate
+					.aggregate(aggregation, PatientTreatmentCollection.class, DoctorTreatmentAnalyticResponse.class)
+					.getMappedResults();
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
