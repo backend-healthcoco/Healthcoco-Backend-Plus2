@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.apache.struts.chain.commands.servlet.CreateAction;
+import org.bson.BSONObject;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -65,8 +70,11 @@ import com.dpdocter.response.PaymentAnalyticsDataResponse;
 import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 import com.dpdocter.services.AnalyticsService;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.DateUtil;
+import common.util.web.DateUtil.TIME_RESET_ENUM;
 
 @Service
 @Transactional
@@ -77,11 +85,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	Logger logger = Logger.getLogger(AnalyticsServiceImpl.class);
 
-	private Criteria getCriteria(String doctorId, String locationId, String hospitalId, DateTime fromDate,
-			DateTime toDate) {
+	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
 		Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-				.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false).and("updatedTime").gte(fromDate)
-				.lte(toDate);
+				.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -100,7 +106,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
-			Date next = null;
+			Date lastdate = null;
+			Map<String, Object> parameters = new HashMap<String, Object>();
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
@@ -114,9 +121,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			} else {
 				from = new Date();
 				to = new Date();
-
 			}
+			long diff = to.getTime() - from.getTime();
+			long diffDays = (diff / (24 * 60 * 60 * 1000));
+			lastdate = new Date(from.getTime() - ((diffDays + 1) * (24 * 60 * 60 * 1000)));
 
+			DateTime last = DPDoctorUtils.getStartTime(lastdate);
 			localCalendar.setTime(from);
 			int fromDay = localCalendar.get(Calendar.DATE);
 			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
@@ -127,37 +137,57 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			fromDay = localCalendar.get(Calendar.DATE);
 			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
 			fromYear = localCalendar.get(Calendar.YEAR);
-			toTime = new DateTime(fromYear, fromMonth, fromDay, 24, 0, 0,
+			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			// total
-			criteria = getCriteria(doctorId, locationId, hospitalId, fromTime, toTime);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(fromTime).lte(toTime);
+
 			data.setTotalNoOfAppointment((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+
 			// cancel by doctor
-			criteria = getCriteria(doctorId, locationId, hospitalId, fromTime, toTime);
+			criteria = getCriteria(doctorId, locationId, hospitalId);
 			data.setCancelBydoctor((int) mongoTemplate.count(
 					new Query(criteria.and("cancelledBy").is(AppointmentCreatedBy.DOCTOR.getType())),
 					AppointmentCollection.class));
+
 			// cancel by Patient
-			criteria = getCriteria(doctorId, locationId, hospitalId, fromTime, toTime);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(fromTime).lte(toTime);
 			data.setCancelByPatient((int) mongoTemplate.count(
 					new Query(criteria.and("cancelledBy").is(AppointmentCreatedBy.PATIENT.getType())),
 					AppointmentCollection.class));
+			if (data.getTotalNoOfAppointment() > 0) {
 
-			// Booked percent
-			criteria = getCriteria(doctorId, locationId, hospitalId, fromTime, toTime);
-			int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
-					AppointmentCollection.class);
+				// Booked percent
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(fromTime).lte(toTime);
+				int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
+						AppointmentCollection.class);
 
-			data.setBookedAppointmentInPercent(
-					((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment()));
-			// Sceduled percent
-			criteria = getCriteria(doctorId, locationId, hospitalId, fromTime, toTime);
-			appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("status").is("SCHEDULED")),
-					AppointmentCollection.class);
-			data.setBookedAppointmentInPercent(
-					(100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment());
-          
+				data.setBookedAppointmentInPercent(
+						((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment()));
+
+				// Sceduled percent
+
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(fromTime).lte(toTime);
+				appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("status").is("SCHEDULED")),
+						AppointmentCollection.class);
+
+				data.setBookedAppointmentInPercent(
+						(100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment());
+
+				// hike
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(last).lte(fromTime);
+				appointmentCount = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+
+				data.setIncreseAppointmentInPercent(
+						(100 * ((double) appointmentCount - (double) data.getTotalNoOfAppointment()))
+								/ (double) data.getTotalNoOfAppointment());
+
+				data.setDecreaseAppointmentInPercent(
+						(100 * ((double) data.getTotalNoOfAppointment() - (double) appointmentCount))
+								/ (double) data.getTotalNoOfAppointment());
+
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While getting Appointment analytic");
@@ -172,11 +202,73 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			String fromDate, String toDate) {
 		DoctorPatientAnalyticResponse data = new DoctorPatientAnalyticResponse();
 		try {
-			Date date = new Date();
+			Criteria criteria = null;
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			Date lastdate = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
+			}
+			long diff = to.getTime() - from.getTime();
+			long diffDays = (diff / (24 * 60 * 60 * 1000));
+			lastdate = new Date(from.getTime() - ((diffDays + 1) * (24 * 60 * 60 * 1000)));
+
+			DateTime last = DPDoctorUtils.getStartTime(lastdate);
+			localCalendar.setTime(from);
+			int fromDay = localCalendar.get(Calendar.DATE);
+			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int fromYear = localCalendar.get(Calendar.YEAR);
+			fromTime = new DateTime(fromYear, fromMonth, fromDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			localCalendar.setTime(to);
+			fromDay = localCalendar.get(Calendar.DATE);
+			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
+			fromYear = localCalendar.get(Calendar.YEAR);
+			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			data.setTotalPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
+
+			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
+			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
+			if (data.getTotalNewPatient() > 0) {
+				int total = 0;
+				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(last).lte(fromTime);
+				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
+				data.setTotalPatientdecrease(100 * (data.getTotalNewPatient() - total) / data.getTotalNewPatient());
+				data.setTotalPatientIncrease(100 * (total - data.getTotalNewPatient()) / data.getTotalNewPatient());
+				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+						.and("visit.locationId").is(new ObjectId(locationId));
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+						Aggregation.unwind("visit"));
+				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
+						.getMappedResults().size();
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting Appointment analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Appointment analytic");
+			logger.error(e + " Error Occurred While getting Patient analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Patient analytic");
 		}
 		return data;
 	}
@@ -187,6 +279,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<DoctorTreatmentAnalyticResponse> data = new ArrayList<DoctorTreatmentAnalyticResponse>();
 		try {
 		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While getting Appointment analytic");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Appointment analytic");
@@ -3170,10 +3263,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
+				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)))
+						.lte(new Date(Long.parseLong(toDate)));
 			}
 
 			Aggregation aggregation = null;
