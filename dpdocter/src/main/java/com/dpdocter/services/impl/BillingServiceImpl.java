@@ -972,20 +972,6 @@ public class BillingServiceImpl implements BillingService {
 						patientReceiptCollection.setUpdatedTime(new Date());
 						doctorPatientReceiptRepository.save(patientReceiptCollection);
 					}
-				DoctorPatientLedgerCollection patientLedgerCollection = doctorPatientLedgerRepository
-						.findByReceiptId(doctorPatientReceiptCollection.getId());
-				patientLedgerCollection.setDiscarded(discarded);
-				patientLedgerCollection.setUpdatedTime(new Date());
-				doctorPatientLedgerRepository.save(patientLedgerCollection);
-
-				DoctorPatientDueAmountCollection amountCollection = doctorPatientDueAmountRepository.find(
-						doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getDoctorId(),
-						doctorPatientReceiptCollection.getLocationId(), doctorPatientReceiptCollection.getHospitalId());
-				amountCollection.setUpdatedTime(new Date());
-				amountCollection
-						.setDueAmount(amountCollection.getDueAmount() + doctorPatientReceiptCollection.getAmountPaid());
-				doctorPatientDueAmountRepository.save(amountCollection);
-
 				doctorPatientReceiptCollection.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount());
 
 			} else {
@@ -1018,6 +1004,20 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientReceiptRepository.save(receiptCollection);
 					}
 			}
+			
+			DoctorPatientLedgerCollection patientLedgerCollection = doctorPatientLedgerRepository
+					.findByReceiptId(doctorPatientReceiptCollection.getId());
+			patientLedgerCollection.setDiscarded(discarded);
+			patientLedgerCollection.setUpdatedTime(new Date());
+			doctorPatientLedgerRepository.save(patientLedgerCollection);
+
+			DoctorPatientDueAmountCollection amountCollection = doctorPatientDueAmountRepository.find(
+					doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getDoctorId(),
+					doctorPatientReceiptCollection.getLocationId(), doctorPatientReceiptCollection.getHospitalId());
+			amountCollection.setUpdatedTime(new Date());
+			amountCollection.setDueAmount(amountCollection.getDueAmount() + doctorPatientReceiptCollection.getAmountPaid());
+			doctorPatientDueAmountRepository.save(amountCollection);
+		
 			doctorPatientReceiptCollection.setUpdatedTime(new Date());
 			doctorPatientReceiptCollection.setDiscarded(discarded);
 			doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
