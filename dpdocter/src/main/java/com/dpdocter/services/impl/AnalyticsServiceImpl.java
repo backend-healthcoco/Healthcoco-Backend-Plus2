@@ -134,7 +134,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			// total
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(fromTime).lte(toTime);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 
 			data.setTotalNoOfAppointment((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
@@ -145,14 +145,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					AppointmentCollection.class));
 
 			// cancel by Patient
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(fromTime).lte(toTime);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 			data.setCancelByPatient((int) mongoTemplate.count(
 					new Query(criteria.and("cancelledBy").is(AppointmentCreatedBy.PATIENT.getType())),
 					AppointmentCollection.class));
 			if (data.getTotalNoOfAppointment() > 0) {
 
 				// Booked percent
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(fromTime).lte(toTime);
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 				int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
 						AppointmentCollection.class);
 
@@ -161,7 +161,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				// Sceduled percent
 
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(fromTime).lte(toTime);
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("status").is("SCHEDULED")),
 						AppointmentCollection.class);
 
@@ -169,7 +169,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						(100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment());
 
 				// hike
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("updatedTime").gte(last).lte(fromTime);
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(last).lte(fromTime);
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 
 				data.setIncreseAppointmentInPercent(
@@ -190,7 +190,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"), Aggregation.match(secondCriteria),
-						Aggregation.group("appointment._id"));
+						Aggregation.group("appointment.id"));
 				double total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 						.getMappedResults().size();
 
@@ -201,11 +201,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").lte(fromTime);
 				secondCriteria = new Criteria("appointment.locationId").is(new ObjectId(locationId))
 						.and("appointment.hospitalId").is(new ObjectId(hospitalId)).and("appointment.updatedTime")
-						.gte(fromTime).lte(toTime);
+						.gte(last).lte(fromTime);
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"), Aggregation.match(secondCriteria),
-						Aggregation.group("appointment._id"));
+						Aggregation.group("appointment.id"));
 				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 						.getMappedResults().size();
 
@@ -277,9 +277,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				data.setTotalPatientIncrease(100 * (total - data.getTotalNewPatient()) / data.getTotalNewPatient());
 				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
 						.and("visit.locationId").is(new ObjectId(locationId));
-				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+				}
+				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.group("_id"));
+						Aggregation.unwind("visit"), Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
 				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 						.getMappedResults().size();
 				data.setTotalVisitedPatient((100 * (total) / data.getTotalNewPatient()));
@@ -336,7 +340,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			Criteria secondCriteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				secondCriteria.and("totalTreatmentService.na;me").regex(searchTerm, "i");
+				secondCriteria.and("totalTreatmentService.name").regex(searchTerm, "i");
 			}
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.unwind("treatments"), Aggregation.lookup("treatment_services_cl",
