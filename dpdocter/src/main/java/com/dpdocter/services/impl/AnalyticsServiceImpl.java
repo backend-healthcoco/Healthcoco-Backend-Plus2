@@ -416,31 +416,29 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							}
 							analyticResponse.setTotalTreatmentServiceCompleted(i);
 						}
-						for (String str : data.getTotalTreatmentServiceCompleted()) {
-							int i = 0;
-							if (str.equals("COMPLETED")) {
-								i++;
+						if (data.getTotalTreatmentServiceProgress() != null
+								&& !data.getTotalTreatmentServiceProgress().isEmpty()) {
+							for (String str : data.getTotalTreatmentServiceProgress()) {
+								int i = 0;
+								if (str.equals("IN_PROGRESS")) {
+									i++;
 
+								}
+								analyticResponse.setTotalTreatmentServiceProgress(i);
 							}
-							analyticResponse.setTotalTreatmentServiceCompleted(i);
 						}
-						for (String str : data.getTotalTreatmentServiceProgress()) {
-							int i = 0;
-							if (str.equals("IN_PROGRESS")) {
-								i++;
+						if (data.getTotalTreatmentServiceNotStarted() != null
+								&& !data.getTotalTreatmentServiceNotStarted().isEmpty()) {
+							for (String str : data.getTotalTreatmentServiceNotStarted()) {
+								int i = 0;
+								if (str.equals("NOT_STARTED")) {
+									i++;
 
+								}
+								analyticResponse.setTotalTreatmentServiceNotStarted(i);
 							}
-							analyticResponse.setTotalTreatmentServiceProgress(i);
-						}
-						for (String str : data.getTotalTreatmentServiceNotStarted()) {
-							int i = 0;
-							if (str.equals("NOT_STARTED")) {
-								i++;
 
-							}
-							analyticResponse.setTotalTreatmentServiceNotStarted(i);
 						}
-
 					}
 				}
 				response.add(analyticResponse);
