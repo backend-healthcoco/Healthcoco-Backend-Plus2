@@ -107,7 +107,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(fromDate));
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				from = new Date(Long.parseLong(toDate));
 				to = new Date(Long.parseLong(toDate));
@@ -204,7 +204,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						.gte(fromTime).lte(toTime);
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
-						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), Aggregation.group("_id"));
+						Aggregation.unwind("appointment"), Aggregation.match(secondCriteria),
+						Aggregation.group("appointment._id"));
 				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 						.getMappedResults().size();
 
@@ -281,6 +282,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.unwind("visit"), Aggregation.group("_id"));
 				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 						.getMappedResults().size();
+				data.setTotalVisitedPatient((100 * (total) / data.getTotalNewPatient()));
+
 			}
 
 		} catch (Exception e) {
@@ -308,7 +311,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(fromDate));
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				from = new Date(Long.parseLong(toDate));
 				to = new Date(Long.parseLong(toDate));
@@ -330,7 +333,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
-			Criteria secondCriteria = new Criteria("totalTreatmentService.na;me").regex(searchTerm, "i");
+
+			Criteria secondCriteria = null;
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				secondCriteria = new Criteria("totalTreatmentService.na;me").regex(searchTerm, "i");
+			}
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.unwind("treatments"), Aggregation.lookup("treatment_services_cl",
 							"treatments.treatmentServiceId", "_id", "totalTreatmentService"),
@@ -3410,7 +3417,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(fromDate));
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				from = new Date(Long.parseLong(toDate));
 				to = new Date(Long.parseLong(toDate));
