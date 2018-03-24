@@ -3765,6 +3765,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 			jasperReportResponse = jasperReportService.createPDF(ComponentType.PATIENT_CARD, parameters,
 					dentalWorksFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+			if (jasperReportResponse != null)
+				response = getFinalImageURL(jasperReportResponse.getPath());
+			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+				if (jasperReportResponse.getFileSystemResource().getFile().exists())
+					jasperReportResponse.getFileSystemResource().getFile().delete();
 		}
 		// TODO: handle exception
 		catch (Exception e) {
