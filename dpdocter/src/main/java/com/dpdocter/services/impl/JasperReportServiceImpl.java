@@ -4793,7 +4793,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-		band.setHeight(20);
+		band.setHeight(25);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 	}
