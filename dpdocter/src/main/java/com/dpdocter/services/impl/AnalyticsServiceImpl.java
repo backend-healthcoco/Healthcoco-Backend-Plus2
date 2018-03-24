@@ -101,7 +101,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Date from = null;
 			Date to = null;
 			Date lastdate = null;
-			Map<String, Object> parameters = new HashMap<String, Object>();
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
@@ -190,7 +189,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
-						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), Aggregation.group("_id"));
+						Aggregation.unwind("appointment"), Aggregation.match(secondCriteria),
+						Aggregation.group("appointment._id"));
 				double total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 						.getMappedResults().size();
 
@@ -3397,10 +3397,42 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)))
-						.lte(new Date(Long.parseLong(toDate)));
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
 			}
+
+			localCalendar.setTime(from);
+			int fromDay = localCalendar.get(Calendar.DATE);
+			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int fromYear = localCalendar.get(Calendar.YEAR);
+			fromTime = new DateTime(fromYear, fromMonth, fromDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			localCalendar.setTime(to);
+			fromDay = localCalendar.get(Calendar.DATE);
+			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
+			fromYear = localCalendar.get(Calendar.YEAR);
+			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 
 			Aggregation aggregation = null;
 			if (size > 0) {
