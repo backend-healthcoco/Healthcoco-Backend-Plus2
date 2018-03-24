@@ -33,7 +33,6 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
-import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.PatientQueueCollection;

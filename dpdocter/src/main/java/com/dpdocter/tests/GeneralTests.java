@@ -2,6 +2,10 @@ package com.dpdocter.tests;
 
 public class GeneralTests {
 
+	static{  
+		  System.out.println("static block is invoked");  
+//		  System.exit(0);  
+		  }  
 	public static void main(String args[]) {
 //		String inputForRest = "Test Message for REST";
 //		RestClient client = new RestClient();
