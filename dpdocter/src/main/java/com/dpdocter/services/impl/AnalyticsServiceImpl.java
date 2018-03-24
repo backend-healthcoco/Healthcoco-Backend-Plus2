@@ -334,9 +334,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 
-			Criteria secondCriteria = null;
+			Criteria secondCriteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				secondCriteria = new Criteria("totalTreatmentService.na;me").regex(searchTerm, "i");
+				secondCriteria.and("totalTreatmentService.na;me").regex(searchTerm, "i");
 			}
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.unwind("treatments"), Aggregation.lookup("treatment_services_cl",
