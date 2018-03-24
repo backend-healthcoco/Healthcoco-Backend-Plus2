@@ -1,41 +1,41 @@
 package com.dpdocter.response;
 
 public class DoctorTreatmentAnalyticResponse {
-	private Integer totalTreatmentService;
-	private Integer totalTreatmentServiceCompleted;
-	private Integer totalTreatmentServiceProgress;
-	private Integer totalTreatmentServiceNotStarted;
-	private String  treatmentServiceName;
+	private int totalTreatmentService;
+	private int totalTreatmentServiceCompleted;
+	private int totalTreatmentServiceProgress;
+	private int totalTreatmentServiceNotStarted;
+	private String treatmentServiceName;
 
-	public Integer getTotalTreatmentService() {
+	public int getTotalTreatmentService() {
 		return totalTreatmentService;
 	}
 
-	public void setTotalTreatmentService(Integer totalTreatmentService) {
+	public void setTotalTreatmentService(int totalTreatmentService) {
 		this.totalTreatmentService = totalTreatmentService;
 	}
 
-	public Integer getTotalTreatmentServiceCompleted() {
+	public int getTotalTreatmentServiceCompleted() {
 		return totalTreatmentServiceCompleted;
 	}
 
-	public void setTotalTreatmentServiceCompleted(Integer totalTreatmentServiceCompleted) {
+	public void setTotalTreatmentServiceCompleted(int totalTreatmentServiceCompleted) {
 		this.totalTreatmentServiceCompleted = totalTreatmentServiceCompleted;
 	}
 
-	public Integer getTotalTreatmentServiceProgress() {
+	public int getTotalTreatmentServiceProgress() {
 		return totalTreatmentServiceProgress;
 	}
 
-	public void setTotalTreatmentServiceProgress(Integer totalTreatmentServiceProgress) {
+	public void setTotalTreatmentServiceProgress(int totalTreatmentServiceProgress) {
 		this.totalTreatmentServiceProgress = totalTreatmentServiceProgress;
 	}
 
-	public Integer getTotalTreatmentServiceNotStarted() {
+	public int getTotalTreatmentServiceNotStarted() {
 		return totalTreatmentServiceNotStarted;
 	}
 
-	public void setTotalTreatmentServiceNotStarted(Integer totalTreatmentServiceNotStarted) {
+	public void setTotalTreatmentServiceNotStarted(int totalTreatmentServiceNotStarted) {
 		this.totalTreatmentServiceNotStarted = totalTreatmentServiceNotStarted;
 	}
 

@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +30,7 @@ import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.TreatmentService;
+import com.dpdocter.beans.TretmentAnalyticMongoResponse;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
@@ -281,6 +283,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
 				}
+				criteria.and("visit.discarded").is(false);
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 						Aggregation.unwind("visit"), Aggregation.match(criteria),
@@ -300,9 +303,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	@Override
-	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchTerm) {
-		List<DoctorTreatmentAnalyticResponse> data = null;
+	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(int page, int size, String doctorId,
+			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
+		List<DoctorTreatmentAnalyticResponse> response = null;
 		try {
 			Criteria criteria = null;
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -337,94 +340,111 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			fromYear = localCalendar.get(Calendar.YEAR);
 			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+					.and("discarded").is(false);
 
-			;
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.and("totalTreatmentService.name").regex(searchTerm, "i");
 			}
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.unwind("treatments"), Aggregation.lookup("treatment_services_cl",
-							"treatments.treatmentServiceId", "_id", "totalTreatmentService"),
+			Aggregation aggregation = null;
+			if (size > 0) {
 
-					Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"), Aggregation.lookup(
+						"treatment_services_cl", "treatments.treatmentServiceId", "_id", "totalTreatmentService"),
 
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("id", "$treatments.treatmentServiceId"))
-									.append("treatmentServiceId",
-											new BasicDBObject("$first", "$treatments.treatmentServiceId"))
-									.append("treatmentServiceName",
-											new BasicDBObject("$first", "$totalTreatmentService.name"))
+						Aggregation
+								.unwind("totalTreatmentService"),
+						Aggregation
+								.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$treatments.treatmentServiceId")
+										.append("treatmentServiceId",
+												new BasicDBObject("$first", "$treatments.treatmentServiceId"))
+										.append("name", new BasicDBObject("$first", "$totalTreatmentService.name"))
+										.append("totalTreatmentServiceCompleted",
+												new BasicDBObject("$push", "$treatments.status"))
+										.append("totalTreatmentServiceProgress",
+												new BasicDBObject("$push", "$treatments.status"))
+										.append("totalTreatmentServiceCompleted",
+												new BasicDBObject("$push", "$treatments.status"))
+										.append("totalTreatmentService", new BasicDBObject("$sum", 1)))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "totalTreatmentService")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+			} else {
+				size = 10;
 
-									.append("totalTreatmentServiceNotStarted",
-											new BasicDBObject("$push", "$treatments.status"))
-									.append("totalTreatmentServiceProgress",
-											new BasicDBObject("$push", "$treatments.status"))
-									.append("totalTreatmentServiceCompleted",
-											new BasicDBObject("$push", "$treatments.status"))
-									.append("totalTreatmentService", new BasicDBObject("$sum", 1)))),
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"), Aggregation.lookup(
+						"treatment_services_cl", "treatments.treatmentServiceId", "_id", "totalTreatmentService"),
 
-					Aggregation.unwind("totalTreatmentServiceCompleted"),
-					Aggregation.match(new Criteria("totalTreatmentServiceCompleted").is("COMPLETED"))
+						Aggregation
+								.unwind("totalTreatmentService"),
+						Aggregation
+								.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$treatments.treatmentServiceId")
+										.append("treatmentServiceId",
+												new BasicDBObject("$first", "$treatments.treatmentServiceId"))
+										.append("name", new BasicDBObject("$first", "$totalTreatmentService.name"))
+										.append("totalTreatmentServiceCompleted",
+												new BasicDBObject("$push", "$treatments.status"))
+										.append("totalTreatmentServiceProgress",
+												new BasicDBObject("$push", "$treatments.status"))
+										.append("totalTreatmentServiceCompleted",
+												new BasicDBObject("$push", "$treatments.status"))
+										.append("totalTreatmentService", new BasicDBObject("$sum", 1)))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "totalTreatmentService")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 
-					,
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("id", "$treatmentServiceId"))
-									.append("treatmentServiceId", new BasicDBObject("$first", "$treatmentServiceId"))
+			}
+			AggregationResults<TretmentAnalyticMongoResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, TretmentAnalyticMongoResponse.class);
+			List<TretmentAnalyticMongoResponse> analyticMongoResponses = aggregationResults.getMappedResults();
+			if (analyticMongoResponses != null && !analyticMongoResponses.isEmpty()) {
+				response = new ArrayList<DoctorTreatmentAnalyticResponse>();
+				DoctorTreatmentAnalyticResponse analyticResponse = new DoctorTreatmentAnalyticResponse();
+				for (TretmentAnalyticMongoResponse data : analyticMongoResponses) {
+					analyticResponse.setTotalTreatmentService(data.getTotalTreatmentService());
+					analyticResponse.setTreatmentServiceName(data.getTreatmentServiceName());
+					if (data.getTotalTreatmentServiceCompleted() != null
+							&& !data.getTotalTreatmentServiceCompleted().isEmpty()) {
 
-									.append("totalTreatmentService",
-											new BasicDBObject("$first", "$totalTreatmentService"))
-									.append("treatmentServiceName",
-											new BasicDBObject("$first", "$treatmentServiceName"))
+						for (String str : data.getTotalTreatmentServiceCompleted()) {
+							int i = 0;
+							if (str.equals("COMPLETED")) {
+								i++;
 
-									.append("totalTreatmentServiceNotStarted",
-											new BasicDBObject("$first", "$totalTreatmentServiceNotStarted"))
-									.append("totalTreatmentServiceProgress",
-											new BasicDBObject("$first", "$totalTreatmentServiceProgress"))
-									.append("totalTreatmentServiceCompleted", new BasicDBObject("$sum", 1)))),
-					Aggregation.unwind("totalTreatmentServiceProgress"),
+							}
+							analyticResponse.setTotalTreatmentServiceCompleted(i);
+						}
+						for (String str : data.getTotalTreatmentServiceCompleted()) {
+							int i = 0;
+							if (str.equals("COMPLETED")) {
+								i++;
 
-					Aggregation.match(new Criteria("totalTreatmentServiceProgress").is("IN_PROGRESS"))
+							}
+							analyticResponse.setTotalTreatmentServiceCompleted(i);
+						}
+						for (String str : data.getTotalTreatmentServiceProgress()) {
+							int i = 0;
+							if (str.equals("IN_PROGRESS")) {
+								i++;
 
-					,
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("id", "$treatmentServiceId"))
-									.append("treatmentServiceId", new BasicDBObject("$first", "$treatmentServiceId"))
+							}
+							analyticResponse.setTotalTreatmentServiceProgress(i);
+						}
+						for (String str : data.getTotalTreatmentServiceNotStarted()) {
+							int i = 0;
+							if (str.equals("NOT_STARTED")) {
+								i++;
 
-									.append("totalTreatmentService",
-											new BasicDBObject("$first", "$totalTreatmentService"))
-									.append("treatmentServiceName",
-											new BasicDBObject("$first", "$treatmentServiceName"))
+							}
+							analyticResponse.setTotalTreatmentServiceNotStarted(i);
+						}
 
-									.append("totalTreatmentServiceNotStarted",
-											new BasicDBObject("$first", "$totalTreatmentServiceNotStarted"))
-									.append("totalTreatmentServiceProgress", new BasicDBObject("$sum", 1))
-									.append("totalTreatmentServiceCompleted",
-											new BasicDBObject("$first", "$totalTreatmentServiceCompleted")))),
-
-					Aggregation.unwind("totalTreatmentServiceNotStarted"),
-
-					Aggregation.match(new Criteria("totalTreatmentServiceNotStarted").is("NOT_STARTED")),
-
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("id", "$treatmentServiceId"))
-									.append("treatmentServiceId", new BasicDBObject("$first", "$treatmentServiceId"))
-
-									.append("totalTreatmentService",
-											new BasicDBObject("$first", "$totalTreatmentService"))
-									.append("treatmentServiceName",
-											new BasicDBObject("$first", "$treatmentServiceName"))
-
-									.append("totalTreatmentServiceNotStarted", new BasicDBObject("$sum", 1))
-
-									.append("totalTreatmentServiceProgress",
-											new BasicDBObject("$first", "$totalTreatmentServiceProgress"))
-									.append("totalTreatmentServiceCompleted",
-											new BasicDBObject("$first", "$totalTreatmentServiceCompleted")))));
-			data = mongoTemplate
-					.aggregate(aggregation, PatientTreatmentCollection.class, DoctorTreatmentAnalyticResponse.class)
-					.getMappedResults();
-
+					}
+				}
+				response.add(analyticResponse);
+			}
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -432,7 +452,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Treatment analytic");
 		}
 
-		return data;
+		return response;
 	}
 
 	@Override
