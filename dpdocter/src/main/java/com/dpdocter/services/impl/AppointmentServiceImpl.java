@@ -4101,7 +4101,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getStatus()) && showAppointmentStatus) {
 
 					if (calenderResponse.getState().equals("CANCEL")) {
-						calenderJasperBean.setStatus( calenderResponse.getStatus().replace("_", " ")+"(CN)");
+						calenderJasperBean.setStatus(calenderResponse.getStatus().replace("_", " ") + " (C)");
 					} else {
 						calenderJasperBean.setStatus(calenderResponse.getStatus().replace("_", " "));
 					}

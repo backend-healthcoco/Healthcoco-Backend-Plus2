@@ -47,4 +47,13 @@ public class DoctorTreatmentAnalyticResponse {
 		this.treatmentServiceName = treatmentServiceName;
 	}
 
+	@Override
+	public String toString() {
+		return "DoctorTreatmentAnalyticResponse [totalTreatmentService=" + totalTreatmentService
+				+ ", totalTreatmentServiceCompleted=" + totalTreatmentServiceCompleted
+				+ ", totalTreatmentServiceProgress=" + totalTreatmentServiceProgress
+				+ ", totalTreatmentServiceNotStarted=" + totalTreatmentServiceNotStarted + ", treatmentServiceName="
+				+ treatmentServiceName + "]";
+	}
+
 }

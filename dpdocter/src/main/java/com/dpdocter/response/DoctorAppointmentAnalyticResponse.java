@@ -8,10 +8,17 @@ public class DoctorAppointmentAnalyticResponse {
 	private Double cancelledAppointmentInPercent = 0.0;
 	private Double newPatientAppointmentInPercent = 0.0;
 	private Double oldPatientAppointmentInPercent = 0.0;
-	private Double increseAppointmentInPercent = 0.0;
-	private Double decreaseAppointmentInPercent = 0.0;
+	private Double changeInAppointmentPercent = 0.0;
 	private Integer cancelByPatient = 0;
 	private Integer cancelBydoctor = 0;
+
+	public Double getChangeInAppointmentPercent() {
+		return changeInAppointmentPercent;
+	}
+
+	public void setChangeInAppointmentPercent(Double changeInAppointmentPercent) {
+		this.changeInAppointmentPercent = changeInAppointmentPercent;
+	}
 
 	public Integer getTotalNoOfAppointment() {
 		return totalNoOfAppointment;
@@ -61,14 +68,6 @@ public class DoctorAppointmentAnalyticResponse {
 		this.oldPatientAppointmentInPercent = oldPatientAppointmentInPercent;
 	}
 
-	public Double getDecreaseAppointmentInPercent() {
-		return decreaseAppointmentInPercent;
-	}
-
-	public void setDecreaseAppointmentInPercent(Double decreaseAppointmentInPercent) {
-		this.decreaseAppointmentInPercent = decreaseAppointmentInPercent;
-	}
-
 	public Integer getCancelByPatient() {
 		return cancelByPatient;
 	}
@@ -83,14 +82,6 @@ public class DoctorAppointmentAnalyticResponse {
 
 	public void setCancelBydoctor(Integer cancelBydoctor) {
 		this.cancelBydoctor = cancelBydoctor;
-	}
-
-	public Double getIncreseAppointmentInPercent() {
-		return increseAppointmentInPercent;
-	}
-
-	public void setIncreseAppointmentInPercent(Double increseAppointmentInPercent) {
-		this.increseAppointmentInPercent = increseAppointmentInPercent;
 	}
 
 }

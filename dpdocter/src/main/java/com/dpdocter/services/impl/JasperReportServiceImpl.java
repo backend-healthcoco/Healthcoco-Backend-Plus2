@@ -5724,10 +5724,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			statusWidth = 80;
 			groupWidth = 80;
 		} else if (showMobileNo && showStatus) {
-			timeWidth = 140;
-			nameWidth = 180;
+			timeWidth = 130;
+			nameWidth = 170;
 			mNoWidth = 100;
-			statusWidth = 100;
+			statusWidth = 120;
 		} else if (showMobileNo && showGroups) {
 			timeWidth = 120;
 			nameWidth = 130;
@@ -5736,16 +5736,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 		} else if (showStatus && showGroups) {
 			timeWidth = 120;
 			nameWidth = 130;
-			statusWidth = 100;
-			groupWidth = 180;
+			statusWidth = 120;
+			groupWidth = 160;
 		} else if (showGroups) {
 			timeWidth = 140;
 			nameWidth = 160;
 			groupWidth = 230;
 		} else if (showStatus) {
 			timeWidth = 140;
-			nameWidth = 160;
-			statusWidth = 110;
+			nameWidth = 150;
+			statusWidth = 120;
 		} else if (showMobileNo) {
 			timeWidth = 140;
 			nameWidth = 160;

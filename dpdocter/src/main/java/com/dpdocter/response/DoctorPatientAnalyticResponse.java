@@ -4,9 +4,16 @@ public class DoctorPatientAnalyticResponse {
 
 	private Integer totalPatient = 0;
 	private Integer totalNewPatient = 0;
-	private Integer totalPatientIncrease = 0;
-	private Integer totalPatientdecrease = 0;
+	private Double changeInTotalPatientInPercent = 0.0;
 	private Integer totalVisitedPatient = 0;
+
+	public Double getChangeInTotalPatientInPercent() {
+		return changeInTotalPatientInPercent;
+	}
+
+	public void setChangeInTotalPatientInPercent(Double changeInTotalPatientInPercent) {
+		this.changeInTotalPatientInPercent = changeInTotalPatientInPercent;
+	}
 
 	public Integer getTotalPatient() {
 		return totalPatient;
@@ -22,22 +29,6 @@ public class DoctorPatientAnalyticResponse {
 
 	public void setTotalNewPatient(Integer totalNewPatient) {
 		this.totalNewPatient = totalNewPatient;
-	}
-
-	public Integer getTotalPatientIncrease() {
-		return totalPatientIncrease;
-	}
-
-	public void setTotalPatientIncrease(Integer totalPatientIncrease) {
-		this.totalPatientIncrease = totalPatientIncrease;
-	}
-
-	public Integer getTotalPatientdecrease() {
-		return totalPatientdecrease;
-	}
-
-	public void setTotalPatientdecrease(Integer totalPatientdecrease) {
-		this.totalPatientdecrease = totalPatientdecrease;
 	}
 
 	public Integer getTotalVisitedPatient() {
