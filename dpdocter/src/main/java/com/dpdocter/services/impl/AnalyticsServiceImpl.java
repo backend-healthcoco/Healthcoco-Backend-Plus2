@@ -360,8 +360,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								new BasicDBObject("_id", "$treatments.treatmentServiceId")
 										.append("treatmentServiceId",
 												new BasicDBObject("$first", "$treatments.treatmentServiceId"))
-										.append("name", new BasicDBObject("$first", "$totalTreatmentService.name"))
-										.append("totalTreatmentServiceCompleted",
+										.append("treatmentServiceName",
+												new BasicDBObject("$first", "$totalTreatmentService.name"))
+										.append("totalTreatmentServiceNotStarted",
 												new BasicDBObject("$push", "$treatments.status"))
 										.append("totalTreatmentServiceProgress",
 												new BasicDBObject("$push", "$treatments.status"))
@@ -384,8 +385,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								new BasicDBObject("_id", "$treatments.treatmentServiceId")
 										.append("treatmentServiceId",
 												new BasicDBObject("$first", "$treatments.treatmentServiceId"))
-										.append("name", new BasicDBObject("$first", "$totalTreatmentService.name"))
-										.append("totalTreatmentServiceCompleted",
+										.append("treatmentServiceName",
+												new BasicDBObject("$first", "$totalTreatmentService.name"))
+										.append("totalTreatmentServiceNotStarted",
 												new BasicDBObject("$push", "$treatments.status"))
 										.append("totalTreatmentServiceProgress",
 												new BasicDBObject("$push", "$treatments.status"))
