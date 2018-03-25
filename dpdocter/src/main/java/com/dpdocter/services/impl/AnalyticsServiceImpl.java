@@ -168,10 +168,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				// Sceduled percent
 
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
-				appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("status").is("SCHEDULED")),
+				appointmentCount = (int) mongoTemplate.count(
+						new Query(criteria.and("status").is("SCHEDULED").and("state").is("NEW")),
 						AppointmentCollection.class);
 
-				data.setBookedAppointmentInPercent(
+				data.setScheduledAppointmentInPercent(
 						(100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment());
 
 				// hike
