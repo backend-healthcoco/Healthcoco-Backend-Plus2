@@ -31,6 +31,8 @@ import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.FlowSheet;
+import com.dpdocter.beans.FlowSheetJasperBean;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
@@ -176,7 +178,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private PatientVisitService patientVisitService;
-	
+
 	@Autowired
 	private FlowsheetRepository flowsheetRepository;
 
@@ -474,7 +476,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public String downloadDischargeSummary(String dischargeSummeryId) {
+	public String downloadDischargeSummary(String dischargeSummeryId, boolean isflowSheet) {
 		String response = null;
 
 		try {
@@ -486,7 +488,11 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						dischargeSummaryCollection.getHospitalId());
 
 				UserCollection user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
-				JasperReportResponse jasperReportResponse = createJasper(dischargeSummaryCollection, patient, user);
+				JasperReportResponse jasperReportResponse = null;
+				if (!isflowSheet)
+					jasperReportResponse = createJasper(dischargeSummaryCollection, patient, user);
+				else
+					jasperReportResponse = createJasperForFlowSheet(dischargeSummaryCollection, patient, user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -2347,42 +2353,34 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 
 	}
-	
+
 	@Override
 	@Transactional
-	public FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request)
-	{
+	public FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request) {
 		DischargeSummaryCollection dischargeSummaryCollection = null;
 		FlowsheetResponse response = null;
 		FlowsheetCollection flowsheetCollection = null;
 		UserCollection userCollection = null;
 		try {
-			
-			if(request.getDoctorId() != null)
-			{
+
+			if (request.getDoctorId() != null) {
 				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			}
 			if (request.getId() != null) {
-				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(request.getId()) );
-			}
-			else if(request.getDischargeSummaryId() != null) {
-				flowsheetCollection = flowsheetRepository.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
-			}
-			else
-			{
+				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(request.getId()));
+			} else if (request.getDischargeSummaryId() != null) {
+				flowsheetCollection = flowsheetRepository
+						.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
+			} else {
 				flowsheetCollection = new FlowsheetCollection();
 				flowsheetCollection.setCreatedTime(new Date());
-				if(userCollection != null)
-				{
+				if (userCollection != null) {
 					flowsheetCollection.setCreatedBy(userCollection.getFirstName());
 				}
 			}
-			if(request.getDischargeSummaryId() != null)
-			{
+			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(request.getId()));
-			}
-			else
-			{
+			} else {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummaryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 				dischargeSummaryCollection.setLocationId(new ObjectId(request.getLocationId()));
@@ -2402,22 +2400,20 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (flowsheetCollection != null) {
 				response = new FlowsheetResponse();
 				BeanUtil.map(flowsheetCollection, response);
-			} 
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;
 	}
-	
-	
+
 	private JasperReportResponse createJasperForFlowSheet(DischargeSummaryCollection dischargeSummaryCollection,
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
 		JasperReportResponse response = null;
-		List<PrescriptionJasperDetails> prescriptionItems = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
+		List<FlowSheetJasperBean> jasperBeans = null;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
@@ -2428,26 +2424,101 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
 
-		if (dischargeSummaryCollection.getAdmissionDate() != null) {
-			parameters.put("dOA", "<b>Date of Admission:-</b>"
-					+ simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
-		}
-		if (dischargeSummaryCollection.getDischargeDate() != null) {
-			parameters.put("dOD", "<b>Date of Discharge:-</b>"
-					+ simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
-		}
-		if (dischargeSummaryCollection.getOperationDate() != null) {
-			parameters.put("operationDate", "<b>Date of Operation:-</b>"
-					+ simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
-		}
-		
+		/*
+		 * if (dischargeSummaryCollection.getAdmissionDate() != null) {
+		 * parameters.put("dOA", "<b>Date of Admission:-</b>" +
+		 * simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()
+		 * )); } if (dischargeSummaryCollection.getDischargeDate() != null) {
+		 * parameters.put("dOD", "<b>Date of Discharge:-</b>" +
+		 * simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()
+		 * )); } if (dischargeSummaryCollection.getOperationDate() != null) {
+		 * parameters.put("operationDate", "<b>Date of Operation:-</b>" +
+		 * simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()
+		 * )); }
+		 * 
+		 * if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.
+		 * getDiagnosis())) { parameters.put("diagnosis",
+		 * dischargeSummaryCollection.getDiagnosis()); }
+		 */
 
-		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getDiagnosis())) {
-			parameters.put("diagnosis", dischargeSummaryCollection.getDiagnosis());
-		}
-		if(dischargeSummaryCollection.getFlowSheets() != null)
-		{
-			parameters.put("flowsheets", dischargeSummaryCollection.getFlowSheets());
+		if (dischargeSummaryCollection.getFlowSheets() != null
+				&& !dischargeSummaryCollection.getFlowSheets().isEmpty()) {
+			pattern = "dd/MM/yyyy hh.mm a";
+			simpleDateFormat = new SimpleDateFormat(pattern);
+			jasperBeans = new ArrayList<FlowSheetJasperBean>();
+			FlowSheetJasperBean jasperBean = null;
+			int i = 1;
+			for (FlowSheet flowsheet : dischargeSummaryCollection.getFlowSheets()) {
+
+				jasperBean = new FlowSheetJasperBean();
+				jasperBean.setNo(i);
+				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getAdvice())) {
+					jasperBean.setAdvice(flowsheet.getAdvice());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getComplaint())) {
+					jasperBean.setComplaint("<b>Complints : </b>" + flowsheet.getComplaint());
+				}
+				if (flowsheet.getDate() != null) {
+					if (flowsheet.getDate() != 0) {
+						jasperBean.setDate(simpleDateFormat.format(new Date(flowsheet.getDate())));
+					}
+				}
+				String field = "";
+
+				field = "Pulse (" + VitalSignsUnit.PULSE.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getPulse()) ? "<b>" + flowsheet.getPulse() + "</b>"
+								: " ")
+						+ "<br>";
+
+				field = field + "Weight (" + VitalSignsUnit.WEIGHT.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getWeight()) ? "<b>" + flowsheet.getWeight() + "</b>"
+								: " ")
+						+ "<br>";
+				field = field + "BSA (" + VitalSignsUnit.BSA.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa()) ? "<b>" + flowsheet.getBsa() + "</b>"
+								: " ")
+						+ "";
+				jasperBean.setPulseWeightAndBsa(field);
+				field = "";
+
+				field = "Temp (" + VitalSignsUnit.TEMPERATURE.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getTemperature())
+								? "<b>" + flowsheet.getTemperature() + "</b>" : " ")
+						+ "<br>";
+
+				field = field + "Height (" + VitalSignsUnit.HEIGHT.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getHeight()) ? "<b>" + flowsheet.getHeight() + "</b>"
+								: " ")
+						+ "<br>";
+				field = field + "Resp Rate (" + VitalSignsUnit.BREATHING.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBreathing())
+								? "<b>" + flowsheet.getBreathing() + "</b>" : " ")
+						+ "";
+
+				jasperBean.setTempHeightBreathAndSystDiast(field);
+
+				field = "";
+
+				field = "Bloodpresssure (" + VitalSignsUnit.BLOODPRESSURE.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getDiastolic(), flowsheet.getSystolic())
+								? "<b>" + flowsheet.getSystolic() + "/" + flowsheet.getDiastolic() + "</b>" : " ")
+						+ "<br>";
+
+				field = field + "BMI (" + VitalSignsUnit.BMI.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBmi()) ? "<b>" + flowsheet.getBmi() + "</b>"
+								: " ")
+						+ "<br>";
+				field = field + "Spo2 (" + VitalSignsUnit.SPO2.getUnit() + ") :"
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getSpo2())
+								? "<b>" + flowsheet.getBreathing() + "</b>" : " ")
+						+ "";
+				jasperBean.setBpBmiAndSpo(field);
+
+				i++;
+				jasperBeans.add(jasperBean);
+			}
+
+			parameters.put("flowsheet", jasperBeans);
 		}
 
 		parameters.put("contentLineSpace",
@@ -2482,13 +2553,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
 						? printSettings.getPageSetup().getRightMargin() : 20)
 				: 20;
-		response = jasperReportService.createPDF(ComponentType.DISCHARGE_SUMMARY, parameters,
-				dischargeSummaryReportA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+		response = jasperReportService.createPDF(ComponentType.FLOW_SHEET, parameters, dischargeSummaryReportA4FileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
 
 	}
-
 
 }

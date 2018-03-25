@@ -1,6 +1,6 @@
 package com.dpdocter.tests;
 
-public class GeneralTests {
+class GeneralTests {
 
 	static{  
 		  System.out.println("static block is invoked");  

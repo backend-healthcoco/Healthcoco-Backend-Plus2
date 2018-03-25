@@ -27,7 +27,8 @@ public enum ComponentType {
 																																													"DENTAL_WORK_REFRESH"), MULTIPLE_CLINICAL_NOTES(
 																																															"MULTIPLE_CLINICAL_NOTES"), PATIENT_CARD(
 																																																	"PATIENT_CARD"), CALENDER_APPOINTMENT(
-																																																			"CALENDER_APPOINTMENT");
+																																																			"CALENDER_APPOINTMENT"), FLOW_SHEET(
+																																																					"FLOW_SHEET");
 
 	private String type;
 

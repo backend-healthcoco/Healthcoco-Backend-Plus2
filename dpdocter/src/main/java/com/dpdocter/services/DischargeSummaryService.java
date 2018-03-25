@@ -32,7 +32,7 @@ public interface DischargeSummaryService {
 	DischargeSummaryResponse deleteDischargeSummary(String dischargeSummeryId, String doctorId, String hospitalId,
 			String locationId, Boolean discarded);
 
-	String downloadDischargeSummary(String dischargeSummeryId);
+	String downloadDischargeSummary(String dischargeSummeryId, boolean isflowSheet);
 
 	void emailDischargeSummary(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
@@ -70,4 +70,5 @@ public interface DischargeSummaryService {
 			String emailAddress);
 
 	FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request);
+
 }

@@ -94,7 +94,7 @@ public class DischargeSummaryAPI {
 		Response<DischargeSummaryResponse> response = null;
 		List<DischargeSummaryResponse> dischargeSummaries = null;
 
-		if (DPDoctorUtils.anyStringEmpty(patientId,locationId, hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Doctor or patient id or locationId or hospitalId is null");
 		}
@@ -154,7 +154,7 @@ public class DischargeSummaryAPI {
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY)
 	public Response<String> downloadDischargeSummary(@PathParam("dischargeSummeryId") String dischargeSummeryId) {
 		Response<String> response = new Response<String>();
-		response.setData(dischargeSummaryService.downloadDischargeSummary(dischargeSummeryId));
+		response.setData(dischargeSummaryService.downloadDischargeSummary(dischargeSummeryId, false));
 		return response;
 	}
 
@@ -183,7 +183,8 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB, notes = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB)
-	public Response<Boolean> emailDischargeSummaryForWeb(@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
+	public Response<Boolean> emailDischargeSummaryForWeb(
+			@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "emailAddress") String emailAddress) {
@@ -194,14 +195,14 @@ public class DischargeSummaryAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. dischargeSummeryId, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 		}
-		dischargeSummaryService.emailDischargeSummaryForWeb(dischargeSummeryId, doctorId, locationId, hospitalId, emailAddress);
+		dischargeSummaryService.emailDischargeSummaryForWeb(dischargeSummeryId, doctorId, locationId, hospitalId,
+				emailAddress);
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
@@ -473,7 +474,7 @@ public class DischargeSummaryAPI {
 		response.setDataList(items);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
 	@POST
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
@@ -488,6 +489,15 @@ public class DischargeSummaryAPI {
 
 		Response<FlowsheetResponse> response = new Response<FlowsheetResponse>();
 		response.setData(flowsheetResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS)
+	public Response<String> downloadFlowSheet(@PathParam("dischargeSummeryId") String dischargeSummeryId) {
+		Response<String> response = new Response<String>();
+		response.setData(dischargeSummaryService.downloadDischargeSummary(dischargeSummeryId, true));
 		return response;
 	}
 
