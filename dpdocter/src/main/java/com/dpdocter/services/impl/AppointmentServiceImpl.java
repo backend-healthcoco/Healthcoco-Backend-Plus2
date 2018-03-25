@@ -1,5 +1,7 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
+import com.dpdocter.beans.CalenderJasperBean;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.ClinicImage;
@@ -70,6 +74,7 @@ import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.CustomAppointmentCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -124,6 +129,9 @@ import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.request.PrintPatientCardRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.AppointmentLookupResponse;
+import com.dpdocter.response.CalenderJasperBeanList;
+import com.dpdocter.response.CalenderResponse;
+import com.dpdocter.response.CalenderResponseForJasper;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorWithAppointmentCount;
 import com.dpdocter.response.JasperReportResponse;
@@ -152,10 +160,9 @@ import common.util.web.DateAndTimeUtility;
 public class AppointmentServiceImpl implements AppointmentService {
 
 	private static Logger logger = Logger.getLogger(AppointmentServiceImpl.class.getName());
-	
+
 	@Value(value = "${pdf.footer.text}")
 	private String footerText;
-
 
 	@Autowired
 	private CityRepository cityRepository;
@@ -165,6 +172,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+
+	@Autowired
+	private JasperReportService jasperReportService;
 
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
@@ -204,7 +214,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private CustomAppointmentRepository customAppointmentRepository;
-	
+
 	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
 
@@ -255,9 +265,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Value(value = "${patient.app.bit.link}")
 	private String patientAppBitLink;
-	
+
 	@Value(value = "${jasper.print.dental.works.reports.fileName}")
 	private String dentalWorksFormA4FileName;
+
+	@Value(value = "${jasper.print.calender.a4.fileName}")
+	private String calenderA4FileName;
 
 	@Autowired
 	private PatientVisitService patientVisitService;
@@ -282,9 +295,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RoleRepository roleRepository;
-	
-	@Autowired
-	private JasperReportService jasperReportService;
 
 	@Override
 	@Transactional
@@ -604,7 +614,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public Appointment updateAppointment(final AppointmentRequest request, Boolean updateVisit, Boolean isStatusChange) {
+	public Appointment updateAppointment(final AppointmentRequest request, Boolean updateVisit,
+			Boolean isStatusChange) {
 		Appointment response = null;
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
@@ -626,11 +637,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.getMappedResults();
 				if (patientCards != null && !patientCards.isEmpty())
 					patientCard = patientCards.get(0);
-				
+
 				final String doctorName = appointmentLookupResponse.getDoctor().getTitle() + " "
 						+ appointmentLookupResponse.getDoctor().getFirstName();
-				
-				if(!isStatusChange) {
+
+				if (!isStatusChange) {
 					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentLookupResponse, appointmentWorkFlowCollection);
 					appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
@@ -640,8 +651,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
 						if (request.getCancelledBy() != null) {
 							if (request.getCancelledBy().equalsIgnoreCase(AppointmentCreatedBy.DOCTOR.getType()))
-								appointmentCollection.setCancelledBy(appointmentLookupResponse.getDoctor().getTitle() + " "
-										+ appointmentLookupResponse.getDoctor().getFirstName());
+								appointmentCollection.setCancelledBy(appointmentLookupResponse.getDoctor().getTitle()
+										+ " " + appointmentLookupResponse.getDoctor().getFirstName());
 							else
 								appointmentCollection.setCancelledBy(patientCard.getLocalPatientName());
 						}
@@ -671,8 +682,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
 							appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 							User drCollection = mongoTemplate.aggregate(
-									Aggregation.newAggregation(
-											Aggregation.match(new Criteria("id").is(appointmentCollection.getDoctorId()))),
+									Aggregation.newAggregation(Aggregation
+											.match(new Criteria("id").is(appointmentCollection.getDoctorId()))),
 									UserCollection.class, User.class).getUniqueMappedResult();
 							appointmentLookupResponse.setDoctor(drCollection);
 						}
@@ -693,7 +704,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					if (updateVisit && !DPDoctorUtils.anyStringEmpty(appointmentCollection.getVisitId())) {
 						if (appointmentCollection.getState().getState().equals("CANCEL"))
-							patientVisitService.updateAppointmentTime(appointmentCollection.getVisitId(), null, null, null);
+							patientVisitService.updateAppointmentTime(appointmentCollection.getVisitId(), null, null,
+									null);
 						else
 							patientVisitService.updateAppointmentTime(appointmentCollection.getVisitId(),
 									appointmentCollection.getAppointmentId(), appointmentCollection.getTime(),
@@ -721,7 +733,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					final String appointmentId = appointmentCollection.getAppointmentId();
 					final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 							+ sdf.format(appointmentCollection.getFromDate());
-					
+
 					final String clinicName = appointmentLookupResponse.getLocation().getLocationName();
 					final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
 							? appointmentLookupResponse.getLocation().getClinicNumber() : "";
@@ -747,12 +759,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 							}
 						}
 					});
-				}else if(request.getStatus() != null){
-					
+				} else if (request.getStatus() != null) {
+
 					appointmentCollection.setCheckedInAt(request.getCheckedInAt());
 					appointmentCollection.setEngagedAt(request.getEngagedAt());
 					appointmentCollection.setCheckedOutAt(request.getCheckedOutAt());
-					
+
 					if (request.getStatus().name().equalsIgnoreCase(QueueStatus.SCHEDULED.name())) {
 						appointmentCollection.setCheckedInAt(0);
 						appointmentCollection.setEngagedAt(0);
@@ -760,9 +772,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setCheckedOutAt(0);
 						appointmentCollection.setEngagedFor(0);
 					} else if (request.getStatus().name().equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-						appointmentCollection.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
+						appointmentCollection.setWaitedFor(
+								appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
 					} else if (request.getStatus().name().equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
-						appointmentCollection.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
+						appointmentCollection.setEngagedFor(
+								appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
 					}
 					appointmentCollection.setStatus(request.getStatus());
 					appointmentCollection.setUpdatedTime(new Date());
@@ -1654,7 +1668,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			List<AppointmentLookupResponse> appointmentLookupResponses = null;
 
 			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"));
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
 				if (status.equalsIgnoreCase(QueueStatus.WAITING.toString())) {
 					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedInAt"));
@@ -3082,8 +3096,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Object changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
 			String appointmentId, String status, Boolean isObjectRequired) {
 		Object response = null;
-		if(isObjectRequired == false)
-		{
+		if (isObjectRequired == false) {
 			response = false;
 		}
 		try {
@@ -3116,7 +3129,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
 			} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
 				appointmentCollection.setCheckedOutAt(new Date(System.currentTimeMillis()).getTime());
-				appointmentCollection.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
+				appointmentCollection
+						.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
 			}
 
 			appointmentCollection.setStatus(QueueStatus.valueOf(status));
@@ -3127,9 +3141,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response = new Appointment();
 					BeanUtil.map(appointmentCollection, response);
 				}
-			}
-			else
-			{
+			} else {
 				response = true;
 			}
 		} catch (Exception e) {
@@ -3632,8 +3644,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 		return response;
 	}
-	
-	
+
 	public boolean containsIgnoreCase(String str, List<String> list) {
 		if (list != null && !list.isEmpty())
 			for (String i : list) {
@@ -3643,24 +3654,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return false;
 	}
 
-	
 	@Override
 	@Transactional
-	public String printPatientCard(PrintPatientCardRequest request)
-	{
+	public String printPatientCard(PrintPatientCardRequest request) {
 		String response = null;
 		JasperReportResponse jasperReportResponse = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "EEE, d MMM yyyy hh:mm aaa";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		String age = null;
-		
+
 		try {
-			
+
 			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()), ComponentType.ALL.getType());
-			
+
 			if (request.getPatientName() != null) {
 				parameters.put("patientName", "<b>Patient Name :- </b> " + request.getPatientName());
 			} else {
@@ -3710,7 +3719,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				parameters.put("generalNotes", "<b>Note :- </b> " + request.getAppointmentId());
 			}
 			patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(request.getDoctorId()));
-			
+
 			String pdfName = request.getPatientName() + "-PATIENT-CARD-" + new Date().getTime();
 			String layout = "PORTRAIT";
 			String pageSize = "A4";
@@ -3730,9 +3739,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			parameters.put("contentLineSpace", LineSpace.SMALL.name());
 			jasperReportResponse = jasperReportService.createPDF(ComponentType.PATIENT_CARD, parameters,
 					dentalWorksFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
-					Integer.parseInt(parameters.get("contentFontSize").toString()),
-					pdfName.replaceAll("\\s+", ""));
-			
+					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
 			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -3743,6 +3751,429 @@ public class AppointmentServiceImpl implements AppointmentService {
 			// TODO: handle exception
 		}
 		return response;
-	
+
 	}
+
+	@Override
+	public String downloadCalender(List<String> doctorIds, String locationId, String hospitalId, String fromTime,
+			String toTime, Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus,
+			Boolean showNotes, Boolean showPatientGroups) {
+		String response = null;
+		JasperReportResponse jasperReportResponse = null;
+		Date fromDate = null;
+		Date toDate = null;
+		try {
+			if (!DPDoctorUtils.anyStringEmpty(fromTime, toTime)) {
+				fromDate = new Date(Long.parseLong(fromTime));
+				toDate = new Date(Long.parseLong(toTime));
+			} else if (!DPDoctorUtils.anyStringEmpty(fromTime)) {
+				fromDate = new Date(Long.parseLong(fromTime));
+			} else if (!DPDoctorUtils.anyStringEmpty(toTime)) {
+				fromDate = new Date(Long.parseLong(toTime));
+			} else {
+				fromDate = new Date();
+			}
+			List<CalenderResponseForJasper> calenderResponseForJaspers = new LinkedList<CalenderResponseForJasper>();
+			List<ObjectId> doctorList = null;
+
+			if (doctorIds != null && !doctorIds.isEmpty()) {
+				doctorList = new ArrayList<ObjectId>();
+				BeanUtil.map(doctorIds, doctorList);
+			} else {
+				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+						.findByLocationId(new ObjectId(locationId), true);
+				doctorList = new ArrayList<ObjectId>();
+				doctorIds = new ArrayList<String>();
+				if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
+					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+						if (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getDoctorId()))
+							doctorList.add(doctorClinicProfileCollection.getDoctorId());
+						doctorIds.add(doctorClinicProfileCollection.getDoctorId().toString());
+					}
+				}
+
+			}
+			if (isGroupByDoctor) {
+				for (ObjectId doctorId : doctorList) {
+					List<CalenderResponseForJasper> calenderResponseForJasper = getCalenderAppointments(null, doctorId,
+							locationId, hospitalId, fromDate, toDate, isGroupByDoctor);
+					if (calenderResponseForJasper != null && !calenderResponseForJasper.isEmpty()) {
+						calenderResponseForJaspers.addAll(calenderResponseForJasper);
+					}
+				}
+
+			} else {
+				calenderResponseForJaspers = getCalenderAppointments(doctorList, null, locationId, hospitalId, fromDate,
+						toDate, isGroupByDoctor);
+			}
+			if (calenderResponseForJaspers == null || calenderResponseForJaspers.isEmpty()) {
+				return response;
+			}
+
+			jasperReportResponse = createCalenderJasper(calenderResponseForJaspers, doctorIds, locationId, hospitalId,
+					isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, fromDate,
+					toDate);
+
+			if (jasperReportResponse != null)
+				response = getFinalImageURL(jasperReportResponse.getPath());
+			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+				if (jasperReportResponse.getFileSystemResource().getFile().exists())
+					jasperReportResponse.getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new BusinessException(ServiceError.Unknown, "Error while download appointment ");
+		}
+		return response;
+	}
+
+	private List<CalenderResponseForJasper> getCalenderAppointments(List<ObjectId> doctorIds, ObjectId doctorId,
+			String locationId, String hospitalId, Date fromTime, Date toTime, Boolean isGroup) {
+		List<CalenderResponseForJasper> response = null;
+		try {
+
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+
+			if (doctorIds != null && !doctorIds.isEmpty()) {
+				criteria.and("doctorId").in(doctorIds);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(doctorId);
+			}
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			DateTime todate = null;
+			DateTime fromdate = null;
+			SortOperation sortOperation = null;
+			if (fromTime != null && toTime != null) {
+				localCalendar.setTime(fromTime);
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+				fromdate = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("fromDate").gte(fromdate);
+
+				localCalendar.setTime(toTime);
+				currentDay = localCalendar.get(Calendar.DATE);
+				currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				currentYear = localCalendar.get(Calendar.YEAR);
+				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("toDate").lte(todate);
+				if (todate.toDate().equals(fromdate.toDate()))
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
+				else {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime", "fromDate"));
+				}
+			} else {
+				localCalendar.setTime(fromTime);
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+				fromdate = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("fromDate").gte(fromdate);
+				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("toDate").lte(todate);
+				sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
+			}
+
+			ProjectionOperation projectListFirst = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("time", "$time"), Fields.field("PID", "$patientCard.PID"),
+					Fields.field("fromDate", "$fromDate"), Fields.field("patientName", "$patientCard.localPatientName"),
+					Fields.field("patientId", "$patientId"), Fields.field("mobileNumber", "$user.mobileNumber"),
+					Fields.field("status", "$status"), Fields.field("notes", "$explanation"),
+					Fields.field("state", "$state"), Fields.field("doctorId", "$doctorId")));
+
+			CustomAggregationOperation firstGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$_id").append("time", new BasicDBObject("$first", "$time"))
+							.append("patientName", new BasicDBObject("$first", "$patientName"))
+							.append("PID", new BasicDBObject("$first", "$PID"))
+							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
+							.append("patientId", new BasicDBObject("$first", "$patientId"))
+							.append("status", new BasicDBObject("$first", "$status"))
+							.append("notes", new BasicDBObject("$first", "$notes"))
+							.append("state", new BasicDBObject("$first", "$state"))
+							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+							.append("doctorId", new BasicDBObject("$first", "$doctorId"))));
+
+			ProjectionOperation projectListsecond = new ProjectionOperation(Fields.from(
+					Fields.field("calenderResponse.patientName", "$patientName"),
+					Fields.field("calenderResponse.fromDate", "$fromDate"),
+					Fields.field("calenderResponse.PID", "$PID"), Fields.field("calenderResponse.time", "$time"),
+					Fields.field("calenderResponse.mobileNumber", "$mobileNumber"),
+					Fields.field("calenderResponse.status", "$status"),
+					Fields.field("calenderResponse.notes", "$notes"),
+					Fields.field("calenderResponse.patientId", "$patientId"),
+					Fields.field("calenderResponse.state", "$state"),
+					Fields.field("calenderResponse.doctorId", "$doctorId"), Fields.field("doctorId", "$doctorId")));
+
+			CustomAggregationOperation secondGroupOperation = null;
+			Aggregation aggregation = null;
+			if (isGroup) {
+				secondGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("_id", "$doctorId")
+								.append("doctorId", new BasicDBObject("$first", "$doctorId")).append("calenderResponse",
+										new BasicDBObject("$push", "$calenderResponse"))));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$redact",
+										new BasicDBObject("$cond",
+												new BasicDBObject("if",
+														new BasicDBObject("$eq",
+																Arrays.asList("$patientCard.locationId",
+																		"$locationId"))).append("then", "$$KEEP")
+																				.append("else", "$$PRUNE")))),
+						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+						projectListFirst, firstGroupOperation, sortOperation, projectListsecond, secondGroupOperation);
+				response = mongoTemplate
+						.aggregate(aggregation, AppointmentCollection.class, CalenderResponseForJasper.class)
+						.getMappedResults();
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$redact",
+										new BasicDBObject("$cond",
+												new BasicDBObject("if",
+														new BasicDBObject("$eq",
+																Arrays.asList("$patientCard.locationId",
+																		"$locationId"))).append("then", "$$KEEP")
+																				.append("else", "$$PRUNE")))),
+						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+						projectListFirst, firstGroupOperation, sortOperation);
+
+				List<CalenderResponse> calenderResponses = mongoTemplate
+						.aggregate(aggregation, AppointmentCollection.class, CalenderResponse.class).getMappedResults();
+				if (calenderResponses != null && !calenderResponses.isEmpty()) {
+					response = new ArrayList<CalenderResponseForJasper>();
+					CalenderResponseForJasper calenderResponseForJasper = new CalenderResponseForJasper();
+					calenderResponseForJasper.setCalenderResponse(calenderResponses);
+					response.add(calenderResponseForJasper);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting calender response ");
+
+		}
+		return response;
+	}
+
+	private JasperReportResponse createCalenderJasper(List<CalenderResponseForJasper> calenderResponseForJaspers,
+			List<String> doctorList, String locationId, String hospitalId, Boolean isGroupByDoctor,
+			Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes, Boolean showPatientGroups,
+			Date fromDate, Date toDate) throws IOException, ParseException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		UserCollection userCollection = null;
+		String pattern = "dd/MM/yyyy";
+		String doctors = "";
+		Boolean mbnoAvailable = false, noteAvailable = false, statusAvailable = false, groupAvailble = false;
+		List<CalenderJasperBean> calenderJasperBeans = null;
+		CalenderJasperBean calenderJasperBean = null;
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+
+		parameters.put("date", "<b>Date :- </b>" + (fromDate != null ? simpleDateFormat.format(fromDate) : "")
+				+ (toDate != null ? " To " + simpleDateFormat.format(toDate) : ""));
+		List<CalenderJasperBeanList> beanLists = new ArrayList<CalenderJasperBeanList>();
+		for (CalenderResponseForJasper calenderResponseForJasper : calenderResponseForJaspers) {
+			CalenderJasperBeanList calenderJasperBeanList = new CalenderJasperBeanList();
+
+			calenderJasperBeans = new ArrayList<CalenderJasperBean>();
+			for (CalenderResponse calenderResponse : calenderResponseForJasper.getCalenderResponse()) {
+
+				calenderJasperBean = new CalenderJasperBean();
+				if (calenderResponse.getTime() != null) {
+					int hour, min;
+					hour = (calenderResponse.getTime().getFromTime() != null ? calenderResponse.getTime().getFromTime()
+							: 0) / 60;
+					min = (calenderResponse.getTime().getFromTime() != null ? calenderResponse.getTime().getFromTime()
+							: 0) % 60;
+					if (hour > 12) {
+						hour = (hour % 12);
+						calenderJasperBean.setTiming(hour + ":" + (min == 0 ? "00" : min) + " PM - ");
+
+					} else {
+						if (hour == 0) {
+							hour = 12;
+						}
+						calenderJasperBean.setTiming(hour + ":" + (min == 0 ? "00" : min) + " AM - ");
+					}
+
+					hour = (calenderResponse.getTime().getToTime() != null ? calenderResponse.getTime().getToTime() : 0)
+							/ 60;
+					min = (calenderResponse.getTime().getToTime() != null ? calenderResponse.getTime().getToTime() : 0)
+							% 60;
+					if (hour > 12) {
+						hour = (hour % 12);
+						calenderJasperBean.setTiming(
+								calenderJasperBean.getTiming() + hour + ":" + (min == 0 ? "00" : min) + " PM");
+
+					} else {
+						if (hour == 0) {
+							hour = 12;
+						}
+						calenderJasperBean.setTiming(
+								calenderJasperBean.getTiming() + hour + ":" + (min == 0 ? "00" : min) + " AM");
+					}
+
+				}
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId()) && showPatientGroups) {
+					List<GroupCollection> groupCollections = getPatientGroup(locationId, calenderResponse.getDoctorId(),
+							calenderResponse.getPatientId());
+					calenderJasperBean.setGroupName("");
+					if (groupCollections != null && !groupCollections.isEmpty()) {
+
+						for (GroupCollection groupCollection : groupCollections) {
+							calenderJasperBean.setGroupName(calenderJasperBean.getGroupName()
+									+ (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) ? "," : "")
+									+ groupCollection.getName());
+
+						}
+						if (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName())) {
+							groupAvailble = true;
+
+						}
+					}
+				}
+
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getNotes()) && showNotes) {
+					calenderJasperBean.setNotes("<b>Note :- </b>" + calenderResponse.getNotes());
+					noteAvailable = true;
+				}
+
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientName())) {
+					calenderJasperBean.setPatientName(calenderResponse.getPatientName());
+					if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPID())) {
+						calenderJasperBean.setPatientName(
+								calenderJasperBean.getPatientName() + " (" + calenderResponse.getPID() + ")");
+
+					}
+				}
+
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getMobileNumber()) && showMobileNo) {
+					calenderJasperBean.setMobileNumber(calenderResponse.getMobileNumber());
+					mbnoAvailable = true;
+				}
+
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getStatus()) && showAppointmentStatus) {
+
+					if (calenderResponse.getState().equals("CANCEL")) {
+						calenderJasperBean.setStatus(calenderResponse.getStatus().replace("_", " ") + " (C)");
+					} else {
+						calenderJasperBean.setStatus(calenderResponse.getStatus().replace("_", " "));
+					}
+					statusAvailable = true;
+				}
+
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getDoctorId()) && !isGroupByDoctor) {
+					doctorList = new ArrayList<String>();
+					if (!doctorList.contains(calenderResponse.getDoctorId())) {
+						doctorList.add(calenderResponse.getDoctorId());
+					}
+				}
+				calenderJasperBeans.add(calenderJasperBean);
+			}
+
+			if (isGroupByDoctor) {
+				if (doctorList.contains(calenderResponseForJasper.getDoctorId())) {
+					doctors = "";
+					userCollection = userRepository.findOne(new ObjectId(calenderResponseForJasper.getDoctorId()));
+					if (userCollection != null) {
+						doctors = (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
+								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+										: "DR.")
+								+ " " + userCollection.getFirstName();
+					}
+					doctorList.remove(doctorList.indexOf(calenderResponseForJasper.getDoctorId()));
+				}
+			} else {
+				for (String doctorId : doctorList) {
+
+					userCollection = userRepository.findOne(new ObjectId(doctorId));
+					if (userCollection != null) {
+						doctors = doctors + (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
+								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+										: "DR.")
+								+ " " + userCollection.getFirstName();
+
+					}
+
+				}
+			}
+
+			calenderJasperBeanList.setCalenders(calenderJasperBeans);
+			calenderJasperBeanList.setDoctor("<b>Doctor:- </b>" + doctors);
+			beanLists.add(calenderJasperBeanList);
+		}
+
+		parameters.put("items", beanLists);
+		parameters.put("title", "Schedules For All Doctors");
+		String layout = "PORTRAIT";
+		String pageSize = "A4";
+		Integer topMargin = 20;
+		Integer bottonMargin = 20;
+		Integer leftMargin = 20;
+		Integer rightMargin = 20;
+
+		parameters.put("showMobileNo", showMobileNo && mbnoAvailable);
+		parameters.put("showStatus", showAppointmentStatus && statusAvailable);
+		parameters.put("showNotes", showNotes && noteAvailable);
+		parameters.put("showGroups", showPatientGroups && groupAvailble);
+		parameters.put("isGroup", isGroupByDoctor);
+
+		parameters.put("footerSignature", "");
+		parameters.put("bottomSignText", "");
+		parameters.put("contentFontSize", 11);
+		parameters.put("headerLeftText", "");
+		parameters.put("headerRightText", "");
+		parameters.put("footerBottomText", "");
+		parameters.put("logoURL", "");
+		parameters.put("showTableOne", false);
+		parameters.put("poweredBy", footerText);
+		String pdfName = locationId + "calender-appointments" + new Date().getTime();
+		parameters.put("contentLineSpace", LineSpace.SMALL.name());
+		response = jasperReportService.createPDF(ComponentType.CALENDER_APPOINTMENT, parameters, calenderA4FileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+
+	}
+
+	private List<GroupCollection> getPatientGroup(String locationId, String doctorId, String patirntId) {
+
+		CustomAggregationOperation GroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))));
+
+		Aggregation aggregation = Aggregation.newAggregation(
+				Aggregation.lookup("patient_group_cl", "_id", "groupId", "patientgroup"),
+				Aggregation.unwind("patientgroup"),
+				Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
+						.is(new ObjectId(locationId)).and("patientgroup.patientId").is(new ObjectId(patirntId))
+						.and("patientgroup.discarded").is(false).and("discarded").is(false)),
+				GroupOperation);
+
+		List<GroupCollection> groupCollections = mongoTemplate
+				.aggregate(aggregation, GroupCollection.class, GroupCollection.class).getMappedResults();
+		return groupCollections;
+	}
+
 }

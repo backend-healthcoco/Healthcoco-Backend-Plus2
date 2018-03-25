@@ -71,13 +71,16 @@ public interface AppointmentService {
 
 	Appointment getAppointmentById(ObjectId appointmentId);
 
-	LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId, String from, String to);
+	LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId, String from,
+			String to);
 
 	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
 			String from, String to);
-/*
-	Object changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
-			String appointmentId, String status);*/
+	/*
+	 * Object changeStatusInAppointment(String doctorId, String locationId,
+	 * String hospitalId, String patientId, String appointmentId, String
+	 * status);
+	 */
 
 	public void updateQueue();
 
@@ -105,5 +108,9 @@ public interface AppointmentService {
 
 	Object changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
 			String appointmentId, String status, Boolean isObjectRequired);
+
+	public String downloadCalender(List<String> doctorIds, String locationId, String hospitalId, String from, String to,
+			Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes,
+			Boolean showPatientGroups);
 
 }
