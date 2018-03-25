@@ -49,6 +49,7 @@ import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.CustomAppointment;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Doctor;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.GeocodedLocation;
@@ -3694,6 +3695,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()), ComponentType.ALL.getType());
+			if (printSettings == null) {
+				printSettings = new PrintSettingsCollection();
+				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+				BeanUtil.map(defaultPrintSettings, printSettings);
+			}
 
 			if (request.getPatientName() != null) {
 				parameters.put("patientName", "<b>Patient Name :- </b> " + request.getPatientName());
@@ -3746,22 +3752,30 @@ public class AppointmentServiceImpl implements AppointmentService {
 			patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(request.getDoctorId()));
 
 			String pdfName = request.getPatientName() + "-PATIENT-CARD-" + new Date().getTime();
-			String layout = "PORTRAIT";
-			String pageSize = "A4";
-			Integer topMargin = 20;
-			Integer bottonMargin = 20;
-			Integer leftMargin = 20;
-			Integer rightMargin = 20;
-			parameters.put("footerSignature", "");
-			parameters.put("bottomSignText", "");
-			parameters.put("contentFontSize", 11);
-			parameters.put("headerLeftText", "");
-			parameters.put("headerRightText", "");
-			parameters.put("footerBottomText", "");
-			parameters.put("logoURL", "");
-			parameters.put("showTableOne", false);
-			parameters.put("poweredBy", footerText);
-			parameters.put("contentLineSpace", LineSpace.SMALL.name());
+			parameters.put("contentLineSpace",
+					(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+							? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
+				
+			String layout = printSettings != null
+					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+					: "PORTRAIT";
+			String pageSize = printSettings != null
+					? (printSettings.getPageSetup() != null ? (printSettings.getPageSetup().getPageSize() != null
+							? printSettings.getPageSetup().getPageSize() : "A4") : "A4")
+					: "A4";
+			
+			Integer topMargin = printSettings != null
+					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+			Integer bottonMargin = printSettings != null
+					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+			Integer leftMargin = printSettings != null
+					? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+							? printSettings.getPageSetup().getLeftMargin() : 20)
+					: 20;
+			Integer rightMargin = printSettings != null
+					? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+							? printSettings.getPageSetup().getRightMargin() : 20)
+					: 20;
 			jasperReportResponse = jasperReportService.createPDF(ComponentType.PATIENT_CARD, parameters,
 					dentalWorksFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
