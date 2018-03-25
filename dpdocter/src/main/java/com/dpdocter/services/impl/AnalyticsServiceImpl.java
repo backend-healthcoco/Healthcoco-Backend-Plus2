@@ -183,7 +183,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						(100 * ((double) data.getTotalNoOfAppointment() - (double) appointmentCount))
 								/ (double) data.getTotalNoOfAppointment());
 				// new Patient Appointment
-				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
+				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime);
 				Criteria secondCriteria = new Criteria("appointment.locationId").is(new ObjectId(locationId))
 						.and("appointment.hospitalId").is(new ObjectId(hospitalId)).and("appointment.updatedTime")
 						.gte(fromTime).lte(toTime);
