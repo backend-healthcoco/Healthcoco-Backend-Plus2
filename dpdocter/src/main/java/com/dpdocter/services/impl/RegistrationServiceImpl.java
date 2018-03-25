@@ -69,6 +69,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.beans.UserReminders;
@@ -77,6 +78,7 @@ import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
+import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FormContentCollection;
@@ -91,6 +93,7 @@ import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserAddressCollection;
 import com.dpdocter.collections.UserCollection;
@@ -102,10 +105,13 @@ import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
+import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FeedbackType;
+import com.dpdocter.enums.GynacPermissionsEnum;
+import com.dpdocter.enums.OpthoPermissionEnums;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.ReminderType;
 import com.dpdocter.enums.Resource;
@@ -122,6 +128,7 @@ import com.dpdocter.repository.ConsentFormRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -133,6 +140,7 @@ import com.dpdocter.repository.ProfessionRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserAddressRepository;
 import com.dpdocter.repository.UserLocationRepository;
@@ -157,6 +165,7 @@ import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.response.UserLookupResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
+import com.dpdocter.services.DynamicUIService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
@@ -247,6 +256,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private LocationServices locationServices;
 
 	@Autowired
+	DynamicUIRepository dynamicUIRepository;
+
+	@Autowired
 	private PrescriptionRepository prescriptionRepository;
 
 	@Autowired
@@ -289,10 +301,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private UserAddressRepository userAddressRepository;
 
 	@Autowired
+	DynamicUIService dynamicUIService;
+
+	@Autowired
 	private JasperReportService jasperReportService;
 
 	@Autowired
 	private EmailTackService emailTackService;
+
+	@Autowired
+	private SpecialityRepository specialityRepository;
 
 	@Value(value = "${jasper.print.consentForm.a4.fileName}")
 	private String consentFormA4FileName;
@@ -374,15 +392,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 				logger.warn(role);
 				throw new BusinessException(ServiceError.NoRecord, role);
 			}
-			
-			if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
-				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID());
-				if(count !=null && count > 0) {
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID());
+				if (count != null && count > 0) {
 					logger.warn("Patient with this PID is already present. Please add patient different PID");
-					throw new BusinessException(ServiceError.InvalidInput, "Patient with this PID is already present. Please add patient different PID");
+					throw new BusinessException(ServiceError.InvalidInput,
+							"Patient with this PID is already present. Please add patient different PID");
 				}
 			}
-			
+
 			request.setFirstName(request.getLocalPatientName());
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			Date createdTime = new Date();
@@ -445,7 +465,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRegistrationDate(new Date().getTime());
 
 			patientCollection.setCreatedTime(createdTime);
-			if(DPDoctorUtils.anyStringEmpty(request.getPID())) {
+			if (DPDoctorUtils.anyStringEmpty(request.getPID())) {
 				patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
 						patientCollection.getRegistrationDate()));
 			}
@@ -676,12 +696,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<Group> groups = null;
 		try {
 
-			if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
-				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID(),
+			if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				Integer count = patientRepository.findPatientByPID(new ObjectId(request.getDoctorId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), request.getPID(),
 						new ObjectId(request.getUserId()));
-				if(count !=null && count > 0) {
+				if (count != null && count > 0) {
 					logger.warn("Patient with this PID is already present. Please add patient different PID");
-					throw new BusinessException(ServiceError.InvalidInput, "Patient with this PID is already present. Please add patient different PID");
+					throw new BusinessException(ServiceError.InvalidInput,
+							"Patient with this PID is already present. Please add patient different PID");
 				}
 			}
 			if (request.getDob() != null && request.getDob().getAge() != null
@@ -749,8 +771,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 						if (infoType.contains("MEDICAL"))
 							patientCollection.setMedicalQuestionAnswers(request.getMedicalQuestionAnswers());
 					}
-					
-					if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+
+					if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 						patientCollection.setPID(request.getPID());
 					}
 				} else {
@@ -817,10 +839,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRelations(request.getRelations());
 				patientCollection.setNotes(request.getNotes());
 
-				if(!DPDoctorUtils.anyStringEmpty(request.getPID())) {
+				if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 					patientCollection.setPID(request.getPID());
-				}
-				else if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
+				} else if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
 					patientCollection.setPID(patientCollection.getPID());
 				} else {
 					patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
@@ -1904,11 +1925,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			UserCollection userCollection = new UserCollection();
 			BeanUtil.map(request, userCollection);
 			userCollection.setUserName(request.getEmailAddress());
-			userCollection.setCreatedTime(new Date());
-
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
-
-
+			userCollection.setCreatedTime(new Date());
 			if (DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
 				userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			}
@@ -1920,6 +1938,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(request, doctorCollection);
 			doctorCollection.setUserId(userCollection.getId());
 			doctorCollection.setCreatedTime(new Date());
+
+			if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+				List<SpecialityCollection> specialityCollections = specialityRepository
+						.findBySuperSpeciality(request.getSpeciality());
+				@SuppressWarnings("unchecked")
+				Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
+						new BeanToPropertyValueTransformer("id"));
+				if (specialityIds != null && !specialityIds.isEmpty()) {
+					doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+				} else
+					doctorCollection.setSpecialities(null);
+
+				assignDefaultUIPermissions(doctorCollection.getUserId().toString());
+			}
 			doctorCollection = doctorRepository.save(doctorCollection);
 
 			// assign role to doctor
@@ -2030,7 +2062,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationIdHospitalId(
 					userCollection.getId(), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()));
-			if (userRoleCollection == null) {
+			if (userRoleCollection != null) {
 				userRoleCollection = new UserRoleCollection(userCollection.getId(), new ObjectId(request.getRoleId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 				userRoleCollection.setCreatedTime(new Date());
@@ -2048,7 +2080,26 @@ public class RegistrationServiceImpl implements RegistrationService {
 					List<String> additionalNumbers = new ArrayList<String>();
 					additionalNumbers.add(request.getMobileNumber());
 				}
-				doctorCollection = doctorRepository.save(doctorCollection);
+
+				if (doctorCollection != null) {
+					List<ObjectId> oldSpecialities = doctorCollection.getSpecialities();
+					if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+						List<SpecialityCollection> specialityCollections = specialityRepository
+								.findBySuperSpeciality(request.getSpeciality());
+						@SuppressWarnings("unchecked")
+						Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("id"));
+						if (specialityIds != null && !specialityIds.isEmpty()) {
+							doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+							if (oldSpecialities != null && !oldSpecialities.isEmpty())
+								removeOldSpecialityPermissions(specialityIds, oldSpecialities,
+										doctorCollection.getUserId().toString());
+						} else
+							doctorCollection.setSpecialities(null);
+						assignDefaultUIPermissions(doctorCollection.getUserId().toString());
+					}
+					doctorRepository.save(doctorCollection);
+				}
 			}
 
 			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
@@ -2112,6 +2163,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return response;
 	}
+
 
 	@Override
 	public RegisterDoctorResponse editUserInClinic(DoctorRegisterRequest request) {
@@ -2281,12 +2333,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 					if (size > 0)
 						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
-								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole() , RoleEnum.LOCATION_ADMIN.getRole()),
+								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),
+										RoleEnum.LOCATION_ADMIN.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
-								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),RoleEnum.LOCATION_ADMIN.getRole()),
+								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(),
+										RoleEnum.LOCATION_ADMIN.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				} else if (role.equalsIgnoreCase(RoleEnum.STAFF.getRole())) {
 					if (size > 0)
@@ -2546,11 +2600,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 									}
 									roleList.add(userRole.getRole());
 								}
-								
-								if(roleList.contains(RoleEnum.HOSPITAL_ADMIN.getRole()) && roleList.contains(RoleEnum.LOCATION_ADMIN.getRole())) {
+
+								if (roleList.contains(RoleEnum.HOSPITAL_ADMIN.getRole())
+										&& roleList.contains(RoleEnum.LOCATION_ADMIN.getRole())) {
 									clinicDoctorResponse.setIsSuperAdmin(true);
 								}
-								
+
 							}
 							if (clinicDoctorResponse.getWebRole() == null
 									|| clinicDoctorResponse.getWebRole().isEmpty()) {
@@ -3974,5 +4029,79 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, "Error while adding user address");
 		}
 		return response;
+	}
+
+	private void assignDefaultUIPermissions(String doctorId) {
+		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+
+		if (dynamicUICollection == null) {
+			dynamicUICollection = new DynamicUICollection();
+			dynamicUICollection.setDoctorId(new ObjectId(doctorId));
+		}
+		UIPermissions uiPermissions = dynamicUIService.getDefaultPermissions();
+		dynamicUICollection.setUiPermissions(uiPermissions);
+		dynamicUIRepository.save(dynamicUICollection);
+	}
+
+	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds,
+			Collection<ObjectId> oldSpecialities, String doctorId) {
+		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+		if (dynamicUICollection != null) {
+			for (ObjectId objectId : specialityIds) {
+				if (oldSpecialities.contains(objectId))
+					oldSpecialities.remove(objectId);
+			}
+			if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
+				List<SpecialityCollection> oldSpecialityCollections = (List<SpecialityCollection>) specialityRepository
+						.findAll(oldSpecialities);
+				@SuppressWarnings("unchecked")
+				Collection<String> specialities = CollectionUtils.collect(oldSpecialityCollections,
+						new BeanToPropertyValueTransformer("speciality"));
+				UIPermissions uiPermissions = dynamicUICollection.getUiPermissions();
+				for (String speciality : specialities) {
+					if (speciality.equalsIgnoreCase("OPHTHALMOLOGIST")) {
+						if (uiPermissions.getClinicalNotesPermissions() != null)
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(OpthoPermissionEnums.OPTHO_CLINICAL_NOTES.getPermissions());
+						if (uiPermissions.getPrescriptionPermissions() != null)
+							uiPermissions.getPrescriptionPermissions()
+									.remove(OpthoPermissionEnums.OPTHO_RX.getPermissions());
+					}
+					if (speciality.equalsIgnoreCase("PEDIATRICIAN")) {
+						if (uiPermissions.getProfilePermissions() != null)
+							uiPermissions.getProfilePermissions()
+									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+					}
+					if (speciality.equalsIgnoreCase("GYNECOLOGIST/OBSTETRICIAN")) {
+						if (uiPermissions.getClinicalNotesPermissions() != null) {
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PA.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PV.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PS.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.EDD.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.LMP.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.USG_GENDER_COUNT.getPermissions());
+							uiPermissions.getProfilePermissions()
+									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+						}
+					}
+					if (speciality.equalsIgnoreCase("CARDIOLOGIST")) {
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECG.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECHO.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.XRAY.getPermissions());
+						uiPermissions.getClinicalNotesPermissions()
+								.remove(CardioPermissionEnum.HOLTER.getPermissions());
+					}
+				}
+				dynamicUIRepository.save(dynamicUICollection);
+			}
+		}
 	}
 }
