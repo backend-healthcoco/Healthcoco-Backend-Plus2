@@ -9,6 +9,9 @@ import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.AppointmentCountAnalyticResponse;
+import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
+import com.dpdocter.response.DoctorPatientAnalyticResponse;
+import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
@@ -52,5 +55,12 @@ public interface AnalyticsService {
 
 	public List<TreatmentService> getTreatmentsAnalyticsData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, int page, int size);
+	
+	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(int page,int size,String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String searchTerm);
+	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate);
+	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate);
 
 }

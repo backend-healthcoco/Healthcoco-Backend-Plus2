@@ -1477,6 +1477,9 @@ public interface PathProxy {
 		public static final String GET_PAYMENT_ANALYTICS_DATA = "/payment";
 		public static final String GET_AMOUNT_DUE_ANALYTICS_DATA = "/amountDue";
 		public static final String GET_TREATMENTS_ANALYTICS_DATA = "/treatments";
+		public static final String GET_PATIENT_ANALYTIC = "/doctor/patient";
+		public static final String GET_TREATMENT_ANALYTIC = "/doctor/treatmentService";
+		public static final String GET_APPOINTMENT_ANALYTIC = "/doctor/appointment";
 
 	}
 
