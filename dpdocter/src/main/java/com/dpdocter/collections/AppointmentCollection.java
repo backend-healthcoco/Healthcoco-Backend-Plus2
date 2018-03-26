@@ -16,117 +16,127 @@ import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.QueueStatus;
 
 @Document(collection = "appointment_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class AppointmentCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String subject;
+	@Field
+	private String subject;
 
-    @Field
-    private String explanation;
+	@Field
+	private String explanation;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private String appointmentId;
+	@Field
+	private String appointmentId;
 
-    @Field
-    private WorkingHours time;
+	@Field
+	private WorkingHours time;
 
-    @Indexed
-    private ObjectId patientId;
+	@Indexed
+	private ObjectId patientId;
 
-    @Field
-    private AppointmentState state = AppointmentState.NEW;
+	@Field
+	private AppointmentState state = AppointmentState.NEW;
 
-    @Field
-    private AppointmentType type = AppointmentType.APPOINTMENT;
+	@Field
+	private AppointmentType type = AppointmentType.APPOINTMENT;
 
-    @Field
-    private Boolean isRescheduled = false;
+	@Field
+	private Boolean isRescheduled = false;
 
-    @Field
-    private Date fromDate;
+	@Field
+	private Date fromDate;
 
-    @Field
-    private Date toDate;
-    
-    @Field
-    private Boolean isCalenderBlocked = false;
+	@Field
+	private Date toDate;
 
-    @Field
-    private Boolean isFeedbackAvailable = false;
+	@Field
+	private Boolean isCalenderBlocked = false;
 
-    @Field
-    private Boolean isAllDayEvent = false;
-    
-    @Field
-    private String cancelledBy;
-    
-    @Field
-    private Boolean notifyPatientBySms;
+	@Field
+	private Boolean isFeedbackAvailable = false;
 
-    @Field
-    private Boolean notifyPatientByEmail;
+	@Field
+	private Boolean isAllDayEvent = false;
 
-    @Field
-    private Boolean notifyDoctorBySms;
+	@Field
+	private String cancelledBy;
 
-    @Field
-    private Boolean notifyDoctorByEmail;
-    
-    @Field
-    private ObjectId visitId;
+	@Field
+	private Boolean notifyPatientBySms;
 
-    @Field
-    private QueueStatus status = QueueStatus.SCHEDULED;
-    
-    @Field
-    private long waitedFor = 0;
-    
-    @Field
-    private long engagedFor = 0;
-    
-    @Field
-    private long engagedAt = 0;
-    
-    @Field
-    private long checkedInAt = 0;
-    
-    @Field
-    private long checkedOutAt = 0;
-    
-    @Field
-    private String category;
-    
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean notifyPatientByEmail;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private Boolean notifyDoctorBySms;
 
-    public String getSubject() {
-	return subject;
-    }
+	@Field
+	private Boolean notifyDoctorByEmail;
 
-    public void setSubject(String subject) {
-	this.subject = subject;
-    }
+	@Field
+	private ObjectId visitId;
 
-    public String getExplanation() {
+	@Field
+	private QueueStatus status = QueueStatus.SCHEDULED;
+
+	@Field
+	private long waitedFor = 0;
+
+	@Field
+	private long engagedFor = 0;
+
+	@Field
+	private long engagedAt = 0;
+
+	@Field
+	private long checkedInAt = 0;
+
+	@Field
+	private long checkedOutAt = 0;
+
+	@Field
+	private String category;
+
+	@Field
+	private String cancelledByProfile;
+
+	public String getCancelledByProfile() {
+		return cancelledByProfile;
+	}
+
+	public void setCancelledByProfile(String cancelledByProfile) {
+		this.cancelledByProfile = cancelledByProfile;
+	}
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -135,92 +145,92 @@ public class AppointmentCollection extends GenericCollection {
 	}
 
 	public String getAppointmentId() {
-	return appointmentId;
-    }
+		return appointmentId;
+	}
 
-    public void setAppointmentId(String appointmentId) {
-	this.appointmentId = appointmentId;
-    }
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
 
-    public WorkingHours getTime() {
-	return time;
-    }
+	public WorkingHours getTime() {
+		return time;
+	}
 
-    public void setTime(WorkingHours time) {
-	this.time = time;
-    }
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
 
-    public ObjectId getPatientId() {
-	return patientId;
-    }
+	public ObjectId getPatientId() {
+		return patientId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public AppointmentState getState() {
-	return state;
-    }
+	public AppointmentState getState() {
+		return state;
+	}
 
-    public void setState(AppointmentState state) {
-	this.state = state;
-    }
+	public void setState(AppointmentState state) {
+		this.state = state;
+	}
 
-    public AppointmentType getType() {
-	return type;
-    }
+	public AppointmentType getType() {
+		return type;
+	}
 
-    public void setType(AppointmentType type) {
-	this.type = type;
-    }
+	public void setType(AppointmentType type) {
+		this.type = type;
+	}
 
-    public Boolean getIsRescheduled() {
-	return isRescheduled;
-    }
+	public Boolean getIsRescheduled() {
+		return isRescheduled;
+	}
 
-    public void setIsRescheduled(Boolean isRescheduled) {
-	this.isRescheduled = isRescheduled;
-    }
+	public void setIsRescheduled(Boolean isRescheduled) {
+		this.isRescheduled = isRescheduled;
+	}
 
-    public Boolean getIsCalenderBlocked() {
-	return isCalenderBlocked;
-    }
+	public Boolean getIsCalenderBlocked() {
+		return isCalenderBlocked;
+	}
 
-    public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
-	this.isCalenderBlocked = isCalenderBlocked;
-    }
+	public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
+		this.isCalenderBlocked = isCalenderBlocked;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getIsFeedbackAvailable() {
-	return isFeedbackAvailable;
-    }
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
 
-    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-	this.isFeedbackAvailable = isFeedbackAvailable;
-    }
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
 
 	public Date getFromDate() {
 		return fromDate;
@@ -365,5 +375,4 @@ public class AppointmentCollection extends GenericCollection {
 				+ category + "]";
 	}
 
-	
 }

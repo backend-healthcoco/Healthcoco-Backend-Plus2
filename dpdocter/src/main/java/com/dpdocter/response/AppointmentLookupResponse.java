@@ -83,6 +83,9 @@ public class AppointmentLookupResponse extends GenericCollection {
     
     private String category;
     
+    private String cancelledByProfile;
+    
+    
 	public String getId() {
 		return id;
 	}
@@ -377,5 +380,13 @@ public class AppointmentLookupResponse extends GenericCollection {
 				+ patientCard + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor
 				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
 				+ ", count=" + count + ", category=" + category + "]";
+	}
+
+	public String getCancelledByProfile() {
+		return cancelledByProfile;
+	}
+
+	public void setCancelledByProfile(String cancelledByProfile) {
+		this.cancelledByProfile = cancelledByProfile;
 	}
 }
