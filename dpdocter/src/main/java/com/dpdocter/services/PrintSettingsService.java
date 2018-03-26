@@ -13,4 +13,6 @@ public interface PrintSettingsService {
 
     PrintSettings deletePrintSettings(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
+	String getPrintSettingsGeneralNote(String doctorId, String locationId, String hospitalId);
+
 }

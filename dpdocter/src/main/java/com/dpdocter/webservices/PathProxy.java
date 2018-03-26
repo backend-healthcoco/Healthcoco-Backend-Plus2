@@ -836,6 +836,8 @@ public interface PathProxy {
 		public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String GET_GENERAL_NOTES = "/getGeneralNotes";
 	}
 
 	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";

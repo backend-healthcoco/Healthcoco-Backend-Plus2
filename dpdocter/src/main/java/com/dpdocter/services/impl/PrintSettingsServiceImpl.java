@@ -10,10 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.PrintSettings;
+import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -24,6 +29,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
+import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.services.PrintSettingsService;
 
 import common.util.web.DPDoctorUtils;
@@ -41,6 +47,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	
 	@Autowired
 	private HospitalRepository hospitalRepository;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	@Override
 	@Transactional
@@ -185,6 +194,58 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Print Settings");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Print Settings");
+		}
+		return response;
+
+	}
+	
+	
+	@Override
+	@Transactional
+	public String getPrintSettingsGeneralNote( String doctorId, String locationId, String hospitalId) {
+		String response = null;
+		PrintSettings printSettings = null;
+		Aggregation aggregation = null;
+		
+		try {
+			
+
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+			{
+				doctorObjectId = new ObjectId(doctorId);
+				criteria.and("doctorId").is(doctorObjectId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+			{
+				locationObjectId = new ObjectId(locationId);
+				criteria.and("locationId").is(locationObjectId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+			{
+				hospitalObjectId = new ObjectId(hospitalId);
+				criteria.and("hospitalId").is(hospitalObjectId);
+			}
+
+		
+			aggregation = Aggregation.newAggregation( Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			
+			AggregationResults<PrintSettings> aggregationResults = mongoTemplate.aggregate(
+					aggregation, PrintSettingsCollection.class,
+					PrintSettings.class);
+			
+			printSettings = aggregationResults.getUniqueMappedResult();
+			if(printSettings != null)
+			{
+				response = printSettings.getGeneralNotes();
+			}
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Print Settings Notes");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Print Settings Notes");
 		}
 		return response;
 
