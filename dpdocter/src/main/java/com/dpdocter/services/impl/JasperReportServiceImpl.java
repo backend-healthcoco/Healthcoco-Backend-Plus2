@@ -4744,7 +4744,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(9);
-		jrDesignTextField.setWidth(250);
+		jrDesignTextField.setWidth(480);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(false);
