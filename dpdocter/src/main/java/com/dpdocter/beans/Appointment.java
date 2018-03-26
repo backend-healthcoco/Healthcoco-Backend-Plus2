@@ -87,6 +87,8 @@ public class Appointment extends GenericCollection {
     
     private String category;
     
+	private String cancelledByProfile;
+    
 	public String getId() {
 		return id;
 	}
@@ -406,6 +408,14 @@ public class Appointment extends GenericCollection {
 				+ ", visitId=" + visitId + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor="
 				+ engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt="
 				+ checkedOutAt + ", count=" + count + ", category=" + category + "]";
+	}
+
+	public String getCancelledByProfile() {
+		return cancelledByProfile;
+	}
+
+	public void setCancelledByProfile(String cancelledByProfile) {
+		this.cancelledByProfile = cancelledByProfile;
 	}
 
 }

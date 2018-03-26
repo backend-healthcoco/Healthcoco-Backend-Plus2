@@ -60,6 +60,8 @@ public class AppointmentRequest {
 	private long checkedOutAt = 0;
 
 	private String category;
+	
+	private String cancelledByProfile;
 
 	public String getAppointmentId() {
 		return appointmentId;
@@ -280,6 +282,14 @@ public class AppointmentRequest {
 				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + ", status=" + status + ", waitedFor="
 				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
 				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + "]";
+	}
+
+	public String getCancelledByProfile() {
+		return cancelledByProfile;
+	}
+
+	public void setCancelledByProfile(String cancelledByProfile) {
+		this.cancelledByProfile = cancelledByProfile;
 	}
 
 }

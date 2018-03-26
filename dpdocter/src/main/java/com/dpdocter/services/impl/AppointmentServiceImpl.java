@@ -651,11 +651,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
 						if (request.getCancelledBy() != null) {
-							if (request.getCancelledBy().equalsIgnoreCase(AppointmentCreatedBy.DOCTOR.getType()))
+							if (request.getCancelledBy().equalsIgnoreCase(AppointmentCreatedBy.DOCTOR.getType())){
 								appointmentCollection.setCancelledBy(appointmentLookupResponse.getDoctor().getTitle()
 										+ " " + appointmentLookupResponse.getDoctor().getFirstName());
-							else
+								appointmentCollection.setCancelledByProfile(AppointmentCreatedBy.DOCTOR.getType());
+							}
+							else{
 								appointmentCollection.setCancelledBy(patientCard.getLocalPatientName());
+								appointmentCollection.setCancelledByProfile(AppointmentCreatedBy.PATIENT.getType());
+							}
 						}
 						AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
 								.findByAppointmentId(request.getAppointmentId());
