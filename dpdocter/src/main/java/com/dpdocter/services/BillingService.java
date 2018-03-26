@@ -9,6 +9,7 @@ import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
+import com.dpdocter.request.InvoiceItemChangeStatusRequest;
 import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
@@ -67,5 +68,7 @@ public interface BillingService {
 			String mobileNumber);
 
 	String downloadMultipleReceipt(List<String> ids);
+
+	Boolean changeInvoiceTreatmentStatus(InvoiceItemChangeStatusRequest request);
 
 }

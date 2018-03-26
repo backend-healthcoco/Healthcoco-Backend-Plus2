@@ -837,7 +837,7 @@ public interface PathProxy {
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
 		
-		public static final String GET_GENERAL_NOTES = "/getGeneralNotes";
+		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 	}
 
 	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
@@ -1316,7 +1316,9 @@ public interface PathProxy {
 
 		public static final String DUE_AMOUNT_REMAINDER = "dueAmount/{patientId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/remainder";
 
-		public static final String DOWNLOAD_MULTIPLE_RECEIPT = "receipt/downlaod";
+		public static final String DOWNLOAD_MULTIPLE_RECEIPT = "receipt/download";
+		
+		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";

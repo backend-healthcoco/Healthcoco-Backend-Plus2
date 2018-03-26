@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
 import com.dpdocter.beans.CustomAggregationOperation;
@@ -71,6 +72,7 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
+import com.dpdocter.request.InvoiceItemChangeStatusRequest;
 import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
@@ -337,7 +339,6 @@ public class BillingServiceImpl implements BillingService {
 					quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
 							request.getHospitalId(), invoiceItemResponse.getItemId(),
 							doctorPatientInvoiceCollection.getId().toString());
-					System.out.println(quantity);
 					
 				}
 
@@ -2149,5 +2150,31 @@ public class BillingServiceImpl implements BillingService {
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
+	}
+	
+	
+	@Override
+	@Transactional
+	public Boolean changeInvoiceTreatmentStatus(InvoiceItemChangeStatusRequest request) {
+		Boolean status = false;
+		DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
+		try {
+			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getInvoiceId()));
+			if (doctorPatientInvoiceCollection != null) {
+				for (InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
+					if (invoiceItem.getItemId().equals(new ObjectId(request.getItemId()))) {
+						invoiceItem.setStatus(request.getStatus());
+						status = true;
+					}
+				}
+				doctorPatientInvoiceCollection  = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+			} else {
+				throw new BusinessException(ServiceError.NoRecord, "Invoice not found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+		}
+		return status;
 	}
 }
