@@ -1288,7 +1288,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		String text = "";
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment " + appointmentId + " with " + doctorName
+			text = "Your appointment with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
 					+ ".";
@@ -1314,7 +1314,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "TENTATIVE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment " + appointmentId + " @ " + dateTime + " with " + doctorName
+			text = "Your appointment @ " + dateTime + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been sent for confirmation.";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
@@ -1331,7 +1331,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
-			text = "Your appointment " + appointmentId + " @ " + dateTime + " has been cancelled by " + doctorName
+			text = "Your appointment @ " + dateTime + " has been cancelled by " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
@@ -1348,7 +1348,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT": {
-			text = "Your appointment " + appointmentId + " for " + dateTime + " with " + doctorName
+			text = "Your appointment for " + dateTime + " with " + doctorName
 					+ " has been cancelled as per your request.";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
@@ -1356,7 +1356,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
-			text = "You have an upcoming appointment " + appointmentId + " @ " + dateTime + " with " + doctorName
+			text = "You have an upcoming appointment @ " + dateTime + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
@@ -1365,7 +1365,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment " + appointmentId + " with " + doctorName
+			text = "Your appointment with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
 					+ ".";
