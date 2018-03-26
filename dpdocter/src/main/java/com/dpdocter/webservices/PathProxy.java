@@ -831,6 +831,8 @@ public interface PathProxy {
 		public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 	}
 
 	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
@@ -1291,7 +1293,9 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_MULTIPLE_RECEIPT = "receipt/download";
 
-		public static final String EMAIL_MULTIPLE_RECEIPT = "receipt/email";;
+		public static final String EMAIL_MULTIPLE_RECEIPT = "receipt/email";
+		
+		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";

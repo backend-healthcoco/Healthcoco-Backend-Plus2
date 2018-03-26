@@ -24,6 +24,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
+import com.dpdocter.request.InvoiceItemChangeStatusRequest;
 import com.dpdocter.request.ListIdrequest;
 import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
@@ -390,4 +391,18 @@ public class BillingApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS, notes = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS)
+	public Response<Boolean> changeInvoiceItemTreatmentStatus(InvoiceItemChangeStatusRequest request) {
+		
+		if (request == null || request.getInvoiceId() == null || request.getItemId().isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(billingService.changeInvoiceTreatmentStatus(request));
+		return response;
+	}
 }
