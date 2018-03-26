@@ -6329,11 +6329,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(width);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(100);
+		jrDesignTextField.setWidth(55);
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		width = width + 100;
+		width = width + 55;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{pulseWeightAndBsa}"));
