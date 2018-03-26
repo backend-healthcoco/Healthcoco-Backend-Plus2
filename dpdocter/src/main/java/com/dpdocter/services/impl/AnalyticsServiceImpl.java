@@ -207,7 +207,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.match(criteria), Aggregation.group("_id")
+						Aggregation.unwind("visit"), Aggregation.match(criteria), Aggregation.group("id")
 
 				);
 				double total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
@@ -232,7 +232,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.match(criteria), Aggregation.group("_id")
+						Aggregation.unwind("visit"), Aggregation.match(criteria), Aggregation.group("id")
 
 				);
 				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
@@ -293,23 +293,22 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-			
 			criteria = getCriteria(null, locationId, hospitalId);
 			data.setTotalPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
 
 			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
 			if (data.getTotalNewPatient() > 0) {
-				//hike in patient
+				// hike in patient
 				int total = 0;
 				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(last).lte(fromTime);
 				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
 
 				data.setChangeInTotalPatientInPercent(100 * ((double) total - (double) data.getTotalNewPatient())
 						/ (double) data.getTotalNewPatient());
-				
-				//visited patient
-				
+
+				// visited patient
+
 				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
 						.and("visit.locationId").is(new ObjectId(locationId));
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
