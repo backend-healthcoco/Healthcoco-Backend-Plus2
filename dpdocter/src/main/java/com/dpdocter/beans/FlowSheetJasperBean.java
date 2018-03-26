@@ -5,15 +5,11 @@ public class FlowSheetJasperBean {
 
 	private String date = " ";
 
-	private String pulseWeightAndBsa;
-
-	private String tempHeightBreathAndSystDiast;
-
-	private String bpBmiAndSpo;
+	private String examination = " ";
 
 	private String complaint;
 
-	private String advice = " ";
+	private String advice;
 
 	public Integer getNo() {
 		return no;
@@ -31,28 +27,12 @@ public class FlowSheetJasperBean {
 		this.date = date;
 	}
 
-	public String getPulseWeightAndBsa() {
-		return pulseWeightAndBsa;
+	public String getExamination() {
+		return examination;
 	}
 
-	public void setPulseWeightAndBsa(String pulseWeightAndBsa) {
-		this.pulseWeightAndBsa = pulseWeightAndBsa;
-	}
-
-	public String getTempHeightBreathAndSystDiast() {
-		return tempHeightBreathAndSystDiast;
-	}
-
-	public void setTempHeightBreathAndSystDiast(String tempHeightBreathAndSystDiast) {
-		this.tempHeightBreathAndSystDiast = tempHeightBreathAndSystDiast;
-	}
-
-	public String getBpBmiAndSpo() {
-		return bpBmiAndSpo;
-	}
-
-	public void setBpBmiAndSpo(String bpBmiAndSpo) {
-		this.bpBmiAndSpo = bpBmiAndSpo;
+	public void setExamination(String examination) {
+		this.examination = examination;
 	}
 
 	public String getComplaint() {
