@@ -2453,10 +2453,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				jasperBean = new FlowSheetJasperBean();
 				jasperBean.setNo(i);
 				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getAdvice())) {
-					jasperBean.setAdvice(flowsheet.getAdvice());
+					jasperBean.setAdvice("<b>Advice :-    </b>" + flowsheet.getAdvice());
 				}
 				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getComplaint())) {
-					jasperBean.setComplaint("<b>Complints : </b>" + flowsheet.getComplaint());
+					jasperBean.setComplaint("<b>Complaint :- </b>" + flowsheet.getComplaint());
 				}
 				if (flowsheet.getDate() != null) {
 					if (flowsheet.getDate() != 0) {
@@ -2465,54 +2465,47 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 				String field = "";
 
-				field = "Pulse (" + VitalSignsUnit.PULSE.getUnit() + ") :"
-						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getPulse()) ? "<b>" + flowsheet.getPulse() + "</b>"
-								: " ")
-						+ "<br>";
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getPulse())
+						? "Pulse (" + VitalSignsUnit.PULSE.getUnit() + ") : " + flowsheet.getPulse() : "");
 
-				field = field + "Weight (" + VitalSignsUnit.WEIGHT.getUnit() + ") :"
-						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getWeight()) ? "<b>" + flowsheet.getWeight() + "</b>"
-								: " ")
-						+ "<br>";
-				field = field + "BSA (" + VitalSignsUnit.BSA.getUnit() + ") :"
-						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa())
-								? "<b>" + String.format("%.3f", Double.parseDouble(flowsheet.getBsa())) + "</b>" : " ")
-						+ "";
-				jasperBean.setPulseWeightAndBsa(field);
-				field = "";
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getWeight(), field) ? ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getWeight())
+								? "Weight (" + VitalSignsUnit.WEIGHT.getUnit() + ") : " + flowsheet.getWeight() : "");
 
-				field = "Temp (" + VitalSignsUnit.TEMPERATURE.getUnit() + ") :"
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa(), field) ? ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa()) ? "BSA (" + VitalSignsUnit.BSA.getUnit()
+								+ ") : " + String.format("%.3f", Double.parseDouble(flowsheet.getBsa())) : "");
+
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getTemperature(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getTemperature())
-								? "<b>" + flowsheet.getTemperature() + "</b>" : " ")
-						+ "<br>";
+								? "Temp (" + VitalSignsUnit.TEMPERATURE.getUnit() + ") : " + flowsheet.getTemperature()
+								: "");
 
-				field = field + "Height (" + VitalSignsUnit.HEIGHT.getUnit() + ") :"
-						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getHeight()) ? "<b>" + flowsheet.getHeight() + "</b>"
-								: " ")
-						+ "<br>";
-				field = field + "Resp Rate (" + VitalSignsUnit.BREATHING.getUnit() + ") :"
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getHeight(), field) ? ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getHeight())
+								? "Height (" + VitalSignsUnit.HEIGHT.getUnit() + ") : " + flowsheet.getHeight() : "");
+
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBreathing(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBreathing())
-								? "<b>" + flowsheet.getBreathing() + "</b>" : " ")
-						+ "";
+								? "Resp Rate (" + VitalSignsUnit.BREATHING.getUnit() + ") : " + flowsheet.getBreathing()
+								: "");
 
-				jasperBean.setTempHeightBreathAndSystDiast(field);
-
-				field = "";
-
-				field = "Bloodpresssure (" + VitalSignsUnit.BLOODPRESSURE.getUnit() + ") :"
+				field = field
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getDiastolic(), flowsheet.getSystolic(), field)
+								? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getDiastolic(), flowsheet.getSystolic())
-								? "<b>" + flowsheet.getSystolic() + "/" + flowsheet.getDiastolic() + "</b>" : " ")
-						+ "<br>";
+								? "B. P. (" + VitalSignsUnit.BLOODPRESSURE.getUnit() + ") : " + flowsheet.getSystolic()
+										+ "/" + flowsheet.getDiastolic() + ""
+								: "");
 
-				field = field + "BMI (" + VitalSignsUnit.BMI.getUnit() + ") :"
-						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBmi())
-								? "<b>" + String.format("%.3f", Double.parseDouble(flowsheet.getBmi())) + "</b>" : " ")
-						+ "<br>";
-				field = field + "Spo2 (" + VitalSignsUnit.SPO2.getUnit() + ") :"
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBmi(), field) ? ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBmi()) ? " BMI (" + VitalSignsUnit.BMI.getUnit()
+								+ ") : " + String.format("%.3f", Double.parseDouble(flowsheet.getBmi())) : "");
+
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getSpo2(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getSpo2())
-								? "<b>" + flowsheet.getBreathing() + "</b>" : " ")
-						+ "";
-				jasperBean.setBpBmiAndSpo(field);
+								? "Spo2 (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getSpo2() : "");
+				jasperBean.setExamination(field);
 
 				i++;
 				jasperBeans.add(jasperBean);
