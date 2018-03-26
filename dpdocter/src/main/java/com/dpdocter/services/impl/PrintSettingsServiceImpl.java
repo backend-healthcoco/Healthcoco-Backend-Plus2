@@ -204,7 +204,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	@Transactional
 	public String getPrintSettingsGeneralNote( String doctorId, String locationId, String hospitalId) {
 		String response = null;
-		PrintSettings printSettings = null;
+		List<PrintSettings> printSettings = null;
 		Aggregation aggregation = null;
 		
 		try {
@@ -236,10 +236,11 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 					aggregation, PrintSettingsCollection.class,
 					PrintSettings.class);
 			
-			printSettings = aggregationResults.getUniqueMappedResult();
-			if(printSettings != null)
-			{
-				response = printSettings.getGeneralNotes();
+			printSettings = aggregationResults.getMappedResults();
+			for (PrintSettings printSetting : printSettings) {
+				if (printSetting.getGeneralNotes() != null) {
+					response = printSetting.getGeneralNotes();
+				}
 			}
 					
 		} catch (Exception e) {
