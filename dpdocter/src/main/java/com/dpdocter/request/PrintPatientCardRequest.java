@@ -10,6 +10,10 @@ public class PrintPatientCardRequest {
 
 	private String patientName;
 
+	private String patientId;
+
+	private String mobileNumber;
+
 	private String appointmentId;
 
 	private Date fromDate;
@@ -106,6 +110,22 @@ public class PrintPatientCardRequest {
 
 	public String getDoctorId() {
 		return doctorId;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	@Override
