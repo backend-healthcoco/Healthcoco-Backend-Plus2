@@ -107,5 +107,23 @@ public class PrintSettingsApi {
 	    return null;
 
     }
+    
+    @Path(value = PathProxy.PrintSettingsUrls.GET_GENERAL_NOTES)
+    @GET
+    @ApiOperation(value = "GET_GENERAL_NOTES", notes = "GET_GENERAL_NOTES")
+    public Response<String> getSettingsGeneralNote(@PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+
+	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+	    logger.warn(" DoctorId or locationId or hospitalId cannot be null");
+	    throw new BusinessException(ServiceError.InvalidInput, " DoctorId or locationId or hospitalId cannot be null");
+	}
+	String generalNote = printSettingsService.getPrintSettingsGeneralNote(doctorId, locationId, hospitalId);
+	
+	Response<String> response = new Response<String>();
+	response.setData(generalNote);
+	return response;
+    }
+
 
 }
