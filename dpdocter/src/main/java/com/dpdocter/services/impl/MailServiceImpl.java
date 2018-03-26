@@ -19,6 +19,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +69,7 @@ public class MailServiceImpl implements MailService {
 	@Value(value = "${is.qa}")
 	private String QA_ENV;
 
+	@Async
 	@Override
 	@Transactional
 	public Boolean sendEmail(String to, String subject, String body, MailAttachment mailAttachment)
@@ -126,6 +128,7 @@ public class MailServiceImpl implements MailService {
 		return respone;
 	}
 	
+	@Async
     @Override
     @Transactional
     public Boolean sendEmailMultiAttach(String to, String subject, String body, List<MailAttachment> mailAttachments) throws MessagingException {
@@ -186,6 +189,7 @@ public class MailServiceImpl implements MailService {
 	return respone;
     }
 
+	@Async
 	@Override
 	public Boolean sendExceptionMail(String body) throws MessagingException {
 		Boolean status = false;
@@ -197,6 +201,7 @@ public class MailServiceImpl implements MailService {
 		
 	}
 
+	@Async
 	@Override
 	public Boolean sendExceptionMail(String subject, String body) throws MessagingException {
 		Boolean status = false;
@@ -210,6 +215,7 @@ public class MailServiceImpl implements MailService {
 		return status;
 	}
 	
+	@Async
 	@Override
 	public Boolean sendMailToIOSteam(String subject, String body) throws MessagingException {
 		Boolean status = false;

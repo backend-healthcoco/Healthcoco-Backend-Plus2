@@ -42,6 +42,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriUtils;
@@ -137,6 +138,7 @@ public class SMSServicesImpl implements SMSServices {
 	@Autowired
 	private SubscriptionDetailRepository subscriptionDetailRepository;
 
+	@Async
 	@Override
 	@Transactional
 	public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
@@ -213,6 +215,7 @@ public class SMSServicesImpl implements SMSServices {
 		return response;
 	}
 
+	@Async
 	@Override
 	@Transactional
 	public Boolean sendAndSaveOTPSMS(String message, String mobileNumber,String otp) {
