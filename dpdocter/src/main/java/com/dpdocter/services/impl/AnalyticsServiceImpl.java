@@ -207,7 +207,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.match(criteria), Aggregation.group("_id")
+						Aggregation.unwind("visit"), Aggregation.match(criteria), Aggregation.group("id")
 
 				);
 				double total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
@@ -232,7 +232,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.match(criteria), Aggregation.group("_id")
+						Aggregation.unwind("visit"), Aggregation.match(criteria), Aggregation.group("id")
 
 				);
 				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
