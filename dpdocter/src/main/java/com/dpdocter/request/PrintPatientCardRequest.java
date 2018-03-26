@@ -12,6 +12,10 @@ public class PrintPatientCardRequest {
 
 	private String patientName;
 
+	private String patientId;
+
+	private String mobileNumber;
+
 	private String appointmentId;
 
 	private Date fromDate;
@@ -110,6 +114,22 @@ public class PrintPatientCardRequest {
 		return doctorId;
 	}
 
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintPatientCardRequest [patientName=" + patientName + ", appointmentId=" + appointmentId
@@ -117,7 +137,7 @@ public class PrintPatientCardRequest {
 				+ locationId + ", hospitalId=" + hospitalId + ", gender=" + gender + ", dob=" + dob + ", generalNotes="
 				+ generalNotes + "]";
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println(JacksonUtil.obj2Json(new PrintPatientCardRequest()));
 		System.out.println(new Date());

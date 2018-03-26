@@ -3737,17 +3737,27 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else {
 				parameters.put("age", "<b>Age :- </b> --");
 			}
-			if (request.getAppointmentId() != null) {
-				parameters.put("requestId", "<b>Id :- </b> " + request.getAppointmentId());
+			if (request.getMobileNumber() != null) {
+				parameters.put("mobileNumber", "<b>Mobile No. :- </b> " + request.getMobileNumber());
 			} else {
-				parameters.put("requestId", "<b>Id :- </b>  --");
+				parameters.put("mobileNumber", "<b>Mobile No. :- </b> --");
+			}
+			if (request.getPatientId() != null) {
+				parameters.put("patientId", "<b>Patient Id :- </b> " + request.getPatientId());
+			} else {
+				parameters.put("patientId", "<b>Patient Id :- </b> --");
+			}
+			if (request.getAppointmentId() != null) {
+				parameters.put("requestId", "<b>Appointment Id :- </b> " + request.getAppointmentId());
+			} else {
+				parameters.put("requestId", "<b>Appointment Id :- </b>  --");
 			}
 			if (request.getFromDate() != null) {
 				parameters.put("fromDate",
 						"<b>Appointment Date :- </b>" + simpleDateFormat.format(request.getFromDate()));
 			}
 			if (request.getGeneralNotes() != null) {
-				parameters.put("generalNotes", "<b>Note :- </b> " + request.getAppointmentId());
+				parameters.put("generalNotes", request.getAppointmentId());
 			}
 			patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(request.getDoctorId()));
 
