@@ -6233,12 +6233,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(width);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(100);
+		jrDesignTextField.setWidth(55);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(titleFontSize));
 		band.addElement(jrDesignTextField);
-		width = width + 100;
+		width = width + 55;
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Examination}"));
 		jrDesignTextField.setX(width);
@@ -6334,7 +6334,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 		width = width + 110;
-		
+
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{advice}"));
 		jrDesignTextField.setX(width + 5);

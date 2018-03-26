@@ -2475,8 +2475,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 								: " ")
 						+ "<br>";
 				field = field + "BSA (" + VitalSignsUnit.BSA.getUnit() + ") :"
-						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa()) ? "<b>" + flowsheet.getBsa() + "</b>"
-								: " ")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa())
+								? "<b>" + String.format("%.3f", Double.parseDouble(flowsheet.getBsa())) + "</b>" : " ")
 						+ "";
 				jasperBean.setPulseWeightAndBsa(field);
 				field = "";
@@ -2505,8 +2505,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						+ "<br>";
 
 				field = field + "BMI (" + VitalSignsUnit.BMI.getUnit() + ") :"
-						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBmi()) ? "<b>" + flowsheet.getBmi() + "</b>"
-								: " ")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBmi())
+								? "<b>" + String.format("%.3f", Double.parseDouble(flowsheet.getBmi())) + "</b>" : " ")
 						+ "<br>";
 				field = field + "Spo2 (" + VitalSignsUnit.SPO2.getUnit() + ") :"
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getSpo2())
