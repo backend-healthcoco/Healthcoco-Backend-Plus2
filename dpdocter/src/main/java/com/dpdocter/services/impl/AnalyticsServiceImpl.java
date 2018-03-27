@@ -203,7 +203,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 						Aggregation.unwind("appointment"), Aggregation.match(criteria), new CustomAggregationOperation(
 								new BasicDBObject("$group", new BasicDBObject("_id", "$appointment._id")))
-	
 
 				);
 				appointmentCount = mongoTemplate
@@ -215,10 +214,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				// old Patient Appointment count
 
-
 				data.setOldPatientAppointmentInPercent((100 * (data.getTotalNoOfAppointment() - appointmentCount))
 						/ (double) data.getTotalNoOfAppointment());
-	
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -278,32 +276,29 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
+
+			// hike in patient
+			int total = 0;
 			if (data.getTotalNewPatient() > 0) {
-				// hike in patient
-				int total = 0;
 				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(last).lte(fromTime);
 				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
-
-				data.setChangeInTotalPatientInPercent(100 * ((double) total - (double) data.getTotalNewPatient())
-						/ (double) data.getTotalNewPatient());
-
-				// visited patient
-
-				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
-						.and("visit.locationId").is(new ObjectId(locationId));
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
-				}
-				criteria.and("visit.discarded").is(false);
-				Aggregation aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
-				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
-						.getMappedResults().size();
-				data.setTotalVisitedPatient((100 * (total) / data.getTotalNewPatient()));
-
+				data.setChangeInTotalPatientInPercent(total - data.getTotalNewPatient());
 			}
+			// visited patient
+
+			criteria = getCriteria(null, locationId, hospitalId).and("visit.adminCreatedTime").gte(fromTime).lte(toTime)
+					.and("visit.locationId").is(new ObjectId(locationId)).and("visit.discarded").is(false);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("visit.doctorId").is(new ObjectId(doctorId));
+			}
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"), Aggregation.unwind("visit"),
+					Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
+			total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
+					.getMappedResults().size();
+			data.setTotalVisitedPatient(total);
 
 		} catch (Exception e) {
 			e.printStackTrace();

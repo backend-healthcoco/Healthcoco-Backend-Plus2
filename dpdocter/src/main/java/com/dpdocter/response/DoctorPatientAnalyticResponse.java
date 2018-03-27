@@ -4,14 +4,14 @@ public class DoctorPatientAnalyticResponse {
 
 	private Integer totalPatient = 0;
 	private Integer totalNewPatient = 0;
-	private Double changeInTotalPatientInPercent = 0.0;
+	private Integer changeInTotalPatientInPercent = 0;
 	private Integer totalVisitedPatient = 0;
 
-	public Double getChangeInTotalPatientInPercent() {
+	public Integer getChangeInTotalPatientInPercent() {
 		return changeInTotalPatientInPercent;
 	}
 
-	public void setChangeInTotalPatientInPercent(Double changeInTotalPatientInPercent) {
+	public void setChangeInTotalPatientInPercent(Integer changeInTotalPatientInPercent) {
 		this.changeInTotalPatientInPercent = changeInTotalPatientInPercent;
 	}
 
