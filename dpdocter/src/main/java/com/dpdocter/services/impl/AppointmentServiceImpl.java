@@ -651,12 +651,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
 						if (request.getCancelledBy() != null) {
-							if (request.getCancelledBy().equalsIgnoreCase(AppointmentCreatedBy.DOCTOR.getType())){
+							if (request.getCancelledBy().equalsIgnoreCase(AppointmentCreatedBy.DOCTOR.getType())) {
 								appointmentCollection.setCancelledBy(appointmentLookupResponse.getDoctor().getTitle()
 										+ " " + appointmentLookupResponse.getDoctor().getFirstName());
 								appointmentCollection.setCancelledByProfile(AppointmentCreatedBy.DOCTOR.getType());
-							}
-							else{
+							} else {
 								appointmentCollection.setCancelledBy(patientCard.getLocalPatientName());
 								appointmentCollection.setCancelledByProfile(AppointmentCreatedBy.PATIENT.getType());
 							}
@@ -1292,8 +1291,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		String text = "";
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
 					+ ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
@@ -1369,8 +1367,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
 					+ ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
@@ -1510,8 +1507,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		String text = "";
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -1533,8 +1529,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "TENTATIVE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointmen @ " + dateTime + " with " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointmen @ " + dateTime + " with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ " has been sent for confirmation. Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -1581,8 +1576,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -3741,10 +3735,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(request.getDoctorId()));
 
 			String pdfName = request.getPatientName() + "-PATIENT-CARD-" + new Date().getTime();
-			parameters.put("contentLineSpace",
-					(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
-							? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
-				
+			parameters
+					.put("contentLineSpace",
+							(printSettings != null
+									&& !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+											? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
+
 			String layout = printSettings != null
 					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 					: "PORTRAIT";
@@ -3752,7 +3748,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					? (printSettings.getPageSetup() != null ? (printSettings.getPageSetup().getPageSize() != null
 							? printSettings.getPageSetup().getPageSize() : "A4") : "A4")
 					: "A4";
-			
+
 			Integer topMargin = printSettings != null
 					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
 			Integer bottonMargin = printSettings != null
@@ -3835,7 +3831,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						toDate, isGroupByDoctor);
 			}
 			if (calenderResponseForJaspers == null || calenderResponseForJaspers.isEmpty()) {
-				return response;
+				throw new BusinessException(ServiceError.NoRecord, "Appointment Not Found");
 			}
 
 			jasperReportResponse = createCalenderJasper(calenderResponseForJaspers, doctorIds, locationId, hospitalId,
@@ -3860,8 +3856,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<CalenderResponseForJasper> response = null;
 		try {
 
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId");
 
 			if (doctorIds != null && !doctorIds.isEmpty()) {
 				criteria.and("doctorId").in(doctorIds);
