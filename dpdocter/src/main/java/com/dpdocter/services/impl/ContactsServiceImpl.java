@@ -213,7 +213,8 @@ public class ContactsServiceImpl implements ContactsService {
 		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 			hospitalObjectId = new ObjectId(hospitalId);
 
-		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded").is(false);
+		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
+				.is(false);
 		if (!discarded)
 			criteria.and("discarded").is(discarded);
 		if (patientIds != null && !patientIds.isEmpty())
@@ -795,7 +796,6 @@ public class ContactsServiceImpl implements ContactsService {
 
 			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
 					Aggregation.unwind("user"), Aggregation.match(criteria),
-					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 					Aggregation.sort(Direction.DESC, "createdTime"));
 
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,

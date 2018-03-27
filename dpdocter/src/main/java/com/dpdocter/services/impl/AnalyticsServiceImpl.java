@@ -279,9 +279,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			criteria = getCriteria(null, locationId, hospitalId);
-			data.setTotalPatient((int) mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
-					PatientCollection.class, PatientCard.class).getMappedResults().size());
+			data.setTotalPatient((int) mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.sort(Direction.DESC, "createdTime")),
+					PatientCollection.class, PatientCollection.class).getMappedResults().size());
 
 			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
