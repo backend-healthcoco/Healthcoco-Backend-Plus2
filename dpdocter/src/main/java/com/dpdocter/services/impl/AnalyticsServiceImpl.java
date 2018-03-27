@@ -194,53 +194,31 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				criteria = getCriteria(null, locationId, hospitalId).and("appointment.locationId")
 						.is(new ObjectId(locationId)).and("appointment.hospitalId").is(new ObjectId(hospitalId))
-						.and("visit.locationId").is(new ObjectId(locationId)).and("visit.hospitalId")
-						.is(new ObjectId(hospitalId))
-						.norOperator(new Criteria("appointment.createdTime").lte(fromTime),
-								new Criteria("visit.adminCreatedTime").lte(fromTime))
-						.and("appointment.type").is("APPOINTMENT");
+						.and("createdTime").gte(fromTime).and("appointment.type").is("APPOINTMENT");
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria.and("appointment.doctorId").is(new ObjectId(doctorId)).and("visit.doctorId")
-							.is(new ObjectId(doctorId));
+					criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
 				}
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
-						Aggregation.unwind("appointment"),
-						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))
+
+						Aggregation.unwind("appointment"), Aggregation.match(criteria), new CustomAggregationOperation(
+								new BasicDBObject("$group", new BasicDBObject("_id", "$appointment._id")))
+	
 
 				);
-				double total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
-						.getMappedResults().size();
+				appointmentCount = mongoTemplate
+						.aggregate(aggregation, PatientCollection.class, PatientCollection.class).getMappedResults()
+						.size();
 
-				data.setNewPatientAppointmentInPercent((100 * (total)) / (double) data.getTotalNoOfAppointment());
+				data.setNewPatientAppointmentInPercent(
+						(100 * (appointmentCount)) / (double) data.getTotalNoOfAppointment());
 
 				// old Patient Appointment count
 
-				criteria = getCriteria(null, locationId, hospitalId).and("appointment.locationId")
-						.is(new ObjectId(locationId)).and("appointment.hospitalId").is(new ObjectId(hospitalId))
-						.and("visit.locationId").is(new ObjectId(locationId)).and("visit.hospitalId")
-						.is(new ObjectId(hospitalId))
-						.orOperator(new Criteria("appointment.createdTime").lte(fromTime),
-								new Criteria("visit.adminCreatedTime").lte(fromTime))
-						.and("appointment.type").is("APPOINTMENT");
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria.and("appointment.doctorId").is(new ObjectId(doctorId)).and("visit.doctorId")
-							.is(new ObjectId(doctorId));
-				}
-				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
-						Aggregation.unwind("appointment"),
-						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))
 
-				);
-				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
-						.getMappedResults().size();
-
-				data.setOldPatientAppointmentInPercent((100 * (total)) / (double) data.getTotalNoOfAppointment());
+				data.setOldPatientAppointmentInPercent((100 * (data.getTotalNoOfAppointment() - appointmentCount))
+						/ (double) data.getTotalNoOfAppointment());
+	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
