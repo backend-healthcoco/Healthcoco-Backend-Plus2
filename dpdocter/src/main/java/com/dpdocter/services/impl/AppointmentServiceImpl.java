@@ -3831,7 +3831,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						toDate, isGroupByDoctor);
 			}
 			if (calenderResponseForJaspers == null || calenderResponseForJaspers.isEmpty()) {
-				throw new BusinessException(ServiceError.NoRecord, "Appointment Not Found");
+				return "Appointment Not Found";
 			}
 
 			jasperReportResponse = createCalenderJasper(calenderResponseForJaspers, doctorIds, locationId, hospitalId,
