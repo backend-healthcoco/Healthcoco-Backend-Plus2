@@ -171,7 +171,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				data.setBookedAppointmentInPercent(
 						((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment()));
 
-				// Sceduled percent
+				// Scheduled percent
 
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 						.and("type").is("APPOINTMENT");
@@ -208,9 +208,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														new BasicDBObject("$gt",
 																Arrays.asList("$appointment.createdTime",
 																		"$createdTime")))
-												.append("then", "$$PRUNE").append("else", "$$KEEP")))),
-						Aggregation.match(criteria), new CustomAggregationOperation(
-								new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))
+												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+						Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))
 
 				);
 				appointmentCount = mongoTemplate
