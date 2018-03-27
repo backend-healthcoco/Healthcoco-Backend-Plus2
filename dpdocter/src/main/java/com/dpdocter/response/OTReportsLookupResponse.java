@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;
@@ -41,6 +42,10 @@ public class OTReportsLookupResponse extends GenericCollection {
 	private UserCollection patientUser;
 	private String uniqueOTId;
 	private Boolean discarded = false;
+	private DoctorAndCost operatingSurgeonAndCost;
+	private DoctorAndCost anaesthetistAndCost;
+	private List<DoctorAndCost> assitingDoctorsAndCost;
+	private List<DoctorAndCost> assitingNursesAndCost;
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -248,6 +253,38 @@ public class OTReportsLookupResponse extends GenericCollection {
 
 	public void setUniqueOTId(String uniqueOTId) {
 		this.uniqueOTId = uniqueOTId;
+	}
+
+	public DoctorAndCost getOperatingSurgeonAndCost() {
+		return operatingSurgeonAndCost;
+	}
+
+	public void setOperatingSurgeonAndCost(DoctorAndCost operatingSurgeonAndCost) {
+		this.operatingSurgeonAndCost = operatingSurgeonAndCost;
+	}
+
+	public DoctorAndCost getAnaesthetistAndCost() {
+		return anaesthetistAndCost;
+	}
+
+	public void setAnaesthetistAndCost(DoctorAndCost anaesthetistAndCost) {
+		this.anaesthetistAndCost = anaesthetistAndCost;
+	}
+
+	public List<DoctorAndCost> getAssitingDoctorsAndCost() {
+		return assitingDoctorsAndCost;
+	}
+
+	public void setAssitingDoctorsAndCost(List<DoctorAndCost> assitingDoctorsAndCost) {
+		this.assitingDoctorsAndCost = assitingDoctorsAndCost;
+	}
+
+	public List<DoctorAndCost> getAssitingNursesAndCost() {
+		return assitingNursesAndCost;
+	}
+
+	public void setAssitingNursesAndCost(List<DoctorAndCost> assitingNursesAndCost) {
+		this.assitingNursesAndCost = assitingNursesAndCost;
 	}
 
 	@Override
