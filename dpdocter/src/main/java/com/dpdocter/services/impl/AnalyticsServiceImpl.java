@@ -198,19 +198,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
 				}
-				Aggregation aggregation = Aggregation
-						.newAggregation(Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
-								Aggregation.unwind("appointment"),
-								new CustomAggregationOperation(new BasicDBObject("$redact",
-										new BasicDBObject("$cond",
-												new BasicDBObject()
-														.append("if",
-																new BasicDBObject("$gt",
-																		Arrays.asList("$appointment.fromDate",
-																				"$createdTime")))
-														.append("then", "$$PRUNE").append("else", "$$KEEP")))),
-								Aggregation.match(criteria), new CustomAggregationOperation(
-										new BasicDBObject("$group", new BasicDBObject("_id", "$appointment._id")))
+				Aggregation aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
+						Aggregation.unwind("appointment"),
+						new CustomAggregationOperation(new BasicDBObject("$redact",
+								new BasicDBObject("$cond",
+										new BasicDBObject()
+												.append("if",
+														new BasicDBObject("$gt",
+																Arrays.asList("$appointment.createdTime",
+																		"$createdTime")))
+												.append("then", "$$PRUNE").append("else", "$$KEEP")))),
+						Aggregation.match(criteria), new CustomAggregationOperation(
+								new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))
 
 				);
 				appointmentCount = mongoTemplate
@@ -288,25 +288,26 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				int total = 0;
 				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(last).lte(fromTime);
 				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
-
-				data.setChangeInTotalPatientInPercent(100 * ((double) total - (double) data.getTotalNewPatient())
-						/ (double) data.getTotalNewPatient());
+				data.setChangeInTotalPatientInPercent(total);
 
 				// visited patient
 
-				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
-						.and("visit.locationId").is(new ObjectId(locationId));
+				criteria = getCriteria(null, locationId, hospitalId).and("visit.adminCreatedTime").gte(fromTime)
+						.lte(toTime).and("visit.locationId").is(new ObjectId(locationId)).and("visit.discarded")
+						.is(false);
+
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+					criteria = criteria.and("doctorId").is(new ObjectId(doctorId)).and("visit.doctorId")
+							.is(new ObjectId(locationId));
 				}
-				criteria.and("visit.discarded").is(false);
+
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 						Aggregation.unwind("visit"), Aggregation.match(criteria),
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
 				total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 						.getMappedResults().size();
-				data.setTotalVisitedPatient((100 * (total) / data.getTotalNewPatient()));
+				data.setTotalVisitedPatient(total);
 
 			}
 
