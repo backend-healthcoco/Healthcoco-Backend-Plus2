@@ -618,7 +618,7 @@ public class AppointmentApi {
 	@Path(value = PathProxy.AppointmentUrls.DOWNLOAD_APPOINTMENT_CALENDER)
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.DOWNLOAD_APPOINTMENT_CALENDER, notes = PathProxy.AppointmentUrls.DOWNLOAD_APPOINTMENT_CALENDER)
-	public Response<String> downloadCalender(@MatrixParam(value = "doctorIds") List<String> doctorIds,
+	public Response<String> downloadCalender(@MatrixParam(value = "doctorId") List<String> doctorIds,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam("groupByDoctor") @DefaultValue("true") Boolean isGroupByDoctor,
