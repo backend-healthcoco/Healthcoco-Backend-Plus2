@@ -3821,7 +3821,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else if (!DPDoctorUtils.anyStringEmpty(fromTime)) {
 				fromDate = new Date(Long.parseLong(fromTime));
 			} else if (!DPDoctorUtils.anyStringEmpty(toTime)) {
-				fromDate = new Date(Long.parseLong(toTime));
+				toDate = new Date(Long.parseLong(toTime));
 			} else {
 				fromDate = new Date();
 			}
@@ -3830,7 +3830,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			if (doctorIds != null && !doctorIds.isEmpty()) {
 				doctorList = new ArrayList<ObjectId>();
-				BeanUtil.map(doctorIds, doctorList);
+				for(String doctorId : doctorIds)doctorList.add(new ObjectId(doctorId));
 			} else {
 				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 						.findByLocationId(new ObjectId(locationId), true);
@@ -3838,9 +3838,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				doctorIds = new ArrayList<String>();
 				if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-						if (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getDoctorId()))
+						if (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getDoctorId())) {
 							doctorList.add(doctorClinicProfileCollection.getDoctorId());
-						doctorIds.add(doctorClinicProfileCollection.getDoctorId().toString());
+							doctorIds.add(doctorClinicProfileCollection.getDoctorId().toString());
+						}						
 					}
 				}
 
@@ -3884,8 +3885,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<CalenderResponseForJasper> response = null;
 		try {
 
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+
 
 			if (doctorIds != null && !doctorIds.isEmpty()) {
 				criteria.and("doctorId").in(doctorIds);
@@ -3914,6 +3916,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				todate = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				criteria.and("toDate").lte(todate);
+			
 				if (todate.toDate().equals(fromdate.toDate()))
 					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
 				else {
