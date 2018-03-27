@@ -1960,7 +1960,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			userRoleCollection.setCreatedTime(new Date());
 			userRoleCollection = userRoleRepository.save(userRoleCollection);
 
-			if (doctorRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())) {
+			/*if (doctorRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())) {
 				RoleCollection userHospitalAdminRole = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
 				if (userHospitalAdminRole != null) {
 					UserRoleCollection userHospitalAdminRoleCollection = new UserRoleCollection(userCollection.getId(),
@@ -1969,7 +1969,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userHospitalAdminRoleCollection.setCreatedTime(new Date());
 					userHospitalAdminRoleCollection = userRoleRepository.save(userHospitalAdminRoleCollection);
 				}
-			}
+			}*/
 			// save user location.
 			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
 			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
