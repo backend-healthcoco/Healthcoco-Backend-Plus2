@@ -3730,7 +3730,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						"<b>Appointment Date :- </b>" + simpleDateFormat.format(request.getFromDate()));
 			}
 			if (request.getGeneralNotes() != null) {
-				parameters.put("generalNotes", request.getAppointmentId());
+				parameters.put("generalNotes", request.getGeneralNotes());
 			}
 			patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId(request.getDoctorId()));
 
