@@ -133,13 +133,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			// total
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
 
 			data.setTotalNoOfAppointment((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			// cancel by doctor
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
 
 			data.setCancelBydoctor((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
@@ -147,14 +147,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					AppointmentCollection.class));
 
 			// cancel by Patient
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
 			data.setCancelByPatient((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
 					.is(AppointmentCreatedBy.PATIENT.getType()).and("state").is("CANCEL")),
 					AppointmentCollection.class));
 			if (data.getTotalNoOfAppointment() > 0) {
 
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 						.and("type").is("APPOINTMENT");
 				int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CANCEL")),
 						AppointmentCollection.class);
@@ -163,7 +163,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment()));
 
 				// Booked percent
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 						.and("type").is("APPOINTMENT");
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
 						AppointmentCollection.class);
@@ -173,7 +173,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				// Sceduled percent
 
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 						.and("type").is("APPOINTMENT");
 				appointmentCount = (int) mongoTemplate.count(
 						new Query(criteria.and("status").is("SCHEDULED").and("state").is("NEW")),
@@ -183,7 +183,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						(100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment());
 
 				// hike
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(last).lte(fromTime)
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(last).lte(fromTime)
 						.and("type").is("APPOINTMENT");
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 
@@ -194,7 +194,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				criteria = getCriteria(null, locationId, hospitalId).and("appointment.locationId")
 						.is(new ObjectId(locationId)).and("appointment.hospitalId").is(new ObjectId(hospitalId))
-						.and("createdTime").gte(fromTime).and("appointment.type").is("APPOINTMENT");
+						.and("fromDate").gte(fromTime).and("appointment.type").is("APPOINTMENT");
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
 				}
