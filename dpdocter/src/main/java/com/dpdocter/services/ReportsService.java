@@ -82,4 +82,6 @@ public interface ReportsService {
 	public String getOTReportsFile(String otId);
 
 	public String getDeliveryReportsFile(String reportId);
+
+	Boolean updateOTReports();
 }

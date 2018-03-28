@@ -465,4 +465,13 @@ public class ReportsAPI {
 		response.setData(reportsService.getDeliveryReportsFile(reportId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
+	@POST
+	@ApiOperation(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS, notes = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
+	public Response<Boolean> updateOTReports() {
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(reportsService.updateOTReports());
+		return response;
+	}
 }

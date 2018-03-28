@@ -501,4 +501,28 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
+	
+	@Path(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS)
+	public Response<FlowsheetResponse> getFlowSheets(@QueryParam(value = "page") int page,
+			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "patientId") String patientId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+		Response<FlowsheetResponse> response = null;
+		List<FlowsheetResponse> flowsheetResponses = null;
+
+		if (DPDoctorUtils.anyStringEmpty(patientId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Doctor or patient id or locationId or hospitalId is null");
+		}
+		flowsheetResponses = dischargeSummaryService.getFlowSheets(doctorId, locationId, hospitalId, patientId, page, size, updatedTime);
+		response = new Response<FlowsheetResponse>();
+		response.setDataList(flowsheetResponses);
+
+		return response;
+
+	}
+	
 }

@@ -1233,6 +1233,8 @@ public interface PathProxy {
 		public static final String DELETE_BROKEN_APPOINTMENT = "/brokenAppointment/{id}/delete";
 		public static final String DOWNLOAD_OT_REPORTS = "OTReports/download/{otId}";
 		public static final String DOWNLOAD_DELIVERY_REPORT = "deliveryReport/download/{reportId}";
+		
+		public static final String UPDATE_OT_REPORTS = "/updateOTReports";
 	}
 
 	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";
@@ -1391,6 +1393,7 @@ public interface PathProxy {
 		public static final String EMAIL_DISCHARGE_SUMMARY_WEB = "/{dischargeSummeryId}/{emailAddress}/mail";
 		public static final String ADD_EDIT_FLOWSHEETS = "/addEditFlowsheets";
 		public static final String DOWNLOAD_FLOWSHEETS = "/flowsheet/{dischargeSummeryId}/download";
+		public static final String GET_FLOWSHEETS = "/getFlowsheets";
 
 	}
 

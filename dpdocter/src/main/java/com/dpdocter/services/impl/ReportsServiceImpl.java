@@ -29,6 +29,7 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.EquipmentLogAMCAndServicingRegister;
 import com.dpdocter.beans.IPDReports;
@@ -1626,6 +1627,61 @@ public class ReportsServiceImpl implements ReportsService {
 		response = jasperReportService.createPDF(ComponentType.DELIVERY_REPORTS, parameters, deliveryReportsFileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean updateOTReports() {
+		Boolean response = false;
+		try {
+			List<OTReportsCollection> otReportsCollections = otReportsRepository.findAll();
+			for (OTReportsCollection otReportsCollection : otReportsCollections) {
+				if (otReportsCollection.getAssitingDoctorsAndCost() == null) {
+					if (otReportsCollection.getAssitingDoctors() != null) {
+						List<DoctorAndCost> doctorAndCosts = new ArrayList<>();
+						for (String assistingDoctors : otReportsCollection.getAssitingDoctors()) {
+							DoctorAndCost doctorAndCost = new DoctorAndCost();
+							doctorAndCost.setDoctor(assistingDoctors);
+							doctorAndCosts.add(doctorAndCost);
+						}
+						otReportsCollection.setAssitingDoctorsAndCost(doctorAndCosts);
+					}
+				}
+
+				if (otReportsCollection.getAssitingNursesAndCost() == null) {
+					if (otReportsCollection.getAssitingNurses() != null) {
+						List<DoctorAndCost> doctorAndCosts = new ArrayList<>();
+						for (String assistingDoctors : otReportsCollection.getAssitingNurses()) {
+							DoctorAndCost doctorAndCost = new DoctorAndCost();
+							doctorAndCost.setDoctor(assistingDoctors);
+							doctorAndCosts.add(doctorAndCost);
+						}
+						otReportsCollection.setAssitingNursesAndCost(doctorAndCosts);
+					}
+				}
+
+				if (otReportsCollection.getAnaesthetistAndCost() == null) {
+					if (otReportsCollection.getAnaesthetist() != null) {
+						DoctorAndCost doctorAndCost = new DoctorAndCost();
+						doctorAndCost.setDoctor(otReportsCollection.getAnaesthetist());
+						otReportsCollection.setAnaesthetistAndCost(doctorAndCost);
+					}
+				}
+
+				if (otReportsCollection.getOperatingSurgeonAndCost() == null) {
+					if (otReportsCollection.getOperatingSurgeon() != null) {
+						DoctorAndCost doctorAndCost = new DoctorAndCost();
+						doctorAndCost.setDoctor(otReportsCollection.getOperatingSurgeon());
+						otReportsCollection.setOperatingSurgeonAndCost(doctorAndCost);
+					}
+				}
+
+			}
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return response;
 	}
 

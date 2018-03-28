@@ -2410,6 +2410,56 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return response;
 	}
+	
+
+	@Override
+	@Transactional
+	public List<FlowsheetResponse> getFlowSheets(String doctorId, String locationId, String hospitalId,
+			String patientId, int page, int size, String updatedTime) {
+		List<FlowsheetResponse> response = null;
+		try {
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(Long.parseLong(updatedTime))).and("patientId")
+					.is(patientObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(locationObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(hospitalObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(doctorObjectId);
+
+			Aggregation aggregation = null;
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(
+
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<FlowsheetResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					FlowsheetCollection.class, FlowsheetResponse.class);
+			response = aggregationResults.getMappedResults();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting flow sheets : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting flow sheets : " + e.getCause().getMessage());
+		}
+		return response;
+	}
 
 	private JasperReportResponse createJasperForFlowSheet(DischargeSummaryCollection dischargeSummaryCollection,
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
