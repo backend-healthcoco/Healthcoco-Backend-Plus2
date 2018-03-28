@@ -4,8 +4,17 @@ public class DoctorPatientAnalyticResponse {
 
 	private Integer totalPatient = 0;
 	private Integer totalNewPatient = 0;
+	private Integer totalOldPatient = 0;
 	private Integer changeInTotalPatientInPercent = 0;
 	private Integer totalVisitedPatient = 0;
+
+	public Integer getTotalOldPatient() {
+		return totalOldPatient;
+	}
+
+	public void setTotalOldPatient(Integer totalOldPatient) {
+		this.totalOldPatient = totalOldPatient;
+	}
 
 	public Integer getChangeInTotalPatientInPercent() {
 		return changeInTotalPatientInPercent;

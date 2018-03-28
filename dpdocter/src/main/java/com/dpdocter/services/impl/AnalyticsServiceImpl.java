@@ -288,6 +288,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
 			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
 
+
+			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").lte(fromTime);
+			data.setTotalOldPatient((int) mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.sort(Direction.DESC, "createdTime")),
+					PatientCollection.class, PatientCollection.class).getMappedResults().size());
+
+			// hike in patient
 			int total = 0;
 
 			if (data.getTotalNewPatient() > 0) {
