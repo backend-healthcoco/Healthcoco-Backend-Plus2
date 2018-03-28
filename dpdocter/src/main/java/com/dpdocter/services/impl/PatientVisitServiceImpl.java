@@ -1240,16 +1240,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex2"))),
+						
+						prescriptionProjectAggregationOperationForDrugs(), prescriptionGroupAggregationOperationForDrugs(),
+						
+						
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$prescriptions.diagnosticTests")
+								new BasicDBObject("path", "$prescriptionsDiagnosticTestsObject")
 										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
 												"arrayIndex3"))),
-						Aggregation.lookup("diagnostic_test_cl", "prescriptions.diagnosticTests.testId", "_id",
+						Aggregation.lookup("diagnostic_test_cl", "prescriptionsDiagnosticTestsObject.testId", "_id",
 								"diagnosticTests"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex4"))),
-						prescriptionFirstProjectAggregationOperation(), prescriptionFirstGroupAggregationOperation(),
+						prescriptionProjectAggregationOperationForDiagnosticTests(), prescriptionGroupAggregationOperationForDiagnosticTests(),
 						prescriptionSecondProjectAggregationOperation(), prescriptionSecondGroupAggregationOperation(),
 
 						// CN
@@ -1330,16 +1334,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex2"))),
+						prescriptionProjectAggregationOperationForDrugs(), prescriptionGroupAggregationOperationForDrugs(),
+						
+						
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$prescriptions.diagnosticTests")
+								new BasicDBObject("path", "$prescriptionsDiagnosticTestsObject")
 										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
 												"arrayIndex3"))),
-						Aggregation.lookup("diagnostic_test_cl", "prescriptions.diagnosticTests.testId", "_id",
+						Aggregation.lookup("diagnostic_test_cl", "prescriptionsDiagnosticTestsObject.testId", "_id",
 								"diagnosticTests"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex4"))),
-						prescriptionFirstProjectAggregationOperation(), prescriptionFirstGroupAggregationOperation(),
+						prescriptionProjectAggregationOperationForDiagnosticTests(), prescriptionGroupAggregationOperationForDiagnosticTests(),
 						prescriptionSecondProjectAggregationOperation(), prescriptionSecondGroupAggregationOperation(),
 
 						// CN
@@ -1460,7 +1467,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 
-	private AggregationOperation prescriptionFirstProjectAggregationOperation() {
+	private AggregationOperation prescriptionProjectAggregationOperationForDrugs() {
 		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
@@ -1494,11 +1501,85 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("prescriptionsitems.direction", "$prescriptions.items.direction")
 				.append("prescriptionsitems.instructions", "$prescriptions.items.instructions")
 				.append("prescriptionsitems.inventoryQuantity", "$prescriptions.items.inventoryQuantity")
-				.append("prescriptionsdiagnosticTests.test", "$diagnosticTests")
-				.append("prescriptionsdiagnosticTests.recordId", "$prescriptions.diagnosticTests.recordId")));
+				.append("prescriptionsDiagnosticTestsObject", "$prescriptions.diagnosticTests")));
 	}
 
-	private AggregationOperation prescriptionFirstGroupAggregationOperation() {
+	private AggregationOperation prescriptionGroupAggregationOperationForDrugs() {
+		return new CustomAggregationOperation(new BasicDBObject("$group",
+				new BasicDBObject("_id", new BasicDBObject("_id", "$_id"))
+						.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+						.append("patientId", new BasicDBObject("$first", "$patientId"))
+						.append("locationId", new BasicDBObject("$first", "$locationId"))
+						.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+						.append("discarded", new BasicDBObject("$first", "$discarded"))
+						.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))
+						.append("visitedFor", new BasicDBObject("$first", "$visitedFor"))
+						.append("prescriptionsid", new BasicDBObject("$first", "$prescriptionsid"))
+						.append("prescriptionsname", new BasicDBObject("$first", "$prescriptionsname"))
+						.append("prescriptionsuniqueEmrId", new BasicDBObject("$first", "$prescriptionsuniqueEmrId"))
+						.append("prescriptionslocationId", new BasicDBObject("$first", "$prescriptionslocationId"))
+						.append("prescriptionshospitalId", new BasicDBObject("$first", "$prescriptionshospitalId"))
+						.append("prescriptionsdoctorId", new BasicDBObject("$first", "$prescriptionsdoctorId"))
+						.append("prescriptionsdiscarded", new BasicDBObject("$first", "$prescriptionsdiscarded"))
+						.append("prescriptionsinHistory", new BasicDBObject("$first", "$prescriptionsinHistory"))
+						.append("prescriptionsadvice", new BasicDBObject("$first", "$prescriptionsadvice"))
+						.append("prescriptionstime", new BasicDBObject("$first", "$prescriptionstime"))
+						.append("prescriptionsfromDate", new BasicDBObject("$first", "$prescriptionsfromDate"))
+						.append("prescriptionspatientId", new BasicDBObject("$first", "$prescriptionspatientId"))
+						.append("prescriptionsisFeedbackAvailable", new BasicDBObject("$first", "$prescriptionsisFeedbackAvailable"))
+						.append("prescriptionsappointmentId", new BasicDBObject("$first", "$prescriptionsappointmentId"))
+						.append("prescriptionsvisitId", new BasicDBObject("$first", "$prescriptionsvisitId"))
+						.append("prescriptionscreatedTime", new BasicDBObject("$first", "$prescriptionscreatedTime"))
+						.append("prescriptionscreatedBy", new BasicDBObject("$first", "$prescriptionscreatedBy"))
+						.append("prescriptionsupdatedTime", new BasicDBObject("$first", "$prescriptionsupdatedTime"))
+						.append("prescriptionItems", new BasicDBObject("$push", "$prescriptionsitems"))
+						.append("prescriptionsDiagnosticTestsObject", new BasicDBObject("$first", "$prescriptionsDiagnosticTestsObject"))
+						.append("clinicalNotesId", new BasicDBObject("$first", "$clinicalNotesId"))
+						.append("treatmentId", new BasicDBObject("$first", "$treatmentId"))
+						.append("recordId", new BasicDBObject("$first", "$recordId"))
+						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
+						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+	}
+
+	private AggregationOperation prescriptionProjectAggregationOperationForDiagnosticTests() {
+		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
+				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
+				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
+				.append("clinicalNotesId", "$clinicalNotesId").append("treatmentId", "$treatmentId")
+				.append("recordId", "$recordId").append("eyePrescriptionId", "$eyePrescriptionId")
+				.append("appointmentId", "$appointmentId").append("time", "$time").append("fromDate", "$fromDate")
+				.append("discarded", "$discarded").append("appointmentRequest", "$appointmentRequest")
+				.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
+				.append("createdBy", "$createdBy").append("prescriptionsid", "$prescriptions._id")
+				.append("prescriptionsname", "$prescriptionsname")
+				.append("prescriptionsuniqueEmrId", "$prescriptionsuniqueEmrId")
+				.append("prescriptionslocationId", "$prescriptionslocationId")
+				.append("prescriptionshospitalId", "$prescriptionshospitalId")
+				.append("prescriptionsdoctorId", "$prescriptionsdoctorId")
+				.append("prescriptionsdiscarded", "$prescriptionsdiscarded")
+				.append("prescriptionsinHistory", "$prescriptionsinHistory")
+				.append("prescriptionsadvice", "$prescriptionsadvice")
+				.append("prescriptionstime", "$prescriptionstime")
+				.append("prescriptionsfromDate", "$prescriptionsfromDate")
+				.append("prescriptionspatientId", "$prescriptionspatientId")
+				.append("prescriptionsisFeedbackAvailable", "$prescriptionsisFeedbackAvailable")
+				.append("prescriptionsappointmentId", "$prescriptionsappointmentId")
+				.append("prescriptionsvisitId", "$prescriptionsvisitId")
+				.append("prescriptionscreatedTime", "$prescriptionscreatedTime")
+				.append("prescriptionscreatedBy", "$prescriptionscreatedBy")
+				.append("prescriptionsupdatedTime", "$prescriptionsupdatedTime")
+				.append("prescriptionsitems", "$prescriptionItems")
+				.append("prescriptionsdiagnosticTests.test", "$diagnosticTests")
+				.append("prescriptionsdiagnosticTests.recordId", "$prescriptionsDiagnosticTestsObject.recordId")));
+	}
+
+	private AggregationOperation prescriptionGroupAggregationOperationForDiagnosticTests() {
 		return new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", new BasicDBObject("_id", "$_id"))
 						.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
@@ -1529,9 +1610,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("prescriptionscreatedTime", new BasicDBObject("$first", "$prescriptionscreatedTime"))
 						.append("prescriptionscreatedBy", new BasicDBObject("$first", "$prescriptionscreatedBy"))
 						.append("prescriptionsupdatedTime", new BasicDBObject("$first", "$prescriptionsupdatedTime"))
-						.append("prescriptionItems", new BasicDBObject("$push", "$prescriptionsitems"))
-						.append("prescriptionDiagnosticTests",
-								new BasicDBObject("$push", "$prescriptionsdiagnosticTests"))
+						.append("prescriptionItems", new BasicDBObject("$first", "$prescriptionsitems"))
+						.append("prescriptionsdiagnosticTests", new BasicDBObject("$push", "$prescriptionsdiagnosticTests"))
 						.append("clinicalNotesId", new BasicDBObject("$first", "$clinicalNotesId"))
 						.append("treatmentId", new BasicDBObject("$first", "$treatmentId"))
 						.append("recordId", new BasicDBObject("$first", "$recordId"))
@@ -1542,7 +1622,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
-
+	
 	private AggregationOperation prescriptionSecondProjectAggregationOperation() {
 		return new CustomAggregationOperation(new BasicDBObject("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
@@ -1573,7 +1653,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("prescriptions.createdBy", "$prescriptionscreatedBy")
 						.append("prescriptions.updatedTime", "$prescriptionsupdatedTime")
 						.append("prescriptions.items", "$prescriptionItems")
-						.append("prescriptions.diagnosticTests", "$prescriptionDiagnosticTests")));
+						.append("prescriptions.diagnosticTests", "$prescriptionsdiagnosticTests")));
 	}
 
 	private AggregationOperation prescriptionSecondGroupAggregationOperation() {
