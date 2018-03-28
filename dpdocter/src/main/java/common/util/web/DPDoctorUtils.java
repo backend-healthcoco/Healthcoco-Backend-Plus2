@@ -373,12 +373,15 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
 				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
 				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
-				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM) || resource.equals(Resource.DENTAL_WORKS)) {
+				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)
+				|| resource.equals(Resource.DENTAL_WORKS)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
-					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+						orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+					}
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder)).minimumNumberShouldMatch(1);
 			}
@@ -658,11 +661,11 @@ public class DPDoctorUtils {
 		return localCalendar.getTime();
 
 	}
-	
+
 	public static Long getStartTimeInMillis(Date date) {
 
 		DateTime startTime = null;
-		
+
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
@@ -671,7 +674,7 @@ public class DPDoctorUtils {
 
 		startTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		
+
 		return startTime.getMillis();
 
 	}
@@ -700,11 +703,11 @@ public class DPDoctorUtils {
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 	}
-	
+
 	public static Long getEndTimeInMillis(Date date) {
 
 		DateTime endTime = null;
-		
+
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
@@ -713,7 +716,7 @@ public class DPDoctorUtils {
 
 		endTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		
+
 		return endTime.getMillis();
 
 	}
