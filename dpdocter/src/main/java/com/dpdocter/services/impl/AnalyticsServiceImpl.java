@@ -274,7 +274,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			criteria = getCriteria(null, locationId, hospitalId);
 			data.setTotalPatient((int) mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),Aggregation.sort(Direction.DESC, "createdTime")),
+							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.sort(Direction.DESC, "createdTime")),
 					PatientCollection.class, PatientCollection.class).getMappedResults().size());
 
 			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
@@ -3413,7 +3414,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<TreatmentService> response = null;
 		try {
 			Criteria criteria = new Criteria();
-
+			Date from = null, to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -3423,12 +3424,22 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
-			}
+			criteria = criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(from))
+					.lte(DPDoctorUtils.getEndTime(to));
 
 			Aggregation aggregation = null;
 			if (size > 0) {
