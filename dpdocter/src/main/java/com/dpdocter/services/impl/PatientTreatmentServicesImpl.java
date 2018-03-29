@@ -1578,12 +1578,15 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 			}
 
-			patientVisitService.generatePatientDetails(
-					(printSettings != null && printSettings.getHeaderSetup() != null
-							? printSettings.getHeaderSetup().getPatientDetails() : null),
-					patient, "<b>TID: </b>" + patientTreatmentCollection.getUniqueEmrId(),
-					patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-					patientTreatmentCollection.getUpdatedTime(), printSettings.getHospitalUId());
+			patientVisitService
+					.generatePatientDetails(
+							(printSettings != null && printSettings.getHeaderSetup() != null
+									? printSettings.getHeaderSetup().getPatientDetails() : null),
+							patient, "<b>TID: </b>" + patientTreatmentCollection.getUniqueEmrId(),
+							patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+							patientTreatmentCollection.getCreatedTime() != null
+									? patientTreatmentCollection.getCreatedTime() : new Date(),
+							printSettings.getHospitalUId());
 			patientVisitService.generatePrintSetup(parameters, printSettings, patientTreatmentCollection.getDoctorId());
 			String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PATIENTTREARMENT-"
 					+ patientTreatmentCollection.getUniqueEmrId() + new Date().getTime();

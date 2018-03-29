@@ -1179,7 +1179,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				patientVisitLookupResponse.getUpdatedTime(), printSettings.getHospitalUId());
+				patientVisitLookupResponse.getCreatedTime(), printSettings.getHospitalUId());
 		generatePrintSetup(parameters, printSettings, patientVisitLookupResponse.getDoctorId());
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")

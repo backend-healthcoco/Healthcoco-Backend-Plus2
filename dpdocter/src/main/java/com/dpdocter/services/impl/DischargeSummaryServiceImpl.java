@@ -930,14 +930,17 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient,
-				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
-						? dischargeSummaryCollection.getUniqueEmrId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				dischargeSummaryCollection.getUpdatedTime(), printSettings.getHospitalUId());
+		patientVisitService
+				.generatePatientDetails(
+						(printSettings != null && printSettings.getHeaderSetup() != null
+								? printSettings.getHeaderSetup().getPatientDetails() : null),
+						patient,
+						"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
+								? dischargeSummaryCollection.getUniqueEmrId() : "--"),
+						patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+						dischargeSummaryCollection.getCreatedTime() != null
+								? dischargeSummaryCollection.getCreatedTime() : new Date(),
+						printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
 				+ dischargeSummaryCollection.getUniqueEmrId() + new Date().getTime();
@@ -2410,7 +2413,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return response;
 	}
-	
 
 	@Override
 	@Transactional
@@ -2451,7 +2453,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			AggregationResults<FlowsheetResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					FlowsheetCollection.class, FlowsheetResponse.class);
 			response = aggregationResults.getMappedResults();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting flow sheets : " + e.getCause().getMessage());

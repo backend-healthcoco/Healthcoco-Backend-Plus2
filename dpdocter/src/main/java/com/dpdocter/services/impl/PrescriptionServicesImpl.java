@@ -298,7 +298,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private InventoryService inventoryService;
-	
+
 	@Autowired
 	private NutritionReferralRepository nutritionReferralRepository;
 
@@ -3881,7 +3881,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
 						? prescriptionCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				prescriptionCollection.getUpdatedTime(), printSettings.getHospitalUId());
+				prescriptionCollection.getCreatedTime() != null ? prescriptionCollection.getCreatedTime() : new Date(),
+				printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PRESCRIPTION-"
 				+ prescriptionCollection.getUniqueEmrId() + new Date().getTime();
@@ -5111,11 +5112,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				request.setTime(appointment.getTime());
 				request.setFromDate(appointment.getFromDate());
 			}
+			if (request.getAdminCreatedTime() == null) {
+				request.setAdminCreatedTime(new Date());
+			}
+			if (request.getCreatedTime() == null) {
+				request.setCreatedTime(new Date());
+			}
 			BeanUtil.map(request, eyePrescriptionCollection);
 
 			UserCollection userCollection = userRepository.findOne(eyePrescriptionCollection.getDoctorId());
-			Date createdTime = new Date();
-			eyePrescriptionCollection.setCreatedTime(createdTime);
 			eyePrescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 			eyePrescriptionCollection
 					.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial() + DPDoctorUtils.generateRandomId());
@@ -5159,6 +5164,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (eyePrescriptionCollection == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Record not found");
 		}
+		if (eyePrescriptionCollection.getAdminCreatedTime() != null) {
+			request.setAdminCreatedTime(eyePrescriptionCollection.getAdminCreatedTime());
+		}
+
 		BeanUtil.map(request, eyePrescriptionCollection);
 		eyePrescriptionCollection = eyePrescriptionRepository.save(eyePrescriptionCollection);
 		if (eyePrescriptionCollection != null) {
@@ -6828,41 +6837,33 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public NutritionReferral addNutritionReferral(NutritionReferralRequest request)
-	{
+	public NutritionReferral addNutritionReferral(NutritionReferralRequest request) {
 		NutritionReferral response = null;
-		
+
 		try {
 			if (request != null) {
 				NutritionReferralCollection nutritionReferralCollection = new NutritionReferralCollection();
 				BeanUtil.map(request, nutritionReferralCollection);
 				nutritionReferralCollection = nutritionReferralRepository.save(nutritionReferralCollection);
-				if(nutritionReferralCollection != null)
-				{
+				if (nutritionReferralCollection != null) {
 					response = new NutritionReferral();
-					BeanUtil.map(nutritionReferralCollection , response);
-					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(nutritionReferralCollection.getPatientId(), nutritionReferralCollection.getLocationId(), nutritionReferralCollection.getHospitalId());
-					if(patientCollection != null)
-					{
+					BeanUtil.map(nutritionReferralCollection, response);
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							nutritionReferralCollection.getPatientId(), nutritionReferralCollection.getLocationId(),
+							nutritionReferralCollection.getHospitalId());
+					if (patientCollection != null) {
 						patientCollection.setIsNutritionActive(true);
 					}
 				}
-				
-			} 
+
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
 }
