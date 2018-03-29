@@ -1751,17 +1751,17 @@ public class BillingServiceImpl implements BillingService {
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
 
-		patientVisitService
-				.generatePatientDetails(
-						(printSettings != null && printSettings.getHeaderSetup() != null
-								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient,
-						"<b>RECEIPTID: </b>" + (doctorPatientReceiptCollection.getUniqueReceiptId() != null
-								? doctorPatientReceiptCollection.getUniqueReceiptId() : "--"),
-						patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-						doctorPatientReceiptCollection.getCreatedTime() != null
-								? doctorPatientReceiptCollection.getCreatedTime() : new Date(),
-						printSettings.getHospitalUId());
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>RECEIPTID: </b>" + (doctorPatientReceiptCollection.getUniqueReceiptId() != null
+						? doctorPatientReceiptCollection.getUniqueReceiptId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				doctorPatientReceiptCollection.getReceivedDate() != null
+						? doctorPatientReceiptCollection.getReceivedDate()
+						: doctorPatientReceiptCollection.getUpdatedTime(),
+				printSettings.getHospitalUId());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, doctorPatientReceiptCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "RECEIPT-"
