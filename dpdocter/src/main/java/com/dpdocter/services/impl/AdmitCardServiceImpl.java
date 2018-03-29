@@ -106,7 +106,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 	@Autowired
 	private MailService mailService;
-	
+
 	@Autowired
 	private DischargeSummaryService dischargeSummaryService;
 
@@ -151,7 +151,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				admitCardCollection.setCreatedBy(doctor.getTitle() + " " + doctor.getFirstName());
 				admitCardCollection.setUniqueEmrId(
 						UniqueIdInitial.ADMIT_CARD.getInitial() + "-" + DPDoctorUtils.generateRandomId());
-				DischargeSummaryRequest dischargeSummaryRequest =  new DischargeSummaryRequest();
+				DischargeSummaryRequest dischargeSummaryRequest = new DischargeSummaryRequest();
 				BeanUtil.map(request, dischargeSummaryRequest);
 				dischargeSummaryService.addEditDischargeSummary(dischargeSummaryRequest);
 			} else {
@@ -486,7 +486,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				patient,
 				"<b>ADMIT-CARD-ID: </b>"
 						+ (admitCardCollection.getUniqueEmrId() != null ? admitCardCollection.getUniqueEmrId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters, admitCardCollection.getUpdatedTime(),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				admitCardCollection.getCreatedTime() != null ? admitCardCollection.getCreatedTime() : new Date(),
 				printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, admitCardCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "ADMIT-CARD-"

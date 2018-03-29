@@ -4449,14 +4449,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 		}
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient,
-				"<b>CID: </b>" + (clinicalNotesCollection.getUniqueEmrId() != null
-						? clinicalNotesCollection.getUniqueEmrId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				clinicalNotesCollection.getUpdatedTime(), printSettings.getHospitalUId());
+		patientVisitService
+				.generatePatientDetails(
+						(printSettings != null && printSettings.getHeaderSetup() != null
+								? printSettings.getHeaderSetup().getPatientDetails() : null),
+						patient,
+						"<b>CID: </b>" + (clinicalNotesCollection.getUniqueEmrId() != null
+								? clinicalNotesCollection.getUniqueEmrId() : "--"),
+						patient.getLocalPatientName(), user.getMobileNumber(),
+						parameters, clinicalNotesCollection.getCreatedTime() != null
+								? clinicalNotesCollection.getCreatedTime() : new Date(),
+						printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
