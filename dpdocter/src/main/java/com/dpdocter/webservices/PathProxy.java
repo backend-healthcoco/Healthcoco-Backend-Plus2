@@ -1730,6 +1730,7 @@ public interface PathProxy {
 
 		public static final String ADD_EDIT_NUTRITION_REFERENCE = "/addEditNutritionReference";
 		public static final String GET_NUTRITION_REFERENCES = "/getNutritionReferences";
+		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
 		
 	}
 

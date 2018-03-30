@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditNutritionReferenceRequest;
@@ -61,14 +62,30 @@ public class NutritionAPI {
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_REFERENCES, notes = PathProxy.NutritionUrl.GET_NUTRITION_REFERENCES)
 	public Response<NutritionReferenceResponse> getNutritionReference(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("searchTerm") String searchTerm , @QueryParam("role") String role  ) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<NutritionReferenceResponse> response = new Response<NutritionReferenceResponse>();
-		response.setDataList(nutritionService.getNutritionReferenceList(doctorId, locationId, page, size));
+		response.setDataList(nutritionService.getNutritionReferenceList(doctorId, locationId, role, page, size));
 		return response;
 	}
+	
+	
+	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS, notes = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS)
+	public Response<NutritionGoalAnalytics> getNutritionAnalytics(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId , @QueryParam("role") String role ) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<NutritionGoalAnalytics> response = new Response<NutritionGoalAnalytics>();
+		response.setData(nutritionService.getGoalAnalytics(doctorId, locationId, role));
+		return response;
+	}
+
 
 }

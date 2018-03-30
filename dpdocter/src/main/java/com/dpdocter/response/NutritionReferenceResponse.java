@@ -3,8 +3,9 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.PatientShortCard;
+import com.dpdocter.collections.GenericCollection;
 
-public class NutritionReferenceResponse {
+public class NutritionReferenceResponse extends GenericCollection{
 
 	private String id;
 	private String doctorId;
