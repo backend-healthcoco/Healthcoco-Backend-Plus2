@@ -889,7 +889,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						drugCollection.setExplanation(item.getInstructions());
 						drugAddEditRequest.setExplanation(item.getInstructions());
 					}
-					System.out.println(item.getInstructions());
+					//System.out.println(item.getInstructions());
 					drugAddEditRequest.setDirection(item.getDirection());
 					drugAddEditRequest.setDuration(item.getDuration());
 					drugAddEditRequest.setDosage(item.getDosage());
@@ -5914,7 +5914,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					String[] fields = line.split(cvsSplitBy);
 					if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
 						String reason = fields[3];
-						System.out.println(fields[0] + fields[3]);
+						//System.out.println(fields[0] + fields[3]);
 						if (reason.equalsIgnoreCase("SPELLING MISTAKE")) {
 							updateSpellingOfGenericCodes(fields[0].trim(), fields[2].trim());
 						} else if (reason.equalsIgnoreCase("REPEAT")) {
@@ -6692,9 +6692,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							for (String genericName : genericsList) {
 								String key = "", value = null;
 								int indexOfStart = genericName.indexOf("("), indexOfEnd = genericName.indexOf(")");
-								System.out.println(genericName);
+								//System.out.println(genericName);
 								if (indexOfStart > -1 && indexOfEnd > -1) {
-									System.out.println(indexOfStart + "..." + indexOfEnd);
+									//System.out.println(indexOfStart + "..." + indexOfEnd);
 									key = genericName.substring(0, indexOfStart - 1);
 									value = genericName.substring(indexOfStart + 1, indexOfEnd - 1);
 									if (!DPDoctorUtils.anyStringEmpty(value) && value.equalsIgnoreCase("NA"))
@@ -6734,7 +6734,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (fields.length > 12 && !DPDoctorUtils.anyStringEmpty(fields[12])) {
 							drugCollection.setUnsafeWith(fields[12]);
 						}
-						System.out.println(drugCollection.toString());
+					//	System.out.println(drugCollection.toString());
 						drugCollection = drugRepository.save(drugCollection);
 
 						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
@@ -6748,7 +6748,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							esPrescriptionService.addDrug(esDrugDocument);
 						}
 					} else {
-						System.out.println("Already present: " + lineCount + " .. " + drugName);
+						//System.out.println("Already present: " + lineCount + " .. " + drugName);
 					}
 				}
 				lineCount = lineCount + 1;

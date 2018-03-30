@@ -114,7 +114,7 @@ public class InventoryServiceImpl implements InventoryService {
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
 			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 				Drug drug =prescriptionServices.makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
-				System.out.println(drug);
+				//System.out.println(drug);
 				transnationalService.addResource(new ObjectId(drug.getId()), Resource.DRUG, false);
 				if (drug != null) {
 					ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -123,7 +123,7 @@ public class InventoryServiceImpl implements InventoryService {
 						esDrugDocument.setDrugTypeId(drug.getDrugType().getId());
 						esDrugDocument.setDrugType(drug.getDrugType().getType());
 					}
-					System.out.println(esDrugDocument);
+				//	System.out.println(esDrugDocument);
 					esPrescriptionService.addDrug(esDrugDocument);
 				}
 				
@@ -740,7 +740,7 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 			if (inventorySettingsCollection != null) {
 				response = new InventorySettings();
-				System.out.println(inventorySettingsCollection);
+			//	System.out.println(inventorySettingsCollection);
 				BeanUtil.map( inventorySettingsCollection, response);
 			} else {
 				response = new InventorySettings();

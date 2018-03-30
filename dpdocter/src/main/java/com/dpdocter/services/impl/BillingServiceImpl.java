@@ -305,10 +305,10 @@ public class BillingServiceImpl implements BillingService {
 			if (doctorPatientInvoiceCollection != null && doctorPatientInvoiceCollection.getInvoiceItems() != null) {
 				itemIds = CollectionUtils.collect(doctorPatientInvoiceCollection.getInvoiceItems(),
 						new BeanToPropertyValueTransformer("itemId"));
-				System.out.println("Item ids ->");
+				/*System.out.println("Item ids ->");
 				for (ObjectId itemid : itemIds) {
 					System.out.println("id :: " + itemid);
-				}
+				}*/
 			}
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
