@@ -2464,7 +2464,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			patientDetails = new PatientDetails();
 		}
 		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
+		patientDetailList.add("<b>Patient Name: "
+				+ (!DPDoctorUtils.anyStringEmpty(firstName.toUpperCase()) ? firstName.toUpperCase() : " ") + "</b>");
 
 		if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
 			patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
@@ -2498,7 +2499,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 				}
 			}
-
+		
 			if (patientDetails.getShowDOB()) {
 				if (!DPDoctorUtils.anyStringEmpty(age, gender))
 					patientDetailList.add("<b>Age | Gender: </b>" + age + " | " + gender);
@@ -2507,7 +2508,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				else if (!DPDoctorUtils.anyStringEmpty(gender))
 					patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
 			}
-
+		}
 			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
 				patientDetailList.add(uniqueEMRId);
 			if (patientDetails.getShowDOB()) {
@@ -2573,7 +2574,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			parameters.put("patientLeftText", patientLeftText);
 			parameters.put("patientRightText", patientRightText);
 		}
-	}
+	
 
 	@Override
 	public ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
