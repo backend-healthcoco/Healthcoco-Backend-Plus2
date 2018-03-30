@@ -2,6 +2,8 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.RegularityStatus;
 import com.dpdocter.response.ImageURLResponse;
 
 public class AddEditNutritionReferenceRequest {
@@ -14,6 +16,11 @@ public class AddEditNutritionReferenceRequest {
 	private String details;
 	private Integer durationInMonths;
 	private List<ImageURLResponse> reports;
+	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
+	private String goalStatus = GoalStatus.REFERRED.getType();
+	private String referredDoctorId;
+	private String referredLocationId;
+	private String referredHospitalId;
 
 	public String getId() {
 		return id;
@@ -79,11 +86,53 @@ public class AddEditNutritionReferenceRequest {
 		this.reports = reports;
 	}
 
+	public String getRegularityStatus() {
+		return regularityStatus;
+	}
+
+	public void setRegularityStatus(String regularityStatus) {
+		this.regularityStatus = regularityStatus;
+	}
+
+	public String getGoalStatus() {
+		return goalStatus;
+	}
+
+	public void setGoalStatus(String goalStatus) {
+		this.goalStatus = goalStatus;
+	}
+
+	public String getReferredDoctorId() {
+		return referredDoctorId;
+	}
+
+	public void setReferredDoctorId(String referredDoctorId) {
+		this.referredDoctorId = referredDoctorId;
+	}
+
+	public String getReferredLocationId() {
+		return referredLocationId;
+	}
+
+	public void setReferredLocationId(String referredLocationId) {
+		this.referredLocationId = referredLocationId;
+	}
+
+	public String getReferredHospitalId() {
+		return referredHospitalId;
+	}
+
+	public void setReferredHospitalId(String referredHospitalId) {
+		this.referredHospitalId = referredHospitalId;
+	}
+
 	@Override
 	public String toString() {
 		return "AddEditNutritionReferenceRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", details=" + details
-				+ ", durationInMonths=" + durationInMonths + ", reports=" + reports + "]";
+				+ ", durationInMonths=" + durationInMonths + ", reports=" + reports + ", regularityStatus="
+				+ regularityStatus + ", goalStatus=" + goalStatus + ", referredDoctorId=" + referredDoctorId
+				+ ", referredLocationId=" + referredLocationId + ", referredHospitalId=" + referredHospitalId + "]";
 	}
 
 }

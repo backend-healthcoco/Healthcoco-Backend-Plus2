@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.RegularityStatus;
 import com.dpdocter.response.ImageURLResponse;
 
 @Document(collection = "nutrition_reference_cl")
@@ -28,6 +30,16 @@ public class NutritionReferenceCollection extends GenericCollection {
 	private Integer durationInMonths;
 	@Field
 	private List<ImageURLResponse> reports;
+	@Field
+	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
+	@Field
+	private String goalStatus = GoalStatus.REFERRED.getType();
+	@Field
+	private ObjectId referredDoctorId;
+	@Field
+	private ObjectId referredLocationId;
+	@Field
+	private ObjectId referredHospitalId;
 
 	public ObjectId getId() {
 		return id;
@@ -93,11 +105,53 @@ public class NutritionReferenceCollection extends GenericCollection {
 		this.reports = reports;
 	}
 
+	public String getRegularityStatus() {
+		return regularityStatus;
+	}
+
+	public void setRegularityStatus(String regularityStatus) {
+		this.regularityStatus = regularityStatus;
+	}
+
+	public String getGoalStatus() {
+		return goalStatus;
+	}
+
+	public void setGoalStatus(String goalStatus) {
+		this.goalStatus = goalStatus;
+	}
+
+	public ObjectId getReferredDoctorId() {
+		return referredDoctorId;
+	}
+
+	public void setReferredDoctorId(ObjectId referredDoctorId) {
+		this.referredDoctorId = referredDoctorId;
+	}
+
+	public ObjectId getReferredLocationId() {
+		return referredLocationId;
+	}
+
+	public void setReferredLocationId(ObjectId referredLocationId) {
+		this.referredLocationId = referredLocationId;
+	}
+
+	public ObjectId getReferredHospitalId() {
+		return referredHospitalId;
+	}
+
+	public void setReferredHospitalId(ObjectId referredHospitalId) {
+		this.referredHospitalId = referredHospitalId;
+	}
+
 	@Override
 	public String toString() {
 		return "NutritionReferenceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", details=" + details
-				+ ", durationInMonths=" + durationInMonths + ", reports=" + reports + "]";
+				+ ", durationInMonths=" + durationInMonths + ", reports=" + reports + ", regularityStatus="
+				+ regularityStatus + ", goalStatus=" + goalStatus + ", referredDoctorId=" + referredDoctorId
+				+ ", referredLocationId=" + referredLocationId + ", referredHospitalId=" + referredHospitalId + "]";
 	}
 
 }

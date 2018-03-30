@@ -1,18 +1,23 @@
 package com.dpdocter.services.impl;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
+import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.AppointmentCollection;
@@ -24,6 +29,8 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFeedbackCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -56,6 +63,9 @@ public class NutritionServiceImpl implements NutritionService{
 	
 	@Autowired
 	private PatientRepository patientRepository;
+	
+	@Autowired
+	private MongoOperations mongoOperations;
 	
 	@Override
 	@Transactional
@@ -106,7 +116,7 @@ public class NutritionServiceImpl implements NutritionService{
 	
 	@Override
 	@Transactional
-	public List<NutritionReferenceResponse> getNutritionReferenceList(String doctorId, String locationId, int page , int size) {
+	public List<NutritionReferenceResponse> getNutritionReferenceList(String doctorId, String locationId, String role, int page , int size) {
 		List<NutritionReferenceResponse> nutritionReferenceResponses= null;
 		LocationCollection locationCollection = null;
 		UserCollection userCollection = null;
@@ -116,12 +126,29 @@ public class NutritionServiceImpl implements NutritionService{
 			
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 			{
-				criteria.and("doctorId").is(new ObjectId(doctorId));
+				if (role != null) {
+					if (role.equals(RoleEnum.NUTRITIONIST.getRole())) {
+						criteria.and("referredDoctorId").is(new ObjectId(doctorId));
+					} else {
+						criteria.and("doctorId").is(new ObjectId(doctorId));
+					}
+				}
+				else {
+					criteria.and("doctorId").is(new ObjectId(doctorId));
+				}
 				userCollection = userRepository.findOne(new ObjectId(doctorId));
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
+				if (role != null) {
+					if (role.equals(RoleEnum.NUTRITIONIST.getRole())) {
+						criteria.and("referredLocationId").is(new ObjectId(locationId));
+					} else {
+						criteria.and("locationId").is(new ObjectId(locationId));
+					}
+				} else {
+					criteria.and("locationId").is(new ObjectId(locationId));
+				}
 				locationCollection = locationRepository.findOne(new ObjectId(locationId));
 			}
 			if (size > 0)
@@ -160,6 +187,77 @@ public class NutritionServiceImpl implements NutritionService{
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return nutritionReferenceResponses;
+	}
+	
+	@Override
+	@Transactional
+	public NutritionGoalAnalytics getGoalAnalytics(String doctorId, String locationId, String role)
+	{
+		NutritionGoalAnalytics nutritionGoalAnalytics = null;
+		try {
+			nutritionGoalAnalytics = new NutritionGoalAnalytics();
+			nutritionGoalAnalytics
+					.setReferredCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.REFERRED.getType()));
+			nutritionGoalAnalytics
+					.setAcceptedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.ADOPTED.getType()));
+			nutritionGoalAnalytics
+					.setOnHoldCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.ON_HOLD.getType()));
+			nutritionGoalAnalytics
+					.setRejectedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.REJECTED.getType()));
+			nutritionGoalAnalytics
+					.setCompletedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.COMPLETED.getType()));
+			nutritionGoalAnalytics.setMetGoalCount(
+					getGoalStatusCount(doctorId, locationId, role, GoalStatus.MET_GOALS.getType()));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return nutritionGoalAnalytics;
+	}
+	
+	
+	
+	private Long getGoalStatusCount(String doctorId, String locationId,String role, String status)
+	{
+		
+		Long count = 0l;
+		try {
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+			{
+				if (role != null) {
+					if (role.equals(RoleEnum.NUTRITIONIST.getRole())) {
+						criteria.and("referredDoctorId").is(new ObjectId(doctorId));
+					} else {
+						criteria.and("doctorId").is(new ObjectId(doctorId));
+					}
+				}
+				else {
+					criteria.and("doctorId").is(new ObjectId(doctorId));
+				}
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				if (role != null) {
+					if (role.equals(RoleEnum.NUTRITIONIST.getRole())) {
+						criteria.and("referredLocationId").is(new ObjectId(locationId));
+					} else {
+						criteria.and("locationId").is(new ObjectId(locationId));
+					}
+				} else {
+					criteria.and("locationId").is(new ObjectId(locationId));
+				}
+			}
+			
+			criteria.and("goalStatus").is(status);
+			
+			Query query = new Query();
+			query.addCriteria(criteria);
+			count = mongoOperations.count(query, NutritionReferenceCollection.class);
+		}
+			catch (Exception e) {
+			// TODO: handle exception
+		}
+		return count;
 	}
 	
 }
