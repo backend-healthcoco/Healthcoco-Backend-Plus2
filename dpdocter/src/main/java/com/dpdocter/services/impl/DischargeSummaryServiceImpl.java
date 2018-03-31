@@ -2443,6 +2443,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				response = new FlowsheetResponse();
 				BeanUtil.map(flowsheetCollection, response);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2503,6 +2504,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		FlowsheetResponse response = null;
 		FlowsheetCollection flowsheetCollection = null;
 		try {
+
 			if (DPDoctorUtils.anyStringEmpty(id)) {
 				throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 			}

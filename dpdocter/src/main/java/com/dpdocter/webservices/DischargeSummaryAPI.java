@@ -533,14 +533,16 @@ public class DischargeSummaryAPI {
 		FlowsheetResponse flowsheetResponses = null;
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
+
 			throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 		}
-		flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
-		response = new Response<FlowsheetResponse>();
-		response.setData(flowsheetResponses);
+			flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
+			response = new Response<FlowsheetResponse>();
+			response.setData(flowsheetResponses);
 
-		return response;
+			return response;
+
+		
 
 	}
-
 }
