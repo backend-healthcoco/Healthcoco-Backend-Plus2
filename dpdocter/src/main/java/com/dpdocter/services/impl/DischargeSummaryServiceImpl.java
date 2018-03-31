@@ -476,7 +476,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public String downloadDischargeSummary(String dischargeSummeryId, boolean isflowSheet) {
+	public String downloadDischargeSummary(String dischargeSummeryId) {
 		String response = null;
 
 		try {
@@ -489,10 +489,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 				UserCollection user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
 				JasperReportResponse jasperReportResponse = null;
-				if (!isflowSheet)
-					jasperReportResponse = createJasper(dischargeSummaryCollection, patient, user);
-				else
-					jasperReportResponse = createJasperForFlowSheet(dischargeSummaryCollection, patient, user);
+
+				jasperReportResponse = createJasper(dischargeSummaryCollection, patient, user);
+
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -506,6 +505,39 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Exception in download Discharge Summary ");
+		}
+		return response;
+	}
+
+	@Override
+	public String downloadFlowSheet(String flowSheetId) {
+		String response = null;
+
+		try {
+
+			FlowsheetCollection flowsheetCollection = flowsheetRepository.findOne(new ObjectId(flowSheetId));
+
+			if (flowsheetCollection != null) {
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						flowsheetCollection.getPatientId(), flowsheetCollection.getLocationId(),
+						flowsheetCollection.getHospitalId());
+
+				UserCollection user = userRepository.findOne(flowsheetCollection.getPatientId());
+				JasperReportResponse jasperReportResponse = null;
+				jasperReportResponse = createJasperForFlowSheet(flowsheetCollection, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Invoice Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Exception in download Flow Sheet");
 		}
 		return response;
 	}
@@ -2371,19 +2403,24 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			}
 			if (request.getId() != null) {
 				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(request.getId()));
+				flowsheetCollection.setUpdatedTime(new Date());
 			} else if (request.getDischargeSummaryId() != null) {
 				flowsheetCollection = flowsheetRepository
 						.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
 			} else {
 				flowsheetCollection = new FlowsheetCollection();
+				flowsheetCollection.setUniqueEmrId(UniqueIdInitial.FLOW_SHEET + DPDoctorUtils.generateRandomId());
 				flowsheetCollection.setCreatedTime(new Date());
 				if (userCollection != null) {
-					flowsheetCollection.setCreatedBy(userCollection.getFirstName());
+					flowsheetCollection.setCreatedBy(
+							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "")
+									+ userCollection.getFirstName());
 				}
 			}
 			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(request.getDischargeSummaryId()));
+
 			} else {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummaryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
@@ -2395,6 +2432,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 			}
 			flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
+
 			flowsheetCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			flowsheetCollection.setLocationId(new ObjectId(request.getLocationId()));
 			flowsheetCollection.setHospitalId(new ObjectId(request.getHospitalId()));
@@ -2411,16 +2449,90 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
-	private JasperReportResponse createJasperForFlowSheet(DischargeSummaryCollection dischargeSummaryCollection,
+	@Override
+	@Transactional
+	public List<FlowsheetResponse> getFlowSheets(String doctorId, String locationId, String hospitalId,
+			String patientId, int page, int size, String updatedTime) {
+		List<FlowsheetResponse> response = null;
+		try {
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(Long.parseLong(updatedTime))).and("patientId")
+					.is(patientObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(locationObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(hospitalObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(doctorObjectId);
+
+			Aggregation aggregation = null;
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<FlowsheetResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					FlowsheetCollection.class, FlowsheetResponse.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting flow sheets : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting flow sheets : " + e.getCause().getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public FlowsheetResponse getFlowSheetsById(String id) {
+		FlowsheetResponse response = null;
+		FlowsheetCollection flowsheetCollection = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(id)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Id is null");
+			}
+
+			flowsheetCollection = flowsheetRepository.findOne(new ObjectId(id));
+			if (flowsheetCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+			response = new FlowsheetResponse();
+			BeanUtil.map(flowsheetCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting flow sheets : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting flow sheets : " + e.getCause().getMessage());
+		}
+		return response;
+	}
+
+	private JasperReportResponse createJasperForFlowSheet(FlowsheetCollection flowsheetCollection,
+
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		List<FlowSheetJasperBean> jasperBeans = null;
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
-				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
-				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(flowsheetCollection.getDoctorId(),
+				flowsheetCollection.getLocationId(), flowsheetCollection.getHospitalId(), ComponentType.ALL.getType());
 
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
@@ -2445,14 +2557,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		 * dischargeSummaryCollection.getDiagnosis()); }
 		 */
 
-		if (dischargeSummaryCollection.getFlowSheets() != null
-				&& !dischargeSummaryCollection.getFlowSheets().isEmpty()) {
+		if (flowsheetCollection.getFlowSheets() != null && !flowsheetCollection.getFlowSheets().isEmpty()) {
 			pattern = "dd/MM/yyyy hh.mm a";
 			simpleDateFormat = new SimpleDateFormat(pattern);
 			jasperBeans = new ArrayList<FlowSheetJasperBean>();
 			FlowSheetJasperBean jasperBean = null;
 			int i = 1;
-			for (FlowSheet flowsheet : dischargeSummaryCollection.getFlowSheets()) {
+			for (FlowSheet flowsheet : flowsheetCollection.getFlowSheets()) {
 
 				jasperBean = new FlowSheetJasperBean();
 				jasperBean.setNo(i);
@@ -2525,13 +2636,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,
-				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
-						? dischargeSummaryCollection.getUniqueEmrId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				dischargeSummaryCollection.getUpdatedTime(), printSettings.getHospitalUId());
-		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
-		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-FLOWSHEET"
-				+ dischargeSummaryCollection.getUniqueEmrId() + new Date().getTime();
+				"<b>DIS-ID: </b>"
+						+ (flowsheetCollection.getUniqueEmrId() != null ? flowsheetCollection.getUniqueEmrId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters, flowsheetCollection.getUpdatedTime(),
+				printSettings.getHospitalUId());
+		patientVisitService.generatePrintSetup(parameters, printSettings, flowsheetCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-FLOWSHEET-"
+				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueEmrId())
+						? flowsheetCollection.getUniqueEmrId() : "")
+				+ new Date().getTime();
 
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")

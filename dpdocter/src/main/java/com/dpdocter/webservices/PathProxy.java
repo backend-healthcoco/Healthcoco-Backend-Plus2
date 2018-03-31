@@ -831,7 +831,7 @@ public interface PathProxy {
 		public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 	}
 
@@ -1367,7 +1367,9 @@ public interface PathProxy {
 		public static final String GET_DISCHARGE_SUMMARY_ITEMS = "/{type}/{range}";
 		public static final String EMAIL_DISCHARGE_SUMMARY_WEB = "/{dischargeSummeryId}/{emailAddress}/mail";
 		public static final String ADD_EDIT_FLOWSHEETS = "/addEditFlowsheets";
-		public static final String DOWNLOAD_FLOWSHEETS = "/flowsheet/{dischargeSummeryId}/download";
+		public static final String DOWNLOAD_FLOWSHEETS = "/flowsheet/{id}/download";
+		public static final String GET_FLOWSHEETS = "/getFlowsheets";
+		public static final String GET_FLOWSHEET_BY_ID = "/getFlowsheetById/{id}";
 
 	}
 
