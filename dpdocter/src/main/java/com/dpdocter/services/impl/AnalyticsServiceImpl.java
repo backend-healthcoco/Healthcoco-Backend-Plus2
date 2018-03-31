@@ -32,6 +32,7 @@ import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TretmentAnalyticMongoResponse;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
@@ -57,7 +58,9 @@ import com.dpdocter.response.AppointmentDeatilAnalyticResponse;
 import com.dpdocter.response.DiagnosticTestsAnalyticsData;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
+import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
+import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
 import com.dpdocter.response.DrugsAnalyticsData;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
@@ -79,13 +82,210 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	Logger logger = Logger.getLogger(AnalyticsServiceImpl.class);
 
 	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
-		Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-				.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+		Criteria criteria = new Criteria();
 
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			criteria.and("locationId").is(new ObjectId(locationId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+			criteria.and("hospitalId").is(new ObjectId(hospitalId));
+		}
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			criteria.and("doctorId").is(new ObjectId(doctorId));
 		}
 		return criteria;
+
+	}
+
+	@Override
+	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(int page, int size, String doctorId,
+			String locationId, String hospitalId, String fromDate, String toDate, String type, String searchTerm) {
+		List<DoctorPrescriptionItemAnalyticResponse> response = null;
+		try {
+			Criteria criteria = null;
+			Criteria itemCriteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
+			}
+			fromTime = DPDoctorUtils.getStartTime(from);
+			toTime = DPDoctorUtils.getEndTime(to);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("adminCreatedTime").gte(fromTime).lte(toTime);
+
+			Aggregation aggregation = null;
+
+			switch (PrescriptionItems.valueOf(type.toUpperCase())) {
+
+			case DRUGS: {
+
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					itemCriteria = itemCriteria.and("item.drugName").regex(searchTerm, "i");
+				}
+				if (size > 0) {
+					aggregation = Aggregation
+							.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
+									new CustomAggregationOperation(
+											new BasicDBObject("$group", new BasicDBObject("_id", "$items.drugId"))),
+									Aggregation.lookup("drug_cl", "_id", "_id", "item"),
+									Aggregation
+											.unwind("item"),
+									Aggregation.match(itemCriteria),
+									new CustomAggregationOperation(new BasicDBObject("$group",
+											new BasicDBObject("_id", "$item._id")
+													.append("name", new BasicDBObject("$first", "$item.drugName"))
+													.append("totalCount", new BasicDBObject("$sum", 1)))),
+									Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
+									Aggregation.skip((page) * size), Aggregation.limit(size));
+				} else {
+					aggregation = Aggregation
+							.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
+									new CustomAggregationOperation(
+											new BasicDBObject("$group", new BasicDBObject("_id", "$items.drugId"))),
+									Aggregation.lookup("drug_cl", "_id", "_id", "item"),
+									Aggregation
+											.unwind("item"),
+									Aggregation.match(itemCriteria),
+									new CustomAggregationOperation(new BasicDBObject("$group",
+											new BasicDBObject("_id", "$item._id")
+													.append("name", new BasicDBObject("$first", "$item.drugName"))
+													.append("totalCount", new BasicDBObject("$sum", 1)))),
+									Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")));
+				}
+
+				break;
+			}
+			case DIAGNOSTICTEST: {
+
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					itemCriteria = itemCriteria.and("item.testName").regex(searchTerm, "i");
+				}
+				if (size > 0) {
+					aggregation = Aggregation
+							.newAggregation(Aggregation.match(criteria), Aggregation.unwind("diagnosticTests"),
+									new CustomAggregationOperation(new BasicDBObject(
+											"$group", new BasicDBObject("_id", "$diagnosticTests.testId"))),
+									Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "item"),
+									Aggregation
+											.unwind("item"),
+									Aggregation.match(itemCriteria),
+									new CustomAggregationOperation(new BasicDBObject("$group",
+											new BasicDBObject("_id", "$item._id")
+													.append("name", new BasicDBObject("$first", "$item.testName"))
+													.append("totalCount", new BasicDBObject("$sum", 1)))),
+									Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
+									Aggregation.skip((page) * size), Aggregation.limit(size));
+				} else {
+					aggregation = Aggregation
+							.newAggregation(Aggregation.match(criteria), Aggregation.unwind("diagnosticTests"),
+									new CustomAggregationOperation(new BasicDBObject(
+											"$group", new BasicDBObject("_id", "$diagnosticTests.testId"))),
+									Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "item"),
+									Aggregation
+											.unwind("item"),
+									Aggregation.match(itemCriteria),
+									new CustomAggregationOperation(new BasicDBObject("$group",
+											new BasicDBObject("_id", "$item._id")
+													.append("name", new BasicDBObject("$first", "$item.testName"))
+													.append("totalCount", new BasicDBObject("$sum", 1)))),
+									Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")));
+				}
+
+				break;
+			}
+			default:
+				break;
+			}
+
+			response = mongoTemplate
+					.aggregate(aggregation, PrescriptionCollection.class, DoctorPrescriptionItemAnalyticResponse.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Prescription items analytic");
+			throw new BusinessException(ServiceError.Unknown,
+					"Error Occurred While getting Prescription items analytic");
+		}
+		return response;
+
+	}
+
+	@Override
+	public DoctorprescriptionAnalyticResponse getPrescriptionAnalytic(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate) {
+		DoctorprescriptionAnalyticResponse data = new DoctorprescriptionAnalyticResponse();
+		try {
+			Criteria criteria = null;
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
+			}
+			criteria = getCriteria(doctorId, locationId, null);
+
+			fromTime = DPDoctorUtils.getStartTime(from);
+			toTime = DPDoctorUtils.getEndTime(to);
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("Prescription_cl", "doctorId", "doctorId", "totalPrescription"),
+					Aggregation.unwind("totalPrescription"),
+					Aggregation.match(new Criteria("totalPrescription.locationId").is(new ObjectId(locationId))
+							.and("totalPrescription.hospitalId").is(new ObjectId(hospitalId))),
+					Aggregation.lookup("Prescription_cl", "doctorId", "doctorId", "totalPrescriptonCreated"),
+
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", "$_id")
+									.append("totalPrescriptonCreated",
+											new BasicDBObject("$first", "$totalPrescriptonCreated"))
+									.append("totalPrescription", new BasicDBObject("$sum", 1)))),
+
+					Aggregation.unwind("totalPrescriptonCreated"),
+
+					Aggregation.match(new Criteria("totalPrescriptonCreated.locationId").is(new ObjectId(locationId))
+							.and("totalPrescriptonCreated.hospitalId").is(new ObjectId(hospitalId))
+							.and("totalPrescriptonCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
+
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", "$_id")
+									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
+									.append("totalPrescriptonCreated", new BasicDBObject("$sum", 1)))));
+
+			data = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class,
+					DoctorprescriptionAnalyticResponse.class).getUniqueMappedResult();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Prescription analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Prescription analytic");
+		}
+		return data;
+
 	}
 
 	@Override
@@ -141,7 +341,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			// cancel by doctor
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
-			;
+
 			data.setCancelBydoctor((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
 					.is(AppointmentCreatedBy.DOCTOR.getType()).and("state").is("CANCEL")),
 					AppointmentCollection.class));
@@ -301,7 +501,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 			// visited patient
 			criteria = getCriteria(null, locationId, hospitalId).and("visit.adminCreatedTime").gte(fromTime).lte(toTime)
-					.and("visit.locationId").is(new ObjectId(locationId)).and("visit.discarded").is(false).and("visit.hospitalId").is(new ObjectId(hospitalId));
+					.and("visit.locationId").is(new ObjectId(locationId)).and("visit.discarded").is(false)
+					.and("visit.hospitalId").is(new ObjectId(hospitalId));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("visit.doctorId").is(new ObjectId(doctorId));
@@ -309,8 +510,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"), Aggregation.unwind("visit"),
-					Aggregation.match(criteria), new CustomAggregationOperation(
-							new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
+					Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
 			total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 					.getMappedResults().size();
 			data.setTotalVisitedPatient(total);
@@ -1257,7 +1458,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 										.append("tests.specimen", "$test.specimen").append("tests.code", "$test.code")
 										.append("tests.createdTime", "$test.createdTime")
 										.append("tests.updatedTime", "$test.updatedTime")
-										.append("tests.createdBy", "$test.createdBy").append("tests..count", "$count")
+										.append("tests.createdBy", "$test.createdBy").append("tests.count", "$count")
 										.append("date", "$createdTime")
 										.append("day", new BasicDBObject("$dayOfMonth", "$createdTime"))
 										.append("month", new BasicDBObject("$month", "$createdTime"))
@@ -1477,7 +1678,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.unwind("$diagnosticTests"),
-						Aggregation.group("$diagnosticTests.testId").count().as("count"),
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$diagnosticTests.testId").append("count",
+										new BasicDBObject("$sum", 1)))),
 						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
 
 						new CustomAggregationOperation(new BasicDBObject("$group",
@@ -1499,9 +1702,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.unwind("$diagnosticTests"),
-						Aggregation.group("$diagnosticTests.testId").count().as("count"),
-						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
-
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$diagnosticTests.testId").append("count",
+										new BasicDBObject("$sum", 1)))),
+						Aggregation
+								.lookup("diagnostic_test_cl", "_id", "_id",
+										"test"),
+						Aggregation.unwind("test"),
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("id", "$_id")
 										.append("locationId", new BasicDBObject("$first", "$test.locationId"))
@@ -1576,7 +1783,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
 						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$items"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 						Aggregation.group("$items.drugId").count().as("count"),
 						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
 
