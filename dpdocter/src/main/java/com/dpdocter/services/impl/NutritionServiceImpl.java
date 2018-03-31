@@ -1,7 +1,5 @@
 package com.dpdocter.services.impl;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.List;
 
 import org.bson.types.ObjectId;

@@ -2385,17 +2385,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(request.getDischargeSummaryId()));
-			} else {
-				dischargeSummaryCollection = new DischargeSummaryCollection();
-				dischargeSummaryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-				dischargeSummaryCollection.setLocationId(new ObjectId(request.getLocationId()));
-				dischargeSummaryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-				dischargeSummaryCollection.setPatientId(new ObjectId(request.getPatientId()));
-				dischargeSummaryCollection.setDiscarded(false);
-				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
-				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
-			}
-			flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
+				flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
+			} 
 			flowsheetCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			flowsheetCollection.setLocationId(new ObjectId(request.getLocationId()));
 			flowsheetCollection.setHospitalId(new ObjectId(request.getHospitalId()));
@@ -2463,6 +2454,35 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
+	
+	@Override
+	@Transactional
+	public FlowsheetResponse getFlowSheetsById(String id) {
+		FlowsheetResponse response = null;
+		FlowsheetCollection flowsheetCollection = null;
+		try {
+			if(DPDoctorUtils.anyStringEmpty(id))
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Id is null");
+			}
+			
+			flowsheetCollection = flowsheetRepository.findOne(new ObjectId(id));
+			if(flowsheetCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord , "Record not found");
+			}
+			response = new FlowsheetResponse();
+			BeanUtil.map(flowsheetCollection, response);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting flow sheets : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting flow sheets : " + e.getCause().getMessage());
+		}
+		return response;
+	}
+	
 	private JasperReportResponse createJasperForFlowSheet(DischargeSummaryCollection dischargeSummaryCollection,
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
 		JasperReportResponse response = null;

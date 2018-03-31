@@ -1394,6 +1394,7 @@ public interface PathProxy {
 		public static final String ADD_EDIT_FLOWSHEETS = "/addEditFlowsheets";
 		public static final String DOWNLOAD_FLOWSHEETS = "/flowsheet/{dischargeSummeryId}/download";
 		public static final String GET_FLOWSHEETS = "/getFlowsheets";
+		public static final String GET_FLOWSHEET_BY_ID = "/getFlowsheetById/{id}";
 
 	}
 

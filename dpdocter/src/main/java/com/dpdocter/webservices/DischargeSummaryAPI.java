@@ -525,4 +525,24 @@ public class DischargeSummaryAPI {
 
 	}
 	
+	
+	@Path(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID, notes = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID)
+	public Response<FlowsheetResponse> getFlowSheetById(@PathParam("id") String id) {
+		Response<FlowsheetResponse> response = null;
+		FlowsheetResponse flowsheetResponses = null;
+
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Id is null");
+		}
+		flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
+		response = new Response<FlowsheetResponse>();
+		response.setData(flowsheetResponses);
+
+		return response;
+
+	}
+	
 }
