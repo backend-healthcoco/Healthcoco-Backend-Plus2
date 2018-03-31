@@ -335,8 +335,7 @@ public class AnalyticsAPI {
 	@Path(value = PathProxy.AnalyticsUrls.GET_PRESCRIPTION_ANALYTIC)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PRESCRIPTION_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_PRESCRIPTION_ANALYTIC)
-	public Response<DoctorprescriptionAnalyticResponse> getPrescriptionAnalytic(@QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+	public Response<DoctorprescriptionAnalyticResponse> getPrescriptionAnalytic(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {

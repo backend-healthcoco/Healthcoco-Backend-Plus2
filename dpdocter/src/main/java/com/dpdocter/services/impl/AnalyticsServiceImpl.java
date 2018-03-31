@@ -227,7 +227,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Override
 	public DoctorprescriptionAnalyticResponse getPrescriptionAnalytic(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate) {
-		DoctorprescriptionAnalyticResponse data = new DoctorprescriptionAnalyticResponse();
+		DoctorprescriptionAnalyticResponse data = null;
 		try {
 			Criteria criteria = null;
 			DateTime fromTime = null;
@@ -253,28 +253,30 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			fromTime = DPDoctorUtils.getStartTime(from);
 			toTime = DPDoctorUtils.getEndTime(to);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("Prescription_cl", "doctorId", "doctorId", "totalPrescription"),
+					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescription"),
 					Aggregation.unwind("totalPrescription"),
 					Aggregation.match(new Criteria("totalPrescription.locationId").is(new ObjectId(locationId))
 							.and("totalPrescription.hospitalId").is(new ObjectId(hospitalId))),
-					Aggregation.lookup("Prescription_cl", "doctorId", "doctorId", "totalPrescriptonCreated"),
+					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescriptionCreated"),
 
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", "$_id")
-									.append("totalPrescriptonCreated",
-											new BasicDBObject("$first", "$totalPrescriptonCreated"))
+									.append("totalPrescriptionCreated",
+											new BasicDBObject("$first", "$totalPrescriptionCreated"))
 									.append("totalPrescription", new BasicDBObject("$sum", 1)))),
 
-					Aggregation.unwind("totalPrescriptonCreated"),
+					Aggregation.unwind("totalPrescriptionCreated"),
 
-					Aggregation.match(new Criteria("totalPrescriptonCreated.locationId").is(new ObjectId(locationId))
-							.and("totalPrescriptonCreated.hospitalId").is(new ObjectId(hospitalId))
-							.and("totalPrescriptonCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
+					Aggregation.match(new Criteria("totalPrescriptionCreated.locationId").is(new ObjectId(locationId))
+							.and("totalPrescriptionCreated.hospitalId").is(new ObjectId(hospitalId))
+							.and("totalPrescriptionCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
 
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", "$_id")
 									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
-									.append("totalPrescriptonCreated", new BasicDBObject("$sum", 1)))));
+									.append("totalPrescriptionCreated", new BasicDBObject("$sum", 1)))));
+			if (data == null)
+				data = new DoctorprescriptionAnalyticResponse();
 
 			data = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class,
 					DoctorprescriptionAnalyticResponse.class).getUniqueMappedResult();

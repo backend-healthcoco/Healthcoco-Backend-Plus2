@@ -1512,21 +1512,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientLeftText = "", patientRightText = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 		sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+
 		if (patientDetails == null) {
 			patientDetails = new PatientDetails();
 		}
-		if(patientDetails.getShowPatientDetailsInCertificate() != null && patientDetails.getShowPatientDetailsInCertificate()) {
+
+		System.out.println(patientDetails.toString());
+		if (patientDetails.getShowPatientDetailsInCertificate() != null
+				&& patientDetails.getShowPatientDetailsInCertificate()) {
 			List<String> patientDetailList = new ArrayList<String>();
 			patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
-			
-			if(!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
-				patientDetailList.add("<b>"+patientDetails.getPIDKey()+": </b>"
+
+			if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
+				patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
 						+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
-			}else {
+			} else {
 				patientDetailList.add("<b>Patient ID: </b>"
 						+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
 			}
-			
 
 			if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
 				Age ageObj = patientCard.getDob().getAge();
@@ -1559,7 +1562,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
 			}
 
-			if(!DPDoctorUtils.anyStringEmpty(uniqueEMRId))patientDetailList.add(uniqueEMRId);
+			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
+				patientDetailList.add(uniqueEMRId);
 			if (patientDetails.getShowDOB()) {
 				if (patientDetails.getShowDate())
 					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
