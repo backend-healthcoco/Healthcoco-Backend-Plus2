@@ -14,6 +14,16 @@ public class AddEditFlowSheetRequest {
 	private String patientId;
 	private Boolean discarded = false;
 	private List<FlowSheet> flowSheets;
+	private String uniqueEmrId;
+	
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
 
 	public String getId() {
 		return id;

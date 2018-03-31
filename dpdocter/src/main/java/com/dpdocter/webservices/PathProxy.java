@@ -836,7 +836,7 @@ public interface PathProxy {
 		public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 	}
 
@@ -1233,7 +1233,7 @@ public interface PathProxy {
 		public static final String DELETE_BROKEN_APPOINTMENT = "/brokenAppointment/{id}/delete";
 		public static final String DOWNLOAD_OT_REPORTS = "OTReports/download/{otId}";
 		public static final String DOWNLOAD_DELIVERY_REPORT = "deliveryReport/download/{reportId}";
-		
+
 		public static final String UPDATE_OT_REPORTS = "/updateOTReports";
 	}
 
@@ -1319,7 +1319,7 @@ public interface PathProxy {
 		public static final String DUE_AMOUNT_REMAINDER = "dueAmount/{patientId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/remainder";
 
 		public static final String DOWNLOAD_MULTIPLE_RECEIPT = "receipt/download";
-		
+
 		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
 	}
 
@@ -1392,7 +1392,7 @@ public interface PathProxy {
 		public static final String GET_DISCHARGE_SUMMARY_ITEMS = "/{type}/{range}";
 		public static final String EMAIL_DISCHARGE_SUMMARY_WEB = "/{dischargeSummeryId}/{emailAddress}/mail";
 		public static final String ADD_EDIT_FLOWSHEETS = "/addEditFlowsheets";
-		public static final String DOWNLOAD_FLOWSHEETS = "/flowsheet/{dischargeSummeryId}/download";
+		public static final String DOWNLOAD_FLOWSHEETS = "/flowsheet/{id}/download";
 		public static final String GET_FLOWSHEETS = "/getFlowsheets";
 		public static final String GET_FLOWSHEET_BY_ID = "/getFlowsheetById/{id}";
 
@@ -1515,6 +1515,8 @@ public interface PathProxy {
 		public static final String GET_PATIENT_ANALYTIC = "/doctor/patient";
 		public static final String GET_TREATMENT_ANALYTIC = "/doctor/treatmentService";
 		public static final String GET_APPOINTMENT_ANALYTIC = "/doctor/appointment";
+		public static final String GET_PRESCRIPTION_ANALYTIC = "/doctor/prescription";
+		public static final String GET_PRESCRIPTION_ITEM_ANALYTIC = "/doctor/prescription/{type}";
 
 	}
 
@@ -1719,12 +1721,9 @@ public interface PathProxy {
 
 	public interface ESDentalLabsUrl {
 
-
 		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks";
 	}
-	
-	
-	
+
 	public static final String NUTRITION_BASE_URL = BASE_URL + "/nutrition";
 
 	public interface NutritionUrl {
@@ -1732,7 +1731,7 @@ public interface PathProxy {
 		public static final String ADD_EDIT_NUTRITION_REFERENCE = "/addEditNutritionReference";
 		public static final String GET_NUTRITION_REFERENCES = "/getNutritionReferences";
 		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
-		
+
 	}
 
 }

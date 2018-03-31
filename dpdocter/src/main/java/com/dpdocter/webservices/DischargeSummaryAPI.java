@@ -154,7 +154,7 @@ public class DischargeSummaryAPI {
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY)
 	public Response<String> downloadDischargeSummary(@PathParam("dischargeSummeryId") String dischargeSummeryId) {
 		Response<String> response = new Response<String>();
-		response.setData(dischargeSummaryService.downloadDischargeSummary(dischargeSummeryId, false));
+		response.setData(dischargeSummaryService.downloadDischargeSummary(dischargeSummeryId));
 		return response;
 	}
 
@@ -495,13 +495,12 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS)
-	public Response<String> downloadFlowSheet(@PathParam("dischargeSummeryId") String dischargeSummeryId) {
+	public Response<String> downloadFlowSheet(@PathParam("id") String id) {
 		Response<String> response = new Response<String>();
-		response.setData(dischargeSummaryService.downloadDischargeSummary(dischargeSummeryId, true));
+		response.setData(dischargeSummaryService.downloadFlowSheet(id));
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS)
@@ -517,15 +516,15 @@ public class DischargeSummaryAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Doctor or patient id or locationId or hospitalId is null");
 		}
-		flowsheetResponses = dischargeSummaryService.getFlowSheets(doctorId, locationId, hospitalId, patientId, page, size, updatedTime);
+		flowsheetResponses = dischargeSummaryService.getFlowSheets(doctorId, locationId, hospitalId, patientId, page,
+				size, updatedTime);
 		response = new Response<FlowsheetResponse>();
 		response.setDataList(flowsheetResponses);
 
 		return response;
 
 	}
-	
-	
+
 	@Path(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID, notes = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID)
@@ -534,8 +533,7 @@ public class DischargeSummaryAPI {
 		FlowsheetResponse flowsheetResponses = null;
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"Id is null");
+			throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 		}
 		flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
 		response = new Response<FlowsheetResponse>();
@@ -544,5 +542,5 @@ public class DischargeSummaryAPI {
 		return response;
 
 	}
-	
+
 }
