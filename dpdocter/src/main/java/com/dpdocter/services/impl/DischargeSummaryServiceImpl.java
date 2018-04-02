@@ -2412,6 +2412,17 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			} else if (request.getDischargeSummaryId() != null) {
 				flowsheetCollection = flowsheetRepository
 						.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
+				if(flowsheetCollection == null)
+				{
+					flowsheetCollection = new FlowsheetCollection();
+					flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET + DPDoctorUtils.generateRandomId());
+					flowsheetCollection.setCreatedTime(new Date());
+					if (userCollection != null) {
+						flowsheetCollection.setCreatedBy(
+								(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "")
+										+ userCollection.getFirstName());
+					}
+				}
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(request.getDischargeSummaryId()));
 				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
