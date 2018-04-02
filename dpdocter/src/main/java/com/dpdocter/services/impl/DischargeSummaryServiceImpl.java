@@ -2412,6 +2412,11 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			} else if (request.getDischargeSummaryId() != null) {
 				flowsheetCollection = flowsheetRepository
 						.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
+				dischargeSummaryCollection = dischargeSummaryRepository
+						.findOne(new ObjectId(request.getDischargeSummaryId()));
+				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
+				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
+				flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
 			} else {
 				flowsheetCollection = new FlowsheetCollection();
 				flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET + DPDoctorUtils.generateRandomId());
@@ -2422,6 +2427,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 									+ userCollection.getFirstName());
 				}
 			}
+
 			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(request.getDischargeSummaryId()));
@@ -2437,6 +2443,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 			}
 			flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
+
 
 			flowsheetCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			flowsheetCollection.setLocationId(new ObjectId(request.getLocationId()));
