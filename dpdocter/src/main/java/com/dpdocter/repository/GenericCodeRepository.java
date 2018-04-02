@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -17,5 +18,8 @@ public interface GenericCodeRepository extends MongoRepository<GenericCodeCollec
 	
 	@Query("{'code': {$in : ?0}}")
 	List<GenericCodeCollection> findByCodes(Collection<String> genericCodes);
+
+	@Query("{'code': {$regex : '^?0.*', $options : 'i'}}")
+	GenericCodeCollection findByStartWithGenericCode(String genericCode, Sort sort);
 
 }

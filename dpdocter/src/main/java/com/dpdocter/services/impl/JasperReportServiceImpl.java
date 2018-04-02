@@ -5522,7 +5522,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesignForSubreport.getDetailSection()).addBand(band);
 
 			band = new JRDesignBand();
-			band.setHeight(13);
+			band.setHeight(20);
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setX(0);
 			jrDesignLine.setY(0);
@@ -5530,14 +5530,43 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setWidth(columnWidth);
 			band.addElement(jrDesignLine);
 
+			xPoint = 1 + ((15 * (columnWidth)) / 100) + ((50 * (columnWidth)) / 100);
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setX(0);
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{grandTotal}"));
+			jrDesignTextField.setX(xPoint);
 			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(12);
-			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth((11 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.setBlankWhenNull(true);
 			band.addElement(jrDesignTextField);
+			
+			xPoint = xPoint + (11 * (columnWidth)) / 100;
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{totalPaid}"));
+			jrDesignTextField.setX(xPoint);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			
+			xPoint = xPoint + (12 * (columnWidth)) / 100;
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{totalBalance}"));
+			jrDesignTextField.setX(xPoint);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(0);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			band.addElement(jrDesignLine);
+			
 			jasperDesignForSubreport.setColumnFooter(band);
 
 			JasperCompileManager.compileReportToFile(jasperDesignForSubreport,
