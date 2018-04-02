@@ -15,9 +15,8 @@ public class FlowsheetResponse extends GenericCollection {
 	private String uniqueId;
 	private String patientId;
 	private Boolean discarded = false;
+	private String dischargeSummaryUniqueEMRId;
 	private List<FlowSheet> flowSheets;
-
-	
 
 	public String getUniqueId() {
 		return uniqueId;
@@ -89,6 +88,14 @@ public class FlowsheetResponse extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getDischargeSummaryUniqueEMRId() {
+		return dischargeSummaryUniqueEMRId;
+	}
+
+	public void setDischargeSummaryUniqueEMRId(String dischargeSummaryUniqueEMRId) {
+		this.dischargeSummaryUniqueEMRId = dischargeSummaryUniqueEMRId;
 	}
 
 	@Override
