@@ -32,7 +32,6 @@ import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TretmentAnalyticMongoResponse;
 import com.dpdocter.collections.AppointmentCollection;
-import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
@@ -1372,12 +1371,30 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		try {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
+			}
+			fromTime = DPDoctorUtils.getStartTime(from);
+			toTime = DPDoctorUtils.getEndTime(to);
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
+				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
-			}
+
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType))
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
@@ -1516,12 +1533,28 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		try {
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
 					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
+			fromTime = DPDoctorUtils.getStartTime(from);
+			toTime = DPDoctorUtils.getEndTime(to);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			}
 
 			AggregationOperation aggregationOperation = null;
@@ -1675,11 +1708,28 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		try {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
+			fromTime = DPDoctorUtils.getStartTime(from);
+			toTime = DPDoctorUtils.getEndTime(to);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			}
 
 			Aggregation aggregation = null;
@@ -1751,11 +1801,28 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
 					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
+			fromTime = DPDoctorUtils.getStartTime(from);
+			toTime = DPDoctorUtils.getEndTime(to);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			}
 
 			Aggregation aggregation = null;
