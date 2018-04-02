@@ -511,12 +511,17 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public String downloadFlowSheet(String flowSheetId) {
+	public String downloadFlowSheet(String id, Boolean byFlowsheetId) {
 		String response = null;
 
 		try {
 
-			FlowsheetCollection flowsheetCollection = flowsheetRepository.findOne(new ObjectId(flowSheetId));
+			FlowsheetCollection flowsheetCollection = null;
+			if (byFlowsheetId) {
+				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(id));
+			} else {
+				flowsheetCollection = flowsheetRepository.findByDischargeSummaryId(new ObjectId(id));
+			}
 
 			if (flowsheetCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
@@ -2410,7 +2415,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
 			} else {
 				flowsheetCollection = new FlowsheetCollection();
-				flowsheetCollection.setUniqueEmrId(UniqueIdInitial.FLOW_SHEET + DPDoctorUtils.generateRandomId());
+				flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET + DPDoctorUtils.generateRandomId());
 				flowsheetCollection.setCreatedTime(new Date());
 				if (userCollection != null) {
 					flowsheetCollection.setCreatedBy(
@@ -2628,13 +2633,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,
 				"<b>DIS-ID: </b>"
-						+ (flowsheetCollection.getUniqueEmrId() != null ? flowsheetCollection.getUniqueEmrId() : "--"),
+						+ (flowsheetCollection.getUniqueId() != null ? flowsheetCollection.getUniqueId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters, flowsheetCollection.getUpdatedTime(),
 				printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, flowsheetCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-FLOWSHEET-"
-				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueEmrId())
-						? flowsheetCollection.getUniqueEmrId() : "")
+				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueId()) ? flowsheetCollection.getUniqueId()
+						: "")
 				+ new Date().getTime();
 
 		String layout = printSettings != null

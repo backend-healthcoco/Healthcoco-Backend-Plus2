@@ -12,17 +12,19 @@ public class FlowsheetResponse extends GenericCollection {
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
-	private String uniqueEmrId;
+	private String uniqueId;
 	private String patientId;
 	private Boolean discarded = false;
 	private List<FlowSheet> flowSheets;
 
-	public String getUniqueEmrId() {
-		return uniqueEmrId;
+	
+
+	public String getUniqueId() {
+		return uniqueId;
 	}
 
-	public void setUniqueEmrId(String uniqueEmrId) {
-		this.uniqueEmrId = uniqueEmrId;
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 
 	public String getId() {
