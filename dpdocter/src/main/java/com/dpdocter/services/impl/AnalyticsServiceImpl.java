@@ -140,13 +140,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 									new CustomAggregationOperation(
 											new BasicDBObject("$group", new BasicDBObject("_id", "$items.drugId"))),
-									Aggregation.lookup("drug_cl", "_id", "_id", "item"),
+									Aggregation.lookup("drug_cl", "_id", "_id", "totalCount"),
 									Aggregation
-											.unwind("item"),
+											.unwind("totalCount"),
 									Aggregation.match(itemCriteria),
 									new CustomAggregationOperation(new BasicDBObject("$group",
-											new BasicDBObject("_id", "$item._id")
-													.append("name", new BasicDBObject("$first", "$item.drugName"))
+											new BasicDBObject("_id", "$totalCount._id")
+													.append("name", new BasicDBObject("$first", "$totalCount.drugName"))
 													.append("totalCount", new BasicDBObject("$sum", 1)))),
 									Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
 									Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -155,13 +155,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 									new CustomAggregationOperation(
 											new BasicDBObject("$group", new BasicDBObject("_id", "$items.drugId"))),
-									Aggregation.lookup("drug_cl", "_id", "_id", "item"),
+									Aggregation.lookup("drug_cl", "_id", "_id", "totalCount"),
 									Aggregation
-											.unwind("item"),
+											.unwind("totalCount"),
 									Aggregation.match(itemCriteria),
 									new CustomAggregationOperation(new BasicDBObject("$group",
-											new BasicDBObject("_id", "$item._id")
-													.append("name", new BasicDBObject("$first", "$item.drugName"))
+											new BasicDBObject("_id", "$totalCount._id")
+													.append("name", new BasicDBObject("$first", "$totalCount.drugName"))
 													.append("totalCount", new BasicDBObject("$sum", 1)))),
 									Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")));
 				}
@@ -178,13 +178,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							.newAggregation(Aggregation.match(criteria), Aggregation.unwind("diagnosticTests"),
 									new CustomAggregationOperation(new BasicDBObject(
 											"$group", new BasicDBObject("_id", "$diagnosticTests.testId"))),
-									Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "item"),
+									Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "totalCount"),
 									Aggregation
-											.unwind("item"),
+											.unwind("totalCount"),
 									Aggregation.match(itemCriteria),
 									new CustomAggregationOperation(new BasicDBObject("$group",
-											new BasicDBObject("_id", "$item._id")
-													.append("name", new BasicDBObject("$first", "$item.testName"))
+											new BasicDBObject("_id", "$totalCount._id")
+													.append("name", new BasicDBObject("$first", "$totalCount.testName"))
 													.append("totalCount", new BasicDBObject("$sum", 1)))),
 									Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
 									Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -193,13 +193,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							.newAggregation(Aggregation.match(criteria), Aggregation.unwind("diagnosticTests"),
 									new CustomAggregationOperation(new BasicDBObject(
 											"$group", new BasicDBObject("_id", "$diagnosticTests.testId"))),
-									Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "item"),
+									Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "totalCount"),
 									Aggregation
-											.unwind("item"),
+											.unwind("totalCount"),
 									Aggregation.match(itemCriteria),
 									new CustomAggregationOperation(new BasicDBObject("$group",
-											new BasicDBObject("_id", "$item._id")
-													.append("name", new BasicDBObject("$first", "$item.testName"))
+											new BasicDBObject("_id", "$totalCount._id")
+													.append("name", new BasicDBObject("$first", "$totalCount.testName"))
 													.append("totalCount", new BasicDBObject("$sum", 1)))),
 									Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")));
 				}
@@ -248,10 +248,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				from = new Date();
 				to = new Date();
 			}
-			criteria = getCriteria(doctorId, locationId, null);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("discarded").is(false);
 
 			fromTime = DPDoctorUtils.getStartTime(from);
 			toTime = DPDoctorUtils.getEndTime(to);
+			// it take lot of time
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescription"),
 					Aggregation.unwind("totalPrescription"),
@@ -275,11 +276,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							new BasicDBObject("_id", "$_id")
 									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
 									.append("totalPrescriptionCreated", new BasicDBObject("$sum", 1)))));
-			if (data == null)
-				data = new DoctorprescriptionAnalyticResponse();
+			// trying with query
 
-			data = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class,
-					DoctorprescriptionAnalyticResponse.class).getUniqueMappedResult();
+			data = new DoctorprescriptionAnalyticResponse();
+			data.setTotalPrescription((int) mongoTemplate.count(new Query(criteria), PrescriptionCollection.class));
+			criteria.and("adminCreatedTime").gte(fromTime).lte(toTime);
+			data.setTotalPrescriptionCreated(
+					(int) mongoTemplate.count(new Query(criteria), PrescriptionCollection.class));
+			// mongoTemplate.aggregate(aggregation,
+			// DoctorClinicProfileCollection.class,
+			// DoctorprescriptionAnalyticResponse.class).getUniqueMappedResult();
 
 		} catch (Exception e) {
 			e.printStackTrace();
