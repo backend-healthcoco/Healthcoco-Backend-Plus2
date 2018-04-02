@@ -2426,6 +2426,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(request.getDischargeSummaryId()));
+				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
+				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 				flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
 			}
 			flowsheetCollection.setDoctorId(new ObjectId(request.getDoctorId()));

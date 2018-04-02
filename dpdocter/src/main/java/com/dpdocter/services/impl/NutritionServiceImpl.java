@@ -174,7 +174,9 @@ public class NutritionServiceImpl implements NutritionService{
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(nutritionReferenceResponse.getPatientId()), new ObjectId(nutritionReferenceResponse.getLocationId()), new ObjectId(nutritionReferenceResponse.getHospitalId())); 
 				if(patientCollection != null)
 				{
+					UserCollection patient = userRepository.findOne(patientCollection.getUserId());
 					PatientShortCard patientCard = new PatientShortCard();
+					BeanUtil.map(patient,patientCard);
 					BeanUtil.map(patientCollection, patientCard);
 					nutritionReferenceResponse.setPatient(patientCard);
 				}
