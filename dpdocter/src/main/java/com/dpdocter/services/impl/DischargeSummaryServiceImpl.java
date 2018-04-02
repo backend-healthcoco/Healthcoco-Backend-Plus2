@@ -2415,7 +2415,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				if(flowsheetCollection == null)
 				{
 					flowsheetCollection = new FlowsheetCollection();
-					flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET + DPDoctorUtils.generateRandomId());
+					flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
 					flowsheetCollection.setCreatedTime(new Date());
 					if (userCollection != null) {
 						flowsheetCollection.setCreatedBy(
@@ -2428,9 +2428,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 				flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
+				flowsheetCollection.setDischargeSummaryUniqueEMRId(dischargeSummaryCollection.getUniqueEmrId());
 			} else {
 				flowsheetCollection = new FlowsheetCollection();
-				flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET + DPDoctorUtils.generateRandomId());
+				flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
 				flowsheetCollection.setCreatedTime(new Date());
 				if (userCollection != null) {
 					flowsheetCollection.setCreatedBy(
