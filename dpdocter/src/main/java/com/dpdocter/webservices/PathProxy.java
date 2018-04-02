@@ -1368,6 +1368,7 @@ public interface PathProxy {
 		public static final String EMAIL_DISCHARGE_SUMMARY_WEB = "/{dischargeSummeryId}/{emailAddress}/mail";
 		public static final String ADD_EDIT_FLOWSHEETS = "/addEditFlowsheets";
 		public static final String DOWNLOAD_FLOWSHEETS = "/flowsheet/{id}/download";
+		public static final String DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID = "/flowsheet/download/{dischargeSummaryId}";
 		public static final String GET_FLOWSHEETS = "/getFlowsheets";
 		public static final String GET_FLOWSHEET_BY_ID = "/getFlowsheetById/{id}";
 

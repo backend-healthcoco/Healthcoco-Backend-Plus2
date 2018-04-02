@@ -497,7 +497,16 @@ public class DischargeSummaryAPI {
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS)
 	public Response<String> downloadFlowSheet(@PathParam("id") String id) {
 		Response<String> response = new Response<String>();
-		response.setData(dischargeSummaryService.downloadFlowSheet(id));
+		response.setData(dischargeSummaryService.downloadFlowSheet(id, true));
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID)
+	public Response<String> downloadFlowSheetByDischargeSummaryId(@PathParam("dischargeSummaryId") String id) {
+		Response<String> response = new Response<String>();
+		response.setData(dischargeSummaryService.downloadFlowSheet(id, false));
 		return response;
 	}
 

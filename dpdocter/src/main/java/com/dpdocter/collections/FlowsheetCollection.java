@@ -17,7 +17,7 @@ public class FlowsheetCollection extends GenericCollection {
 	@Field
 	private ObjectId dischargeSummaryId;
 	@Field
-	private String uniqueEmrId;
+	private String uniqueId;
 	@Field
 	private List<FlowSheet> flowSheets;
 	@Field
@@ -30,14 +30,13 @@ public class FlowsheetCollection extends GenericCollection {
 	private ObjectId patientId;
 	@Field
 	private Boolean discarded = false;
-	
 
-	public String getUniqueEmrId() {
-		return uniqueEmrId;
+	public String getUniqueId() {
+		return uniqueId;
 	}
 
-	public void setUniqueEmrId(String uniqueEmrId) {
-		this.uniqueEmrId = uniqueEmrId;
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 
 	public ObjectId getId() {

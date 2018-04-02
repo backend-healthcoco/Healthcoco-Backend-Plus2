@@ -14,15 +14,17 @@ public class AddEditFlowSheetRequest {
 	private String patientId;
 	private Boolean discarded = false;
 	private List<FlowSheet> flowSheets;
-	private String uniqueEmrId;
+	private String uniqueId;
 	
 
-	public String getUniqueEmrId() {
-		return uniqueEmrId;
+	
+
+	public String getUniqueId() {
+		return uniqueId;
 	}
 
-	public void setUniqueEmrId(String uniqueEmrId) {
-		this.uniqueEmrId = uniqueEmrId;
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 
 	public String getId() {
