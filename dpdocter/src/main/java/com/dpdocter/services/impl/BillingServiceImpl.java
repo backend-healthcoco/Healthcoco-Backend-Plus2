@@ -2140,7 +2140,6 @@ public class BillingServiceImpl implements BillingService {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
-
 		Double grandTotal = 0.0, totalPaid = 0.0, totalBalance = 0.0;
 		List<String> invoiceIds = new ArrayList<String>();
 		for (DoctorPatientReceiptLookupResponse doctorPatientReceiptLookupResponse : doctorPatientReceiptLookupResponses) {
