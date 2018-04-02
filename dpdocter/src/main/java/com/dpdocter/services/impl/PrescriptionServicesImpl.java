@@ -4310,9 +4310,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							new BeanToPropertyValueTransformer("code"));
 					if (codes != null && !codes.isEmpty()) {
 						for (String word : codes) {
-							word = word.toLowerCase();
+							if(!DPDoctorUtils.anyStringEmpty(word)) {
+								word = word.toLowerCase();
+								genericCodes.add(word);
+							}
 						}
-						genericCodes.addAll(codes);
 					}
 				}
 			}
@@ -6734,13 +6736,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							String genericsList[] = fields[8].split("\\+");
 
 							Map<String, String> generics = new HashMap<String, String>();
-
 							for (String genericName : genericsList) {
 								String key = "", value = null;
 								int indexOfStart = genericName.indexOf("("), indexOfEnd = genericName.indexOf(")");
-								System.out.println(genericName);
 								if (indexOfStart > -1 && indexOfEnd > -1) {
-									System.out.println(indexOfStart + "..." + indexOfEnd);
 									key = genericName.substring(0, indexOfStart - 1);
 									value = genericName.substring(indexOfStart + 1, indexOfEnd - 1);
 									if (!DPDoctorUtils.anyStringEmpty(value) && value.equalsIgnoreCase("NA"))
@@ -6757,6 +6756,31 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							for (GenericCode genericCode : genericCodes) {
 								genericCode.setStrength(generics.get(genericCode.getName()));
 							}
+							
+							if(generics.size() != genericCodes.size()) {
+								for(Entry<String, String> generic : generics.entrySet()) {
+									boolean isPresent = false;
+									for(GenericCode genericCode : genericCodes)
+										if(generic.getKey().equalsIgnoreCase(genericCode.getName()))isPresent = true;
+									
+									if(!isPresent) {
+										GenericCodeCollection genericCodeCollection = new GenericCodeCollection();
+										genericCodeCollection.setAdminCreatedTime(new Date());
+										genericCodeCollection.setName(generic.getKey());
+										genericCodeCollection.setCode(generateGenericCode(genericCodeCollection.getName()));
+										genericCodeCollection.setCreatedBy("ADMIN");
+										genericCodeCollection.setCreatedTime(new Date());
+										genericCodeCollection.setUpdatedTime(new Date());
+										genericCodeCollection = genericCodeRepository.save(genericCodeCollection);
+										
+										GenericCode code = new GenericCode();
+										BeanUtil.map(genericCodeCollection, code);
+										code.setStrength(generic.getValue());
+										genericCodes.add(code);
+									}
+								}
+							}
+							
 							drugCollection.setGenericNames(genericCodes);
 						}
 
@@ -6840,7 +6864,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugCollection drugCollection = drugRepository.findByStartWithDrugCode(drugCode, null, null, null,
 				new Sort(Sort.Direction.DESC, "createdTime"));
 		if (drugCollection != null) {
-			long count = Long.parseLong(drugCollection.getDrugCode().replace(drugCode, "")) + 1;
+			Integer count = Integer.parseInt(drugCollection.getDrugCode().replace(drugCode, "")) + 1;
 			if (count < 1000) {
 				drugCode = drugCode + String.format("%04d", count);
 			} else {
@@ -6853,6 +6877,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return drugCode;
 	}
 
+	private String generateGenericCode(String genericName) {
+		String genericCode = genericName.substring(0, 3);
+		
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode, new Sort(Sort.Direction.DESC, "createdTime"));
+		if (genericCodeCollection != null) {
+			Integer count = Integer.parseInt(genericCodeCollection.getCode().replace(genericCode, "")) + 1;
+			if (count < 1000) {
+				genericCode = genericCode + String.format("%04d", count);
+			} else {
+				genericCode = genericCode + count;
+			}
+		} else {
+			genericCode = genericCode + "0001";
+		}
+
+		return genericCode;
+	}
+	
 	@Override
 	public Boolean updateDrugInteraction() {
 		Boolean response = false;
