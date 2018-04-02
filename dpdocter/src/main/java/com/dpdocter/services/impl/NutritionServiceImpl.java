@@ -80,6 +80,7 @@ public class NutritionServiceImpl implements NutritionService{
 				nutritionReferenceCollection = new NutritionReferenceCollection();
 			}
 			BeanUtil.map(request, nutritionReferenceCollection);
+			nutritionReferenceCollection.setReports(request.getReports());
 			nutritionReferenceCollection = nutritionReferenceRepository.save(nutritionReferenceCollection);
 			if (nutritionReferenceCollection != null) {
 				response = new NutritionReferenceResponse();
