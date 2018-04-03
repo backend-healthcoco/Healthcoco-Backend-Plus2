@@ -1,7 +1,6 @@
 package com.dpdocter.beans;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.jfree.ui.Align;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
