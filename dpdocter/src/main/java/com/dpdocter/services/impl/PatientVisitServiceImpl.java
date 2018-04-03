@@ -2469,7 +2469,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
 			if (patientDetails.getPIDKey().equalsIgnoreCase("false")) {
-				patientDetails.setPIDKey("UHID");
+				patientDetails.setPIDKey("PID");
 			}
 			patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
 					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
