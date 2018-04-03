@@ -6630,7 +6630,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			br = new BufferedReader(new FileReader(UPLOAD_DRUGS));
 			Map<String, DrugType> drugTypesMap = new HashMap<String, DrugType>();
 			List<DrugType> drugTypes = mongoTemplate
-					.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria())), DrugTypeCollection.class,
+					.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(null))), DrugTypeCollection.class,
 							DrugType.class)
 					.getMappedResults();
 			if (drugTypes != null && !drugTypes.isEmpty()) {
@@ -6642,7 +6642,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (lineCount > 0) {
 					String[] fields = line.split(",");
 
-					String drugName = fields[0], drugType = fields[1], companyName = fields[5];
+					String drugName = fields[0].trim(), drugType = fields[1].trim(), companyName = fields[5].trim();
 
 					if (drugType.equalsIgnoreCase("TABLET"))
 						drugType = "TAB";
@@ -6671,6 +6671,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 						drugCollection.setDrugName(drugName);
 						drugCollection.setDrugType(drugTypesMap.get(drugType));
+						if(drugCollection.getDrugType() == null) {
+							DrugTypeCollection drugTypeCollection = new DrugTypeCollection();
+							drugTypeCollection.setAdminCreatedTime(new Date());
+							drugTypeCollection.setCreatedBy("ADMIN");
+							drugTypeCollection.setCreatedTime(new Date());
+							drugTypeCollection.setUpdatedTime(new Date());
+							drugTypeCollection.setType(drugType);
+							drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
+							
+							DrugType drugTypeObj = new DrugType();
+							BeanUtil.map(drugTypeCollection, drugTypeObj);
+							drugCollection.setDrugType(drugTypeObj);
+							drugTypesMap.put(drugType, drugTypeObj);
+						}
 						drugCollection.setCompanyName(companyName);
 
 						if (!DPDoctorUtils.anyStringEmpty(fields[2])) {
@@ -6691,25 +6705,31 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 							Map<String, String> generics = new HashMap<String, String>();
 							for (String genericName : genericsList) {
+								genericName = genericName.replaceAll("\\s", "");
 								String key = "", value = null;
 								int indexOfStart = genericName.indexOf("("), indexOfEnd = genericName.indexOf(")");
 								if (indexOfStart > -1 && indexOfEnd > -1) {
-									key = genericName.substring(0, indexOfStart - 1);
-									value = genericName.substring(indexOfStart + 1, indexOfEnd - 1);
+									key = genericName.substring(0, indexOfStart);
+									value = genericName.substring(indexOfStart+1, indexOfEnd);
+									System.out.println(value);
 									if (!DPDoctorUtils.anyStringEmpty(value) && value.equalsIgnoreCase("NA"))
 										value = null;
 								} else {
 									key = genericName;
 								}
+								System.out.println(key);
 								generics.put(key, value);
 							}
-							List<GenericCode> genericCodes = mongoTemplate.aggregate(
+							List<GenericCode> genericCodesFromDB = mongoTemplate.aggregate(
 									Aggregation.newAggregation(
 											Aggregation.match(new Criteria("name").in(generics.keySet()))),
 									GenericCodeCollection.class, GenericCode.class).getMappedResults();
-							for (GenericCode genericCode : genericCodes) {
+							for (GenericCode genericCode : genericCodesFromDB) {
 								genericCode.setStrength(generics.get(genericCode.getName()));
 							}
+							
+							List<GenericCode> genericCodes = new ArrayList<>();
+							genericCodes.addAll(genericCodesFromDB);
 							
 							if(generics.size() != genericCodes.size()) {
 								for(Entry<String, String> generic : generics.entrySet()) {
@@ -6758,7 +6778,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (fields.length > 12 && !DPDoctorUtils.anyStringEmpty(fields[12])) {
 							drugCollection.setUnsafeWith(fields[12]);
 						}
-					//	System.out.println(drugCollection.toString());
 						drugCollection = drugRepository.save(drugCollection);
 
 						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
@@ -6808,16 +6827,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private String generateDrugCode(String drugName, String drugType) {
+		drugName = drugName.replaceAll("[^a-zA-Z0-9]", "");
 		String drugCode = null;
 		if (drugName.length() > 2)
 			drugCode = drugType.substring(0, 2) + drugName.substring(0, 3);
 		else
 			drugCode = drugType.substring(0, 2) + drugName.substring(0, 2);
-
-		DrugCollection drugCollection = drugRepository.findByStartWithDrugCode(drugCode, null, null, null,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+		DrugCollection drugCollection = drugRepository.findByStartWithDrugCode(drugCode, null, null, null, new Sort(Sort.Direction.DESC, "createdTime"));
+		if(drugName.equalsIgnoreCase("O2")) {
+			drugCollection = null;
+		}
+		
 		if (drugCollection != null) {
-			Integer count = Integer.parseInt(drugCollection.getDrugCode().replace(drugCode, "")) + 1;
+			Integer count = Integer.parseInt(drugCollection.getDrugCode().toUpperCase().replace(drugCode, "")) + 1;
 			if (count < 1000) {
 				drugCode = drugCode + String.format("%04d", count);
 			} else {
@@ -6831,7 +6853,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private String generateGenericCode(String genericName) {
-		String genericCode = genericName.substring(0, 3);
+		genericName = genericName.replaceAll("[^a-zA-Z0-9]", "");
+		System.out.println(genericName);
+		String genericCode = "GEN" + genericName.substring(0, 3);
 		
 		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode, new Sort(Sort.Direction.DESC, "createdTime"));
 		if (genericCodeCollection != null) {
@@ -6844,10 +6868,29 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} else {
 			genericCode = genericCode + "0001";
 		}
-
+		
+		genericCode = updateIfGenericCodeExist(genericCode);
+		
 		return genericCode;
 	}
 	
+	private String updateIfGenericCodeExist(String genericCode) {
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode, new Sort(Sort.Direction.DESC, "createdTime"));
+		if(genericCodeCollection != null) {
+			genericCode = genericCode.substring(0, 6);
+			Integer count = Integer.parseInt(genericCodeCollection.getCode().replace(genericCode, "")) + 1;
+			if (count < 1000) {
+				genericCode = genericCode + String.format("%04d", count);
+			} else {
+				genericCode = genericCode + count;
+			}
+			genericCode = updateIfGenericCodeExist(genericCode);
+		}
+		
+		return genericCode;
+		
+	}
+
 	@Override
 	public Boolean updateDrugInteraction() {
 		Boolean response = false;
