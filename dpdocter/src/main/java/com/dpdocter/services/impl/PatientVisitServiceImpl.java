@@ -2468,6 +2468,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				+ (!DPDoctorUtils.anyStringEmpty(firstName.toUpperCase()) ? firstName.toUpperCase() : " ") + "</b>");
 
 		if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
+			if (patientDetails.getPIDKey().equalsIgnoreCase("false")) {
+				patientDetails.setPIDKey("UHID");
+			}
 			patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
 					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
 		} else {
@@ -2499,7 +2502,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 				}
 			}
-		
+
 			if (patientDetails.getShowDOB()) {
 				if (!DPDoctorUtils.anyStringEmpty(age, gender))
 					patientDetailList.add("<b>Age | Gender: </b>" + age + " | " + gender);
@@ -2509,72 +2512,71 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
 			}
 		}
-			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
-				patientDetailList.add(uniqueEMRId);
-			if (patientDetails.getShowDOB()) {
-				if (patientDetails.getShowDate())
-					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
-				patientDetailList
-						.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-			} else {
-				patientDetailList
-						.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-				if (patientDetails.getShowDate())
-					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
-			}
+		if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
+			patientDetailList.add(uniqueEMRId);
+		if (patientDetails.getShowDOB()) {
+			if (patientDetails.getShowDate())
+				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+			patientDetailList
+					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		} else {
+			patientDetailList
+					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+			if (patientDetails.getShowDate())
+				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+		}
 
-			if (patientDetails.getShowBloodGroup() && patientCard != null
-					&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
-				patientDetailList.add("<b>Blood Group: </b>" + patientCard.getBloodGroup());
-			}
-			if (patientDetails.getShowCity() && patientCard != null && !DPDoctorUtils
-					.anyStringEmpty(patientCard.getAddress() != null ? patientCard.getAddress().getCity() : null)) {
-				patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
-			}
-			if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
-				ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
-				if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
-					patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
-			}
+		if (patientDetails.getShowBloodGroup() && patientCard != null
+				&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
+			patientDetailList.add("<b>Blood Group: </b>" + patientCard.getBloodGroup());
+		}
+		if (patientDetails.getShowCity() && patientCard != null && !DPDoctorUtils
+				.anyStringEmpty(patientCard.getAddress() != null ? patientCard.getAddress().getCity() : null)) {
+			patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
+		}
+		if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
+			ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
+			if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
+				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
+		}
 
-			if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId()
-					&& !DPDoctorUtils.anyStringEmpty(hospitalUId)) {
-				patientDetailList.add("<b>Hospital Id: </b>" + hospitalUId);
-			}
+		if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId()
+				&& !DPDoctorUtils.anyStringEmpty(hospitalUId)) {
+			patientDetailList.add("<b>Hospital Id: </b>" + hospitalUId);
+		}
 
-			boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
-					? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
-			boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
-					? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
-			String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null
-					? patientDetails.getStyle().getFontSize() : "";
+		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
+				? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
+		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
+				? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
+		String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null
+				? patientDetails.getStyle().getFontSize() : "";
 
-			for (int i = 0; i < patientDetailList.size(); i++) {
-				String text = patientDetailList.get(i);
-				if (!DPDoctorUtils.anyStringEmpty(text)) {
-					if (isItalic)
-						text = "<i>" + text + "</i>";
-					if (isBold)
-						text = "<b>" + text + "</b>";
-					text = "<span style='font-size:" + fontSize + "'>" + text + "</span>";
+		for (int i = 0; i < patientDetailList.size(); i++) {
+			String text = patientDetailList.get(i);
+			if (!DPDoctorUtils.anyStringEmpty(text)) {
+				if (isItalic)
+					text = "<i>" + text + "</i>";
+				if (isBold)
+					text = "<b>" + text + "</b>";
+				text = "<span style='font-size:" + fontSize + "'>" + text + "</span>";
 
-					if (i % 2 == 0) {
-						if (!DPDoctorUtils.anyStringEmpty(patientLeftText))
-							patientLeftText = patientLeftText + "<br>" + text;
-						else
-							patientLeftText = text;
-					} else {
-						if (!DPDoctorUtils.anyStringEmpty(patientRightText))
-							patientRightText = patientRightText + "<br>" + text;
-						else
-							patientRightText = text;
-					}
+				if (i % 2 == 0) {
+					if (!DPDoctorUtils.anyStringEmpty(patientLeftText))
+						patientLeftText = patientLeftText + "<br>" + text;
+					else
+						patientLeftText = text;
+				} else {
+					if (!DPDoctorUtils.anyStringEmpty(patientRightText))
+						patientRightText = patientRightText + "<br>" + text;
+					else
+						patientRightText = text;
 				}
 			}
-			parameters.put("patientLeftText", patientLeftText);
-			parameters.put("patientRightText", patientRightText);
 		}
-	
+		parameters.put("patientLeftText", patientLeftText);
+		parameters.put("patientRightText", patientRightText);
+	}
 
 	@Override
 	public ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
