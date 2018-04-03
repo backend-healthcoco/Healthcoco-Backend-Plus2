@@ -440,13 +440,15 @@ public class BillingServiceImpl implements BillingService {
 				// System.out.println(inventoryItem);
 				// System.out.println("Batch id :: " +
 				// inventoryStock.getBatchId());
-				InventoryBatch inventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
-				// System.out.println(inventoryBatch);
-				if (inventoryBatch != null && inventoryItem != null) {
-					createInventoryStock(itemId.toString(), inventoryItem.getId(), inventoryBatch,
-							request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-							request.getHospitalId(), quantity.intValue(),
-							doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+				if (inventoryStock != null) {
+					InventoryBatch inventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
+					// System.out.println(inventoryBatch);
+					if (inventoryBatch != null && inventoryItem != null) {
+						createInventoryStock(itemId.toString(), inventoryItem.getId(), inventoryBatch,
+								request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+								request.getHospitalId(), quantity.intValue(),
+								doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+					}
 				}
 
 			}
