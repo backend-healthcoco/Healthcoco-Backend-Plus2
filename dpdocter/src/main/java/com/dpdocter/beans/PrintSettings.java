@@ -1,5 +1,8 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+>>>>>>> b0b9a45... validation added to get drug
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
