@@ -71,9 +71,9 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Nested)
 	private Duration duration;
 
-    @Field(type = FieldType.String)
+	@Field(type = FieldType.String)
 	private String dosage;
-	
+
 	@MultiField(mainField = @Field(type = FieldType.Long))
 	private List<Long> dosageTime;
 
@@ -94,19 +94,22 @@ public class ESDrugDocument {
 
 	@Field(type = FieldType.Long)
 	private Long totalStock;
-	
+
 	@Field(type = FieldType.Long)
 	private Long retailPrice;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> specialities;
-	 
-    @Field(type = FieldType.String)
+
+	@Field(type = FieldType.String)
 	private String rxRequired;
-	
-    @Field(type = FieldType.String)
+
+	@Field(type = FieldType.String)
 	private String unsafeWith;
-	
+
+	@Field(type = FieldType.String)
+	private String stockingUnit;
+
 	@Override
 	public int hashCode() {
 		return this.drugCode.hashCode();
@@ -355,6 +358,14 @@ public class ESDrugDocument {
 
 	public void setUnsafeWith(String unsafeWith) {
 		this.unsafeWith = unsafeWith;
+	}
+
+	public String getStockingUnit() {
+		return stockingUnit;
+	}
+
+	public void setStockingUnit(String stockingUnit) {
+		this.stockingUnit = stockingUnit;
 	}
 
 	@Override

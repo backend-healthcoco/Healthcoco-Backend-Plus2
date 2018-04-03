@@ -842,6 +842,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
 				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 				drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
+				drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
 			}
 		}
 		return drugs;
@@ -859,6 +860,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
 				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
 				drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
+				drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
 			}
 		}
 		return drugs;
