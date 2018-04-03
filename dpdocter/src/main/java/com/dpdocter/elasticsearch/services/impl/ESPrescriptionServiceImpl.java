@@ -800,15 +800,17 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	{
 		List<ESDrugDocument> response= new ArrayList<>();
 		for (ESDrugDocument drug : drugs) {
-			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId())) {
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
-						drug.getHospitalId(), drug.getId());
-				if (inventoryItem != null) {
-					InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
-							.getInventoryItem(inventoryItem.getId());
-					drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
-				}
 
+			/*System.out.println("Location id ::" + drug.getLocationId());
+			System.out.println("Hospital id ::" + drug.getHospitalId());
+			System.out.println("Drug id ::" + drug.getId());*/
+			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
+			if(inventoryItem != null)	
+			{
+				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
+				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+				drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
+				drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
 			}
 			response.add(drug);
 		}
@@ -819,15 +821,17 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	{
 		List<DrugDocument> response= new ArrayList<>();
 		for (DrugDocument drug : drugs) {
-			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId())) {
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
-						drug.getHospitalId(), drug.getId());
-				if (inventoryItem != null) {
-					InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
-							.getInventoryItem(inventoryItem.getId());
-					drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
-				}
 
+			/*System.out.println("Location id ::" + drug.getLocationId());
+			System.out.println("Hospital id ::" + drug.getHospitalId());
+			System.out.println("Drug id ::" + drug.getId());*/
+			InventoryItem  inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(), drug.getHospitalId(), drug.getId());
+			if(inventoryItem != null)	
+			{
+				InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService.getInventoryItem(inventoryItem.getId());
+				drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+				drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
+				drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
 			}
 			response.add(drug);
 		}

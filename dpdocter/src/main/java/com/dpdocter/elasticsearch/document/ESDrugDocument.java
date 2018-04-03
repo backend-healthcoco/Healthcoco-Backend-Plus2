@@ -106,6 +106,11 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private Double retailPrice;
 
+;
+
+	@Field(type = FieldType.String)
+	private String stockingUnit;
+
 	@Override
 	public int hashCode() {
 		return this.drugCode.hashCode();
@@ -368,5 +373,15 @@ public class ESDrugDocument {
 	public void setCompanyRankingCount(long companyRankingCount) {
 		this.companyRankingCount = companyRankingCount;
 	}
+	
+	public String getStockingUnit() {
+		return stockingUnit;
+	}
+
+	public void setStockingUnit(String stockingUnit) {
+		this.stockingUnit = stockingUnit;
+	}
+
+	
 
 }

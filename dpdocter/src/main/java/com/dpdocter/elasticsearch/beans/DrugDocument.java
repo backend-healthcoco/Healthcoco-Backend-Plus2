@@ -59,6 +59,8 @@ public class DrugDocument {
 
 	private Double retailPrice;
 
+	private String stockingUnit;
+
 	public String getId() {
 		return id;
 	}
@@ -241,6 +243,14 @@ public class DrugDocument {
 
 	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
+	}
+
+	public String getStockingUnit() {
+		return stockingUnit;
+	}
+
+	public void setStockingUnit(String stockingUnit) {
+		this.stockingUnit = stockingUnit;
 	}
 
 	@Override
