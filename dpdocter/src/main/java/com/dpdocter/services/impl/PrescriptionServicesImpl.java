@@ -6757,13 +6757,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								if (indexOfStart > -1 && indexOfEnd > -1) {
 									key = genericName.substring(0, indexOfStart);
 									value = genericName.substring(indexOfStart+1, indexOfEnd);
-									System.out.println(value);
 									if (!DPDoctorUtils.anyStringEmpty(value) && value.equalsIgnoreCase("NA"))
 										value = null;
 								} else {
 									key = genericName;
 								}
-								System.out.println(key);
 								generics.put(key, value);
 							}
 							List<GenericCode> genericCodesFromDB = mongoTemplate.aggregate(
@@ -6825,28 +6823,29 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							drugCollection.setUnsafeWith(fields[12]);
 						}
 						System.out.println(drugCollection.toString());
-//						drugCollection = drugRepository.save(drugCollection);
-//
-//						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-//						if (drugCollection != null) {
-//							ESDrugDocument esDrugDocument = new ESDrugDocument();
-//							BeanUtil.map(drugCollection, esDrugDocument);
-//							if (drugCollection.getDrugType() != null) {
-//								esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-//								esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-//							}
-//							esPrescriptionService.addDrug(esDrugDocument);
-//						}
+						drugCollection = drugRepository.save(drugCollection);
+
+						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+						if (drugCollection != null) {
+							ESDrugDocument esDrugDocument = new ESDrugDocument();
+							BeanUtil.map(drugCollection, esDrugDocument);
+							if (drugCollection.getDrugType() != null) {
+								esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+								esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+							}
+							esPrescriptionService.addDrug(esDrugDocument);
+						}
 					} else {
 						System.out.println("Already present: " + lineCount + " .. " + drugName);
 					}
 				}
 				lineCount = lineCount + 1;
+				response = true;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred uploading drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred uploading drugs");
+//			throw new BusinessException(ServiceError.Unknown, "Error Occurred uploading drugs");
 		} finally {
 			if (br != null) {
 				try {
@@ -6880,12 +6879,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugCode = drugType.substring(0, 2) + drugName.substring(0, 3);
 		else
 			drugCode = drugType.substring(0, 2) + drugName.substring(0, 2);
-		DrugCollection drugCollection = drugRepository.findByStartWithDrugCode(drugCode, null, null, null, new Sort(Sort.Direction.DESC, "createdTime"));
+		
+		List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(null).and("drugCode").regex("^" + drugCode, "i")),
+				Aggregation.sort(new Sort(Direction.DESC, "drugCode")), Aggregation.limit(1))
+				, DrugCollection.class, DrugCollection.class).getMappedResults();
+		DrugCollection drugCollection = null;
+		if(drugCollections != null && !drugCollections.isEmpty())drugCollection = drugCollections.get(0);
+//		DrugCollection drugCollection = drugRepository.findByStartWithDrugCode(drugCode, null, null, null, new Sort(Sort.Direction.DESC, "drugCode"));
 		if(drugName.equalsIgnoreCase("O2")) {
 			drugCollection = null;
 		}
 		
 		if (drugCollection != null) {
+			System.out.println(drugCollection.getDrugCode());
 			Integer count = Integer.parseInt(drugCollection.getDrugCode().toUpperCase().replace(drugCode, "")) + 1;
 			if (count < 1000) {
 				drugCode = drugCode + String.format("%04d", count);
@@ -6901,10 +6907,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	private String generateGenericCode(String genericName) {
 		genericName = genericName.replaceAll("[^a-zA-Z0-9]", "");
-		System.out.println(genericName);
 		String genericCode = "GEN" + genericName.substring(0, 3);
 		
-		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode, new Sort(Sort.Direction.DESC, "createdTime"));
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode, new Sort(Sort.Direction.DESC, "code"));
 		if (genericCodeCollection != null) {
 			Integer count = Integer.parseInt(genericCodeCollection.getCode().replace(genericCode, "")) + 1;
 			if (count < 1000) {
