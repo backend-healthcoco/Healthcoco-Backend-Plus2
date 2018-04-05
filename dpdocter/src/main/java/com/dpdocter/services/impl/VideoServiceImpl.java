@@ -43,6 +43,8 @@ import com.dpdocter.services.VideoService;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class VideoServiceImpl implements VideoService {
 
@@ -180,6 +182,39 @@ public class VideoServiceImpl implements VideoService {
 					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<MyVideo> aggregationResults = mongoTemplate.aggregate(aggregation, MyVideoCollection.class,
 					MyVideo.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<Video> getLocationVideos(String doctorId ,String locationId, String hospitalId, String searchTerm, int page, int size , List<String> tags) {
+		Aggregation aggregation = null;
+		List<Video> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").in(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").in(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").in(new ObjectId(hospitalId));
+			}
+			if(tags != null)
+			{
+				criteria.and("tags").in(tags);
+			}
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria)
+					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<Video> aggregationResults = mongoTemplate.aggregate(aggregation, VideoCollection.class,
+					Video.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			// TODO: handle exception

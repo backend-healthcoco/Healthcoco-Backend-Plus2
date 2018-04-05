@@ -18,4 +18,7 @@ public interface VideoService {
 
 	List<MyVideo> getMyVideos(String doctorId, String searchTerm, int page, int size);
 
+	List<Video> getLocationVideos(String doctorId, String locationId, String hospitalId, String searchTerm, int page,
+			int size, List<String> tags);
+
 }
