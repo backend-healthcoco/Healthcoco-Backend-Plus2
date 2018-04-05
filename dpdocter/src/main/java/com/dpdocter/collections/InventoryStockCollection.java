@@ -17,9 +17,9 @@ public class InventoryStockCollection extends GenericCollection {
 	@Field
 	private ObjectId batchId;
 	@Field
-	private Long costPrice;
+	private Double costPrice;
 	@Field
-	private Long retailPrice;
+	private Double retailPrice;
 	@Field
 	private String stockType;
 	@Field
@@ -33,7 +33,7 @@ public class InventoryStockCollection extends GenericCollection {
 	@Field
 	private Boolean discarded = false;
 	@Field
-	private Long totalPrice;
+	private Double totalPrice;
 	@Field
 	private ObjectId resourceId;
 	@Field
@@ -71,22 +71,6 @@ public class InventoryStockCollection extends GenericCollection {
 		this.batchId = batchId;
 	}
 
-	public Long getCostPrice() {
-		return costPrice;
-	}
-
-	public void setCostPrice(Long costPrice) {
-		this.costPrice = costPrice;
-	}
-
-	public Long getRetailPrice() {
-		return retailPrice;
-	}
-
-	public void setRetailPrice(Long retailPrice) {
-		this.retailPrice = retailPrice;
-	}
-
 	public String getStockType() {
 		return stockType;
 	}
@@ -119,14 +103,6 @@ public class InventoryStockCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public Long getTotalPrice() {
-		return totalPrice;
-	}
-
-	public void setTotalPrice(Long totalPrice) {
-		this.totalPrice = totalPrice;
-	}
-
 	public ObjectId getResourceId() {
 		return resourceId;
 	}
@@ -157,6 +133,30 @@ public class InventoryStockCollection extends GenericCollection {
 
 	public void setInvoiceId(ObjectId invoiceId) {
 		this.invoiceId = invoiceId;
+	}
+
+	public Double getCostPrice() {
+		return costPrice;
+	}
+
+	public void setCostPrice(Double costPrice) {
+		this.costPrice = costPrice;
+	}
+
+	public Double getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Double retailPrice) {
+		this.retailPrice = retailPrice;
+	}
+
+	public Double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(Double totalPrice) {
+		this.totalPrice = totalPrice;
 	}
 
 	@Override

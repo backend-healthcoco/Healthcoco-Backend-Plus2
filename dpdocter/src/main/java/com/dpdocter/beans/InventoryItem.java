@@ -19,7 +19,7 @@ public class InventoryItem extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
-	private Long retailPrice;
+	private Double retailPrice;
 
 	public String getId() {
 		return id;

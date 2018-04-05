@@ -11,8 +11,8 @@ public class InventoryStockLookupResponse extends GenericCollection {
 	private Long quantity;
 	private String batchId;
 	private InventoryBatch inventoryBatch;
-	private Long costPrice;
-	private Long retailPrice;
+	private Double costPrice;
+	private Double retailPrice;
 	private String stockType;
 	private String locationId;
 	private String hospitalId;
@@ -59,19 +59,19 @@ public class InventoryStockLookupResponse extends GenericCollection {
 		this.inventoryBatch = inventoryBatch;
 	}
 
-	public Long getCostPrice() {
+	public Double getCostPrice() {
 		return costPrice;
 	}
 
-	public void setCostPrice(Long costPrice) {
+	public void setCostPrice(Double costPrice) {
 		this.costPrice = costPrice;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 

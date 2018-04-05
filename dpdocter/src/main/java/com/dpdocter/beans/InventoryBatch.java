@@ -10,8 +10,8 @@ public class InventoryBatch extends GenericCollection {
 	private Long expiryDate;
 	private Long noOfItems;
 	private Long noOfItemsLeft;
-	private Long retailPrice;
-	private Long costPrice;
+	private Double retailPrice;
+	private Double costPrice;
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
@@ -64,16 +64,20 @@ public class InventoryBatch extends GenericCollection {
 		this.noOfItemsLeft = noOfItemsLeft;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 
-	public Long getCostPrice() {
+	public Double getCostPrice() {
 		return costPrice;
+	}
+
+	public void setCostPrice(Double costPrice) {
+		this.costPrice = costPrice;
 	}
 
 	public void setCostPrice(Long costPrice) {

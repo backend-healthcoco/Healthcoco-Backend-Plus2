@@ -19,7 +19,7 @@ public class InventoryItemLookupResposne extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
-	private Long retailPrice;
+	private Double retailPrice;
 	private List<InventoryBatch> inventoryBatchs;
 
 	public String getId() {
@@ -126,11 +126,11 @@ public class InventoryItemLookupResposne extends GenericCollection {
 		this.totalStock = totalStock;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 

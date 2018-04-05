@@ -2,7 +2,6 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-
 public class InventoryStock extends GenericCollection {
 
 	private String id;
@@ -10,15 +9,15 @@ public class InventoryStock extends GenericCollection {
 	private Long quantity;
 	private String batchId;
 	private InventoryBatch inventoryBatch;
-	private Long costPrice;
-	private Long retailPrice;
+	private Double costPrice;
+	private Double retailPrice;
 	private String stockType;
 	private String patientId;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
-	private Long totalPrice;
+	private Double totalPrice;
 	private String resourceId;
 	private String invoiceId;
 
@@ -62,22 +61,6 @@ public class InventoryStock extends GenericCollection {
 		this.inventoryBatch = inventoryBatch;
 	}
 
-	public Long getCostPrice() {
-		return costPrice;
-	}
-
-	public void setCostPrice(Long costPrice) {
-		this.costPrice = costPrice;
-	}
-
-	public Long getRetailPrice() {
-		return retailPrice;
-	}
-
-	public void setRetailPrice(Long retailPrice) {
-		this.retailPrice = retailPrice;
-	}
-
 	public String getStockType() {
 		return stockType;
 	}
@@ -110,14 +93,6 @@ public class InventoryStock extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public Long getTotalPrice() {
-		return totalPrice;
-	}
-
-	public void setTotalPrice(Long totalPrice) {
-		this.totalPrice = totalPrice;
-	}
-
 	public String getPatientId() {
 		return patientId;
 	}
@@ -133,7 +108,7 @@ public class InventoryStock extends GenericCollection {
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
-	
+
 	public String getResourceId() {
 		return resourceId;
 	}
@@ -141,13 +116,37 @@ public class InventoryStock extends GenericCollection {
 	public void setResourceId(String resourceId) {
 		this.resourceId = resourceId;
 	}
-	
+
 	public String getInvoiceId() {
 		return invoiceId;
 	}
 
 	public void setInvoiceId(String invoiceId) {
 		this.invoiceId = invoiceId;
+	}
+
+	public Double getCostPrice() {
+		return costPrice;
+	}
+
+	public void setCostPrice(Double costPrice) {
+		this.costPrice = costPrice;
+	}
+
+	public Double getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Double retailPrice) {
+		this.retailPrice = retailPrice;
+	}
+
+	public Double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(Double totalPrice) {
+		this.totalPrice = totalPrice;
 	}
 
 	@Override
