@@ -6776,10 +6776,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (fields.length > 12 && !DPDoctorUtils.anyStringEmpty(fields[12])) {
 							drugCollection.setUnsafeWith(fields[12]);
 						}
-<<<<<<< HEAD
-=======
-						System.out.println(drugCollection.toString());
->>>>>>> c6c90b09... -Uncommented upload drugs save operation
 						drugCollection = drugRepository.save(drugCollection);
 
 						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);

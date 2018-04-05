@@ -29,7 +29,7 @@ import com.dpdocter.enums.PackageType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.BulkSMSRequest;
-import com.dpdocter.request.ExportContactsRequest;
+import com.dpdocter.request.ExportRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
@@ -174,7 +174,7 @@ public class ContactsApi {
 	@Path(value = PathProxy.ContactsUrls.EXPORT_CONTACTS)
 	@POST
 	@ApiOperation(value = PathProxy.ContactsUrls.EXPORT_CONTACTS, notes = PathProxy.ContactsUrls.EXPORT_CONTACTS)
-	public Response<Boolean> exportContacts(ExportContactsRequest request) {
+	public Response<Boolean> exportContacts(ExportRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input. Export Request Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Export Request Cannot Be Empty");

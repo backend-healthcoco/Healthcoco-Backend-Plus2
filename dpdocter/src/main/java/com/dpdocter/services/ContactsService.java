@@ -9,7 +9,7 @@ import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.request.BulkSMSRequest;
-import com.dpdocter.request.ExportContactsRequest;
+import com.dpdocter.request.ExportRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
@@ -28,7 +28,7 @@ public interface ContactsService {
 
 	Boolean importContacts(ImportContactsRequest request);
 
-	Boolean exportContacts(ExportContactsRequest request);
+	Boolean exportContacts(ExportRequest request);
 
 	DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime,
 			boolean discarded, int page, int size, String role);

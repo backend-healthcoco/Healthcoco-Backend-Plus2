@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -29,18 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
-import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
-import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
-import com.dpdocter.collections.InventoryItemCollection;
-import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
@@ -60,13 +55,11 @@ import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.BulkSMSRequest;
-import com.dpdocter.request.ExportContactsRequest;
+import com.dpdocter.request.ExportRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
-import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.ImageURLResponse;
-import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.PatientGroupLookupResponse;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
@@ -590,7 +583,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Override
 	@Transactional
-	public Boolean exportContacts(ExportContactsRequest request) {
+	public Boolean exportContacts(ExportRequest request) {
 		Boolean response = false;
 		ExportContactsRequestCollection exportContactsRequestCollection = null;
 		try {

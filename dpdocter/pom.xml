@@ -10,6 +10,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -37,9 +40,6 @@
 		</profile>
 		<profile>
 			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -999,19 +999,18 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/core-renderer -->
-<!-- 		<dependency> -->
-<!-- 		    <groupId>org.xhtmlrenderer</groupId> -->
-<!-- 		    <artifactId>core-renderer</artifactId> -->
-<!-- 		    <version>R8pre2</version> -->
-<!-- 		</dependency>	 -->
-<!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf -->
-<dependency>
-    <groupId>org.xhtmlrenderer</groupId>
-    <artifactId>flying-saucer-pdf</artifactId>
-    <version>9.1.12</version>
-</dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf -->
+		<dependency>
+		    <groupId>org.xhtmlrenderer</groupId>
+		    <artifactId>flying-saucer-pdf</artifactId>
+		    <version>9.1.12</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi</artifactId>
+		    <version>3.17</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<testResources>
