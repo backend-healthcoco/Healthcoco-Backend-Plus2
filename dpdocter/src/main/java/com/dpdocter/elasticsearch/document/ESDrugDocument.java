@@ -104,7 +104,7 @@ public class ESDrugDocument {
 	private Long totalStock;
 
 	@Field(type = FieldType.Long)
-	private Long retailPrice;
+	private Double retailPrice;
 
 	@Override
 	public int hashCode() {
@@ -357,11 +357,11 @@ public class ESDrugDocument {
 		this.unsafeWith = unsafeWith;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 

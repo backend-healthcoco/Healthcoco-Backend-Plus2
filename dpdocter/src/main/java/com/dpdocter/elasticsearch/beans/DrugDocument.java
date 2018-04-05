@@ -57,7 +57,7 @@ public class DrugDocument {
 
 	private Long totalStock;
 
-	private Long retailPrice;
+	private Double retailPrice;
 
 	public String getId() {
 		return id;
@@ -235,11 +235,11 @@ public class DrugDocument {
 		this.totalStock = totalStock;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 

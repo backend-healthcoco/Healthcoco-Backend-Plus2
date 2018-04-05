@@ -80,10 +80,6 @@ public class InventoryBatch extends GenericCollection {
 		this.costPrice = costPrice;
 	}
 
-	public void setCostPrice(Long costPrice) {
-		this.costPrice = costPrice;
-	}
-
 	public String getLocationId() {
 		return locationId;
 	}
