@@ -1,7 +1,7 @@
 package com.dpdocter.services.impl;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -24,6 +24,7 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.NutritionGoalStatusStampingCollection;
 import com.dpdocter.collections.NutritionReferenceCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFeedbackCollection;
@@ -35,6 +36,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.NutritionGoalStatusStampingRepository;
 import com.dpdocter.repository.NutritionReferenceRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
@@ -66,6 +68,9 @@ public class NutritionServiceImpl implements NutritionService{
 	
 	@Autowired
 	private MongoOperations mongoOperations;
+	
+	@Autowired
+	private NutritionGoalStatusStampingRepository nutritionGoalStatusStampingRepository;
 	
 	@Override
 	@Transactional
@@ -194,32 +199,128 @@ public class NutritionServiceImpl implements NutritionService{
 	
 	@Override
 	@Transactional
-	public NutritionGoalAnalytics getGoalAnalytics(String doctorId, String locationId, String role)
+	public NutritionGoalAnalytics getGoalAnalytics(String doctorId, String locationId, String role, Long fromDate , Long toDate)
 	{
 		NutritionGoalAnalytics nutritionGoalAnalytics = null;
 		try {
 			nutritionGoalAnalytics = new NutritionGoalAnalytics();
 			nutritionGoalAnalytics
-					.setReferredCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.REFERRED.getType()));
+					.setReferredCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.REFERRED.getType(),  fromDate , toDate));
 			nutritionGoalAnalytics
-					.setAcceptedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.ADOPTED.getType()));
+					.setAcceptedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.ADOPTED.getType(),fromDate , toDate));
 			nutritionGoalAnalytics
-					.setOnHoldCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.ON_HOLD.getType()));
+					.setOnHoldCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.ON_HOLD.getType(),fromDate , toDate));
 			nutritionGoalAnalytics
-					.setRejectedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.REJECTED.getType()));
+					.setRejectedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.REJECTED.getType(),fromDate , toDate));
 			nutritionGoalAnalytics
-					.setCompletedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.COMPLETED.getType()));
+					.setCompletedCount(getGoalStatusCount(doctorId, locationId, role, GoalStatus.COMPLETED.getType(),fromDate , toDate));
 			nutritionGoalAnalytics.setMetGoalCount(
-					getGoalStatusCount(doctorId, locationId, role, GoalStatus.MET_GOALS.getType()));
+					getGoalStatusCount(doctorId, locationId, role, GoalStatus.MET_GOALS.getType(),fromDate , toDate));
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return nutritionGoalAnalytics;
 	}
 	
+	public Boolean changeStatus(String id, String regularityStatus, String goalStatus)
+	{
+		Boolean response = false;
+		NutritionReferenceCollection nutritionReferenceCollection = null;
+		try {
+			if(!DPDoctorUtils.anyStringEmpty(id))
+			{
+				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(id));
+				if(nutritionReferenceCollection != null)
+				{
+					if(!DPDoctorUtils.anyStringEmpty(regularityStatus))
+					{
+						nutritionReferenceCollection.setRegularityStatus(regularityStatus);
+					}
+					if(!DPDoctorUtils.anyStringEmpty(goalStatus))
+					{
+						nutritionReferenceCollection.setGoalStatus(goalStatus);
+						NutritionGoalStatusStampingCollection nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
+								.getByPatientDoctorLocationHospitalandStatus(nutritionReferenceCollection.getPatientId(),
+										nutritionReferenceCollection.getReferredDoctorId(),
+										nutritionReferenceCollection.getReferredLocationId(),
+										nutritionReferenceCollection.getReferredHospitalId(), goalStatus);
+						
+						if(nutritionGoalStatusStampingCollection != null)
+						{
+							nutritionGoalStatusStampingCollection.setUpdatedTime(new Date());
+							nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository.save(nutritionGoalStatusStampingCollection);
+						}
+						else
+						{
+							nutritionGoalStatusStampingCollection = new NutritionGoalStatusStampingCollection();
+							nutritionGoalStatusStampingCollection.setDoctorId(nutritionReferenceCollection.getDoctorId());
+							nutritionGoalStatusStampingCollection.setLocationId(nutritionReferenceCollection.getLocationId());
+							nutritionGoalStatusStampingCollection.setHospitalId(nutritionReferenceCollection.getHospitalId());
+							nutritionGoalStatusStampingCollection.setReferredDoctorId(nutritionReferenceCollection.getReferredDoctorId());
+							nutritionGoalStatusStampingCollection.setReferredLocationId(nutritionReferenceCollection.getReferredLocationId());
+							nutritionGoalStatusStampingCollection.setReferredHospitalId(nutritionReferenceCollection.getReferredHospitalId());
+							nutritionGoalStatusStampingCollection.setPatientId(nutritionReferenceCollection.getPatientId());
+							nutritionGoalStatusStampingCollection.setGoalStatus(goalStatus);
+							nutritionGoalStatusStampingCollection.setCreatedTime(new Date());
+							nutritionGoalStatusStampingCollection.setUpdatedTime(new Date());
+							UserCollection userCollection = userRepository.findOne(nutritionReferenceCollection.getReferredDoctorId());
+							nutritionGoalStatusStampingCollection.setCreatedBy(userCollection.getCreatedBy());
+							nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository.save(nutritionGoalStatusStampingCollection);
+						}
+					}
+					response = true;
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
+	}
 	
 	
-	private Long getGoalStatusCount(String doctorId, String locationId,String role, String status)
+	public NutritionReferenceResponse getNutritionReferenceResposneById(String id)
+	{
+		NutritionReferenceResponse response = null;
+		NutritionReferenceCollection nutritionReferenceCollection = null;
+		try {
+			if(!DPDoctorUtils.anyStringEmpty(id))
+			{
+				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(id));
+				if(nutritionReferenceCollection != null)
+				{
+					response = new NutritionReferenceResponse();
+					BeanUtil.map(nutritionReferenceCollection, response);
+					LocationCollection locationCollection = locationRepository.findOne(new ObjectId(response.getHospitalId()));
+					if(locationCollection != null)
+					{
+						response.setLocationName(locationCollection.getLocationName());
+					}
+					UserCollection userCollection = userRepository.findOne(new ObjectId(response.getLocationId()));
+					if(userCollection != null)
+					{
+						response.setDoctorName(userCollection.getFirstName());
+					}
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()), new ObjectId(response.getHospitalId())); 
+					if(patientCollection != null)
+					{
+						UserCollection patient = userRepository.findOne(patientCollection.getUserId());
+						PatientShortCard patientCard = new PatientShortCard();
+						BeanUtil.map(patient,patientCard);
+						BeanUtil.map(patientCollection, patientCard);
+						response.setPatient(patientCard);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+		return response;
+	}
+	
+	private Long getGoalStatusCount(String doctorId, String locationId,String role, String status , Long fromDate , Long toDate)
 	{
 		
 		Long count = 0l;
@@ -255,7 +356,7 @@ public class NutritionServiceImpl implements NutritionService{
 			
 			Query query = new Query();
 			query.addCriteria(criteria);
-			count = mongoOperations.count(query, NutritionReferenceCollection.class);
+			count = mongoOperations.count(query, NutritionGoalStatusStampingCollection.class);
 		}
 			catch (Exception e) {
 			// TODO: handle exception

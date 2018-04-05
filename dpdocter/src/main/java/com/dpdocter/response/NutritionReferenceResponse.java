@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.RegularityStatus;
 
-public class NutritionReferenceResponse extends GenericCollection{
+public class NutritionReferenceResponse extends GenericCollection {
 
 	private String id;
 	private String doctorId;
@@ -18,6 +20,8 @@ public class NutritionReferenceResponse extends GenericCollection{
 	private String doctorName;
 	private String locationName;
 	private PatientShortCard patient;
+	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
+	private String goalStatus = GoalStatus.REFERRED.getType();
 
 	public String getId() {
 		return id;
@@ -99,13 +103,28 @@ public class NutritionReferenceResponse extends GenericCollection{
 		this.patient = patient;
 	}
 
-	
 	public String getLocationName() {
 		return locationName;
 	}
 
 	public void setLocationName(String locationName) {
 		this.locationName = locationName;
+	}
+
+	public String getRegularityStatus() {
+		return regularityStatus;
+	}
+
+	public void setRegularityStatus(String regularityStatus) {
+		this.regularityStatus = regularityStatus;
+	}
+
+	public String getGoalStatus() {
+		return goalStatus;
+	}
+
+	public void setGoalStatus(String goalStatus) {
+		this.goalStatus = goalStatus;
 	}
 
 	@Override
