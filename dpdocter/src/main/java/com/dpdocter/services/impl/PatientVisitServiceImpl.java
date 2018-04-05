@@ -674,7 +674,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		PrescriptionAddEditResponse prescriptionResponse = null;
 		PrescriptionAddEditResponseDetails editResponseDetails = null; 
-		if (request.getPrescription().getId() != null) {
+		if (request.getPrescription().getId() == null) {
 			prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription(), false, createdBy,
 					appointment);
 		}
