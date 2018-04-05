@@ -13,6 +13,7 @@ public interface NutritionService {
 	List<NutritionReferenceResponse> getNutritionReferenceList(String doctorId, String locationId, String role,
 			int page, int size);
 
-	NutritionGoalAnalytics getGoalAnalytics(String doctorId, String locationId, String role);
+	NutritionGoalAnalytics getGoalAnalytics(String doctorId, String locationId, String role, Long fromDate,
+			Long toDate);
 
 }
