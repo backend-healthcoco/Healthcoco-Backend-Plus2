@@ -78,4 +78,6 @@ public interface DischargeSummaryService {
 
 	public String downloadFlowSheet(String id, Boolean byFlowsheetId);
 
+	String downloadFlowSheet(String flowSheetId);
+
 }

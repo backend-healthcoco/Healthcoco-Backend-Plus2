@@ -511,17 +511,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public String downloadFlowSheet(String id, Boolean byFlowsheetId) {
+	public String downloadFlowSheet(String flowSheetId) {
 		String response = null;
 
 		try {
 
-			FlowsheetCollection flowsheetCollection = null;
-			if (byFlowsheetId) {
-				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(id));
-			} else {
-				flowsheetCollection = flowsheetRepository.findByDischargeSummaryId(new ObjectId(id));
-			}
+			FlowsheetCollection flowsheetCollection = flowsheetRepository.findOne(new ObjectId(flowSheetId));
 
 			if (flowsheetCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
@@ -2433,6 +2428,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			} else {
 				flowsheetCollection = new FlowsheetCollection();
 				flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
+
 				flowsheetCollection.setCreatedTime(new Date());
 				if (userCollection != null) {
 					flowsheetCollection.setCreatedBy(
@@ -2651,8 +2647,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, flowsheetCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-FLOWSHEET-"
-				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueId()) ? flowsheetCollection.getUniqueId()
-						: "")
+				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueId())
+						? flowsheetCollection.getUniqueId() : "")
 				+ new Date().getTime();
 
 		String layout = printSettings != null
@@ -2678,6 +2674,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		return response;
 
+	}
+
+	@Override
+	public String downloadFlowSheet(String id, Boolean byFlowsheetId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
