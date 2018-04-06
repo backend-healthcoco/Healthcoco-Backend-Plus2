@@ -361,7 +361,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (getDataFromElasticSearch(id) != null)
 						return getDataFromElasticSearch(id);
 					else
-						return null;
+						return new ArrayList<Code>();
 				}
 
 				public Map<String, List<Code>> loadAll(Iterable<? extends String> keys) {
