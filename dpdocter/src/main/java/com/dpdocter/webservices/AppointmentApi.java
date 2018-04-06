@@ -274,10 +274,11 @@ public class AppointmentApi {
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
-			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime) {
+			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime,
+			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb) {
 
 		List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status, sortBy, fromTime, toTime);
+				page, size, updatedTime, status, sortBy, fromTime, toTime, isWeb);
 		Response<Appointment> response = new Response<Appointment>();
 		response.setDataList(appointment);
 		return response;

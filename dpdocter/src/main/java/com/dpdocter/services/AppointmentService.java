@@ -39,7 +39,7 @@ public interface AppointmentService {
 
 	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime);
+			String toTime, Boolean isWeb);
 
 	List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
