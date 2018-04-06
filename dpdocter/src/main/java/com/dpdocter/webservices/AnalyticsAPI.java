@@ -27,6 +27,7 @@ import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
 import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
+import com.dpdocter.response.DoctorVisitAnalyticResponse;
 import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
@@ -339,7 +340,7 @@ public class AnalyticsAPI {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "T locationId, hospitalId should not be empty");
+			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
 		}
 
 		DoctorprescriptionAnalyticResponse data = analyticsService.getPrescriptionAnalytic(doctorId, locationId,
@@ -365,6 +366,23 @@ public class AnalyticsAPI {
 				doctorId, locationId, hospitalId, fromDate, toDate, type, searchTerm);
 		Response<DoctorPrescriptionItemAnalyticResponse> response = new Response<DoctorPrescriptionItemAnalyticResponse>();
 		response.setDataList(data);
+		return response;
+	}
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_VISIT_ANALYTIC)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_VISIT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_PATIENT_VISIT_ANALYTIC)
+	public Response<DoctorVisitAnalyticResponse> getPatintVisitAnalytic(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
+		}
+
+		DoctorVisitAnalyticResponse data = analyticsService.getVisitAnalytic(doctorId, locationId, hospitalId, fromDate,
+				toDate);
+		Response<DoctorVisitAnalyticResponse> response = new Response<DoctorVisitAnalyticResponse>();
+		response.setData(data);
 		return response;
 	}
 
