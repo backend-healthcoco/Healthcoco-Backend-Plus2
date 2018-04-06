@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -77,13 +78,13 @@ public class NutritionAPI {
 	@GET
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS, notes = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS)
 	public Response<NutritionGoalAnalytics> getNutritionAnalytics(@QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId , @QueryParam("role") String role ) {
+			@QueryParam("locationId") String locationId , @QueryParam("role") String role ,@DefaultValue("0") @QueryParam("fromDate") Long fromDate ,@QueryParam("toDate") Long toDate ) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<NutritionGoalAnalytics> response = new Response<NutritionGoalAnalytics>();
-		response.setData(nutritionService.getGoalAnalytics(doctorId, locationId, role));
+		response.setData(nutritionService.getGoalAnalytics(doctorId, locationId, role, fromDate, toDate));
 		return response;
 	}
 

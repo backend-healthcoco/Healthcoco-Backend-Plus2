@@ -353,6 +353,12 @@ public class NutritionServiceImpl implements NutritionService{
 			
 			criteria.and("goalStatus").is(status);
 			
+			if (toDate != null) {
+				criteria.and("updatedTime").gte(new Date(fromDate)).lte(DPDoctorUtils.getEndTime(new Date(toDate)));
+			} else {
+				criteria.and("updatedTime").gte(new Date(fromDate));
+			}
+			
 			Query query = new Query();
 			query.addCriteria(criteria);
 			count = mongoOperations.count(query, NutritionGoalStatusStampingCollection.class);
