@@ -5441,10 +5441,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{stages}"));
 		jrDesignTextField
 				.setPrintWhenExpression(new JRDesignExpression("!$P{stages}.equals(null) && !$P{stages}.isEmpty() "));
-		jrDesignTextField.setX(25);
+		jrDesignTextField.setX(22);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(statusWidth);
+		jrDesignTextField.setWidth(columnWidth - 20);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
