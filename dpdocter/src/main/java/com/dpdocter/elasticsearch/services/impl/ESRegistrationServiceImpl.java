@@ -93,12 +93,11 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	public boolean addPatient(ESPatientDocument request) {
 		boolean response = false;
 		try {
-			if(!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
+			if (!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 				String localPatientNameFormatted = request.getLocalPatientName().replaceAll("[^a-zA-Z0-9]", "");
 				request.setLocalPatientNameFormatted(localPatientNameFormatted.toLowerCase());
 			}
-				
-			
+
 			esPatientRepository.save(request);
 			response = true;
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.PATIENT, true);
@@ -122,8 +121,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
-					.should(QueryBuilders
-							.queryStringQuery("localPatientNameFormatted:"+patientName+"*")
+					.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + "*" + patientName + "*")
 							.boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
@@ -257,8 +255,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 						BoolQueryBuilder queryBuilderForReference = new BoolQueryBuilder();
 
 						if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-							queryBuilderForReference.must(QueryBuilders
-									.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
+							queryBuilderForReference
+									.must(QueryBuilders.orQuery(
+											QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
 											QueryBuilders.termQuery("locationId", locationId)))
 									.must(QueryBuilders.orQuery(
 											QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
