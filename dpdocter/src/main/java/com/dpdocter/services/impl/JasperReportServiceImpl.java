@@ -1461,11 +1461,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(26);
 
 		Boolean showIntructions = (Boolean) parameters.get("showIntructions") != null
-				? (Boolean) parameters.get("showIntructions") : false;
+				? (Boolean) parameters.get("showIntructions")
+				: false;
 		Boolean showDirection = (Boolean) parameters.get("showDirection") != null
-				? (Boolean) parameters.get("showDirection") : false;
+				? (Boolean) parameters.get("showDirection")
+				: false;
 		String instructionAlign = parameters.get("instructionAlign") != null
-				? (String) parameters.get("instructionAlign") : "HORIZONTAL";
+				? (String) parameters.get("instructionAlign")
+				: "HORIZONTAL";
 		int drugWidth = 0, dosageWidth = 0, directionWidth = 0, durationWidth = 0, instructionWidth = 0;
 		if (showDirection != null && showIntructions != null) {
 			if (showDirection && showIntructions) {
@@ -1739,18 +1742,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 		}
 		/*
-		 * band = new JRDesignBand(); band.setHeight(20);
-		 * band.setPrintWhenExpression( new JRDesignExpression(
+		 * band = new JRDesignBand(); band.setHeight(20); band.setPrintWhenExpression(
+		 * new JRDesignExpression(
 		 * "!$F{genericNames}.equals( null ) && !$F{genericNames}.isEmpty()"));
 		 * jrDesignTextField = new JRDesignTextField();
-		 * jrDesignTextField.setExpression(new
-		 * JRDesignExpression("$F{genericNames}")); jrDesignTextField.setX(0);
-		 * jrDesignTextField.setY(0); jrDesignTextField.setHeight(18);
-		 * jrDesignTextField.setWidth(columnWidth);
+		 * jrDesignTextField.setExpression(new JRDesignExpression("$F{genericNames}"));
+		 * jrDesignTextField.setX(0); jrDesignTextField.setY(0);
+		 * jrDesignTextField.setHeight(18); jrDesignTextField.setWidth(columnWidth);
 		 * jrDesignTextField.setStretchWithOverflow(true);
-		 * jrDesignTextField.setMarkup("html");
-		 * band.addElement(jrDesignTextField); ((JRDesignSection)
-		 * jasperDesign.getDetailSection()).addBand(band);
+		 * jrDesignTextField.setMarkup("html"); band.addElement(jrDesignTextField);
+		 * ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		 */
 
 		band = new JRDesignBand();
@@ -4671,7 +4672,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		band = new JRDesignBand();
 		band.setHeight(10);
 
@@ -4752,6 +4753,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 		band.addElement(jrDesignTextField);
+
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		((JRDesignSection) jasperDesign.getDetailSection())
@@ -4934,7 +4936,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(2);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(245);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+
 		jrDesignTextField.setBold(false);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
@@ -5148,7 +5152,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
-		band.setHeight(15);
+		band.setHeight(2);
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -5159,7 +5163,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
-		band.setHeight(10);
+		band.setHeight(25);
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{stages}"));
+		jrDesignTextField
+				.setPrintWhenExpression(new JRDesignExpression("!$P{stages}.equals(null) && !$P{stages}.isEmpty() "));
+		jrDesignTextField.setX(25);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(statusWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setMarkup("html");
+		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
@@ -5539,7 +5555,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth((11 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			
+
 			xPoint = xPoint + (11 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{totalPaid}"));
@@ -5549,7 +5565,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			
+
 			xPoint = xPoint + (12 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{totalBalance}"));
@@ -5559,14 +5575,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			
+
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setX(0);
 			jrDesignLine.setY(0);
 			jrDesignLine.setHeight(1);
 			jrDesignLine.setWidth(columnWidth);
 			band.addElement(jrDesignLine);
-			
+
 			jasperDesignForSubreport.setColumnFooter(band);
 
 			JasperCompileManager.compileReportToFile(jasperDesignForSubreport,
@@ -5740,7 +5756,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 
 		Boolean showMobileNo = (Boolean) parameters.get("showMobileNo") != null
-				? (Boolean) parameters.get("showMobileNo") : false;
+				? (Boolean) parameters.get("showMobileNo")
+				: false;
 		Boolean showStatus = (Boolean) parameters.get("showStatus") != null ? (Boolean) parameters.get("showStatus")
 				: false;
 		Boolean showNotes = (Boolean) parameters.get("showNotes") != null ? (Boolean) parameters.get("showNotes")
