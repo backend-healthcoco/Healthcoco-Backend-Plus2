@@ -101,9 +101,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private boolean saveToInventory = false;
-	
+
 	@Field
 	private String labType = LabType.DIAGNOSTIC.getType();
+
 
 	public ObjectId getId() {
 		return id;
@@ -328,7 +329,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setSaveToInventory(boolean saveToInventory) {
 		this.saveToInventory = saveToInventory;
 	}
-	
+
 	public String getLabType() {
 		return labType;
 	}

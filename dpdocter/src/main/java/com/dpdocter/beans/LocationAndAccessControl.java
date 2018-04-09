@@ -69,6 +69,8 @@ public class LocationAndAccessControl {
 
 	private Boolean isDentalImagingLab = false;
 
+	private Boolean isMobileNumberOptional = false;
+
 	private List<Role> roles;
 
 	public String getId() {
@@ -325,6 +327,14 @@ public class LocationAndAccessControl {
 
 	public void setIsDentalImagingLab(Boolean isDentalImagingLab) {
 		this.isDentalImagingLab = isDentalImagingLab;
+	}
+
+	public Boolean getIsMobileNumberOptional() {
+		return isMobileNumberOptional;
+	}
+
+	public void setIsMobileNumberOptional(Boolean isMobileNumberOptional) {
+		this.isMobileNumberOptional = isMobileNumberOptional;
 	}
 
 	@Override
