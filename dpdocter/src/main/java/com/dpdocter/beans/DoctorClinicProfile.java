@@ -106,12 +106,14 @@ public class DoctorClinicProfile {
 	private String packageType = PackageType.ADVANCE.getType();
 
 	private String doctorSlugURL;
-	
+
 	private boolean showInventoryCount = false;
-	
+
 	private boolean showInventory = true;
-	
+
 	private boolean saveToInventory = false;
+
+	private Boolean isMobileNumberOptional = false;
 
 	public String getId() {
 		return id;
@@ -541,7 +543,13 @@ public class DoctorClinicProfile {
 	public void setSaveToInventory(boolean saveToInventory) {
 		this.saveToInventory = saveToInventory;
 	}
-	
-	
+
+	public Boolean getIsMobileNumberOptional() {
+		return isMobileNumberOptional;
+	}
+
+	public void setIsMobileNumberOptional(Boolean isMobileNumberOptional) {
+		this.isMobileNumberOptional = isMobileNumberOptional;
+	}
 
 }

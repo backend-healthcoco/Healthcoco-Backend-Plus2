@@ -146,6 +146,8 @@ public class LocationCollection extends GenericCollection {
 	private Boolean isDentalWorksLab = false;
 	@Field
 	private Boolean isDentalImagingLab = false;
+	@Field
+	private Boolean isMobileNumberOptional = false;
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;

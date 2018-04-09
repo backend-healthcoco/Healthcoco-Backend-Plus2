@@ -15,19 +15,19 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.PackageType;
 
-public class DoctorClinicProfileLookupResponse extends GenericCollection{
+public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private ObjectId id;
 
-    private ObjectId doctorId;
+	private ObjectId doctorId;
 
-    private ObjectId locationId;
+	private ObjectId locationId;
 
-    private Boolean isActivate = false;
+	private Boolean isActivate = false;
 
-    private Boolean isVerified = true;
+	private Boolean isVerified = true;
 
-    private Boolean discarded = false;
+	private Boolean discarded = false;
 
 	private String patientInitial = "P";
 
@@ -58,15 +58,15 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection{
 	private Boolean isSendBirthdaySMS = true;
 
 	private LocationCollection location;
-	
+
 	private HospitalCollection hospital;
-	
+
 	private DoctorCollection doctor;
-	
+
 	private UserCollection user;
-	
+
 	private String packageType;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
