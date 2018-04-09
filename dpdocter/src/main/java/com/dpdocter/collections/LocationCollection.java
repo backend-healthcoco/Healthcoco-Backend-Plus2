@@ -529,4 +529,12 @@ public class LocationCollection extends GenericCollection {
 		this.isDentalImagingLab = isDentalImagingLab;
 	}
 
+	public Boolean getIsMobileNumberOptional() {
+		return isMobileNumberOptional;
+	}
+
+	public void setIsMobileNumberOptional(Boolean isMobileNumberOptional) {
+		this.isMobileNumberOptional = isMobileNumberOptional;
+	}
+
 }
