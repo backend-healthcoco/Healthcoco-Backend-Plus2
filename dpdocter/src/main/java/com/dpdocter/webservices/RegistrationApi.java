@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.BloodGroup;
-import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ClinicLabProperties;
@@ -36,6 +35,7 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -1134,6 +1134,57 @@ public class RegistrationApi {
 		}
 		Response<UserAddress> response = new Response<UserAddress>();
 		response.setData(registrationService.deleteUserAddress(addressId, userId, mobileNumber, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.DELETE_PATIENT)
+	@DELETE
+	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_PATIENT, notes = PathProxy.RegistrationUrls.DELETE_PATIENT)
+	public Response<Boolean> deletePatient(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("patientId") String patientId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId & patientId could not null");
+
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.deletePatient(doctorId, locationId, hospitalId, patientId, discarded));
+		return response;
+	}
+
+	
+	@Path(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
+	public Response<PatientShortCard> getDeletedPatient(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
+
+		}
+		Response<PatientShortCard> response = new Response<PatientShortCard>();
+		response.setDataList(registrationService.getDeletedPatient(doctorId, locationId, hospitalId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
+	public Response<Boolean> updatePatientNumber(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("oldPatientId") String patientId,
+			@QueryParam("newPatientId") String newPatientId, @QueryParam("mobileNumber") String mobileNumber) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
+
+		}
+		
+		if (DPDoctorUtils.allStringsEmpty(newPatientId, mobileNumber)) {
+			throw new BusinessException(ServiceError.InvalidInput, "New PatientId and mobileNumber both cannot be null");
+
+		}
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.updatePatientNumber(doctorId, locationId, hospitalId, patientId, newPatientId, mobileNumber));
 		return response;
 	}
 }

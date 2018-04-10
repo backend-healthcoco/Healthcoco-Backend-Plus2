@@ -198,6 +198,12 @@ public interface PathProxy {
 		public static final String ADD_EDIT_USER_ADDRESS = "user/address/addEdit";
 
 		public static final String DELETE_USER_ADDRESS = "user/address/{addressId}/delete";
+		
+		public static final String DELETE_PATIENT = "/patient/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
+
+		public static final String GET_DELETED_PATIENT = "/patient/getDeleted/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String UPDATE_PATIENT_NUMBER = "/patient/{doctorId}/{locationId}/{hospitalId}/{oldPatientId}";
 
 	}
 

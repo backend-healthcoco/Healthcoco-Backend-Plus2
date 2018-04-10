@@ -35,6 +35,8 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +63,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -70,19 +73,35 @@ import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.beans.UserReminders;
+import com.dpdocter.collections.AdmitCardCollection;
+import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ConsentFormCollection;
+import com.dpdocter.collections.DeliveryReportsCollection;
+import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
+import com.dpdocter.collections.DoctorPatientDueAmountCollection;
+import com.dpdocter.collections.DoctorPatientInvoiceCollection;
+import com.dpdocter.collections.DoctorPatientLedgerCollection;
+import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FormContentCollection;
 import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.collections.HistoryCollection;
+import com.dpdocter.collections.IPDReportsCollection;
+import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.OPDReportsCollection;
+import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PatientTreatmentCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProfessionCollection;
@@ -4058,5 +4077,187 @@ public class RegistrationServiceImpl implements RegistrationService {
 				dynamicUIRepository.save(dynamicUICollection);
 			}
 		}
+	}
+	
+	@Override
+	public Boolean deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
+			Boolean discarded) {
+		Boolean response = false;
+		try {
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
+					.and("hospitalId").is(hospitalObjectId).and("userId").is(patientObjectId);
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+
+			List<PatientCollection> patientCollections = mongoTemplate
+					.aggregate(aggregation, PatientCollection.class, PatientCollection.class).getMappedResults();
+
+			if (patientCollections != null && !patientCollections.isEmpty()) {
+
+				criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
+						.and("hospitalId").is(hospitalObjectId).and("patientId").is(patientObjectId);
+
+				for (PatientCollection patientCollection : patientCollections) {
+					patientCollection.setIsPatientDiscarded(discarded);
+					patientCollection.setUpdatedTime(new Date());
+					patientRepository.save(patientCollection);
+
+					ESPatientDocument esPatientDocument = esPatientRepository
+							.findOne(patientCollection.getId().toString());
+					esPatientDocument.setIsPatientDiscarded(discarded);
+					esPatientDocument = esPatientRepository.save(esPatientDocument);
+					
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							PrescriptionCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							ClinicalNotesCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							PatientVisitCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							PatientTreatmentCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							HistoryCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							RecordsCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							DoctorPatientInvoiceCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							DoctorPatientReceiptCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							DischargeSummaryCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							AdmitCardCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							AppointmentCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							AppointmentBookedSlotCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							DoctorPatientLedgerCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							DoctorPatientDueAmountCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							IPDReportsCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							LabReportsCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							OPDReportsCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							OTReportsCollection.class);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
+							DeliveryReportsCollection.class);
+
+					response = true;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while deleting patient");
+		}
+		return response;
+	}
+
+	@Override
+	public List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId) {
+		List<PatientShortCard> response = null;
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
+					.and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").is(true);
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+
+			response = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientShortCard.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting deleted patient");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
+			String newPatientId, String mobileNumber) {
+		Boolean response = false;
+		try {
+			ObjectId doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId),
+					hospitalObjectId = new ObjectId(hospitalId), patientObjectId = new ObjectId(patientId);
+
+			if (!DPDoctorUtils.anyStringEmpty(newPatientId)) {
+				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+						patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+				patientCollection.setUserId(new ObjectId(newPatientId));
+				patientCollection.setUpdatedTime(new Date());
+				patientCollection = patientRepository.save(patientCollection);
+
+				ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
+				esPatientDocument.setUserId(newPatientId);
+				esPatientDocument = esPatientRepository.save(esPatientDocument);
+				response = true;
+			} else if (!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+				UserCollection userCollection = userRepository.findOne(patientObjectId);
+				if (userCollection != null) {
+					userCollection.setMobileNumber(mobileNumber);
+					userCollection.setUpdatedTime(new Date());
+					userCollection = userRepository.save(userCollection);
+
+					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+							patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+					patientCollection.setUpdatedTime(new Date());
+					patientCollection = patientRepository.save(patientCollection);
+
+					ESPatientDocument esPatientDocument = esPatientRepository
+							.findOne(patientCollection.getId().toString());
+					esPatientDocument.setMobileNumber(mobileNumber);
+					esPatientDocument = esPatientRepository.save(esPatientDocument);
+
+					response = true;
+				}
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number");
+		}
+		return response;
 	}
 }

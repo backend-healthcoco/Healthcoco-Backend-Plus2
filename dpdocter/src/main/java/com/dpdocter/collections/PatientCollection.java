@@ -120,6 +120,9 @@ public class PatientCollection extends GenericCollection {
 	@Field
 	private String PNUM;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -389,6 +392,14 @@ public class PatientCollection extends GenericCollection {
 		PNUM = pNUM;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
@@ -402,7 +413,7 @@ public class PatientCollection extends GenericCollection {
 				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", personalInformation=" + personalInformation
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
-				+ lifestyleQuestionAnswers + ", PNUM=" + PNUM + "]";
+				+ lifestyleQuestionAnswers + ", PNUM=" + PNUM + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

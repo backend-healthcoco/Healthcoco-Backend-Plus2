@@ -112,6 +112,12 @@ public class AppointmentCollection extends GenericCollection {
 	@Field
 	private String cancelledByProfile;
 
+	@Field
+	private String localPatientName;
+	
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
 	}
@@ -360,6 +366,22 @@ public class AppointmentCollection extends GenericCollection {
 		this.category = category;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -372,7 +394,8 @@ public class AppointmentCollection extends GenericCollection {
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
 				+ ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", category="
-				+ category + "]";
+				+ category + ", isPatientDiscarded=" + isPatientDiscarded + ", cancelledByProfile=" + cancelledByProfile
+				+ ", localPatientName=" + localPatientName + "]";
 	}
 
 }

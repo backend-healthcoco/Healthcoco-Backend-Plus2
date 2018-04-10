@@ -628,16 +628,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 				AppointmentCollection appointmentCollection = new AppointmentCollection();
 				BeanUtil.map(appointmentLookupResponse, appointmentCollection);
 				PatientCard patientCard = null;
-				List<PatientCard> patientCards = mongoTemplate
-						.aggregate(Aggregation.newAggregation(
-								Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
-										.and("locationId").is(new ObjectId(request.getLocationId())).and("hospitalId")
-										.is(new ObjectId(request.getHospitalId()))),
+				List<PatientCard> patientCards = null;
+				if(!DPDoctorUtils.allStringsEmpty(request.getPatientId())) {
+					patientCards = mongoTemplate
+							.aggregate(Aggregation.newAggregation(
+									Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
+									.and("locationId").is(new ObjectId(request.getLocationId())).and("hospitalId")
+									.is(new ObjectId(request.getHospitalId()))),
 								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
 								PatientCollection.class, PatientCard.class)
-						.getMappedResults();
-				if (patientCards != null && !patientCards.isEmpty())
-					patientCard = patientCards.get(0);
+								.getMappedResults();
+					if (patientCards != null && !patientCards.isEmpty())
+						patientCard = patientCards.get(0);
+					appointmentCollection.setLocalPatientName(patientCard.getLocalPatientName());
+				}else {
+					appointmentCollection.setLocalPatientName(request.getLocalPatientName());
+				}
 
 				final String doctorName = appointmentLookupResponse.getDoctor().getTitle() + " "
 						+ appointmentLookupResponse.getDoctor().getFirstName();
@@ -732,8 +738,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					Date _24HourDt = _24HourSDF.parse(_24HourTime);
 
-					final String patientName = patientCard.getLocalPatientName() != null
-							? patientCard.getLocalPatientName().split(" ")[0] : "";
+					final String patientName = (patientCard != null && patientCard.getLocalPatientName() != null)
+							? patientCard.getLocalPatientName().split(" ")[0] : 
+								(request.getLocalPatientName() != null ? request.getLocalPatientName().split(" ")[0]:"");
 					final String appointmentId = appointmentCollection.getAppointmentId();
 					final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 							+ sdf.format(appointmentCollection.getFromDate());
@@ -744,8 +751,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					// sendSMS after appointment is saved
 					final String id = appointmentCollection.getId().toString(),
-							patientEmailAddress = patientCard.getEmailAddress(),
-							patientMobileNumber = patientCard.getUser().getMobileNumber(),
+							patientEmailAddress = patientCard != null ? patientCard.getEmailAddress() : null,
+							patientMobileNumber = patientCard != null ? patientCard.getUser().getMobileNumber() : null,
 							doctorEmailAddress = appointmentLookupResponse.getDoctor().getEmailAddress(),
 							doctorMobileNumber = appointmentLookupResponse.getDoctor().getMobileNumber();
 					final DoctorFacility facility = (clinicProfileCollection != null)
@@ -789,15 +796,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				response = new Appointment();
 				BeanUtil.map(appointmentCollection, response);
-				patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
-				patientCard.getUser().setLocationId(patientCard.getLocationId());
-				patientCard.getUser().setHospitalId(patientCard.getHospitalId());
-				BeanUtil.map(patientCard.getUser(), patientCard);
-				patientCard.setUserId(patientCard.getUserId());
-				patientCard.setId(patientCard.getUserId());
-				patientCard.setColorCode(patientCard.getUser().getColorCode());
-				patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
-				patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+				if(patientCard != null) {
+					patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
+					patientCard.getUser().setLocationId(patientCard.getLocationId());
+					patientCard.getUser().setHospitalId(patientCard.getHospitalId());
+					BeanUtil.map(patientCard.getUser(), patientCard);
+					patientCard.setUserId(patientCard.getUserId());
+					patientCard.setId(patientCard.getUserId());
+					patientCard.setColorCode(patientCard.getUser().getColorCode());
+					patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+					patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+				}else {
+					patientCard = new PatientCard();
+					patientCard.setLocalPatientName(request.getLocalPatientName());
+				}
 				response.setPatient(patientCard);
 
 				response.setDoctorName(doctorName);
@@ -855,15 +867,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 			UserCollection userCollection = userRepository.findOne(doctorId);
 			LocationCollection locationCollection = locationRepository.findOne(locationId);
 			PatientCard patientCard = null;
-			List<PatientCard> patientCards = mongoTemplate
-					.aggregate(Aggregation.newAggregation(
-							Aggregation.match(new Criteria("userId").is(patientId).and("locationId").is(locationId)
-									.and("hospitalId").is(hospitalId)),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
-							PatientCollection.class, PatientCard.class)
-					.getMappedResults();
-			if (patientCards != null && !patientCards.isEmpty())
-				patientCard = patientCards.get(0);
+			List<PatientCard> patientCards = null;
+			
+			if(patientId != null) {
+				patientCards = mongoTemplate
+				.aggregate(Aggregation.newAggregation(
+						Aggregation.match(new Criteria("userId").is(patientId).and("locationId").is(locationId)
+								.and("hospitalId").is(hospitalId)),
+						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
+						PatientCollection.class, PatientCard.class)
+				.getMappedResults();
+				if (patientCards != null && !patientCards.isEmpty())
+					patientCard = patientCards.get(0);
+				request.setLocalPatientName(patientCard.getLocalPatientName());
+			}
 
 			AppointmentCollection appointmentCollection = null;
 
@@ -879,7 +896,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 			}
 
-			if (userCollection != null && locationCollection != null && patientCard != null) {
+			if (userCollection != null && locationCollection != null) {
 
 				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorId, locationId);
 
@@ -907,8 +924,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				Date _24HourDt = _24HourSDF.parse(_24HourTime);
 
-				final String patientName = patientCard.getLocalPatientName() != null
-						? patientCard.getLocalPatientName().split(" ")[0] : "";
+				final String patientName = (patientCard != null && patientCard.getLocalPatientName() != null)
+						? patientCard.getLocalPatientName().split(" ")[0] : 
+							(request.getLocalPatientName() != null ? request.getLocalPatientName().split(" ")[0]:"");
 				final String appointmentId = appointmentCollection.getAppointmentId();
 				final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 						+ sdf.format(appointmentCollection.getFromDate());
@@ -921,7 +939,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection.setState(AppointmentState.CONFIRM);
 					appointmentCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				} else {
-					appointmentCollection.setCreatedBy(patientCard.getLocalPatientName());
+					if(patientCard != null)appointmentCollection.setCreatedBy(patientCard.getLocalPatientName());
+					else appointmentCollection.setCreatedBy(request.getLocalPatientName());
+					
 					if (clinicProfileCollection != null && clinicProfileCollection.getFacility() != null
 							&& (clinicProfileCollection.getFacility().getType()
 									.equalsIgnoreCase(DoctorFacility.IBS.getType()))) {
@@ -930,7 +950,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setState(AppointmentState.NEW);
 					}
 
-					userFavouriteService.addRemoveFavourites(request.getPatientId(), request.getDoctorId(),
+					if(patientId != null)userFavouriteService.addRemoveFavourites(request.getPatientId(), request.getDoctorId(),
 							Resource.DOCTOR.getType(), request.getLocationId(), false);
 				}
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
@@ -946,8 +966,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				// sendSMS after appointment is saved
 
 				final String id = appointmentCollection.getId().toString(),
-						patientEmailAddress = patientCard.getEmailAddress(),
-						patientMobileNumber = patientCard.getUser().getMobileNumber(),
+						patientEmailAddress = patientCard != null ? patientCard.getEmailAddress() : null,
+						patientMobileNumber = patientCard != null ? patientCard.getUser().getMobileNumber() : null,
 						doctorEmailAddress = userCollection.getEmailAddress(),
 						doctorMobileNumber = userCollection.getMobileNumber();
 				final DoctorFacility facility = (clinicProfileCollection != null)
@@ -972,15 +992,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 					BeanUtil.map(appointmentCollection, response);
 
 					if (isFormattedResponseRequired) {
-						patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
-						patientCard.getUser().setLocationId(patientCard.getLocationId());
-						patientCard.getUser().setHospitalId(patientCard.getHospitalId());
-						BeanUtil.map(patientCard.getUser(), patientCard);
-						patientCard.setUserId(patientCard.getUserId());
-						patientCard.setId(patientCard.getUserId());
-						patientCard.setColorCode(patientCard.getUser().getColorCode());
-						patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
-						patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+						if(patientCard != null) {
+							patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
+							patientCard.getUser().setLocationId(patientCard.getLocationId());
+							patientCard.getUser().setHospitalId(patientCard.getHospitalId());
+							BeanUtil.map(patientCard.getUser(), patientCard);
+							patientCard.setUserId(patientCard.getUserId());
+							patientCard.setId(patientCard.getUserId());
+							patientCard.setColorCode(patientCard.getUser().getColorCode());
+							patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+							patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+						}else {
+							patientCard = new PatientCard();
+							patientCard.setLocalPatientName(request.getLocalPatientName());
+						}
 						response.setPatient(patientCard);
 						if (userCollection != null)
 							response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
@@ -1025,7 +1050,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			ObjectId hospitalId) {
 		ObjectId patientId = null;
 		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
-			if (request.getLocalPatientName() == null || request.getMobileNumber() == null) {
+			if(DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))return null;
+			
+			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
 			}
 			PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
@@ -1718,7 +1745,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 									.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
 									AppointmentCollection.class, AppointmentLookupResponse.class)
 							.getMappedResults();
-
 				} else {
 					appointmentLookupResponses = mongoTemplate
 							.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
