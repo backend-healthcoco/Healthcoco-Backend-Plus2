@@ -1,29 +1,24 @@
-package com.bean;
+package com.dpdocter.beans;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
 public class WorkHistory {
 	
 	private String Profession;
-	private String OffDays[][]={{"Sun","false"},
-			{"Mon","false"},
-			{"Tue","false"},
-			{"Wed","false"},
-			{"Thu","false"},
-			{"Fri","false"},
-			{"Sat","false"}}; 
-	
+	private OffDays offDays; 
 	private ArrayList<Date> WorkTo=new ArrayList<Date>();
 	private ArrayList<Date> WorkFrom=new ArrayList<Date>();
 	
-	public String[][] getOffDays() {
-		return OffDays;
+
+	public OffDays getOffDays() {
+		return offDays;
 	}
-	
-	public void setOffDays(String[][] offDays) {
-		    this.OffDays = offDays;
+
+	public void setOffDays(OffDays offDays) {
+		this.offDays = offDays;
 	}
 
 	public String getProfession() {
@@ -56,9 +51,10 @@ public class WorkHistory {
 
 	@Override
 	public String toString() {
-		return "WorkHistory [Profession=" + Profession + ", OffDays=" + Arrays.toString(OffDays) + ", WorkTo=" + WorkTo
-				+ ", WorkFrom=" + WorkFrom + "]";
+		return "WorkHistory [Profession=" + Profession + ", offDays=" + offDays + ", WorkTo=" + WorkTo + ", WorkFrom="
+				+ WorkFrom + "]";
 	}
+
 	
 
 }

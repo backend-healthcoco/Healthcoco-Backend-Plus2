@@ -1,60 +1,49 @@
-package com.bean;
+package com.dpdocter.beans;
 
 import java.util.Date;
 
-import com.Enum.SleepWhen;
+import com.dpdocter.enums.SleepWhen;
 
 public class Sleep {
 	
 	private Duration2 duration;
-	private Date SleepFrom;
-	private Date SleepTo;
+	private Date sleepFrom;
+	private Date sleepTo;
 	private SleepWhen sleepWhen;
-	
 	
 	public Duration2 getDuration() {
 		return duration;
 	}
-	
 	public void setDuration(Duration2 duration) {
-		 long diff = SleepTo.getTime() - SleepFrom.getTime();
-	     
-	     long diffMinutes = diff / (60 * 1000) % 60;
-	     long diffHours = diff / (60 * 60 * 1000);
-		 duration.setHours((int)diffHours);
-		 duration.setMinutes((int)diffMinutes);
+		this.duration = duration;
 	}
-	
-	
-	public SleepWhen getsleepWhen() {
+	public Date getSleepFrom() {
+		return sleepFrom;
+	}
+	public void setSleepFrom(Date sleepFrom) {
+		this.sleepFrom = sleepFrom;
+	}
+	public Date getSleepTo() {
+		return sleepTo;
+	}
+	public void setSleepTo(Date sleepTo) {
+		this.sleepTo = sleepTo;
+	}
+	public SleepWhen getSleepWhen() {
 		return sleepWhen;
 	}
-	
-	public void setsleepWhen(SleepWhen sleepwhen) {
-		this.sleepWhen = sleepwhen;
+	public void setSleepWhen(SleepWhen sleepWhen) {
+		this.sleepWhen = sleepWhen;
 	}
 	
-	public Date getSleepFrom() {
-		return SleepFrom;
-	}
-	
-	public void setSleepFrom(Date sleepFrom) {
-		SleepFrom = sleepFrom;
-	}
-	
-	public Date getSleepTo() {
-		return SleepTo;
-	}
-	
-	public void setSleepTo(Date sleepTo) {
-		SleepTo = sleepTo;
-	}
-
 	@Override
 	public String toString() {
-		return "Sleep [duration=" + duration + ", SleepFrom=" + SleepFrom + ", SleepTo=" + SleepTo + ", sleepWhen="
+		return "Sleep [duration=" + duration + ", sleepFrom=" + sleepFrom + ", sleepTo=" + sleepTo + ", sleepWhen="
 				+ sleepWhen + "]";
 	}
+	
+
+	
 	
 	
 

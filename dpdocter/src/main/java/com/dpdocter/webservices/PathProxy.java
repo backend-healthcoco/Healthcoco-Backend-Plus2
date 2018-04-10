@@ -1666,5 +1666,37 @@ public interface PathProxy {
 		public static final String SEARCH_DENTAL_WORKS = "/searchDentalWorks/{range}";
 
 	}
+	
+	public static final String NUTRITION_URL = BASE_URL + "/patientProfile";
+	
+	public interface NutritionUrls {
+		
+		public static final String ADD_PATIENT = "/addPatient";
+		public static final String GET_PATIENT = "/getPatient/{patientInfoId}";
+		public static final String GET_ALL_PATIENT = "/getAllPatients/{doctorId}";
+		public static final String ADD_EDIT_PATIENT_ACTIVITY = "/addEditPatientActivity";
+		public static final String ADD_EDIT_PATIENT_COMMUNITY = "/addEditPatientCommunity";
+		public static final String ADD_EDIT_PATIENT_FOOD_PREFERENCES = "/addEditPatientFoodPreferences";
+		public static final String ADD_EDIT_PATIENT_GEOGRAPHICAL_AREA = "/addEditPatientGeographicalArea";
+		public static final String ADD_EDIT_PATIENT_LAPTOP_USAGE = "/addEditPatientLaptopUsage";
+		public static final String ADD_EDIT_PATIENT_MEAL = "/addEditPatientMeal";
+		public static final String ADD_EDIT_PATIENT_MOBILE_PHONE_USAGE = "/addEditPatientMobilePhoneUsage";
+		public static final String ADD_EDIT_PATIENT_PRIMARY_DETAIL = "/addEditPatientPrimaryDetail";
+		public static final String ADD_EDIT_PATIENT_SLEEP = "/addEditPatientSleep";
+		public static final String ADD_EDIT_PATIENT_TV_USAGE = "/addEditPatientTvUsage";
+		public static final String ADD_EDIT_PATIENT_WORK_HISTORY = "/addEditPatientWorkHistory";
+		public static final String GET_PATIENT_ACTIVITY = "/getPatientActivity/{patientInfoId}";
+		public static final String GET_PATIENT_COMMUNITY = "/getPatientCommunity/{patientInfoId}";
+		public static final String GET_PATIENT_FOOD_PREFERENCES = "/getPatientFoodPreferences/{patientInfoId}";
+		public static final String GET_PATIENT_GEOGRAPHICAL_AREA = "/getArea/{patientInfoId}";
+		public static final String GET_PATIENT_LAPTOP_USAGE = "/getPatientLaptopUsage/{patientInfoId}";
+		public static final String GET_PATIENT_MEAL = "/getPatientMeal/{patientInfoId}";
+		public static final String GET_PATIENT_MOBILE_PHONE_USAGE = "/getPhoneUsage/{patientInfoId}";
+		public static final String GET_PATIENT_PRIMARY_DETAIL = "/getPatientPrimaryDetail/{patientInfoId}";
+		public static final String GET_PATIENT_SLEEP = "/getPatientSleep/{patientInfoId}";
+		public static final String GET_PATIENT_TV_USAGE = "/getPatientTvUsage/{patientInfoId}";
+		public static final String GET_PATIENT_WORK_HISTORY = "/getPatientWorkHistory/{patientInfoId}";
+		
+	}
 
 }

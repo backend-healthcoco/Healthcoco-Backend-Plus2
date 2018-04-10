@@ -1,4 +1,4 @@
-package com.bean;
+package com.dpdocter.beans;
 
 public class PatientInfo {
 	
@@ -42,6 +42,8 @@ public class PatientInfo {
 	private WorkHistory workHistory;
 	
  	private Boolean isPatientDiscarded = false;
+ 	
+ 	private String doctorId;
 
 	public String getId() {
 		return id;
@@ -158,14 +160,24 @@ public class PatientInfo {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	@Override
 	public String toString() {
-		return "PatientInfoCollection [id=" + id + ", patientID=" + patientId + ", activity=" + activity
-				+ ", community=" + community + ", foodPreferences=" + foodPreferences + ", geographicalArea="
-				+ geographicalArea + ", laptopUsage=" + laptopUsage + ", meal=" + meal + ", mobilePhoneUsage="
-				+ mobilePhoneUsage + ", primaryDetail=" + primaryDetail + ", sleep=" + sleep + ", tvUsage=" + tvUsage
-				+ ", workHistory=" + workHistory + "]";
+		return "PatientInfo [id=" + id + ", patientId=" + patientId + ", activity=" + activity + ", community="
+				+ community + ", foodPreferences=" + foodPreferences + ", geographicalArea=" + geographicalArea
+				+ ", laptopUsage=" + laptopUsage + ", meal=" + meal + ", mobilePhoneUsage=" + mobilePhoneUsage
+				+ ", primaryDetail=" + primaryDetail + ", sleep=" + sleep + ", tvUsage=" + tvUsage + ", workHistory="
+				+ workHistory + ", isPatientDiscarded=" + isPatientDiscarded + ", doctorId=" + doctorId + "]";
 	}
+
+	
 
 		
 

@@ -1,8 +1,8 @@
-package com.response;
+package com.dpdocter.response;
 
 import java.util.Date;
 
-import com.Enum.GenderType;
+import com.dpdocter.enums.GenderType;
 
 public class AddEditPrimaryDetailResponse {
 	

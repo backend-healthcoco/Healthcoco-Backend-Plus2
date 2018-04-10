@@ -1,4 +1,4 @@
-package com.bean;
+package com.dpdocter.beans;
 
 public class GeographicalArea {
 	

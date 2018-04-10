@@ -1,4 +1,4 @@
-package com.request;
+package com.dpdocter.request;
 
 public class AddEditCommunityRequest {
 	

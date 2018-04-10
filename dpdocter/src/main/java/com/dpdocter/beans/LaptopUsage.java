@@ -1,8 +1,8 @@
-package com.bean;
+package com.dpdocter.beans;
 
 public class LaptopUsage {
 	
-	private Integer hoursperday;
+	private Integer hoursperday=0;
 	private Boolean LaptopInBedroom;
 	
 	public int getHoursperday() {

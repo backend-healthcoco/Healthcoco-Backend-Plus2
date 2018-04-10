@@ -1,22 +1,15 @@
-package com.bean;
+package com.dpdocter.beans;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
-import com.Enum.LifeStyle;
+import com.dpdocter.enums.LifeStyle;
 
 public class Activity {
 	
 	private LifeStyle lifestyle;
-	private String ExerciseType[][]={{"Gym","false"} ,
-			{"Yoga","false"} ,
-			{"Walking","false"}  ,
-			{"Running","false"}  , 
-			{"Brisk Walk","false"}  ,
-			{"Cycling","false"}  
-			  ,{"Weight Lifting","false"} 
-			  , {"Swimming","false"}};
 
-	
+	private  ExerciseType exerciseType;
 
 	public LifeStyle getLifestyle() {
 		return lifestyle;
@@ -26,17 +19,17 @@ public class Activity {
 		this.lifestyle = lifestyle;
 	}
 
-	public String[][] getExerciseType() {
-		return ExerciseType;
+	public ExerciseType getExerciseType() {
+		return exerciseType;
 	}
 
-	public void setExerciseType(String[][] exerciseType) {
-		ExerciseType = exerciseType;
+	public void setExerciseType(ExerciseType exerciseType) {
+		this.exerciseType = exerciseType;
 	}
 
 	@Override
 	public String toString() {
-		return "Activity [lifestyle=" + lifestyle + ", ExerciseType=" + Arrays.toString(ExerciseType) + "]";
+		return "Activity [lifestyle=" + lifestyle + ", exerciseType=" + exerciseType + "]";
 	}
 	
 

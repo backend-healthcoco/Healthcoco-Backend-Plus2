@@ -1,4 +1,4 @@
-package com.bean;
+package com.dpdocter.beans;
 
 import java.util.ArrayList;
 import java.util.Date;

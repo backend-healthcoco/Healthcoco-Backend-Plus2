@@ -1,36 +1,24 @@
-package com.bean;
+package com.dpdocter.beans;
 
-import java.util.Arrays;
-
-public class FoodPreferences {
+public class FoodPreferences { 
 	
-	private String FoodPref[][]={{"Veg","false"},
-			{"Grains","false"},
-			{"Milk","false"},
-			{"Egg","false"},
-			{"Fish","false"},
-			{"Meat","false"},
-			{"Sea Food","false"},
-			{"Honey","false"}}; 
-	
-	
+		
+		private FoodPref foodpref;
 
-	public String[][] getFoodPref() {
-		return FoodPref;
-	}
+		public FoodPref getFoodpref() {
+			return foodpref;
+		}
 
+		public void setFoodpref(FoodPref foodpref) {
+			this.foodpref = foodpref;
+		}
 
-
-	public void setFoodPref(String[][] foodPref) {
-		FoodPref = foodPref;
-	}
-
-
-
-	@Override
-	public String toString() {
-		return "FoodPreferences [FoodPref=" + Arrays.toString(FoodPref) + "]";
-	}
-	
+		@Override
+		public String toString() {
+			return "FoodPreferences [foodpref=" + foodpref + "]";
+		}
+		
+		
+		
 
 }

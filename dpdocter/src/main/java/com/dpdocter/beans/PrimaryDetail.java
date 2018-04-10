@@ -1,20 +1,17 @@
-package com.bean;
+package com.dpdocter.beans;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import com.Enum.GenderType;
+import com.dpdocter.enums.GenderType;
 
 public class PrimaryDetail {
 	
-	 
-	private String id;
-	 
 	private String name;
 	private String mobilenumber;
 	private Date DateOfBirth;
 	private GenderType gender;
-	private Integer age;
+	private Integer age=0;
 	
 	
 	public String getName() {
@@ -41,14 +38,17 @@ public class PrimaryDetail {
 	public void setGender(GenderType gender) {
 		this.gender = gender;
 	}
-	public int getAge(Date dateOfBirth) {
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
 		
 		Calendar today = Calendar.getInstance();
 	    Calendar birthDate = Calendar.getInstance();
 
 	     age = 0;
 
-	    birthDate.setTime(dateOfBirth);
+	    birthDate.setTime(this.getDateOfBirth());
 	    if (birthDate.after(today)) {
 	        throw new IllegalArgumentException("Can't be born in the future");
 	    }
@@ -65,23 +65,14 @@ public class PrimaryDetail {
 	              (birthDate.get(Calendar.DAY_OF_MONTH) > today.get(Calendar.DAY_OF_MONTH ))){
 	        age--;
 	    }
-		
-		
-		return age;
-	}
-	public void setAge(int age) {
-		
-		this.age = age;
-	}
-	public String getId() {
-		// TODO Auto-generated method stub
-		return id;
+	    
+	    this.age = age;
 	}
 	
 	
 	@Override
 	public String toString() {
-		return "PrimaryDetail [id=" + id + ", name=" + name + ", mobilenumber=" + mobilenumber + ", DateOfBirth="
+		return "PrimaryDetail [name=" + name + ", mobilenumber=" + mobilenumber + ", DateOfBirth="
 				+ DateOfBirth + ", gender=" + gender + ", age=" + age + "]";
 	}
 	

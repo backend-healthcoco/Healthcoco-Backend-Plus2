@@ -1,8 +1,8 @@
-package com.request;
+package com.dpdocter.request;
 
 import java.util.Date;
 
-import com.Enum.GenderType;
+import com.dpdocter.enums.GenderType;
 
 public class AddEditPrimaryDetailRequest {
 	

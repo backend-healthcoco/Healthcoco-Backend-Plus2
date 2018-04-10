@@ -1,4 +1,4 @@
-package com.response;
+package com.dpdocter.response;
 
 public class AddEditCommunityResponse {
 	

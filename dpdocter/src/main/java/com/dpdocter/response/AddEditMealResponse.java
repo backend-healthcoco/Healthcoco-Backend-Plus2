@@ -1,9 +1,9 @@
-package com.response;
+package com.dpdocter.response;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.Enum.MealType;
+import com.dpdocter.enums.MealType;
 
 public class AddEditMealResponse {
 	

@@ -1,4 +1,4 @@
-package com.Enum;
+package com.dpdocter.enums;
 
 public enum MealType {
 	

@@ -1,9 +1,11 @@
-package com.bean;
+package com.dpdocter.beans;
+
+
 
 public class Duration2 {
 	
-	private  Integer hours;
-	private  Integer minutes;
+	private  Integer hours=0;
+	private  Integer minutes=0;
 	
 	public Integer getHours() {
 		return hours;

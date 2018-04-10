@@ -1,21 +1,21 @@
-package com.collection;
+package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.bean.Activity;
-import com.bean.Community;
-import com.bean.FoodPreferences;
-import com.bean.GeographicalArea;
-import com.bean.LaptopUsage;
-import com.bean.Meal;
-import com.bean.MobilePhoneUsage;
-import com.bean.PrimaryDetail;
-import com.bean.Sleep;
-import com.bean.TvUsage;
-import com.bean.WorkHistory;
+import com.dpdocter.beans.Activity;
+import com.dpdocter.beans.Community;
+import com.dpdocter.beans.FoodPreferences;
+import com.dpdocter.beans.GeographicalArea;
+import com.dpdocter.beans.LaptopUsage;
+import com.dpdocter.beans.Meal;
+import com.dpdocter.beans.MobilePhoneUsage;
+import com.dpdocter.beans.PrimaryDetail;
+import com.dpdocter.beans.Sleep;
+import com.dpdocter.beans.TvUsage;
+import com.dpdocter.beans.WorkHistory;
 
 @Document(collection = "patient_info_cl")
 public class PatientInfoCollection  {
@@ -23,6 +23,17 @@ public class PatientInfoCollection  {
 	@Id
 	private ObjectId id;
 	
+	@Field
+	private ObjectId doctorId;
+	
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	@Field
 	private ObjectId patientId;
 	
@@ -181,12 +192,17 @@ public class PatientInfoCollection  {
 
 	@Override
 	public String toString() {
-		return "PatientInfoCollection [id=" + id + ", patientID=" + patientId + ", activity=" + activity
-				+ ", community=" + community + ", foodPreferences=" + foodPreferences + ", geographicalArea="
+		return "PatientInfoCollection [id=" + id + ", doctorId=" + doctorId + ", patientId=" + patientId + ", activity="
+				+ activity + ", community=" + community + ", foodPreferences=" + foodPreferences + ", geographicalArea="
 				+ geographicalArea + ", laptopUsage=" + laptopUsage + ", meal=" + meal + ", mobilePhoneUsage="
 				+ mobilePhoneUsage + ", primaryDetail=" + primaryDetail + ", sleep=" + sleep + ", tvUsage=" + tvUsage
-				+ ", workHistory=" + workHistory + "]";
+				+ ", workHistory=" + workHistory + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
+	
+
+
+	
 
 	
 

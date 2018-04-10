@@ -1,9 +1,9 @@
-package com.request;
+package com.dpdocter.request;
 
 import java.util.Date;
 
-import com.Enum.SleepWhen;
-import com.bean.Duration2;
+import com.dpdocter.enums.SleepWhen;
+import com.dpdocter.beans.Duration2;
 
 public class AddEditSleepRequest {
 	

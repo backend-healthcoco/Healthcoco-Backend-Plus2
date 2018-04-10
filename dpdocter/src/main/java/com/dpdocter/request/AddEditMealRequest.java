@@ -1,9 +1,9 @@
-package com.request;
+package com.dpdocter.request;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.Enum.MealType;
+import com.dpdocter.enums.MealType;
 
 public class AddEditMealRequest {
 	
