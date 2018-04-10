@@ -4,6 +4,7 @@ import java.awt.print.Book;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -39,6 +41,8 @@ import com.dpdocter.request.ExportRequest;
 import com.dpdocter.services.DownloadDateServices;
 import com.mongodb.BasicDBObject;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class DownloadDataServiceImpl implements DownloadDateServices{
 
@@ -46,6 +50,13 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 	
 	@Autowired
 	DownloadDataRequestRepository downloadDataRequestRepository;
+	
+	private static final String COMMA_DELIMITER = ",";
+
+	private static final String NEW_LINE_SEPARATOR = "\n";
+
+//	@Value(value = "${patients.data.file}")
+	private String PATIENTS_DATA_FILE;
 	
 	@Autowired
 	MongoTemplate mongoTemplate;
@@ -97,7 +108,8 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 
 	private MailAttachment generatePatientData(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId){
 		MailAttachment mailAttachment = new MailAttachment();
-		Workbook workbook = new HSSFWorkbook();
+//		Workbook workbook = new HSSFWorkbook();
+		FileWriter fileWriter = null;
 		try {
 			Criteria criteria = new Criteria("locationId").is(locationId).and("hospitalId").is(hospitalId).and("doctorId").is(doctorId);
 			
@@ -153,7 +165,7 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 									.append("PID", new BasicDBObject("$first","$PID"))
 									.append("localPatientName", new BasicDBObject("$first","$localPatientName"))
-									.append("mobileNumber", new BasicDBObject("$first","$user.mobileNumber"))
+									.append("mobileNumber", new BasicDBObject("$first","$mobileNumber"))
 									.append("emailAddress", new BasicDBObject("$first","$emailAddress"))
 									.append("secMobile", new BasicDBObject("$first","$secMobile"))
 									.append("gender", new BasicDBObject("$first","$gender"))
@@ -177,26 +189,28 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 			List<PatientDownloadData> patientDownloadDatas = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientDownloadData.class).getMappedResults();
 			
 			
-		    Sheet sheet = workbook.createSheet();
-		 
+//		    Sheet sheet = workbook.createSheet();
+			fileWriter = new FileWriter("/Users/nehakariya/Patients.csv");
+			
+			
 		    int rowCount = 0;
-		    Row headerRow = sheet.createRow(++rowCount);
-		    writeHeader(PatientDownloadData.class, headerRow);
+//		    Row headerRow = sheet.createRow(++rowCount);
+		    writeHeader(PatientDownloadData.class, fileWriter);
 		    
 		    for (PatientDownloadData patientDownloadData : patientDownloadDatas) {
 		    		if(patientDownloadData.getDob() != null) {
 		    			patientDownloadData.setDateOfBirth(patientDownloadData.getDob().getDays() +"/"+ patientDownloadData.getDob().getMonths()+"/" + patientDownloadData.getDob().getYears() +"/");
 		    			patientDownloadData.setAge(patientDownloadData.getDob().getAge().getYears()+"");
 		    		}
-		        Row row = sheet.createRow(++rowCount);
-		        writeData(patientDownloadData, row);
+//		        Row row = sheet.createRow(++rowCount);
+		        writeData(patientDownloadData, fileWriter);
 		    }
 		 
-		    File patientFile = new File("/Users/nehakariya/Patients.xlsx");
-		    		patientFile.createNewFile();
+//		    File patientFile = new File("/Users/nehakariya/Patients.xlsx");
+//		    		patientFile.createNewFile();
 		    
-		    FileOutputStream outputStream = new FileOutputStream(patientFile);
-		    workbook.write(outputStream);
+//		    FileOutputStream outputStream = new FileOutputStream(patientFile);
+//		    workbook.write(outputStream);
 		    
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -204,7 +218,10 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 			throw new BusinessException(ServiceError.Unknown, "Error downloading patient data");
 		}finally {
 			try {
-				workbook.close();
+				if (fileWriter != null) {
+					fileWriter.flush();
+					fileWriter.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -214,25 +231,40 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 		
 	}
 
-	private void writeHeader(Class classOfObject, Row row) {
+	private void writeHeader(Class classOfObject, FileWriter fileWriter) throws IOException {
 		int index = 1;
+		String headerString = "";
 	    for (Field field : classOfObject.getDeclaredFields()) {
 	        field.setAccessible(true);
-	    		Cell cell = row.createCell(++index);
-		    cell.setCellValue(field.getName());
+	        
+	        if(!field.getName().equalsIgnoreCase("dob")) {
+	        		if(!DPDoctorUtils.anyStringEmpty(headerString)) headerString = headerString + field.getName();
+		        else headerString = headerString + COMMA_DELIMITER + field.getName();
+	        }
+	        
+//	    		Cell cell = fileWriter.createCell(++index);
+//		    cell.setCellValue(field.getName());
 	    }
-		
+	    fileWriter.append(headerString);
+	    fileWriter.append(NEW_LINE_SEPARATOR);
 	}
 
-	private void writeData(Object obj, Row row) throws IllegalArgumentException, IllegalAccessException {
-		
+	private void writeData(Object obj, FileWriter fileWriter) throws IllegalArgumentException, IllegalAccessException, IOException {
+		String dataString = "";
 		int index = 1;
 	    for (Field field : obj.getClass().getDeclaredFields()) {
 	    		field.setAccessible(true);
-	    		Cell cell = row.createCell(index);
-		    cell.setCellValue(field.get(obj)+"");
+	    		if(!field.getName().equalsIgnoreCase("dob")) {
+		    		if(DPDoctorUtils.anyStringEmpty(dataString)) dataString = dataString + field.get(obj);
+			    else dataString = dataString + COMMA_DELIMITER + field.get(obj);
+	    		}
+//	    		Cell cell = fileWriter.createCell(index);
+//		    cell.setCellValue(field.get(obj)+"");
 	    }
-		
+	    dataString.replaceAll("\\[", "\"");
+	    dataString.replaceAll("\\]", "\"");
+	    fileWriter.append(dataString);
+	    fileWriter.append(NEW_LINE_SEPARATOR);
 	}
 	
 }

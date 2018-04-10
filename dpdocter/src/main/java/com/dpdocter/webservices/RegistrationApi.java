@@ -1172,7 +1172,7 @@ public class RegistrationApi {
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
 	public Response<Boolean> updatePatientNumber(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("oldPatientId") String patientId,
 			@QueryParam("newPatientId") String newPatientId, @QueryParam("mobileNumber") String mobileNumber) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");

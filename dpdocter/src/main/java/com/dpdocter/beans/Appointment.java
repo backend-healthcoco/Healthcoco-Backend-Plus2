@@ -89,6 +89,8 @@ public class Appointment extends GenericCollection {
     
 	private String cancelledByProfile;
     
+	private String localPatientName;
+	
 	public String getId() {
 		return id;
 	}
@@ -393,6 +395,22 @@ public class Appointment extends GenericCollection {
 		this.category = category;
 	}
 
+	public String getCancelledByProfile() {
+		return cancelledByProfile;
+	}
+
+	public void setCancelledByProfile(String cancelledByProfile) {
+		this.cancelledByProfile = cancelledByProfile;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -407,15 +425,7 @@ public class Appointment extends GenericCollection {
 				+ ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail
 				+ ", visitId=" + visitId + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor="
 				+ engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt="
-				+ checkedOutAt + ", count=" + count + ", category=" + category + "]";
+				+ checkedOutAt + ", count=" + count + ", category=" + category + ", cancelledByProfile="
+				+ cancelledByProfile + ", localPatientName=" + localPatientName + "]";
 	}
-
-	public String getCancelledByProfile() {
-		return cancelledByProfile;
-	}
-
-	public void setCancelledByProfile(String cancelledByProfile) {
-		this.cancelledByProfile = cancelledByProfile;
-	}
-
 }
