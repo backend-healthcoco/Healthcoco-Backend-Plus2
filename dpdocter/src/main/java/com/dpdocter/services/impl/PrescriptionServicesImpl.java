@@ -6880,7 +6880,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		else
 			drugCode = drugType.substring(0, 2) + drugName.substring(0, 2);
 		
-		List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(null).and("drugCode").regex("^" + drugCode, "i")),
+		List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(null)
+				.and("drugCode").regex("^" + drugCode, "i")),
 				Aggregation.sort(new Sort(Direction.DESC, "drugCode")), Aggregation.limit(1))
 				, DrugCollection.class, DrugCollection.class).getMappedResults();
 		DrugCollection drugCollection = null;

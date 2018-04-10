@@ -1231,7 +1231,7 @@ public interface PathProxy {
 
 		public static final String GET_BLOGS = "/getBlogs";
 
-		public static final String GET_BLOG_List = "/get";
+		public static final String GET_BLOG_LIST = "/get";
 
 		public static final String GET__MOST_LIKES_OR_VIEWED_BLOGS = "/getMostLIkesOrViewedBlogs";
 
@@ -1244,6 +1244,8 @@ public interface PathProxy {
 		public static final String GET_FEVOURITE_BLOGS = "/getFovourite";
 
 		public static final String LIKE_THE_BLOG = "/likeTheBlog/{blogId}/{userId}";
+
+		public static final String GET_BLOGS_BY_CATEGORY = "/";
 
 	}
 

@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,11 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Blog;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.collections.BlogCollection;
 import com.dpdocter.collections.BlogLikesCollection;
 import com.dpdocter.collections.FavouriteBlogsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.BlogCategoryType;
+import com.dpdocter.enums.BlogSuperCategoryType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -33,8 +36,11 @@ import com.dpdocter.repository.BlogRepository;
 import com.dpdocter.repository.FevouriteBlogsRepository;
 import com.dpdocter.repository.GridFsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.BlogCategoryWithPageSize;
+import com.dpdocter.request.BlogRequest;
 import com.dpdocter.response.BlogResponse;
 import com.dpdocter.services.BlogService;
+import com.mongodb.BasicDBObject;
 import com.mongodb.gridfs.GridFSDBFile;
 
 import common.util.web.DPDoctorUtils;
@@ -421,6 +427,137 @@ public class BlogServicesImpl implements BlogService {
 
 		return BlogCategoryType.values();
 
+	}
+
+	@Override
+	public List<BlogResponse> getBlogs(BlogRequest request) {
+		List<BlogResponse> response = null;
+		try {
+			
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(
+					new BasicDBObject("$project", new BasicDBObject("_id", "$id")
+							.append("title","$title")
+							.append("titleImage", new BasicDBObject("$cond", 
+									new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$titleImage", null)))
+									          .append("then", new BasicDBObject("$concat", Arrays.asList(imagePath, "$titleImage")))
+									          .append("else", null)))
+							.append("superCategory","$superCategory").append("category","$category")
+							.append("articleId","$articleId").append("isActive","$isActive")
+							.append("article","$article").append("noOfLikes","$noOfLikes")
+							.append("isliked",true).append("isFavourite",true)
+//							.append("blogLikesObject", new BasicDBObject("$cond",
+//													new BasicDBObject("if",
+//															new BasicDBObject("$and",
+//																	Arrays.asList(new BasicDBObject("$eq",
+//																	Arrays.asList("$blogLikesCollection.userId",
+//																			new ObjectId(request.getUserId()))),
+//															new BasicDBObject("$eq",
+//																	Arrays.asList("$blogLikesCollection.discarded",
+//																			false))))).append("then", "$blogLikesCollection")
+//																					.append("else", null)))
+							.append("views","$views")
+							.append("postBy","$postBy").append("discarded","$discarded")
+//							.append("favouriteBlogObject", new BasicDBObject("$cond",
+//									new BasicDBObject("if",
+//											new BasicDBObject("$and",
+//													Arrays.asList(new BasicDBObject("$eq",
+//													Arrays.asList("$favouriteBlogCollection.userId",
+//															new ObjectId(request.getUserId()))),
+//											new BasicDBObject("$eq",
+//													Arrays.asList("$favouriteBlogCollection.discarded",
+//															false))))).append("then", "$favouriteBlogCollection")
+//																	.append("else", null)))
+							.append("shortDesc","$shortDesc")
+							.append("metaKeyword","$metaKeyword").append("slugURL","$slugURL")
+							.append("adminCreatedTime","$adminCreatedTime").append("createdTime","$createdTime")
+							.append("updatedTime","$updatedTime").append("createdBy","$createdBy")
+							.append("updatedTime","$updatedTime").append("createdBy","$createdBy")));
+										
+			
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(
+					new BasicDBObject("$group", new BasicDBObject("_id", "$id")
+							.append("title", new BasicDBObject("$first","$title"))
+							.append("titleImage", new BasicDBObject("$first","$titleImage"))
+							.append("superCategory", new BasicDBObject("$first","$superCategory"))
+							.append("category", new BasicDBObject("$first","$category"))
+							.append("articleId", new BasicDBObject("$first","$articleId"))
+							.append("isActive", new BasicDBObject("$first","$isActive"))
+							.append("article", new BasicDBObject("$first","$article"))
+							.append("noOfLikes", new BasicDBObject("$first","$noOfLikes"))
+							.append("isliked", new BasicDBObject("$first","$isliked"))
+							.append("views", new BasicDBObject("$first","$views"))
+							.append("postBy", new BasicDBObject("$first","$postBy"))
+							.append("discarded", new BasicDBObject("$first","$discarded"))
+							.append("isFavourite", new BasicDBObject("$first","$isFavourite"))
+							.append("shortDesc",new BasicDBObject("$first", "$shortDesc"))
+							.append("metaKeyword",new BasicDBObject("$first","$metaKeyword"))
+							.append("slugURL",new BasicDBObject("$first", "$slugURL"))
+							.append("adminCreatedTime",new BasicDBObject("$first", "$adminCreatedTime"))
+							.append("createdTime", new BasicDBObject("$first","$createdTime"))
+							.append("updatedTime", new BasicDBObject("$first","$updatedTime"))
+							.append("createdBy", new BasicDBObject("$first","$createdBy"))));
+			
+			if(request.getBlogSuperCategories() != null && !request.getBlogSuperCategories().isEmpty()) {
+				Aggregation aggregation = null;
+				
+				Criteria criteria = new Criteria("discarded").is(false);
+
+				if (!DPDoctorUtils.anyStringEmpty(request.getTitle())) {
+					criteria = criteria.orOperator(new Criteria("title").regex("^" + request.getTitle(), "i"));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(request.getCategory())) {
+					criteria = criteria.and("category").is(request.getCategory());
+				}
+				
+				for(BlogCategoryWithPageSize blogCategoryWithPageSize : request.getBlogSuperCategories()) {
+					if(blogCategoryWithPageSize.getSize() > 0) {
+						criteria = criteria.and("superCategory").is(blogCategoryWithPageSize.getSuperCategory().getType());
+						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+//								Aggregation.lookup("blog_likes_cl", "_id", "blogId", "blogLikesCollection"),
+//								new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$blogLikesCollection")
+//														.append("preserveNullAndEmptyArrays", true))),
+//								Aggregation.match(new Criteria("blogLikesCollection.userId").is(new ObjectId(request.getUserId())).and("discarded").is(false)),
+							
+//								Aggregation.lookup("fevourite_Blogs_cl", "_id", "blogId", "favouriteBlogCollection"),
+//								new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$favouriteBlogCollection")
+//														.append("preserveNullAndEmptyArrays", true))),
+//								Aggregation.match(new Criteria("favouriteBlogCollection.userId").is(new ObjectId(request.getUserId())).and("discarded").is(false)),
+								projectOperation, groupOperation,
+								Aggregation.sort(Sort.Direction.DESC, "createdTime"), 
+								Aggregation.skip((blogCategoryWithPageSize.getPage()) * blogCategoryWithPageSize.getSize()),
+								Aggregation.limit(blogCategoryWithPageSize.getSize()));
+					}else {
+						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+//								Aggregation.lookup("blog_likes_cl", "_id", "blogId", "blogLikesCollection"),
+//								new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$blogLikesCollection")
+//														.append("preserveNullAndEmptyArrays", true))),
+////								Aggregation.match(new Criteria("blogLikesCollection.userId").is(new ObjectId(request.getUserId())).and("discarded").is(false)),
+//							
+//								Aggregation.lookup("fevourite_Blogs_cl", "_id", "blogId", "favouriteBlogCollection"),
+//								new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$favouriteBlogCollection")
+//														.append("preserveNullAndEmptyArrays", true))),
+//								Aggregation.match(new Criteria("favouriteBlogCollection.userId").is(new ObjectId(request.getUserId())).and("discarded").is(false)),
+								projectOperation, groupOperation,
+								Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+					}
+					List<Blog> blogs = mongoTemplate.aggregate(aggregation, BlogCollection.class, Blog.class).getMappedResults();
+					if(blogs != null && !blogs.isEmpty()) {
+						if(response == null)response = new ArrayList<BlogResponse>();
+						
+						BlogResponse blogResponse = new BlogResponse();
+						blogResponse.setBlogs(blogs);
+						blogResponse.setSuperCategory(blogCategoryWithPageSize.getSuperCategory());
+						response.add(blogResponse);
+					}
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error While Getting Blogs"+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error While Getting Blogs" + e.getMessage());
+
+		}
+		return response;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.Blog;
 import com.dpdocter.enums.BlogCategoryType;
+import com.dpdocter.request.BlogRequest;
 import com.dpdocter.response.BlogResponse;
 
 public interface BlogService {
@@ -21,4 +22,6 @@ public interface BlogService {
 	public List<Blog> getFevouriteBlogs(int size, int page, String category, String userId, String title);
 
 	public BlogCategoryType[] getBlogCategory();
+
+	public List<BlogResponse> getBlogs(BlogRequest request);
 }

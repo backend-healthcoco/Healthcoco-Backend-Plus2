@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.BlogCategoryType;
+import com.dpdocter.enums.BlogSuperCategoryType;
 
 @Document(collection = "blog_cl")
 public class BlogCollection extends GenericCollection {
@@ -23,6 +24,9 @@ public class BlogCollection extends GenericCollection {
 	@Field
 	private Boolean isActive = true;
 
+	@Field
+	private BlogSuperCategoryType superCategory;
+	
 	@Field
 	private BlogCategoryType category;
 
