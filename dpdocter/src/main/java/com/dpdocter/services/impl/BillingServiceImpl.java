@@ -2204,8 +2204,9 @@ public class BillingServiceImpl implements BillingService {
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
-				printSettings.getHospitalUId());
+				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				doctorPatientReceiptLookupResponses.get(0).getCreatedTime() != null
+				? doctorPatientReceiptLookupResponses.get(0).getCreatedTime() : new Date(), printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()));
 		String pdfName = (user != null ? user.getFirstName() : "") + "MULTIPLERECEIPT-" + new Date().getTime();
