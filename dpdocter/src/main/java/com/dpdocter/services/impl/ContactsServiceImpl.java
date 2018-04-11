@@ -919,10 +919,10 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			if (mobileNumbers.size() > 500) {
+			/*if (mobileNumbers.size() > 500) {
 				throw new BusinessException(ServiceError.NotAcceptable,
 						"Cannot send more messages to more than 500 patients. Please select other group or create new one.");
-			}
+			}*/
 
 			if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
 				status = true;
