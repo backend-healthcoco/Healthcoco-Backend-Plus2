@@ -4055,12 +4055,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				for (PatientCollection patientCollection : patientCollections) {
 					patientCollection.setIsPatientDiscarded(discarded);
+					patientCollection.setUpdatedTime(new Date());
 					patientRepository.save(patientCollection);
 
 					ESPatientDocument esPatientDocument = esPatientRepository
 							.findOne(patientCollection.getId().toString());
 					esPatientDocument.setIsPatientDiscarded(discarded);
-
+					esPatientDocument = esPatientRepository.save(esPatientDocument);
+					
 					mongoTemplate.updateMulti(new Query(criteria),
 							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
 							PrescriptionCollection.class);
@@ -4122,93 +4124,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					response = true;
 				}
 			}
-
-			// if (patientCollectionResponses != null &&
-			// !patientCollectionResponses.isEmpty())
-			// patientCard = patientCollectionResponses.get(0);
-			// if (patientCard != null && patientCard.getUser() != null) {
-			// Reference reference = null;
-			// if (patientCard.getReference() != null) {
-			//
-			// reference = new Reference();
-			// BeanUtil.map(patientCard.getReference(), reference);
-			//
-			// }
-			// patientCard.setReferredBy(null);
-			//
-			// registeredPatientDetails = new RegisteredPatientDetails();
-			//
-			// BeanUtil.map(patientCard, registeredPatientDetails);
-			// BeanUtil.map(patientCard.getUser(), registeredPatientDetails);
-			// registeredPatientDetails.setImageUrl(patientCard.getImageUrl());
-			// registeredPatientDetails.setThumbnailUrl(patientCard.getThumbnailUrl());
-			//
-			// registeredPatientDetails.setUserId(patientCard.getUser().getId().toString());
-			// registeredPatientDetails.setReferredBy(reference);
-			// Patient patient = new Patient();
-			// BeanUtil.map(patientCard, patient);
-			// patient.setPatientId(patientCard.getUserId());
-			//
-			// Integer prescriptionCount = 0, clinicalNotesCount = 0,
-			// recordsCount = 0;
-			// if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-			// prescriptionCount =
-			// prescriptionRepository.getPrescriptionCountForOtherDoctors(
-			// new ObjectId(patientCard.getDoctorId()),
-			// patientCard.getUser().getId(),
-			// new ObjectId(patientCard.getHospitalId()), new
-			// ObjectId(patientCard.getLocationId()));
-			// clinicalNotesCount =
-			// clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
-			// new ObjectId(patientCard.getDoctorId()),
-			// patientCard.getUser().getId(),
-			// new ObjectId(patientCard.getHospitalId()), new
-			// ObjectId(patientCard.getLocationId()));
-			// recordsCount = recordsRepository.getRecordsForOtherDoctors(new
-			// ObjectId(patientCard.getDoctorId()),
-			// patientCard.getUser().getId(), new
-			// ObjectId(patientCard.getHospitalId()),
-			// new ObjectId(patientCard.getLocationId()));
-			// } else {
-			// prescriptionCount =
-			// prescriptionRepository.getPrescriptionCountForOtherLocations(
-			// patientCard.getUser().getId(), new
-			// ObjectId(patientCard.getHospitalId()),
-			// new ObjectId(patientCard.getLocationId()));
-			// clinicalNotesCount =
-			// clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
-			// patientCard.getUser().getId(), new
-			// ObjectId(patientCard.getHospitalId()),
-			// new ObjectId(patientCard.getLocationId()));
-			// recordsCount =
-			// recordsRepository.getRecordsForOtherLocations(patientCard.getUser().getId(),
-			// new ObjectId(patientCard.getHospitalId()), new
-			// ObjectId(patientCard.getLocationId()));
-			// }
-			//
-			// if ((prescriptionCount != null && prescriptionCount > 0)
-			// || (clinicalNotesCount != null && clinicalNotesCount > 0)
-			// || (recordsCount != null && recordsCount > 0))
-			// patient.setIsDataAvailableWithOtherDoctor(true);
-			//
-			// patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId,
-			// locationId, hospitalId,
-			// patientCard.getUser().getId().toString()));
-			// registeredPatientDetails.setPatient(patient);
-			// registeredPatientDetails.setAddress(patientCard.getAddress());
-			// @SuppressWarnings("unchecked")
-			// Collection<ObjectId> groupIds =
-			// CollectionUtils.collect(patientCard.getPatientGroupCollections(),
-			// new BeanToPropertyValueTransformer("groupId"));
-			// if (groupIds != null && !groupIds.isEmpty()) {
-			// groups = mongoTemplate
-			// .aggregate(Aggregation.newAggregation(Aggregation.match(new
-			// Criteria("id").in(groupIds))),
-			// GroupCollection.class, Group.class)
-			// .getMappedResults();
-			// registeredPatientDetails.setGroups(groups);
-			// }
-			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
