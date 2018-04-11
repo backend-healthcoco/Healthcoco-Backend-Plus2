@@ -1429,6 +1429,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
 		List<String> specialities = null;
+		List<String> parentSpecialities = null;
 		List<DoctorRegistrationDetail> registrationDetails = null;
 		List<String> professionalMemberships = null;
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
@@ -1471,9 +1472,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						.findAll(doctorCollection.getSpecialities());
 				specialities = (List<String>) CollectionUtils.collect(specialityCollections,
 						new BeanToPropertyValueTransformer("superSpeciality"));
+				
+				parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
+						new BeanToPropertyValueTransformer("speciality"));
 
 				doctorProfile.setClinicProfile(clinicProfile);
 				doctorProfile.setSpecialities(specialities);
+				doctorProfile.setParentSpecialities(parentSpecialities);
 				// set medical councils using medical councils ids
 				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
 				if (doctorProfile.getRegistrationDetails() != null
