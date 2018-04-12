@@ -246,6 +246,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private EyePrescriptionRepository eyePrescriptionRepository;
+	
+	@Autowired
+	private ContactsService contactsService;
 
 	@Override
 	@Transactional
