@@ -1467,6 +1467,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				for (ESDoctorDocument doctor : doctors) {
 					doctorWEbSearch = new ESDoctorWEbSearch();
 					BeanUtil.map(doctor, doctorWEbSearch);
+					if (latitude != null && longitude != null && doctorWEbSearch.getLatitude() != null
+							&& doctorWEbSearch.getLongitude() != null) {
+						doctorWEbSearch.setDistance(
+								DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
+										doctorWEbSearch.getLatitude(), doctorWEbSearch.getLongitude(), "K"));
+					}
 					doctorList.add(doctorWEbSearch);
 				}
 				doctorResponse.setDoctors(doctorList);
@@ -1489,6 +1495,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (DPDoctorUtils.anyStringEmpty(city)) {
 				city = "Nagpur";
 			}
+			
+			
 			doctorResponse.setMetaData(doctorResponse.getMetaData() + StringUtils.capitalize(city));
 
 			doctorResponse.setCount(getDoctorCount(city, location, latitude, longitude, speciality, symptom, booking,

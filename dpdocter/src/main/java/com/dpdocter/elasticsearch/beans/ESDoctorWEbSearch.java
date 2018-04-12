@@ -67,6 +67,8 @@ public class ESDoctorWEbSearch {
 
 	private long rankingCount = 0;
 
+	private Double distance;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -297,6 +299,14 @@ public class ESDoctorWEbSearch {
 
 	public void setColorCode(String colorCode) {
 		this.colorCode = colorCode;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
 	}
 
 	@Override
