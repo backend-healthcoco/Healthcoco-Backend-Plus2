@@ -4915,7 +4915,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-		band.setHeight(20);
+		band.setHeight(25);
 
 		jasperDesign.setPageFooter(band);
 
@@ -5081,7 +5081,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		int Startwith = 2;
-
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
@@ -5098,7 +5097,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-		band.setHeight(20);
+		band.setHeight(25);
+		jasperDesign.setPageFooter(band);
 
 	}
 
