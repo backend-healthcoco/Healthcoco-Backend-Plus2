@@ -1728,6 +1728,15 @@ public interface PathProxy {
 		public static final String GET_REQUESTS = "/getRequests";
 
 	}
+	
+	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
+
+	public interface DentalImagingUrl {
+
+		public static final String ADD_EDIT_DENTAL_IMAGING_REQUEST = "/addEditRequest";
+		public static final String GET_REQUESTS = "/getRequests";
+
+	}
 
 	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
 

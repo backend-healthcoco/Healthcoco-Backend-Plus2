@@ -18,7 +18,6 @@ import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.services.DentalImagingService;
 
 import common.util.web.Response;
@@ -62,12 +61,11 @@ public class DentalImagingAPI {
 			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
 			@QueryParam("page") int page) {
 
+
 		Response<DentalImaging> response = new Response<DentalImaging>();
 		response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
 		return response;
 	}
-	
-	
-	
+
 }
 
