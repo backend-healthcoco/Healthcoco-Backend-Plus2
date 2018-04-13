@@ -34,9 +34,6 @@ public class OPDReportsCollection extends GenericCollection {
 	private ObjectId visitId;
 	@Field
 	private Boolean isPatientDiscarded = false;
-
-	@Field
-	private Boolean isPatientDiscarded = false;
 	
 	public ObjectId getId() {
 		return id;

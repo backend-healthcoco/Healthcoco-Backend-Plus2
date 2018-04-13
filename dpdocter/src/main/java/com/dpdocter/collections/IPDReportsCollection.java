@@ -50,9 +50,6 @@ public class IPDReportsCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-
-	@Field
-	private Boolean isPatientDiscarded = false;
 	
 	public ObjectId getId() {
 		return id;
