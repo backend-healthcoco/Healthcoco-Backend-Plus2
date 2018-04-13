@@ -622,6 +622,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 					doctorLabReportRepository.save(doctorLabReportCollection);
 				}
 			}
+			
+			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
+					ComponentType.APPOINTMENT_STATUS_CHANGE.getType(), null, null);
 
 		} catch (Exception e) {
 			e.printStackTrace();

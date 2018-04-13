@@ -1037,8 +1037,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 							response.setLongitude(locationCollection.getLongitude());
 						}
 					}
+					/*pushNotificationServices.notifyUser(request.getDoctorId(), "New appointment created.",
+							ComponentType.APPOINTMENT.getType(), null, null);*/
 				}
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -3289,6 +3292,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			appointmentCollection.setStatus(QueueStatus.valueOf(status));
 			appointmentCollection.setUpdatedTime(new Date());
 			appointmentCollection = appointmentRepository.save(appointmentCollection);
+			
+			pushNotificationServices.notifyUser(doctorId, "Appointment status changed.",
+					ComponentType.PATIENT_REFRESH.getType(), null, null);
 			if (isObjectRequired == true) {
 				if (appointmentCollection != null) {
 					response = new Appointment();

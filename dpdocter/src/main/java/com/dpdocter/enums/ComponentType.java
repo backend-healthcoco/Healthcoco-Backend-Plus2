@@ -28,7 +28,9 @@ public enum ComponentType {
 																																															"MULTIPLE_CLINICAL_NOTES"), PATIENT_CARD(
 																																																	"PATIENT_CARD"), CALENDER_APPOINTMENT(
 																																																			"CALENDER_APPOINTMENT"), FLOW_SHEET(
-																																																					"FLOW_SHEET");
+																																																					"FLOW_SHEET"), PATIENT_REFRESH(
+																																																							"PATIENT_REFRESH"), APPOINTMENT_STATUS_CHANGE(
+																																																									"APPOINTMENT_STATUS_CHANGE");
 
 	private String type;
 
