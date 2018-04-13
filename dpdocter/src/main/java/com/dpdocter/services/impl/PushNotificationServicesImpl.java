@@ -278,6 +278,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setRi(componentTypeId);
 					notification.setNotificationType(componentType);
 				}
+				else
+				{
+					notification.setNotificationType(componentType);
+				}
 
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
