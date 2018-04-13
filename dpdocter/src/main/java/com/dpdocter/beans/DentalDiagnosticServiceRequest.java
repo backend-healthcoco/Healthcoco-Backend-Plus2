@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class DentalImagingService {
+public class DentalDiagnosticServiceRequest {
 
 	private String type;
 	private String serviceName;

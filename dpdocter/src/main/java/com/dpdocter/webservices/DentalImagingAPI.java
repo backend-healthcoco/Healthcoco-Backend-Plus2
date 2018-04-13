@@ -1,4 +1,5 @@
-/*package com.dpdocter.webservices;
+
+package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -17,6 +18,7 @@ import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.services.DentalImagingService;
 
 import common.util.web.Response;
@@ -51,7 +53,7 @@ public class DentalImagingAPI {
 		return response;
 	}
 	
-	
+
 	@Path(value = PathProxy.DentalImagingUrl.GET_REQUESTS)
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_REQUESTS, notes = PathProxy.DentalImagingUrl.GET_REQUESTS)
@@ -65,4 +67,4 @@ public class DentalImagingAPI {
 		return response;
 	}
 }
-*/
+
