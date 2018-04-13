@@ -1054,7 +1054,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			ObjectId hospitalId) {
 		ObjectId patientId = null;
 		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
-			if(DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))return null;
 			
 			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");

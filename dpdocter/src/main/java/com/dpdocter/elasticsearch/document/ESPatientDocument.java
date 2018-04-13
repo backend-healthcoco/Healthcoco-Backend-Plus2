@@ -98,6 +98,9 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean isPatientDiscarded = false;
 	
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
+	
 	public String getId() {
 		return id;
 	}
@@ -324,10 +327,17 @@ public class ESPatientDocument {
 		this.localPatientNameFormatted = localPatientNameFormatted;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
 	@Override
 	public String toString() {
 		return "ESPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
-				+ ", firstName=" + firstName + ", localPatientName=" + localPatientName + ", gender=" + gender
 				+ ", firstName=" + firstName + ", localPatientName=" + localPatientName + ", localPatientNameFormatted="
 				+ localPatientNameFormatted + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
 				+ emailAddress + ", dob=" + dob + ", city=" + city + ", locality=" + locality + ", postalCode="
@@ -335,20 +345,7 @@ public class ESPatientDocument {
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy
 				+ ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
 				+ ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + ", userUId=" + userUId
-				+ ", consultantDoctorIds=" + consultantDoctorIds + ", getId()=" + getId() + ", getUserId()="
-				+ getUserId() + ", getLocalPatientName()=" + getLocalPatientName() + ", getPID()=" + getPID()
-				+ ", getUserName()=" + getUserName() + ", getFirstName()=" + getFirstName() + ", getGender()="
-				+ getGender() + ", getBloodGroup()=" + getBloodGroup() + ", getEmailAddress()=" + getEmailAddress()
-				+ ", getDob()=" + getDob() + ", getCity()=" + getCity() + ", getLocality()=" + getLocality()
-				+ ", getPostalCode()=" + getPostalCode() + ", getMobileNumber()=" + getMobileNumber()
-				+ ", getProfession()=" + getProfession() + ", getDoctorId()=" + getDoctorId() + ", getLocationId()="
-				+ getLocationId() + ", getHospitalId()=" + getHospitalId() + ", getReferredBy()=" + getReferredBy()
-				+ ", getCreatedTime()=" + getCreatedTime() + ", getImageUrl()=" + getImageUrl() + ", getThumbnailUrl()="
-				+ getThumbnailUrl() + ", getColorCode()=" + getColorCode() + ", getRegistrationDate()="
-				+ getRegistrationDate() + ", getUserUId()=" + getUserUId() + ", getConsultantDoctorIds()="
-				+ getConsultantDoctorIds() + ", getLocalPatientNameFormatted()=" + getLocalPatientNameFormatted()
-				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
-				+ "]";
+				+ ", consultantDoctorIds=" + consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded
+				+ ", discarded=" + discarded + "]";
 	}
-
 }

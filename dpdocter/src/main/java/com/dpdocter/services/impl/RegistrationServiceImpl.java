@@ -4058,12 +4058,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				for (PatientCollection patientCollection : patientCollections) {
 					patientCollection.setIsPatientDiscarded(discarded);
+					patientCollection.setDiscarded(discarded);
 					patientCollection.setUpdatedTime(new Date());
 					patientRepository.save(patientCollection);
 
 					ESPatientDocument esPatientDocument = esPatientRepository
 							.findOne(patientCollection.getId().toString());
 					esPatientDocument.setIsPatientDiscarded(discarded);
+					esPatientDocument.setDiscarded(discarded);
 					esPatientDocument = esPatientRepository.save(esPatientDocument);
 					
 					mongoTemplate.updateMulti(new Query(criteria),
