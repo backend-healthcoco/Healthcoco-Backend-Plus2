@@ -192,7 +192,10 @@ public class ContactsServiceImpl implements ContactsService {
 			Boolean sortByFirstName, String role) throws Exception {
 		DoctorContactsResponse response = null;
 		List<PatientCard> patientCards = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
 
+		if (discarded)discards[1] = true;
 		long createdTimestamp = Long.parseLong(updatedTime);
 
 		ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -203,9 +206,7 @@ public class ContactsServiceImpl implements ContactsService {
 		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 			hospitalObjectId = new ObjectId(hospitalId);
 
-		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded").ne(true);
-		if (!discarded)
-			criteria.and("discarded").is(discarded);
+		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("discarded").in(discards);
 		if (patientIds != null && !patientIds.isEmpty())
 			criteria.and("userId").in(patientIds);
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
@@ -618,7 +619,7 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 			long createdTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("discarded").in(discards);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 					criteria.and("consultantDoctorIds").is(doctorObjectId);

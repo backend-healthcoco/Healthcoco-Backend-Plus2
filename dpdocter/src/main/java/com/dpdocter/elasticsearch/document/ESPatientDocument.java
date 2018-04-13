@@ -98,6 +98,9 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean isPatientDiscarded = false;
 	
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
+	
 	public String getId() {
 		return id;
 	}
@@ -324,6 +327,14 @@ public class ESPatientDocument {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
 	@Override
 	public String toString() {
 		return "ESPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
@@ -334,7 +345,7 @@ public class ESPatientDocument {
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy
 				+ ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
 				+ ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + ", userUId=" + userUId
-				+ ", consultantDoctorIds=" + consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ ", consultantDoctorIds=" + consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded
+				+ ", discarded=" + discarded + "]";
 	}
-
 }
