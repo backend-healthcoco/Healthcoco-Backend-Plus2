@@ -1013,7 +1013,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		band = new JRDesignBand();
 		band.setHeight(2);
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{title}.equals( null ) && !$F{title}.isEmpty()"));
@@ -1024,10 +1024,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		band = new JRDesignBand();
 		band.setHeight(20);
-		band.setPrintWhenExpression(new JRDesignExpression("!$F{indicationOfUSG}.equals( null ) && !$F{indicationOfUSG}.isEmpty()"));
+		band.setPrintWhenExpression(
+				new JRDesignExpression("!$F{indicationOfUSG}.equals( null ) && !$F{indicationOfUSG}.isEmpty()"));
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{USGTITLE}"));
@@ -1193,7 +1194,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$F{procedureNote}", fieldWidth, false, 0, false);
-		
+
 		band = new JRDesignBand();
 		band.setHeight(2);
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{title}.equals( null ) && !$F{title}.isEmpty()"));
@@ -1204,7 +1205,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		JasperCompileManager.compileReportToFile(jasperDesign,
 				JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_subreport-A4.jasper");
 
@@ -4669,7 +4670,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-		band.setHeight(20);
+		band.setHeight(25);
 
 		jasperDesign.setPageFooter(band);
 
@@ -4820,7 +4821,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		int Startwith = 2;
-
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
@@ -4838,7 +4838,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 		}
 		band.setHeight(25);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		jasperDesign.setPageFooter(band);
 
 	}
 
@@ -5561,7 +5561,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth((15 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			
+
 			xPoint = xPoint + (15 * (columnWidth)) / 100;
 
 			jrDesignTextField = new JRDesignTextField();
@@ -5574,8 +5574,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 
 			((JRDesignSection) jasperDesignForSubreport.getDetailSection()).addBand(band);
-	
-			JasperCompileManager.compileReportToFile(jasperDesignForSubreport, JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-receipts_subreport.jasper");
+
+			JasperCompileManager.compileReportToFile(jasperDesignForSubreport,
+					JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-receipts_subreport.jasper");
 
 			JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesignForSubreport);
 			jSubreport.setUsingCache(false);
@@ -5599,11 +5600,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jSubreport);
 
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-			
-			
+
 			band = new JRDesignBand();
 			band.setHeight(20);
-		
+
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setX(0);
 			jrDesignLine.setY(0);
@@ -5611,7 +5611,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setWidth(columnWidth);
 			band.addElement(jrDesignLine);
 
-			
 			xPoint = 1 + (51 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Total}"));
@@ -5622,7 +5621,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setBold(true);
 			band.addElement(jrDesignTextField);
-			
+
 			xPoint = xPoint + ((11 * (columnWidth)) / 100);
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{grandTotal}"));
@@ -5632,7 +5631,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth((11 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			
+
 			xPoint = xPoint + (11 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{totalPaid}"));
@@ -5642,7 +5641,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth((15 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			
+
 			xPoint = xPoint + (15 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{totalBalance}"));
@@ -5652,9 +5651,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth((12 * (columnWidth)) / 100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
-			
+
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-			
+
 			band = new JRDesignBand();
 			band.setHeight(2);
 			jrDesignLine = new JRDesignLine();
@@ -5663,9 +5662,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setHeight(1);
 			jrDesignLine.setWidth(columnWidth);
 			band.addElement(jrDesignLine);
-			
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		}
 	}
