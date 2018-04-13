@@ -2,7 +2,9 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class DentalImagingRequest {
+import com.dpdocter.collections.GenericCollection;
+
+public class DentalImaging extends GenericCollection {
 
 	private String id;
 	private String patientId;
@@ -15,6 +17,14 @@ public class DentalImagingRequest {
 	private String specialInstructions;
 	private List<DentalDiagnosticServiceRequest> services;
 	private Boolean discarded;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getPatientId() {
 		return patientId;
@@ -94,22 +104,6 @@ public class DentalImagingRequest {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	@Override
-	public String toString() {
-		return "DentalImagingRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId
-				+ ", locationId=" + locationId + ", referringDoctor=" + referringDoctor + ", clinicalNotes="
-				+ clinicalNotes + ", reportsRequired=" + reportsRequired + ", specialInstructions="
-				+ specialInstructions + "]";
 	}
 
 }
