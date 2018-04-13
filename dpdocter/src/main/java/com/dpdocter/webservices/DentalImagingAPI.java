@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
 
 
 @Component
-@Path(PathProxy.DENTAL_LAB_BASE_URL)
+@Path(PathProxy.DENTAL_IMAGING_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DENTAL_IMAGING_URL, description = "Endpoint for dental imaging")
