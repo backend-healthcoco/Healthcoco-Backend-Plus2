@@ -52,13 +52,14 @@ public class DentalImagingAPI {
 		return response;
 	}
 	
+	
 	@Path(value = PathProxy.DentalImagingUrl.GET_REQUESTS)
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_REQUESTS, notes = PathProxy.DentalImagingUrl.GET_REQUESTS)
 	public Response<DentalImaging> getPickupRequests(@QueryParam("locationId") String locationId,@QueryParam("hospitalId") String hospitalId,
 			@QueryParam("doctorId") String doctorId, @DefaultValue("0") @QueryParam("from") Long from,
 			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page,) {
+			@QueryParam("page") int page) {
 
 		Response<DentalImaging> response = new Response<DentalImaging>();
 		response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
