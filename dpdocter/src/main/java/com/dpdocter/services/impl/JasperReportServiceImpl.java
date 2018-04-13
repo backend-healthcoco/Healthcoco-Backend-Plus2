@@ -4915,7 +4915,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-		band.setHeight(20);
+		band.setHeight(25);
 
 		jasperDesign.setPageFooter(band);
 
@@ -5081,7 +5081,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		int Startwith = 2;
-
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 		if (!DPDoctorUtils.anyStringEmpty(parameters.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
@@ -5098,7 +5097,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-		band.setHeight(20);
+
+		band.setHeight(25);
+		jasperDesign.setPageFooter(band);
+
 
 	}
 
@@ -5774,6 +5776,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 
+
 			xPoint = xPoint + (15 * (columnWidth)) / 100;
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{balance}"));
@@ -5785,6 +5788,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 
 			((JRDesignSection) jasperDesignForSubreport.getDetailSection()).addBand(band);
+
 
 			JasperCompileManager.compileReportToFile(jasperDesignForSubreport,
 					JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-receipts_subreport.jasper");
