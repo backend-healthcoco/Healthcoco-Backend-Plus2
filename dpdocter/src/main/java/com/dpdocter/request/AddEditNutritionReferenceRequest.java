@@ -21,6 +21,8 @@ public class AddEditNutritionReferenceRequest {
 	private String referredDoctorId;
 	private String referredLocationId;
 	private String referredHospitalId;
+	private String localPatientName;
+	private String mobileNumber;
 
 	public String getId() {
 		return id;
@@ -124,6 +126,22 @@ public class AddEditNutritionReferenceRequest {
 
 	public void setReferredHospitalId(String referredHospitalId) {
 		this.referredHospitalId = referredHospitalId;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	@Override

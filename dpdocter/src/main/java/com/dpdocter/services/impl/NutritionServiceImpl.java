@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
@@ -29,7 +31,9 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFeedbackCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -41,9 +45,12 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditNutritionReferenceRequest;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
 import com.dpdocter.services.NutritionService;
+import com.dpdocter.services.RegistrationService;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -71,6 +78,15 @@ public class NutritionServiceImpl implements NutritionService{
 	@Autowired
 	private NutritionGoalStatusStampingRepository nutritionGoalStatusStampingRepository;
 	
+	@Autowired
+	private RegistrationService registrationService;
+	
+	@Autowired
+	private TransactionalManagementService transnationalService;
+	
+	@Autowired
+	private ESRegistrationService esRegistrationService;
+	
 	@Override
 	@Transactional
 	public NutritionReferenceResponse addEditNutritionReference(AddEditNutritionReferenceRequest request) {
@@ -78,6 +94,10 @@ public class NutritionServiceImpl implements NutritionService{
 		NutritionReferenceCollection nutritionReferenceCollection = null;
 		try {
 
+			ObjectId doctorId = new ObjectId(request.getDoctorId()), locationId = new ObjectId(request.getLocationId()),
+					hospitalId = new ObjectId(request.getHospitalId()), patientId = null;
+			
+			patientId = registerPatientIfNotRegistered(request, doctorId, locationId,hospitalId);
 			response = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(request.getId()));
@@ -368,5 +388,61 @@ public class NutritionServiceImpl implements NutritionService{
 		}
 		return count;
 	}
+	
+	private ObjectId registerPatientIfNotRegistered(AddEditNutritionReferenceRequest request, ObjectId doctorId, ObjectId locationId,
+			ObjectId hospitalId) {
+		ObjectId patientId = null;
+		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
+			
+			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
+				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
+			}
+			PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+			patientRegistrationRequest.setFirstName(request.getLocalPatientName());
+			patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
+			patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
+			patientRegistrationRequest.setDoctorId(request.getDoctorId());
+			patientRegistrationRequest.setLocationId(request.getLocationId());
+			patientRegistrationRequest.setHospitalId(request.getHospitalId());
+			RegisteredPatientDetails patientDetails = null;
+			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
+			if (patientDetails != null) {
+				request.setPatientId(patientDetails.getUserId());
+			}
+			transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
+			esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
+			patientId = new ObjectId(request.getPatientId());
+		} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+
+			patientId = new ObjectId(request.getPatientId());
+			PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(patientId, locationId,
+					hospitalId);
+			if (patient == null) {
+				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setDoctorId(request.getDoctorId());
+				patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
+				patientRegistrationRequest.setFirstName(request.getLocalPatientName());
+				patientRegistrationRequest.setUserId(request.getPatientId());
+				patientRegistrationRequest.setLocationId(request.getLocationId());
+				patientRegistrationRequest.setHospitalId(request.getHospitalId());
+				RegisteredPatientDetails patientDetails = registrationService
+						.registerExistingPatient(patientRegistrationRequest, null);
+				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
+				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
+			} else {
+				List<ObjectId> consultantDoctorIds = patient.getConsultantDoctorIds();
+				if (consultantDoctorIds == null)
+					consultantDoctorIds = new ArrayList<ObjectId>();
+				if (!consultantDoctorIds.contains(doctorId))
+					consultantDoctorIds.add(doctorId);
+				patient.setConsultantDoctorIds(consultantDoctorIds);
+				patient.setUpdatedTime(new Date());
+				patientRepository.save(patient);
+			}
+		}
+
+		return patientId;
+	}
+	
 	
 }
