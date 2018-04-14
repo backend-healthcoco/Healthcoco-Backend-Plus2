@@ -192,10 +192,11 @@ public class ContactsServiceImpl implements ContactsService {
 			Boolean sortByFirstName, String role) throws Exception {
 		DoctorContactsResponse response = null;
 		List<PatientCard> patientCards = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 
-		if (discarded)discards[1] = true;
+		if (discarded)
+			discards.add(true);
 		long createdTimestamp = Long.parseLong(updatedTime);
 
 		ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -206,7 +207,10 @@ public class ContactsServiceImpl implements ContactsService {
 		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 			hospitalObjectId = new ObjectId(hospitalId);
 
-		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("discarded").in(discards);
+		Criteria criteria = new Criteria("discarded").in(discards);
+		
+		if (createdTimestamp > 0)
+			criteria.and("updatedTime").gt(new Date(createdTimestamp));
 		if (patientIds != null && !patientIds.isEmpty())
 			criteria.and("userId").in(patientIds);
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
@@ -221,29 +225,25 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		if (sortByFirstName) {
 
-			CustomAggregationOperation projectOperations = new CustomAggregationOperation(
-					new BasicDBObject("$project",
-							new BasicDBObject("_id", "$_id").append("userId", "$userId")
-									.append("firstName", "$firstName").append("localPatientName", "$localPatientName")
-									.append("insensitiveLocalPatientName",
-											new BasicDBObject("$toLower", "$localPatientName"))
-									.append("userName", "$userName").append("emailAddress", "$emailAddress")
-									.append("imageUrl", "$imageUrl").append("thumbnailUrl", "$thumbnailUrl")
-									.append("bloodGroup", "$bloodGroup").append("PID", "$PID")
-									.append("gender", "$gender").append("countryCode", "$countryCode")
-									.append("mobileNumber", "$mobileNumber").append("secPhoneNumber", "$secPhoneNumber")
-									.append("dob", "$dob").append("dateOfVisit", "$dateOfVisit")
-									.append("doctorId", "$doctorId").append("locationId", "$locationId")
-									.append("hospitalId", "$hospitalId").append("colorCode", "$user.colorCode")
-									.append("user", "$user").append("address", "$address")
-									.append("patientId", "$userId").append("profession", "$profession")
-									.append("relations", "$relations")
-									.append("consultantDoctorIds", "$consultantDoctorIds")
-									.append("registrationDate", "$registrationDate").append("relations", "$relations")
-									.append("consultantDoctorIds", "$consultantDoctorIds")
-									.append("registrationDate", "$registrationDate")
-									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
-									.append("createdBy", "$createdBy")));
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project",
+					new BasicDBObject("_id", "$_id").append("userId", "$userId").append("firstName", "$firstName")
+							.append("localPatientName", "$localPatientName")
+							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
+							.append("userName", "$userName").append("emailAddress", "$emailAddress")
+							.append("imageUrl", "$imageUrl").append("thumbnailUrl", "$thumbnailUrl")
+							.append("bloodGroup", "$bloodGroup").append("PID", "$PID").append("gender", "$gender")
+							.append("countryCode", "$countryCode").append("mobileNumber", "$mobileNumber")
+							.append("secPhoneNumber", "$secPhoneNumber").append("dob", "$dob")
+							.append("dateOfVisit", "$dateOfVisit").append("doctorId", "$doctorId")
+							.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
+							.append("colorCode", "$user.colorCode").append("user", "$user")
+							.append("address", "$address").append("patientId", "$userId")
+							.append("profession", "$profession").append("relations", "$relations")
+							.append("consultantDoctorIds", "$consultantDoctorIds")
+							.append("registrationDate", "$registrationDate").append("relations", "$relations")
+							.append("consultantDoctorIds", "$consultantDoctorIds")
+							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
+							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
 			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("id", "$_id").append("userId", new BasicDBObject("$first", "$userId"))
@@ -619,7 +619,8 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 			long createdTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("discarded").in(discards);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("discarded")
+					.in(discards);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
