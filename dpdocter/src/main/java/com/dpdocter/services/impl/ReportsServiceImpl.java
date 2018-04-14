@@ -550,6 +550,12 @@ public class ReportsServiceImpl implements ReportsService {
 							}
 							prescription.setItems(prescriptionItemDetails);
 						}
+						else
+						{
+							prescription.setItems(new ArrayList<PrescriptionItemDetail>()); 
+						}
+						
+						
 						PatientVisitCollection patientVisitCollection = patientVisitRepository
 								.findByPrescriptionId(collection.getPrescriptionCollection().getId());
 						if (patientVisitCollection != null)
@@ -575,6 +581,15 @@ public class ReportsServiceImpl implements ReportsService {
 								}
 							}
 							prescription.setDiagnosticTests(diagnosticTests);
+						}
+						else
+						{
+							prescription.setDiagnosticTests(new ArrayList<TestAndRecordDataResponse>());
+						}
+						
+						if(collection.getPrescriptionCollection().getAdvice() == null)
+						{
+							prescription.setAdvice("");
 						}
 						if (prescription != null) {
 							opdReports.setPrescription(prescription);
