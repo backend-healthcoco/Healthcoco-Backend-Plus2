@@ -19,6 +19,7 @@ import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
 import com.dpdocter.response.CollectionBoyResponse;
+import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.DynamicCollectionBoyAllocationResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
@@ -94,9 +95,9 @@ public interface LocationServices {
 	Boolean addEditRateCardTestAssociation(List<RateCardTestAssociation> request);
 
 	/*
-	 * List<RateCardTestAssociationLookupResponse> getRateCardTests(int page,
-	 * int size, String searchTerm, String daughterLabId, String parentLabId,
-	 * String labId);
+	 * List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int
+	 * size, String searchTerm, String daughterLabId, String parentLabId, String
+	 * labId);
 	 */
 	// List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId,
 	// int size, int page);
@@ -147,6 +148,7 @@ public interface LocationServices {
 	DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request);
 
 	List<LabTestPickupLookupResponse> getLabTestPickupByIds(List<ObjectId> ids);
-	
+
 	public Boolean makeFavouriteRateCardTest(String locationId, String hospitalId, String diagnosticTestId);
+
 }

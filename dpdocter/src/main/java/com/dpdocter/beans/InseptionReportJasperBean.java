@@ -1,0 +1,116 @@
+package com.dpdocter.beans;
+
+import java.util.List;
+
+public class InseptionReportJasperBean {
+
+	private String dentallab;
+	private String doctor;
+	private String patientName;
+	private String shade;
+	private String dentalWork;
+	private String material;
+	private String toothNumbers;
+	private String status;
+	private String requestId;
+	private String stages;
+	private String date;
+	private List<DentalStagejasperBean> items;
+
+	public String getDentallab() {
+		return dentallab;
+	}
+
+	public void setDentallab(String dentallab) {
+		this.dentallab = dentallab;
+	}
+
+	public String getDoctor() {
+		return doctor;
+	}
+
+	public void setDoctor(String doctor) {
+		this.doctor = doctor;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getShade() {
+		return shade;
+	}
+
+	public void setShade(String shade) {
+		this.shade = shade;
+	}
+
+	public String getDentalWork() {
+		return dentalWork;
+	}
+
+	public void setDentalWork(String dentalWork) {
+		this.dentalWork = dentalWork;
+	}
+
+	public String getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(String material) {
+		this.material = material;
+	}
+
+	public String getToothNumbers() {
+		return toothNumbers;
+	}
+
+	public void setToothNumbers(String toothNumbers) {
+		this.toothNumbers = toothNumbers;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
+
+	public String getStages() {
+		return stages;
+	}
+
+	public void setStages(String stages) {
+		this.stages = stages;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public List<DentalStagejasperBean> getItems() {
+		return items;
+	}
+
+	public void setItems(List<DentalStagejasperBean> items) {
+		this.items = items;
+	}
+
+}

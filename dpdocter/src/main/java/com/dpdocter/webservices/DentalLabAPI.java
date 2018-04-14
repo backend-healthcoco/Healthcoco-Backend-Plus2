@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -458,15 +459,15 @@ public class DentalLabAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT)
+	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_MULTIPLE_DENTAL_LAB_INSPECTION_REPORT)
 	@GET
-	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT, notes = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT)
-	public Response<String> downloadInspectionReport(@PathParam("requestId") String requestId) {
+	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_MULTIPLE_DENTAL_LAB_INSPECTION_REPORT, notes = PathProxy.DentalLabUrls.DOWNLOAD_MULTIPLE_DENTAL_LAB_INSPECTION_REPORT)
+	public Response<String> downloadMultipleInspectionReport(@MatrixParam("requestId") List<String> requestId) {
 		if (requestId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(dentalLabService.downloadDentalLabReportPrint(requestId, true));
+		response.setData(dentalLabService.downloadMultipleInspectionReportPrint(requestId));
 		return response;
 	}
 

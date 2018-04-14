@@ -16,15 +16,23 @@ public enum ComponentType {
 																							"DELIVERY_REPORTS"), DOCTOR_LAB_REPORTS(
 																									"DOCTOR_LAB_REPORTS"), CERTIFICATE(
 																											"CERTIFICATE"), DOCTOR_REFERNCE(
-																													"DOCTOR_REFERNCE"),
-	DENTAL_WORKS("DENTAL_WORKS"), 
-	DENTAL_LAB_REQUEST("DENTAL_LAB_REQUEST"), 
-	LAB_REQUISATION_FORM("LAB_REQUISATION_FORM"), 
-	DENTAL_LAB_INSPECTION_REPORT("DENTAL_LAB_INSPECTION_REPORT"), 
-	REFRESH_DOCTOR_LAB_REPORTS("REFRESH_DOCTOR_LAB_REPORTS"),
-	MULTIPLE_RECEIPT("MULTIPLE_RECEIPT"), DENTAL_WORKS_CANCELLATION("DENTAL_WORKS_CANCELLATION"), DENTAL_WORK_REFRESH("DENTAL_WORK_REFRESH"),
-	MULTIPLE_CLINICAL_NOTES("MULTIPLE_CLINICAL_NOTES"), PATIENT_CARD("PATIENT_CARD"), CALENDER_APPOINTMENT("CALENDER_APPOINTMENT") , FLOW_SHEET("FLOW_SHEET"),PATIENT_REFRESH("PATIENT_REFRESH"),
-	APPOINTMENT_STATUS_CHANGE("APPOINTMENT_STATUS_CHANGE"),;
+
+																													"DOCTOR_REFERNCE"), DENTAL_WORKS(
+																															"DENTAL_WORKS"), DENTAL_LAB_REQUEST(
+																																	"DENTAL_LAB_REQUEST"), LAB_REQUISATION_FORM(
+																																			"LAB_REQUISATION_FORM"), DENTAL_LAB_INSPECTION_REPORT(
+																																					"DENTAL_LAB_INSPECTION_REPORT"), REFRESH_DOCTOR_LAB_REPORTS(
+																																							"REFRESH_DOCTOR_LAB_REPORTS"), MULTIPLE_RECEIPT(
+																																									"MULTIPLE_RECEIPT"), DENTAL_WORKS_CANCELLATION(
+																																											"DENTAL_WORKS_CANCELLATION"), DENTAL_WORK_REFRESH(
+																																													"DENTAL_WORK_REFRESH"), MULTIPLE_CLINICAL_NOTES(
+																																															"MULTIPLE_CLINICAL_NOTES"), PATIENT_CARD(
+																																																	"PATIENT_CARD"), CALENDER_APPOINTMENT(
+																																																			"CALENDER_APPOINTMENT"), FLOW_SHEET(
+																																																					"FLOW_SHEET"), PATIENT_REFRESH(
+																																																							"PATIENT_REFRESH"), APPOINTMENT_STATUS_CHANGE(
+																																																									"APPOINTMENT_STATUS_CHANGE"), MULTIPLE_INSPECTION_REPORT(
+																																																											"MULTIPLE_INSPECTION_REPORT");
 
 	private String type;
 
