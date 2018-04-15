@@ -113,7 +113,7 @@ public class InventoryServiceImpl implements InventoryService {
 			
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
 			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-				Drug drug =prescriptionServices.makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+				Drug drug = makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
 				//System.out.println(drug);
 				transnationalService.addResource(new ObjectId(drug.getId()), Resource.DRUG, false);
 				if (drug != null) {
@@ -838,4 +838,43 @@ public class InventoryServiceImpl implements InventoryService {
 		return inventoryBatch;
 	}
 
+	@Transactional
+	private Drug makeDrugFavourite(String drugCode, String doctorId, String locationId, String hospitalId) {
+		Drug response = null;
+
+		try {
+			ObjectId doctorObjectId = new ObjectId(doctorId),
+					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+			/*DrugCollection originalDrug = drugRepository.findOne(drugObjectId);
+			if (originalDrug == null) {
+				logger.error("Invalid drug Id");
+				throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
+			}*/
+			DrugCollection drugCollection = drugRepository.findByCodeAndDoctorId(drugCode,
+					doctorObjectId);
+			if (drugCollection == null) {
+				drugCollection = new DrugCollection();
+
+				drugCollection.setLocationId(locationObjectId);
+				drugCollection.setHospitalId(hospitalObjectId);
+				drugCollection.setDoctorId(doctorObjectId);
+				drugCollection.setRankingCount(1);
+				drugCollection.setId(null);
+			} else {
+				drugCollection.setLocationId(locationObjectId);
+				drugCollection.setHospitalId(hospitalObjectId);
+				drugCollection.setRankingCount(drugCollection.getRankingCount() + 1);
+				drugCollection.setUpdatedTime(new Date());
+			}
+			drugCollection = drugRepository.save(drugCollection);
+			response = new Drug();
+			BeanUtil.map(drugCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While making Drug Favourite");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While making Drug Favourite");
+		}
+		return response;
+	}
 }
