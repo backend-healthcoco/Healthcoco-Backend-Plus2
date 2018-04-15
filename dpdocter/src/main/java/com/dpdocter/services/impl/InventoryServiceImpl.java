@@ -696,12 +696,9 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryItem response = null;
 		InventoryItemCollection inventoryItemCollection = null;
 		try {
-<<<<<<< HEAD
-			System.out.println( locationId + "  ---  " + hospitalId + "  ===  " + resourceId);
-			inventoryItemCollection = inventoryItemRepository.findByLocationIdHospitalIdResourceId(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(resourceId));
-=======
+
+
 			inventoryItemCollection = inventoryItemRepository.findByLocationIdHospitalIdResourceId(new ObjectId(locationId), new ObjectId(hospitalId), resourceId);
->>>>>>> f5aee43... Iventory changes for total stock
 			if (inventoryItemCollection != null) {
 				response = new InventoryItem();
 				BeanUtil.map( inventoryItemCollection, response);
