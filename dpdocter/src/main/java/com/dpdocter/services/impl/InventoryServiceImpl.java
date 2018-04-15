@@ -696,8 +696,6 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryItem response = null;
 		InventoryItemCollection inventoryItemCollection = null;
 		try {
-
-
 			inventoryItemCollection = inventoryItemRepository.findByLocationIdHospitalIdResourceId(new ObjectId(locationId), new ObjectId(hospitalId), resourceId);
 			if (inventoryItemCollection != null) {
 				response = new InventoryItem();
