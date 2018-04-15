@@ -806,7 +806,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			System.out.println("Drug id ::" + drug.getId());*/
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
-						drug.getHospitalId(), drug.getId());
+						drug.getHospitalId(), drug.getDrugCode());
 				if (inventoryItem != null) {
 					InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
 							.getInventoryItem(inventoryItem.getId());
@@ -828,9 +828,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			/*System.out.println("Location id ::" + drug.getLocationId());
 			System.out.println("Hospital id ::" + drug.getHospitalId());
 			System.out.println("Drug id ::" + drug.getId());*/
-			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
+			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getDrugCode())) {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
-						drug.getHospitalId(), drug.getId());
+						drug.getHospitalId(), drug.getDrugCode());
 				if (inventoryItem != null) {
 					InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
 							.getInventoryItem(inventoryItem.getId());
