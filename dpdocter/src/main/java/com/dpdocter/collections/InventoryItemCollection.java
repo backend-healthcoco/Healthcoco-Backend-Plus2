@@ -23,7 +23,7 @@ public class InventoryItemCollection extends GenericCollection {
 	@Field
 	private Long reOrderLevel;
 	@Field
-	private ObjectId resourceId;
+	private String resourceId;
 	@Field
 	private ObjectId locationId;
 	@Field
@@ -83,11 +83,11 @@ public class InventoryItemCollection extends GenericCollection {
 		this.manufacturer = manufacturer;
 	}
 
-	public ObjectId getResourceId() {
+	public String getResourceId() {
 		return resourceId;
 	}
 
-	public void setResourceId(ObjectId resourceId) {
+	public void setResourceId(String resourceId) {
 		this.resourceId = resourceId;
 	}
 
