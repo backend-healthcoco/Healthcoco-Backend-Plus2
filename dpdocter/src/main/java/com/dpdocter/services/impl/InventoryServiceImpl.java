@@ -846,15 +846,19 @@ public class InventoryServiceImpl implements InventoryService {
 			ObjectId doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
 			/*DrugCollection originalDrug = drugRepository.findOne(drugObjectId);
+			 * drugCollection = drugRepository.findByDrugCode(drugCode);
 			if (originalDrug == null) {
 				logger.error("Invalid drug Id");
 				throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 			}*/
-			DrugCollection drugCollection = drugRepository.findByCodeAndDoctorId(drugCode,
-					doctorObjectId);
+			DrugCollection originalDrug = drugRepository.findByDrugCode(drugCode);
+			if (originalDrug == null) {
+				logger.error("Invalid drug Id");
+				throw new BusinessException(ServiceError.Unknown, "Invalid drug code");
+			}
+			DrugCollection drugCollection = drugRepository.findByDrugCode(drugCode, doctorObjectId, locationObjectId, hospitalObjectId);
 			if (drugCollection == null) {
-				drugCollection = new DrugCollection();
-
+				drugCollection = originalDrug;
 				drugCollection.setLocationId(locationObjectId);
 				drugCollection.setHospitalId(hospitalObjectId);
 				drugCollection.setDoctorId(doctorObjectId);
