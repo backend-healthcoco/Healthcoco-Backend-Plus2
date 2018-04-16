@@ -82,6 +82,7 @@ public class NutritionServiceImpl implements NutritionService{
 				nutritionReferenceCollection = new NutritionReferenceCollection();
 			}
 			BeanUtil.map(request, nutritionReferenceCollection);
+			nutritionReferenceCollection.setReports(request.getReports());
 			nutritionReferenceCollection = nutritionReferenceRepository.save(nutritionReferenceCollection);
 			if (nutritionReferenceCollection != null) {
 				response = new NutritionReferenceResponse();
@@ -176,7 +177,9 @@ public class NutritionServiceImpl implements NutritionService{
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(nutritionReferenceResponse.getPatientId()), new ObjectId(nutritionReferenceResponse.getLocationId()), new ObjectId(nutritionReferenceResponse.getHospitalId())); 
 				if(patientCollection != null)
 				{
+					UserCollection patient = userRepository.findOne(patientCollection.getUserId());
 					PatientShortCard patientCard = new PatientShortCard();
+					BeanUtil.map(patient,patientCard);
 					BeanUtil.map(patientCollection, patientCard);
 					nutritionReferenceResponse.setPatient(patientCard);
 				}
