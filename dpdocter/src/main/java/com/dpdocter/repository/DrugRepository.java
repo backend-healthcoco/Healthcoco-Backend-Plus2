@@ -121,4 +121,7 @@ public interface DrugRepository
 	@Query("{'drugCode': {$regex : '^?0.*', $options : 'i'}, 'doctorId': ?1,  'locationId': ?2, 'hospitalId': ?3}")
 	DrugCollection findByStartWithDrugCode(String drugCode, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, Sort sort);
 
+	@Query("{'drugCode': ?0, 'doctorId': ?1,  'locationId': ?2, 'hospitalId': ?3}")
+	DrugCollection findByDrugCode(String drugCode, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+
 }
