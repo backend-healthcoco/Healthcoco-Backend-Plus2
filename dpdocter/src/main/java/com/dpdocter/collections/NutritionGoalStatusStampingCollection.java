@@ -105,5 +105,4 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", goalStatus=" + goalStatus
 				+ "]";
 	}
-
 }
