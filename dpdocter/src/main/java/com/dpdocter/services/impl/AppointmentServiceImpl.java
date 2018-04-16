@@ -3294,7 +3294,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			appointmentCollection = appointmentRepository.save(appointmentCollection);
 			
 			pushNotificationServices.notifyUser(doctorId, "Appointment status changed.",
-					ComponentType.PATIENT_REFRESH.getType(), null, null);
+					ComponentType.APPOINTMENT_STATUS_CHANGE.getType(), null, null);
 			if (isObjectRequired == true) {
 				if (appointmentCollection != null) {
 					response = new Appointment();

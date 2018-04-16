@@ -624,7 +624,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
-					ComponentType.APPOINTMENT_STATUS_CHANGE.getType(), null, null);
+					ComponentType.PATIENT_REFRESH.getType(), null, null);
 
 		} catch (Exception e) {
 			e.printStackTrace();
