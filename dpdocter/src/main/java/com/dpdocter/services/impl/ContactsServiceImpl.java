@@ -208,7 +208,7 @@ public class ContactsServiceImpl implements ContactsService {
 			hospitalObjectId = new ObjectId(hospitalId);
 
 		Criteria criteria = new Criteria("discarded").in(discards);
-		
+
 		if (createdTimestamp > 0)
 			criteria.and("updatedTime").gt(new Date(createdTimestamp));
 		if (patientIds != null && !patientIds.isEmpty())
@@ -605,12 +605,12 @@ public class ContactsServiceImpl implements ContactsService {
 		List<PatientCard> patientCards = null;
 		List<Group> groups = null;
 		Aggregation aggregation = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
@@ -756,12 +756,12 @@ public class ContactsServiceImpl implements ContactsService {
 
 		List<PatientCard> patientCards = null;
 		Aggregation aggregation = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
@@ -770,7 +770,8 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("discarded").in(discards);
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
@@ -921,10 +922,12 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			/*if (mobileNumbers.size() > 500) {
-				throw new BusinessException(ServiceError.NotAcceptable,
-						"Cannot send more messages to more than 500 patients. Please select other group or create new one.");
-			}*/
+			/*
+			 * if (mobileNumbers.size() > 500) { throw new
+			 * BusinessException(ServiceError.NotAcceptable,
+			 * "Cannot send more messages to more than 500 patients. Please select other group or create new one."
+			 * ); }
+			 */
 
 			if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
 				status = true;
