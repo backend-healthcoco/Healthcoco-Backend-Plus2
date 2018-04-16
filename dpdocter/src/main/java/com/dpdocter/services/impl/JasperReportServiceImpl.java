@@ -1009,10 +1009,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(20);
-		band.setPrintWhenExpression(new JRDesignExpression("!$F{title}.equals( null ) && !$F{title}.isEmpty()"));
-
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{title}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{ClinicalNotes}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(20);
@@ -1025,7 +1023,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
-		band.setPrintWhenExpression(new JRDesignExpression("!$F{title}.equals( null ) && !$F{title}.isEmpty()"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
