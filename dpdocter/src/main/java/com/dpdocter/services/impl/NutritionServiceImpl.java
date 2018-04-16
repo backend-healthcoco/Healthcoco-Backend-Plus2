@@ -114,6 +114,10 @@ public class NutritionServiceImpl implements NutritionService{
 				BeanUtil.map(nutritionReferenceCollection, response);
 				
 				
+				NutritionGoalStatusStampingCollection nutritionGoalStatusStampingCollection = new NutritionGoalStatusStampingCollection();
+				BeanUtil.map(nutritionReferenceCollection, nutritionGoalStatusStampingCollection);
+				nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository.save(nutritionGoalStatusStampingCollection);
+				
 				if(response.getLocationId() != null)
 				{
 					LocationCollection locationCollection = locationRepository.findOne(new ObjectId(response.getLocationId()));
