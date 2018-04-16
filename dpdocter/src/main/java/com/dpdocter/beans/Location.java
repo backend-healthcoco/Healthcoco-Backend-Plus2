@@ -108,6 +108,16 @@ public class Location {
 	private Boolean isDentalImagingLab = false;
 	/* private String defaultParentLabId; */
 
+	private Boolean isMobileNumberOptional = false;
+
+	public Boolean getIsMobileNumberOptional() {
+		return isMobileNumberOptional;
+	}
+
+	public void setIsMobileNumberOptional(Boolean isMobileNumberOptional) {
+		this.isMobileNumberOptional = isMobileNumberOptional;
+	}
+
 	public String getId() {
 		return id;
 	}
