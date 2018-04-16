@@ -154,7 +154,7 @@ public class NutritionServiceImpl implements NutritionService{
 				}
 				if(response.getDoctorId() != null)
 				{
-					UserCollection userCollection = userRepository.findOne(new ObjectId(response.getDoctorId()));
+					userCollection = userRepository.findOne(new ObjectId(response.getDoctorId()));
 					response.setDoctorName(userCollection.getFirstName());
 				}
 				
