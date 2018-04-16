@@ -112,12 +112,40 @@ public class NutritionServiceImpl implements NutritionService{
 			if (nutritionReferenceCollection != null) {
 				response = new NutritionReferenceResponse();
 				BeanUtil.map(nutritionReferenceCollection, response);
+				NutritionGoalStatusStampingCollection nutritionGoalStatusStampingCollection = null;
+				UserCollection userCollection = null;
+				if(response.getDoctorId() != null)
+				{
+					userCollection = userRepository.findOne(new ObjectId(response.getDoctorId()));
+					response.setDoctorName(userCollection.getFirstName());
+				}
+				nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository.getByPatientDoctorLocationHospitalandStatus(patientId, doctorId, locationId, hospitalId, nutritionReferenceCollection.getGoalStatus());
 				
-				
-				NutritionGoalStatusStampingCollection nutritionGoalStatusStampingCollection = new NutritionGoalStatusStampingCollection();
-				BeanUtil.map(nutritionReferenceCollection, nutritionGoalStatusStampingCollection);
-				nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository.save(nutritionGoalStatusStampingCollection);
-				
+				if (nutritionGoalStatusStampingCollection != null) {
+					nutritionGoalStatusStampingCollection.setGoalStatus(nutritionReferenceCollection.getGoalStatus());
+					nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
+							.save(nutritionGoalStatusStampingCollection);
+				} else {
+					nutritionGoalStatusStampingCollection = new NutritionGoalStatusStampingCollection();
+					nutritionGoalStatusStampingCollection.setDoctorId(nutritionReferenceCollection.getDoctorId());
+					nutritionGoalStatusStampingCollection.setLocationId(nutritionReferenceCollection.getLocationId());
+					nutritionGoalStatusStampingCollection.setHospitalId(nutritionReferenceCollection.getHospitalId());
+					nutritionGoalStatusStampingCollection.setPatientId(nutritionReferenceCollection.getPatientId());
+					nutritionGoalStatusStampingCollection
+							.setReferredDoctorId(nutritionReferenceCollection.getReferredDoctorId());
+					nutritionGoalStatusStampingCollection
+							.setReferredHospitalId(nutritionReferenceCollection.getReferredHospitalId());
+					nutritionGoalStatusStampingCollection
+							.setReferredLocationId(nutritionReferenceCollection.getReferredLocationId());
+					nutritionGoalStatusStampingCollection.setGoalStatus(nutritionReferenceCollection.getGoalStatus());
+					if(userCollection != null)
+					{
+						nutritionGoalStatusStampingCollection.setCreatedBy(userCollection.getFirstName());
+					}
+					nutritionGoalStatusStampingCollection.setCreatedTime(new Date());
+					nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
+							.save(nutritionGoalStatusStampingCollection);
+				}
 				if(response.getLocationId() != null)
 				{
 					LocationCollection locationCollection = locationRepository.findOne(new ObjectId(response.getLocationId()));
