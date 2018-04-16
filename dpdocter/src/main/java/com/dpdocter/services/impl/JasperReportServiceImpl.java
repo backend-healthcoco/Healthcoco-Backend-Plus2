@@ -1,4 +1,5 @@
 
+
 package com.dpdocter.services.impl;
 
 import java.util.Map;
@@ -1203,7 +1204,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
-		band.setPrintWhenExpression(new JRDesignExpression("!$F{title}.equals( null ) && !$F{title}.isEmpty()"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
