@@ -27,13 +27,14 @@
 					</resource>
 				</resources>
 				<plugins>
-        			<plugin>
-           		 <groupId>org.apache.tomcat.maven</groupId>
-            		 <artifactId>tomcat7-maven-plugin</artifactId>
-                 <version>2.0</version>
-               </plugin>
-            </plugins>
-			
+
+					<plugin>
+						<groupId>org.apache.tomcat.maven</groupId>
+						<artifactId>tomcat7-maven-plugin</artifactId>
+						<version>2.0</version>
+					</plugin>
+				</plugins>
+
 			</build>
 		</profile>
 		<profile>
@@ -860,6 +861,17 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -1001,9 +1013,16 @@
 			<systemPath>${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
 		</dependency>
 		<dependency>
-		    <groupId>org.xhtmlrenderer</groupId>
-		    <artifactId>flying-saucer-pdf</artifactId>
-		    <version>9.1.12</version>
+			<groupId>org.xhtmlrenderer</groupId>
+			<artifactId>flying-saucer-pdf</artifactId>
+			<version>9.1.12</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.17</version>
 		</dependency>
 	</dependencies>
 	<build>

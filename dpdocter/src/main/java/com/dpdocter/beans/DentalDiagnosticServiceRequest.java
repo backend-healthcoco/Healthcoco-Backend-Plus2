@@ -9,6 +9,7 @@ public class DentalDiagnosticServiceRequest {
 	private List<String> toothNumber;
 	private String CBCTQuadrant;
 	private String CBCTArch;
+	private DentalDiagnosticService dentalDiagnosticService;
 
 	public String getType() {
 		return type;
@@ -48,6 +49,14 @@ public class DentalDiagnosticServiceRequest {
 
 	public void setCBCTArch(String cBCTArch) {
 		CBCTArch = cBCTArch;
+	}
+
+	public DentalDiagnosticService getDentalDiagnosticService() {
+		return dentalDiagnosticService;
+	}
+
+	public void setDentalDiagnosticService(DentalDiagnosticService dentalDiagnosticService) {
+		this.dentalDiagnosticService = dentalDiagnosticService;
 	}
 
 }

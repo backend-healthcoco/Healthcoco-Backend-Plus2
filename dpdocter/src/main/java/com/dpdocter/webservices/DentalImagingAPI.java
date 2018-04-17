@@ -66,5 +66,8 @@ public class DentalImagingAPI {
 		response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
 		return response;
 	}
+	
+	
+	
 }
 
