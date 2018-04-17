@@ -13,8 +13,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.Location;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.DentalImagingService;
@@ -66,5 +68,27 @@ public class DentalImagingAPI {
 	}
 	
 	
+	@Path(value = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION, notes = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION)
+	public Response<Location> getPickupRequests(@QueryParam("dentalImagingServiceId") String dentalImagingServiceId,
+			@QueryParam("doctorId") String doctorId,@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
+			@QueryParam("page") int page) {
+
+		Response<Location> response = new Response<Location>();
+		//response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_SERVICES)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_SERVICES, notes = PathProxy.DentalImagingUrl.GET_SERVICES)
+	public Response<DentalDiagnosticService> getPickupRequests(@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
+			@QueryParam("page") int page) {
+
+		Response<DentalDiagnosticService> response = new Response<DentalDiagnosticService>();
+		//response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
+		return response;
+	}
 	
 }
