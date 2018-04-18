@@ -230,9 +230,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							new CustomAggregationOperation(new BasicDBObject("$project",
 									new BasicDBObject("name", "$drug.drugName").append("totalCount",
 											new BasicDBObject("$cond",
-													new BasicDBObject("if", new BasicDBObject("itemId",
-															  "$drug._id") )
-																	.append("then", "$Count").append("else", 0))))),
+													new BasicDBObject("if", new BasicDBObject("itemId", "$drug._id"))
+															.append("then", "$Count").append("else", 0))))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount"))
 
 					);
@@ -1546,7 +1545,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
 						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
 						new CustomAggregationOperation(new BasicDBObject("$project",
-								new BasicDBObject("tests.locationId", "$test.locationId")
+								new BasicDBObject("tests.locationId", "$test.locationId").append("tests.id", "$test.id")
 										.append("tests.hospitalId", "$test.hospitalId")
 										.append("tests.testName", "$test.testName")
 										.append("tests.explanation", "$test.explanation")
@@ -1571,7 +1570,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
 						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
 						new CustomAggregationOperation(new BasicDBObject("$project",
-								new BasicDBObject("tests.locationId", "$test.locationId")
+								new BasicDBObject("tests.locationId", "$test.locationId").append("tests.id", "$test.id")
 										.append("tests.hospitalId", "$test.hospitalId")
 										.append("tests.testName", "$test.testName")
 										.append("tests.explanation", "$test.explanation")
@@ -1702,7 +1701,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
 						new CustomAggregationOperation(new BasicDBObject("$project",
 								new BasicDBObject("drugs.locationId", "$drug.locationId")
-										.append("drugs.hospitalId", "$drug.hospitalId")
+										.append("drugs.hospitalId", "$drug.hospitalId").append("drugs.id", "$drug.id")
 										.append("drugs.doctorId", "$drug.doctorId")
 										.append("drugs.drugName", "$drug.drugName")
 										.append("drugs.drugType", "$drug.drugType")
@@ -1733,7 +1732,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
 						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
 						new CustomAggregationOperation(new BasicDBObject("$project",
-								new BasicDBObject("drugs.locationId", "$drug.locationId")
+								new BasicDBObject("drugs.locationId", "$drug.locationId").append("drugs.id", "$drug.id")
 										.append("drugs.hospitalId", "$drug.hospitalId")
 										.append("drugs.doctorId", "$drug.doctorId")
 										.append("drugs.drugName", "$drug.drugName")
