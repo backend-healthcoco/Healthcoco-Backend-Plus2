@@ -640,7 +640,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.quantity", "$treatments.quantity")));
 
 			Aggregation aggregation = Aggregation
-					.newAggregation(Aggregation.match(new Criteria("_id").in(treatmentId).and("isPatientDiscarded").is(false)),
+					.newAggregation(Aggregation.match(new Criteria("_id").in(treatmentId).and("isPatientDiscarded").ne(true)),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
@@ -705,7 +705,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
-					.is(patientObjectId).and("isPatientDiscarded").is(false);
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))
 					criteria.and("doctorId").is(doctorObjectId);
@@ -862,7 +862,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
-					.is(patientObjectId).and("isPatientDiscarded").is(false);
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))

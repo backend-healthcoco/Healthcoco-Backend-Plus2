@@ -18,11 +18,11 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 	List<DoctorPatientReceiptCollection> findAvailableAdvanceReceipts(String name, ObjectId doctorId,
 			ObjectId locationId, ObjectId hospitalId, ObjectId patientId, Sort sort);
 
-	@Query(value = "{'patientId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3,'discarded' : false, 'isPatientDiscarded':false}", count = true)
+	@Query(value = "{'patientId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3,'discarded' : false, 'isPatientDiscarded':{'$ne' : true}}", count = true)
 	Integer countByPatientIdDoctorLocationHospital(ObjectId patientId, ObjectId doctorId, ObjectId locationId,
 			ObjectId hospitalId);
 
-	@Query(value = "{'patientId' : ?0,'discarded' : false, 'isPatientDiscarded':false}", count = true)
+	@Query(value = "{'patientId' : ?0,'discarded' : false, 'isPatientDiscarded':{'$ne' : true}}", count = true)
 	Integer countByPatientId(ObjectId patientId);
 
 	@Query("{'advanceReceiptIdWithAmounts.receiptId': ?0}")

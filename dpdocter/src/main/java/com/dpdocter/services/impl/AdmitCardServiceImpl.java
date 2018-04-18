@@ -201,7 +201,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			String patientId, int page, int size, long updatedTime, Boolean discarded) {
 		List<AdmitCardResponse> response = null;
 		try {
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
 			}

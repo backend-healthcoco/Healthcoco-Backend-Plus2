@@ -215,8 +215,9 @@ public class ReportsServiceImpl implements ReportsService {
 					opdReportsCollection = new OPDReportsCollection();
 					UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
 					BeanUtil.map(opdReports, opdReportsCollection);
-					opdReportsCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
-							? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
+					opdReportsCollection.setCreatedBy(
+							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+									: "DR.") + " " + userCollection.getFirstName());
 					opdReportsCollection.setAdminCreatedTime(new Date());
 					if (opdReports.getCreatedTime() == null) {
 						opdReportsCollection.setCreatedTime(new Date());
@@ -328,7 +329,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -441,7 +442,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -549,13 +550,10 @@ public class ReportsServiceImpl implements ReportsService {
 								prescriptionItemDetails.add(prescriptionItemDetail);
 							}
 							prescription.setItems(prescriptionItemDetails);
+						} else {
+							prescription.setItems(new ArrayList<PrescriptionItemDetail>());
 						}
-						else
-						{
-							prescription.setItems(new ArrayList<PrescriptionItemDetail>()); 
-						}
-						
-						
+
 						PatientVisitCollection patientVisitCollection = patientVisitRepository
 								.findByPrescriptionId(collection.getPrescriptionCollection().getId());
 						if (patientVisitCollection != null)
@@ -581,14 +579,11 @@ public class ReportsServiceImpl implements ReportsService {
 								}
 							}
 							prescription.setDiagnosticTests(diagnosticTests);
-						}
-						else
-						{
+						} else {
 							prescription.setDiagnosticTests(new ArrayList<TestAndRecordDataResponse>());
 						}
-						
-						if(collection.getPrescriptionCollection().getAdvice() == null)
-						{
+
+						if (collection.getPrescriptionCollection().getAdvice() == null) {
 							prescription.setAdvice("");
 						}
 						if (prescription != null) {
@@ -636,7 +631,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -765,7 +760,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -909,25 +904,27 @@ public class ReportsServiceImpl implements ReportsService {
 		String response = null;
 		try {
 			List<OTReportsLookupResponse> otReportsLookupResponses = mongoTemplate
-					.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(otId))),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
-											true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
-									new BasicDBObject("$cond",
-											new BasicDBObject("if",
-													new BasicDBObject("$eq",
-															Arrays.asList("$patientCollection.locationId",
-																	"$locationId"))).append("then", "$$KEEP")
-																			.append("else", "$$PRUNE")))),
+					.aggregate(
+							Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(otId))),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+									Aggregation.unwind("doctor"),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$patientCollection")
+													.append("preserveNullAndEmptyArrays", true))),
+									new CustomAggregationOperation(
+											new BasicDBObject("$redact",
+													new BasicDBObject("$cond",
+															new BasicDBObject("if", new BasicDBObject("$eq",
+																	Arrays.asList("$patientCollection.locationId",
+																			"$locationId"))).append("then", "$$KEEP")
+																					.append("else", "$$PRUNE")))),
 
-							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-							Aggregation.unwind("patientUser")), OTReportsCollection.class,
-							OTReportsLookupResponse.class)
+									Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+									Aggregation.unwind("patientUser")),
+							OTReportsCollection.class, OTReportsLookupResponse.class)
 					.getMappedResults();
 
 			if (otReportsLookupResponses != null) {
@@ -976,8 +973,10 @@ public class ReportsServiceImpl implements ReportsService {
 			parameters.put("operationDate", sdf.format(otReportsLookupResponse.getOperationDate()));
 		}
 
-		parameters.put("anaesthesiaType", (otReportsLookupResponse.getAnaesthesiaType() != null)
-				? otReportsLookupResponse.getAnaesthesiaType().getAnaesthesiaType() : null);
+		parameters.put("anaesthesiaType",
+				(otReportsLookupResponse.getAnaesthesiaType() != null)
+						? otReportsLookupResponse.getAnaesthesiaType().getAnaesthesiaType()
+						: null);
 
 		if (otReportsLookupResponse.getSurgery() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a");
@@ -1024,46 +1023,52 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("anaesthetist", otReportsLookupResponse.getAnaesthetist());
 		parameters.put("materialForHPE",
 				otReportsLookupResponse.getMaterialForHPE() != null && otReportsLookupResponse.getMaterialForHPE()
-						? "YES" : "NO");
+						? "YES"
+						: "NO");
 		parameters.put("remarks", otReportsLookupResponse.getRemarks());
 		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
 		parameters.put("otReportsId", otReportsLookupResponse.getId());
 
-		patientVisitService
-				.generatePatientDetails(
-						(printSettings != null && printSettings.getHeaderSetup() != null
-								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient,
-						"<b>OT-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId())
-								? otReportsLookupResponse.getUniqueOTId() : "--"),
-						patient.getLocalPatientName(), user.getMobileNumber(),
-						parameters, otReportsLookupResponse.getUpdatedTime() != null
-								? otReportsLookupResponse.getUpdatedTime() : new Date(),
-						printSettings.getHospitalUId());
+		patientVisitService.generatePatientDetails((printSettings != null
+				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>OT-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId())
+						? otReportsLookupResponse.getUniqueOTId()
+						: "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				otReportsLookupResponse.getUpdatedTime() != null ? otReportsLookupResponse.getUpdatedTime()
+						: new Date(),
+				printSettings.getHospitalUId());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(otReportsLookupResponse.getDoctorId()));
 		String pdfName = (user != null ? user.getFirstName() : "") + "OTREPORTS-"
 				+ (!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId())
-						? otReportsLookupResponse.getUniqueOTId() : "")
+						? otReportsLookupResponse.getUniqueOTId()
+						: "")
 				+ new Date().getTime();
 
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 		response = jasperReportService.createPDF(ComponentType.OT_REPORTS, parameters, OTReportsFileName, layout,
 				pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
@@ -1092,12 +1097,10 @@ public class ReportsServiceImpl implements ReportsService {
 									new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(new BasicDBObject("$redact",
-									new BasicDBObject("$cond",
-											new BasicDBObject("if",
-													new BasicDBObject("$eq",
-															Arrays.asList("$patientCollection.locationId",
-																	"$locationId"))).append("then", "$$KEEP")
-																			.append("else", "$$PRUNE")))),
+									new BasicDBObject("$cond", new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patientCollection.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 							Aggregation.unwind("patientUser")),
@@ -1163,41 +1166,46 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("formNo", deliveryReportsLookupResponse.getFormNo());
 		parameters.put("remarks", deliveryReportsLookupResponse.getRemarks());
 
-		patientVisitService
-				.generatePatientDetails(
-						(printSettings != null && printSettings.getHeaderSetup() != null
-								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient,
-						"<b>DR-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId())
-								? deliveryReportsLookupResponse.getUniqueDRId() : "--"),
-						patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-						deliveryReportsLookupResponse.getUpdatedTime() != null
-								? deliveryReportsLookupResponse.getUpdatedTime() : new Date(),
-						printSettings.getHospitalUId());
+		patientVisitService.generatePatientDetails((printSettings != null
+				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>DR-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId())
+						? deliveryReportsLookupResponse.getUniqueDRId()
+						: "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				deliveryReportsLookupResponse.getUpdatedTime() != null ? deliveryReportsLookupResponse.getUpdatedTime()
+						: new Date(),
+				printSettings.getHospitalUId());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(deliveryReportsLookupResponse.getDoctorId()));
 		String pdfName = (user != null ? user.getFirstName() : "") + "DELIVERYREPORTS-"
 				+ (!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId())
-						? deliveryReportsLookupResponse.getUniqueDRId() : "")
+						? deliveryReportsLookupResponse.getUniqueDRId()
+						: "")
 				+ new Date().getTime();
 
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 		response = jasperReportService.createPDF(ComponentType.DELIVERY_REPORTS, parameters, deliveryReportsFileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,

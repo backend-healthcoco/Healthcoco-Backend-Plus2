@@ -1656,7 +1656,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -1963,7 +1963,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -2624,7 +2624,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
-					.and("hospitalId").is(hospitalObjectId).and("date").gt(start).lte(end).and("discarded").is(false).and("isPatientDiscarded").is(false);
+					.and("hospitalId").is(hospitalObjectId).and("date").gt(start).lte(end).and("discarded").is(false).and("isPatientDiscarded").ne(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("status").is(status.toUpperCase());
@@ -3209,7 +3209,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 					Criteria criteria2 = new Criteria("doctorId").is(userCollection.getId()).and("locationId")
-							.is(new ObjectId(locationId)).and("isPatientDiscarded").is(false);
+							.is(new ObjectId(locationId)).and("isPatientDiscarded").ne(true);
 					if (!DPDoctorUtils.anyStringEmpty(from)) {
 						localCalendar.setTime(new Date(Long.parseLong(from)));
 						int currentDay = localCalendar.get(Calendar.DATE);

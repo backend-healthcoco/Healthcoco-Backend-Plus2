@@ -207,7 +207,7 @@ public class ContactsServiceImpl implements ContactsService {
 		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 			hospitalObjectId = new ObjectId(hospitalId);
 
-		Criteria criteria = new Criteria("discarded").in(discards);
+		Criteria criteria = new Criteria("discarded").in(discards).and("isPatientDiscarded").ne(true);
 
 		if (createdTimestamp > 0)
 			criteria.and("updatedTime").gt(new Date(createdTimestamp));

@@ -10,11 +10,11 @@ import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 public interface DoctorPatientInvoiceRepository extends MongoRepository<DoctorPatientInvoiceCollection, ObjectId>,
 		PagingAndSortingRepository<DoctorPatientInvoiceCollection, ObjectId> {
 	
-	@Query(value = "{'patientId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3,'discarded' : false, 'isPatientDiscarded':false}", count = true)
+	@Query(value = "{'patientId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3,'discarded' : false, 'isPatientDiscarded': {'$ne' : true}}", count = true)
 	Integer countByPatientIdDoctorLocationHospital(ObjectId patientId, ObjectId doctorId, ObjectId locationId,
 			ObjectId hospitalId);
 
-	@Query(value = "{'patientId' : ?0,'discarded' : false, 'isPatientDiscarded':false}", count = true)
+	@Query(value = "{'patientId' : ?0,'discarded' : false, 'isPatientDiscarded':{ '$ne' : true } }", count = true)
 	Integer countByPatientId(ObjectId patientId);
 
 	@Query("{'uniqueInvoiceId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3}")

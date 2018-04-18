@@ -1439,7 +1439,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-					.is(patientObjectId).and("isPatientDiscarded").is(false);
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
@@ -1629,7 +1629,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId) {
 		List<Prescription> prescriptions = null;
 		try {
-			Criteria criteria = new Criteria("_id").in(prescriptionIds).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("_id").in(prescriptionIds).and("isPatientDiscarded").ne(true);
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
 					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
@@ -1828,7 +1828,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Integer prescriptionCount = 0;
 		try {
 
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true);
 			;
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
@@ -3298,7 +3298,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria().andOperator(new Criteria("patientId").is(new ObjectId(patientId)),
-					new Criteria("updatedTime").gt(new Date(createdTimestamp))).and("isPatientDiscarded").is(false);
+					new Criteria("updatedTime").gt(new Date(createdTimestamp))).and("isPatientDiscarded").ne(true);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
@@ -5255,7 +5255,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		long createdTimestamp = Long.parseLong(updatedTime);
 
 		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-				.is(patientObjectId).and("isPatientDiscarded").is(false);
+				.is(patientObjectId).and("isPatientDiscarded").ne(true);
 		if (!discarded)
 			criteria.and("discarded").is(discarded);
 		// if(inHistory)criteria.and("inHistory").is(inHistory);

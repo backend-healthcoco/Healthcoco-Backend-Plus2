@@ -547,7 +547,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded").ne(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -883,7 +883,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded").ne(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -1065,7 +1065,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
 					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)).and("discarded")
-					.is(false).and("isPatientDiscarded").is(false);
+					.is(false).and("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
@@ -1397,7 +1397,7 @@ public class BillingServiceImpl implements BillingService {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("patientId")
 					.is(new ObjectId(patientId)).and("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").is(false);
+					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").ne(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
