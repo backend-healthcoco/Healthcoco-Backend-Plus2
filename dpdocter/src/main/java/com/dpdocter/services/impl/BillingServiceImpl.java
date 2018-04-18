@@ -394,7 +394,7 @@ public class BillingServiceImpl implements BillingService {
 										doctorPatientInvoiceCollection.getId().toString(), "ADDED");
 							}
 							if (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
-								createInventoryStock(drug.getDrugCode()), inventoryItem.getId(),
+								createInventoryStock(drug.getDrugCode(), inventoryItem.getId(),
 										invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
 										request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 										diff.intValue(), doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
