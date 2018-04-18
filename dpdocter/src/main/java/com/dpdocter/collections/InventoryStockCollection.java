@@ -35,7 +35,7 @@ public class InventoryStockCollection extends GenericCollection {
 	@Field
 	private Double totalPrice;
 	@Field
-	private ObjectId resourceId;
+	private String resourceId;
 	@Field
 	private ObjectId invoiceId;
 
@@ -103,11 +103,11 @@ public class InventoryStockCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public ObjectId getResourceId() {
+	public String getResourceId() {
 		return resourceId;
 	}
 
-	public void setResourceId(ObjectId resourceId) {
+	public void setResourceId(String resourceId) {
 		this.resourceId = resourceId;
 	}
 

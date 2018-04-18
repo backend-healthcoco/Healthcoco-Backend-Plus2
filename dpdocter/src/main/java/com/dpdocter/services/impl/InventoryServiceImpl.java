@@ -409,7 +409,7 @@ public class InventoryServiceImpl implements InventoryService {
 			response = new InventoryStock();
 			BeanUtil.map(inventoryStockCollection, response);
 			
-			List<DrugCollection> drugCollections =  drugRepository.findByIdLocationIdHospitalId(inventoryStockCollection.getResourceId() , inventoryStockCollection.getLocationId(), inventoryStockCollection.getHospitalId());
+			List<DrugCollection> drugCollections =  drugRepository.findByIdLocationIdHospitalId(new ObjectId(inventoryStockCollection.getResourceId()) , inventoryStockCollection.getLocationId(), inventoryStockCollection.getHospitalId());
 			
 			for (DrugCollection drugCollection : drugCollections) {
 				{
