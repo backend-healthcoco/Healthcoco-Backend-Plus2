@@ -1062,8 +1062,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									+ " is here - Tap to view it!",
 							ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
 
-					if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
-						sendMessage(prescriptionCollection);
+					/*if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
+						sendMessage(prescriptionCollection);*/
 				}
 			});
 
