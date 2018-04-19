@@ -5056,6 +5056,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(30);
 
 		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{generalNotes}.isEmpty()"));
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{generalNotes}"));
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(5);
