@@ -17,10 +17,10 @@ public interface InventoryStockRepository extends MongoRepository<InventoryStock
 	
 	
 	@Query("{ 'locationId': ?0, 'hospitalId': ?1 , 'resourceId': ?2 , 'invoiceId': ?3 }")
-    public InventoryStockCollection findByLocationIdHospitalIdResourceIdInvoiceId( ObjectId locationId, ObjectId hospitalId ,ObjectId resourceId , ObjectId invoiceId);
+    public InventoryStockCollection findByLocationIdHospitalIdResourceIdInvoiceId( ObjectId locationId, ObjectId hospitalId ,String resourceId , ObjectId invoiceId);
 	
 	
 	@Query("{ 'locationId': ?0, 'hospitalId': ?1 , 'resourceId': ?2 , 'invoiceId': ?3 }")
-    public List<InventoryStockCollection> findListByLocationIdHospitalIdResourceIdInvoiceId( ObjectId locationId, ObjectId hospitalId ,ObjectId resourceId , ObjectId invoiceId);
+    public List<InventoryStockCollection> findListByLocationIdHospitalIdResourceIdInvoiceId( ObjectId locationId, ObjectId hospitalId ,String resourceId , ObjectId invoiceId);
 
 }
