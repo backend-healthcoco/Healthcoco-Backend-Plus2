@@ -5,11 +5,11 @@ import java.util.List;
 public class DentalDiagnosticServiceRequest {
 
 	private String type;
+	private String dentalDiagnosticServiceId;
 	private String serviceName;
 	private List<String> toothNumber;
 	private String CBCTQuadrant;
 	private String CBCTArch;
-	private DentalDiagnosticService dentalDiagnosticService;
 
 	public String getType() {
 		return type;
@@ -51,12 +51,12 @@ public class DentalDiagnosticServiceRequest {
 		CBCTArch = cBCTArch;
 	}
 
-	public DentalDiagnosticService getDentalDiagnosticService() {
-		return dentalDiagnosticService;
+	public String getDentalDiagnosticServiceId() {
+		return dentalDiagnosticServiceId;
 	}
 
-	public void setDentalDiagnosticService(DentalDiagnosticService dentalDiagnosticService) {
-		this.dentalDiagnosticService = dentalDiagnosticService;
+	public void setDentalDiagnosticServiceId(String dentalDiagnosticServiceId) {
+		this.dentalDiagnosticServiceId = dentalDiagnosticServiceId;
 	}
 
 }
