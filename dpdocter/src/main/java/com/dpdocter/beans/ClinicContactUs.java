@@ -21,10 +21,12 @@ public class ClinicContactUs extends GenericCollection {
 
 	private String doctorId;
 
+	private String hospitalId;
+
 	private String country;
 
 	private String state;
-	
+
 	private String city;
 
 	private String clinicNumber;
@@ -32,10 +34,8 @@ public class ClinicContactUs extends GenericCollection {
 	private String streetAddress;
 
 	private DoctorContactStateType contactState = DoctorContactStateType.APPROACH;
-	
+
 	private Date contactLaterOnDate;
-	
-	
 
 	public String getEmailAddress() {
 		return emailAddress;
@@ -48,8 +48,6 @@ public class ClinicContactUs extends GenericCollection {
 	public Type getType() {
 		return type;
 	}
-	
-	
 
 	public void setType(Type type) {
 		this.type = type;
@@ -133,6 +131,14 @@ public class ClinicContactUs extends GenericCollection {
 
 	public void setContactLaterOnDate(Date contactLaterOnDate) {
 		this.contactLaterOnDate = contactLaterOnDate;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 }

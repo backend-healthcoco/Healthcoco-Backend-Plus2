@@ -24,6 +24,8 @@ public class ClinicContactUsCollection extends GenericCollection {
 	@Field
 	private ObjectId doctorId;
 	@Field
+	private ObjectId hospitalId;
+	@Field
 	private String country;
 	@Field
 	private String state;
@@ -134,6 +136,14 @@ public class ClinicContactUsCollection extends GenericCollection {
 		this.contactLaterOnDate = contactLaterOnDate;
 	}
 
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicContactUsCollection [id=" + id + ", locationName=" + locationName + ", emailAddress="
@@ -141,6 +151,5 @@ public class ClinicContactUsCollection extends GenericCollection {
 				+ state + ", city=" + city + ", contactLaterOnDate=" + contactLaterOnDate + ", clinicNumber="
 				+ clinicNumber + ", streetAddress=" + streetAddress + ", contactState=" + contactState + "]";
 	}
-
 
 }
