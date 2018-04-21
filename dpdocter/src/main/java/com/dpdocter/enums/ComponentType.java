@@ -30,7 +30,9 @@ public enum ComponentType {
 																																																			"CALENDER_APPOINTMENT"), FLOW_SHEET(
 																																																					"FLOW_SHEET"), PATIENT_REFRESH(
 																																																							"PATIENT_REFRESH"), APPOINTMENT_STATUS_CHANGE(
-																																																									"APPOINTMENT_STATUS_CHANGE");
+
+																																																									"APPOINTMENT_STATUS_CHANGE"), MULTIPLE_INSPECTION_REPORT(
+																																																											"MULTIPLE_INSPECTION_REPORT");
 
 	private String type;
 

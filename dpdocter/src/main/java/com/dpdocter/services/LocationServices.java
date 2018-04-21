@@ -18,6 +18,7 @@ import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
 import com.dpdocter.response.CollectionBoyResponse;
+import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.DynamicCollectionBoyAllocationResponse;
 import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
@@ -40,7 +41,8 @@ public interface LocationServices {
 
 	Boolean verifyCRN(String locationId, String crn, String requestId);
 
-	//List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm);
+	// List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String
+	// locationId, String searchTerm);
 
 	// List<Location> getAssociatedLabs(String locationId, Boolean isParent);
 
@@ -72,9 +74,10 @@ public interface LocationServices {
 	RateCardLabAssociation addEditRateCardAssociatedLab(RateCardLabAssociation rateCardLabAssociation);
 
 	RateCardLabAssociation getRateCardAssociatedLab(String daughterLabId, String parentLabId);
-/*
-	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
-			String searchTerm);*/
+	/*
+	 * List<Location> getClinics(int page, int size, String hospitalId, Boolean
+	 * isClinic, Boolean isLab, Boolean isParent, String searchTerm);
+	 */
 
 	// Integer getCBCount(int size, int page, String locationId, String
 	// searchTerm);
@@ -91,9 +94,9 @@ public interface LocationServices {
 	Boolean addEditRateCardTestAssociation(List<RateCardTestAssociation> request);
 
 	/*
-	 * List<RateCardTestAssociationLookupResponse> getRateCardTests(int page,
-	 * int size, String searchTerm, String daughterLabId, String parentLabId,
-	 * String labId);
+	 * List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int
+	 * size, String searchTerm, String daughterLabId, String parentLabId, String
+	 * labId);
 	 */
 	// List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId,
 	// int size, int page);
@@ -106,7 +109,7 @@ public interface LocationServices {
 	// List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int
 	// size, int page);
 
-	Integer getCBCount(String locationId, String searchTerm , String labType);
+	Integer getCBCount(String locationId, String searchTerm, String labType);
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm, int page, int size);
 
@@ -144,4 +147,5 @@ public interface LocationServices {
 	List<LabTestPickupLookupResponse> getLabTestPickupByIds(List<ObjectId> ids);
 
 	DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request);
+
 }

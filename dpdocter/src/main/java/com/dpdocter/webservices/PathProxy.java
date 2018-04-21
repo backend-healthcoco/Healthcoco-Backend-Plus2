@@ -1591,6 +1591,7 @@ public interface PathProxy {
 
 	public interface DownloadDataUrls {
 
+
 		public static final String PATIENTS = "/patients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String PRESCRIPTIONS = "/prescriptions/{doctorId}/{locationId}/{hospitalId}";
@@ -1610,6 +1611,10 @@ public interface PathProxy {
 		public static final String INVOICES = "/invoices/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String DATA = "/data";
+
+
 	}
 
 	public static final String DENTAL_LAB_BASE_URL = BASE_URL + "/dentalLab";
@@ -1645,6 +1650,7 @@ public interface PathProxy {
 		public static final String GET_PICKUP_REQUEST_BY_ID = "/getRequestById/{requestId}";
 		public static final String DOWNLOAD_DENTAL_LAB_REPORT = "/getReportById/{requestId}";
 		public static final String DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT = "/inspectionReport/{requestId}/download";
+		public static final String DOWNLOAD_MULTIPLE_DENTAL_LAB_INSPECTION_REPORT = "/inspectionReport/download";
 
 	}
 

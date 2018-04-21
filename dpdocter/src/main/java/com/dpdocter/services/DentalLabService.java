@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
@@ -48,8 +50,8 @@ public interface DentalLabService {
 
 	/*
 	 * List<DentalLabDoctorAssociationLookupResponse>
-	 * getDentalLabDoctorAssociations(String locationId, int page, int size,
-	 * String searchTerm);
+	 * getDentalLabDoctorAssociations(String locationId, int page, int size, String
+	 * searchTerm);
 	 */
 
 	/*
@@ -90,8 +92,8 @@ public interface DentalLabService {
 	/*
 	 * List<DentalLabPickupResponse> getRequests(String dentalLabId, String
 	 * doctorId, Long from, Long to, String searchTerm, String status, Boolean
-	 * isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor, int
-	 * size, int page);
+	 * isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor, int size,
+	 * int page);
 	 */
 
 	/*
@@ -126,13 +128,17 @@ public interface DentalLabService {
 
 	String downloadDentalLabReportPrint(String id, Boolean isInspectionReport);
 
+	public List<DentalLabPickupResponse> getRequestByIds(List<ObjectId> ids);
+
+	public String downloadMultipleInspectionReportPrint(List<String> requestId);
+
 	/*
 	 * DentalLabDoctorAssociation
 	 * addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request);
 	 * 
 	 * List<DentalLabDoctorAssociationLookupResponse>
-	 * getDentalLabDoctorAssociations(String locationId, int page, int size,
-	 * String searchTerm);
+	 * getDentalLabDoctorAssociations(String locationId, int page, int size, String
+	 * searchTerm);
 	 */
 
 }
