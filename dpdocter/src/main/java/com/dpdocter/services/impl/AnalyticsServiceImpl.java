@@ -2409,6 +2409,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<InvoiceAnalyticsDataDetailResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -2423,27 +2427,24 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
 
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("invoiceDate").gt(start);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			fromTime = DPDoctorUtils.getStartTime(from);
+			toTime = DPDoctorUtils.getEndTime(to);
+			criteria.and("invoiceDate").gte(fromTime).lte(toTime);
 
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("invoiceDate").lte(end);
-			}
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("uniqueInvoiceId", "$uniqueInvoiceId"))
 							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
@@ -2544,7 +2545,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<IncomeAnalyticsDataResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
-
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
@@ -2556,28 +2560,23 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			DateTime start = null, end = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
 
-				start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("invoiceDate").gt(start);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("invoiceDate").lte(end);
-			}
+			fromTime = DPDoctorUtils.getStartTime(from);
+			toTime = DPDoctorUtils.getEndTime(to);
+			criteria.and("invoiceDate").gte(fromTime).lte(toTime);
 
 			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
 				switch (queryType) {
@@ -2590,7 +2589,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					break;
 				}
 				case "PATIENTGROUP": {
-					response = getInvoiceIncomeDataByPatientGroup(searchType, page, size, start, end, doctorId,
+					response = getInvoiceIncomeDataByPatientGroup(searchType, page, size, fromTime, toTime, doctorId,
 							locationId, hospitalId);
 					break;
 				}
@@ -2638,10 +2637,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			if (start != null) {
-				criteria2.and("invoice.invoiceDate").gt(start);
-			}
-			if (end != null) {
-				criteria2.and("invoice.invoiceDate").lte(end);
+				criteria2.and("invoice.invoiceDate").gt(start).lte(end);
 			}
 
 			Aggregation aggregation = Aggregation.newAggregation(

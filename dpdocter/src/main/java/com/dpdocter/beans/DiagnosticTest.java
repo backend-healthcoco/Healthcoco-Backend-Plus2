@@ -23,16 +23,26 @@ public class DiagnosticTest extends GenericCollection {
 
 	private String diagnosticTestCode;
 
-    private Double diagnosticTestCost = 0.0;
+	private Double diagnosticTestCost = 0.0;
 
-    private Amount diagnosticTestComission;
+	private Amount diagnosticTestComission;
 
-    private Double diagnosticTestCostForPatient = 0.0;
+	private Double diagnosticTestCostForPatient = 0.0;
 
-    private long rankingCount = 0;
+	private long rankingCount = 0;
 
-    private Integer turnaroundTime;
-    
+	private long count = 0;
+
+	private Integer turnaroundTime;
+
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
 	public String getId() {
 		return id;
 	}
