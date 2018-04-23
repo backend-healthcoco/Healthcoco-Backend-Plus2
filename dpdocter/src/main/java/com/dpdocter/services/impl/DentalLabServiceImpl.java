@@ -2311,7 +2311,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (dentalWorksSample.getDentalToothNumbers() != null) {
 				for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
 					toothNumbers = toothNumbers + StringUtils.join(dentalToothNumber.getToothNumber(), ',') + " - "
-							+ dentalToothNumber.getType() + "<br>";
+							+ dentalToothNumber.getType();
 				}
 				parameters.put("toothNumbers", toothNumbers);
 
@@ -2511,7 +2511,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				if (dentalWorksSample.getDentalToothNumbers() != null) {
 					for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
 						toothNumbers = toothNumbers + StringUtils.join(dentalToothNumber.getToothNumber(), ',') + " - "
-								+ dentalToothNumber.getType() + "<br>";
+								+ dentalToothNumber.getType();
 					}
 					jasperBean.setToothNumbers(toothNumbers);
 
