@@ -841,6 +841,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 					response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 				}
+				
+				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+						.findByLocationId(new ObjectId(request.getLocationId()));
+				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+					pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+							"Appointment updated.", ComponentType.APPOINTMENT_REFRESH.getType(),
+							null, null);
+				}
 			} else {
 				logger.error(incorrectAppointmentId);
 				throw new BusinessException(ServiceError.InvalidInput, incorrectAppointmentId);
@@ -1037,8 +1045,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 							response.setLongitude(locationCollection.getLongitude());
 						}
 					}
-					/*pushNotificationServices.notifyUser(request.getDoctorId(), "New appointment created.",
-							ComponentType.APPOINTMENT.getType(), null, null);*/
+
+					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+							.findByLocationId(locationId);
+					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+								"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(),
+								null, null);
+					}
 				}
 			}
 			
@@ -3293,8 +3307,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 			appointmentCollection.setUpdatedTime(new Date());
 			appointmentCollection = appointmentRepository.save(appointmentCollection);
 			
-			pushNotificationServices.notifyUser(doctorId, "Appointment status changed.",
-					ComponentType.APPOINTMENT_STATUS_CHANGE.getType(), null, null);
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationId(locationObjectId);
+			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+				pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+						"Appointment status changed.", ComponentType.APPOINTMENT_STATUS_CHANGE.getType(),
+						appointmentCollection.getId().toString(), null);
+			}
+			
+			/*pushNotificationServices.notifyUser(doctorId, "Appointment status changed.",
+					ComponentType.APPOINTMENT_STATUS_CHANGE.getType(), null, null);*/
 			if (isObjectRequired == true) {
 				if (appointmentCollection != null) {
 					response = new Appointment();
