@@ -27,7 +27,14 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Drug;
+<<<<<<< HEAD
+=======
+import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.EquipmentLogAMCAndServicingRegister;
+import com.dpdocter.beans.GenericCode;
+>>>>>>> e90650b... implemented HAPPY-3240
 import com.dpdocter.beans.IPDReports;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
@@ -70,9 +77,15 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DeliveryReportsLookupResponse;
 import com.dpdocter.response.DeliveryReportsResponse;
+import com.dpdocter.response.DurationResponse;
+import com.dpdocter.response.GenericCodeResponse;
 import com.dpdocter.response.IPDReportLookupResponse;
 import com.dpdocter.response.IPDReportsResponse;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.OPDDiagnosticTestResponse;
+import com.dpdocter.response.OPDPrescriptionItemResponse;
+import com.dpdocter.response.OPDPrescriptionResponse;
+import com.dpdocter.response.OPDReportCustomResponse;
 import com.dpdocter.response.OPDReportsLookupResponse;
 import com.dpdocter.response.OPDReportsResponse;
 import com.dpdocter.response.OTReportsLookupResponse;
@@ -433,7 +446,7 @@ public class ReportsServiceImpl implements ReportsService {
 	public OPDReportsResponse getOPDReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime) {
 		// TODO Auto-generated method stub
-		List<OPDReports> response = null;
+		List<OPDReportCustomResponse> response = null;
 		OPDReportsResponse opdReportsResponse = null;
 		List<OPDReportsLookupResponse> opdReportsLookupResponses = null;
 		int count = 0;
@@ -494,9 +507,9 @@ public class ReportsServiceImpl implements ReportsService {
 						OPDReportsCollection.class, OPDReportsLookupResponse.class).getMappedResults();
 
 			if (opdReportsLookupResponses != null) {
-				response = new ArrayList<OPDReports>();
+				response = new ArrayList<OPDReportCustomResponse>();
 				for (OPDReportsLookupResponse collection : opdReportsLookupResponses) {
-					OPDReports opdReports = new OPDReports();
+					OPDReportCustomResponse opdReports = new OPDReportCustomResponse();
 
 					BeanUtil.map(collection, opdReports);
 					if (collection.getDoctorId() != null) {
@@ -528,7 +541,7 @@ public class ReportsServiceImpl implements ReportsService {
 					}
 
 					if (collection.getPrescriptionCollection() != null) {
-						Prescription prescription = new Prescription();
+						OPDPrescriptionResponse prescription = new OPDPrescriptionResponse();
 						List<TestAndRecordData> tests = collection.getPrescriptionCollection().getDiagnosticTests();
 						collection.getPrescriptionCollection().setDiagnosticTests(null);
 
@@ -537,21 +550,46 @@ public class ReportsServiceImpl implements ReportsService {
 
 						BeanUtil.map(collection.getPrescriptionCollection(), prescription);
 						if (items != null && !items.isEmpty()) {
-							List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
+							List<OPDPrescriptionItemResponse> prescriptionItemDetails = new ArrayList<OPDPrescriptionItemResponse>();
 							for (PrescriptionItem prescriptionItem : items) {
-								PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+								OPDPrescriptionItemResponse prescriptionItemDetail = new OPDPrescriptionItemResponse();
 								BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 								DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
 								if (drugCollection != null) {
 									Drug drug = new Drug();
 									BeanUtil.map(drugCollection, drug);
-									prescriptionItemDetail.setDrug(drug);
+									prescriptionItemDetail.setId(drug.getId());
+									if (drug.getDuration() != null) {
+										DurationResponse duration = new DurationResponse();
+										BeanUtil.map(drug.getDuration(), duration);
+										prescriptionItemDetail.setDuration(duration);
+									}
+									if (drug.getDrugType() != null) {
+										prescriptionItemDetail.setDrugType(drug.getDrugType().getType());
+									}
+									if (drug.getDirection() != null && !drug.getDirection().isEmpty()) {
+										prescriptionItemDetail.setDirection(new ArrayList<String>());
+										for (DrugDirection direction : drug.getDirection()) {
+											prescriptionItemDetail.getDirection().add(direction.getDirection());
+										}
+									}
+
+									if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+										prescriptionItemDetail.setGenericNames(new ArrayList<GenericCodeResponse>());
+										for (GenericCode genericCode : drug.getGenericNames()) {
+											GenericCodeResponse genericCodeResponse = new GenericCodeResponse();
+											BeanUtil.map(genericCode, genericCodeResponse);
+											prescriptionItemDetail.getGenericNames().add(genericCodeResponse);
+										}
+									}
+									prescriptionItemDetails.add(prescriptionItemDetail);
 								}
-								prescriptionItemDetails.add(prescriptionItemDetail);
+								prescription.setItems(prescriptionItemDetails);
 							}
-							prescription.setItems(prescriptionItemDetails);
+
 						} else {
-							prescription.setItems(new ArrayList<PrescriptionItemDetail>());
+							prescription.setItems(new ArrayList<OPDPrescriptionItemResponse>());
+
 						}
 
 						PatientVisitCollection patientVisitCollection = patientVisitRepository
@@ -560,7 +598,7 @@ public class ReportsServiceImpl implements ReportsService {
 							prescription.setVisitId(patientVisitCollection.getId().toString());
 
 						if (tests != null && !tests.isEmpty()) {
-							List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
+							List<OPDDiagnosticTestResponse> diagnosticTests = new ArrayList<OPDDiagnosticTestResponse>();
 							for (TestAndRecordData data : tests) {
 								if (data.getTestId() != null) {
 									DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
@@ -570,17 +608,19 @@ public class ReportsServiceImpl implements ReportsService {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 									}
 									if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
-										diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+										diagnosticTests.add(new OPDDiagnosticTestResponse(diagnosticTest.getId(),diagnosticTest.getTestName(),
 												data.getRecordId().toString()));
 									} else {
-										diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, null));
+										diagnosticTests.add(new OPDDiagnosticTestResponse(diagnosticTest.getId(),diagnosticTest.getTestName(), null));
 									}
 
 								}
 							}
 							prescription.setDiagnosticTests(diagnosticTests);
 						} else {
-							prescription.setDiagnosticTests(new ArrayList<TestAndRecordDataResponse>());
+
+							prescription.setDiagnosticTests(new ArrayList<OPDDiagnosticTestResponse>());
+
 						}
 
 						if (collection.getPrescriptionCollection().getAdvice() == null) {
@@ -1212,5 +1252,8 @@ public class ReportsServiceImpl implements ReportsService {
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		return response;
 	}
+
+
+	
 
 }
