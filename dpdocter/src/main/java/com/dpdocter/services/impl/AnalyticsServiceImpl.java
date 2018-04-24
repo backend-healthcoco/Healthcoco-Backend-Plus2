@@ -2438,11 +2438,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				to = new Date(Long.parseLong(fromDate));
 				toTime = DPDoctorUtils.getEndTime(to);
 				criteria.and("invoiceDate").gte(fromTime);
-			} else  {
+			} else {
 				to = new Date(Long.parseLong(toDate));
 				toTime = DPDoctorUtils.getEndTime(to);
 				criteria.and("invoiceDate").lte(toTime);
-			
+
 			}
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("uniqueInvoiceId", "$uniqueInvoiceId"))
@@ -2562,20 +2562,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
+				fromTime = DPDoctorUtils.getStartTime(from);
+				toTime = DPDoctorUtils.getEndTime(to);
+				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
+				fromTime = DPDoctorUtils.getStartTime(from);
+				criteria.and("invoiceDate").gte(fromTime);
 			} else {
-				from = new Date();
-				to = new Date();
+				to = new Date(Long.parseLong(toDate));
+				toTime = DPDoctorUtils.getEndTime(to);
+				criteria.and("invoiceDate").lte(toTime);
 			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
-			criteria.and("invoiceDate").gte(fromTime).lte(toTime);
 
 			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
 				switch (queryType) {
