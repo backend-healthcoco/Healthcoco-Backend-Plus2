@@ -576,7 +576,10 @@ public class ReportsServiceImpl implements ReportsService {
 									prescriptionItemDetail.setId(drug.getId());
 									if (drug.getDuration() != null) {
 										DurationResponse duration = new DurationResponse();
-										BeanUtil.map(drug.getDuration(), duration);
+										duration.setDurationUnit(drug.getDuration().getDurationUnit() != null
+												? drug.getDuration().getDurationUnit().getUnit()
+												: "");
+										duration.setValue(drug.getDuration().getValue());
 										prescriptionItemDetail.setDuration(duration);
 									}
 									if (drug.getDrugType() != null) {
@@ -621,10 +624,11 @@ public class ReportsServiceImpl implements ReportsService {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 									}
 									if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
-										diagnosticTests.add(new OPDDiagnosticTestResponse(diagnosticTest.getId(),diagnosticTest.getTestName(),
-												data.getRecordId().toString()));
+										diagnosticTests.add(new OPDDiagnosticTestResponse(diagnosticTest.getId(),
+												diagnosticTest.getTestName(), data.getRecordId().toString()));
 									} else {
-										diagnosticTests.add(new OPDDiagnosticTestResponse(diagnosticTest.getId(),diagnosticTest.getTestName(), null));
+										diagnosticTests.add(new OPDDiagnosticTestResponse(diagnosticTest.getId(),
+												diagnosticTest.getTestName(), null));
 									}
 
 								}
