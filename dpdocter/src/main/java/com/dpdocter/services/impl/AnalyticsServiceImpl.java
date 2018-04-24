@@ -2438,7 +2438,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				to = new Date(Long.parseLong(fromDate));
 				toTime = DPDoctorUtils.getEndTime(to);
 				criteria.and("invoiceDate").gte(fromTime);
-			} else {
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				to = new Date(Long.parseLong(toDate));
 				toTime = DPDoctorUtils.getEndTime(to);
 				criteria.and("invoiceDate").lte(toTime);
@@ -2570,7 +2570,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				from = new Date(Long.parseLong(fromDate));
 				fromTime = DPDoctorUtils.getStartTime(from);
 				criteria.and("invoiceDate").gte(fromTime);
-			} else {
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				to = new Date(Long.parseLong(toDate));
 				toTime = DPDoctorUtils.getEndTime(to);
 				criteria.and("invoiceDate").lte(toTime);
