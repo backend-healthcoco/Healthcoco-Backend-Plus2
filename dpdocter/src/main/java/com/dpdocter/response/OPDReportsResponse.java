@@ -2,18 +2,16 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.OPDReports;
-
 public class OPDReportsResponse {
 
-	List<OPDReports> opdReports;
+	List<OPDReportCustomResponse> opdReports;
 	Integer count;
 
-	public List<OPDReports> getOpdReports() {
+	public List<OPDReportCustomResponse> getOpdReports() {
 		return opdReports;
 	}
 
-	public void setOpdReports(List<OPDReports> opdReports) {
+	public void setOpdReports(List<OPDReportCustomResponse> opdReports) {
 		this.opdReports = opdReports;
 	}
 
