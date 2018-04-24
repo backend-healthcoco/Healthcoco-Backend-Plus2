@@ -2435,19 +2435,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(fromDate));
-				fromTime = DPDoctorUtils.getStartTime(from);
 				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				criteria.and("invoiceDate").gte(fromTime);
+			} else  {
 				to = new Date(Long.parseLong(toDate));
-				fromTime = DPDoctorUtils.getStartTime(from);
 				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
-			} 
-
+				criteria.and("invoiceDate").lte(toTime);
+			
+			}
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("uniqueInvoiceId", "$uniqueInvoiceId"))
 							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
