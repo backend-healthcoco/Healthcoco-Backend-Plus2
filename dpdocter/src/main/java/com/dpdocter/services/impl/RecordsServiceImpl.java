@@ -1389,11 +1389,10 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
-			if (request.getPrescriptionId() != null) {
+			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId(), request.getPatientId())) {
 				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(),
 						new ObjectId(request.getPatientId()));
 			}
-
 			if (request.getRegisterPatient()) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
 				patientRegistrationRequest.setFirstName(request.getFirstName());
@@ -1410,7 +1409,9 @@ public class RecordsServiceImpl implements RecordsService {
 
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
 				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
-			} else {
+
+			} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+
 				List<PatientCard> patientCards = mongoTemplate.aggregate(
 						Aggregation.newAggregation(
 								Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
@@ -1443,7 +1444,7 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			if (file != null) {
 				if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
-					String path = "userRecords" + File.separator + request.getPatientId();
+					String path = "userRecords";
 					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
 					String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
@@ -1506,8 +1507,8 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 
 				String body = null;
-				if (prescriptionCollection != null
-						&& !DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())) {
+				if (prescriptionCollection != null && !DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())
+						&& !DPDoctorUtils.anyStringEmpty(recordsCollection.getPatientId())) {
 					if (recordsCollection.getRecordsState()
 							.equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
 						String subject = approvedRecordToDoctorSubject;
@@ -1535,9 +1536,11 @@ public class RecordsServiceImpl implements RecordsService {
 					}
 				}
 			}
-			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
-					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())
-					&& recordsCollection.getShareWithPatient()) {
+			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())
+					&& recordsCollection.getRecordsState().equalsIgnoreCase(
+							RecordsState.APPROVAL_NOT_REQUIRED.toString())
+					&& recordsCollection.getShareWithPatient()
+					&& !DPDoctorUtils.anyStringEmpty(recordsCollection.getPatientId())) {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
