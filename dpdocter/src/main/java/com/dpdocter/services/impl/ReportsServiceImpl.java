@@ -1,3820 +1,1242 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.PatientCard;
-import com.dpdocter.beans.TreatmentService;
-import com.dpdocter.collections.AppointmentCollection;
-import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorPatientInvoiceCollection;
-import com.dpdocter.collections.DoctorPatientLedgerCollection;
-import com.dpdocter.collections.DoctorPatientReceiptCollection;
+import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.GenericCode;
+import com.dpdocter.beans.IPDReports;
+import com.dpdocter.beans.OPDReports;
+import com.dpdocter.beans.OTReports;
+import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.TestAndRecordData;
+import com.dpdocter.beans.TimeDuration;
+import com.dpdocter.collections.DeliveryReportsCollection;
+import com.dpdocter.collections.DiagnosticTestCollection;
+import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.HospitalCollection;
+import com.dpdocter.collections.IPDReportsCollection;
+import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.OPDReportsCollection;
+import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PatientGroupCollection;
-import com.dpdocter.collections.PatientQueueCollection;
-import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
-import com.dpdocter.enums.AppointmentCreatedBy;
-import com.dpdocter.enums.AppointmentState;
-import com.dpdocter.enums.ModeOfPayment;
-import com.dpdocter.enums.PatientAnalyticType;
-import com.dpdocter.enums.PrescriptionItems;
-import com.dpdocter.enums.SearchType;
-import com.dpdocter.enums.UnitType;
+import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.response.AmountDueAnalyticsDataResponse;
-import com.dpdocter.response.AppointmentAnalyticResponse;
-import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
-import com.dpdocter.response.AppointmentCountAnalyticResponse;
-import com.dpdocter.response.AppointmentDeatilAnalyticResponse;
-import com.dpdocter.response.DiagnosticTestsAnalyticsData;
-import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
-import com.dpdocter.response.DoctorPatientAnalyticResponse;
-import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
-import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
-import com.dpdocter.response.DoctorVisitAnalyticResponse;
-import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
-import com.dpdocter.response.DrugsAnalyticsData;
-import com.dpdocter.response.IncomeAnalyticsDataResponse;
-import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
-import com.dpdocter.response.PatientAnalyticResponse;
-import com.dpdocter.response.PaymentAnalyticsDataResponse;
-import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
-import com.dpdocter.response.TretmentAnalyticMongoResponse;
-import com.dpdocter.services.AnalyticsService;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DeliveryReportsRepository;
+import com.dpdocter.repository.DiagnosticTestRepository;
+import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.HospitalRepository;
+import com.dpdocter.repository.IPDReportsRepository;
+import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.OPDReportsRepository;
+import com.dpdocter.repository.OTReportsRepository;
+import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientVisitRepository;
+import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
+import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.DeliveryReportsLookupResponse;
+import com.dpdocter.response.DeliveryReportsResponse;
+import com.dpdocter.response.DurationResponse;
+import com.dpdocter.response.GenericCodeResponse;
+import com.dpdocter.response.IPDReportLookupResponse;
+import com.dpdocter.response.IPDReportsResponse;
+import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.OPDDiagnosticTestResponse;
+import com.dpdocter.response.OPDPrescriptionItemResponse;
+import com.dpdocter.response.OPDPrescriptionResponse;
+import com.dpdocter.response.OPDReportCustomResponse;
+import com.dpdocter.response.OPDReportsLookupResponse;
+import com.dpdocter.response.OPDReportsResponse;
+import com.dpdocter.response.OTReportsLookupResponse;
+import com.dpdocter.response.OTReportsResponse;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.PatientVisitService;
+import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.ReportsService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
 @Service
-@Transactional
-public class ReportsServiceImpl implements AnalyticsService {
+public class ReportsServiceImpl implements ReportsService {
+
+	private static Logger logger = Logger.getLogger(ReportsServiceImpl.class.getName());
 
 	@Autowired
-	private MongoTemplate mongoTemplate;
+	IPDReportsRepository ipdReportsRepository;
 
-	Logger logger = Logger.getLogger(ReportsServiceImpl.class);
+	@Autowired
+	OPDReportsRepository opdReportsRepository;
 
-	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
-		Criteria criteria = new Criteria();
+	@Autowired
+	OTReportsRepository otReportsRepository;
 
-		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-			criteria.and("locationId").is(new ObjectId(locationId));
-		}
-		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-			criteria.and("hospitalId").is(new ObjectId(hospitalId));
-		}
-		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-			criteria.and("doctorId").is(new ObjectId(doctorId));
-		}
-		return criteria;
+	@Autowired
+	DeliveryReportsRepository deliveryReportsRepository;
 
-	}
+	@Autowired
+	PrescriptionRepository prescriptionRepository;
 
-	@Override
-	public DoctorVisitAnalyticResponse getVisitAnalytic(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate) {
-		DoctorVisitAnalyticResponse data = null;
-		try {
-			Criteria criteria = null;
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
+	@Autowired
+	UserRepository userRepository;
 
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("discarded").is(false);
+	@Autowired
+	PatientRepository patientRepository;
 
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
+	@Autowired
+	LocationRepository locationRepository;
 
-			data = new DoctorVisitAnalyticResponse();
-			data.setTotalVisit((int) mongoTemplate.count(new Query(criteria), PatientVisitCollection.class));
-			criteria.and("adminCreatedTime").gte(fromTime).lte(toTime);
-			data.setTotalVisitCreated((int) mongoTemplate.count(new Query(criteria), PatientVisitCollection.class));
-			// mongoTemplate.aggregate(aggregation,
-			// DoctorClinicProfileCollection.class,
-			// DoctorprescriptionAnalyticResponse.class).getUniqueMappedResult();
+	@Autowired
+	HospitalRepository hospitalRepository;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting visit analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting visit analytic");
-		}
-		return data;
+	@Autowired
+	MongoTemplate mongoTemplate;
 
-	}
+	@Autowired
+	PrescriptionServices prescriptionServices;
+
+	@Autowired
+	private DrugRepository drugRepository;
+
+	@Autowired
+	private PatientVisitRepository patientVisitRepository;
+
+	@Autowired
+	private DiagnosticTestRepository diagnosticTestRepository;
+
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+
+	@Autowired
+	private PatientVisitService patientVisitService;
+
+	@Autowired
+	private JasperReportService jasperReportService;
+
+	@Value(value = "${image.path}")
+	private String imagePath;
+
+	@Value(value = "${jasper.print.ot.reports.fileName}")
+	private String OTReportsFileName;
+
+	@Value(value = "${jasper.print.delivery.reports.fileName}")
+	private String deliveryReportsFileName;
 
 	@Override
-	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(int page, int size, String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String type, String searchTerm) {
-		List<DoctorPrescriptionItemAnalyticResponse> response = null;
-		try {
-			Criteria criteria = null;
-			Criteria itemCriteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
+	@Transactional
+	public IPDReports submitIPDReport(IPDReports ipdReports) {
+		IPDReports response = null;
+		IPDReportsCollection ipdReportsCollection = new IPDReportsCollection();
+		UserCollection userCollection = userRepository.findOne(new ObjectId(ipdReports.getDoctorId()));
 
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
+		if (ipdReports != null) {
+			BeanUtil.map(ipdReports, ipdReportsCollection);
+			try {
+
+				ipdReportsCollection.setAdminCreatedTime(new Date());
+				if (ipdReports.getCreatedTime() == null) {
+					ipdReportsCollection.setCreatedTime(new Date());
+				}
+
+				ipdReportsCollection.setCreatedBy(
+						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
+								+ " " + userCollection.getFirstName());
+
+				ipdReportsCollection = ipdReportsRepository.save(ipdReportsCollection);
+
+				if (ipdReportsCollection != null) {
+					BeanUtil.map(ipdReportsCollection, ipdReports);
+					response = new IPDReports();
+					response = ipdReports;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e + " Error occured while creating IPD Records");
+				throw new BusinessException(ServiceError.Unknown, "Error occured while creating IPD Records");
 			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
-			criteria = getCriteria(doctorId, locationId, null);
-
-			Aggregation aggregation = null;
-
-			switch (PrescriptionItems.valueOf(type.toUpperCase())) {
-
-			case DRUGS: {
-				itemCriteria.and("totalCount.hospitalId").is(new ObjectId(hospitalId)).and("totalCount.locationId")
-						.is(new ObjectId(locationId)).and("prescription.hospitalId").is(new ObjectId(hospitalId))
-						.and("prescription.locationId").is(new ObjectId(locationId));
-
-				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					itemCriteria = itemCriteria.and("totalCount.drugName").regex(searchTerm, "i");
-				}
-				if (size > 0) {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "prescription"),
-							Aggregation.unwind("prescription"), Aggregation.unwind("prescription.items"),
-							Aggregation.lookup("drug_cl", "doctorId", "doctorId", "totalCount"),
-							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
-							new CustomAggregationOperation(new BasicDBObject("$project",
-									new BasicDBObject("totalCount", "$totalCount").append("itemId",
-											"$prescription.items.drugId"))),
-							new CustomAggregationOperation(new BasicDBObject(
-									"$group",
-									new BasicDBObject(
-											"_id",
-											new BasicDBObject("drugId", "$totalCount._id").append("itemId", "$itemId"))
-													.append("name", new BasicDBObject("$first", "$totalCount.drugName"))
-													.append("totalCount", new BasicDBObject("$sum", 1)))),
-
-							new CustomAggregationOperation(new BasicDBObject("$project",
-									new BasicDBObject("name", "$name").append("totalCount",
-											new BasicDBObject("$cond", new BasicDBObject("$if", new BasicDBObject("$eq",
-													new Object[] { new BasicDBObject("$itemId", "totalCount._id") })
-															.append("then", "$totalCount").append("else", 0)))))),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
-				} else {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "prescription"),
-							Aggregation.unwind("prescription"), Aggregation.unwind("prescription.items"),
-							Aggregation.lookup("drug_cl", "doctorId", "doctorId", "totalCount"),
-							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
-
-							new CustomAggregationOperation(new BasicDBObject("$project",
-									new BasicDBObject("totalCount", "$totalCount").append("itemId",
-											"$prescription.items.drugId"))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id",
-											new BasicDBObject("drugId", "$totalCount._id").append("itemId", "$itemId"))
-													.append("itemId", new BasicDBObject("$first", "$itemId"))
-													.append("drug", new BasicDBObject("$first", "$totalCount"))
-													.append("Count", new BasicDBObject("$sum", 1)))),
-
-							new CustomAggregationOperation(new BasicDBObject("$project",
-									new BasicDBObject("name", "$drug.drugName").append("totalCount",
-											new BasicDBObject("$cond",
-													new BasicDBObject("if", new BasicDBObject("itemId", "$drug._id"))
-															.append("then", "$Count").append("else", 0))))),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount"))
-
-					);
-				}
-
-				break;
-			}
-			case DIAGNOSTICTEST: {
-				itemCriteria.and("totalCount.hospitalId").is(new ObjectId(hospitalId)).and("totalCount.locationId")
-						.is(new ObjectId(locationId));
-
-				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					itemCriteria = itemCriteria.and("totalCount.testName").regex(searchTerm, "i");
-				}
-				if (size > 0) {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.unwind("diagnosticTests"),
-							new CustomAggregationOperation(
-									new BasicDBObject("$group", new BasicDBObject("_id", "$diagnosticTests.testId"))
-											.append("itemId", new BasicDBObject("$first", "$diagnosticTests.testId"))),
-
-							Aggregation.lookup("diagnostic_test_cl", "doctorid", "doctorid", "totalCount"),
-
-							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
-
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "$totalCount._id")
-											.append("name", new BasicDBObject("$first", "$totalCount.testName"))
-
-											.append("totalCount", new BasicDBObject("$sum",
-													new BasicDBObject("$cond", new Object[] { new BasicDBObject("$eq",
-															new Object[] {
-																	new BasicDBObject("$itemId", "$totalCount._id") }),
-															1, 0 }))))),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
-				} else {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.unwind("diagnosticTests"),
-							new CustomAggregationOperation(
-									new BasicDBObject("$group", new BasicDBObject("_id", "$diagnosticTests.testId"))
-											.append("itemId", new BasicDBObject("$first", "$diagnosticTests.testId"))),
-
-							Aggregation.lookup("diagnostic_test_cl", "doctorid", "doctorid", "totalCount"),
-
-							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
-
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "$totalCount._id")
-											.append("name", new BasicDBObject("$first", "$totalCount.testName"))
-
-											.append("totalCount", new BasicDBObject("$sum",
-													new BasicDBObject("$cond", new Object[] { new BasicDBObject("$eq",
-															new Object[] {
-																	new BasicDBObject("$itemId", "$totalCount._id") }),
-															1, 0 }))))),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")));
-				}
-
-				break;
-			}
-			default:
-				break;
-			}
-
-			response = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class,
-					DoctorPrescriptionItemAnalyticResponse.class).getMappedResults();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting Prescription items analytic");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting Prescription items analytic");
-		}
-		return response;
-
-	}
-
-	@Override
-	public DoctorprescriptionAnalyticResponse getPrescriptionAnalytic(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate) {
-		DoctorprescriptionAnalyticResponse data = null;
-		try {
-			Criteria criteria = null;
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("discarded").is(false);
-
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
-			// it take lot of time
-
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescription"),
-					Aggregation.unwind("totalPrescription"),
-					Aggregation.match(new Criteria("totalPrescription.locationId").is(new ObjectId(locationId))
-							.and("totalPrescription.hospitalId").is(new ObjectId(hospitalId))),
-					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescriptionCreated"),
-
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
-									.append("totalPrescriptionCreated",
-											new BasicDBObject("$first", "$totalPrescriptionCreated"))
-									.append("totalPrescription", new BasicDBObject("$sum", 1)))),
-
-					Aggregation.unwind("totalPrescriptionCreated"),
-
-					Aggregation.match(new Criteria("totalPrescriptionCreated.locationId").is(new ObjectId(locationId))
-							.and("totalPrescriptionCreated.hospitalId").is(new ObjectId(hospitalId))
-							.and("totalPrescriptionCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
-
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
-									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
-									.append("totalPrescriptionCreated", new BasicDBObject("$sum", 1)))));
-			// trying with query
-
-			data = new DoctorprescriptionAnalyticResponse();
-			data.setTotalPrescription((int) mongoTemplate.count(new Query(criteria), PrescriptionCollection.class));
-			criteria.and("adminCreatedTime").gte(fromTime).lte(toTime);
-			data.setTotalPrescriptionCreated(
-					(int) mongoTemplate.count(new Query(criteria), PrescriptionCollection.class));
-			// mongoTemplate.aggregate(aggregation,
-			// DoctorClinicProfileCollection.class,
-			// DoctorprescriptionAnalyticResponse.class).getUniqueMappedResult();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting Prescription analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Prescription analytic");
-		}
-		return data;
-
-	}
-
-	@Override
-	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate) {
-		DoctorAppointmentAnalyticResponse data = new DoctorAppointmentAnalyticResponse();
-		try {
-			Criteria criteria = null;
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			Date lastdate = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			long diff = to.getTime() - from.getTime();
-			long diffDays = (diff / (24 * 60 * 60 * 1000));
-			lastdate = new Date(from.getTime() - ((diffDays + 1) * (24 * 60 * 60 * 1000)));
-
-			DateTime last = DPDoctorUtils.getStartTime(lastdate);
-			localCalendar.setTime(from);
-			int fromDay = localCalendar.get(Calendar.DATE);
-			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int fromYear = localCalendar.get(Calendar.YEAR);
-			fromTime = new DateTime(fromYear, fromMonth, fromDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			localCalendar.setTime(to);
-			fromDay = localCalendar.get(Calendar.DATE);
-			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
-			fromYear = localCalendar.get(Calendar.YEAR);
-			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-			// total
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT");
-
-			data.setTotalNoOfAppointment((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
-
-			// cancel by doctor
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT");
-
-			data.setCancelBydoctor((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
-					.is(AppointmentCreatedBy.DOCTOR.getType()).and("state").is("CANCEL")),
-					AppointmentCollection.class));
-
-			// cancel by Patient
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT");
-			data.setCancelByPatient((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
-					.is(AppointmentCreatedBy.PATIENT.getType()).and("state").is("CANCEL")),
-					AppointmentCollection.class));
-			if (data.getTotalNoOfAppointment() > 0) {
-
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-						.and("type").is("APPOINTMENT");
-				int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CANCEL")),
-						AppointmentCollection.class);
-
-				data.setCancelledAppointmentInPercent(
-						((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment()));
-
-				// Booked percent
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-						.and("type").is("APPOINTMENT");
-				appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
-						AppointmentCollection.class);
-
-				data.setBookedAppointmentInPercent(
-						((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment()));
-
-				// Scheduled percent
-
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-						.and("type").is("APPOINTMENT");
-				appointmentCount = (int) mongoTemplate.count(
-						new Query(criteria.and("status").is("SCHEDULED").and("state").is("NEW")),
-						AppointmentCollection.class);
-
-				data.setScheduledAppointmentInPercent(
-						(100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment());
-
-				// hike
-				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(last).lte(fromTime)
-						.and("type").is("APPOINTMENT");
-				appointmentCount = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
-
-				data.setChangeInAppointmentPercent(
-						(100 * ((double) data.getTotalNoOfAppointment() - (double) appointmentCount))
-								/ (double) data.getTotalNoOfAppointment());
-				// new Patient Appointment
-
-				criteria = getCriteria(null, locationId, hospitalId).and("appointment.locationId")
-						.is(new ObjectId(locationId)).and("appointment.hospitalId").is(new ObjectId(hospitalId))
-						.and("appointment.fromDate").gte(fromTime).and("appointment.type").is("APPOINTMENT");
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
-				}
-				Aggregation aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
-						Aggregation.unwind("appointment"),
-						new CustomAggregationOperation(new BasicDBObject("$redact",
-								new BasicDBObject("$cond",
-										new BasicDBObject()
-												.append("if",
-														new BasicDBObject("$gt",
-																Arrays.asList("$appointment.createdTime",
-																		"$createdTime")))
-												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-						Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))
-
-				);
-				appointmentCount = mongoTemplate
-						.aggregate(aggregation, PatientCollection.class, PatientCollection.class).getMappedResults()
-						.size();
-
-				data.setNewPatientAppointmentInPercent(
-						(100 * (appointmentCount)) / (double) data.getTotalNoOfAppointment());
-
-				// old Patient Appointment count
-
-				data.setOldPatientAppointmentInPercent((100 * (data.getTotalNoOfAppointment() - appointmentCount))
-						/ (double) data.getTotalNoOfAppointment());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting Appointment analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Appointment analytic");
-		}
-		return data;
-
-	}
-
-	@Override
-	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate) {
-		DoctorPatientAnalyticResponse data = new DoctorPatientAnalyticResponse();
-		try {
-			Criteria criteria = null;
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			Date lastdate = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			long diff = to.getTime() - from.getTime();
-			long diffDays = (diff / (24 * 60 * 60 * 1000));
-			lastdate = new Date(from.getTime() - ((diffDays + 1) * (24 * 60 * 60 * 1000)));
-
-			DateTime last = DPDoctorUtils.getStartTime(lastdate);
-			localCalendar.setTime(from);
-			int fromDay = localCalendar.get(Calendar.DATE);
-			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int fromYear = localCalendar.get(Calendar.YEAR);
-			fromTime = new DateTime(fromYear, fromMonth, fromDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			localCalendar.setTime(to);
-			fromDay = localCalendar.get(Calendar.DATE);
-			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
-			fromYear = localCalendar.get(Calendar.YEAR);
-			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-			criteria = getCriteria(null, locationId, hospitalId);
-			data.setTotalPatient((int) mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-							Aggregation.sort(Direction.DESC, "createdTime")),
-					PatientCollection.class, PatientCollection.class).getMappedResults().size());
-
-			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
-			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
-
-			// hike in patient
-			int total = 0;
-
-			if (data.getTotalNewPatient() > 0) {
-				// hike in patient
-
-				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(last).lte(fromTime);
-				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
-				data.setChangeInTotalPatientInPercent(total);
-
-			}
-			// visited patient
-			criteria = getCriteria(null, locationId, hospitalId).and("visit.adminCreatedTime").gte(fromTime).lte(toTime)
-					.and("visit.locationId").is(new ObjectId(locationId)).and("visit.discarded").is(false)
-					.and("visit.hospitalId").is(new ObjectId(hospitalId));
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("visit.doctorId").is(new ObjectId(doctorId));
-			}
-
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"), Aggregation.unwind("visit"),
-					Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
-			total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
-					.getMappedResults().size();
-			data.setTotalVisitedPatient(total);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting Patient analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Patient analytic");
-		}
-		return data;
-	}
-
-	@Override
-	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(int page, int size, String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
-		List<DoctorTreatmentAnalyticResponse> response = null;
-		try {
-			Criteria criteria = null;
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-
-			localCalendar.setTime(from);
-			int fromDay = localCalendar.get(Calendar.DATE);
-			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int fromYear = localCalendar.get(Calendar.YEAR);
-			fromTime = new DateTime(fromYear, fromMonth, fromDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			localCalendar.setTime(to);
-			fromDay = localCalendar.get(Calendar.DATE);
-			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
-			fromYear = localCalendar.get(Calendar.YEAR);
-			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
-					.and("discarded").is(false);
-
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.and("totalTreatmentService.name").regex(searchTerm, "i");
-			}
-			Aggregation aggregation = null;
-			if (size > 0) {
-
-				aggregation = Aggregation
-						.newAggregation(Aggregation.unwind("treatments"),
-								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-										"totalTreatmentService"),
-
-								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
-								new CustomAggregationOperation(
-										new BasicDBObject("$group",
-												new BasicDBObject("_id", "$treatments.treatmentServiceId")
-														.append("treatmentServiceId",
-																new BasicDBObject("$first",
-																		"$treatments.treatmentServiceId"))
-														.append("treatmentServiceName",
-																new BasicDBObject("$first",
-																		"$totalTreatmentService.name"))
-														.append("totalTreatmentServiceNotStarted",
-																new BasicDBObject("$push", "$treatments.status"))
-														.append("totalTreatmentServiceProgress",
-																new BasicDBObject("$push", "$treatments.status"))
-														.append("totalTreatmentServiceCompleted",
-																new BasicDBObject("$push", "$treatments.status"))
-														.append("totalTreatmentService",
-																new BasicDBObject("$sum", 1)))),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "totalTreatmentService")),
-								Aggregation.skip((page) * size), Aggregation.limit(size));
-			} else {
-				size = 10;
-
-				aggregation = Aggregation
-						.newAggregation(Aggregation.unwind("treatments"),
-								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-										"totalTreatmentService"),
-
-								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
-								new CustomAggregationOperation(
-										new BasicDBObject("$group",
-												new BasicDBObject("_id", "$treatments.treatmentServiceId")
-														.append("treatmentServiceId",
-																new BasicDBObject("$first",
-																		"$treatments.treatmentServiceId"))
-														.append("treatmentServiceName",
-																new BasicDBObject("$first",
-																		"$totalTreatmentService.name"))
-														.append("totalTreatmentServiceNotStarted",
-																new BasicDBObject("$push", "$treatments.status"))
-														.append("totalTreatmentServiceProgress",
-																new BasicDBObject("$push", "$treatments.status"))
-														.append("totalTreatmentServiceCompleted",
-																new BasicDBObject("$push", "$treatments.status"))
-														.append("totalTreatmentService",
-																new BasicDBObject("$sum", 1)))),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "totalTreatmentService")),
-								Aggregation.skip((page) * size), Aggregation.limit(size));
-
-			}
-			AggregationResults<TretmentAnalyticMongoResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					PatientTreatmentCollection.class, TretmentAnalyticMongoResponse.class);
-			List<TretmentAnalyticMongoResponse> analyticMongoResponses = aggregationResults.getMappedResults();
-			if (analyticMongoResponses != null && !analyticMongoResponses.isEmpty()) {
-				response = new ArrayList<DoctorTreatmentAnalyticResponse>();
-				DoctorTreatmentAnalyticResponse analyticResponse = new DoctorTreatmentAnalyticResponse();
-				for (TretmentAnalyticMongoResponse data : analyticMongoResponses) {
-					analyticResponse.setTotalTreatmentService(data.getTotalTreatmentService());
-					analyticResponse.setTreatmentServiceName(data.getTreatmentServiceName());
-					if (data.getTotalTreatmentServiceCompleted() != null
-							&& !data.getTotalTreatmentServiceCompleted().isEmpty()) {
-
-						for (String str : data.getTotalTreatmentServiceCompleted()) {
-							int i = 0;
-							if (str.equals("COMPLETED")) {
-								i++;
-
-							}
-							analyticResponse.setTotalTreatmentServiceCompleted(i);
-						}
-						if (data.getTotalTreatmentServiceProgress() != null
-								&& !data.getTotalTreatmentServiceProgress().isEmpty()) {
-							for (String str : data.getTotalTreatmentServiceProgress()) {
-								int i = 0;
-								if (str.equals("IN_PROGRESS")) {
-									i++;
-
-								}
-								analyticResponse.setTotalTreatmentServiceProgress(i);
-							}
-						}
-						if (data.getTotalTreatmentServiceNotStarted() != null
-								&& !data.getTotalTreatmentServiceNotStarted().isEmpty()) {
-							for (String str : data.getTotalTreatmentServiceNotStarted()) {
-								int i = 0;
-								if (str.equals("NOT_STARTED")) {
-									i++;
-
-								}
-								analyticResponse.setTotalTreatmentServiceNotStarted(i);
-							}
-
-						}
-					}
-				}
-				response.add(analyticResponse);
-			}
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting Treatment analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Treatment analytic");
-		}
-
-		return response;
-	}
-
-	@Override
-	public List<PatientAnalyticResponse> getPatientCount(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String queryType, String searchType, String searchTerm) {
-		List<PatientAnalyticResponse> response = null;
-		try {
-			Criteria criteria = new Criteria();
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("fromDate").gte(fromTime);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				criteria.and("toDate").lte(toTime);
-			}
-			Aggregation aggregation = null;
-			CustomAggregationOperation aggregationOperation = null;
-			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
-			case NEW_PATIENT: {
-				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-						Fields.field("patients._id", "$userId"),
-						Fields.field("patients.localPatientName", "$localPatientName"),
-						Fields.field("patients.pid", "$PID"), Fields.field("patients.firstName", "$firstName"),
-						Fields.field("patients.registrationDate", "$registrationDate"),
-						Fields.field("patients.createdTime", "$createdTime"), Fields.field("date", "$createdTime")));
-
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-					criteria = criteria.and("locationId").is(new ObjectId(locationId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-					criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
-				}
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("week", new BasicDBObject("$first", "$week"))
-											.append("date", new BasicDBObject("$first", "$date"))
-											.append("patients", new BasicDBObject("$push", "$patients"))));
-
-					break;
-				}
-
-				case WEEKLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("day", new BasicDBObject("$first", "$day"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("week", new BasicDBObject("$first", "$week"))
-													.append("date", new BasicDBObject("$first", "$date"))
-													.append("patients", new BasicDBObject("$push", "$patients"))));
-
-					break;
-				}
-
-				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("week", new BasicDBObject("$first", "$week"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("patients", new BasicDBObject("$push", "$patients"))));
-
-					break;
-				}
-				case YEARLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("week", new BasicDBObject("$first", "$week"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("patients", new BasicDBObject("$push", "$patients"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")));
-				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-						"patient_cl", PatientAnalyticResponse.class);
-				response = aggregationResults.getMappedResults();
-				break;
-			}
-
-			case CITY_WISE: {
-				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-						Fields.field("patient._id", "$userId"),
-						Fields.field("patient.localPatientName", "$localPatientName"),
-						Fields.field("patient.pid", "$PID"), Fields.field("patient.firstName", "$user.firstName"),
-						Fields.field("patient.registrationDate", "$registrationDate"),
-						Fields.field("patient.createdTime", "$createdTime"), Fields.field("date", "$createdTime"),
-						Fields.field("city", "$address.city")));
-				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					criteria.and("address.city").is(searchTerm);
-				}
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-					criteria = criteria.and("locationId").is(new ObjectId(locationId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-					criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
-				}
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-				case DAILY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
-											.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("date", new BasicDBObject("$first", "$date"))
-													.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-				}
-				case WEEKLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
-											.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("week", new BasicDBObject("$first", "$week"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("date", new BasicDBObject("$first", "$date"))
-													.append("patients", new BasicDBObject("$push", "$patient"))));
-					break;
-				}
-
-				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("month", "$month").append("year", "$year").append("city",
-											"$city")).append("day", new BasicDBObject("$first", "$day"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("date", new BasicDBObject("$first", "$date"))
-													.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-				}
-				case YEARLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year").append("city", "$city"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
-				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-						"patient_cl", PatientAnalyticResponse.class);
-				response = aggregationResults.getMappedResults();
-				break;
-			}
-			case LOCALITY_WISE: {
-				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-						Fields.field("patient._id", "$userId"),
-						Fields.field("patient.localPatientName", "$localPatientName"),
-						Fields.field("patient.pid", "$PID"), Fields.field("patient.firstName", "$user.firstName"),
-						Fields.field("patient.registrationDate", "$registrationDate"),
-						Fields.field("patient.createdTime", "$createdTime"), Fields.field("date", "$createdTime"),
-						Fields.field("city", "$address.city")));
-				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					criteria.and("address.locality").is(searchTerm);
-				}
-
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-					criteria = criteria.and("locationId").is(new ObjectId(locationId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-					criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
-				}
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-				case DAILY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("city", new BasicDBObject("$first", "$city"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("date", new BasicDBObject("$first", "$date"))
-											.append("patients", new BasicDBObject("$push", "$patient"))));
-					break;
-				}
-
-				case WEEKLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("day", new BasicDBObject("$first", "$day"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("week", new BasicDBObject("$first", "$week"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("date", new BasicDBObject("$first", "$date"))
-													.append("patients", new BasicDBObject("$push", "$patient"))));
-					break;
-				}
-
-				case MONTHLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-				}
-				case YEARLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("date").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-						"patient_cl", PatientAnalyticResponse.class);
-				response = aggregationResults.getMappedResults();
-				break;
-			}
-			case IN_GROUP: {
-				ProjectionOperation projectList = new ProjectionOperation(
-						Fields.from(Fields.field("patient.id", "$patient.userId"),
-								Fields.field("patient.localPatientName", "$patient.localPatientName"),
-								Fields.field("patient.PID", "$patient.PID"),
-								Fields.field("patient.firstName", "$patient.firstName"),
-								Fields.field("patient.registrationDate", "$patient.registrationDate"),
-								Fields.field("patient.createdTime", "$patient.createdTime"),
-								Fields.field("groupName", "$group.name"), Fields.field("date", "$createdTime"),
-								Fields.field("groupId", "$group._id")));
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria = criteria.and("patient.doctorId").is(new ObjectId(doctorId)).and("group.doctorId")
-							.is(new ObjectId(doctorId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-					criteria = criteria.and("patient.locationId").is(new ObjectId(locationId)).and("group.locationId")
-							.is(new ObjectId(locationId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-					criteria = criteria.and("patient.hospitalId").is(new ObjectId(hospitalId)).and("group.hospitalId")
-							.is(new ObjectId(hospitalId));
-				}
-
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-				case DAILY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
-											.append("groupId", "$groupId"))
-													.append("day", new BasicDBObject("$first", "$day"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("groupName", new BasicDBObject("$first", "$groupName"))
-													.append("groupId", new BasicDBObject("$first", "$groupId"))
-													.append("date", new BasicDBObject("$first", "$date"))
-													.append("patients", new BasicDBObject("$push", "$patient"))));
-					break;
-				}
-
-				case WEEKLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
-											.append("groupId", "$groupId"))
-													.append("day", new BasicDBObject("$first", "$day"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("groupName", new BasicDBObject("$first", "$groupName"))
-													.append("groupId", new BasicDBObject("$first", "$groupId"))
-													.append("date", new BasicDBObject("$first", "$date"))
-													.append("patients", new BasicDBObject("$push", "$patient"))));
-					break;
-				}
-
-				case MONTHLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("month", "$month").append("year", "$year").append("groupId",
-											"$groupId")).append("day", new BasicDBObject("$first", "$day"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("groupName", new BasicDBObject("$first", "$groupName"))
-													.append("groupId", new BasicDBObject("$first", "$groupId"))
-													.append("date", new BasicDBObject("$first", "$date"))
-													.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-				}
-				case YEARLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year").append("groupId", "$groupId"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("groupName", new BasicDBObject("$first", "$groupName"))
-									.append("groupId", new BasicDBObject("$first", "$groupId"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
-						Aggregation.unwind("group"), Aggregation.match(criteria),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
-
-				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-						PatientGroupCollection.class, PatientAnalyticResponse.class);
-				response = aggregationResults.getMappedResults();
-				break;
-			}
-			case TOP_10_VISITED: {
-				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-						Fields.field("patient.id", "$userId"),
-						Fields.field("patient.localPatientName", "$localPatientName"),
-						Fields.field("patient.PID", "$PID"), Fields.field("patient.firstName", "$user.firstName"),
-						Fields.field("patient.registrationDate", "$registrationDate"),
-						Fields.field("patient.createdTime", "$visit.createdTime"),
-						Fields.field("patient.visitedTime", "$visit.time"),
-						Fields.field("date", "$visit.createdTime")));
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria = criteria.and("patient.doctorId").is(new ObjectId(doctorId)).and("visit.doctorId")
-							.is(new ObjectId(doctorId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-					criteria = criteria.and("patient.locationId").is(new ObjectId(locationId)).and("visit.locationId")
-							.is(new ObjectId(locationId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-					criteria = criteria.and("patient.hospitalId").is(new ObjectId(hospitalId)).and("visit.hospitalId")
-							.is(new ObjectId(hospitalId));
-				}
-
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("city", new BasicDBObject("$first", "$city"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("data", new BasicDBObject("$push", "$patient"))
-											.append("count", new BasicDBObject("$size", "$data"))));
-					break;
-				}
-
-				case WEEKLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("day", new BasicDBObject("$first", "$day"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-													.append("data", new BasicDBObject("$push", "$patient"))
-													.append("count", new BasicDBObject("$size", "$data"))));
-					break;
-				}
-
-				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("data", new BasicDBObject("$push", "$patient"))
-									.append("count", new BasicDBObject("$size", "$data"))));
-
-					break;
-				}
-				case YEARLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("data", new BasicDBObject("$push", "$patient"))));
-
-					break;
-
-				}
-
-				default:
-					break;
-				}
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
-						Aggregation.unwind("user"),
-						Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visit"),
-						Aggregation.unwind("visit"), Aggregation.match(criteria),
-						projectList.and("visit.createdTime").extractDayOfMonth().as("day").and("visit.createdTime")
-								.extractMonth().as("month").and("visit.createdTime").extractYear().as("year")
-								.and("visit.createdTime").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "count")));
-
-				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-						"patient_cl", PatientAnalyticResponse.class);
-				response = aggregationResults.getMappedResults();
-				break;
-
-			}
-
-			case VISITED_PATIENT: {
-				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-						Fields.field("patient.id", "$patient.userId"),
-						Fields.field("patient.localPatientName", "$patient.localPatientName"),
-						Fields.field("patient.PID", "$patient.PID"),
-						Fields.field("patient.firstName", "$user.firstName"),
-						Fields.field("patient.registrationDate", "$patient.registrationDate"),
-						Fields.field("patient.createdTime", "$createdTime"),
-						Fields.field("patient.visitedTime", "$time"), Fields.field("createdTime", "$createdTime")));
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria = criteria.and("patient.doctorId").is(new ObjectId(doctorId)).and("patient.doctorId")
-							.is(new ObjectId(doctorId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-					criteria = criteria.and("patient.locationId").is(new ObjectId(locationId)).and("patient.locationId")
-							.is(new ObjectId(locationId));
-				}
-				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-					criteria = criteria.and("patient.hospitalId").is(new ObjectId(hospitalId)).and("patient.hospitalId")
-							.is(new ObjectId(hospitalId));
-				}
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("city", new BasicDBObject("$first", "$city"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("date", new BasicDBObject("$first", "$createdTime"))
-											.append("patients", new BasicDBObject("$push", "$patient"))));
-					break;
-				}
-
-				case WEEKLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
-											.append("groupId", "$groupId"))
-													.append("day", new BasicDBObject("$first", "$day"))
-													.append("city", new BasicDBObject("$first", "$city"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("date", new BasicDBObject("$first", "$createdTime"))
-													.append("patients", new BasicDBObject("$push", "$patient"))));
-					break;
-				}
-
-				case MONTHLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$createdTime"))
-									.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-				}
-				case YEARLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$createdTime"))
-									.append("patients", new BasicDBObject("$push", "$patient"))));
-
-					break;
-
-				}
-
-				default:
-					break;
-				}
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
-				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-						"patient_visit_cl", PatientAnalyticResponse.class);
-				response = aggregationResults.getMappedResults();
-
-				break;
-
-			}
-
-			default:
-				break;
-
-			}
-			for (PatientAnalyticResponse patientAnalyticResponse : response) {
-				patientAnalyticResponse.setCount(patientAnalyticResponse.getPatients().size());
-
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting patient analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting patient analytic");
-		}
-
-		return response;
-
-	}
-
-	@Override
-	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
-			int size) {
-		List<?> response = null;
-		try {
-			switch (PrescriptionItems.valueOf(type.toUpperCase())) {
-
-			case DRUGS: {
-				if (!DPDoctorUtils.anyStringEmpty(queryType) && queryType.equalsIgnoreCase("TOP")) {
-					response = getMostPrescribedDrugs(doctorId, locationId, hospitalId, fromDate, toDate, searchType,
-							page, size);
-					break;
-				} else
-					response = getMostPrescribedDrugsByDate(doctorId, locationId, hospitalId, fromDate, toDate,
-							searchType, page, size);
-				break;
-			}
-			case DIAGNOSTICTEST: {
-				if (!DPDoctorUtils.anyStringEmpty(queryType) && queryType.equalsIgnoreCase("TOP")) {
-					response = getMostPrescribedLabTests(locationId, hospitalId, fromDate, toDate, searchType, page,
-							size);
-					break;
-				} else
-					response = getMostPrescribedLabTestsByDate(locationId, hospitalId, fromDate, toDate, searchType,
-							page, size);
-				break;
-			}
-			default:
-				break;
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting most prescribed prescription items");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting most prescribed prescription items");
-		}
-		return response;
-	}
-
-	private List<?> getMostPrescribedLabTestsByDate(String locationId, String hospitalId, String fromDate,
-			String toDate, String searchType, int page, int size) {
-		List<DiagnosticTestsAnalyticsData> response = null;
-		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId));
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
-			}
-
-			AggregationOperation aggregationOperation = null;
-			if (!DPDoctorUtils.anyStringEmpty(searchType))
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-
-				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("tests", new BasicDBObject("$push", "$tests"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-				}
-
-				case WEEKLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("day", new BasicDBObject("$first", "$day"))
-													.append("tests", new BasicDBObject("$push", "$tests"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-				}
-
-				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("tests", new BasicDBObject("$push", "$tests"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))));
-					break;
-				}
-				case YEARLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("tests", new BasicDBObject("$push", "$tests"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("day", new BasicDBObject("$first", "$day"))
-										.append("tests", new BasicDBObject("$push", "$tests"))
-										.append("month", new BasicDBObject("$first", "$month"))
-										.append("year", new BasicDBObject("$first", "$year"))
-										.append("date", new BasicDBObject("$first", "$date"))));
-			}
-
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.unwind("$diagnosticTests"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$diagnosticTests.testId")
-										.append("count", new BasicDBObject("$sum", 1))
-										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
-						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
-						new CustomAggregationOperation(new BasicDBObject("$project",
-								new BasicDBObject("tests.locationId", "$test.locationId").append("tests.id", "$test.id")
-										.append("tests.hospitalId", "$test.hospitalId")
-										.append("tests.testName", "$test.testName")
-										.append("tests.explanation", "$test.explanation")
-										.append("tests.discarded", "$test.discarded")
-										.append("tests.specimen", "$test.specimen").append("tests.code", "$test.code")
-										.append("tests.createdTime", "$test.createdTime")
-										.append("tests.updatedTime", "$test.updatedTime")
-										.append("tests.createdBy", "$test.createdBy").append("tests.count", "$count")
-										.append("date", "$createdTime")
-										.append("day", new BasicDBObject("$dayOfMonth", "$createdTime"))
-										.append("month", new BasicDBObject("$month", "$createdTime"))
-										.append("year", new BasicDBObject("$year", "$createdTime"))
-										.append("week", new BasicDBObject("$week", "$createdTime")))),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "createdTime"),
-						Aggregation.skip(page * size), Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.unwind("$diagnosticTests"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$diagnosticTests.testId")
-										.append("count", new BasicDBObject("$sum", 1))
-										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
-						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
-						new CustomAggregationOperation(new BasicDBObject("$project",
-								new BasicDBObject("tests.locationId", "$test.locationId").append("tests.id", "$test.id")
-										.append("tests.hospitalId", "$test.hospitalId")
-										.append("tests.testName", "$test.testName")
-										.append("tests.explanation", "$test.explanation")
-										.append("tests.discarded", "$test.discarded")
-										.append("tests.specimen", "$test.specimen").append("tests.code", "$test.code")
-										.append("tests.createdTime", "$test.createdTime")
-										.append("tests.updatedTime", "$test.updatedTime")
-										.append("tests.createdBy", "$test.createdBy").append("tests.count", "$count")
-										.append("date", "$createdTime")
-										.append("day", new BasicDBObject("$dayOfMonth", "$createdTime"))
-										.append("month", new BasicDBObject("$month", "$createdTime"))
-										.append("year", new BasicDBObject("$year", "$createdTime"))
-										.append("week", new BasicDBObject("$week", "$createdTime")))),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "createdTime"));
-			}
-			response = mongoTemplate
-					.aggregate(aggregation, PrescriptionCollection.class, DiagnosticTestsAnalyticsData.class)
-					.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting most prescribed lab tests");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting most prescribed lab tests");
-		}
-		return response;
-	}
-
-	private List<?> getMostPrescribedDrugsByDate(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate, String searchType, int page, int size) {
-		List<DrugsAnalyticsData> response = null;
-		try {
-			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
-					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
-			}
-
-			AggregationOperation aggregationOperation = null;
-			if (!DPDoctorUtils.anyStringEmpty(searchType))
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-
-				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("day", new BasicDBObject("$first", "$day"))
-											.append("drugs", new BasicDBObject("$push", "$drugs"))
-											.append("month", new BasicDBObject("$first", "$month"))
-											.append("year", new BasicDBObject("$first", "$year"))
-											.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-				}
-
-				case WEEKLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("day", new BasicDBObject("$first", "$day"))
-													.append("drugs", new BasicDBObject("$push", "$drugs"))
-													.append("month", new BasicDBObject("$first", "$month"))
-													.append("year", new BasicDBObject("$first", "$year"))
-													.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-				}
-
-				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("drugs", new BasicDBObject("$push", "$drugs"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))));
-					break;
-				}
-				case YEARLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("drugs", new BasicDBObject("$push", "$drugs"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("day", new BasicDBObject("$first", "$day"))
-										.append("drugs", new BasicDBObject("$push", "$drugs"))
-										.append("month", new BasicDBObject("$first", "$month"))
-										.append("year", new BasicDBObject("$first", "$year"))
-										.append("date", new BasicDBObject("$first", "$date"))));
-			}
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$items"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$items.drugId").append("count", new BasicDBObject("$sum", 1))
-										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
-						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
-						new CustomAggregationOperation(new BasicDBObject("$project",
-								new BasicDBObject("drugs.locationId", "$drug.locationId")
-										.append("drugs.hospitalId", "$drug.hospitalId").append("drugs.id", "$drug.id")
-										.append("drugs.doctorId", "$drug.doctorId")
-										.append("drugs.drugName", "$drug.drugName")
-										.append("drugs.drugType", "$drug.drugType")
-										.append("drugs.explanation", "$drug.explanation")
-										.append("drugs.discarded", "$drug.discarded")
-										.append("drugs.duration", "$drug.duration")
-										.append("drugs.dosage", "$drug.dosage")
-										.append("drugs.dosageTime", "$drug.dosageTime")
-										.append("drugs.direction", "$drug.direction")
-										.append("drugs.categories", "$drug.categories")
-										.append("drugs.rankingCount", "$drug.rankingCount")
-										.append("drugs.genericNames", "$drug.genericNames")
-										.append("drugs.drugCode", "$drug.drugCode")
-										.append("drugs.createdTime", "$drug.createdTime")
-										.append("drugs.updatedTime", "$drug.updatedTime")
-										.append("drugs.createdBy", "$drug.createdBy").append("drugs.count", "$count")
-										.append("date", "$createdTime")
-										.append("day", new BasicDBObject("$dayOfMonth", "$createdTime"))
-										.append("month", new BasicDBObject("$month", "$createdTime"))
-										.append("year", new BasicDBObject("$year", "$createdTime"))
-										.append("week", new BasicDBObject("$week", "$createdTime")))),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "createdTime"),
-						Aggregation.skip(page * size), Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$items"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$items.drugId").append("count", new BasicDBObject("$sum", 1))
-										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
-						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
-						new CustomAggregationOperation(new BasicDBObject("$project",
-								new BasicDBObject("drugs.locationId", "$drug.locationId").append("drugs.id", "$drug.id")
-										.append("drugs.hospitalId", "$drug.hospitalId")
-										.append("drugs.doctorId", "$drug.doctorId")
-										.append("drugs.drugName", "$drug.drugName")
-										.append("drugs.drugType", "$drug.drugType")
-										.append("drugs.explanation", "$drug.explanation")
-										.append("drugs.discarded", "$drug.discarded")
-										.append("drugs.duration", "$drug.duration")
-										.append("drugs.dosage", "$drug.dosage")
-										.append("drugs.dosageTime", "$drug.dosageTime")
-										.append("drugs.direction", "$drug.direction")
-										.append("drugs.categories", "$drug.categories")
-										.append("drugs.rankingCount", "$drug.rankingCount")
-										.append("drugs.genericNames", "$drug.genericNames")
-										.append("drugs.drugCode", "$drug.drugCode")
-										.append("drugs.createdTime", "$drug.createdTime")
-										.append("drugs.updatedTime", "$drug.updatedTime")
-										.append("drugs.createdBy", "$drug.createdBy").append("drugs.count", "$count")
-										.append("date", "$createdTime")
-										.append("day", new BasicDBObject("$dayOfMonth", "$createdTime"))
-										.append("month", new BasicDBObject("$month", "$createdTime"))
-										.append("year", new BasicDBObject("$year", "$createdTime"))
-										.append("week", new BasicDBObject("$week", "$createdTime")))),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "createdTime"));
-			}
-
-			response = mongoTemplate.aggregate(aggregation, PrescriptionCollection.class, DrugsAnalyticsData.class)
-					.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting most prescribed drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting most prescribed drugs");
-		}
-		return response;
-	}
-
-	private List<?> getMostPrescribedLabTests(String locationId, String hospitalId, String fromDate, String toDate,
-			String searchType, int page, int size) {
-		List<DiagnosticTest> response = null;
-		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
-					.is(new ObjectId(hospitalId));
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
-			}
-
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.unwind("$diagnosticTests"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$diagnosticTests.testId").append("count",
-										new BasicDBObject("$sum", 1)))),
-						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
-
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("id", "$_id")
-										.append("locationId", new BasicDBObject("$first", "$test.locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$test.hospitalId"))
-										.append("testName", new BasicDBObject("$first", "$test.testName"))
-										.append("explanation", new BasicDBObject("$first", "$test.explanation"))
-										.append("discarded", new BasicDBObject("$first", "$test.discarded"))
-										.append("specimen", new BasicDBObject("$first", "$test.specimen"))
-										.append("code", new BasicDBObject("$first", "$test.code"))
-										.append("createdTime", new BasicDBObject("$first", "$test.createdTime"))
-										.append("updatedTime", new BasicDBObject("$first", "$test.updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$test.createdBy"))
-										.append("count", new BasicDBObject("$first", "$count")))),
-
-						Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
-						Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.unwind("$diagnosticTests"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$diagnosticTests.testId").append("count",
-										new BasicDBObject("$sum", 1)))),
-						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("id", "$_id")
-										.append("locationId", new BasicDBObject("$first", "$test.locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$test.hospitalId"))
-										.append("testName", new BasicDBObject("$first", "$test.testName"))
-										.append("explanation", new BasicDBObject("$first", "$test.explanation"))
-										.append("discarded", new BasicDBObject("$first", "$test.discarded"))
-										.append("specimen", new BasicDBObject("$first", "$test.specimen"))
-										.append("code", new BasicDBObject("$first", "$test.code"))
-										.append("createdTime", new BasicDBObject("$first", "$test.createdTime"))
-										.append("updatedTime", new BasicDBObject("$first", "$test.updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$test.createdBy"))
-										.append("count", new BasicDBObject("$first", "$count")))),
-
-						Aggregation.sort(Direction.DESC, "count"));
-			}
-			response = mongoTemplate.aggregate(aggregation, PrescriptionCollection.class, DiagnosticTest.class)
-					.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting most prescribed lab tests");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting most prescribed lab tests");
-		}
-		return response;
-
-	}
-
-	private List<Drug> getMostPrescribedDrugs(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate, String searchType, int page, int size) {
-		List<Drug> response = null;
-		try {
-			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
-					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
-
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
-			}
-
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$items"),
-						Aggregation.group("$items.drugId").count().as("count"),
-						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
-
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("id", "$_id")
-										.append("locationId", new BasicDBObject("$first", "$drug.locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$drug.hospitalId"))
-										.append("doctorId", new BasicDBObject("$first", "$drug.doctorId"))
-										.append("drugName", new BasicDBObject("$first", "$drug.drugName"))
-										.append("drugType", new BasicDBObject("$first", "$drug.drugType"))
-										.append("explanation", new BasicDBObject("$first", "$drug.explanation"))
-										.append("discarded", new BasicDBObject("$first", "$drug.discarded"))
-										.append("duration", new BasicDBObject("$first", "$drug.duration"))
-										.append("dosage", new BasicDBObject("$first", "$drug.dosage"))
-										.append("dosageTime", new BasicDBObject("$first", "$drug.dosageTime"))
-										.append("direction", new BasicDBObject("$first", "$drug.direction"))
-										.append("categories", new BasicDBObject("$first", "$drug.categories"))
-										.append("rankingCount", new BasicDBObject("$max", "$drug.rankingCount"))
-										.append("genericNames", new BasicDBObject("$first", "$drug.genericNames"))
-										.append("drugCode", new BasicDBObject("$first", "$drug.drugCode"))
-										.append("createdTime", new BasicDBObject("$first", "$drug.createdTime"))
-										.append("updatedTime", new BasicDBObject("$first", "$drug.updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$drug.createdBy"))
-										.append("count", new BasicDBObject("$first", "$count")))),
-
-						Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
-						Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
-						Aggregation.group("$items.drugId").count().as("count"),
-						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
-
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("id", "$_id")
-										.append("locationId", new BasicDBObject("$first", "$drug.locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$drug.hospitalId"))
-										.append("doctorId", new BasicDBObject("$first", "$drug.doctorId"))
-										.append("drugName", new BasicDBObject("$first", "$drug.drugName"))
-										.append("drugType", new BasicDBObject("$first", "$drug.drugType"))
-										.append("explanation", new BasicDBObject("$first", "$drug.explanation"))
-										.append("discarded", new BasicDBObject("$first", "$drug.discarded"))
-										.append("duration", new BasicDBObject("$first", "$drug.duration"))
-										.append("dosage", new BasicDBObject("$first", "$drug.dosage"))
-										.append("dosageTime", new BasicDBObject("$first", "$drug.dosageTime"))
-										.append("direction", new BasicDBObject("$first", "$drug.direction"))
-										.append("categories", new BasicDBObject("$first", "$drug.categories"))
-										.append("rankingCount", new BasicDBObject("$max", "$drug.rankingCount"))
-										.append("genericNames", new BasicDBObject("$first", "$drug.genericNames"))
-										.append("drugCode", new BasicDBObject("$first", "$drug.drugCode"))
-										.append("createdTime", new BasicDBObject("$first", "$drug.createdTime"))
-										.append("updatedTime", new BasicDBObject("$first", "$drug.updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$drug.createdBy"))
-										.append("count", new BasicDBObject("$first", "$count")))),
-
-						Aggregation.sort(Direction.DESC, "count"));
-			}
-
-			response = mongoTemplate.aggregate(aggregation, PrescriptionCollection.class, Drug.class)
-					.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting most prescribed drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting most prescribed drugs");
 		}
 		return response;
 	}
 
 	@Override
-	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
-			int page, int size) {
-		AppointmentAnalyticResponse response = null;
+	@Transactional
+	public OPDReports submitOPDReport(OPDReports opdReports) {
+		OPDReports response = null;
+
+		OPDReportsCollection opdReportsCollection = null;
 		try {
-			Criteria criteria = new Criteria();
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria = criteria.and("locationId").is(new ObjectId(locationId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			}
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				criteria.and("fromDate").gte(fromTime);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				criteria.and("toDate").lte(toTime);
-			}
-
-			long count = mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
-			if (count > 0) {
-				response = new AppointmentAnalyticResponse();
-				Aggregation aggregation = null;
-				if (size > 0) {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("patient_queue_cl", "appointmentId", "appointmentId", "patientQueue"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patientQueue")
-											.append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
-													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("date", new BasicDBObject("$first", "$fromDate"))
-									.append("fromTime", new BasicDBObject("$first", "$time.fromTime"))
-									.append("waitedFor", new BasicDBObject("$max", "$patientQueue.waitedFor"))
-									.append("engagedAt", new BasicDBObject("$max", "$patientQueue.engagedAt"))
-									.append("checkedInAt", new BasicDBObject("$max", "$patientQueue.checkedInAt"))
-									.append("checkedOutAt", new BasicDBObject("$max", "$patientQueue.checkedOutAt"))
-									.append("patientName", new BasicDBObject("$first", "$patient.localPatientName"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
-							Aggregation.skip(page * size), Aggregation.limit(size),
-							Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime")));
-				} else {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("patient_queue_cl", "appointmentId", "appointmentId", "patientQueue"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patientQueue")
-											.append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
-													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("date", new BasicDBObject("$first", "$fromDate"))
-									.append("fromTime", new BasicDBObject("$first", "$time.fromTime"))
-									.append("waitedFor", new BasicDBObject("$max", "$patientQueue.waitedFor"))
-									.append("engagedAt", new BasicDBObject("$max", "$patientQueue.engagedAt"))
-									.append("checkedInAt", new BasicDBObject("$max", "$patientQueue.checkedInAt"))
-									.append("checkedOutAt", new BasicDBObject("$max", "$patientQueue.checkedOutAt"))
-									.append("patientName", new BasicDBObject("$first", "$patient.localPatientName"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
-							Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime")));
-				}
-				List<AppointmentDeatilAnalyticResponse> analyticResponses = mongoTemplate
-						.aggregate(aggregation, AppointmentCollection.class, AppointmentDeatilAnalyticResponse.class)
-						.getMappedResults();
-				response.setTotalAppointments(count);
-
-				for (AppointmentDeatilAnalyticResponse appointmentDeatilAnalyticResponse : analyticResponses) {
-					List<PatientCard> patientCards = mongoTemplate.aggregate(
-							Aggregation.newAggregation(Aggregation.match(new Criteria("userId")
-									.is(new ObjectId(appointmentDeatilAnalyticResponse.getPatientId()))
-									.and("locationId")
-									.is(new ObjectId(appointmentDeatilAnalyticResponse.getLocationId()))
-									.and("hospitalId")
-									.is(new ObjectId(appointmentDeatilAnalyticResponse.getHospitalId())))),
-							PatientCollection.class, PatientCard.class).getMappedResults();
-					if (patientCards != null && !patientCards.isEmpty()) {
-						appointmentDeatilAnalyticResponse.setPatientName(patientCards.get(0).getLocalPatientName());
-					}
-				}
-				response.setAppointments(analyticResponses);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting appointment analytics data");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting appointment analytics data");
-		}
-		return response;
-	}
-
-	@Override
-	public List<AppointmentAverageTimeAnalyticResponse> getAppointmentAverageTimeAnalyticsData(String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String queryType, String searchType,
-			String searchTerm, int page, int size) {
-		List<AppointmentAverageTimeAnalyticResponse> response = null;
-		try {
-
-			Criteria criteria = new Criteria("discarded").is(false);
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
-			}
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("date").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("date").lte(end);
-			}
-
-			AggregationOperation aggregationOperation = null;
-			if (!DPDoctorUtils.anyStringEmpty(searchType))
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-
-				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
-											.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
-											.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-				}
-
-				case WEEKLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year"))
-													.append("averageWaitingTime",
-															new BasicDBObject("$avg", "$waitedFor"))
-													.append("averageEngagedTime",
-															new BasicDBObject("$avg", "$engagedFor"))
-													.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-				}
-
-				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
-									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
-									.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-				}
-				case YEARLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
-									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
-									.append("date", new BasicDBObject("$first", "$date"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
-										.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
-										.append("date", new BasicDBObject("$first", "$date"))));
-			}
-
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("date", "$date"),
-								Fields.field("waitedFor", "$waitedFor"), Fields.field("engagedFor", "$engagedFor")))
-										.and("date").extractDayOfMonth().as("day").and("date").extractMonth()
-										.as("month").and("date").extractYear().as("year").and("date").extractWeek()
-										.as("week"),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "date"), Aggregation.skip(page * size),
-						Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("date", "$date"),
-								Fields.field("waitedFor", "$waitedFor"), Fields.field("engagedFor", "$engagedFor")))
-										.and("date").extractDayOfMonth().as("day").and("date").extractMonth()
-										.as("month").and("date").extractYear().as("year").and("date").extractWeek()
-										.as("week"),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "date"));
-			}
-			AggregationResults<AppointmentAverageTimeAnalyticResponse> aggregationResults = mongoTemplate
-					.aggregate(aggregation, PatientQueueCollection.class, AppointmentAverageTimeAnalyticResponse.class);
-			response = aggregationResults.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting appointment average time analytics data");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting appointment average time analytics data");
-		}
-		return response;
-	}
-
-	@Override
-	public List<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
-			int page, int size) {
-		List<AppointmentCountAnalyticResponse> response = null;
-		try {
-
-			Criteria criteria = new Criteria();
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
-				if (queryType.equalsIgnoreCase("CANCEL"))
-					criteria.and("state").is(AppointmentState.CANCEL.getState());
-				else if (queryType.equalsIgnoreCase("PATIENTGROUP")) {
-					response = getAppointmentCountAnalyticnDataByPatientGroup(doctorId, locationId, hospitalId,
-							fromDate, toDate, page, size);
-					return response;
-				}
-			}
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("fromDate").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("fromDate").lte(end);
-			}
-
-			AggregationOperation aggregationOperation = null;
-			if (!DPDoctorUtils.anyStringEmpty(searchType))
-				switch (SearchType.valueOf(searchType.toUpperCase())) {
-
-				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-											.append("count", new BasicDBObject("$sum", 1))
-											.append("date", new BasicDBObject("$first", "$fromDate"))));
-
-					break;
-				}
-
-				case WEEKLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("week", "$week").append("month", "$month").append("year",
-											"$year")).append("count", new BasicDBObject("$sum", 1)).append("date",
-													new BasicDBObject("$first", "$fromDate"))));
-
-					break;
-				}
-
-				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$fromDate"))));
-
-					break;
-				}
-				case YEARLY: {
-
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$fromDate"))));
-
-					break;
-
-				}
-				default:
-					break;
-				}
-			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("count", new BasicDBObject("$sum", 1))
-										.append("date", new BasicDBObject("$first", "$fromDate"))));
-			}
-
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"))).and("fromDate")
-								.extractDayOfMonth().as("day").and("fromDate").extractMonth().as("month")
-								.and("fromDate").extractYear().as("year").and("fromDate").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "fromDate"),
-						Aggregation.skip(page * size), Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"))).and("fromDate")
-								.extractDayOfMonth().as("day").and("fromDate").extractMonth().as("month")
-								.and("fromDate").extractYear().as("year").and("fromDate").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "fromDate"));
-			}
-			AggregationResults<AppointmentCountAnalyticResponse> aggregationResults = mongoTemplate
-					.aggregate(aggregation, AppointmentCollection.class, AppointmentCountAnalyticResponse.class);
-			response = aggregationResults.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting appointment count analytics data");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting appointment count analytics data");
-		}
-		return response;
-	}
-
-	private List<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticnDataByPatientGroup(String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, int page, int size) {
-		List<AppointmentCountAnalyticResponse> response = null;
-		try {
-			Criteria criteria = new Criteria();
-			Criteria criteria2 = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("group.doctorId").in(new ObjectId(doctorId));
-				criteria2.and("appointment.doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("group.locationId").is(new ObjectId(locationId));
-				criteria2.and("appointment.locationId").is(new ObjectId(locationId));
-			}
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria2.and("appointment.fromDate").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria2.and("appointment.fromDate").lte(end);
-			}
-
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("group_cl", "groupId", "_id", "group"), Aggregation.unwind("group"),
-					Aggregation.match(criteria),
-					Aggregation.lookup("appointment_cl", "patientId", "patientId", "appointment"),
-					Aggregation.unwind("appointment"), Aggregation.match(criteria2),
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("groupName", "$group.name")).append("count",
-									new BasicDBObject("$sum", 1)))));
-
-			response = mongoTemplate
-					.aggregate(aggregation, PatientGroupCollection.class, AppointmentCountAnalyticResponse.class)
-					.getMappedResults();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting appointment count analytics data by patient group");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting appointment count analytics data by patient group");
-		}
-		return response;
-	}
-
-	@Override
-	public List<InvoiceAnalyticsDataDetailResponse> getIncomeDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
-			int size) {
-		List<InvoiceAnalyticsDataDetailResponse> response = null;
-		try {
-			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-
-			Criteria criteria2 = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
-				criteria2.and("patient.locationId").is(new ObjectId(locationId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = DPDoctorUtils.getStartTime(from);
-				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				to = new Date(Long.parseLong(fromDate));
-				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("invoiceDate").gte(fromTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("invoiceDate").lte(toTime);
-
-			}
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("uniqueInvoiceId", "$uniqueInvoiceId"))
-							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
-							.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-							.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-							.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-							.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-							.append("patientName", new BasicDBObject("$first", "$patientName"))
-							.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-
-			if (size > 0) {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria2),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject(
-								"resultantDiscount",
-								new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-										Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-												.append("then", new BasicDBObject("$multiply",
-														Arrays.asList(new BasicDBObject("$divide",
-																Arrays.asList("$totalDiscount.value", 100)),
-																"$totalCost")))
-												.append("else", "$totalDiscount.value")))
-														.append("resultantCost", "$totalCost")
-														.append("invoiceDate", "$invoiceDate")
-														.append("resultantTax", new BasicDBObject("$cond",
-																new BasicDBObject("if", new BasicDBObject("$eq",
-																		Arrays.asList("$totalTax.unit",
-																				UnitType.PERCENT.name()))).append(
-																						"then",
-																						new BasicDBObject("$multiply",
-																								Arrays.asList(
-																										new BasicDBObject(
-																												"$divide",
-																												Arrays.asList(
-																														"$totalTax.value",
-																														100)),
-																										"$totalCost")))
-																						.append("else",
-																								"$totalTax.value")))
-														.append("patientName", "$patient.localPatientName")
-														.append("uniqueInvoiceId", "$uniqueInvoiceId")
-														.append("resultantInvoiceAmount", "$grandTotal"))),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate")),
-						Aggregation.skip((page) * size), Aggregation.limit(size)), DoctorPatientInvoiceCollection.class,
-						InvoiceAnalyticsDataDetailResponse.class).getMappedResults();
-			} else {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria2),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject(
-								"resultantDiscount",
-								new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-										Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-												.append("then", new BasicDBObject("$multiply",
-														Arrays.asList(new BasicDBObject("$divide",
-																Arrays.asList("$totalDiscount.value", 100)),
-																"$totalCost")))
-												.append("else", "$totalDiscount.value")))
-														.append("resultantCost", "$totalCost")
-														.append("invoiceDate", "$invoiceDate")
-														.append("resultantTax", new BasicDBObject("$cond",
-																new BasicDBObject("if", new BasicDBObject("$eq",
-																		Arrays.asList("$totalTax.unit",
-																				UnitType.PERCENT.name()))).append(
-																						"then",
-																						new BasicDBObject("$multiply",
-																								Arrays.asList(
-																										new BasicDBObject(
-																												"$divide",
-																												Arrays.asList(
-																														"$totalTax.value",
-																														100)),
-																										"$totalCost")))
-																						.append("else",
-																								"$totalTax.value")))
-														.append("patientName", "$patient.localPatientName")
-														.append("uniqueInvoiceId", "$uniqueInvoiceId")
-														.append("resultantInvoiceAmount", "$grandTotal"))),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate"))),
-						DoctorPatientInvoiceCollection.class, InvoiceAnalyticsDataDetailResponse.class)
-						.getMappedResults();
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting income analytics data");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting income analytics data");
-		}
-		return response;
-
-	}
-
-	@Override
-	public List<IncomeAnalyticsDataResponse> getIncomeAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
-			int size) {
-		List<IncomeAnalyticsDataResponse> response = null;
-		try {
-			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-				fromTime = DPDoctorUtils.getStartTime(from);
-				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				fromTime = DPDoctorUtils.getStartTime(from);
-				criteria.and("invoiceDate").gte(fromTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				to = new Date(Long.parseLong(toDate));
-				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("invoiceDate").lte(toTime);
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
-				switch (queryType) {
-				case "DOCTORS": {
-					response = getInvoiceIncomeDataByDoctors(searchType, page, size, criteria);
-					break;
-				}
-				case "SERVICES": {
-					response = getInvoiceIncomeDataByServices(searchType, page, size, criteria);
-					break;
-				}
-				case "PATIENTGROUP": {
-					response = getInvoiceIncomeDataByPatientGroup(searchType, page, size, fromTime, toTime, doctorId,
-							locationId, hospitalId);
-					break;
-				}
-				default: {
-					response = getInvoiceIncomeDataByDate(searchType, page, size, criteria);
-					break;
-				}
-				}
-			} else {
-				response = getInvoiceIncomeDataByDate(searchType, page, size, criteria);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting invoice income analytics data");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting invoice income analytics data");
-		}
-		return response;
-
-	}
-
-	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByPatientGroup(String searchType, int page, int size,
-			DateTime start, DateTime end, String doctorId, String locationId, String hospitalId) {
-		List<IncomeAnalyticsDataResponse> response = null;
-		try {
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("groupName", "$groupName"))
-							.append("count", new BasicDBObject("$sum", 1))
-							.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-							.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-							.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-							.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-							.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-
-			Criteria criteria = new Criteria();
-			Criteria criteria2 = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("group.doctorId").in(new ObjectId(doctorId));
-				criteria2.and("invoice.doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("group.locationId").is(new ObjectId(locationId));
-				criteria2.and("invoice.locationId").is(new ObjectId(locationId));
-			}
-
-			if (start != null) {
-				criteria2.and("invoice.invoiceDate").gt(start).lte(end);
-			}
-
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("group_cl", "groupId", "_id", "group"), Aggregation.unwind("group"),
-					Aggregation.match(criteria),
-					Aggregation.lookup("doctor_patient_invoice_cl", "patientId", "patientId", "invoice"),
-					Aggregation.unwind("invoice"), Aggregation.match(criteria2),
-					Aggregation.unwind("invoice.invoiceItems"),
-					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("resultantDiscount",
-							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-									Arrays.asList("$invoice.totalDiscount.unit", UnitType.PERCENT.name()))).append(
-											"then",
-											new BasicDBObject("$multiply", Arrays.asList(
-													new BasicDBObject("$divide",
-															Arrays.asList("$invoice.totalDiscount.value", 100)),
-													"$invoice.totalCost")))
-											.append("else", "$invoice.totalDiscount.value")))
-													.append("resultantCost", "$invoice.totalCost")
-													.append("invoiceDate", "$invoice.invoiceDate")
-													.append("resultantTax", new BasicDBObject("$cond",
-															new BasicDBObject("if", new BasicDBObject("$eq", Arrays
-																	.asList("$invoice.totalTax.unit", UnitType.PERCENT
-																			.name()))).append("then", new BasicDBObject(
-																					"$multiply",
-																					Arrays.asList(new BasicDBObject(
-																							"$divide", Arrays.asList(
-																									"$invoice.totalTax.value",
-																									100)),
-																							"$invoice.totalCost")))
-																					.append("else",
-																							"$invoice.totalTax.value")))
-													.append("resultantInvoiceAmount", "$invoice.grandTotal")
-													.append("groupId", "$group._id")
-													.append("groupName", "$group.name"))),
-					aggregationOperation);
-			// , Aggregation.skip(page * size), Aggregation.limit(size)
-			// new CustomAggregationOperation(new BasicDBObject("$group", new
-			// BasicDBObject("_id", new BasicDBObject("groupName",
-			// "$group.name"))
-			// .append("count", new BasicDBObject("$sum", 1)))));
-
-			response = mongoTemplate
-					.aggregate(aggregation, PatientGroupCollection.class, IncomeAnalyticsDataResponse.class)
-					.getMappedResults();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting income analytics data by patient group");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting income analytics data by patient group");
-		}
-		return response;
-	}
-
-	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByServices(String searchType, int page, int size,
-			Criteria criteria) {
-		List<IncomeAnalyticsDataResponse> response = null;
-
-		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-				new BasicDBObject("_id", new BasicDBObject("itemId", "$itemId"))
-						.append("serviceName", new BasicDBObject("$first", "$serviceName"))
-						.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-						.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-						.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-						.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-						.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-
-		Aggregation aggregation = null;
-		if (size > 0) {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("invoiceItems"),
-					new CustomAggregationOperation(new BasicDBObject("$project",
-							new BasicDBObject("resultantDiscount",
-									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-													.append("then", new BasicDBObject("$multiply",
-															Arrays.asList(new BasicDBObject("$divide",
-																	Arrays.asList("$totalDiscount.value", 100)),
-																	"$totalCost")))
-													.append("else", "$totalDiscount.value")))
-															.append("resultantCost", "$totalCost")
-															.append("invoiceDate", "$invoiceDate")
-															.append("resultantTax", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$totalTax.unit",
-																					UnitType.PERCENT.name()))).append(
-																							"then",
-																							new BasicDBObject(
-																									"$multiply",
-																									Arrays.asList(
-																											new BasicDBObject(
-																													"$divide",
-																													Arrays.asList(
-																															"$totalTax.value",
-																															100)),
-																											"$totalCost")))
-																							.append("else",
-																									"$totalTax.value")))
-															.append("resultantInvoiceAmount", "$grandTotal")
-															.append("itemId", "$invoiceItems.itemId")
-															.append("serviceName", "$invoiceItems.name"))),
-					aggregationOperation, Aggregation.sort(Direction.DESC, "invoiceDate"),
-					Aggregation.skip(page * size), Aggregation.limit(size));
-		} else {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("invoiceItems"),
-					new CustomAggregationOperation(new BasicDBObject("$project",
-							new BasicDBObject("resultantDiscount",
-									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-													.append("then", new BasicDBObject("$multiply",
-															Arrays.asList(new BasicDBObject("$divide",
-																	Arrays.asList("$totalDiscount.value", 100)),
-																	"$totalCost")))
-													.append("else", "$totalDiscount.value")))
-															.append("resultantCost", "$totalCost")
-															.append("invoiceDate", "$invoiceDate")
-															.append("resultantTax", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$totalTax.unit",
-																					UnitType.PERCENT.name()))).append(
-																							"then",
-																							new BasicDBObject(
-																									"$multiply",
-																									Arrays.asList(
-																											new BasicDBObject(
-																													"$divide",
-																													Arrays.asList(
-																															"$totalTax.value",
-																															100)),
-																											"$totalCost")))
-																							.append("else",
-																									"$totalTax.value")))
-															.append("resultantInvoiceAmount", "$grandTotal")
-															.append("itemId", "$invoiceItems.itemId")
-															.append("serviceName", "$invoiceItems.name"))),
-					aggregationOperation, Aggregation.sort(Direction.DESC, "invoiceDate"));
-		}
-		response = mongoTemplate
-				.aggregate(aggregation, DoctorPatientInvoiceCollection.class, IncomeAnalyticsDataResponse.class)
-				.getMappedResults();
-		return response;
-
-	}
-
-	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByDoctors(String searchType, int page, int size,
-			Criteria criteria) {
-		List<IncomeAnalyticsDataResponse> response = null;
-
-		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-				new BasicDBObject("_id", new BasicDBObject("doctorId", "$doctorId"))
-						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-						.append("title", new BasicDBObject("$first", "$title"))
-						.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-						.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-						.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-						.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-						.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-						.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-
-		Aggregation aggregation = null;
-		if (size > 0) {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-					new CustomAggregationOperation(new BasicDBObject("$project",
-							new BasicDBObject("resultantDiscount",
-									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-													.append("then", new BasicDBObject("$multiply",
-															Arrays.asList(new BasicDBObject("$divide",
-																	Arrays.asList("$totalDiscount.value", 100)),
-																	"$totalCost")))
-													.append("else", "$totalDiscount.value")))
-															.append("resultantCost", "$totalCost")
-															.append("invoiceDate", "$invoiceDate")
-															.append("resultantTax", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$totalTax.unit",
-																					UnitType.PERCENT.name()))).append(
-																							"then",
-																							new BasicDBObject(
-																									"$multiply",
-																									Arrays.asList(
-																											new BasicDBObject(
-																													"$divide",
-																													Arrays.asList(
-																															"$totalTax.value",
-																															100)),
-																											"$totalCost")))
-																							.append("else",
-																									"$totalTax.value")))
-															.append("resultantInvoiceAmount", "$grandTotal")
-															.append("doctorId", "$doctorId")
-															.append("title", "$user.title")
-															.append("doctorName", "$user.firstName"))),
-					aggregationOperation, Aggregation.sort(Direction.DESC, "invoiceDate"),
-					Aggregation.skip(page * size), Aggregation.limit(size));
-		} else {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-					new CustomAggregationOperation(new BasicDBObject("$project",
-							new BasicDBObject("resultantDiscount",
-									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-													.append("then", new BasicDBObject("$multiply",
-															Arrays.asList(new BasicDBObject("$divide",
-																	Arrays.asList("$totalDiscount.value", 100)),
-																	"$totalCost")))
-													.append("else", "$totalDiscount.value")))
-															.append("resultantCost", "$totalCost")
-															.append("invoiceDate", "$invoiceDate")
-															.append("resultantTax", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$totalTax.unit",
-																					UnitType.PERCENT.name()))).append(
-																							"then",
-																							new BasicDBObject(
-																									"$multiply",
-																									Arrays.asList(
-																											new BasicDBObject(
-																													"$divide",
-																													Arrays.asList(
-																															"$totalTax.value",
-																															100)),
-																											"$totalCost")))
-																							.append("else",
-																									"$totalTax.value")))
-															.append("doctorId", "$doctorId")
-															.append("title", "$user.title")
-															.append("doctorName", "$user.firstName"))),
-					aggregationOperation, Aggregation.sort(Direction.DESC, "invoiceDate"));
-		}
-		response = mongoTemplate
-				.aggregate(aggregation, DoctorPatientInvoiceCollection.class, IncomeAnalyticsDataResponse.class)
-				.getMappedResults();
-		return response;
-
-	}
-
-	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByDate(String searchType, int page, int size,
-			Criteria criteria) {
-		List<IncomeAnalyticsDataResponse> response = null;
-		AggregationOperation aggregationOperation = null;
-		if (!DPDoctorUtils.anyStringEmpty(searchType))
-			switch (SearchType.valueOf(searchType.toUpperCase())) {
-
-			case DAILY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-										.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-										.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-										.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-										.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-
-				break;
-			}
-
-			case WEEKLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
-										.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-										.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-										.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-										.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-										.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-
-				break;
-			}
-
-			case MONTHLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-								.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-								.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-								.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-								.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-								.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-				break;
-			}
-			case YEARLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-								.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-								.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-								.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-								.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-								.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-
-				break;
-
-			}
-			default:
-				break;
-			}
-		else {
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id",
-							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-									.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-									.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-									.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-									.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-									.append("date", new BasicDBObject("$first", "$invoiceDate"))));
-		}
-
-		Aggregation aggregation = null;
-		if (size > 0) {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$project",
-							new BasicDBObject("resultantDiscount",
-									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-													.append("then", new BasicDBObject("$multiply",
-															Arrays.asList(new BasicDBObject("$divide",
-																	Arrays.asList("$totalDiscount.value", 100)),
-																	"$totalCost")))
-													.append("else", "$totalDiscount.value")))
-															.append("resultantCost", "$totalCost")
-															.append("invoiceDate", "$invoiceDate")
-															.append("resultantTax", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$totalTax.unit",
-																					UnitType.PERCENT.name()))).append(
-																							"then",
-																							new BasicDBObject(
-																									"$multiply",
-																									Arrays.asList(
-																											new BasicDBObject(
-																													"$divide",
-																													Arrays.asList(
-																															"$totalTax.value",
-																															100)),
-																											"$totalCost")))
-																							.append("else",
-																									"$totalTax.value")))
-															.append("resultantInvoiceAmount", "$grandTotal")
-															.append("day",
-																	new BasicDBObject("$dayOfMonth", "$invoiceDate"))
-															.append("month",
-																	new BasicDBObject("$month", "$invoiceDate"))
-															.append("year", new BasicDBObject("$year", "$invoiceDate"))
-															.append("week",
-																	new BasicDBObject("$week", "$invoiceDate")))),
-					aggregationOperation, Aggregation.sort(Direction.DESC, "invoiceDate"),
-					Aggregation.skip(page * size), Aggregation.limit(size));
-		} else {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$project",
-							new BasicDBObject("resultantDiscount",
-									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-													.append("then", new BasicDBObject("$multiply",
-															Arrays.asList(new BasicDBObject("$divide",
-																	Arrays.asList("$totalDiscount.value", 100)),
-																	"$totalCost")))
-													.append("else", "$totalDiscount.value")))
-															.append("resultantCost", "$totalCost")
-															.append("invoiceDate", "$invoiceDate")
-															.append("resultantTax", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$totalTax.unit",
-																					UnitType.PERCENT.name()))).append(
-																							"then",
-																							new BasicDBObject(
-																									"$multiply",
-																									Arrays.asList(
-																											new BasicDBObject(
-																													"$divide",
-																													Arrays.asList(
-																															"$totalTax.value",
-																															100)),
-																											"$totalCost")))
-																							.append("else",
-																									"$totalTax.value")))
-															.append("resultantInvoiceAmount", "$grandTotal")
-															.append("day",
-																	new BasicDBObject("$dayOfMonth", "$invoiceDate"))
-															.append("month",
-																	new BasicDBObject("$month", "$invoiceDate"))
-															.append("year", new BasicDBObject("$year", "$invoiceDate"))
-															.append("week",
-																	new BasicDBObject("$week", "$invoiceDate")))),
-					aggregationOperation, Aggregation.sort(Direction.DESC, "invoiceDate"));
-		}
-		response = mongoTemplate
-				.aggregate(aggregation, DoctorPatientInvoiceCollection.class, IncomeAnalyticsDataResponse.class)
-				.getMappedResults();
-		return response;
-	}
-
-	@Override
-	public List<PaymentDetailsAnalyticsDataResponse> getPaymentDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
-			int size) {
-		List<PaymentDetailsAnalyticsDataResponse> response = null;
-		try {
-			Criteria criteria = new Criteria();
-
-			Criteria criteria2 = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
-				criteria2.and("patient.locationId").is(new ObjectId(locationId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
-			}
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("receivedDate").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("receivedDate").lte(end);
-			}
-
-			if (size > 0) {
-				response = mongoTemplate
-						.aggregate(
-								Aggregation
-										.newAggregation(Aggregation.match(criteria),
-												Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-												Aggregation.unwind("patient"), Aggregation.match(criteria2),
-												new CustomAggregationOperation(
-														new BasicDBObject("$group",
-																new BasicDBObject("_id", "$uniqueReceiptId")
-																		.append("date",
-																				new BasicDBObject("$first",
-																						"$receivedDate"))
-																		.append("patientName",
-																				new BasicDBObject("$first",
-																						"$patient.localPatientName"))
-																		.append("uniqueReceiptId",
-																				new BasicDBObject("$first",
-																						"$uniqueReceiptId"))
-																		.append("uniqueInvoiceId",
-																				new BasicDBObject("$first",
-																						"$uniqueInvoiceId"))
-																		.append("amountPaid",
-																				new BasicDBObject("$first",
-																						"$amountPaid"))
-																		.append("modeOfPayment",
-																				new BasicDBObject("$first",
-																						"$modeOfPayment"))
-																		.append("receiptType",
-																				new BasicDBObject("$first",
-																						"$receiptType")))),
-												Aggregation.sort(new Sort(Sort.Direction.DESC, "receivedDate")),
-												Aggregation.skip((page) * size), Aggregation.limit(size)),
-								DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class)
-						.getMappedResults();
-			} else {
-				response = mongoTemplate
-						.aggregate(
-								Aggregation
-										.newAggregation(Aggregation.match(criteria),
-												Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-												Aggregation.unwind("patient"), Aggregation.match(criteria2),
-												new CustomAggregationOperation(
-														new BasicDBObject("$group",
-																new BasicDBObject("_id", "$uniqueReceiptId")
-																		.append("date",
-																				new BasicDBObject("$first",
-																						"$receivedDate"))
-																		.append("patientName",
-																				new BasicDBObject("$first",
-																						"$patient.localPatientName"))
-																		.append("uniqueReceiptId",
-																				new BasicDBObject("$first",
-																						"$uniqueReceiptId"))
-																		.append("uniqueInvoiceId",
-																				new BasicDBObject("$first",
-																						"$uniqueInvoiceId"))
-																		.append("amountPaid",
-																				new BasicDBObject("$first",
-																						"$amountPaid"))
-																		.append("modeOfPayment",
-																				new BasicDBObject("$first",
-																						"$modeOfPayment"))
-																		.append("receiptType",
-																				new BasicDBObject("$first",
-																						"$receiptType")))),
-												Aggregation.sort(new Sort(Sort.Direction.DESC, "receivedDate"))),
-								DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class)
-						.getMappedResults();
-
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting payment details analytics data");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While getting payment details analytics data");
-		}
-		return response;
-	}
-
-	@Override
-	public List<PaymentAnalyticsDataResponse> getPaymentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
-			int size) {
-		List<PaymentAnalyticsDataResponse> response = null;
-		try {
-			Criteria criteria = new Criteria();
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			}
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("receivedDate").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("receivedDate").lte(end);
-			}
-
-			switch (queryType) {
-			case "DOCTORS": {
-				response = getPaymentDataByDoctors(searchType, page, size, criteria);
-				break;
-			}
-			case "PAYMENTMODES": {
-				response = getPaymentDataByPaymentModes(searchType, page, size, criteria);
-				break;
-			}
-			default: {
-				response = getPaymentByDate(searchType, page, size, criteria);
-				break;
-			}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting payment analytics data");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting payment analytics data");
-		}
-		return response;
-	}
-
-	private List<PaymentAnalyticsDataResponse> getPaymentDataByDoctors(String searchType, int page, int size,
-			Criteria criteria) {
-		List<PaymentAnalyticsDataResponse> response = null;
-		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-				new BasicDBObject("_id", new BasicDBObject("doctorId", "$doctorId"))
-						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-						.append("title", new BasicDBObject("$first", "$title"))
-						.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-						.append("cash", new BasicDBObject("$sum", "$cash"))
-						.append("card", new BasicDBObject("$sum", "$card"))
-						.append("online", new BasicDBObject("$sum", "$online"))
-						.append("wallet", new BasicDBObject("$sum", "$wallet"))
-						.append("total", new BasicDBObject("$sum", "$total"))
-						.append("date", new BasicDBObject("$first", "$receivedDate"))));
-
-		Aggregation aggregation = null;
-		if (size > 0) {
-			aggregation = Aggregation
-					.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$project",
-									new BasicDBObject("cash",
-											new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-													Arrays.asList("$modeOfPayment", ModeOfPayment.CASH.name()))).append(
-															"then", "$amountPaid")
-															.append("else", 0))).append("card", new BasicDBObject(
-																	"$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$modeOfPayment",
-																					ModeOfPayment.CARD.name())))
-																							.append("then",
-																									"$amountPaid")
-																							.append("else", 0)))
-																	.append("online", new BasicDBObject("$cond",
-																			new BasicDBObject("if", new BasicDBObject(
-																					"$eq",
-																					Arrays.asList("$modeOfPayment",
-																							ModeOfPayment.ONLINE
-																									.name()))).append(
-																											"then",
-																											"$amountPaid")
-																											.append("else",
-																													0)))
-																	.append("wallet", new BasicDBObject("$cond",
-																			new BasicDBObject("if", new BasicDBObject(
-																					"$eq",
-																					Arrays.asList("$modeOfPayment",
-																							ModeOfPayment.WALLET
-																									.name()))).append(
-																											"then",
-																											"$amountPaid")
-																											.append("else",
-																													0)))
-																	.append("total", "$amountPaid")
-																	.append("doctorId", "$doctorId")
-																	.append("date", "$receivedDate")
-																	.append("title", "$user.title")
-																	.append("doctorName", "$user.firstName"))),
-							aggregationOperation, Aggregation.sort(Direction.DESC, "receivedDate"),
-							Aggregation.skip(page * size), Aggregation.limit(size));
-		} else {
-			aggregation = Aggregation
-					.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$project",
-									new BasicDBObject("cash",
-											new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-													Arrays.asList("$modeOfPayment", ModeOfPayment.CASH.name()))).append(
-															"then", "$amountPaid")
-															.append("else", 0))).append("card", new BasicDBObject(
-																	"$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$modeOfPayment",
-																					ModeOfPayment.CARD.name())))
-																							.append("then",
-																									"$amountPaid")
-																							.append("else", 0)))
-																	.append("online", new BasicDBObject("$cond",
-																			new BasicDBObject("if", new BasicDBObject(
-																					"$eq",
-																					Arrays.asList("$modeOfPayment",
-																							ModeOfPayment.ONLINE
-																									.name()))).append(
-																											"then",
-																											"$amountPaid")
-																											.append("else",
-																													0)))
-																	.append("wallet", new BasicDBObject("$cond",
-																			new BasicDBObject("if", new BasicDBObject(
-																					"$eq",
-																					Arrays.asList("$modeOfPayment",
-																							ModeOfPayment.WALLET
-																									.name()))).append(
-																											"then",
-																											"$amountPaid")
-																											.append("else",
-																													0)))
-																	.append("total", "$amountPaid")
-																	.append("doctorId", "$doctorId")
-																	.append("receivedDate", "$receivedDate")
-																	.append("title", "$user.title")
-																	.append("doctorName", "$user.firstName"))),
-							aggregationOperation, Aggregation.sort(Direction.DESC, "receivedDate"));
-		}
-		response = mongoTemplate
-				.aggregate(aggregation, DoctorPatientReceiptCollection.class, PaymentAnalyticsDataResponse.class)
-				.getMappedResults();
-		return response;
-	}
-
-	private List<PaymentAnalyticsDataResponse> getPaymentDataByPaymentModes(String searchType, int page, int size,
-			Criteria criteria) {
-		List<PaymentAnalyticsDataResponse> response = null;
-		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-				new BasicDBObject("_id", new BasicDBObject("modeOfPayment", "$modeOfPayment"))
-						.append("modeOfPayment", new BasicDBObject("$first", "$modeOfPayment"))
-						.append("total", new BasicDBObject("$sum", "$total"))));
-
-		Aggregation aggregation = null;
-		if (size > 0) {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$project",
-							new BasicDBObject("total", "$amountPaid").append("modeOfPayment", "$modeOfPayment"))),
-					aggregationOperation, Aggregation.sort(Direction.ASC, "modeOfPayment"),
-					Aggregation.skip(page * size), Aggregation.limit(size));
-		} else {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$project",
-							new BasicDBObject("total", "$amountPaid").append("modeOfPayment", "$modeOfPayment"))),
-					aggregationOperation, Aggregation.sort(Direction.ASC, "modeOfPayment"));
-		}
-		response = mongoTemplate
-				.aggregate(aggregation, DoctorPatientReceiptCollection.class, PaymentAnalyticsDataResponse.class)
-				.getMappedResults();
-		return response;
-
-	}
-
-	private List<PaymentAnalyticsDataResponse> getPaymentByDate(String searchType, int page, int size,
-			Criteria criteria) {
-		List<PaymentAnalyticsDataResponse> response = null;
-		AggregationOperation aggregationOperation = null;
-		if (!DPDoctorUtils.anyStringEmpty(searchType))
-			switch (SearchType.valueOf(searchType.toUpperCase())) {
-
-			case DAILY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("cash", new BasicDBObject("$sum", "$cash"))
-										.append("card", new BasicDBObject("$sum", "$card"))
-										.append("online", new BasicDBObject("$sum", "$online"))
-										.append("wallet", new BasicDBObject("$sum", "$wallet"))
-										.append("total", new BasicDBObject("$sum", "$total"))
-										.append("date", new BasicDBObject("$first", "$receivedDate"))));
-
-				break;
-			}
-
-			case WEEKLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
-										.append("cash", new BasicDBObject("$sum", "$cash"))
-										.append("card", new BasicDBObject("$sum", "$card"))
-										.append("online", new BasicDBObject("$sum", "$online"))
-										.append("wallet", new BasicDBObject("$sum", "$wallet"))
-										.append("total", new BasicDBObject("$sum", "$total"))
-										.append("date", new BasicDBObject("$first", "$receivedDate"))));
-
-				break;
-			}
-
-			case MONTHLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-								.append("cash", new BasicDBObject("$sum", "$cash"))
-								.append("card", new BasicDBObject("$sum", "$card"))
-								.append("online", new BasicDBObject("$sum", "$online"))
-								.append("wallet", new BasicDBObject("$sum", "$wallet"))
-								.append("total", new BasicDBObject("$sum", "$total"))
-								.append("date", new BasicDBObject("$first", "$receivedDate"))));
-				break;
-			}
-			case YEARLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-								.append("cash", new BasicDBObject("$sum", "$cash"))
-								.append("card", new BasicDBObject("$sum", "$card"))
-								.append("online", new BasicDBObject("$sum", "$online"))
-								.append("wallet", new BasicDBObject("$sum", "$wallet"))
-								.append("total", new BasicDBObject("$sum", "$total"))
-								.append("date", new BasicDBObject("$first", "$receivedDate"))));
-
-				break;
-
-			}
-			default:
-				break;
-			}
-		else {
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id",
-							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-									.append("cash", new BasicDBObject("$sum", "$cash"))
-									.append("card", new BasicDBObject("$sum", "$card"))
-									.append("online", new BasicDBObject("$sum", "$online"))
-									.append("wallet", new BasicDBObject("$sum", "$wallet"))
-									.append("total", new BasicDBObject("$sum", "$total"))
-									.append("date", new BasicDBObject("$first", "$receivedDate"))));
-		}
-
-		Aggregation aggregation = null;
-		if (size > 0) {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(
-					new BasicDBObject("$project", new BasicDBObject("cash", new BasicDBObject("$cond",
-							new BasicDBObject("if",
-									new BasicDBObject("$eq",
-											Arrays.asList("$modeOfPayment", ModeOfPayment.CASH.name())))
-													.append("then", "$amountPaid").append("else", 0))).append(
-															"card",
-															new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$modeOfPayment",
-																					ModeOfPayment.CARD.name())))
-																							.append("then",
-																									"$amountPaid")
-																							.append("else", 0)))
-															.append("online", new BasicDBObject(
-																	"$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$modeOfPayment",
-																					ModeOfPayment.ONLINE.name())))
-																							.append("then",
-																									"$amountPaid")
-																							.append("else", 0)))
-															.append("wallet", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$modeOfPayment",
-																					ModeOfPayment.WALLET.name())))
-																							.append("then",
-																									"$amountPaid")
-																							.append("else", 0)))
-															.append("day", "$receivedDate")
-															.append("day",
-																	new BasicDBObject("$dayOfMonth", "$receivedDate"))
-															.append("month",
-																	new BasicDBObject("$month", "$receivedDate"))
-															.append("year", new BasicDBObject("$year", "$receivedDate"))
-															.append("week",
-																	new BasicDBObject("$week", "$receivedDate")))),
-					aggregationOperation, Aggregation.sort(Direction.DESC, "receivedDate"),
-					Aggregation.skip(page * size), Aggregation.limit(size));
-		} else {
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(
-					new BasicDBObject("$project", new BasicDBObject("cash", new BasicDBObject("$cond",
-							new BasicDBObject("if",
-									new BasicDBObject("$eq",
-											Arrays.asList("$modeOfPayment", ModeOfPayment.CASH.name())))
-													.append("then", "$amountPaid").append("else", 0))).append(
-															"card",
-															new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$modeOfPayment",
-																					ModeOfPayment.CARD.name())))
-																							.append("then",
-																									"$amountPaid")
-																							.append("else", 0)))
-															.append("online", new BasicDBObject(
-																	"$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$modeOfPayment",
-																					ModeOfPayment.ONLINE.name())))
-																							.append("then",
-																									"$amountPaid")
-																							.append("else", 0)))
-															.append("wallet", new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$modeOfPayment",
-																					ModeOfPayment.WALLET.name())))
-																							.append("then",
-																									"$amountPaid")
-																							.append("else", 0)))
-															.append("receivedDate", "$receivedDate")
-															.append("day",
-																	new BasicDBObject("$dayOfMonth", "$receivedDate"))
-															.append("month",
-																	new BasicDBObject("$month", "$receivedDate"))
-															.append("year", new BasicDBObject("$year", "$receivedDate"))
-															.append("week",
-																	new BasicDBObject("$week", "$receivedDate")))),
-					aggregationOperation, Aggregation.sort(Direction.DESC, "receivedDate"));
-		}
-		response = mongoTemplate
-				.aggregate(aggregation, DoctorPatientReceiptCollection.class, PaymentAnalyticsDataResponse.class)
-				.getMappedResults();
-		return response;
-	}
-
-	@Override
-	public List<AmountDueAnalyticsDataResponse> getAmountDueAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
-			int size) {
-		List<AmountDueAnalyticsDataResponse> response = null;
-		try {
-			Criteria criteria = new Criteria();
-			Criteria criteria2 = new Criteria();
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
-				criteria2.and("patient.locationId").is(new ObjectId(locationId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
-			}
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("receivedDate").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("receivedDate").lte(end);
-			}
-			Aggregation aggregation = null;
-
-			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
-				if (queryType.equalsIgnoreCase("PATIENT")) {
-					if (size > 0) {
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-								Aggregation.unwind("patient"), Aggregation.match(criteria2),
-								new CustomAggregationOperation(new BasicDBObject("$project",
-										new BasicDBObject("debitAmount", "$debitAmount")
-												.append("creditAmount", "$creditAmount")
-												.append("patientId", "$patientId")
-												.append("total",
-														new BasicDBObject("$subtract",
-																Arrays.asList("$debitAmount", "$creditAmount")))
-												.append("patientName", "$patient.localPatientName")
-												.append("pid", "$patient.PID"))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$patientId")
-												.append("invoiced", new BasicDBObject("$sum", "$debitAmount"))
-												.append("received", new BasicDBObject("$sum", "$creditAmount"))
-												.append("amountDue", new BasicDBObject("$sum", "$total"))
-												.append("patientName", new BasicDBObject("$first", "$patientName"))
-												.append("pid", new BasicDBObject("$first", "$pid")))),
-								Aggregation.skip(page * size), Aggregation.limit(size));
+			if (opdReports != null) {
+				OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
+						.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
+				if (opdReportsCollectionOld != null) {
+					opdReportsCollectionOld.setAmountReceived(opdReports.getAmountReceived());
+					if (opdReports.getReceiptDate() != null) {
+						opdReportsCollectionOld.setReceiptDate(opdReports.getReceiptDate());
 					} else {
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-								Aggregation.unwind("patient"), Aggregation.match(criteria2),
-								new CustomAggregationOperation(new BasicDBObject("$project",
-										new BasicDBObject("debitAmount", "$debitAmount")
-												.append("creditAmount", "$creditAmount")
-												.append("patientId", "$patientId")
-												.append("total",
-														new BasicDBObject("$subtract",
-																Arrays.asList("$debitAmount", "$creditAmount")))
-												.append("patientName", "$patient.localPatientName")
-												.append("pid", "$patient.PID"))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$patientId")
-												.append("invoiced", new BasicDBObject("$sum", "$debitAmount"))
-												.append("received", new BasicDBObject("$sum", "$creditAmount"))
-												.append("amountDue", new BasicDBObject("$sum", "$total"))
-												.append("patientName", new BasicDBObject("$first", "$patientName"))
-												.append("pid", new BasicDBObject("$first", "$pid")))));
+						opdReportsCollectionOld.setReceiptDate(new Date());
 					}
-				} else if (queryType.equalsIgnoreCase("DOCTORS")) {
-					if (size > 0) {
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.unwind("doctor"),
-								new CustomAggregationOperation(new BasicDBObject("$project",
-										new BasicDBObject("debitAmount", "$debitAmount")
-												.append("creditAmount", "$creditAmount").append("doctorId", "$doctorId")
-												.append("total",
-														new BasicDBObject("$subtract",
-																Arrays.asList("$debitAmount", "$creditAmount")))
-												.append("doctorName", "$doctor.firstName"))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$doctorId")
-												.append("invoiced", new BasicDBObject("$sum", "$debitAmount"))
-												.append("received", new BasicDBObject("$sum", "$creditAmount"))
-												.append("amountDue", new BasicDBObject("$sum", "$total"))
-												.append("doctorName", new BasicDBObject("$first", "$doctorName")))),
-								Aggregation.skip(page * size), Aggregation.limit(size));
-					} else {
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.unwind("doctor"),
-								new CustomAggregationOperation(new BasicDBObject("$project",
-										new BasicDBObject("debitAmount", "$debitAmount")
-												.append("creditAmount", "$creditAmount").append("doctorId", "$doctorId")
-												.append("total",
-														new BasicDBObject("$subtract",
-																Arrays.asList("$debitAmount", "$creditAmount")))
-												.append("doctorName", "$doctor.firstName"))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$doctorId")
-												.append("invoiced", new BasicDBObject("$sum", "$debitAmount"))
-												.append("received", new BasicDBObject("$sum", "$creditAmount"))
-												.append("amountDue", new BasicDBObject("$sum", "$total"))
-												.append("doctorName", new BasicDBObject("$first", "$doctorName")))));
+					opdReportsCollectionOld.setReceiptNo(opdReports.getReceiptNo());
+					opdReportsCollectionOld.setRemarks(opdReports.getRemarks());
+					if (opdReports.getCreatedTime() != null) {
+						opdReportsCollectionOld.setCreatedTime(opdReports.getCreatedTime());
 					}
+					opdReportsCollectionOld.setUpdatedTime(new Date());
+					opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
+				} else {
+					opdReportsCollection = new OPDReportsCollection();
+					UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
+					BeanUtil.map(opdReports, opdReportsCollection);
+					opdReportsCollection.setCreatedBy(
+							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+									: "DR.") + " " + userCollection.getFirstName());
+					opdReportsCollection.setAdminCreatedTime(new Date());
+					if (opdReports.getCreatedTime() == null) {
+						opdReportsCollection.setCreatedTime(new Date());
+					}
+					opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 				}
-			} else {
-				throw new BusinessException(ServiceError.Unknown, "Query Type cannot be null");
-			}
 
-			response = mongoTemplate
-					.aggregate(aggregation, DoctorPatientLedgerCollection.class, AmountDueAnalyticsDataResponse.class)
-					.getMappedResults();
+				if (opdReportsCollection != null) {
+					response = new OPDReports();
+					BeanUtil.map(opdReportsCollection, response);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting amount due analytics data");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting amount due analytics data");
+			logger.error(e + " Error occured while creating OPD Records");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while OPD Records");
+		}
+
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public OTReports submitOTReport(OTReports otReports) {
+		OTReports response = null;
+		OTReportsCollection otReportsCollection = new OTReportsCollection();
+		UserCollection userCollection = userRepository.findOne(new ObjectId(otReports.getDoctorId()));
+		if (otReports != null) {
+			BeanUtil.map(otReports, otReportsCollection);
+			try {
+
+				if (DPDoctorUtils.anyStringEmpty(otReportsCollection.getUniqueOTId()))
+					otReportsCollection
+							.setUniqueOTId(UniqueIdInitial.OT_REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
+
+				otReportsCollection.setAdminCreatedTime(new Date());
+				if (otReports.getCreatedTime() == null) {
+					otReportsCollection.setCreatedTime(new Date());
+
+				}
+				otReportsCollection.setCreatedBy(
+						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
+								+ " " + userCollection.getFirstName());
+
+				otReportsCollection = otReportsRepository.save(otReportsCollection);
+
+				if (otReportsCollection != null) {
+					BeanUtil.map(otReportsCollection, otReports);
+					response = new OTReports();
+					response = otReports;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e + " Error occured while creating OT Records");
+				throw new BusinessException(ServiceError.Unknown, "Error occured while OT Records");
+			}
 		}
 		return response;
 	}
 
 	@Override
-	public List<TreatmentService> getTreatmentsAnalyticsData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, int page, int size) {
-		List<TreatmentService> response = null;
-		try {
-			Criteria criteria = new Criteria();
+	@Transactional
+	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports) {
+		DeliveryReports response = null;
+		DeliveryReportsCollection deliveryReportsCollection = new DeliveryReportsCollection();
+		UserCollection userCollection = userRepository.findOne(new ObjectId(deliveryReports.getDoctorId()));
+		if (deliveryReports != null) {
+			BeanUtil.map(deliveryReports, deliveryReportsCollection);
+			try {
 
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				if (DPDoctorUtils.anyStringEmpty(deliveryReportsCollection.getUniqueDRId()))
+					deliveryReportsCollection.setUniqueDRId(
+							UniqueIdInitial.DELIVERY_REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
+
+				deliveryReportsCollection.setAdminCreatedTime(new Date());
+				if (deliveryReports.getCreatedTime() == null) {
+					deliveryReportsCollection.setCreatedTime(new Date());
+
+				}
+				deliveryReportsCollection.setCreatedBy(
+						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "DR.")
+								+ " " + userCollection.getFirstName());
+
+				deliveryReportsCollection = deliveryReportsRepository.save(deliveryReportsCollection);
+				if (deliveryReportsCollection != null) {
+					BeanUtil.map(deliveryReportsCollection, deliveryReports);
+					response = new DeliveryReports();
+					response = deliveryReports;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e + " Error occured while creating Delivery Records");
+				throw new BusinessException(ServiceError.Unknown, "Error occured while Delivery Records");
+			}
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public IPDReportsResponse getIPDReportsList(String locationId, String doctorId, String patientId, String from,
+			String to, int page, int size, String updatedTime) {
+		List<IPDReports> response = null;
+		IPDReportsResponse ipdReportsResponse = null;
+		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
+		int count = 0;
+		try {
+
+			// long updatedTimeStamp = Long.parseLong(updatedTime);
+			// Criteria criteria = new Criteria("updatedTime").gte(new
+			// Date(updatedTimeStamp));
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			if (!DPDoctorUtils.anyStringEmpty(from) && !DPDoctorUtils.anyStringEmpty(to)) {
+
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))))
+						.lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			} else if (!DPDoctorUtils.anyStringEmpty(from)) {
+
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
+			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			}
+			if (size > 0)
+				ipdReportLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+						Aggregation.unwind("hospital"), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+						Aggregation.skip(page * size), Aggregation.limit(size)), IPDReportsCollection.class,
+						IPDReportLookupResponse.class).getMappedResults();
+			else
+				ipdReportLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+						Aggregation.unwind("hospital"), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						IPDReportsCollection.class, IPDReportLookupResponse.class).getMappedResults();
+
+			if (ipdReportLookupResponses != null) {
+				response = new ArrayList<IPDReports>();
+				for (IPDReportLookupResponse collection : ipdReportLookupResponses) {
+					IPDReports ipdReports = new IPDReports();
+					BeanUtil.map(collection, ipdReports);
+					if (collection.getDoctor() != null) {
+						UserCollection doctor = collection.getDoctor();
+						if (doctor != null)
+							ipdReports.setDoctorName(doctor.getFirstName());
+					}
+					if (collection.getLocation() != null) {
+						LocationCollection locationCollection = collection.getLocation();
+						if (locationCollection != null) {
+							ipdReports.setLocationName(locationCollection.getLocationName());
+						}
+					}
+					if (collection.getHospitalId() != null) {
+						HospitalCollection hospitalCollection = collection.getHospital();
+						if (hospitalCollection != null) {
+							ipdReports.setHospitalName(hospitalCollection.getHospitalName());
+						}
+					}
+					if (collection.getPatientId() != null) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
+								new ObjectId(collection.getHospitalId()));
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							ipdReports.setPatient(patient);
+						}
+					}
+					response.add(ipdReports);
+				}
+			}
+
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
+				criteria2.and("locationId").is(new ObjectId(locationId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			}
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria2.and("patientId").is(new ObjectId(patientId));
 			}
 
-			localCalendar.setTime(from);
-			int fromDay = localCalendar.get(Calendar.DATE);
-			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int fromYear = localCalendar.get(Calendar.YEAR);
-			fromTime = new DateTime(fromYear, fromMonth, fromDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			localCalendar.setTime(to);
-			fromDay = localCalendar.get(Calendar.DATE);
-			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
-			fromYear = localCalendar.get(Calendar.YEAR);
-			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			count = (int) mongoTemplate.count(new Query(criteria2), IPDReportsCollection.class);
 
-			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
-
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$treatments"),
-								Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
-								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
-								Aggregation.unwind("$treatmentServices"),
-								new CustomAggregationOperation(
-										new BasicDBObject("$group",
-												new BasicDBObject("id", "$_id")
-														.append("locationId",
-																new BasicDBObject("$first",
-																		"$treatmentServices.locationId"))
-														.append("hospitalId",
-																new BasicDBObject("$first",
-																		"$treatmentServices.hospitalId"))
-														.append("doctorId",
-																new BasicDBObject("$first",
-																		"$treatmentServices.doctorId"))
-														.append("name",
-																new BasicDBObject("$first", "$treatmentServices.name"))
-														.append("cost",
-																new BasicDBObject("$first", "$treatmentServices.cost"))
-														.append("treatmentCode",
-																new BasicDBObject("$first",
-																		"$treatmentServices.treatmentCode"))
-														.append("discarded",
-																new BasicDBObject("$first",
-																		"$treatmentServices.discarded"))
-														.append("rankingCount",
-																new BasicDBObject("$first",
-																		"$treatmentServices.rankingCount"))
-														.append("category",
-																new BasicDBObject("$first",
-																		"$treatmentServices.category"))
-														.append("fieldsRequired",
-																new BasicDBObject("$first",
-																		"$treatmentServices.fieldsRequired"))
-														.append("createdTime",
-																new BasicDBObject("$first",
-																		"$treatmentServices.createdTime"))
-														.append("updatedTime",
-																new BasicDBObject("$first",
-																		"$treatmentServices.updatedTime"))
-														.append("createdBy",
-																new BasicDBObject("$first",
-																		"$treatmentServices.createdBy"))
-														.append("count", new BasicDBObject("$first", "$count")))),
-								Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
-								Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$treatments"),
-								Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
-								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
-								Aggregation.unwind("$treatmentServices"),
-								new CustomAggregationOperation(
-										new BasicDBObject("$group",
-												new BasicDBObject("id", "$_id")
-														.append("locationId",
-																new BasicDBObject("$first",
-																		"$treatmentServices.locationId"))
-														.append("hospitalId",
-																new BasicDBObject("$first",
-																		"$treatmentServices.hospitalId"))
-														.append("doctorId",
-																new BasicDBObject("$first",
-																		"$treatmentServices.doctorId"))
-														.append("name",
-																new BasicDBObject("$first", "$treatmentServices.name"))
-														.append("cost",
-																new BasicDBObject("$first", "$treatmentServices.cost"))
-														.append("treatmentCode",
-																new BasicDBObject("$first",
-																		"$treatmentServices.treatmentCode"))
-														.append("discarded",
-																new BasicDBObject("$first",
-																		"$treatmentServices.discarded"))
-														.append("rankingCount",
-																new BasicDBObject("$first",
-																		"$treatmentServices.rankingCount"))
-														.append("category",
-																new BasicDBObject("$first",
-																		"$treatmentServices.category"))
-														.append("fieldsRequired",
-																new BasicDBObject("$first",
-																		"$treatmentServices.fieldsRequired"))
-														.append("createdTime",
-																new BasicDBObject("$first",
-																		"$treatmentServices.createdTime"))
-														.append("updatedTime",
-																new BasicDBObject("$first",
-																		"$treatmentServices.updatedTime"))
-														.append("createdBy",
-																new BasicDBObject("$first",
-																		"$treatmentServices.createdBy"))
-														.append("count", new BasicDBObject("$first", "$count")))),
-								Aggregation.sort(Direction.DESC, "count"));
-			}
-
-			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, TreatmentService.class)
-					.getMappedResults();
+			ipdReportsResponse = new IPDReportsResponse();
+			ipdReportsResponse.setIpdReports(response);
+			ipdReportsResponse.setCount(count);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting most prescribed drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting most prescribed drugs");
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
+		return ipdReportsResponse;
+	}
+
+	@Override
+	@Transactional
+	public OPDReportsResponse getOPDReportsList(String locationId, String doctorId, String patientId, String from,
+			String to, int page, int size, String updatedTime) {
+		// TODO Auto-generated method stub
+		List<OPDReportCustomResponse> response = null;
+		OPDReportsResponse opdReportsResponse = null;
+		List<OPDReportsLookupResponse> opdReportsLookupResponses = null;
+		try {
+
+			// long updatedTimeStamp = Long.parseLong(updatedTime);
+			// Criteria criteria = new Criteria("updatedTime").gte(new
+			// Date(updatedTimeStamp));
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+
+			if (doctorId != null)
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			if (!DPDoctorUtils.anyStringEmpty(from) && !DPDoctorUtils.anyStringEmpty(to)) {
+
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))))
+						.lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			} else if (!DPDoctorUtils.anyStringEmpty(from)) {
+
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
+			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			}
+
+			if (size > 0)
+				opdReportsLookupResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+								Aggregation.unwind("hospital"),
+								Aggregation.lookup("prescription_cl", "prescriptionId", "_id",
+										"prescriptionCollection"),
+								Aggregation.unwind("prescriptionCollection"),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+								Aggregation.skip(page * size), Aggregation.limit(size)),
+						OPDReportsCollection.class, OPDReportsLookupResponse.class).getMappedResults();
+			else
+				opdReportsLookupResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+								Aggregation.unwind("hospital"),
+								Aggregation.lookup("prescription_cl", "prescriptionId", "_id",
+										"prescriptionCollection"),
+								Aggregation.unwind("prescriptionCollection"),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						OPDReportsCollection.class, OPDReportsLookupResponse.class).getMappedResults();
+
+			if (opdReportsLookupResponses != null) {
+				response = new ArrayList<OPDReportCustomResponse>();
+				for (OPDReportsLookupResponse collection : opdReportsLookupResponses) {
+					OPDReportCustomResponse opdReports = new OPDReportCustomResponse();
+
+					BeanUtil.map(collection, opdReports);
+					if (collection.getDoctorId() != null) {
+						UserCollection doctor = collection.getDoctor();
+						if (doctor != null)
+							opdReports.setDoctorName(doctor.getFirstName());
+					}
+					if (collection.getLocationId() != null) {
+						LocationCollection locationCollection = collection.getLocation();
+						if (locationCollection != null) {
+							opdReports.setLocationName(locationCollection.getLocationName());
+						}
+					}
+					if (collection.getHospitalId() != null) {
+						HospitalCollection hospitalCollection = collection.getHospital();
+						if (hospitalCollection != null) {
+							opdReports.setHospitalName(hospitalCollection.getHospitalName());
+						}
+					}
+					if (collection.getPatientId() != null) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
+								new ObjectId(collection.getHospitalId()));
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							opdReports.setPatient(patient);
+						}
+					}
+
+					if (collection.getPrescriptionCollection() != null) {
+						OPDPrescriptionResponse prescription = new OPDPrescriptionResponse();
+						List<TestAndRecordData> tests = collection.getPrescriptionCollection().getDiagnosticTests();
+						collection.getPrescriptionCollection().setDiagnosticTests(null);
+
+						List<PrescriptionItem> items = collection.getPrescriptionCollection().getItems();
+						collection.getPrescriptionCollection().setItems(null);
+
+						BeanUtil.map(collection.getPrescriptionCollection(), prescription);
+						if (items != null && !items.isEmpty()) {
+							List<OPDPrescriptionItemResponse> prescriptionItemDetails = new ArrayList<OPDPrescriptionItemResponse>();
+							for (PrescriptionItem prescriptionItem : items) {
+								OPDPrescriptionItemResponse prescriptionItemDetail = new OPDPrescriptionItemResponse();
+								BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+								DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+								if (drugCollection != null) {
+									Drug drug = new Drug();
+									BeanUtil.map(drugCollection, drug);
+									prescriptionItemDetail.setId(drug.getId());
+									if (drug.getDuration() != null) {
+										DurationResponse duration = new DurationResponse();
+										duration.setDurationUnit(drug.getDuration().getDurationUnit() != null
+												? drug.getDuration().getDurationUnit().getUnit()
+												: "");
+										duration.setValue(drug.getDuration().getValue());
+										prescriptionItemDetail.setDuration(duration);
+									}
+									if (drug.getDrugType() != null) {
+										prescriptionItemDetail.setDrugType(drug.getDrugType().getType());
+									}
+									if (drug.getDirection() != null && !drug.getDirection().isEmpty()) {
+										prescriptionItemDetail.setDirection(new ArrayList<String>());
+										for (DrugDirection direction : drug.getDirection()) {
+											prescriptionItemDetail.getDirection().add(direction.getDirection());
+										}
+									}
+
+									if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+										prescriptionItemDetail.setGenericNames(new ArrayList<GenericCodeResponse>());
+										for (GenericCode genericCode : drug.getGenericNames()) {
+											GenericCodeResponse genericCodeResponse = new GenericCodeResponse();
+											BeanUtil.map(genericCode, genericCodeResponse);
+											prescriptionItemDetail.getGenericNames().add(genericCodeResponse);
+										}
+									}
+									prescriptionItemDetails.add(prescriptionItemDetail);
+								}
+								prescription.setItems(prescriptionItemDetails);
+							}
+						} else {
+							prescription.setItems(new ArrayList<OPDPrescriptionItemResponse>());
+						}
+
+						PatientVisitCollection patientVisitCollection = patientVisitRepository
+								.findByPrescriptionId(collection.getPrescriptionCollection().getId());
+						if (patientVisitCollection != null)
+							prescription.setVisitId(patientVisitCollection.getId().toString());
+
+						if (tests != null && !tests.isEmpty()) {
+							List<OPDDiagnosticTestResponse> diagnosticTests = new ArrayList<OPDDiagnosticTestResponse>();
+							for (TestAndRecordData data : tests) {
+								if (data.getTestId() != null) {
+									DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
+											.findOne(data.getTestId());
+									DiagnosticTest diagnosticTest = new DiagnosticTest();
+									if (diagnosticTestCollection != null) {
+										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+									}
+									if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
+										diagnosticTests.add(new OPDDiagnosticTestResponse(diagnosticTest.getId(),
+												diagnosticTest.getTestName(), data.getRecordId().toString()));
+									} else {
+										diagnosticTests.add(new OPDDiagnosticTestResponse(diagnosticTest.getId(),
+												diagnosticTest.getTestName(), null));
+									}
+
+								}
+							}
+							prescription.setDiagnosticTests(diagnosticTests);
+						} else {
+							prescription.setDiagnosticTests(new ArrayList<OPDDiagnosticTestResponse>());
+						}
+
+						if (collection.getPrescriptionCollection().getAdvice() == null) {
+							prescription.setAdvice("");
+						}
+						if (prescription != null) {
+							opdReports.setPrescription(prescription);
+						}
+					}
+					response.add(opdReports);
+				}
+			}
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria2.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria2.and("patientId").is(new ObjectId(patientId));
+			}
+			int count = (int) mongoTemplate.count(new Query(criteria2), OPDReportsCollection.class);
+			opdReportsResponse = new OPDReportsResponse();
+			opdReportsResponse.setOpdReports(response);
+			opdReportsResponse.setCount(count);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return opdReportsResponse;}
+
+	@Override
+	@Transactional
+	public OTReportsResponse getOTReportsList(String locationId, String doctorId, String patientId, String from,
+			String to, int page, int size, String updatedTime) {
+		// TODO Auto-generated method stub
+		List<OTReports> response = null;
+		OTReportsResponse otReportsResponse = null;
+		List<OTReportsLookupResponse> otReportsLookupResponses = null;
+		int count = 0;
+		try {
+
+			// long updatedTimeStamp = Long.parseLong(updatedTime);
+			// Criteria criteria = new Criteria("updatedTime").gte(new
+			// Date(updatedTimeStamp));
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			if (!DPDoctorUtils.anyStringEmpty(from) && !DPDoctorUtils.anyStringEmpty(to)) {
+
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))))
+						.lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			} else if (!DPDoctorUtils.anyStringEmpty(from)) {
+
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
+			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			}
+
+			if (size > 0)
+				otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+						Aggregation.unwind("hospital"), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+						Aggregation.skip(page * size), Aggregation.limit(size)), OTReportsCollection.class,
+						OTReportsLookupResponse.class).getMappedResults();
+			else
+				otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+						Aggregation.unwind("hospital"), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						OTReportsCollection.class, OTReportsLookupResponse.class).getMappedResults();
+
+			if (otReportsLookupResponses != null) {
+				response = new ArrayList<OTReports>();
+				for (OTReportsLookupResponse collection : otReportsLookupResponses) {
+					OTReports otReports = new OTReports();
+					BeanUtil.map(collection, otReports);
+					if (collection.getDoctorId() != null) {
+						UserCollection doctor = collection.getDoctor();
+						if (doctor != null)
+							otReports.setDoctorName(doctor.getFirstName());
+					}
+					LocationCollection locationCollection = collection.getLocation();
+					if (locationCollection != null) {
+						otReports.setLocationName(locationCollection.getLocationName());
+
+					}
+					HospitalCollection hospitalCollection = collection.getHospital();
+					if (hospitalCollection != null) {
+						otReports.setHospitalName(hospitalCollection.getHospitalName());
+					}
+					if (collection.getPatientId() != null) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
+								new ObjectId(collection.getHospitalId()));
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							otReports.setPatient(patient);
+						}
+					}
+					if (collection.getSurgery().getEndTime() != null
+							&& collection.getSurgery().getStartTime() != null) {
+						Long diff = collection.getSurgery().getStartTime() - collection.getSurgery().getEndTime();
+						TimeDuration timeDuration = new TimeDuration();
+
+						Long diffSeconds = diff / 1000 % 60;
+						Long diffMinutes = diff / (60 * 1000) % 60;
+						Long diffHours = diff / (60 * 60 * 1000);
+						Integer diffInDays = (int) ((collection.getSurgery().getEndTime()
+								- collection.getSurgery().getStartTime()) / (1000 * 60 * 60 * 24));
+
+						timeDuration.setSeconds(diffSeconds.intValue());
+						timeDuration.setMinutes(diffMinutes.intValue());
+						timeDuration.setHours(diffHours.intValue());
+						timeDuration.setDays(diffInDays);
+
+						otReports.setTimeDuration(timeDuration);
+					}
+
+					response.add(otReports);
+				}
+			}
+
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria2.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria2.and("patientId").is(new ObjectId(patientId));
+			}
+
+			count = (int) mongoTemplate.count(new Query(criteria2), OTReportsCollection.class);
+			otReportsResponse = new OTReportsResponse();
+			otReportsResponse.setOtReports(response);
+			otReportsResponse.setCount(count);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return otReportsResponse;
+	}
+
+	@Override
+	@Transactional
+	public DeliveryReportsResponse getDeliveryReportsList(String locationId, String doctorId, String patientId,
+			String from, String to, int page, int size, String updatedTime) {
+		// TODO Auto-generated method stub
+		List<DeliveryReports> response = null;
+		DeliveryReportsResponse deliveryReportsResponse = null;
+		List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = null;
+		int count = 0;
+		try {
+
+			// long updatedTimeStamp = Long.parseLong(updatedTime);
+			// Criteria criteria = new Criteria("updatedTime").gte(new
+			// Date(updatedTimeStamp));
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			if (!DPDoctorUtils.anyStringEmpty(from) && !DPDoctorUtils.anyStringEmpty(to)) {
+
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))))
+						.lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			} else if (!DPDoctorUtils.anyStringEmpty(from)) {
+
+				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
+			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
+			}
+
+			if (size > 0)
+				deliveryReportsLookupResponses = mongoTemplate
+						.aggregate(
+								Aggregation.newAggregation(Aggregation.match(criteria),
+										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+										Aggregation.unwind("location"),
+										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+										Aggregation.unwind("hospital"),
+										Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+										Aggregation.skip(page * size), Aggregation.limit(size)),
+								DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class)
+						.getMappedResults();
+			else
+				deliveryReportsLookupResponses = mongoTemplate
+						.aggregate(
+								Aggregation.newAggregation(Aggregation.match(criteria),
+										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+										Aggregation.unwind("location"),
+										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+										Aggregation.unwind("hospital"),
+										Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+								DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class)
+						.getMappedResults();
+
+			if (deliveryReportsLookupResponses != null) {
+				response = new ArrayList<DeliveryReports>();
+				for (DeliveryReportsLookupResponse collection : deliveryReportsLookupResponses) {
+					DeliveryReports deliveryReports = new DeliveryReports();
+					BeanUtil.map(collection, deliveryReports);
+					if (collection.getDoctorId() != null) {
+						UserCollection doctor = collection.getDoctor();
+						if (doctor != null)
+							deliveryReports.setDoctorName(doctor.getFirstName());
+					}
+					LocationCollection locationCollection = collection.getLocation();
+					if (locationCollection != null) {
+						deliveryReports.setLocationName(locationCollection.getLocationName());
+
+					}
+					HospitalCollection hospitalCollection = collection.getHospital();
+					if (hospitalCollection != null) {
+						deliveryReports.setHospitalName(hospitalCollection.getHospitalName());
+					}
+					if (collection.getPatientId() != null) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
+								new ObjectId(collection.getHospitalId()));
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							deliveryReports.setPatient(patient);
+						}
+					}
+
+					response.add(deliveryReports);
+				}
+			}
+
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria2.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria2.and("patientId").is(new ObjectId(patientId));
+			}
+
+			count = (int) mongoTemplate.count(new Query(criteria2), DeliveryReportsCollection.class);
+			deliveryReportsResponse = new DeliveryReportsResponse();
+			deliveryReportsResponse.setDeliveryReports(response);
+			deliveryReportsResponse.setCount(count);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return deliveryReportsResponse;
+	}
+
+	@Override
+	public Boolean addPrescriptionOPDReports() {
+		Boolean response = false;
+		try {
+			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findAll();
+			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+						String.valueOf(prescriptionCollection.getId()),
+						String.valueOf(prescriptionCollection.getDoctorId()),
+						String.valueOf(prescriptionCollection.getLocationId()),
+						String.valueOf(prescriptionCollection.getHospitalId()), prescriptionCollection.getCreatedTime(),
+						prescriptionCollection.getUpdatedTime());
+				opdReports = submitOPDReport(opdReports);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public OPDReports getOPDReportByVisitId(String visitId) {
+		OPDReports response = null;
+		OPDReportsCollection opdReportsCollection = opdReportsRepository.getOPDReportByVisitId(new ObjectId(visitId));
+		if (opdReportsCollection != null) {
+			response = new OPDReports();
+			BeanUtil.map(opdReportsCollection, response);
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public String getOTReportsFile(String otId) {
+		String response = null;
+		try {
+			List<OTReportsLookupResponse> otReportsLookupResponses = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(otId))),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+									Aggregation.unwind("doctor"),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$patientCollection")
+													.append("preserveNullAndEmptyArrays", true))),
+									new CustomAggregationOperation(
+											new BasicDBObject("$redact",
+													new BasicDBObject("$cond",
+															new BasicDBObject("if", new BasicDBObject("$eq",
+																	Arrays.asList("$patientCollection.locationId",
+																			"$locationId"))).append("then", "$$KEEP")
+																					.append("else", "$$PRUNE")))),
+
+									Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+									Aggregation.unwind("patientUser")),
+							OTReportsCollection.class, OTReportsLookupResponse.class)
+					.getMappedResults();
+
+			if (otReportsLookupResponses != null) {
+				OTReportsLookupResponse otReportsLookupResponse = otReportsLookupResponses.get(0);
+				PatientCollection patient = otReportsLookupResponse.getPatientCollection();
+				UserCollection user = otReportsLookupResponse.getPatientUser();
+
+				JasperReportResponse jasperReportResponse = createOTReportsJasper(otReportsLookupResponse, patient,
+						user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+		}
+		return response;
+	}
+
+	private JasperReportResponse createOTReportsJasper(OTReportsLookupResponse otReportsLookupResponse,
+			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				new ObjectId(otReportsLookupResponse.getDoctorId()),
+				new ObjectId(otReportsLookupResponse.getLocationId()),
+				new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+
+		if (otReportsLookupResponse.getOperationDate() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			parameters.put("operationDate", sdf.format(otReportsLookupResponse.getOperationDate()));
+		}
+
+		parameters.put("anaesthesiaType",
+				(otReportsLookupResponse.getAnaesthesiaType() != null)
+						? otReportsLookupResponse.getAnaesthesiaType().getAnaesthesiaType()
+						: null);
+
+		if (otReportsLookupResponse.getSurgery() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			String startTime = "";
+			if (otReportsLookupResponse.getSurgery().getStartTime() != null)
+				startTime = sdf.format(new Date(otReportsLookupResponse.getSurgery().getStartTime()));
+
+			String endTime = "";
+			if (otReportsLookupResponse.getSurgery().getEndTime() != null)
+				endTime = sdf.format(new Date(otReportsLookupResponse.getSurgery().getEndTime()));
+
+			if (!DPDoctorUtils.anyStringEmpty(startTime, endTime))
+				parameters.put("dateAndTimeOfSurgery", startTime + " to " + endTime);
+			else if (!DPDoctorUtils.anyStringEmpty(startTime))
+				parameters.put("dateAndTimeOfSurgery", startTime);
+		}
+
+		if (otReportsLookupResponse.getTimeDuration() != null) {
+			TimeDuration timeDuration = otReportsLookupResponse.getTimeDuration();
+			String duration = "";
+			if (timeDuration.getDays() != null && timeDuration.getDays() > 0)
+				duration = timeDuration.getDays() + " days";
+			if (timeDuration.getHours() != null && timeDuration.getHours() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration + " " : "") + timeDuration.getHours()
+						+ " hrs";
+			}
+			if (timeDuration.getMinutes() != null && timeDuration.getMinutes() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration + " " : "") + timeDuration.getMinutes()
+						+ " mins";
+			}
+			if (timeDuration.getSeconds() != null && timeDuration.getSeconds() > 0) {
+				duration = (!DPDoctorUtils.anyStringEmpty(duration) ? duration + " " : "") + timeDuration.getSeconds()
+						+ " secs";
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(duration))
+				parameters.put("durationOfSurgery", duration);
+		}
+
+		parameters.put("provisionalDiagnosis", otReportsLookupResponse.getProvisionalDiagnosis());
+		parameters.put("finalDiagnosis", otReportsLookupResponse.getFinalDiagnosis());
+		parameters.put("operatingSurgeon", otReportsLookupResponse.getOperatingSurgeon());
+		parameters.put("anaesthetist", otReportsLookupResponse.getAnaesthetist());
+		parameters.put("materialForHPE",
+				otReportsLookupResponse.getMaterialForHPE() != null && otReportsLookupResponse.getMaterialForHPE()
+						? "YES"
+						: "NO");
+		parameters.put("remarks", otReportsLookupResponse.getRemarks());
+		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
+		parameters.put("otReportsId", otReportsLookupResponse.getId());
+
+		patientVisitService.generatePatientDetails((printSettings != null
+				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>OT-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId())
+						? otReportsLookupResponse.getUniqueOTId()
+						: "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				otReportsLookupResponse.getUpdatedTime() != null ? otReportsLookupResponse.getUpdatedTime()
+						: new Date(),
+				printSettings.getHospitalUId());
+
+		patientVisitService.generatePrintSetup(parameters, printSettings,
+				new ObjectId(otReportsLookupResponse.getDoctorId()));
+		String pdfName = (user != null ? user.getFirstName() : "") + "OTREPORTS-"
+				+ (!DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getUniqueOTId())
+						? otReportsLookupResponse.getUniqueOTId()
+						: "")
+				+ new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.OT_REPORTS, parameters, OTReportsFileName, layout,
+				pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
+
+	@Override
+	public String getDeliveryReportsFile(String reportId) {
+		String response = null;
+		try {
+			List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(reportId))),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
+											true))),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond", new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patientCollection.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser")),
+					DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class).getMappedResults();
+
+			if (deliveryReportsLookupResponses != null) {
+				DeliveryReportsLookupResponse deliveryReportsLookupResponse = deliveryReportsLookupResponses.get(0);
+				PatientCollection patient = deliveryReportsLookupResponse.getPatientCollection();
+				UserCollection user = deliveryReportsLookupResponse.getPatientUser();
+
+				JasperReportResponse jasperReportResponse = createDeliveryReportsJasper(deliveryReportsLookupResponse,
+						patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+		}
+		return response;
+	}
+
+	private JasperReportResponse createDeliveryReportsJasper(
+			DeliveryReportsLookupResponse deliveryReportsLookupResponse, PatientCollection patient, UserCollection user)
+			throws NumberFormatException, IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				new ObjectId(deliveryReportsLookupResponse.getDoctorId()),
+				new ObjectId(deliveryReportsLookupResponse.getLocationId()),
+				new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+
+		parameters.put("deliveryReportsId", deliveryReportsLookupResponse.getId());
+		if (deliveryReportsLookupResponse.getDeliveryDate() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			parameters.put("deliveryDate", sdf.format(deliveryReportsLookupResponse.getDeliveryDate()));
+		}
+
+		if (deliveryReportsLookupResponse.getDeliveryTime() != null
+				&& deliveryReportsLookupResponse.getDeliveryTime() != 0) {
+			parameters.put("deliveryTime",
+					String.format("%02d:%02d", deliveryReportsLookupResponse.getDeliveryTime() / 60,
+							deliveryReportsLookupResponse.getDeliveryTime() % 60));
+		}
+		parameters.put("babyGender", deliveryReportsLookupResponse.getBabyGender());
+
+		parameters.put("deliveryType", deliveryReportsLookupResponse.getDeliveryType());
+		parameters.put("formNo", deliveryReportsLookupResponse.getFormNo());
+		parameters.put("remarks", deliveryReportsLookupResponse.getRemarks());
+
+		patientVisitService.generatePatientDetails((printSettings != null
+				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>DR-ID: </b>" + (!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId())
+						? deliveryReportsLookupResponse.getUniqueDRId()
+						: "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				deliveryReportsLookupResponse.getUpdatedTime() != null ? deliveryReportsLookupResponse.getUpdatedTime()
+						: new Date(),
+				printSettings.getHospitalUId());
+
+		patientVisitService.generatePrintSetup(parameters, printSettings,
+				new ObjectId(deliveryReportsLookupResponse.getDoctorId()));
+		String pdfName = (user != null ? user.getFirstName() : "") + "DELIVERYREPORTS-"
+				+ (!DPDoctorUtils.anyStringEmpty(deliveryReportsLookupResponse.getUniqueDRId())
+						? deliveryReportsLookupResponse.getUniqueDRId()
+						: "")
+				+ new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.DELIVERY_REPORTS, parameters, deliveryReportsFileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		return response;
 	}
 
