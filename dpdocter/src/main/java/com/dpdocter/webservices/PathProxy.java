@@ -1729,7 +1729,8 @@ public interface PathProxy {
 		public static final String GET_REQUESTS = "/getRequests";
 		public static final String GET_SERVICE_LOCATION = "/getServiceLocation";
 		public static final String GET_SERVICES = "/getServices";
-
+		public static final String ADD_EDIT_DENTAL_IMAGING_LOCATION_ASSOCIATION = "/addEditDentalImagingLocationAssociation";
+		public static final String GET_LOCATION_ASSOCIATED_SERVICES = "/getLocationAssociatedServices";
 	}
 
 	public static final String SEARCH_BASE_URL = BASE_URL + "/search";

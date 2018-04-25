@@ -14,34 +14,43 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
+import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
+import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DentalImagingLocationServiceAssociationRepository;
 import com.dpdocter.repository.DentalImagingRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupLookupResponse;
 import com.dpdocter.services.DentalImagingService;
 
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class DentalImagingServiceImpl implements DentalImagingService{
+public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Autowired
 	LocationRepository locationRepository;
-	
+
 	@Autowired
 	DentalImagingRepository dentalImagingRepository;
-	
+
+	@Autowired
+	DentalImagingLocationServiceAssociationRepository dentalImagingLocationServiceAssociationRepository;
+
 	@Autowired
 	MongoTemplate mongoTemplate;
 	private static Logger logger = Logger.getLogger(DentalImagingServiceImpl.class.getName());
-	
+
 	@Override
 	@Transactional
 	public DentalImaging addEditDentalImagingRequest(DentalImagingRequest request) {
@@ -82,17 +91,14 @@ public class DentalImagingServiceImpl implements DentalImagingService{
 		}
 		return response;
 	}
-	
-	
-	
+
 	@Override
 	@Transactional
 
 	public List<DentalImaging> getRequests(String locationId, String hospitalId, String doctorId, Long from, Long to,
-			String searchTerm,int size, int page) {
+			String searchTerm, int size, int page) {
 
 		List<DentalImaging> response = null;
-		List<DentalLabPickupLookupResponse> lookupResponses = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -110,105 +116,18 @@ public class DentalImagingServiceImpl implements DentalImagingService{
 			} else {
 				criteria.and("updatedTime").gte(new Date(from));
 			}
-/*
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("patientName", new BasicDBObject("$first", "$patientName"))
-							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-							.append("dentalWorksSamples", new BasicDBObject("$push", "$dentalWorksSamples"))
-							.append("gender", new BasicDBObject("$first", "$gender"))
-							.append("age", new BasicDBObject("$first", "$age"))
-							.append("crn", new BasicDBObject("$first", "$crn"))
-							.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
-							.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
-							.append("status", new BasicDBObject("$first", "$status"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("dentalLabId", new BasicDBObject("$first", "$dentalLabId"))
-							.append("numberOfSamplesRequested",
-									new BasicDBObject("$first", "$numberOfSamplesRequested"))
-							.append("numberOfSamplesPicked", new BasicDBObject("$first", "$numberOfSamplesPicked"))
-							.append("requestId", new BasicDBObject("$first", "$requestId"))
-							.append("isCompleted", new BasicDBObject("$first", "$isCompleted"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-							.append("isAcceptedAtLab", new BasicDBObject("$first", "$isAcceptedAtLab"))
-							.append("isCollectedAtDoctor", new BasicDBObject("$first", "$isCollectedAtDoctor"))
-							.append("collectionBoyId", new BasicDBObject("$first", "$collectionBoyId"))
-							.append("serialNumber", new BasicDBObject("$first", "$serialNumber"))
-							.append("reasonForCancel", new BasicDBObject("$first", "$reasonForCancel"))
-							.append("cancelledBy", new BasicDBObject("$first", "$cancelledBy"))
-							.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
-							.append("dentalLab", new BasicDBObject("$first", "$dentalLab"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("doctor", new BasicDBObject("$first", "$doctor"))
-							.append("feedBackRating", new BasicDBObject("$first", "$feedBackRating"))
-							.append("feedBackComment", new BasicDBObject("$first", "$feedBackComment"))));
-*/
-			/*
-			 * private DentalWork dentalWork; private List<DentalToothNumber>
-			 * dentalToothNumbers; private List<DentalStage> dentalStagesForLab; private
-			 * Long etaInDate; private Integer etaInHour; private Boolean isCompleted =
-			 * false; private Boolean isUrgent = false; private String instructions; private
-			 * String occlusalStaining; private String ponticDesign; private String
-			 * collarAndMetalDesign; private String uniqueWorkId; private
-			 * List<ImageURLResponse> dentalImages; private List<DentalWorkCardValue>
-			 * dentalWorkCardValues; private String shade; private List<String> material;
-			 * private List<DentalStage> dentalStagesForDoctor; private
-			 * RateCardDentalWorkAssociation rateCardDentalWorkAssociation; private String
-			 * processStatus;
-			 */
-
-			
-			/*if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("dentalLab.locationName").regex("^" + searchTerm),
-						new Criteria("dentalLab.locationName").regex(searchTerm + ".*"),
-						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
-						new Criteria("doctor.firstName").regex("^" + searchTerm),
-						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
-						new Criteria("patientName").regex("^" + searchTerm, "i"),
-						new Criteria("patientName").regex("^" + searchTerm),
-						new Criteria("patientName").regex(searchTerm + ".*"),
-						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm, "i"),
-						new Criteria("dentalWorksSamples.uniqueWorkId").regex("^" + searchTerm),
-						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + "$", "i"),
-						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + "$"),
-						new Criteria("dentalWorksSamples.uniqueWorkId").regex(searchTerm + ".*"));
-			}
-*/
-			/* (SEVEN) */
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(/*Aggregation.unwind("dentalWorksSamples"),*/
-						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
-					/*	Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),
-						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
-										true))),*/
-						Aggregation.match(criteria), 
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(/*Aggregation.unwind("dentalWorksSamples"),*/
-						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
-						/*Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),
-						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
-										true))),*/
-						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-			// System.out.println(aggregation);
 			AggregationResults<DentalImaging> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingCollection.class, DentalImaging.class);
 			response = aggregationResults.getMappedResults();
 
-			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -216,5 +135,116 @@ public class DentalImagingServiceImpl implements DentalImagingService{
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public List<DentalDiagnosticService> getServices(String searchTerm, String type, int page, int size) {
+		List<DentalDiagnosticService> response = null;
+
+		try {
+			Criteria criteria = new Criteria();
+			Aggregation aggregation = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("type").is(type);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("name").regex("^" + searchTerm), new Criteria("name").regex(searchTerm + ".*"));
+			}
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<DentalDiagnosticService> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalDiagnosticServiceCollection.class, DentalDiagnosticService.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public Boolean addEditDentalImagingLocationServiceAssociation(
+			List<DentalImagingLocationServiceAssociation> request) {
+		Boolean response = false;
+		ObjectId oldId = null;
+		DentalImagingLocationServiceAssociationCollection dentalImagingLocationServiceAssociationCollection = null;
+		try {
+			for (DentalImagingLocationServiceAssociation dentalImagingLocationServiceAssociation : request) {
+				dentalImagingLocationServiceAssociationCollection = dentalImagingLocationServiceAssociationRepository
+						.findbyServiceLocationHospital(new ObjectId(dentalImagingLocationServiceAssociation.getDentalDiagnosticServiceId()),
+								new ObjectId(dentalImagingLocationServiceAssociation.getLocationId()), new ObjectId(dentalImagingLocationServiceAssociation.getHospitalId()));
+				if (dentalImagingLocationServiceAssociationCollection == null) {
+					dentalImagingLocationServiceAssociationCollection = new DentalImagingLocationServiceAssociationCollection();
+				} else {
+					oldId = dentalImagingLocationServiceAssociationCollection.getId();
+				}
+				BeanUtil.map(dentalImagingLocationServiceAssociation,
+						dentalImagingLocationServiceAssociationCollection);
+				dentalImagingLocationServiceAssociationCollection.setId(oldId);
+				dentalImagingLocationServiceAssociationCollection = dentalImagingLocationServiceAssociationRepository
+						.save(dentalImagingLocationServiceAssociationCollection);
+			}
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn(e);
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input" + e);
+		}
+		return response;
+	}
 	
+	@Override
+	@Transactional
+	public List<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(String locationId , String hospitalId , String searchTerm, String type, int page, int size) {
+		List<DentalImagingLocationServiceAssociationLookupResponse> response = null;
+
+		try {
+			Criteria criteria = new Criteria();
+			Aggregation aggregation = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("service.type").is(type);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("service.name").regex("^" + searchTerm, "i"),
+						new Criteria("service.name").regex("^" + searchTerm), new Criteria("service.name").regex(searchTerm + ".*"));
+			}
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("dental_diagnostic_service_cl", "dentalDiagnosticServiceId", "_id", "service"),
+						Aggregation.unwind("service"),Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("dental_diagnostic_service_cl", "dentalDiagnosticServiceId", "_id", "service"),
+						Aggregation.unwind("service"),Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<DentalImagingLocationServiceAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalImagingLocationServiceAssociationCollection.class, DentalImagingLocationServiceAssociationLookupResponse.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 }
