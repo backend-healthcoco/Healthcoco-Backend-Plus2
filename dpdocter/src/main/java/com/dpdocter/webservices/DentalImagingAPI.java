@@ -1,5 +1,7 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -15,10 +17,12 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
+import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.Location;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.services.DentalImagingService;
 
 import common.util.web.Response;
@@ -84,11 +88,35 @@ public class DentalImagingAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_SERVICES, notes = PathProxy.DentalImagingUrl.GET_SERVICES)
 	public Response<DentalDiagnosticService> getPickupRequests(@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page) {
+			@QueryParam("page") int page , 	@QueryParam("type") String type) {
 
 		Response<DentalDiagnosticService> response = new Response<DentalDiagnosticService>();
-		//response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
+		response.setDataList(dentalImagingService.getServices(searchTerm, type, page, size));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.ADD_EDIT_DENTAL_IMAGING_LOCATION_ASSOCIATION)
+	@POST
+	@ApiOperation(value = PathProxy.DentalImagingUrl.ADD_EDIT_DENTAL_IMAGING_LOCATION_ASSOCIATION, notes = PathProxy.DentalImagingUrl.ADD_EDIT_DENTAL_IMAGING_LOCATION_ASSOCIATION)
+	public Response<Boolean> addEditDentalImagingLocationServiceAssociation(List<DentalImagingLocationServiceAssociation> request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalImagingService.addEditDentalImagingLocationServiceAssociation(request));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_LOCATION_ASSOCIATED_SERVICES)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_LOCATION_ASSOCIATED_SERVICES, notes = PathProxy.DentalImagingUrl.GET_LOCATION_ASSOCIATED_SERVICES)
+	public Response<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
+			@QueryParam("page") int page , 	@QueryParam("type") String type) {
+		Response<DentalImagingLocationServiceAssociationLookupResponse> response = new Response<DentalImagingLocationServiceAssociationLookupResponse>();
+		response.setDataList(dentalImagingService.getLocationAssociatedServices(locationId, hospitalId, searchTerm, type, page, size));
+		return response;
+	}
+	
 	
 }
