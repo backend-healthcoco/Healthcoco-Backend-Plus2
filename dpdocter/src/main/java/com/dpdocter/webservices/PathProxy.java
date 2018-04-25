@@ -1495,8 +1495,9 @@ public interface PathProxy {
 		public static final String GET_PATIENT_ANALYTIC = "/doctor/patient";
 		public static final String GET_TREATMENT_ANALYTIC = "/doctor/treatmentService";
 		public static final String GET_APPOINTMENT_ANALYTIC = "/doctor/appointment";
-
-	}
+		public static final String GET_PRESCRIPTION_ANALYTIC = "/doctor/prescription";
+		public static final String GET_PRESCRIPTION_ITEM_ANALYTIC = "/doctor/prescription/{type}";
+		public static final String GET_PATIENT_VISIT_ANALYTIC = "/doctor/visit";}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
 
