@@ -1,5 +1,4 @@
 package com.dpdocter.services.impl;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,26 +20,18 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Drug;
-<<<<<<< HEAD
-=======
 import com.dpdocter.beans.DrugDirection;
-import com.dpdocter.beans.EquipmentLogAMCAndServicingRegister;
 import com.dpdocter.beans.GenericCode;
->>>>>>> e90650b... implemented HAPPY-3240
 import com.dpdocter.beans.IPDReports;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
 import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.TimeDuration;
 import com.dpdocter.collections.DeliveryReportsCollection;
@@ -90,7 +80,6 @@ import com.dpdocter.response.OPDReportsLookupResponse;
 import com.dpdocter.response.OPDReportsResponse;
 import com.dpdocter.response.OTReportsLookupResponse;
 import com.dpdocter.response.OTReportsResponse;
-import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
@@ -1256,8 +1245,5 @@ public class ReportsServiceImpl implements ReportsService {
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		return response;
 	}
-
-
-	
 
 }

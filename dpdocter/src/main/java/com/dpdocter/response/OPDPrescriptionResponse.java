@@ -7,8 +7,9 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.collections.GenericCollection;
 
-public class OPDPrescriptionResponse {
+public class OPDPrescriptionResponse extends GenericCollection {
 
 	private String id;
 
