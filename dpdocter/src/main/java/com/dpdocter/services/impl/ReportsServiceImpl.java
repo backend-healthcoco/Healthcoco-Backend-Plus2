@@ -76,12 +76,12 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 @Transactional
-public class AnalyticsServiceImpl implements AnalyticsService {
+public class ReportsServiceImpl implements AnalyticsService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	Logger logger = Logger.getLogger(AnalyticsServiceImpl.class);
+	Logger logger = Logger.getLogger(ReportsServiceImpl.class);
 
 	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
 		Criteria criteria = new Criteria();
