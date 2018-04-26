@@ -571,6 +571,8 @@ public class ReportsServiceImpl implements ReportsService {
 									Drug drug = new Drug();
 									BeanUtil.map(drugCollection, drug);
 									prescriptionItemDetail.setId(drug.getId());
+
+									prescriptionItemDetail.setDrugName(drug.getDrugName());
 									if (drug.getDuration() != null) {
 										DurationResponse duration = new DurationResponse();
 										duration.setDurationUnit(drug.getDuration().getDurationUnit() != null
