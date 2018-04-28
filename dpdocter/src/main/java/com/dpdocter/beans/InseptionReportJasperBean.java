@@ -4,7 +4,7 @@ import java.util.List;
 
 public class InseptionReportJasperBean {
 
-	private String dentallab;
+	private String dentalLab;
 	private String doctor;
 	private String patientName;
 	private String shade;
@@ -17,12 +17,12 @@ public class InseptionReportJasperBean {
 	private String date;
 	private List<DentalStagejasperBean> items;
 
-	public String getDentallab() {
-		return dentallab;
+	public String getDentalLab() {
+		return dentalLab;
 	}
 
-	public void setDentallab(String dentallab) {
-		this.dentallab = dentallab;
+	public void setDentalLab(String dentalLab) {
+		this.dentalLab = dentalLab;
 	}
 
 	public String getDoctor() {

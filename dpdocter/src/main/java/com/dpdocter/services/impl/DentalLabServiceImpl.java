@@ -1822,6 +1822,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public List<DentalLabPickupResponse> getRequestByIds(List<ObjectId> ids) {
 		List<DentalLabPickupResponse> dentalLabPickupResponses = null;
 		List<DentalLabPickupLookupResponse> dentalLabPickupLookupResponse = null;
+		DentalLabPickupResponse dentalLabPickupResponse = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -1841,16 +1842,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalLabPickupLookupResponse = aggregationResults.getMappedResults();
 
 			if (dentalLabPickupLookupResponse != null && !dentalLabPickupLookupResponse.isEmpty()) {
-
 				List<DentalStageRequest> dentalStageRequestsForDoctor = null;
 				List<DentalStageRequest> dentalStageRequestsForLab = null;
 				List<DentalWorksSampleRequest> dentalWorksSampleRequests = null;
-				DentalLabPickupResponse dentalLabPickupResponse = null;
 				dentalLabPickupResponses = new ArrayList<DentalLabPickupResponse>();
 				for (DentalLabPickupLookupResponse labPickupLookupResponse : dentalLabPickupLookupResponse) {
 					dentalWorksSampleRequests = new ArrayList<DentalWorksSampleRequest>();
 					dentalLabPickupResponse = new DentalLabPickupResponse();
-					BeanUtil.map(dentalLabPickupLookupResponse, dentalLabPickupResponse);
+					BeanUtil.map(labPickupLookupResponse, dentalLabPickupResponse);
 
 					for (DentalWorksSample dentalWorksSample : labPickupLookupResponse.getDentalWorksSamples()) {
 						// sSystem.out.println( " work sample:: " +
@@ -2343,7 +2342,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 		String labName = "";
 		String stageForDoctor = null;
 		String locationId = null, hospitalId = null;
-
 		String workId = " ";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
@@ -2357,9 +2355,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 				locationId = dentalLabPickupResponse.getDentalLab().getId();
 				hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
 				labName = dentalLabPickupResponse.getDentalLab().getLocationName();
-				jasperBean.setDentallab("<b>Dental Lab :- </b> " + labName);
+				jasperBean.setDentalLab("<b>Dental Lab :- </b> " + labName);
 			} else {
-				jasperBean.setDentallab("<b>Dental Lab :- </b> ");
+				jasperBean.setDentalLab("<b>Dental Lab :- </b> ");
 			}
 
 			if (dentalLabPickupResponse.getDoctor() != null) {
@@ -2438,7 +2436,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				if (dentalWorksSample.getDentalToothNumbers() != null) {
 					for (DentalToothNumber dentalToothNumber : dentalWorksSample.getDentalToothNumbers()) {
 						toothNumbers = toothNumbers + StringUtils.join(dentalToothNumber.getToothNumber(), ',') + " - "
-								+ dentalToothNumber.getType() + "<br>";
+								+ dentalToothNumber.getType();
 					}
 					jasperBean.setToothNumbers(toothNumbers);
 
@@ -2532,7 +2530,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		parameters.put("showTableOne", false);
 		parameters.put("poweredBy", footerText);
 		parameters.put("contentLineSpace", LineSpace.SMALL.name());
-		response = jasperReportService.createPDF(ComponentType.MULTIPLE_CLINICAL_NOTES, parameters,
+		response = jasperReportService.createPDF(ComponentType.MULTIPLE_INSPECTION_REPORT, parameters,
 				dentalWorksFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
