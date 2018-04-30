@@ -5207,11 +5207,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(18);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{copingStage}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{copingStage}"));
 		jrDesignTextField.setX(25);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(copingWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
@@ -5219,11 +5220,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{bisqueStage}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{bisqueStage}"));
 		jrDesignTextField.setX(copingWidth + 25);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(bisqueWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
@@ -5231,18 +5233,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{finalStage}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{finalStage}"));
 		jrDesignTextField.setX(bisqueWidth + 25);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(finalWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addInspectionReportsItem(parameters,
 				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
