@@ -13,7 +13,9 @@ public class InseptionReportJasperBean {
 	private String toothNumbers;
 	private String status;
 	private String requestId;
-	private String stages;
+	private String bisqueStage;
+	private String finalStage;
+	private String copingStage;
 	private String date;
 	private List<DentalStagejasperBean> items;
 
@@ -89,12 +91,30 @@ public class InseptionReportJasperBean {
 		this.requestId = requestId;
 	}
 
-	public String getStages() {
-		return stages;
+
+
+	public String getBisqueStage() {
+		return bisqueStage;
 	}
 
-	public void setStages(String stages) {
-		this.stages = stages;
+	public void setBisqueStage(String bisqueStage) {
+		this.bisqueStage = bisqueStage;
+	}
+
+	public String getFinalStage() {
+		return finalStage;
+	}
+
+	public void setFinalStage(String finalStage) {
+		this.finalStage = finalStage;
+	}
+
+	public String getCopingStage() {
+		return copingStage;
+	}
+
+	public void setCopingStage(String copingStage) {
+		this.copingStage = copingStage;
 	}
 
 	public String getDate() {
