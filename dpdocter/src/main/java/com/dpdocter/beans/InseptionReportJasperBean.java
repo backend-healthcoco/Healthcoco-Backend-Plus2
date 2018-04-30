@@ -4,6 +4,7 @@ import java.util.List;
 
 public class InseptionReportJasperBean {
 
+	
 	private String dentalLab;
 	private String doctor;
 	private String patientName;
@@ -13,9 +14,9 @@ public class InseptionReportJasperBean {
 	private String toothNumbers;
 	private String status;
 	private String requestId;
-	private String bisqueStage;
-	private String finalStage;
-	private String copingStage;
+	private String bisqueStage = "BISQUE";
+	private String finalStage = "FINAL";
+	private String copingStage = "COPING";
 	private String date;
 	private List<DentalStagejasperBean> items;
 
@@ -91,8 +92,6 @@ public class InseptionReportJasperBean {
 		this.requestId = requestId;
 	}
 
-
-
 	public String getBisqueStage() {
 		return bisqueStage;
 	}
@@ -131,6 +130,13 @@ public class InseptionReportJasperBean {
 
 	public void setItems(List<DentalStagejasperBean> items) {
 		this.items = items;
+	}
+	@Override
+	public String toString() {
+		return "s [dentalLab=" + dentalLab + ", doctor=" + doctor + ", patientName=" + patientName + ", shade=" + shade
+				+ ", dentalWork=" + dentalWork + ", material=" + material + ", toothNumbers=" + toothNumbers
+				+ ", status=" + status + ", requestId=" + requestId + ", bisqueStage=" + bisqueStage + ", finalStage="
+				+ finalStage + ", copingStage=" + copingStage + ", date=" + date + ", items=" + items + "]";
 	}
 
 }

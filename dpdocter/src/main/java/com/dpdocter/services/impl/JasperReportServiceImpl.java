@@ -5199,19 +5199,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		int copingWidth, bisqueWidth, finalWidth;
-		copingWidth = (35 * (columnWidth - 50)) / 100;
-		bisqueWidth = (35 * (columnWidth - 50)) / 100;
-		finalWidth = (35 * (columnWidth - 50)) / 100;
+		copingWidth = (35 * (columnWidth - 40)) / 100;
+		bisqueWidth = (35 * (columnWidth - 40)) / 100;
+		finalWidth = (35 * (columnWidth - 40)) / 100;
 
 		band = new JRDesignBand();
 		band.setHeight(18);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{copingStage}"));
-		jrDesignTextField.setX(25);
+		jrDesignTextField.setX(20);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(copingWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
@@ -5221,10 +5220,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{bisqueStage}"));
-		jrDesignTextField.setX(copingWidth + 25);
+		jrDesignTextField.setX(copingWidth + 20);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(bisqueWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
@@ -5234,10 +5232,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{finalStage}"));
-		jrDesignTextField.setX(bisqueWidth + 25);
+		jrDesignTextField.setX(copingWidth+bisqueWidth + 20);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(finalWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
@@ -6269,6 +6266,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.setRightMargin(0);
 		jasperDesign.setTopMargin(0);
 		jasperDesign.addStyle(normalStyle);
+		band = new JRDesignBand();
+		band.setHeight(1);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
 		band.setHeight(18);
@@ -6542,18 +6549,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		int copingWidth, bisqueWidth, finalWidth;
-		copingWidth = (35 * (columnWidth - 50)) / 100;
-		bisqueWidth = (35 * (columnWidth - 50)) / 100;
-		finalWidth = (35 * (columnWidth - 50)) / 100;
+		copingWidth = (35 * (columnWidth - 40)) / 100;
+		bisqueWidth = (35 * (columnWidth - 40)) / 100;
+		finalWidth = (35 * (columnWidth - 40)) / 100;
 
 		band = new JRDesignBand();
 		band.setHeight(18);
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{copingStage}"));
-		jrDesignTextField.setX(25);
+		jrDesignTextField.setX(20);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{copingStage}"));
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(copingWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
@@ -6562,10 +6568,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{bisqueStage}"));
-		jrDesignTextField.setX(copingWidth + 25);
+		jrDesignTextField.setX(copingWidth + 20);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(bisqueWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
@@ -6574,10 +6579,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{finalStage}"));
-		jrDesignTextField.setX(copingWidth + bisqueWidth + 25);
+		jrDesignTextField.setX(copingWidth + bisqueWidth + 20);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setWidth(finalWidth);
 		jrDesignTextField.setStretchWithOverflow(true);

@@ -2353,9 +2353,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		String labName = "";
-		String copingStage = null;
-		String bisqueStage = null;
-		String finalStage = null;
+
 		String locationId = null, hospitalId = null;
 		String workId = " ";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -2365,10 +2363,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 		List<InseptionReportJasperBean> jasperBeans = new ArrayList<InseptionReportJasperBean>();
 		InseptionReportJasperBean jasperBean = null;
 		for (DentalLabPickupResponse dentalLabPickupResponse : dentalLabPickupResponses) {
-			copingStage = "COPING";
-			bisqueStage = "BISQUE";
-			finalStage = "FINAL";
 			jasperBean = new InseptionReportJasperBean();
+			System.out.println(jasperBean.toString());
 			if (dentalLabPickupResponse.getDentalLab() != null) {
 				locationId = dentalLabPickupResponse.getDentalLab().getId();
 				hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
@@ -2404,29 +2400,28 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 				if (dentalWorksSample.getDentalStagesForDoctor() != null
 						&& !dentalWorksSample.getDentalStagesForDoctor().isEmpty()) {
-
 					for (DentalStageRequest dentalStageRequest : dentalWorksSample.getDentalStagesForDoctor()) {
 
 						if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getStage())) {
 							if (dentalStageRequest.getStage().equalsIgnoreCase("COPING")) {
-								copingStage = dentalStageRequest.getStage();
+								jasperBean.setCopingStage(dentalStageRequest.getStage());
 								if (dentalStageRequest.getPickupTime() != null) {
-									copingStage = copingStage + "("
-											+ simpleDateFormat.format(dentalStageRequest.getPickupTime()) + ")";
+									jasperBean.setCopingStage(jasperBean.getCopingStage() + "("
+											+ simpleDateFormat.format(dentalStageRequest.getPickupTime()) + ")");
 								}
 							}
 							if (dentalStageRequest.getStage().equalsIgnoreCase("BISQUE")) {
-								bisqueStage = dentalStageRequest.getStage();
+								jasperBean.setBisqueStage(dentalStageRequest.getStage());
 								if (dentalStageRequest.getPickupTime() != null) {
-									bisqueStage = bisqueStage + "("
-											+ simpleDateFormat.format(dentalStageRequest.getPickupTime()) + ")";
+									jasperBean.setBisqueStage(jasperBean.getBisqueStage() + "("
+											+ simpleDateFormat.format(dentalStageRequest.getPickupTime()) + ")");
 								}
 							}
 							if (dentalStageRequest.getStage().equalsIgnoreCase("FINAL")) {
-								finalStage = dentalStageRequest.getStage();
+								jasperBean.setFinalStage(dentalStageRequest.getStage());
 								if (dentalStageRequest.getPickupTime() != null) {
-									finalStage = finalStage + "("
-											+ simpleDateFormat.format(dentalStageRequest.getPickupTime()) + ")";
+									jasperBean.setFinalStage(jasperBean.getFinalStage() + "("
+											+ simpleDateFormat.format(dentalStageRequest.getPickupTime()) + ")");
 								}
 							}
 
@@ -2537,9 +2532,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				jasperBean.setRequestId("");
 			}
 
-			jasperBean.setBisqueStage(bisqueStage);
-			jasperBean.setCopingStage(copingStage);
-			jasperBean.setFinalStage(finalStage);
 			jasperBean.setDate(
 					"<b>Work Date :- </b>" + simpleDateFormat.format(dentalLabPickupResponse.getUpdatedTime()));
 			jasperBeans.add(jasperBean);
