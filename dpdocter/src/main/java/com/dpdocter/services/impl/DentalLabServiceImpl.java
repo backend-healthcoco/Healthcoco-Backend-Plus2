@@ -1852,6 +1852,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					BeanUtil.map(labPickupLookupResponse, dentalLabPickupResponse);
 
 					for (DentalWorksSample dentalWorksSample : labPickupLookupResponse.getDentalWorksSamples()) {
+						dentalStageRequestsForDoctor = null;
 						// sSystem.out.println( " work sample:: " +
 						// dentalLabPickupLookupResponse.getDentalWorksSamples());
 						DentalWorksSampleRequest dentalWorksSampleRequest = new DentalWorksSampleRequest();
@@ -2353,7 +2354,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		String labName = "";
-
 		String locationId = null, hospitalId = null;
 		String workId = " ";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -2364,7 +2364,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		InseptionReportJasperBean jasperBean = null;
 		for (DentalLabPickupResponse dentalLabPickupResponse : dentalLabPickupResponses) {
 			jasperBean = new InseptionReportJasperBean();
-			System.out.println(jasperBean.toString());
+
 			if (dentalLabPickupResponse.getDentalLab() != null) {
 				locationId = dentalLabPickupResponse.getDentalLab().getId();
 				hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
