@@ -12,7 +12,8 @@ public class ESWEBResponse {
 	private String metaData;
 	private String Speciality;
 	private Integer count = 0;
-
+	private String city;
+	
 	public Integer getCount() {
 		return count;
 	}
@@ -61,4 +62,17 @@ public class ESWEBResponse {
 		Speciality = speciality;
 	}
 
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	@Override
+	public String toString() {
+		return "ESWEBResponse [doctors=" + doctors + ", pharmacies=" + pharmacies + ", labs=" + labs + ", metaData="
+				+ metaData + ", Speciality=" + Speciality + ", count=" + count + ", city=" + city + "]";
+	}
 }

@@ -1492,7 +1492,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				city = "Nagpur";
 			}
 			doctorResponse.setMetaData(doctorResponse.getMetaData() + StringUtils.capitalize(city));
-
+			doctorResponse.setCity(city);
 			doctorResponse.setCount(getDoctorCount(city, location, latitude, longitude, speciality, symptom, booking,
 					calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience, maxExperience, service));
 
@@ -1533,6 +1533,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (pharmacies != null && !pharmacies.isEmpty()) {
 				response.setPharmacies(pharmacies);
 			}
+			response.setCity(city);
 			response.setMetaData("pharmacy in " + city);
 			if (!pharmacyType.isEmpty() && pharmacyType != null) {
 				for (String type : pharmacyType) {
@@ -1576,7 +1577,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				response.setLabs(labs);
 			}
 			response.setMetaData("lab in " + city);
-
+			response.setCity(city);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
