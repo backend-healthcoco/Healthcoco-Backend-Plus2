@@ -5437,16 +5437,45 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+		int copingWidth, bisqueWidth, finalWidth;
+		copingWidth = (35 * (columnWidth - 40)) / 100;
+		bisqueWidth = (35 * (columnWidth - 40)) / 100;
+		finalWidth = (35 * (columnWidth - 40)) / 100;
+
 		band = new JRDesignBand();
-		band.setHeight(22);
+		band.setHeight(18);
+
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{stages}"));
-		jrDesignTextField
-				.setPrintWhenExpression(new JRDesignExpression("!$P{stages}.equals(null) && !$P{stages}.isEmpty() "));
-		jrDesignTextField.setX(25);
-		jrDesignTextField.setY(2);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(columnWidth - 20);
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{copingStage}"));
+		jrDesignTextField.setX(20);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setWidth(copingWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setMarkup("html");
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{bisqueStage}"));
+		jrDesignTextField.setX(copingWidth + 20);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setWidth(bisqueWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setMarkup("html");
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{finalStage}"));
+		jrDesignTextField.setX(copingWidth+bisqueWidth + 20);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setWidth(finalWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
@@ -5500,7 +5529,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			titleFontSize = 13;
 
 		band = new JRDesignBand();
-		band.setHeight(20);
+		band.setHeight(18);
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(20);
 		jrDesignLine.setY(0);
@@ -5512,7 +5541,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Process}"));
 		jrDesignTextField.setX(22);
-		jrDesignTextField.setY(2);
+		jrDesignTextField.setY(1);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(175);
 		jrDesignTextField.setBold(true);
@@ -5523,7 +5552,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{InspectedBy}"));
 		jrDesignTextField.setX(197);
-		jrDesignTextField.setY(2);
+		jrDesignTextField.setY(1);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(150);
 		jrDesignTextField.setBold(true);
@@ -5534,17 +5563,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Date}"));
 		jrDesignTextField.setX(347);
-		jrDesignTextField.setY(2);
+		jrDesignTextField.setY(1);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(135);
-		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(titleFontSize));
 		band.addElement(jrDesignTextField);
 
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(20);
-		jrDesignLine.setY(18);
+		jrDesignLine.setY(17);
 		jrDesignLine.setHeight(1);
 		jrDesignLine.setWidth(columnWidth - 40);
 		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
@@ -5553,7 +5582,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
-		band.setHeight(20);
+		band.setHeight(18);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{process}"));
@@ -5581,10 +5610,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(2);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(135);
-		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
@@ -5624,7 +5651,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 
 	}
-
 	private void createMultipleReceipt(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)
 			throws JRException {
@@ -6450,6 +6476,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 	}
 
+
 	private void createMultipleInspectionReport(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)
 			throws JRException {
@@ -6474,17 +6501,24 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.setRightMargin(0);
 		jasperDesign.setTopMargin(0);
 		jasperDesign.addStyle(normalStyle);
-
-		((JRDesignSection) jasperDesign.getDetailSection())
-				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+		band = new JRDesignBand();
+		band.setHeight(1);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
-		band.setHeight(20);
+		band.setHeight(18);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{date}"));
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(2);
-		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(250);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
@@ -6498,7 +6532,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{requestId}"));
 		jrDesignTextField.setX(251);
 		jrDesignTextField.setY(2);
-		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(245);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 		jrDesignTextField.setPrintWhenExpression(
@@ -6512,12 +6546,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
-		band.setHeight(20);
+		band.setHeight(18);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{doctor}"));
 		jrDesignTextField.setX(2);
 		jrDesignTextField.setY(2);
-		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(250);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
@@ -6531,11 +6565,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{dentalLab}"));
 		jrDesignTextField.setX(251);
 		jrDesignTextField.setY(2);
-		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(245);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-
 		jrDesignTextField.setBold(false);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
@@ -6571,7 +6604,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 
@@ -6585,7 +6618,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 
@@ -6599,7 +6632,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 
@@ -6613,7 +6646,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 
@@ -6624,9 +6657,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(materialWidth - 3);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 
@@ -6637,9 +6671,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(statusWidth);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -6657,7 +6692,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
-		band.setHeight(20);
+		band.setHeight(18);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{patientName}"));
@@ -6733,7 +6768,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setBold(false);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -6748,19 +6783,44 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+		int copingWidth, bisqueWidth, finalWidth;
+		copingWidth = (35 * (columnWidth - 40)) / 100;
+		bisqueWidth = (35 * (columnWidth - 40)) / 100;
+		finalWidth = (35 * (columnWidth - 40)) / 100;
+
 		band = new JRDesignBand();
-		band.setHeight(20);
+		band.setHeight(18);
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{stages}"));
-		jrDesignTextField
-				.setPrintWhenExpression(new JRDesignExpression("!$F{stages}.equals(null) && !$F{stages}.isEmpty() "));
-		jrDesignTextField.setX(25);
-		jrDesignTextField.setY(2);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(columnWidth - 20);
+		jrDesignTextField.setX(20);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{copingStage}"));
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setWidth(copingWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize));
-		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{bisqueStage}"));
+		jrDesignTextField.setX(copingWidth + 20);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setWidth(bisqueWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{finalStage}"));
+		jrDesignTextField.setX(copingWidth + bisqueWidth + 20);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setWidth(finalWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 

@@ -1,5 +1,4 @@
 package com.dpdocter.beans;
-
 public class DentalCardValueJasperBean {
 
 	private String name = " ";

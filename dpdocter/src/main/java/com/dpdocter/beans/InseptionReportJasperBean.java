@@ -3,7 +3,6 @@ package com.dpdocter.beans;
 import java.util.List;
 
 public class InseptionReportJasperBean {
-
 	private String dentalLab;
 	private String doctor;
 	private String patientName;
@@ -13,11 +12,11 @@ public class InseptionReportJasperBean {
 	private String toothNumbers;
 	private String status;
 	private String requestId;
-	private String stages;
+	private String bisqueStage = "BISQUE";
+	private String finalStage = "FINAL";
+	private String copingStage = "COPING";
 	private String date;
 	private List<DentalStagejasperBean> items;
-
-	
 
 	public String getDentalLab() {
 		return dentalLab;
@@ -91,12 +90,28 @@ public class InseptionReportJasperBean {
 		this.requestId = requestId;
 	}
 
-	public String getStages() {
-		return stages;
+	public String getBisqueStage() {
+		return bisqueStage;
 	}
 
-	public void setStages(String stages) {
-		this.stages = stages;
+	public void setBisqueStage(String bisqueStage) {
+		this.bisqueStage = bisqueStage;
+	}
+
+	public String getFinalStage() {
+		return finalStage;
+	}
+
+	public void setFinalStage(String finalStage) {
+		this.finalStage = finalStage;
+	}
+
+	public String getCopingStage() {
+		return copingStage;
+	}
+
+	public void setCopingStage(String copingStage) {
+		this.copingStage = copingStage;
 	}
 
 	public String getDate() {
@@ -115,4 +130,11 @@ public class InseptionReportJasperBean {
 		this.items = items;
 	}
 
+	@Override
+	public String toString() {
+		return "s [dentalLab=" + dentalLab + ", doctor=" + doctor + ", patientName=" + patientName + ", shade=" + shade
+				+ ", dentalWork=" + dentalWork + ", material=" + material + ", toothNumbers=" + toothNumbers
+				+ ", status=" + status + ", requestId=" + requestId + ", bisqueStage=" + bisqueStage + ", finalStage="
+				+ finalStage + ", copingStage=" + copingStage + ", date=" + date + ", items=" + items + "]";
+	}
 }
