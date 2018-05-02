@@ -10,67 +10,67 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Hospital {
-    private String id;
+	private String id;
 
-    private String hospitalName;
+	private String hospitalName;
 
-    private String hospitalPhoneNumber;
+	private String hospitalPhoneNumber;
 
-    private String hospitalImageUrl;
+	private String hospitalImageUrl;
 
-    private String hospitalDescription;
+	private String hospitalDescription;
 
-    private List<LocationAndAccessControl> locationsAndAccessControl = new ArrayList<LocationAndAccessControl>();
+	private List<LocationAndAccessControl> locationsAndAccessControl = new ArrayList<LocationAndAccessControl>();
 
-    private String hospitalUId;
-    
-    public String getId() {
-	return id;
-    }
+	private String hospitalUId;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getHospitalName() {
-	return hospitalName;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setHospitalName(String hospitalName) {
-	this.hospitalName = hospitalName;
-    }
+	public String getHospitalName() {
+		return hospitalName;
+	}
 
-    public String getHospitalPhoneNumber() {
-	return hospitalPhoneNumber;
-    }
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
 
-    public void setHospitalPhoneNumber(String hospitalPhoneNumber) {
-	this.hospitalPhoneNumber = hospitalPhoneNumber;
-    }
+	public String getHospitalPhoneNumber() {
+		return hospitalPhoneNumber;
+	}
 
-    public String getHospitalImageUrl() {
-	return hospitalImageUrl;
-    }
+	public void setHospitalPhoneNumber(String hospitalPhoneNumber) {
+		this.hospitalPhoneNumber = hospitalPhoneNumber;
+	}
 
-    public void setHospitalImageUrl(String hospitalImageUrl) {
-	this.hospitalImageUrl = hospitalImageUrl;
-    }
+	public String getHospitalImageUrl() {
+		return hospitalImageUrl;
+	}
 
-    public String getHospitalDescription() {
-	return hospitalDescription;
-    }
+	public void setHospitalImageUrl(String hospitalImageUrl) {
+		this.hospitalImageUrl = hospitalImageUrl;
+	}
 
-    public void setHospitalDescription(String hospitalDescription) {
-	this.hospitalDescription = hospitalDescription;
-    }
+	public String getHospitalDescription() {
+		return hospitalDescription;
+	}
 
-    public List<LocationAndAccessControl> getLocationsAndAccessControl() {
-	return locationsAndAccessControl;
-    }
+	public void setHospitalDescription(String hospitalDescription) {
+		this.hospitalDescription = hospitalDescription;
+	}
 
-    public void setLocationsAndAccessControl(List<LocationAndAccessControl> locationsAndAccessControl) {
-	this.locationsAndAccessControl = locationsAndAccessControl;
-    }
+	public List<LocationAndAccessControl> getLocationsAndAccessControl() {
+		return locationsAndAccessControl;
+	}
+
+	public void setLocationsAndAccessControl(List<LocationAndAccessControl> locationsAndAccessControl) {
+		this.locationsAndAccessControl = locationsAndAccessControl;
+	}
 
 	public String getHospitalUId() {
 		return hospitalUId;

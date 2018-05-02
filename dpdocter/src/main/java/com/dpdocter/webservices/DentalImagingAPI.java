@@ -20,6 +20,7 @@ import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -117,6 +118,15 @@ public class DentalImagingAPI {
 			@QueryParam("page") int page , 	@QueryParam("type") String type) {
 		Response<DentalImagingLocationServiceAssociationLookupResponse> response = new Response<DentalImagingLocationServiceAssociationLookupResponse>();
 		response.setDataList(dentalImagingService.getLocationAssociatedServices(locationId, hospitalId, searchTerm, type, page, size));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_HOSPITAL_LIST)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_HOSPITAL_LIST, notes = PathProxy.DentalImagingUrl.GET_HOSPITAL_LIST)
+	public Response<Hospital> getLocationAssociatedServices(@QueryParam("doctorId") String doctorId, @QueryParam("hospitalId") String hospitalId) {
+		Response<Hospital> response = new Response<Hospital>();
+		response.setDataList(dentalImagingService.getHospitalList(doctorId, hospitalId));
 		return response;
 	}
 	
