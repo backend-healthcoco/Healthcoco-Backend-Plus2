@@ -1,11 +1,15 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -14,14 +18,23 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.AccessControl;
+import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.Hospital;
+import com.dpdocter.beans.LocationAndAccessControl;
+import com.dpdocter.beans.Role;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -29,8 +42,11 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DentalImagingLocationServiceAssociationRepository;
 import com.dpdocter.repository.DentalImagingRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupLookupResponse;
+import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.DentalImagingService;
 
 import common.util.web.DPDoctorUtils;
@@ -43,6 +59,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Autowired
 	DentalImagingRepository dentalImagingRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 
 	@Autowired
 	DentalImagingLocationServiceAssociationRepository dentalImagingLocationServiceAssociationRepository;
@@ -50,6 +69,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	@Autowired
 	MongoTemplate mongoTemplate;
 	private static Logger logger = Logger.getLogger(DentalImagingServiceImpl.class.getName());
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
 
 	@Override
 	@Transactional
@@ -246,5 +268,80 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public List<Hospital> getHospitalList(String doctorId , String hospitalId)
+	{
+		List<Hospital> hospitals = null;
+		
+		try {
+			UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
+			Criteria criteria = new Criteria("doctorId").is(userCollection.getId());
+			criteria.and("location.hospitalId").is(new ObjectId(hospitalId));
+			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id", "hospital"),
+							Aggregation.unwind("hospital"), Aggregation.match(criteria)),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+			if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
+				logger.warn("None of your clinic is active");
+				// user.setUserState(UserState.NOTACTIVATED);
+				throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
+			}
+			if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
+				hospitals = new ArrayList<Hospital>();
+				Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
+				for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+					LocationCollection locationCollection = doctorClinicProfileLookupResponse.getLocation();
+					HospitalCollection hospitalCollection = doctorClinicProfileLookupResponse.getHospital();
+					LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
+					BeanUtil.map(locationCollection, locationAndAccessControl);
+					locationAndAccessControl.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
+					locationAndAccessControl.setIsVerified(doctorClinicProfileLookupResponse.getIsVerified());
+					locationAndAccessControl.setLogoUrl(getFinalImageURL(locationAndAccessControl.getLogoUrl()));
+					locationAndAccessControl
+							.setLogoThumbnailUrl(getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
+					locationAndAccessControl.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
+					Hospital hospital = new Hospital();
+					BeanUtil.map(hospitalCollection, hospital);
+					
+					hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
+					hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
+					checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
+					hospitals.add(hospital);
+				}
+			} 
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,"Exception occured :: " + e);
+		}
+		return hospitals;
+		
+	}
+		
+		private String getFinalImageURL(String imageURL) {
+			if (imageURL != null) {
+				return imagePath + imageURL;
+			} else
+				return null;
+
+		}
+		
+		private List<ClinicImage> getFinalClinicImages(List<ClinicImage> clinicImages) {
+			if (clinicImages != null && !clinicImages.isEmpty())
+				for (ClinicImage clinicImage : clinicImages) {
+					if (clinicImage.getImageUrl() != null) {
+						clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+					}
+					if (clinicImage.getThumbnailUrl() != null) {
+						clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+					}
+				}
+			return clinicImages;
+		}
+
 
 }

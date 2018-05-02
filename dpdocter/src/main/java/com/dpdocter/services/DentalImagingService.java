@@ -6,6 +6,7 @@ import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.Hospital;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 
 public interface DentalImagingService {
@@ -21,5 +22,7 @@ public interface DentalImagingService {
 
 	List<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(String locationId,
 			String hospitalId, String searchTerm, String type, int page, int size);
+
+	List<Hospital> getHospitalList(String doctorId, String hospitalId);
 
 }

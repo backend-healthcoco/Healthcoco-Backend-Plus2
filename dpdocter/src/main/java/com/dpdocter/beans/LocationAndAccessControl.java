@@ -73,6 +73,10 @@ public class LocationAndAccessControl {
 
 	private List<Role> roles;
 
+	private Boolean isActivate = false;
+
+	private Boolean isVerified = true;
+
 	public String getId() {
 		return id;
 	}
@@ -335,6 +339,22 @@ public class LocationAndAccessControl {
 
 	public void setIsMobileNumberOptional(Boolean isMobileNumberOptional) {
 		this.isMobileNumberOptional = isMobileNumberOptional;
+	}
+
+	public Boolean getIsActivate() {
+		return isActivate;
+	}
+
+	public void setIsActivate(Boolean isActivate) {
+		this.isActivate = isActivate;
+	}
+
+	public Boolean getIsVerified() {
+		return isVerified;
+	}
+
+	public void setIsVerified(Boolean isVerified) {
+		this.isVerified = isVerified;
 	}
 
 	@Override
