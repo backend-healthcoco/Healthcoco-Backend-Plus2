@@ -627,7 +627,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
 
-				if ((!DPDoctorUtils.allStringsEmpty(city))) {
+				if (!DPDoctorUtils.allStringsEmpty(city)) {
 					citylatitude = latitude;
 					citylongitude = longitude;
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
@@ -755,6 +755,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (esCityDocument != null) {
 					latitude = esCityDocument.getLatitude() + "";
 					longitude = esCityDocument.getLongitude() + "";
+				} else {
+					return 0;
 				}
 			}
 
@@ -856,7 +858,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
 
-				if (latitude.equals("21.1458004") && longitude.equals("79.0881546")) {
+				if (!DPDoctorUtils.allStringsEmpty(city)) {
 					citylatitude = latitude;
 					citylongitude = longitude;
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
