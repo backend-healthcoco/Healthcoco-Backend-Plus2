@@ -267,6 +267,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.packageType = packageType;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId

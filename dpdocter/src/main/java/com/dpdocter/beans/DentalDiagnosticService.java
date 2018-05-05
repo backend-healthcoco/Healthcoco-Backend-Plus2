@@ -2,10 +2,10 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class DentalDiagnosticService extends GenericCollection{
+public class DentalDiagnosticService extends GenericCollection {
 
 	private String id;
-	private String name;
+	private String serviceName;
 	private String type;
 	private Boolean discarded = false;
 
@@ -17,12 +17,12 @@ public class DentalDiagnosticService extends GenericCollection{
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getServiceName() {
+		return serviceName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
 	public String getType() {

@@ -11,7 +11,7 @@ public class DentalDiagnosticServiceCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String name;
+	private String serviceName;
 	@Field
 	private String type;
 	@Field
@@ -25,12 +25,12 @@ public class DentalDiagnosticServiceCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getServiceName() {
+		return serviceName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
 	public String getType() {
@@ -51,8 +51,8 @@ public class DentalDiagnosticServiceCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DentalDiagnosticServiceCollection [id=" + id + ", name=" + name + ", type=" + type + ", discarded="
-				+ discarded + "]";
+		return "DentalDiagnosticServiceCollection [id=" + id + ", serviceName=" + serviceName + ", type=" + type
+				+ ", discarded=" + discarded + "]";
 	}
 
 }
