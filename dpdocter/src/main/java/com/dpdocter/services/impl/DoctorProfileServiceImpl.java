@@ -546,7 +546,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"),Aggregation.lookup("hospital_cl", "location.hospitalId", "_id", "hospital"),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("hospital_cl", "location.hospitalId", "_id", "hospital"),
 							Aggregation.unwind("hospital"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 							Aggregation.unwind("doctor")),
@@ -564,55 +565,54 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					if (doctorClinicProfile != null)
 						clinicProfile.add(doctorClinicProfile);
 				}
-			}
 
-			doctorProfile = new DoctorProfile();
+				doctorProfile = new DoctorProfile();
 
-			BeanUtil.map(userCollection, doctorProfile);
+				BeanUtil.map(userCollection, doctorProfile);
 
-			BeanUtil.map(doctorCollection, doctorProfile);
+				BeanUtil.map(doctorCollection, doctorProfile);
 
-			doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
-			// set specialities using speciality ids
-			if (doctorCollection.getSpecialities() != null) {
-				List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
-						.findAll(doctorCollection.getSpecialities());
-				specialities = (List<String>) CollectionUtils.collect(specialityCollections,
-						new BeanToPropertyValueTransformer("superSpeciality"));
-				if (isMobileApp) {
-					List<String> parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
-							new BeanToPropertyValueTransformer("speciality"));
-					doctorProfile.setParentSpecialities(parentSpecialities);
-				}
+				doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
+				// set specialities using speciality ids
+				if (doctorCollection.getSpecialities() != null) {
+					List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
+							.findAll(doctorCollection.getSpecialities());
+					specialities = (List<String>) CollectionUtils.collect(specialityCollections,
+							new BeanToPropertyValueTransformer("superSpeciality"));
+					if (isMobileApp) {
+						List<String> parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("speciality"));
+						doctorProfile.setParentSpecialities(parentSpecialities);
+					}
 
-				doctorProfile.setClinicProfile(clinicProfile);
-				doctorProfile.setSpecialities(specialities);
-				// set medical councils using medical councils ids
-				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
-				if (doctorProfile.getRegistrationDetails() != null
-						&& !doctorProfile.getRegistrationDetails().isEmpty()) {
-					for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
-						DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
-						BeanUtil.map(registrationDetail, doctorRegistrationDetail);
-						registrationDetails.add(doctorRegistrationDetail);
+					doctorProfile.setClinicProfile(clinicProfile);
+					doctorProfile.setSpecialities(specialities);
+					// set medical councils using medical councils ids
+					registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+					if (doctorProfile.getRegistrationDetails() != null
+							&& !doctorProfile.getRegistrationDetails().isEmpty()) {
+						for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+							DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+							BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+							registrationDetails.add(doctorRegistrationDetail);
+						}
+					}
+					doctorProfile.setRegistrationDetails(registrationDetails);
+					// set professional memberships using professional membership
+					// ids
+					if (doctorCollection.getProfessionalMemberships() != null
+							&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
+						professionalMemberships = (List<String>) CollectionUtils.collect(
+								(Collection<?>) professionalMembershipRepository
+										.findAll(doctorCollection.getProfessionalMemberships()),
+								new BeanToPropertyValueTransformer("membership"));
 					}
 				}
-				doctorProfile.setRegistrationDetails(registrationDetails);
-				// set professional memberships using professional membership
-				// ids
-				if (doctorCollection.getProfessionalMemberships() != null
-						&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
-					professionalMemberships = (List<String>) CollectionUtils.collect(
-							(Collection<?>) professionalMembershipRepository
-									.findAll(doctorCollection.getProfessionalMemberships()),
-							new BeanToPropertyValueTransformer("membership"));
-				}
+				doctorProfile.setProfessionalMemberships(professionalMemberships);
+
+				// set clinic profile details
+				doctorProfile.setClinicProfile(clinicProfile);
 			}
-			doctorProfile.setProfessionalMemberships(professionalMemberships);
-
-			// set clinic profile details
-			doctorProfile.setClinicProfile(clinicProfile);
-
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -621,7 +621,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			logger.error(e + " Error Getting Doctor Profile");
 			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile");
 		}
-		return doctorProfile;}
+		return doctorProfile;
+	}
 
 	private DoctorClinicProfile getDoctorClinic(DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse,
 			String patientId, Boolean isMobileApp, int locationSize) {
@@ -631,19 +632,26 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 			if (locationCollection != null) {
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -682,14 +690,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setFeedbacks(feedbacks);
 			doctorClinic.setNoOfFeedbacks((int) mongoTemplate.count(new Query(criteria), FeedbackCollection.class));
 
-			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(
-							Aggregation.match(new Criteria("userId").is(doctorClinicProfileLookupResponse.getDoctorId())
-									.and("locationId").is(locationCollection.getId()).and("hospitalId")
-									.is(locationCollection.getHospitalId())),
-							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
-							Aggregation.unwind("roleCollection")),
-					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
+			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.match(
+											new Criteria("userId").is(doctorClinicProfileLookupResponse.getDoctorId())
+													.and("locationId").is(locationCollection.getId()).and("hospitalId")
+													.is(locationCollection.getHospitalId())),
+									Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
+									Aggregation.unwind("roleCollection")),
+							UserRoleCollection.class, UserRoleLookupResponse.class)
+					.getMappedResults();
 			List<Role> roles = null;
 
 			for (UserRoleLookupResponse roleLookupResponse : userRoleLookupResponses) {
@@ -1327,16 +1338,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	 * 
 	 * @Transactional public RegularCheckUpAddEditRequest
 	 * addRegularCheckupMonths(RegularCheckUpAddEditRequest request) {
-	 * UserCollection userCollection = null; RegularCheckUpAddEditRequest
-	 * response = null; try { userCollection = userRepository.findOne(new
+	 * UserCollection userCollection = null; RegularCheckUpAddEditRequest response =
+	 * null; try { userCollection = userRepository.findOne(new
 	 * ObjectId(request.getDoctorId())); BeanUtil.map(request, userCollection);
 	 * userRepository.save(userCollection); response = new
 	 * RegularCheckUpAddEditRequest(); BeanUtil.map(request, response);
 	 * 
 	 * } catch (Exception e) { e.printStackTrace(); logger.error(e +
 	 * " Error Editing Doctor Profile"); throw new
-	 * BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
-	 * } return response; }
+	 * BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile"); }
+	 * return response; }
 	 */
 
 	@Override
@@ -1457,54 +1468,53 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					if (doctorClinicProfile != null)
 						clinicProfile.add(doctorClinicProfile);
 				}
-			}
 
-			doctorProfile = new DoctorProfile();
+				doctorProfile = new DoctorProfile();
 
-			BeanUtil.map(userCollection, doctorProfile);
+				BeanUtil.map(userCollection, doctorProfile);
 
-			BeanUtil.map(doctorCollection, doctorProfile);
+				BeanUtil.map(doctorCollection, doctorProfile);
 
-			doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
-			// set specialities using speciality ids
-			if (doctorCollection.getSpecialities() != null) {
-				List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
-						.findAll(doctorCollection.getSpecialities());
-				specialities = (List<String>) CollectionUtils.collect(specialityCollections,
-						new BeanToPropertyValueTransformer("superSpeciality"));
-				
-				parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
-						new BeanToPropertyValueTransformer("speciality"));
+				doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
+				// set specialities using speciality ids
+				if (doctorCollection.getSpecialities() != null) {
+					List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
+							.findAll(doctorCollection.getSpecialities());
+					specialities = (List<String>) CollectionUtils.collect(specialityCollections,
+							new BeanToPropertyValueTransformer("superSpeciality"));
 
-				doctorProfile.setClinicProfile(clinicProfile);
-				doctorProfile.setSpecialities(specialities);
-				doctorProfile.setParentSpecialities(parentSpecialities);
-				// set medical councils using medical councils ids
-				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
-				if (doctorProfile.getRegistrationDetails() != null
-						&& !doctorProfile.getRegistrationDetails().isEmpty()) {
-					for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
-						DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
-						BeanUtil.map(registrationDetail, doctorRegistrationDetail);
-						registrationDetails.add(doctorRegistrationDetail);
+					parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
+							new BeanToPropertyValueTransformer("speciality"));
+
+					doctorProfile.setClinicProfile(clinicProfile);
+					doctorProfile.setSpecialities(specialities);
+					doctorProfile.setParentSpecialities(parentSpecialities);
+					// set medical councils using medical councils ids
+					registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+					if (doctorProfile.getRegistrationDetails() != null
+							&& !doctorProfile.getRegistrationDetails().isEmpty()) {
+						for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+							DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+							BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+							registrationDetails.add(doctorRegistrationDetail);
+						}
+					}
+					doctorProfile.setRegistrationDetails(registrationDetails);
+					// set professional memberships using professional membership
+					// ids
+					if (doctorCollection.getProfessionalMemberships() != null
+							&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
+						professionalMemberships = (List<String>) CollectionUtils.collect(
+								(Collection<?>) professionalMembershipRepository
+										.findAll(doctorCollection.getProfessionalMemberships()),
+								new BeanToPropertyValueTransformer("membership"));
 					}
 				}
-				doctorProfile.setRegistrationDetails(registrationDetails);
-				// set professional memberships using professional membership
-				// ids
-				if (doctorCollection.getProfessionalMemberships() != null
-						&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
-					professionalMemberships = (List<String>) CollectionUtils.collect(
-							(Collection<?>) professionalMembershipRepository
-									.findAll(doctorCollection.getProfessionalMemberships()),
-							new BeanToPropertyValueTransformer("membership"));
-				}
+				doctorProfile.setProfessionalMemberships(professionalMemberships);
+
+				// set clinic profile details
+				doctorProfile.setClinicProfile(clinicProfile);
 			}
-			doctorProfile.setProfessionalMemberships(professionalMemberships);
-
-			// set clinic profile details
-			doctorProfile.setClinicProfile(clinicProfile);
-
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -1539,12 +1549,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public Boolean updateShowInventory(String doctorId, String locationId , Boolean showInventory) {
+	public Boolean updateShowInventory(String doctorId, String locationId, Boolean showInventory) {
 		Boolean response = false;
 		try {
-			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+					.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 			if (doctorClinicProfileCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
 			}
@@ -1563,12 +1574,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public Boolean updateShowInventoryCount(String doctorId, String locationId , Boolean showInventoryCount) {
+	public Boolean updateShowInventoryCount(String doctorId, String locationId, Boolean showInventoryCount) {
 		Boolean response = false;
 		try {
-			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+					.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 			if (doctorClinicProfileCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
 			}
@@ -1587,12 +1599,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public Boolean updateSavetoInventory(String doctorId, String locationId , Boolean saveToInventory) {
+	public Boolean updateSavetoInventory(String doctorId, String locationId, Boolean saveToInventory) {
 		Boolean response = false;
 		try {
-			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+					.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 			if (doctorClinicProfileCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
 			}
