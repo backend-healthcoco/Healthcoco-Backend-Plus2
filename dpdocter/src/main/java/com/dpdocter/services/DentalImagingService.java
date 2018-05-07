@@ -8,12 +8,13 @@ import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
+import com.dpdocter.response.DentalImagingResponse;
 
 public interface DentalImagingService {
 
 	DentalImaging addEditDentalImagingRequest(DentalImagingRequest request);
 
-	List<DentalImaging> getRequests(String locationId, String hospitalId, String doctorId, Long from, Long to,
+	List<DentalImagingResponse> getRequests(String locationId, String hospitalId, String doctorId, Long from, Long to,
 			String searchTerm, int size, int page);
 
 	List<DentalDiagnosticService> getServices(String searchTerm, String type, int page, int size);
