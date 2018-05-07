@@ -26,6 +26,7 @@ import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Role;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
@@ -33,6 +34,7 @@ import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollectio
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -42,8 +44,10 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DentalImagingLocationServiceAssociationRepository;
 import com.dpdocter.repository.DentalImagingRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
+import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.DentalLabPickupLookupResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
@@ -62,6 +66,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	PatientRepository patientRepository;
 
 	@Autowired
 	DentalImagingLocationServiceAssociationRepository dentalImagingLocationServiceAssociationRepository;
@@ -117,10 +124,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	@Override
 	@Transactional
 
-	public List<DentalImaging> getRequests(String locationId, String hospitalId, String doctorId, Long from, Long to,
+	public List<DentalImagingResponse> getRequests(String locationId, String hospitalId, String doctorId, Long from, Long to,
 			String searchTerm, int size, int page) {
 
-		List<DentalImaging> response = null;
+		List<DentalImagingResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -146,9 +153,23 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-			AggregationResults<DentalImaging> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DentalImagingCollection.class, DentalImaging.class);
+			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalImagingCollection.class, DentalImagingResponse.class);
 			response = aggregationResults.getMappedResults();
+			
+			for (DentalImagingResponse dentalImagingResponse : response) {
+				if(!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getLocationId() , dentalImagingResponse.getHospitalId() , dentalImagingResponse.getPatientId())) {
+					
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(dentalImagingResponse.getPatientId()), new ObjectId(dentalImagingResponse.getLocationId()), new ObjectId(dentalImagingResponse.getHospitalId()));
+					if(patientCollection != null)
+					{
+						PatientCard patientCard = new PatientCard();
+						BeanUtil.map(patientCollection, patientCard);
+						dentalImagingResponse.setPatient(patientCard);
+					}
+
+				}
+			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -171,8 +192,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
-						new Criteria("name").regex("^" + searchTerm), new Criteria("name").regex(searchTerm + ".*"));
+				criteria = criteria.orOperator(new Criteria("serviceName").regex("^" + searchTerm, "i"),
+						new Criteria("serviceName").regex("^" + searchTerm), new Criteria("serviceName").regex(searchTerm + ".*"));
 			}
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
