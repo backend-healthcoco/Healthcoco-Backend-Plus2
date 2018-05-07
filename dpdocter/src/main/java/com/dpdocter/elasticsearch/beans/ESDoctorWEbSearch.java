@@ -69,6 +69,8 @@ public class ESDoctorWEbSearch {
 
 	private Double distance;
 
+	private List<String> appointmentBookingNumber;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -308,18 +310,27 @@ public class ESDoctorWEbSearch {
 	public void setDistance(Double distance) {
 		this.distance = distance;
 	}
+	
+	public List<String> getAppointmentBookingNumber() {
+		return appointmentBookingNumber;
+	}
+
+	public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
+		this.appointmentBookingNumber = appointmentBookingNumber;
+	}
 
 	@Override
 	public String toString() {
-		return "ESDoctorResponse [userId=" + userId + ", title=" + title + ", firstName=" + firstName + ", gender="
-				+ gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl="
-				+ imageUrl + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
+		return "ESDoctorWEbSearch [colorCode=" + colorCode + ", userId=" + userId + ", title=" + title + ", firstName="
+				+ firstName + ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
 				+ revisitConsultationFee + ", specialities=" + specialities + ", experience=" + experience
 				+ ", streetAddress=" + streetAddress + ", country=" + country + ", state=" + state + ", city=" + city
 				+ ", postalCode=" + postalCode + ", geoPoint=" + geoPoint + ", latitude=" + latitude + ", longitude="
 				+ longitude + ", landmarkDetails=" + landmarkDetails + ", locality=" + locality + ", clinicNumber="
 				+ clinicNumber + ", locationName=" + locationName + ", facility=" + facility + ", userUId=" + userUId
 				+ ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL + ", rankingCount="
-				+ rankingCount + "]";
+				+ rankingCount + ", appointmentBookingNumber=" + appointmentBookingNumber + "]";
 	}
+
 }
