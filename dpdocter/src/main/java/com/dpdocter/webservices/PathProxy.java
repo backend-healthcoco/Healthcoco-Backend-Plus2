@@ -1739,4 +1739,10 @@ public interface PathProxy {
 		public static final String GET_HOSPITAL_LIST = "/getHospitalList";
 	}
 
+	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
+
+	public interface SearchUrls {
+
+		public static final String SEARCH_DOCTORS = "/doctors";
+	}
 }
