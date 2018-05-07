@@ -1718,4 +1718,11 @@ public interface PathProxy {
 		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
 		
 	}
+
+	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
+
+	public interface SearchUrls {
+
+		public static final String SEARCH_DOCTORS = "/doctors";
+	}
 }
