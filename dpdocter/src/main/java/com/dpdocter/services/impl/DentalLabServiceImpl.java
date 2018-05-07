@@ -621,6 +621,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 			response = new DentalLabPickup();
 			BeanUtil.map(dentalLabPickupCollection, response);
+			if(locationCollection != null)
+			{
+				Location location = new Location();
+				BeanUtil.map(locationCollection, location);
+				response.setDentalLab(location);
+			}
 		} catch (Exception e) {
 			logger.warn(e);
 			e.printStackTrace();
