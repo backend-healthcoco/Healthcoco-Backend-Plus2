@@ -1,10 +1,14 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.QueryParam;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -23,20 +27,30 @@ import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
+import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Role;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
+import com.dpdocter.collections.DentalImagingReportsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.HospitalCollection;
+import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -46,14 +60,18 @@ import com.dpdocter.repository.DentalImagingRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.DentalLabPickupLookupResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.DentalImagingService;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class DentalImagingServiceImpl implements DentalImagingService {
@@ -247,7 +265,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	
 	@Override
 	@Transactional
-	public List<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(String locationId , String hospitalId , String searchTerm, String type, int page, int size) {
+	public List<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(String locationId , String hospitalId , String searchTerm, String type, int page, int size , Boolean discarded) {
 		List<DentalImagingLocationServiceAssociationLookupResponse> response = null;
 
 		try {
@@ -266,6 +284,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("service.type").is(type);
 			}
 
+			if(discarded != null)
+			{
+				criteria.and("discarded").is(discarded);
+			}
+			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("service.name").regex("^" + searchTerm, "i"),
 						new Criteria("service.name").regex("^" + searchTerm), new Criteria("service.name").regex(searchTerm + ".*"));
@@ -363,6 +386,107 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 			return clinicImages;
 		}
+		
+	@Override	
+	@Transactional
+	public Response<ServiceLocationResponse> getServiceLocations(List<String> dentalImagingServiceId, String hospitalId,
+			String searchTerm, int size, int page) {
+
+		return null;
+
+	}
 
 
+/*	@Override
+	@Transactional
+	public DentalImagingReports addLabReportBase64(FileDetails fileDetails, DoctorLabReportsAddRequest request) {
+		DentalImagingReports response = null;
+		DentalImagingReportsCollection labReportsCollection = null;
+		ImageURLResponse imageURLResponse = null;
+		try {
+			Date createdTime = new Date();
+
+			if (fileDetails != null) {
+				// String path = "lab-reports";
+				// String recordLabel = fileDetails.getFileName();
+				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
+
+				String path = "lab-reports" + File.separator + request.getPatientId();
+
+				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
+				if (imageURLResponse != null) {
+					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
+					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+				}
+			}
+
+			if (labReportsCollection == null) {
+				labReportsCollection = new LabReportsCollection();
+			}
+			if (labReportsCollection.getLabReports() == null) {
+				List<ImageURLResponse> responses = new ArrayList<>();
+				labReportsCollection.setLabReports(responses);
+			}
+			BeanUtil.map(request, labReportsCollection);
+			labReportsCollection.getLabReports().add(imageURLResponse);
+			labReportsCollection = labReportsRepository.save(labReportsCollection);
+			response = new LabReports();
+			BeanUtil.map(labReportsCollection, response);
+
+			if (labReportsCollection != null) {
+
+				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+
+				if (request.getMobileNumber() != null) {
+					LocationCollection daughterlocationCollection = locationRepository
+							.findOne(labReportsCollection.getLocationId());
+					LocationCollection parentLocationCollection = locationRepository
+							.findOne(labReportsCollection.getUploadedByLocationId());
+					String message = labReportUploadMessage;
+
+					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+
+					smsTrackDetail.setType("LAB REPORT UPLOAD");
+					SMSDetail smsDetail = new SMSDetail();
+					smsDetail.setUserId(daughterlocationCollection.getId());
+					SMS sms = new SMS();
+					smsDetail.setUserName(daughterlocationCollection.getLocationName());
+					message = message.replace("{patientName}", userCollection.getFirstName());
+					message = message.replace("{specimenName}", request.getTestName());
+					message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
+					sms.setSmsText(message);
+					SMSAddress smsAddress = new SMSAddress();
+					smsAddress.setRecipient(request.getMobileNumber());
+					sms.setSmsAddress(smsAddress);
+					smsDetail.setSms(sms);
+					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+					smsDetails.add(smsDetail);
+					smsTrackDetail.setSmsDetails(smsDetails);
+					smsServices.sendSMS(smsTrackDetail, true);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	*/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 }
