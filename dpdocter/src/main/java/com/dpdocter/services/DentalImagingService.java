@@ -9,6 +9,9 @@ import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
+import com.dpdocter.response.ServiceLocationResponse;
+
+import common.util.web.Response;
 
 public interface DentalImagingService {
 
@@ -21,9 +24,12 @@ public interface DentalImagingService {
 
 	Boolean addEditDentalImagingLocationServiceAssociation(List<DentalImagingLocationServiceAssociation> request);
 
-	List<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(String locationId,
-			String hospitalId, String searchTerm, String type, int page, int size);
-
 	List<Hospital> getHospitalList(String doctorId, String hospitalId);
+
+	Response<ServiceLocationResponse> getServiceLocations(List<String> dentalImagingServiceId, String hospitalId,
+			String searchTerm, int size, int page);
+
+	List<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(String locationId,
+			String hospitalId, String searchTerm, String type, int page, int size, Boolean discarded);
 
 }

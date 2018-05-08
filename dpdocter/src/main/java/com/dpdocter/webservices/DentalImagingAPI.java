@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -26,6 +27,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
+import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.services.DentalImagingService;
 
 import common.util.web.Response;
@@ -80,11 +82,11 @@ public class DentalImagingAPI {
 	@Path(value = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION, notes = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION)
-	public Response<Location> getPickupRequests(@QueryParam("dentalImagingServiceId") String dentalImagingServiceId,
-			@QueryParam("doctorId") String doctorId,@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
+	public Response<ServiceLocationResponse> getServiceLocations(@MatrixParam(value = "dentalImagingServiceId") List<String> dentalImagingServiceId,
+			@QueryParam("hospitalId") String hospitalId,@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
 			@QueryParam("page") int page) {
 
-		Response<Location> response = new Response<Location>();
+		Response<ServiceLocationResponse> response = new Response<ServiceLocationResponse>();
 		//response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
 		return response;
 	}
@@ -117,9 +119,9 @@ public class DentalImagingAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_LOCATION_ASSOCIATED_SERVICES, notes = PathProxy.DentalImagingUrl.GET_LOCATION_ASSOCIATED_SERVICES)
 	public Response<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page , 	@QueryParam("type") String type) {
+			@QueryParam("page") int page , 	@QueryParam("type") String type , @QueryParam("discarded") Boolean discarded) {
 		Response<DentalImagingLocationServiceAssociationLookupResponse> response = new Response<DentalImagingLocationServiceAssociationLookupResponse>();
-		response.setDataList(dentalImagingService.getLocationAssociatedServices(locationId, hospitalId, searchTerm, type, page, size));
+		response.setDataList(dentalImagingService.getLocationAssociatedServices(locationId, hospitalId, searchTerm, type, page, size, discarded));
 		return response;
 	}
 	
