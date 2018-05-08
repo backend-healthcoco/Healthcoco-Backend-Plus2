@@ -196,9 +196,6 @@ public class SearchServiceImpl implements SearchService {
 				}
 
 				if (esDoctorDocuments == null || esDoctorDocuments.isEmpty()) {
-					System.out.println("find near by dr");
-					System.out.println(boolQueryBuilder);
-//					boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX));
 					if (size > 0)
 						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
 								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
@@ -208,12 +205,9 @@ public class SearchServiceImpl implements SearchService {
 								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
 					nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 				}else {
-					System.out.println("find near by dr");
-					System.out.println(boolQueryBuilderForNearByDoctors);
 					if (size > 0) {
 						size = size - esDoctorDocuments.size();
 						if (size > 0) {
-//							boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX));
 							if (size > 0)
 								searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
 										.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
@@ -221,13 +215,11 @@ public class SearchServiceImpl implements SearchService {
 							nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);	
 						}
 					}else {
-//						boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX));
 						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
 									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
 						nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 					}
 				}
-			System.out.println(nearByDoctors);
 			if(!(esDoctorDocuments == null && nearByDoctors == null)) {
 				response = new SearchDoctorResponse();
 				
@@ -265,7 +257,7 @@ public class SearchServiceImpl implements SearchService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
-					"Error While Getting Doctor Details From ES : " + e.getMessage());
+					"Error While searching Doctor From ES : " + e.getMessage());
 		}
 		return response;
 	}
@@ -276,7 +268,6 @@ public class SearchServiceImpl implements SearchService {
 
 			List<String> specialities = null;
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
-System.out.println(doctorDocument.getSpecialities());
 				if (doctorDocument.getSpecialities() != null) {
 					specialities = new ArrayList<String>();
 					for (String specialityId : doctorDocument.getSpecialities()) {

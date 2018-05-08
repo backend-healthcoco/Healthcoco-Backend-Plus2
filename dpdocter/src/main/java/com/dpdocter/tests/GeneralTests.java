@@ -48,6 +48,5 @@ public class GeneralTests {
 		
 
         
->>>>>>> Stashed changes
 	}
 }

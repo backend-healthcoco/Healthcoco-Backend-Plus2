@@ -1518,6 +1518,7 @@ public interface PathProxy {
 	public interface RankingUrls {
 
 		public static final String GET_DOCTORS_RANKING = "/doctors";
+		public static final String CALCULATE_RANKING = "/calculate";
 	}
 
 	public static final String USER_FAVOURITES_BASE_URL = BASE_URL + "/favourite";
