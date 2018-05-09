@@ -56,10 +56,12 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DentalImagingLocationServiceAssociationRepository;
+import com.dpdocter.repository.DentalImagingReportsRepository;
 import com.dpdocter.repository.DentalImagingRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
@@ -69,6 +71,8 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.DentalImagingService;
+import com.dpdocter.services.FileManager;
+import com.dpdocter.services.SMSServices;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -90,6 +94,15 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Autowired
 	DentalImagingLocationServiceAssociationRepository dentalImagingLocationServiceAssociationRepository;
+	
+	@Autowired
+	FileManager fileManager;
+	
+	@Autowired
+	DentalImagingReportsRepository dentalImagingReportsRepository;
+	
+	@Autowired
+	SMSServices smsServices;
 
 	@Autowired
 	MongoTemplate mongoTemplate;
@@ -397,21 +410,19 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	}
 
 
-/*	@Override
+	@Override
 	@Transactional
-	public DentalImagingReports addLabReportBase64(FileDetails fileDetails, DoctorLabReportsAddRequest request) {
+	public DentalImagingReports addDentalImagingReportBase64(FileDetails fileDetails, DentalImagingReportsAddRequest request) {
 		DentalImagingReports response = null;
-		DentalImagingReportsCollection labReportsCollection = null;
+		DentalImagingReportsCollection dentalImagingReportsCollection = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
 			Date createdTime = new Date();
 
 			if (fileDetails != null) {
-				// String path = "lab-reports";
-				// String recordLabel = fileDetails.getFileName();
 				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
 
-				String path = "lab-reports" + File.separator + request.getPatientId();
+				String path = "dental-imaging-reports" + File.separator + request.getPatientId();
 
 				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
 				if (imageURLResponse != null) {
@@ -420,29 +431,27 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 			}
 
-			if (labReportsCollection == null) {
-				labReportsCollection = new LabReportsCollection();
+			if (dentalImagingReportsCollection == null) {
+				dentalImagingReportsCollection = new DentalImagingReportsCollection();
+				
 			}
-			if (labReportsCollection.getLabReports() == null) {
-				List<ImageURLResponse> responses = new ArrayList<>();
-				labReportsCollection.setLabReports(responses);
-			}
-			BeanUtil.map(request, labReportsCollection);
-			labReportsCollection.getLabReports().add(imageURLResponse);
-			labReportsCollection = labReportsRepository.save(labReportsCollection);
-			response = new LabReports();
-			BeanUtil.map(labReportsCollection, response);
+			
+			BeanUtil.map(request, dentalImagingReportsCollection);
+			dentalImagingReportsCollection.setReport(imageURLResponse);
+			dentalImagingReportsCollection = dentalImagingReportsRepository.save(dentalImagingReportsCollection);
+			response = new DentalImagingReports();
+			BeanUtil.map(dentalImagingReportsCollection, response);
 
-			if (labReportsCollection != null) {
+			if (dentalImagingReportsCollection != null) {
 
 				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 
 				if (request.getMobileNumber() != null) {
 					LocationCollection daughterlocationCollection = locationRepository
-							.findOne(labReportsCollection.getLocationId());
+							.findOne(dentalImagingReportsCollection.getLocationId());
 					LocationCollection parentLocationCollection = locationRepository
-							.findOne(labReportsCollection.getUploadedByLocationId());
-					String message = labReportUploadMessage;
+							.findOne(dentalImagingReportsCollection.getUploadedByLocationId());
+					String message = "";
 
 					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -453,7 +462,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					SMS sms = new SMS();
 					smsDetail.setUserName(daughterlocationCollection.getLocationName());
 					message = message.replace("{patientName}", userCollection.getFirstName());
-					message = message.replace("{specimenName}", request.getTestName());
+					message = message.replace("{specimenName}", "");
 					message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
 					sms.setSmsText(message);
 					SMSAddress smsAddress = new SMSAddress();
@@ -473,20 +482,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		return response;
 	}
-	*/
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	
 }
+		
