@@ -439,7 +439,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "SI");
 				}
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
-					customValues.put("REQ", componentTypeId);
+					customValues.put("RI", componentTypeId);
 					customValues.put("T", "DW");
 				}
 			}
