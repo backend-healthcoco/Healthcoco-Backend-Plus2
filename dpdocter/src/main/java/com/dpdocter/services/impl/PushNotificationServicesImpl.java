@@ -426,6 +426,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "SI");
 				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+					customValues.put("REQ", componentTypeId);
+					customValues.put("T", "DW");
+				}
 			}
 			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
 			service.push(pushToken, payload);
