@@ -70,12 +70,12 @@ public class DentalImagingAPI {
 	public Response<DentalImagingResponse> getPickupRequests(@QueryParam("locationId") String locationId,@QueryParam("hospitalId") String hospitalId,
 			@QueryParam("doctorId") String doctorId, @DefaultValue("0") @QueryParam("from") Long from,
 			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page) {
+			@QueryParam("page") int page,@QueryParam("type") String type) {
 
 
 
 		Response<DentalImagingResponse> response = new Response<DentalImagingResponse>();
-		response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
+		response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page , type));
 		return response;
 	}
 

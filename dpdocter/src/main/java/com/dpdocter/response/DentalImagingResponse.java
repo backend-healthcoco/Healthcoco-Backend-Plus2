@@ -14,6 +14,9 @@ public class DentalImagingResponse extends GenericCollection {
 	private String doctorId;
 	private String hospitalId;
 	private String locationId;
+	private String uploadedByDoctorId;
+	private String uploadedByHospitalId;
+	private String uploadedByLocationId;
 	private String referringDoctor;
 	private String clinicalNotes;
 	private Boolean reportsRequired;
@@ -125,6 +128,30 @@ public class DentalImagingResponse extends GenericCollection {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public String getUploadedByDoctorId() {
+		return uploadedByDoctorId;
+	}
+
+	public void setUploadedByDoctorId(String uploadedByDoctorId) {
+		this.uploadedByDoctorId = uploadedByDoctorId;
+	}
+
+	public String getUploadedByHospitalId() {
+		return uploadedByHospitalId;
+	}
+
+	public void setUploadedByHospitalId(String uploadedByHospitalId) {
+		this.uploadedByHospitalId = uploadedByHospitalId;
+	}
+
+	public String getUploadedByLocationId() {
+		return uploadedByLocationId;
+	}
+
+	public void setUploadedByLocationId(String uploadedByLocationId) {
+		this.uploadedByLocationId = uploadedByLocationId;
 	}
 
 }

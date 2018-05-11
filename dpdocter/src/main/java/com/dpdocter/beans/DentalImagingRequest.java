@@ -106,7 +106,7 @@ public class DentalImagingRequest {
 	public void setId(String id) {
 		this.id = id;
 	}
-
+	
 	public String getUploadedByDoctorId() {
 		return uploadedByDoctorId;
 	}
