@@ -516,6 +516,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		List<ESDoctorDocument> esDoctorDocuments = null;
 		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		List<ESDoctorDocument> response = null;
+		if(size == 0) size = 10;
 		try {
 
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
@@ -580,6 +581,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			Integer distance = 4;
 			String citylongitude = null, citylatitude = null;
 			do {
+				
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.must(QueryBuilders.matchQuery("isDoctorListed", true))
 						.must(QueryBuilders.matchQuery("isClinic", true));
@@ -651,8 +653,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
 
+				
 				response = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-
 				if (response != null && esDoctorDocuments == null)
 					esDoctorDocuments = new ArrayList<ESDoctorDocument>();
 				if (esDoctorDocuments != null) {
@@ -662,9 +664,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						if (size == 0)
 							break;
 					}
-				}
-
-			} while (citylatitude == null && citylongitude == null && distance <= 30 && response.size() < 10);
+				} 
+			} while (citylatitude == null && citylongitude == null && distance <= 30 && esDoctorDocuments.size() < size);
 
 			if (esDoctorDocuments != null) {
 
