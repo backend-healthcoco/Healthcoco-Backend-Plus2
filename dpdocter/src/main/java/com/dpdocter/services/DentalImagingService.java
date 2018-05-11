@@ -23,9 +23,6 @@ public interface DentalImagingService {
 
 	DentalImaging addEditDentalImagingRequest(DentalImagingRequest request);
 
-	List<DentalImagingResponse> getRequests(String locationId, String hospitalId, String doctorId, Long from, Long to,
-			String searchTerm, int size, int page);
-
 	List<DentalDiagnosticService> getServices(String searchTerm, String type, int page, int size);
 
 	Boolean addEditDentalImagingLocationServiceAssociation(List<DentalImagingLocationServiceAssociation> request);
@@ -43,5 +40,8 @@ public interface DentalImagingService {
 	Boolean addEditDoctorHospitalDentalImagingAssociation(List<DoctorHospitalDentalImagingAssociation> request);
 
 	List<DoctorHospitalDentalImagingAssociation> getDoctorHospitalAssociation(String doctorId);
+
+	List<DentalImagingResponse> getRequests(String locationId, String hospitalId, String doctorId, Long from, Long to,
+			String searchTerm, int size, int page, String type);
 
 }
