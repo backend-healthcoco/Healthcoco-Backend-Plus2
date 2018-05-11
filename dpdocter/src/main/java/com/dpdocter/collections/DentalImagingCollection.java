@@ -23,6 +23,12 @@ public class DentalImagingCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 	@Field
+	private ObjectId uploadedByDoctorId;
+	@Field
+	private ObjectId uploadedByHospitalId;
+	@Field
+	private ObjectId uploadedByLocationId;
+	@Field
 	private ObjectId locationId;
 	@Field
 	private String referringDoctor;
@@ -131,6 +137,30 @@ public class DentalImagingCollection extends GenericCollection {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public ObjectId getUploadedByDoctorId() {
+		return uploadedByDoctorId;
+	}
+
+	public void setUploadedByDoctorId(ObjectId uploadedByDoctorId) {
+		this.uploadedByDoctorId = uploadedByDoctorId;
+	}
+
+	public ObjectId getUploadedByHospitalId() {
+		return uploadedByHospitalId;
+	}
+
+	public void setUploadedByHospitalId(ObjectId uploadedByHospitalId) {
+		this.uploadedByHospitalId = uploadedByHospitalId;
+	}
+
+	public ObjectId getUploadedByLocationId() {
+		return uploadedByLocationId;
+	}
+
+	public void setUploadedByLocationId(ObjectId uploadedByLocationId) {
+		this.uploadedByLocationId = uploadedByLocationId;
 	}
 
 	@Override

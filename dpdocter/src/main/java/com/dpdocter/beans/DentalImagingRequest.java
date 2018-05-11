@@ -9,6 +9,9 @@ public class DentalImagingRequest {
 	private String doctorId;
 	private String hospitalId;
 	private String locationId;
+	private String uploadedByDoctorId;
+	private String uploadedByHospitalId;
+	private String uploadedByLocationId;
 	private String referringDoctor;
 	private String clinicalNotes;
 	private Boolean reportsRequired;
@@ -40,7 +43,7 @@ public class DentalImagingRequest {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getLocationId() {
+	public String getLocationId() { 
 		return locationId;
 	}
 
@@ -87,7 +90,7 @@ public class DentalImagingRequest {
 	public void setServices(List<DentalDiagnosticServiceRequest> services) {
 		this.services = services;
 	}
-
+	
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -102,6 +105,30 @@ public class DentalImagingRequest {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getUploadedByDoctorId() {
+		return uploadedByDoctorId;
+	}
+
+	public void setUploadedByDoctorId(String uploadedByDoctorId) {
+		this.uploadedByDoctorId = uploadedByDoctorId;
+	}
+
+	public String getUploadedByHospitalId() {
+		return uploadedByHospitalId;
+	}
+
+	public void setUploadedByHospitalId(String uploadedByHospitalId) {
+		this.uploadedByHospitalId = uploadedByHospitalId;
+	}
+
+	public String getUploadedByLocationId() {
+		return uploadedByLocationId;
+	}
+
+	public void setUploadedByLocationId(String uploadedByLocationId) {
+		this.uploadedByLocationId = uploadedByLocationId;
 	}
 
 	@Override
