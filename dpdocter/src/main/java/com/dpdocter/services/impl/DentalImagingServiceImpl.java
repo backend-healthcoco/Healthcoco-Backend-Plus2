@@ -196,11 +196,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("updatedTime").gte(new Date(from));
 			}
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,

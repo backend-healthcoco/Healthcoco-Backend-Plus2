@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.GenericCollection;
 
@@ -20,6 +21,7 @@ public class DentalImagingResponse extends GenericCollection {
 	private List<DentalDiagnosticServiceRequest> services;
 	private Boolean discarded;
 	private PatientCard patient;
+	private Location location;
 
 	public String getId() {
 		return id;
@@ -115,6 +117,14 @@ public class DentalImagingResponse extends GenericCollection {
 
 	public void setPatient(PatientCard patient) {
 		this.patient = patient;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 
 }
