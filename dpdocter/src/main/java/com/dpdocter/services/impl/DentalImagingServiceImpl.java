@@ -436,20 +436,26 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			String searchTerm, int size, int page) {
 
 		List<DentalImagingLocationResponse> dentalImagingLocationResponses = null;
+		List<ObjectId> serviceIds = new ArrayList<ObjectId>();
 		List<DentalImagingLocationServiceAssociationCollection> dentalImagingLocationServiceAssociationCollections = null;
 		// List<RateCardTestAssociationLookupResponse> responses = null;
 		Collection<ObjectId> hospitalIds = null;
+		List<ObjectId> hospitalObjectIds = new ArrayList<ObjectId>();
 
 		try {
 			List<DoctorHospitalDentalImagingAssociation> doctorHospitalDentalImagingAssociations = getDoctorHospitalAssociation(
 					doctorId);
 
-			hospitalIds = CollectionUtils.collect(doctorHospitalDentalImagingAssociations,
-					new BeanToPropertyValueTransformer("hospitalId"));
-			HashSet<ObjectId> hospitalHashSet = new HashSet<>(hospitalIds);
+			for (DoctorHospitalDentalImagingAssociation doctorHospitalDentalImagingAssociation : doctorHospitalDentalImagingAssociations) {
+				hospitalObjectIds.add(new ObjectId(doctorHospitalDentalImagingAssociation.getHospitalId()));
+			}
+			
+			for (String id : dentalImagingServiceId) {
+				serviceIds.add(new ObjectId(id));
+			}
 			dentalImagingLocationServiceAssociationCollections = dentalImagingLocationServiceAssociationRepository
-					.findbyHospital(new ArrayList<>(hospitalHashSet));
-			if (dentalImagingLocationServiceAssociationCollections == null) {
+					.findbyHospital(hospitalObjectIds);
+						if (dentalImagingLocationServiceAssociationCollections == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Association not found");
 			}
 			Aggregation aggregation = null;
@@ -458,19 +464,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.and("service.serviceName").regex(searchTerm, "i");
 			}
-			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("hospitalId").in(hospitalHashSet)),
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("hospitalId").in(hospitalObjectIds)),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-					Aggregation.lookup("treatment_services_cl", "dentalDiagnosticServiceId", "_id", "service"),
+					Aggregation.lookup("dental_diagnostic_service_cl", "dentalDiagnosticServiceId", "_id", "service"),Aggregation.unwind("service"),
 					Aggregation.match(criteria),
 					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("id", "$locationId")
-									.append("locationId", new BasicDBObject("$first", "$locationId")).append("location",
-											new BasicDBObject("$first", "$location").append("dentalDiagnosticServiceId",
-													new BasicDBObject("$push", "$dentalDiagnosticServiceId"))))),
-					Aggregation.match(new Criteria("dentalDiagnosticServiceId").all(dentalImagingServiceId)));
+							new BasicDBObject("_id", "$locationId")
+							.append("locationId", new BasicDBObject("$first", "$locationId")).append("location",
+							new BasicDBObject("$first", "$location")).append("dentalDiagnosticServiceId",
+							new BasicDBObject("$push", "$dentalDiagnosticServiceId")))),
+					Aggregation.match(new Criteria("dentalDiagnosticServiceId").all(serviceIds)));
 			AggregationResults<DentalImagingLocationResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingLocationServiceAssociationCollection.class, DentalImagingLocationResponse.class);
-			System.out.println(aggregation);
 			dentalImagingLocationResponses = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
