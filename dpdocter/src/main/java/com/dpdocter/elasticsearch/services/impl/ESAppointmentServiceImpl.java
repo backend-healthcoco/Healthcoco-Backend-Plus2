@@ -528,8 +528,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					return esDoctorDocuments;
 				}
 			}
-			if (DPDoctorUtils.anyStringEmpty(longitude, latitude)) return null;
-			
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude))
+				return esDoctorDocuments;
+
 			Set<String> specialityIdSet = new HashSet<String>();
 			Set<String> locationIds = null, doctorIds = null;
 
@@ -660,11 +661,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						if (size == 0)
 							break;
 					}
-				}else {
-					if(distance >= 30 && response.size() == 0)break;
-				}
+				} 
 
-			} while (citylatitude == null && citylongitude == null && response.size() < 10);
+			} while (citylatitude == null && citylongitude == null && distance >= 30 && response.size() < 10);
 
 			if (esDoctorDocuments != null) {
 
