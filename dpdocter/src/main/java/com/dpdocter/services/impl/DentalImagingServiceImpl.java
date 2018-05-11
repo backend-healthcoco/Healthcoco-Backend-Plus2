@@ -448,7 +448,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("service.serviceName").regex(searchTerm, "i"));
 			}
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+			aggregation = Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.unwind("location"),Aggregation.match(criteria));
 			AggregationResults<DentalImagingLocationResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingLocationServiceAssociationCollection.class, DentalImagingLocationResponse.class);
 			System.out.println(aggregation);
