@@ -24,6 +24,7 @@ import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.ServiceLocationResponse;
@@ -79,12 +80,12 @@ public class DentalImagingAPI {
 	@Path(value = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION, notes = PathProxy.DentalImagingUrl.GET_SERVICE_LOCATION)
-	public Response<ServiceLocationResponse> getServiceLocations(@MatrixParam(value = "dentalImagingServiceId") List<String> dentalImagingServiceId,
-			@QueryParam("hospitalId") String hospitalId,@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
+	public Response<DentalImagingLocationResponse> getServiceLocations(@MatrixParam(value = "dentalImagingServiceId") List<String> dentalImagingServiceId,
+			@QueryParam("doctorId") String doctorId,@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
 			@QueryParam("page") int page) {
 
-		Response<ServiceLocationResponse> response = new Response<ServiceLocationResponse>();
-		//response.setDataList(dentalImagingService.getRequests(locationId, hospitalId, doctorId, from, to, searchTerm, size, page));
+		Response<DentalImagingLocationResponse> response = new Response<DentalImagingLocationResponse>();
+		response.setDataList(dentalImagingService.getServiceLocations(dentalImagingServiceId, doctorId, searchTerm, size, page));
 		return response;
 	}
 	

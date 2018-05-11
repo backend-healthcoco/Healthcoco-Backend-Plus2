@@ -2,14 +2,18 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.QueryParam;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +21,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LabReports;
@@ -43,10 +51,14 @@ import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
 import com.dpdocter.collections.DentalImagingReportsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorHospitalDentalImagingAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.RateCardCollection;
+import com.dpdocter.collections.RateCardLabAssociationCollection;
+import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
@@ -58,21 +70,25 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DentalImagingLocationServiceAssociationRepository;
 import com.dpdocter.repository.DentalImagingReportsRepository;
 import com.dpdocter.repository.DentalImagingRepository;
+import com.dpdocter.repository.DoctorHospitalDentalImagingAssociationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.request.DoctorLabReportsAddRequest;
+import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.DentalLabPickupLookupResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.DentalImagingService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.SMSServices;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -100,6 +116,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	
 	@Autowired
 	DentalImagingReportsRepository dentalImagingReportsRepository;
+	
+	@Autowired
+	DoctorHospitalDentalImagingAssociationRepository doctorHospitalDentalImagingAssociationRepository;
 	
 	@Autowired
 	SMSServices smsServices;
@@ -400,12 +419,45 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			return clinicImages;
 		}
 		
+	@SuppressWarnings("unchecked")
 	@Override	
 	@Transactional
-	public Response<ServiceLocationResponse> getServiceLocations(List<String> dentalImagingServiceId, String hospitalId,
+	public List<DentalImagingLocationResponse> getServiceLocations(List<String> dentalImagingServiceId, String doctorId,
 			String searchTerm, int size, int page) {
 
-		return null;
+		List<DentalImagingLocationResponse> dentalImagingLocationResponses = null;
+		List<DentalImagingLocationServiceAssociationCollection> dentalImagingLocationServiceAssociationCollections = null;
+		// List<RateCardTestAssociationLookupResponse> responses = null;
+		Collection<ObjectId> hospitalIds = null;
+		
+		try {
+			List<DoctorHospitalDentalImagingAssociation> doctorHospitalDentalImagingAssociations = getDoctorHospitalAssociation(doctorId);
+			
+			hospitalIds = CollectionUtils.collect(doctorHospitalDentalImagingAssociations,
+					new BeanToPropertyValueTransformer("hospitalId"));
+			HashSet<ObjectId> hospitalHashSet= new HashSet<>(hospitalIds);
+			dentalImagingLocationServiceAssociationCollections = dentalImagingLocationServiceAssociationRepository
+					.findbyHospital(new ArrayList<>(hospitalHashSet));
+			if (dentalImagingLocationServiceAssociationCollections == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Association not found");
+			}
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			criteria.and("hospitalId").in(hospitalHashSet);
+			criteria.and("dentalDiagnosticServiceId").in(dentalImagingServiceId);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("service.serviceName").regex(searchTerm, "i"));
+			}
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+			AggregationResults<DentalImagingLocationResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalImagingLocationServiceAssociationCollection.class, DentalImagingLocationResponse.class);
+			System.out.println(aggregation);
+			dentalImagingLocationResponses = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+		return dentalImagingLocationResponses;
 
 	}
 
@@ -482,6 +534,65 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		return response;
 	}
+	
+
+	@Override
+	@Transactional
+	public Boolean addEditDoctorHospitalDentalImagingAssociation(List<DoctorHospitalDentalImagingAssociation> request) {
+		Boolean response = false;
+		ObjectId oldId = null;
+		DoctorHospitalDentalImagingAssociationCollection doctorHospitalDentalImagingAssociationCollection = null;
+		try {
+			for (DoctorHospitalDentalImagingAssociation doctorHospitalDentalImagingAssociation  : request) {
+				doctorHospitalDentalImagingAssociationCollection = doctorHospitalDentalImagingAssociationRepository.findbyDoctorHospital(new ObjectId(doctorHospitalDentalImagingAssociation.getDoctorId()), new ObjectId(doctorHospitalDentalImagingAssociation.getHospitalId()));
+						
+				if (doctorHospitalDentalImagingAssociationCollection == null) {
+					doctorHospitalDentalImagingAssociationCollection = new DoctorHospitalDentalImagingAssociationCollection();
+				} else {
+					oldId = doctorHospitalDentalImagingAssociationCollection.getId();
+				}
+				BeanUtil.map(doctorHospitalDentalImagingAssociation, doctorHospitalDentalImagingAssociationCollection);
+				doctorHospitalDentalImagingAssociationCollection.setId(oldId);
+				doctorHospitalDentalImagingAssociationCollection = doctorHospitalDentalImagingAssociationRepository
+						.save(doctorHospitalDentalImagingAssociationCollection);
+			}
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn(e);
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input" + e);
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<DoctorHospitalDentalImagingAssociation> getDoctorHospitalAssociation(String doctorId) {
+		List<DoctorHospitalDentalImagingAssociation> response = null;
+
+		try {
+			Criteria criteria = new Criteria();
+			Aggregation aggregation = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+		
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<DoctorHospitalDentalImagingAssociation> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DoctorHospitalDentalImagingAssociationCollection.class, DoctorHospitalDentalImagingAssociation.class);
+			
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 	
 }
 		
