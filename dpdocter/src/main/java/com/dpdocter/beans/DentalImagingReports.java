@@ -1,13 +1,12 @@
 package com.dpdocter.beans;
 
-
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.ImageURLResponse;
 
 public class DentalImagingReports extends GenericCollection {
 
 	private String id;
-	
+
 	private String patientId;
 
 	private String serviceName;
@@ -17,8 +16,12 @@ public class DentalImagingReports extends GenericCollection {
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private ImageURLResponse report;
+
+	private String title;
+
+	private String note;
 
 	private Boolean discarded = false;
 
@@ -31,6 +34,22 @@ public class DentalImagingReports extends GenericCollection {
 	private Boolean isSharedToPatient = false;
 
 	private String requestId;
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
 
 	public String getPatientId() {
 		return patientId;
@@ -118,6 +137,22 @@ public class DentalImagingReports extends GenericCollection {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public ImageURLResponse getReport() {
+		return report;
+	}
+
+	public void setReport(ImageURLResponse report) {
+		this.report = report;
 	}
 
 }

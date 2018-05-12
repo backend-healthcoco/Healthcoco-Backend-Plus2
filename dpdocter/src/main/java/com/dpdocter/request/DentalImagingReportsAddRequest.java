@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class DentalImagingReportsAddRequest {
 
 	private String patientId;
@@ -27,6 +29,10 @@ public class DentalImagingReportsAddRequest {
 	private Boolean isSharedToPatient = false;
 
 	private String requestId;
+
+	private String title;
+
+	private String note;
 
 	public String getPatientId() {
 		return patientId;
@@ -130,6 +136,22 @@ public class DentalImagingReportsAddRequest {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	@Override

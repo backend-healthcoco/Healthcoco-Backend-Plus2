@@ -44,4 +44,8 @@ public interface DentalImagingService {
 	List<DentalImagingResponse> getRequests(String locationId, String hospitalId, String doctorId, Long from, Long to,
 			String searchTerm, int size, int page, String type);
 
+	DentalImaging discardRequest(String id, boolean discarded);
+
+	DentalImagingReports discardReport(String id, boolean discarded);
+
 }
