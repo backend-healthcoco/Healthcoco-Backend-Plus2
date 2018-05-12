@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -13,23 +14,35 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
+import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.Hospital;
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.Location;
+import com.dpdocter.collections.DentalImagingCollection;
+import com.dpdocter.collections.DentalWorkCollection;
+import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.request.DentalimagingReportsUploadRequest;
+import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.services.DentalImagingService;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -132,5 +145,57 @@ public class DentalImagingAPI {
 		return response;
 	}
 	
+	
+	@POST
+	@Path(value = PathProxy.DentalImagingUrl.ADD_RECORDS)
+	@ApiOperation(value = PathProxy.DentalImagingUrl.ADD_RECORDS, notes = PathProxy.DentalImagingUrl.ADD_RECORDS)
+	public Response<DentalImagingReports> addRecordsBase64(DentalimagingReportsUploadRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		DentalImagingReports dentalImagingReports = dentalImagingService.addDentalImagingReportBase64(request.getFileDetails(),
+				request.getRequest());
+
+		Response<DentalImagingReports> response = new Response<DentalImagingReports>();
+		response.setData(dentalImagingReports);
+		return response;
+	}
+	
+	
+	
+	@Path(value = PathProxy.DentalImagingUrl.DISCARD_REQUEST)
+	@DELETE
+	@ApiOperation(value = PathProxy.DentalImagingUrl.DISCARD_REQUEST, notes = PathProxy.DentalImagingUrl.DISCARD_REQUEST)
+	public Response<DentalImaging> discardRequest(@QueryParam("id") String id,
+			@QueryParam("discarded") boolean discarded) {
+
+		DentalImaging dentalImaging = null;
+		if (id == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		dentalImaging = dentalImagingService.discardRequest(id, discarded);
+		Response<DentalImaging> response = new Response<DentalImaging>();
+		response.setData(dentalImaging);
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.DISCARD_RECORD)
+	@DELETE
+	@ApiOperation(value = PathProxy.DentalImagingUrl.DISCARD_RECORD, notes = PathProxy.DentalImagingUrl.DISCARD_RECORD)
+	public Response<DentalImagingReports> discardReports(@QueryParam("id") String id,
+			@QueryParam("discarded") boolean discarded) {
+
+		DentalImagingReports dentalImagingReports = null;
+		if (id == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		dentalImagingReports = dentalImagingService.discardReport(id, discarded);
+		Response<DentalImagingReports> response = new Response<DentalImagingReports>();
+		response.setData(dentalImagingReports);
+		return response;
+	}
 	
 }

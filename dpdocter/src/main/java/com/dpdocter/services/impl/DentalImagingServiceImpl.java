@@ -36,6 +36,7 @@ import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
@@ -146,18 +147,21 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
 				}
 				BeanUtil.map(request, dentalImagingCollection);
-
+				dentalImagingCollection.setServices(request.getServices());
 				dentalImagingCollection.setUpdatedTime(new Date());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
 			} else {
 				requestId = UniqueIdInitial.DENTAL_IMAGING.getInitial() + DPDoctorUtils.generateRandomId();
 				dentalImagingCollection = new DentalImagingCollection();
 				BeanUtil.map(request, dentalImagingCollection);
+				dentalImagingCollection.setServices(request.getServices());
 				dentalImagingCollection.setRequestId(requestId);
 				dentalImagingCollection.setCreatedTime(new Date());
 				dentalImagingCollection.setUpdatedTime(new Date());
 
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
+				
+				
 			}
 			response = new DentalImaging();
 			BeanUtil.map(dentalImagingCollection, response);
@@ -233,7 +237,17 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						BeanUtil.map(patientCollection, patientCard);
 						dentalImagingResponse.setPatient(patientCard);
 					}
-
+				}
+				List<DentalImagingReportsCollection> dentalImagingReportsCollections = dentalImagingReportsRepository.getReportsByRequestId(new ObjectId(dentalImagingResponse.getId()));
+				if(dentalImagingReportsCollections != null)
+				{
+					List<DentalImagingReports> dentalImagingReports = new ArrayList<>();
+					for (DentalImagingReportsCollection dentalImagingReportsCollection : dentalImagingReportsCollections) {
+						DentalImagingReports reports = new DentalImagingReports();
+						BeanUtil.map(dentalImagingReportsCollection, reports);
+						dentalImagingReports.add(reports);
+					}
+					dentalImagingResponse.setReports(dentalImagingReports);
 				}
 			}
 
@@ -534,40 +548,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			response = new DentalImagingReports();
 			BeanUtil.map(dentalImagingReportsCollection, response);
 
-			if (dentalImagingReportsCollection != null) {
-
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
-
-				if (request.getMobileNumber() != null) {
-					LocationCollection daughterlocationCollection = locationRepository
-							.findOne(dentalImagingReportsCollection.getLocationId());
-					LocationCollection parentLocationCollection = locationRepository
-							.findOne(dentalImagingReportsCollection.getUploadedByLocationId());
-					String message = "";
-
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
-					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-
-					smsTrackDetail.setType("LAB REPORT UPLOAD");
-					SMSDetail smsDetail = new SMSDetail();
-					smsDetail.setUserId(daughterlocationCollection.getId());
-					SMS sms = new SMS();
-					smsDetail.setUserName(daughterlocationCollection.getLocationName());
-					message = message.replace("{patientName}", userCollection.getFirstName());
-					message = message.replace("{specimenName}", "");
-					message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
-					sms.setSmsText(message);
-					SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(request.getMobileNumber());
-					sms.setSmsAddress(smsAddress);
-					smsDetail.setSms(sms);
-					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					smsDetails.add(smsDetail);
-					smsTrackDetail.setSmsDetails(smsDetails);
-					smsServices.sendSMS(smsTrackDetail, true);
-				}
-			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -630,6 +610,55 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		} catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public DentalImaging discardRequest(String id, boolean discarded) {
+		DentalImaging response = null;
+		DentalImagingCollection dentalImagingCollection = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(id)) {
+				dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(id));
+			}
+			if (dentalImagingCollection != null) {
+				dentalImagingCollection.setDiscarded(discarded);
+				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput, "Record not found");
+			}
+			response = new DentalImaging();
+			BeanUtil.map(dentalImagingCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	
+	@Override
+	@Transactional
+	public DentalImagingReports discardReport(String id, boolean discarded) {
+		DentalImagingReports response = null;
+		DentalImagingReportsCollection dentalImagingReportsCollection = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(id)) {
+				dentalImagingReportsCollection = dentalImagingReportsRepository.findOne(new ObjectId(id));
+			}
+			if (dentalImagingReportsCollection != null) {
+				dentalImagingReportsCollection.setDiscarded(discarded);
+				dentalImagingReportsCollection = dentalImagingReportsRepository.save(dentalImagingReportsCollection);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput, "Record not found");
+			}
+			response = new DentalImagingReports();
+			BeanUtil.map(dentalImagingReportsCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;

@@ -49,6 +49,12 @@ public class DentalImagingReportsCollection extends GenericCollection {
 	@Field
 	private ObjectId requestId;
 
+	@Field
+	private String title;
+
+	@Field
+	private String note;
+
 	public ObjectId getPatientId() {
 		return patientId;
 	}
@@ -151,6 +157,22 @@ public class DentalImagingReportsCollection extends GenericCollection {
 
 	public void setReport(ImageURLResponse report) {
 		this.report = report;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 }
