@@ -621,7 +621,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		DentalImaging response = null;
 		DentalImagingCollection dentalImagingCollection = null;
 		try {
-			if (DPDoctorUtils.anyStringEmpty(id)) {
+			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(id));
 			}
 			if (dentalImagingCollection != null) {
@@ -646,7 +646,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		DentalImagingReports response = null;
 		DentalImagingReportsCollection dentalImagingReportsCollection = null;
 		try {
-			if (DPDoctorUtils.anyStringEmpty(id)) {
+			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				dentalImagingReportsCollection = dentalImagingReportsRepository.findOne(new ObjectId(id));
 			}
 			if (dentalImagingReportsCollection != null) {
