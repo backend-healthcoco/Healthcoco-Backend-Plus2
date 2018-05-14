@@ -1888,11 +1888,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Transactional
 	public Boolean checktDoctorExistByEmailAddress(String emailAddress) {
 		try {
+
 			UserCollection userCollections = userRepository.findByUserNameAndEmailAddress(emailAddress, emailAddress);
-			if (userCollections == null)
+			if (userCollections == null) {
 				return false;
-			else
+
+			} else {
 				return true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1962,6 +1965,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userHospitalAdminRoleCollection = userRoleRepository.save(userHospitalAdminRoleCollection);
 				}
 			}
+
 			// save user location.
 			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
 			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
@@ -2055,6 +2059,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userCollection.getId(), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()));
 			if (userRoleCollection != null) {
+				if (userRoleCollection.getRoleId().toString().equals(request.getRoleId())) {
+					logger.error("User has  already assigned " + doctorRole.getRole() + "in clinic");
+					throw new BusinessException(ServiceError.InvalidInput,
+							"User has  already assigned " + doctorRole.getRole() + " in clinic");
+				}
+
 				userRoleCollection = new UserRoleCollection(userCollection.getId(), new ObjectId(request.getRoleId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 				userRoleCollection.setCreatedTime(new Date());
@@ -2093,13 +2103,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 					doctorRepository.save(doctorCollection);
 				}
 			}
-
-			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
-			doctorClinicProfileCollection.setLocationId(new ObjectId(request.getLocationId()));
-			doctorClinicProfileCollection.setCreatedTime(new Date());
-			doctorClinicProfileCollection.setIsActivate(request.getIsActivate());
-			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+					.findByDoctorIdLocationId(userCollection.getId(), new ObjectId(request.getLocationId()));
+			if (doctorClinicProfileCollection == null) {
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setDoctorId(userCollection.getId());
+				doctorClinicProfileCollection.setLocationId(new ObjectId(request.getLocationId()));
+				doctorClinicProfileCollection.setCreatedTime(new Date());
+				doctorClinicProfileCollection.setIsActivate(request.getIsActivate());
+				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			}
 
 			response = new RegisterDoctorResponse();
 			userCollection.setPassword(null);
@@ -2488,6 +2501,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 							.append("isVerified", new BasicDBObject("$first", "$isVerified"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
 
+							.append("patientInitial", new BasicDBObject("$first", "$patientInitial"))
+							.append("patientCounter", new BasicDBObject("$first", "$patientCounter"))
+
 							.append("appointmentBookingNumber",
 									new BasicDBObject("$first", "$appointmentBookingNumber"))
 							.append("consultationFee", new BasicDBObject("$first", "$consultationFee"))
@@ -2532,8 +2548,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
 								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 
-								Aggregation.unwind("doctor"), Aggregation.match(criteria), projectionOperation),
-
+								Aggregation.unwind("doctor"), Aggregation.match(criteria)),
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			}
@@ -4061,6 +4076,80 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
+	private void assignDefaultUIPermissions(String doctorId) {
+		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+
+		if (dynamicUICollection == null) {
+			dynamicUICollection = new DynamicUICollection();
+			dynamicUICollection.setDoctorId(new ObjectId(doctorId));
+		}
+		UIPermissions uiPermissions = dynamicUIService.getDefaultPermissions();
+		dynamicUICollection.setUiPermissions(uiPermissions);
+		dynamicUIRepository.save(dynamicUICollection);
+	}
+
+	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds,
+			Collection<ObjectId> oldSpecialities, String doctorId) {
+		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+		if (dynamicUICollection != null) {
+			for (ObjectId objectId : specialityIds) {
+				if (oldSpecialities.contains(objectId))
+					oldSpecialities.remove(objectId);
+			}
+			if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
+				List<SpecialityCollection> oldSpecialityCollections = (List<SpecialityCollection>) specialityRepository
+						.findAll(oldSpecialities);
+				@SuppressWarnings("unchecked")
+				Collection<String> specialities = CollectionUtils.collect(oldSpecialityCollections,
+						new BeanToPropertyValueTransformer("speciality"));
+				UIPermissions uiPermissions = dynamicUICollection.getUiPermissions();
+				for (String speciality : specialities) {
+					if (speciality.equalsIgnoreCase("OPHTHALMOLOGIST")) {
+						if (uiPermissions.getClinicalNotesPermissions() != null)
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(OpthoPermissionEnums.OPTHO_CLINICAL_NOTES.getPermissions());
+						if (uiPermissions.getPrescriptionPermissions() != null)
+							uiPermissions.getPrescriptionPermissions()
+									.remove(OpthoPermissionEnums.OPTHO_RX.getPermissions());
+					}
+					if (speciality.equalsIgnoreCase("PEDIATRICIAN")) {
+						if (uiPermissions.getProfilePermissions() != null)
+							uiPermissions.getProfilePermissions()
+									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+					}
+					if (speciality.equalsIgnoreCase("GYNECOLOGIST/OBSTETRICIAN")) {
+						if (uiPermissions.getClinicalNotesPermissions() != null) {
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PA.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PV.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PS.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.EDD.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.LMP.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.USG_GENDER_COUNT.getPermissions());
+							uiPermissions.getProfilePermissions()
+									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+						}
+					}
+					if (speciality.equalsIgnoreCase("CARDIOLOGIST")) {
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECG.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECHO.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.XRAY.getPermissions());
+						uiPermissions.getClinicalNotesPermissions()
+								.remove(CardioPermissionEnum.HOLTER.getPermissions());
+					}
+				}
+				dynamicUIRepository.save(dynamicUICollection);
+			}
+		}
+	}
+
 	@Override
 	public Boolean deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
 			Boolean discarded) {
@@ -4264,80 +4353,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number");
 		}
 		return response;
-	}
-
-	private void assignDefaultUIPermissions(String doctorId) {
-		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
-
-		if (dynamicUICollection == null) {
-			dynamicUICollection = new DynamicUICollection();
-			dynamicUICollection.setDoctorId(new ObjectId(doctorId));
-		}
-		UIPermissions uiPermissions = dynamicUIService.getDefaultPermissions();
-		dynamicUICollection.setUiPermissions(uiPermissions);
-		dynamicUIRepository.save(dynamicUICollection);
-	}
-
-	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds,
-			Collection<ObjectId> oldSpecialities, String doctorId) {
-		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
-		if (dynamicUICollection != null) {
-			for (ObjectId objectId : specialityIds) {
-				if (oldSpecialities.contains(objectId))
-					oldSpecialities.remove(objectId);
-			}
-			if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
-				List<SpecialityCollection> oldSpecialityCollections = (List<SpecialityCollection>) specialityRepository
-						.findAll(oldSpecialities);
-				@SuppressWarnings("unchecked")
-				Collection<String> specialities = CollectionUtils.collect(oldSpecialityCollections,
-						new BeanToPropertyValueTransformer("speciality"));
-				UIPermissions uiPermissions = dynamicUICollection.getUiPermissions();
-				for (String speciality : specialities) {
-					if (speciality.equalsIgnoreCase("OPHTHALMOLOGIST")) {
-						if (uiPermissions.getClinicalNotesPermissions() != null)
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(OpthoPermissionEnums.OPTHO_CLINICAL_NOTES.getPermissions());
-						if (uiPermissions.getPrescriptionPermissions() != null)
-							uiPermissions.getPrescriptionPermissions()
-									.remove(OpthoPermissionEnums.OPTHO_RX.getPermissions());
-					}
-					if (speciality.equalsIgnoreCase("PEDIATRICIAN")) {
-						if (uiPermissions.getProfilePermissions() != null)
-							uiPermissions.getProfilePermissions()
-									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
-					}
-					if (speciality.equalsIgnoreCase("GYNECOLOGIST/OBSTETRICIAN")) {
-						if (uiPermissions.getClinicalNotesPermissions() != null) {
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(GynacPermissionsEnum.PA.getPermissions());
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(GynacPermissionsEnum.PV.getPermissions());
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(GynacPermissionsEnum.PS.getPermissions());
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(GynacPermissionsEnum.EDD.getPermissions());
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(GynacPermissionsEnum.LMP.getPermissions());
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(GynacPermissionsEnum.USG_GENDER_COUNT.getPermissions());
-							uiPermissions.getProfilePermissions()
-									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
-						}
-					}
-					if (speciality.equalsIgnoreCase("CARDIOLOGIST")) {
-						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECG.getPermissions());
-						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECHO.getPermissions());
-						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.XRAY.getPermissions());
-						uiPermissions.getClinicalNotesPermissions()
-								.remove(CardioPermissionEnum.HOLTER.getPermissions());
-					}
-				}
-				dynamicUIRepository.save(dynamicUICollection);
-			}
-		}
 	}
 
 }
