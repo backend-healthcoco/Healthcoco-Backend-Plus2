@@ -796,9 +796,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			} else {
 				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId,
 						locationObjectId, hospitalObjectId);
+				String PID = null;
 				if (patientCollection != null) {
 					ObjectId patientId = patientCollection.getId();
 					ObjectId patientDoctorId = patientCollection.getDoctorId();
+					PID = patientCollection.getPID();
+					
 					request.setRegistrationDate(patientCollection.getRegistrationDate());
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
@@ -819,8 +822,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 					patientCollection.setPID(request.getPID());
-				} else if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
-					patientCollection.setPID(patientCollection.getPID());
+				} else if (!DPDoctorUtils.anyStringEmpty(PID)) {
+					patientCollection.setPID(PID);
 				} else {
 					patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
 							patientCollection.getRegistrationDate()));
@@ -1408,7 +1411,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Integer patientSize = patientRepository.findTodaysRegisteredPatient(locationObjectId, hospitalObjectId,
 					startTimeinMillis, endTimeinMillis);
 
-			if (patientCount == null)
+			if (patientSize == null)
 				patientSize = 0;
 			LocationCollection location = locationRepository.findOne(locationObjectId);
 			if (location == null) {
@@ -1423,7 +1426,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
 					+ DPDoctorUtils.getPrefixedNumber(patientCounter);
 
-			System.out.println(locationId + ".." + patientSize + ".." + patientCounter);
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			throw e;
