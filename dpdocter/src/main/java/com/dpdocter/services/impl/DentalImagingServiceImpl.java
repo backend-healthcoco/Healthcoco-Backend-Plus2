@@ -62,6 +62,7 @@ import com.dpdocter.collections.RateCardLabAssociationCollection;
 import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -88,6 +89,7 @@ import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.DentalImagingService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 
@@ -123,6 +125,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Autowired
 	SMSServices smsServices;
+	
+	@Autowired
+	PushNotificationServices pushNotificationServices;
 
 	@Autowired
 	MongoTemplate mongoTemplate;
@@ -140,8 +145,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		try {
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
-
+			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (request.getId() != null) {
+				
 				dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(request.getId()));
 				if (dentalImagingCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -150,6 +156,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setServices(request.getServices());
 				dentalImagingCollection.setUpdatedTime(new Date());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
+				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "You have new dental imaging request.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),String.valueOf(dentalImagingCollection.getId()), null);
 			} else {
 				requestId = UniqueIdInitial.DENTAL_IMAGING.getInitial() + DPDoctorUtils.generateRandomId();
 				dentalImagingCollection = new DentalImagingCollection();
@@ -158,8 +165,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setRequestId(requestId);
 				dentalImagingCollection.setCreatedTime(new Date());
 				dentalImagingCollection.setUpdatedTime(new Date());
-
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
+				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request Has been updated.", ComponentType.REFRESH_DENTAL_IMAGING.getType(), String.valueOf(dentalImagingCollection.getId()), null);
 				
 				
 			}
@@ -225,13 +232,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			response = aggregationResults.getMappedResults();
 
 			for (DentalImagingResponse dentalImagingResponse : response) {
-				if (!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getLocationId(),
-						dentalImagingResponse.getHospitalId(), dentalImagingResponse.getPatientId())) {
+				if (!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getUploadedByLocationId(),
+						dentalImagingResponse.getUploadedByHospitalId(), dentalImagingResponse.getPatientId())) {
 
 					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
 							new ObjectId(dentalImagingResponse.getPatientId()),
-							new ObjectId(dentalImagingResponse.getLocationId()),
-							new ObjectId(dentalImagingResponse.getHospitalId()));
+							new ObjectId(dentalImagingResponse.getUploadedByLocationId()),
+							new ObjectId(dentalImagingResponse.getUploadedByHospitalId()));
 					if (patientCollection != null) {
 						PatientCard patientCard = new PatientCard();
 						BeanUtil.map(patientCollection, patientCard);
@@ -493,7 +500,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria = criteria.and("service.serviceName").regex(searchTerm, "i");
 			}
 			aggregation = Aggregation.newAggregation(
-					Aggregation.match(new Criteria("hospitalId").in(hospitalObjectIds)),
+					Aggregation.match(new Criteria("hospitalId").in(hospitalObjectIds).and("discarded").is(false)),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
 					Aggregation.lookup("dental_diagnostic_service_cl", "dentalDiagnosticServiceId", "_id", "service"),
 					Aggregation.unwind("service"), Aggregation.match(criteria),
@@ -524,7 +531,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		ImageURLResponse imageURLResponse = null;
 		try {
 			Date createdTime = new Date();
-
+			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (fileDetails != null) {
 				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
 
@@ -534,12 +541,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				if (imageURLResponse != null) {
 					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
 					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+					pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Report have been uploaded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), null, null);
 				}
 			}
 
 			if (dentalImagingReportsCollection == null) {
 				dentalImagingReportsCollection = new DentalImagingReportsCollection();
-
 			}
 
 			BeanUtil.map(request, dentalImagingReportsCollection);
@@ -624,9 +631,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(id));
 			}
+			
 			if (dentalImagingCollection != null) {
+				UserCollection userCollection = userRepository.findOne(dentalImagingCollection.getDoctorId());
 				dentalImagingCollection.setDiscarded(discarded);
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
+				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request has been discarded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Record not found");
 			}

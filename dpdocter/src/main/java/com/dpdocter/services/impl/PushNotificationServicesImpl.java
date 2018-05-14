@@ -278,6 +278,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setRi(componentTypeId);
 					notification.setNotificationType(componentType);
 				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+					notification.setRi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
 				else
 				{
 					notification.setNotificationType(componentType);
@@ -429,6 +433,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "DW");
+				}
+				
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+					customValues.put("RI", componentTypeId);
+					customValues.put("T", "DI");
 				}
 			}
 			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
