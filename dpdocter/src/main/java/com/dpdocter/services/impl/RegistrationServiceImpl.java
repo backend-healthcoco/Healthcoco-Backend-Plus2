@@ -2481,20 +2481,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 
-			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new BasicDBObject(
-					"$group",
+			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("isActivate", new BasicDBObject("$first", "$isActivate"))
 							.append("isVerified", new BasicDBObject("$first", "$isVerified"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("patientInitial", new BasicDBObject("$first", "$patientInitial"))
-							.append("patientCounter", new BasicDBObject("$first", "$patientCounter"))
-							.append("appointmentBookingNumber", new BasicDBObject("$first", "$appointmentBookingNumber"))
+
+							.append("appointmentBookingNumber",
+									new BasicDBObject("$first", "$appointmentBookingNumber"))
 							.append("consultationFee", new BasicDBObject("$first", "$consultationFee"))
 							.append("revisitConsultationFee", new BasicDBObject("$first", "$revisitConsultationFee"))
-							.append("appointmentSlot",
-									new BasicDBObject("$first", "$appointmentSlot"))
+							.append("appointmentSlot", new BasicDBObject("$first", "$appointmentSlot"))
 							.append("workingSchedules", new BasicDBObject("$first", "$workingSchedules"))
 							.append("facility", new BasicDBObject("$first", "$facility"))
 							.append("noOfReviews", new BasicDBObject("$first", "$noOfReviews"))
@@ -2502,7 +2500,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 							.append("timeZone", new BasicDBObject("$first", "$timeZone"))
 							.append("rankingCount", new BasicDBObject("$first", "$rankingCount"))
 							.append("location", new BasicDBObject("$first", "$location"))
-							.append("hospital", new BasicDBObject("$first", "$hospital"))
 							.append("doctor", new BasicDBObject("$first", "$doctor"))
 							.append("user", new BasicDBObject("$first", "$user"))
 							.append("packageType", new BasicDBObject("$first", "$packageType"))
@@ -2510,7 +2507,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
-			
 			if (size > 0) {
 				doctorClinicProfileLookupResponses = mongoTemplate
 						.aggregate(
@@ -2526,6 +2522,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 										Aggregation.match(criteria.and("userRoleCollection.locationId")
 												.is(new ObjectId(locationId))),
 										Aggregation.skip((page) * size), Aggregation.limit(size)),
+
 								DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			} else {
@@ -2534,7 +2531,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.unwind("location"),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
 								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-								Aggregation.unwind("doctor"), Aggregation.match(criteria)),
+
+								Aggregation.unwind("doctor"), Aggregation.match(criteria), projectionOperation),
+
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			}
