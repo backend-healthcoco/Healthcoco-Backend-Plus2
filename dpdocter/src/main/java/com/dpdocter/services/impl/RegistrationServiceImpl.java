@@ -2524,7 +2524,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 										Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollection"),
 										Aggregation.unwind("userRoleCollection"),
 										Aggregation.match(criteria.and("userRoleCollection.locationId")
-												.is(new ObjectId(locationId))),projectionOperation,
+												.is(new ObjectId(locationId))),
 										Aggregation.skip((page) * size), Aggregation.limit(size)),
 								DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
@@ -2534,7 +2534,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.unwind("location"),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
 								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-								Aggregation.unwind("doctor"), Aggregation.match(criteria),projectionOperation),
+								Aggregation.unwind("doctor"), Aggregation.match(criteria)),
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			}
