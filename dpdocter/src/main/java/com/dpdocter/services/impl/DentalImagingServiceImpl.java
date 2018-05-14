@@ -2,18 +2,12 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.QueryParam;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +15,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DentalDiagnosticService;
@@ -36,17 +27,11 @@ import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
-import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
-import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.PatientCard;
-import com.dpdocter.beans.Role;
-import com.dpdocter.beans.SMS;
-import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
@@ -54,17 +39,10 @@ import com.dpdocter.collections.DentalImagingReportsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorHospitalDentalImagingAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
-import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.RateCardCollection;
-import com.dpdocter.collections.RateCardLabAssociationCollection;
-import com.dpdocter.collections.RateCardTestAssociationCollection;
-import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.RoleEnum;
-import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -77,16 +55,11 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
-import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
-import com.dpdocter.response.DentalLabPickupLookupResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.ImageURLResponse;
-import com.dpdocter.response.LabTestGroupResponse;
-import com.dpdocter.response.ServiceLocationResponse;
-import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.DentalImagingService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.PushNotificationServices;
@@ -94,7 +67,6 @@ import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
-import common.util.web.Response;
 
 @Service
 public class DentalImagingServiceImpl implements DentalImagingService {
@@ -144,7 +116,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		String requestId = null;
 
 		try {
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (request.getId() != null) {
 				
@@ -156,7 +127,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setServices(request.getServices());
 				dentalImagingCollection.setUpdatedTime(new Date());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
-				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "You have new dental imaging request.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),String.valueOf(dentalImagingCollection.getId()), null);
+				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "You have new dental imaging request.", ComponentType.REFRESH_DENTAL_IMAGING.getType(),String.valueOf(dentalImagingCollection.getId()), null);
 			} else {
 				requestId = UniqueIdInitial.DENTAL_IMAGING.getInitial() + DPDoctorUtils.generateRandomId();
 				dentalImagingCollection = new DentalImagingCollection();
@@ -166,7 +137,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setCreatedTime(new Date());
 				dentalImagingCollection.setUpdatedTime(new Date());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
-				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request Has been updated.", ComponentType.REFRESH_DENTAL_IMAGING.getType(), String.valueOf(dentalImagingCollection.getId()), null);
+				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request Has been updated.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
 				
 				
 			}
@@ -474,7 +445,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		List<ObjectId> serviceIds = new ArrayList<ObjectId>();
 		List<DentalImagingLocationServiceAssociationCollection> dentalImagingLocationServiceAssociationCollections = null;
 		// List<RateCardTestAssociationLookupResponse> responses = null;
-		Collection<ObjectId> hospitalIds = null;
 		List<ObjectId> hospitalObjectIds = new ArrayList<ObjectId>();
 
 		try {
