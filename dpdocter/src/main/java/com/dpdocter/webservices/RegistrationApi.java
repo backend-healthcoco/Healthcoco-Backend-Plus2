@@ -113,23 +113,21 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
 	@POST
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_REGISTER, notes = PathProxy.RegistrationUrls.PATIENT_REGISTER, response = Response.class)
-	public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request, @MatrixParam(value = "infoType") List<String> infoType) {
+	public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request,
+			@MatrixParam(value = "infoType") List<String> infoType) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		} 
-		else if (request.getLocalPatientName().length() < 2) {
+		} else if (request.getLocalPatientName().length() < 2) {
 			logger.warn(firstNameValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 		}
-
-		
 
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = null;
 
 		if (request.getUserId() == null) {
-			if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))
+			if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))
 				registrationService.checkPatientCount(request.getMobileNumber());
 			registeredPatientDetails = registrationService.registerNewPatient(request);
 			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
@@ -152,7 +150,8 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
 	@PUT
 	@ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, response = Response.class)
-	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request, @MatrixParam(value = "infoType") List<String> infoType) {
+	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request,
+			@MatrixParam(value = "infoType") List<String> infoType) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -167,7 +166,8 @@ public class RegistrationApi {
 			}
 		}
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
-		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request, infoType);
+		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request,
+				infoType);
 		transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
 		esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
@@ -205,8 +205,9 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, response = Response.class)
-	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false")  @QueryParam("getAddress") Boolean getAddress, 
-			@DefaultValue("true")  @QueryParam("discardedAddress") Boolean discardedAddress) {
+	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber,
+			@DefaultValue("false") @QueryParam("getAddress") Boolean getAddress,
+			@DefaultValue("true") @QueryParam("discardedAddress") Boolean discardedAddress) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
@@ -219,9 +220,10 @@ public class RegistrationApi {
 				user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 			}
-			if(getAddress) {
-				List<UserAddress> userAddress = registrationService.getUserAddress(null, mobileNumber, discardedAddress);
-				if(userAddress != null && !userAddress.isEmpty()) {
+			if (getAddress) {
+				List<UserAddress> userAddress = registrationService.getUserAddress(null, mobileNumber,
+						discardedAddress);
+				if (userAddress != null && !userAddress.isEmpty()) {
 					UserAddressResponse userAddressResponse = new UserAddressResponse();
 					userAddressResponse.setUserAddress(userAddress);
 					response.setData(userAddressResponse);
@@ -623,10 +625,11 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		RegisterDoctorResponse doctorResponse = null;
-		if (!registrationService.checktDoctorExistByEmailAddress(request.getEmailAddress()))
+		if (!registrationService.checktDoctorExistByEmailAddress(request.getEmailAddress())) {
 			doctorResponse = registrationService.registerNewUser(request);
-		else
+		} else {
 			doctorResponse = registrationService.registerExisitingUser(request);
+		}
 
 		transnationalService.addResource(new ObjectId(doctorResponse.getUserId()), Resource.DOCTOR, false);
 		if (doctorResponse != null)
@@ -1070,11 +1073,12 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS)
 	@POST
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS, notes = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS)
-	public Response<UserReminders> addEditPatientReminders(UserReminders request, @QueryParam("reminderType") String reminderType) {
+	public Response<UserReminders> addEditPatientReminders(UserReminders request,
+			@QueryParam("reminderType") String reminderType) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
 
-		}else if (DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+		} else if (DPDoctorUtils.anyStringEmpty(request.getUserId())) {
 			throw new BusinessException(ServiceError.InvalidInput, "User Id could not null");
 
 		}
@@ -1082,11 +1086,12 @@ public class RegistrationApi {
 		response.setData(registrationService.addEditPatientReminders(request, reminderType));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.GET_USER_REMINDERS)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USER_REMINDERS, notes = PathProxy.RegistrationUrls.GET_USER_REMINDERS)
-	public Response<UserReminders> getPatientReminders(@PathParam("userId") String userId, @QueryParam("reminderType") String reminderType) {
+	public Response<UserReminders> getPatientReminders(@PathParam("userId") String userId,
+			@QueryParam("reminderType") String reminderType) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User Id could not null");
 
@@ -1103,7 +1108,8 @@ public class RegistrationApi {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
 
-		}else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) && (request.getUserIds() == null || !request.getUserIds().isEmpty())) {
+		} else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())
+				&& (request.getUserIds() == null || !request.getUserIds().isEmpty())) {
 			throw new BusinessException(ServiceError.InvalidInput, "User Id & Mobile Number could not null");
 
 		}
@@ -1111,23 +1117,27 @@ public class RegistrationApi {
 		response.setData(registrationService.addEditUserAddress(request));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.GET_USER_ADDRESS)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USER_ADDRESS, notes = PathProxy.RegistrationUrls.GET_USER_ADDRESS)
-	public Response<UserAddress> getUserAddress(@QueryParam("userId") String userId, @QueryParam("mobileNumber") String mobileNumber, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<UserAddress> getUserAddress(@QueryParam("userId") String userId,
+			@QueryParam("mobileNumber") String mobileNumber,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.allStringsEmpty(userId, mobileNumber)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User Id & MobileNumber could not null");
-}
+		}
 		Response<UserAddress> response = new Response<UserAddress>();
 		response.setDataList(registrationService.getUserAddress(userId, mobileNumber, discarded));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS)
 	@DELETE
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS, notes = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS)
-	public Response<UserAddress> deleteUserAddress(@PathParam("addressId") String addressId, @QueryParam("userId") String userId, @QueryParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+	public Response<UserAddress> deleteUserAddress(@PathParam("addressId") String addressId,
+			@QueryParam("userId") String userId, @QueryParam("mobileNumber") String mobileNumber,
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(userId, addressId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User Id  & Address Id could not null");
 
@@ -1142,9 +1152,11 @@ public class RegistrationApi {
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_PATIENT, notes = PathProxy.RegistrationUrls.DELETE_PATIENT)
 	public Response<Boolean> deletePatient(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@PathParam("patientId") String patientId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@PathParam("patientId") String patientId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId & patientId could not null");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Doctor Id, locationId, hospitalId & patientId could not null");
 
 		}
 		Response<Boolean> response = new Response<Boolean>();
@@ -1152,7 +1164,6 @@ public class RegistrationApi {
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
@@ -1166,25 +1177,28 @@ public class RegistrationApi {
 		response.setDataList(registrationService.getDeletedPatient(doctorId, locationId, hospitalId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
 	public Response<Boolean> updatePatientNumber(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("oldPatientId") String patientId,
-			@QueryParam("newPatientId") String newPatientId, @QueryParam("mobileNumber") String mobileNumber) {
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("oldPatientId") String patientId, @QueryParam("newPatientId") String newPatientId,
+			@QueryParam("mobileNumber") String mobileNumber) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
 
 		}
-		
+
 		if (DPDoctorUtils.allStringsEmpty(newPatientId, mobileNumber)) {
-			throw new BusinessException(ServiceError.InvalidInput, "New PatientId and mobileNumber both cannot be null");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"New PatientId and mobileNumber both cannot be null");
 
 		}
-		
+
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(registrationService.updatePatientNumber(doctorId, locationId, hospitalId, patientId, newPatientId, mobileNumber));
+		response.setData(registrationService.updatePatientNumber(doctorId, locationId, hospitalId, patientId,
+				newPatientId, mobileNumber));
 		return response;
 	}
 }
