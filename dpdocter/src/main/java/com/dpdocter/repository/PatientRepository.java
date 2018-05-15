@@ -123,5 +123,8 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	@Query("{'locationId':?0, 'hospitalId':?1, 'registrationDate' : {'$gt' : ?2, '$lte' : ?3}}")
 	List<PatientCollection> findTodaysRegisteredPatient(ObjectId locationId, ObjectId hospitalId, Long startTimeinMillis, Long endTimeinMillis, Pageable pageRequest);
+	
+	@Query("{'locationId':?0, 'hospitalId':?1, 'registrationDate' : {'$gt' : ?2, '$lte' : ?3}}")
+	List<PatientCollection> findTodaysRegisteredPatient(ObjectId locationId, ObjectId hospitalId, Long startTimeinMillis, Long endTimeinMillis, Sort sort);
 
 }
