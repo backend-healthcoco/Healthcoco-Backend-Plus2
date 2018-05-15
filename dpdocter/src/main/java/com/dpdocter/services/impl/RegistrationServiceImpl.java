@@ -801,7 +801,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					ObjectId patientId = patientCollection.getId();
 					ObjectId patientDoctorId = patientCollection.getDoctorId();
 					PID = patientCollection.getPID();
-					
+
 					request.setRegistrationDate(patientCollection.getRegistrationDate());
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
@@ -2498,6 +2498,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.unwind("doctor"), Aggregation.match(criteria),
 								Aggregation.skip((page) * size), Aggregation.limit(size)),
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
+
 						.getMappedResults();
 			} else {
 				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
@@ -2505,7 +2506,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.unwind("location"),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
 								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+
 								Aggregation.unwind("doctor"), Aggregation.match(criteria)),
+
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			}
