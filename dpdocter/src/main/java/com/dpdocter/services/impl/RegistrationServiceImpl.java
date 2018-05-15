@@ -2055,16 +2055,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(),
 					request.getEmailAddress());
 
-			UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationIdHospitalId(
+			UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationIdHospitalIdRoleId(
 					userCollection.getId(), new ObjectId(request.getLocationId()),
-					new ObjectId(request.getHospitalId()));
-			if (userRoleCollection != null) {
-				if (userRoleCollection.getRoleId().toString().equals(request.getRoleId())) {
-					logger.error("User has  already assigned " + doctorRole.getRole() + "in clinic");
-					throw new BusinessException(ServiceError.InvalidInput,
-							"User has  already assigned " + doctorRole.getRole() + " in clinic");
-				}
-
+					new ObjectId(request.getHospitalId()), doctorRole.getId());
+			if (userRoleCollection == null) {
 				userRoleCollection = new UserRoleCollection(userCollection.getId(), new ObjectId(request.getRoleId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 				userRoleCollection.setCreatedTime(new Date());
@@ -2494,52 +2488,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 
-			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("isActivate", new BasicDBObject("$first", "$isActivate"))
-							.append("isVerified", new BasicDBObject("$first", "$isVerified"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
 
-							.append("patientInitial", new BasicDBObject("$first", "$patientInitial"))
-							.append("patientCounter", new BasicDBObject("$first", "$patientCounter"))
 
-							.append("appointmentBookingNumber",
-									new BasicDBObject("$first", "$appointmentBookingNumber"))
-							.append("consultationFee", new BasicDBObject("$first", "$consultationFee"))
-							.append("revisitConsultationFee", new BasicDBObject("$first", "$revisitConsultationFee"))
-							.append("appointmentSlot", new BasicDBObject("$first", "$appointmentSlot"))
-							.append("workingSchedules", new BasicDBObject("$first", "$workingSchedules"))
-							.append("facility", new BasicDBObject("$first", "$facility"))
-							.append("noOfReviews", new BasicDBObject("$first", "$noOfReviews"))
-							.append("noOfRecommenations", new BasicDBObject("$first", "$noOfRecommenations"))
-							.append("timeZone", new BasicDBObject("$first", "$timeZone"))
-							.append("rankingCount", new BasicDBObject("$first", "$rankingCount"))
-							.append("location", new BasicDBObject("$first", "$location"))
-							.append("doctor", new BasicDBObject("$first", "$doctor"))
-							.append("user", new BasicDBObject("$first", "$user"))
-							.append("packageType", new BasicDBObject("$first", "$packageType"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			if (size > 0) {
-				doctorClinicProfileLookupResponses = mongoTemplate
-						.aggregate(
-								Aggregation.newAggregation(
-										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-										Aggregation.unwind("location"),
-										Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
-										Aggregation.unwind("user"),
-										Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-										Aggregation.unwind("doctor"),
-										Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollection"),
-										Aggregation.unwind("userRoleCollection"),
-										Aggregation.match(criteria.and("userRoleCollection.locationId")
-												.is(new ObjectId(locationId))),
-										Aggregation.skip((page) * size), Aggregation.limit(size)),
+				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+								Aggregation.unwind("doctor"), Aggregation.match(criteria),
+								Aggregation.skip((page) * size), Aggregation.limit(size)),
+						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 
-								DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			} else {
 				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
