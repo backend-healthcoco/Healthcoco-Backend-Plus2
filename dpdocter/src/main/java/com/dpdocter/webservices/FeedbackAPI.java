@@ -232,7 +232,6 @@ public class FeedbackAPI {
 	public Response<PatientFeedbackResponse> getPatientFeedback(FeedbackGetRequest request , @QueryParam("type") String type) {
 		Response<PatientFeedbackResponse> response = new Response<>();
 		List<PatientFeedbackResponse> feedbacks = null;
-		System.out.println("------ get patient feedback -----");
 		try {
 			feedbacks = feedbackService.getPatientFeedbackList(request , type);
 			response.setDataList(feedbacks);

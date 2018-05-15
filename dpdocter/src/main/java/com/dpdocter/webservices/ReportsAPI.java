@@ -61,8 +61,6 @@ public class ReportsAPI {
 			@QueryParam("to")String to,@QueryParam("page")  int page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
 		OPDReportsResponse opdReports = reportsService.getOPDReportsList(locationId, doctorId, patientId, from, to, page,
 				size, updatedTime);
-		System.out.println( "opd reports"); 
-		System.out.println(opdReports);
 		Response<OPDReportsResponse> response = new Response<OPDReportsResponse>();
 		response.setData(opdReports);
 		return response;

@@ -1132,7 +1132,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.match(criteria), aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-			// System.out.println(aggregation);
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
 			lookupResponses = aggregationResults.getMappedResults();
@@ -1144,14 +1143,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 					List<DentalStageRequest> dentalStageRequestsForDoctor = null;
 					List<DentalStageRequest> dentalStageRequestsForLab = null;
 					List<DentalWorksSampleRequest> dentalWorksSampleRequests = new ArrayList<>();
-					// System.out.println( " lookup response :: " +
-					// dentalLabPickupLookupResponse);
 					DentalLabPickupResponse dentalLabPickupResponse = new DentalLabPickupResponse();
 					BeanUtil.map(dentalLabPickupLookupResponse, dentalLabPickupResponse);
 
 					for (DentalWorksSample dentalWorksSample : dentalLabPickupLookupResponse.getDentalWorksSamples()) {
-						// sSystem.out.println( " work sample:: " +
-						// dentalLabPickupLookupResponse.getDentalWorksSamples());
 						DentalWorksSampleRequest dentalWorksSampleRequest = new DentalWorksSampleRequest();
 						BeanUtil.map(dentalWorksSample, dentalWorksSampleRequest);
 						if (dentalWorksSample.getDentalStagesForDoctor() != null) {
@@ -1810,14 +1805,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 				List<DentalStageRequest> dentalStageRequestsForDoctor = null;
 				List<DentalStageRequest> dentalStageRequestsForLab = null;
 				List<DentalWorksSampleRequest> dentalWorksSampleRequests = new ArrayList<>();
-				// System.out.println( " lookup response :: " +
-				// dentalLabPickupLookupResponse);
 				dentalLabPickupResponse = new DentalLabPickupResponse();
 				BeanUtil.map(dentalLabPickupLookupResponse, dentalLabPickupResponse);
 
 				for (DentalWorksSample dentalWorksSample : dentalLabPickupLookupResponse.getDentalWorksSamples()) {
-					// System.out.println( " work sample:: " +
-					// dentalLabPickupLookupResponse.getDentalWorksSamples());
 					DentalWorksSampleRequest dentalWorksSampleRequest = new DentalWorksSampleRequest();
 					BeanUtil.map(dentalWorksSample, dentalWorksSampleRequest);
 					if (dentalWorksSample.getDentalStagesForDoctor() != null) {
@@ -1887,8 +1878,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 					for (DentalWorksSample dentalWorksSample : labPickupLookupResponse.getDentalWorksSamples()) {
 						dentalStageRequestsForDoctor = null;
-						// sSystem.out.println( " work sample:: " +
-						// dentalLabPickupLookupResponse.getDentalWorksSamples());
 						DentalWorksSampleRequest dentalWorksSampleRequest = new DentalWorksSampleRequest();
 						BeanUtil.map(dentalWorksSample, dentalWorksSampleRequest);
 						if (dentalWorksSample.getDentalStagesForDoctor() != null) {

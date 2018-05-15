@@ -1934,7 +1934,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
-			System.out.println("test");
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
 			jrDesignTextField.setBold(true);

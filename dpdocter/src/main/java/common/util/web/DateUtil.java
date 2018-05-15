@@ -214,6 +214,5 @@ public class DateUtil {
 	public static void main(String[] args) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.DATE, -40);
-		System.out.println(calendar.getTime());
 	}
 }

@@ -944,7 +944,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 				RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.RECEPTIONIST_NURSE.getRole());
 				if(roleCollection != null) {
-					System.out.println("finding appointments");
 					Aggregation aggregation = Aggregation.newAggregation(
 							Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
 							Aggregation.lookup("user_cl", "userId", "_id", "receptionist"), Aggregation.unwind("receptionist"),
@@ -997,15 +996,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
 							.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class).getMappedResults();
 					
-					System.out.println(aggregationResults.size());
 					Map<String, LocationAdminAppointmentLookupResponse> locationDetailsMap = new HashMap<String, LocationAdminAppointmentLookupResponse>();
 					if(aggregationResults != null && !aggregationResults.isEmpty()) {
-						System.out.println("get response");
 						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 						
 						for(LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
-							System.out.println(lookupResponse.toString());
 							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
 							int count = 0;
 							if (lookupResponse.getDrAppointments() != null && !lookupResponse.getDrAppointments().isEmpty())
@@ -1040,7 +1036,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							}
 							lookupResponse.setMessage(message);
 							locationDetailsMap.put(lookupResponse.getLocationId(), lookupResponse);
-							System.out.println("added");
 					}
 					for (Entry<String, LocationAdminAppointmentLookupResponse> entry : locationDetailsMap.entrySet()) {
 							LocationAdminAppointmentLookupResponse response = entry.getValue();
@@ -1048,9 +1043,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									+ " appointments scheduled today.\n" + response.getMessage()
 									+ ".\nHave a Healthy and Happy day!!";
 							
-							System.out.println(response.getUserId().toString() + response.getLocationAdminName() + ".."+response.getLocationAdminEmailAddress()+ ".."+response.getLocationAdminMobileNumber());
-							System.out.println(response.getUserDevices() != null);
-							System.out.println(message);
 //							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 //							smsTrackDetail.setDoctorId(response.getUserId());
 //							smsTrackDetail.setType("APPOINTMENT");
@@ -1078,7 +1070,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						
 				}
 					else {
-						System.out.println("null response");
 					}	
 				}				
 //			}

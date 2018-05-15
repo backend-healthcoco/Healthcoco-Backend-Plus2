@@ -114,7 +114,6 @@ public class InventoryServiceImpl implements InventoryService {
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
 			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 				Drug drug = makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
-				//System.out.println(drug);
 			}
 			
 		} catch (Exception e) {
@@ -336,7 +335,6 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryStock response = null;
 		InventoryBatchCollection inventoryBatchCollection = null;
 		InventoryItemCollection inventoryItemCollection = null;
-		//System.out.println();
 		try {
 
 			InventoryStockCollection inventoryStockCollection = new InventoryStockCollection();
@@ -736,7 +734,6 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 			if (inventorySettingsCollection != null) {
 				response = new InventorySettings();
-				System.out.println(inventorySettingsCollection);
 				BeanUtil.map( inventorySettingsCollection, response);
 			} else {
 				response = new InventorySettings();

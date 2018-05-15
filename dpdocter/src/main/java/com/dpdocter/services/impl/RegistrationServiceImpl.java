@@ -3145,7 +3145,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))
 					roleId = hospitalAdminGlobalRoleCollection.getId();
-				System.out.println(userRoleCollections.size());
 				for (UserRoleCollection userRoleCollection : userRoleCollections) {
 					userRoleCollection.setHospitalId(roleCollection.getHospitalId());
 					userRoleCollection.setLocationId(roleCollection.getLocationId());

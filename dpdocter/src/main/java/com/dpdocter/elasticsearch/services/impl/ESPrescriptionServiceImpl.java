@@ -801,9 +801,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<ESDrugDocument> response= new ArrayList<>();
 		for (ESDrugDocument drug : drugs) {
 
-			/*System.out.println("Location id ::" + drug.getLocationId());
-			System.out.println("Hospital id ::" + drug.getHospitalId());
-			System.out.println("Drug id ::" + drug.getId());*/
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
 						drug.getHospitalId(), drug.getDrugCode());
@@ -825,9 +822,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<DrugDocument> response= new ArrayList<>();
 		for (DrugDocument drug : drugs) {
 
-			/*System.out.println("Location id ::" + drug.getLocationId());
-			System.out.println("Hospital id ::" + drug.getHospitalId());
-			System.out.println("Drug id ::" + drug.getId());*/
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getDrugCode())) {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
 						drug.getHospitalId(), drug.getDrugCode());

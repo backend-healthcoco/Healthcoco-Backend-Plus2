@@ -40,7 +40,6 @@ public class PushNotificationApi {
 	@POST
 	@ApiOperation(value = PathProxy.PushNotificationUrls.ADD_DEVICE, notes = PathProxy.PushNotificationUrls.ADD_DEVICE)
 	public Response<UserDevice> addDevice(UserDevice request){
-		System.out.println(request);
 		if(request == null || DPDoctorUtils.anyStringEmpty(request.getDeviceId(), request.getPushToken()) || request.getDeviceType() == null || request.getRole() == null){
 			    logger.warn("Invalid Input");
 			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

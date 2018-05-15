@@ -43,7 +43,6 @@ public class DpDocterLoggingAspect {
 		long start = System.currentTimeMillis();
 	    LOGGER.warn("Going to call the method " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + new Date());
 	    Object response =  pjp.proceed();
-	    //System.out.println(response);
 	    LOGGER.warn("Method execution completed for " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + new Date());
 	    long elapsedTime = System.currentTimeMillis() - start;
 	    LOGGER.warn("Method " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " took "+ elapsedTime + " milliseconds for execution");

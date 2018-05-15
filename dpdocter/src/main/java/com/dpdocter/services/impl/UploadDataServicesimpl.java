@@ -291,7 +291,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// elasticsearchTemplate.queryForList(searchQuery,
 			// ESDrugDocument.class);
 			// if(drugDocuments != null) {
-			// System.out.println(drugDocuments.size());
 			// for(ESDrugDocument esDrugDocument : drugDocuments) {
 			// esDrugRepository.delete(esDrugDocument.getId());
 			// }
@@ -317,7 +316,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// elasticsearchTemplate.queryForList(searchQuery,
 			// ESTreatmentServiceDocument.class);
 			// if(esTreatmentServiceDocuments != null) {
-			// System.out.println(esTreatmentServiceDocuments.size());
 			// for(ESTreatmentServiceDocument esTreatmentServiceDocument :
 			// esTreatmentServiceDocuments) {
 			// esTreatmentServiceRepository.delete(esTreatmentServiceDocument.getId());
@@ -546,7 +544,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 											registeredPatientDetails.getUserId(), doctorId, hospitalId, locationId);
 								}
 							}
-System.out.println(request);
 						} else {
 							System.out.println(patientCount + " patients already exist with mobile number "
 									+ request.getMobileNumber());
@@ -636,7 +633,6 @@ System.out.println(request);
 				if (lineCount > 0) {
 					Boolean createVisit = false;
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(lineCount +".."+ fields[2]);
 					if (!DPDoctorUtils.anyStringEmpty(fields[2], fields[3])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[2].replace("'", ""));
@@ -888,7 +884,6 @@ System.out.println(lineCount +".."+ fields[2]);
 
 				if (lineCount > 0) {
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(fields[0] +""+ fields[1]);
 					if (!DPDoctorUtils.anyStringEmpty(fields[0], fields[1])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
@@ -1194,7 +1189,6 @@ System.out.println(fields[0] +""+ fields[1]);
 
 						} else
 							dataCountNotUploaded++;
-						System.out.println(lineCount + ".." + fields[1]);
 					}
 				}
 				lineCount++;
@@ -1399,7 +1393,6 @@ System.out.println(fields[0] +""+ fields[1]);
 	@Override
 	public Boolean assignPNUMToPatientsHavingPNUMAsNull(String doctorId, String locationId, String hospitalId) {
 		try {
-			System.out.println(patientInitial);
 			if (DPDoctorUtils.anyStringEmpty(patientInitial))
 				patientInitial = "P";
 
@@ -1626,7 +1619,6 @@ System.out.println(fields[0] +""+ fields[1]);
 				if (lineCount > 0) {
 					Boolean createVisit = false;
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(lineCount +".."+ fields[2]);
 					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[4])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
@@ -1758,7 +1750,6 @@ System.out.println(lineCount +".."+ fields[2]);
 
 				if (lineCount > 0) {
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
 					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[5])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
@@ -1778,7 +1769,6 @@ System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
 							
 							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(fields[4].replace("'", ""), doctorObjectId, locationObjectId, hospitalObjectId);
 							if (doctorPatientInvoiceCollection == null) {
-								System.out.println("new invoice");
 								doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
 
 								doctorPatientInvoiceCollection.setDoctorId(doctorObjectId);
@@ -1794,7 +1784,7 @@ System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
 										(drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
 												+ drCollection.getFirstName());
 
-							}else {System.out.println("not new invoice");
+							}else {
 								totalDiscount = doctorPatientInvoiceCollection.getTotalDiscount();
 								totalCost = doctorPatientInvoiceCollection.getTotalCost();
 								grandTotal = doctorPatientInvoiceCollection.getGrandTotal();
@@ -1872,7 +1862,6 @@ System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
 								doctorPatientInvoiceCollection.setDiscarded(true);
 							}
 							
-							System.out.println(doctorPatientInvoiceCollection);
 							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
 							
 							
@@ -1968,7 +1957,6 @@ System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
 
 				if (lineCount > 0) {
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(lineCount +".."+ fields[2]);
 					if (!DPDoctorUtils.anyStringEmpty(fields[1])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));

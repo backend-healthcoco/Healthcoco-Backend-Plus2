@@ -2810,7 +2810,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								if (diagramsCollection.getDiagramUrl() != null) {
 									diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
 								}
-								System.out.println(diagram.get("url"));
 								diagram.put("tags", diagramsCollection.getTags());
 								diagramIds.add(diagram);
 							}

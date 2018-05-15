@@ -115,13 +115,10 @@ public class LocaleApi {
 		Response<UserSearchRequest> response = null;
 		UserSearchRequest status = null;
 		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		// System.out.println(data.toString());
 		UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
-		// System.out.println(request);
 		ImageURLResponse imageURLResponse = null;
 		if (file != null) {
 			imageURLResponse = localeService.addRXImageMultipart(file);
-			// System.out.println(imageURLResponse);
 			if (request != null) {
 				PrescriptionRequest prescriptionRequest = new PrescriptionRequest();
 				prescriptionRequest.setPrescriptionURL(imageURLResponse);

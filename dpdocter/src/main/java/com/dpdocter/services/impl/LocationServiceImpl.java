@@ -1239,7 +1239,6 @@ public class LocationServiceImpl implements LocationServices {
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
-					System.out.println(dynamicCollectionBoyAllocationCollection);
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 							.findbyParentIdandDaughterId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
 									new ObjectId(request.getParentLabLocationId()),
@@ -1341,9 +1340,6 @@ public class LocationServiceImpl implements LocationServices {
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));
-
-			System.out.println(criteria);
-			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
@@ -1355,7 +1351,6 @@ public class LocationServiceImpl implements LocationServices {
 					CollectionBoyCollection.class, CollectionBoyResponse.class);
 			response = aggregationResults.getMappedResults();
 			
-			System.out.println(aggregation);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Collection Boys");
@@ -2296,7 +2291,6 @@ public class LocationServiceImpl implements LocationServices {
 
 			AggregationResults<PatientLabTestSampleReportResponse> aggregationResults = mongoTemplate
 					.aggregate(aggregation, LabReportsCollection.class, PatientLabTestSampleReportResponse.class);
-			// System.out.println(aggregation);
 			response = aggregationResults.getMappedResults().size();
 
 		} catch (Exception e) {

@@ -711,8 +711,6 @@ public class SMSServicesImpl implements SMSServices {
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
 			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'GET' request to URL : " + url);
-			System.out.println("Response Code : " + responseCode);
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -724,7 +722,6 @@ public class SMSServicesImpl implements SMSServices {
 
 			}
 			in.close();
-			System.out.println(response.toString());
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -757,8 +754,6 @@ public class SMSServicesImpl implements SMSServices {
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
 			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'GET' request to URL : " + url);
-			System.out.println("Response Code : " + responseCode);
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -770,8 +765,6 @@ public class SMSServicesImpl implements SMSServices {
 
 			}
 			in.close();
-			System.out.println(response.toString());
-			
 			if(responseCode == 200)boolResponse = true;
 		} catch (Exception e) {
 

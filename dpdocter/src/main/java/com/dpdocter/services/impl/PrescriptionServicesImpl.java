@@ -4296,11 +4296,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			// Collection<List<Drug>> drugs =
 			// CollectionUtils.collect(historyCollections, new
 			// BeanToPropertyValueTransformer("drugsAndAllergies.drugs"));
-			//// System.out.println(drugIds);
 			//
 			// Collection<Drug> drugIds = CollectionUtils.collect(drugs, new
 			// BeanToPropertyValueTransformer("Drug"));
-			// System.out.println(drugIds);
 			// }
 			List<String> genericCodes = new ArrayList<String>();
 
@@ -5964,7 +5962,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						String[] fields = line.split(cvsSplitBy);
 						if(fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
 							String reason = fields[3];
-							System.out.println(reason);
 							
 							if(reason.equalsIgnoreCase("SPELLING MISTAKE")){
 								updateSpellingOfGenericCodes(fields[0], fields[2]);
@@ -6846,7 +6843,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (fields.length > 12 && !DPDoctorUtils.anyStringEmpty(fields[12])) {
 							drugCollection.setUnsafeWith(fields[12]);
 						}
-						System.out.println(drugCollection.toString());
 						drugCollection = drugRepository.save(drugCollection);
 
 						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
@@ -6916,7 +6912,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		
 		if (drugCollection != null) {
-			System.out.println(drugCollection.getDrugCode());
 			Integer count = Integer.parseInt(drugCollection.getDrugCode().toUpperCase().replace(drugCode, "")) + 1;
 			if (count < 1000) {
 				drugCode = drugCode + String.format("%04d", count);
