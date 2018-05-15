@@ -3581,65 +3581,130 @@ public class RegistrationServiceImpl implements RegistrationService {
 									Aggregation.sort(new Sort(Direction.ASC, "createdTime"))),
 							PatientCollection.class, PatientCollection.class).getMappedResults();
 
-					if (samePIDPatientCollections != null) {
-						for (int i = 0; i < samePIDPatientCollections.size(); i++) {
-							PatientCollection patient = samePIDPatientCollections.get(i);
+					if (samePIDPatientCollections != null && samePIDPatientCollections.size()>1) {
+						PatientCollection patient = samePIDPatientCollections.get(0);
+						
+						if(patient.getRegistrationDate() == null)patient.setRegistrationDate(patient.getCreatedTime().getTime());
+						
+						Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+						localCalendar.setTime(new Date(patient.getRegistrationDate()));
+						int currentDay = localCalendar.get(Calendar.DATE);
+						int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+						int currentYear = localCalendar.get(Calendar.YEAR);
 
-							if (patient.getRegistrationDate() == null) {
-								patient.setRegistrationDate(patient.getCreatedTime().getTime());
-							}
-							if (i > 0) {
-								Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-								localCalendar.setTime(new Date(patient.getRegistrationDate()));
-								int currentDay = localCalendar.get(Calendar.DATE);
-								int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-								int currentYear = localCalendar.get(Calendar.YEAR);
-
-								DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-										DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-								Long startTimeinMillis = start.getMillis();
-								DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-										DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-								Long endTimeinMillis = end.getMillis();
-								List<PatientCollection> lastPatients = patientRepository.findTodaysRegisteredPatient(
-										patient.getLocationId(), patient.getHospitalId(), startTimeinMillis,
-										endTimeinMillis, new PageRequest(0, 1, Direction.DESC, "PID"));
-
-								Integer patientSize = 0;
-								if (lastPatients != null && !lastPatients.isEmpty()) {
-									PatientCollection lastPatient = lastPatients.get(0);
-									patientSize = Integer.parseInt(lastPatient.getPID().substring(
-											lastPatient.getPID().length() - 2, lastPatient.getPID().length()));
-								}
-
-								LocationCollection location = locationRepository.findOne(patient.getLocationId());
-								if (location == null) {
-									logger.warn("Invalid Location Id");
-									throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
-								}
-								String patientInitial = location.getPatientInitial();
-								int patientCounter = location.getPatientCounter();
-								if (patientCounter <= patientSize)
-									patientCounter = patientCounter + patientSize;
+						DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+								DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+						Long startTimeinMillis = start.getMillis();
+						DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+								DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+						Long endTimeinMillis = end.getMillis();
+						
+						List<PatientCollection> patients = patientRepository.findTodaysRegisteredPatient(
+								patient.getLocationId(), patient.getHospitalId(), startTimeinMillis,
+								endTimeinMillis, new Sort(Direction.ASC, "createdTime"));
+						
+						LocationCollection location = locationRepository.findOne(patient.getLocationId());
+						if (location == null) {
+							logger.warn("Invalid Location Id");
+							throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+						}
+						String patientInitial = location.getPatientInitial();
+						int patientCounter = location.getPatientCounter();
+						
+						if(patients != null) {
+							for(PatientCollection patientCollectionObj : patients) {
 								String generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
-										+ DPDoctorUtils.getPrefixedNumber(currentMonth)
-										+ DPDoctorUtils.getPrefixedNumber(currentYear % 100)
-										+ DPDoctorUtils.getPrefixedNumber(patientCounter);
-
-								patient.setPID(generatedId);
+											+ DPDoctorUtils.getPrefixedNumber(currentMonth)
+											+ DPDoctorUtils.getPrefixedNumber(currentYear % 100)
+											+ DPDoctorUtils.getPrefixedNumber(patientCounter);
+	
+								patientCollectionObj.setPID(generatedId);
+								if(patientCollectionObj.getRegistrationDate() == null)patientCollectionObj.setRegistrationDate(patientCollectionObj.getCreatedTime().getTime());
+								patientCollectionObj = patientRepository.save(patientCollectionObj);
+								ESPatientDocument esPatientDocument = esPatientRepository
+										.findOne(patientCollectionObj.getId().toString());
+								if (esPatientDocument != null) {
+									esPatientDocument.setPID(patientCollectionObj.getPID());
+									esPatientDocument.setRegistrationDate(patientCollectionObj.getRegistrationDate());
+									esPatientDocument = esPatientRepository.save(esPatientDocument);
+								}
+								patientCounter = patientCounter + 1;
+								
 							}
-							patient = patientRepository.save(patient);
-							ESPatientDocument esPatientDocument = esPatientRepository
-									.findOne(patient.getId().toString());
-							if (esPatientDocument != null) {
-								esPatientDocument.setPID(patient.getPID());
-								esPatientDocument.setRegistrationDate(patient.getRegistrationDate());
-								esPatientDocument = esPatientRepository.save(esPatientDocument);
-							}
-
 						}
 					}
 				}
+			
+			
+			
+//			if (patientCollections != null)
+//				for (PatientCollection patientCollection : patientCollections) {
+//					List<PatientCollection> samePIDPatientCollections = mongoTemplate.aggregate(
+//							Aggregation.newAggregation(
+//									Aggregation.match(new Criteria("locationId").is(patientCollection.getLocationId())
+//											.and("PID").is(patientCollection.getPID())),
+//									Aggregation.sort(new Sort(Direction.ASC, "createdTime"))),
+//							PatientCollection.class, PatientCollection.class).getMappedResults();
+//
+//					if (samePIDPatientCollections != null) {
+//						for (int i = 0; i < samePIDPatientCollections.size(); i++) {
+//							PatientCollection patient = samePIDPatientCollections.get(i);
+//
+//							if (patient.getRegistrationDate() == null) {
+//								patient.setRegistrationDate(patient.getCreatedTime().getTime());
+//							}
+//							if (i > 0) {
+//								Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+//								localCalendar.setTime(new Date(patient.getRegistrationDate()));
+//								int currentDay = localCalendar.get(Calendar.DATE);
+//								int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+//								int currentYear = localCalendar.get(Calendar.YEAR);
+//
+//								DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+//										DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+//								Long startTimeinMillis = start.getMillis();
+//								DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+//										DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+//								Long endTimeinMillis = end.getMillis();
+//								List<PatientCollection> lastPatients = patientRepository.findTodaysRegisteredPatient(
+//										patient.getLocationId(), patient.getHospitalId(), startTimeinMillis,
+//										endTimeinMillis, new PageRequest(0, 1, Direction.DESC, "PID"));
+//
+//								Integer patientSize = 0;
+//								if (lastPatients != null && !lastPatients.isEmpty()) {
+//									PatientCollection lastPatient = lastPatients.get(0);
+//									patientSize = Integer.parseInt(lastPatient.getPID().substring(
+//											lastPatient.getPID().length() - 2, lastPatient.getPID().length()));
+//								}
+//
+//								LocationCollection location = locationRepository.findOne(patient.getLocationId());
+//								if (location == null) {
+//									logger.warn("Invalid Location Id");
+//									throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+//								}
+//								String patientInitial = location.getPatientInitial();
+//								int patientCounter = location.getPatientCounter();
+//								if (patientCounter <= patientSize)
+//									patientCounter = patientCounter + patientSize;
+//								String generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
+//										+ DPDoctorUtils.getPrefixedNumber(currentMonth)
+//										+ DPDoctorUtils.getPrefixedNumber(currentYear % 100)
+//										+ DPDoctorUtils.getPrefixedNumber(patientCounter);
+//
+//								patient.setPID(generatedId);
+//							}
+//							patient = patientRepository.save(patient);
+//							ESPatientDocument esPatientDocument = esPatientRepository
+//									.findOne(patient.getId().toString());
+//							if (esPatientDocument != null) {
+//								esPatientDocument.setPID(patient.getPID());
+//								esPatientDocument.setRegistrationDate(patient.getRegistrationDate());
+//								esPatientDocument = esPatientRepository.save(esPatientDocument);
+//							}
+//
+//						}
+//					}
+//				}
 
 		} catch (Exception e) {
 			logger.error(e);

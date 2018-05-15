@@ -1679,6 +1679,21 @@ public class RecordsServiceImpl implements RecordsService {
 				if (request.getRecordsFiles() != null && !request.getRecordsFiles().isEmpty()) {
 					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
 							.findByUserId(new ObjectId(request.getPatientId()));
+					
+					if (userAllowanceDetailsCollection == null) {
+						userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
+						Aggregation aggregation = Aggregation.newAggregation(Aggregation
+								.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
+										.and("userState").is("USERSTATECOMPLETE")));
+
+						List<UserCollection> userCollections = mongoTemplate
+								.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
+						@SuppressWarnings("unchecked")
+						Collection<ObjectId> userIds = CollectionUtils.collect(userCollections,
+								new BeanToPropertyValueTransformer("id"));
+						userAllowanceDetailsCollection.setUserIds(new ArrayList<>(userIds));
+					}
+					
 					if (oldRecord != null) {
 						for (RecordsFile file : oldRecord.getRecordsFiles()) {
 
@@ -1704,7 +1719,7 @@ public class RecordsServiceImpl implements RecordsService {
 						}
 
 					}
-					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+					userAllowanceDetailsCollection = userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
 					request.setUploadedBy(RoleEnum.PATIENT);
 				}
 			}
