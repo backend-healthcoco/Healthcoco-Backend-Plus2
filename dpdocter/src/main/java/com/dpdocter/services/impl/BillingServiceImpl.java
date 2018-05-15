@@ -33,6 +33,7 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
@@ -49,6 +50,7 @@ import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
+import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -57,6 +59,7 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.BillingType;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
@@ -66,6 +69,7 @@ import com.dpdocter.repository.DoctorPatientDueAmountRepository;
 import com.dpdocter.repository.DoctorPatientInvoiceRepository;
 import com.dpdocter.repository.DoctorPatientLedgerRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
+import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -88,6 +92,7 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
+import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 
@@ -167,6 +172,12 @@ public class BillingServiceImpl implements BillingService {
 	@Value(value = "${jasper.print.multiple.receipt.fileName}")
 	private String multipleReceiptFileName;
 
+	@Autowired
+	DrugRepository drugRepository;
+	
+	@Autowired
+	private PrescriptionServices prescriptionServices;
+	
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
 		InvoiceAndReceiptInitials response = null;
@@ -305,15 +316,15 @@ public class BillingServiceImpl implements BillingService {
 			if (doctorPatientInvoiceCollection != null && doctorPatientInvoiceCollection.getInvoiceItems() != null) {
 				itemIds = CollectionUtils.collect(doctorPatientInvoiceCollection.getInvoiceItems(),
 						new BeanToPropertyValueTransformer("itemId"));
-				/*System.out.println("Item ids ->");
-				for (ObjectId itemid : itemIds) {
-					System.out.println("id :: " + itemid);
-				}*/
 			}
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
 				InventoryStock inventoryStock = null;
 				Long quantity = null;
+				Drug drug  = null;
+				if(invoiceItemResponse.getType().equals(InvoiceItemType.PRODUCT)) {
+					drug = prescriptionServices.getDrugById(invoiceItemResponse.getItemId());
+				}
 				itemIds.remove(new ObjectId(invoiceItemResponse.getItemId()));
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
@@ -339,7 +350,6 @@ public class BillingServiceImpl implements BillingService {
 					quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
 							request.getHospitalId(), invoiceItemResponse.getItemId(),
 							doctorPatientInvoiceCollection.getId().toString());
-
 				}
 
 				if (quantity != null && quantity > 0 && invoiceItemResponse.getInventoryBatch() != null) {
@@ -370,9 +380,6 @@ public class BillingServiceImpl implements BillingService {
 
 						InventoryBatch oldInventoryBatch = inventoryService
 								.getInventoryBatchById(inventoryStock.getBatchId());
-						// InventoryBatch newInventoryBatch =
-						// inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
-
 						if (quantity > invoiceItemResponse.getQuantity().getValue()) {
 							Long diff = quantity - invoiceItemResponse.getQuantity().getValue();
 							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
@@ -427,27 +434,26 @@ public class BillingServiceImpl implements BillingService {
 			}
 
 			for (ObjectId itemId : itemIds) {
-				// System.out.println("inside added section . item id :: " +
-				// itemId);
-				InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(
-						request.getLocationId(), request.getHospitalId(), itemId.toString(),
-						doctorPatientInvoiceCollection.getId().toString());
-				// System.out.println(inventoryStock);
-				Long quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
-						request.getHospitalId(), itemId.toString(), doctorPatientInvoiceCollection.getId().toString());
-				// System.out.println("Added quantity :: " + quantity);
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-						request.getHospitalId(), itemId.toString());
-				// System.out.println(inventoryItem);
-				// System.out.println("Batch id :: " +
-				// inventoryStock.getBatchId());
-				InventoryBatch inventoryBatch = inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
-				// System.out.println(inventoryBatch);
-				if (inventoryBatch != null && inventoryItem != null) {
-					createInventoryStock(itemId.toString(), inventoryItem.getId(), inventoryBatch,
-							request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-							request.getHospitalId(), quantity.intValue(),
-							doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+				DrugCollection drug = drugRepository.findOne(itemId);
+				if (drug != null) {
+					InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(
+							request.getLocationId(), request.getHospitalId(), drug.getDrugCode(),
+							doctorPatientInvoiceCollection.getId().toString());
+					Long quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
+							request.getHospitalId(), drug.getDrugCode(),
+							doctorPatientInvoiceCollection.getId().toString());
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+							request.getHospitalId(), drug.getDrugCode());
+					if (inventoryStock != null) {
+						InventoryBatch inventoryBatch = inventoryService
+								.getInventoryBatchById(inventoryStock.getBatchId());
+						if (inventoryBatch != null && inventoryItem != null) {
+							createInventoryStock(drug.getDrugCode(), inventoryItem.getId(), inventoryBatch,
+									request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+									request.getHospitalId(), quantity.intValue(),
+									doctorPatientInvoiceCollection.getId().toString(), "ADDED");
+						}
+					}
 				}
 
 			}

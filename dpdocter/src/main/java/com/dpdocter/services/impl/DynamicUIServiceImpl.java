@@ -608,6 +608,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
 				dataDynamicField.setDischargeSummaryDynamicFields(new DischargeSummaryDynamicFields());
 				dataDynamicField.setTreatmentDynamicFields(new TreatmentDynamicFields());
+				//ClinicalNotesDynamicField clinicalNotesDynamicField = new ClinicalNotesDynamicField();
+				dataDynamicField.setClinicalNotesDynamicField(new ClinicalNotesDynamicField());
+				//PrescriptionDynamicField prescriptionDynamicField = new PrescriptionDynamicField();
+				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
 				dataDynamicUI.setDataDynamicField(dataDynamicField);
 			}
 		} else {

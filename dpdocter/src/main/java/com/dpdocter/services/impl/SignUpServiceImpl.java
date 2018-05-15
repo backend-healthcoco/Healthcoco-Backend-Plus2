@@ -697,8 +697,6 @@ public class SignUpServiceImpl implements SignUpService {
 		CollectionBoyResponse response = null;
 		ESCollectionBoyDocument esCollectionBoyDocument = null;
 		try {
-			// String localePassword = DPDoctorUtils.randomString(8);
-			// System.out.println(localePassword);
 			UserCollection userCollection = new UserCollection();
 			userCollection.setUserName(UniqueIdInitial.PHARMACY.getInitial() + collectionBoy.getMobileNumber());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
@@ -710,8 +708,6 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setUserState(UserState.COLLECTION_BOY);
 			userCollection.setSalt(DPDoctorUtils.generateSalt());
 			String salt = new String(userCollection.getSalt());
-			// char[] sha3Password =
-			// DPDoctorUtils.getSHA3SecurePassword(localePassword.toCharArray());
 			char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(collectionBoy.getPassword().toCharArray());
 			String password = new String(sha3Password);
 			password = passwordEncoder.encodePassword(password, salt);

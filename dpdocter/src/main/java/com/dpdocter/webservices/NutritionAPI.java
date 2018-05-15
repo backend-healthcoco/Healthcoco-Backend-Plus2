@@ -53,7 +53,6 @@ public class NutritionAPI {
 
 		nutritionReferenceResponse = nutritionService.addEditNutritionReference(request);
 		response.setData(nutritionReferenceResponse);
-		System.out.println(response);
 		return response;
 	}
 	

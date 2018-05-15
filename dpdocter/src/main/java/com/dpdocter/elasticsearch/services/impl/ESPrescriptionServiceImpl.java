@@ -14,7 +14,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -24,7 +23,6 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.LabTest;
@@ -833,9 +831,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs)
 	{
 		for (ESDrugDocument drug : drugs) {
-			/*System.out.println("Location id ::" + drug.getLocationId());
-			System.out.println("Hospital id ::" + drug.getHospitalId());
-			System.out.println("Drug id ::" + drug.getId());*/
+
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
 						drug.getHospitalId(), drug.getDrugCode());
@@ -854,9 +850,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs)
 	{
 		for (DrugDocument drug : drugs) {
-			/*System.out.println("Location id ::" + drug.getLocationId());
-			System.out.println("Hospital id ::" + drug.getHospitalId());
-			System.out.println("Drug id ::" + drug.getId());*/
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getDrugCode())) {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
 						drug.getHospitalId(), drug.getDrugCode());

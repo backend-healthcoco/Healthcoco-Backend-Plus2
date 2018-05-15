@@ -48,7 +48,6 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
-import io.swagger.models.auth.In;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
@@ -114,7 +113,6 @@ public class InventoryServiceImpl implements InventoryService {
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
 			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 				Drug drug = makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
-				//System.out.println(drug);
 				transnationalService.addResource(new ObjectId(drug.getId()), Resource.DRUG, false);
 				if (drug != null) {
 					ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -123,10 +121,8 @@ public class InventoryServiceImpl implements InventoryService {
 						esDrugDocument.setDrugTypeId(drug.getDrugType().getId());
 						esDrugDocument.setDrugType(drug.getDrugType().getType());
 					}
-				//	System.out.println(esDrugDocument);
 					esPrescriptionService.addDrug(esDrugDocument);
 				}
-				
 			}
 			
 		} catch (Exception e) {
@@ -347,7 +343,6 @@ public class InventoryServiceImpl implements InventoryService {
 	public InventoryStock addInventoryStock(InventoryStock inventoryStock) {
 		InventoryStock response = null;
 		InventoryBatchCollection inventoryBatchCollection = null;
-
 		try {
 
 			InventoryStockCollection inventoryStockCollection = new InventoryStockCollection();
@@ -740,7 +735,6 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 			if (inventorySettingsCollection != null) {
 				response = new InventorySettings();
-			//	System.out.println(inventorySettingsCollection);
 				BeanUtil.map( inventorySettingsCollection, response);
 			} else {
 				response = new InventorySettings();

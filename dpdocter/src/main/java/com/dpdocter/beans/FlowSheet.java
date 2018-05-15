@@ -144,6 +144,5 @@ public class FlowSheet {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(JacksonUtil.obj2Json(new FlowSheet()));
 	}
 }

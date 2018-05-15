@@ -4243,11 +4243,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			// Collection<List<Drug>> drugs =
 			// CollectionUtils.collect(historyCollections, new
 			// BeanToPropertyValueTransformer("drugsAndAllergies.drugs"));
-			//// System.out.println(drugIds);
 			//
 			// Collection<Drug> drugIds = CollectionUtils.collect(drugs, new
 			// BeanToPropertyValueTransformer("Drug"));
-			// System.out.println(drugIds);
 			// }
 			List<String> genericCodes = new ArrayList<String>();
 
@@ -6844,7 +6842,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		
 		if (drugCollection != null) {
-			System.out.println(drugCollection.getDrugCode());
 			Integer count = Integer.parseInt(drugCollection.getDrugCode().toUpperCase().replace(drugCode, "")) + 1;
 			if (count < 1000) {
 				drugCode = drugCode + String.format("%04d", count);
