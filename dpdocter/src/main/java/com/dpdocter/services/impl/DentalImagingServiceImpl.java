@@ -233,6 +233,40 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 							));
 			
+		/*	CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$_id").append("type", new BasicDBObject("$first", "$type"))
+							.append("dentalDiagnosticServiceId", new BasicDBObject("$first", "$dentalDiagnosticServiceId"))
+							.append("serviceName", new BasicDBObject("$first", "$serviceName"))
+							.append("toothNumber", new BasicDBObject("$first", "$toothNumber"))
+							.append("CBCTQuadrant", new BasicDBObject("$first", "$CBCTQuadrant"))
+							.append("CBCTArch", new BasicDBObject("$first", "$CBCTArch"))
+							));*/
+			
+		/*	
+			private String type;
+			private String dentalDiagnosticServiceId;
+			private String serviceName;
+			private List<String> toothNumber;
+			private String CBCTQuadrant;
+			private String toothNumber;*/
+			
+			/*private String patientId;
+			private String doctorId;
+			private String hospitalId;
+			private String locationId;
+			private String uploadedByDoctorId;
+			private String uploadedByHospitalId;
+			private String uploadedByLocationId;
+			private String referringDoctor;
+			private String clinicalNotes;
+			private Boolean reportsRequired;
+			private String specialInstructions;
+			private List<DentalDiagnosticServiceRequest> services;
+			private Boolean discarded;
+			private PatientCard patient;
+			private Location location;
+			private List<DentalImagingReports> reports;*/
+			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
@@ -240,7 +274,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"), Aggregation.match(criteria),aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
