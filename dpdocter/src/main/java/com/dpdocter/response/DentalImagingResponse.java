@@ -23,7 +23,7 @@ public class DentalImagingResponse extends GenericCollection {
 	private Boolean reportsRequired;
 	private String specialInstructions;
 	private List<DentalDiagnosticServiceRequest> services;
-	private Boolean discarded;
+	private Boolean discarded = false;
 	private PatientCard patient;
 	private Location location;
 	private List<DentalImagingReports> reports;
@@ -163,5 +163,7 @@ public class DentalImagingResponse extends GenericCollection {
 	public void setReports(List<DentalImagingReports> reports) {
 		this.reports = reports;
 	}
+	
+	
 
 }

@@ -35,11 +35,13 @@ import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorHospitalDentalImagingAssociationRepository;
 import com.dpdocter.request.DentalimagingReportsUploadRequest;
 import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
+import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.services.DentalImagingService;
 
@@ -198,6 +200,16 @@ public class DentalImagingAPI {
 		dentalImagingReports = dentalImagingService.discardReport(id, discarded);
 		Response<DentalImagingReports> response = new Response<DentalImagingReports>();
 		response.setData(dentalImagingReports);
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_ASSOCIATED_DOCTORS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_ASSOCIATED_DOCTORS, notes = PathProxy.DentalImagingUrl.GET_ASSOCIATED_DOCTORS)
+	public Response<DoctorHospitalDentalImagingAssociationResponse> getLocationAssociatedServices(@QueryParam("hospitalId") String hospitalId,@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
+			@QueryParam("page") int page) {
+		Response<DoctorHospitalDentalImagingAssociationResponse> response = new Response<DoctorHospitalDentalImagingAssociationResponse>();
+		response.setDataList(dentalImagingService.getHospitalAssociatedDoctor(hospitalId, searchTerm, size, page));
 		return response;
 	}
 	

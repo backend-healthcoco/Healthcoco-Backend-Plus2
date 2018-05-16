@@ -62,6 +62,7 @@ import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.DentalImagingService;
 import com.dpdocter.services.FileManager;
@@ -684,7 +685,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 			
 			if (dentalImagingCollection != null) {
-				UserCollection userCollection = userRepository.findOne(dentalImagingCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findOne(dentalImagingCollection.getUploadedByDoctorId());
 				dentalImagingCollection.setDiscarded(discarded);
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
 				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request has been discarded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
@@ -724,5 +725,48 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public List<DoctorHospitalDentalImagingAssociationResponse> getHospitalAssociatedDoctor(String hospitalId,
+			String searchTerm, int size, int page) {
+		
+		List<DoctorHospitalDentalImagingAssociationResponse> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			Aggregation aggregation = null;
+			
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("service.name").regex("^" + searchTerm, "i"),
+						new Criteria("service.name").regex("^" + searchTerm),
+						new Criteria("service.name").regex(searchTerm + ".*"));
+			}
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<DoctorHospitalDentalImagingAssociationResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, DoctorHospitalDentalImagingAssociationCollection.class,
+					DoctorHospitalDentalImagingAssociationResponse.class);
+
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 
 }
