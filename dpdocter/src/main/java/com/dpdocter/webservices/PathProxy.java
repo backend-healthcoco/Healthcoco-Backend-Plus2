@@ -1740,7 +1740,7 @@ public interface PathProxy {
 		public static final String ADD_RECORDS = "/addRecords";
 		public static final String DISCARD_REQUEST = "/discardRequest";
 		public static final String DISCARD_RECORD = "/discardRecord";
-		
+		public static final String GET_ASSOCIATED_DOCTORS = "/getAssociatedDoctors";
 	}
 
 	public static final String SEARCH_BASE_URL = BASE_URL + "/search";

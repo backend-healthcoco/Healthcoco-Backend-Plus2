@@ -15,6 +15,7 @@ import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
+import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 
 import common.util.web.Response;
@@ -47,5 +48,9 @@ public interface DentalImagingService {
 	DentalImaging discardRequest(String id, boolean discarded);
 
 	DentalImagingReports discardReport(String id, boolean discarded);
+
+	List<DoctorHospitalDentalImagingAssociationResponse> getHospitalAssociatedDoctor(String hospitalId,
+			String searchTerm, int size, int page);
+
 
 }
