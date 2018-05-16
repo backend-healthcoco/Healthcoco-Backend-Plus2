@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DentalDiagnosticService;
+import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
@@ -30,6 +31,7 @@ import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
@@ -50,6 +52,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DentalImagingLocationServiceAssociationRepository;
 import com.dpdocter.repository.DentalImagingReportsRepository;
 import com.dpdocter.repository.DentalImagingRepository;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorHospitalDentalImagingAssociationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -100,6 +103,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	
 	@Autowired
 	PushNotificationServices pushNotificationServices;
+	
+	@Autowired
+	DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Autowired
 	MongoTemplate mongoTemplate;
@@ -116,7 +122,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		String requestId = null;
 
 		try {
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(request.getLocationId()));
 			if (request.getId() != null) {
 				
 				dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(request.getId()));
@@ -127,8 +133,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setServices(request.getServices());
 				dentalImagingCollection.setUpdatedTime(new Date());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
-				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "You have new dental imaging request.", ComponentType.REFRESH_DENTAL_IMAGING.getType(),String.valueOf(dentalImagingCollection.getId()), null);
+				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+					pushNotificationServices.notifyUser(String.valueOf(doctorClinicProfileCollection.getDoctorId()), "You have new dental imaging request.", ComponentType.REFRESH_DENTAL_IMAGING.getType(),String.valueOf(dentalImagingCollection.getId()), null);
+					
+				}
 			} else {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUploadedByDoctorId()));
 				requestId = UniqueIdInitial.DENTAL_IMAGING.getInitial() + DPDoctorUtils.generateRandomId();
 				dentalImagingCollection = new DentalImagingCollection();
 				BeanUtil.map(request, dentalImagingCollection);
@@ -136,10 +146,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setRequestId(requestId);
 				dentalImagingCollection.setCreatedTime(new Date());
 				dentalImagingCollection.setUpdatedTime(new Date());
+				dentalImagingCollection.setCreatedBy(userCollection.getFirstName());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
-				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request Has been updated.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
-				
-				
+				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+					pushNotificationServices.notifyUser(String.valueOf(doctorClinicProfileCollection.getDoctorId()), "Request Has been updated.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
+				}
 			}
 			response = new DentalImaging();
 			BeanUtil.map(dentalImagingCollection, response);
@@ -177,8 +188,20 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria.and("doctorId").is(new ObjectId(doctorId));
+					criteria.and("hospitalId").is(new ObjectId(hospitalId));
 				}
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("patient.firstName").regex("^" + searchTerm, "i"),
+						new Criteria("patient.firstName").regex("^" + searchTerm),
+						new Criteria("patient.firstName").regex(searchTerm + ".*"),
+						new Criteria("location.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("location.locationName").regex("^" + searchTerm),
+						new Criteria("location.locationName").regex(searchTerm + ".*"),
+						new Criteria("services.serviceName").regex("^" + searchTerm, "i"),
+						new Criteria("services.serviceName").regex("^" + searchTerm),
+						new Criteria("services.serviceName").regex(searchTerm + ".*"));
 			}
 
 			if (to != null) {
@@ -186,16 +209,54 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			} else {
 				criteria.and("updatedTime").gte(new Date(from));
 			}
+			
+			
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first", "$patientId"))
+							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+							.append("locationId", new BasicDBObject("$first", "$locationId"))
+							.append("uploadedByDoctorId", new BasicDBObject("$first", "$uploadedByDoctorId"))
+							.append("uploadedByHospitalId", new BasicDBObject("$first", "$uploadedByHospitalId"))
+							.append("uploadedByLocationId", new BasicDBObject("$first", "$uploadedByLocationId"))
+							.append("services", new BasicDBObject("$push", "$services"))
+							.append("referringDoctor", new BasicDBObject("$first", "$referringDoctor"))
+							.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
+							.append("reportsRequired", new BasicDBObject("$first", "$reportsRequired"))
+							.append("discarded", new BasicDBObject("$first", "$discarded"))
+							.append("patient", new BasicDBObject("$first", "$patient"))
+							.append("location", new BasicDBObject("$first", "$location"))
+							.append("reports", new BasicDBObject("$first", "$reports"))
+							));
+			
+			
+			/*private String patientId;
+			private String doctorId;
+			private String hospitalId;
+			private String locationId;
+			private String uploadedByDoctorId;
+			private String uploadedByHospitalId;
+			private String uploadedByLocationId;
+			private String referringDoctor;
+			private String clinicalNotes;
+			private Boolean reportsRequired;
+			private String specialInstructions;
+			private List<DentalDiagnosticServiceRequest> services;
+			private Boolean discarded;
+			private PatientCard patient;
+			private Location location;
+			private List<DentalImagingReports> reports;*/
+			
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria),
+						Aggregation.unwind("location"), Aggregation.match(criteria),aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria),
+						Aggregation.unwind("location"), Aggregation.match(criteria),aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
