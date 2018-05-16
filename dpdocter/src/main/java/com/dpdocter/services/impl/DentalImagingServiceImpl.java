@@ -227,25 +227,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("patient", new BasicDBObject("$first", "$patient"))
 							.append("location", new BasicDBObject("$first", "$location"))
 							.append("reports", new BasicDBObject("$first", "$reports"))
+							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 							));
-			
-			
-			/*private String patientId;
-			private String doctorId;
-			private String hospitalId;
-			private String locationId;
-			private String uploadedByDoctorId;
-			private String uploadedByHospitalId;
-			private String uploadedByLocationId;
-			private String referringDoctor;
-			private String clinicalNotes;
-			private Boolean reportsRequired;
-			private String specialInstructions;
-			private List<DentalDiagnosticServiceRequest> services;
-			private Boolean discarded;
-			private PatientCard patient;
-			private Location location;
-			private List<DentalImagingReports> reports;*/
 			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
