@@ -106,8 +106,6 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private Double retailPrice;
 
-;
-
 	@Field(type = FieldType.String)
 	private String stockingUnit;
 

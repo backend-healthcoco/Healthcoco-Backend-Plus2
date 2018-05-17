@@ -5,7 +5,7 @@ public class PrescriptionInventoryBatchResponse {
 	private String id;
 	private String batchName;
 	private Long noOfItemsLeft;
-	private Long retailPrice;
+	private Double retailPrice;
 
 	public String getId() {
 		return id;
@@ -31,11 +31,11 @@ public class PrescriptionInventoryBatchResponse {
 		this.noOfItemsLeft = noOfItemsLeft;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 
