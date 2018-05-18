@@ -1743,5 +1743,6 @@ public interface PathProxy {
 	public interface SearchUrls {
 
 		public static final String SEARCH_DOCTORS = "/doctors";
+		public static final String GET_RESOURCES_COUNT_BY_CITY = "/resources/countByCity/{city}";
 	}
 }
