@@ -4,6 +4,7 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,24 +27,26 @@ import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
-import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
-import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
-import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
-import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
 import com.dpdocter.services.SearchService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -51,25 +54,16 @@ import common.util.web.DPDoctorUtils;
 public class SearchServiceImpl implements SearchService {
 
 	@Autowired
-	private ESDoctorRepository esDoctorRepository;
-
-	@Autowired
-	private ESLocationRepository esLocationRepository;
-
-	@Autowired
-	private ESUserLocaleRepository esUserLocaleRepository;
-
-	@Autowired
 	private ESSpecialityRepository esSpecialityRepository;
-
-	@Autowired
-	private ESDiagnosticTestRepository esDiagnosticTestRepository;
 
 	@Autowired
 	private ESTreatmentServiceRepository esTreatmentServiceRepository;
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 	
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -183,51 +177,55 @@ public class SearchServiceImpl implements SearchService {
 				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
 				SearchQuery searchQuery = null;
 				
-				if(!otherArea) {
+				if(DPDoctorUtils.anyStringEmpty(locality)) {
 					if (size > 0)
-						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
 								.withPageable(new PageRequest(page, size)).build();
 					else
-						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
 
 					esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-				}
-
-				if (esDoctorDocuments == null || esDoctorDocuments.isEmpty()) {
-					System.out.println("find near by dr");
-					System.out.println(boolQueryBuilder);
-//					boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX));
-					if (size > 0)
-						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-								.withPageable(new PageRequest(page, size)).build();
-					else
-						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
-					nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 				}else {
-					System.out.println("find near by dr");
-					System.out.println(boolQueryBuilderForNearByDoctors);
-					if (size > 0) {
-						size = size - esDoctorDocuments.size();
-						if (size > 0) {
-//							boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX));
-							if (size > 0)
-								searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-										.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-										.withPageable(new PageRequest(page, size)).build();
-							nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);	
-						}
-					}else {
-//						boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX));
-						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+					if(!otherArea) {
+						if (size > 0)
+							searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+									.withPageable(new PageRequest(page, size)).build();
+						else
+							searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
+
+						esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
+					}
+
+					if (esDoctorDocuments == null || esDoctorDocuments.isEmpty()) {					
+						if (size > 0)
+							searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+									.withPageable(new PageRequest(page, size)).build();
+						else
+							searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
 									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
 						nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
+					}else {
+						if (size > 0) {
+							size = size - esDoctorDocuments.size();
+							if (size > 0) {
+								if (size > 0)
+									searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+											.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+											.withPageable(new PageRequest(page, size)).build();
+								nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);	
+							}
+						}else {
+							searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality").type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+										.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
+							nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
+						}
 					}
 				}
-			System.out.println(nearByDoctors);
 			if(!(esDoctorDocuments == null && nearByDoctors == null)) {
 				response = new SearchDoctorResponse();
 				
@@ -590,5 +588,53 @@ System.out.println(doctorDocument.getSpecialities());
 		} else
 			return null;
 
+	}
+
+	@Override
+	public List<ResourcesCountResponse> getResourcesCountByCity(String city, List<String> types) {
+		List<ResourcesCountResponse> response = null;
+		try {
+			if(types == null || types.isEmpty()) {
+				types = new ArrayList<String>();
+				types.add("DOCTOR");
+				types.add("PHARMACY");
+			}else {
+				for(String type: types)type=type.toUpperCase();
+			}
+			
+			if(types.contains("DOCTOR")) {
+				response = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+						Aggregation.match(new org.springframework.data.mongodb.core.query.Criteria("location.city").is(city)),
+						Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"), Aggregation.unwind("doctor"),
+						Aggregation.unwind("doctor.specialities"),
+															new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$doctor.specialities")
+																	.append("count", new BasicDBObject("$sum", 1)))),
+															Aggregation.lookup("speciality_cl", "_id", "_id", "speciality"),
+															Aggregation.unwind("speciality"),
+															new CustomAggregationOperation(new BasicDBObject("$project", 
+																	new BasicDBObject("fields.key", "$speciality.speciality").append("fields.value", "$count")
+																	.append("resourceType", new BasicDBObject("$concat", Arrays.asList("DOCTOR"))).append("totalCount", "$count"))),
+															new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("fields.value", -1))), 
+															new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$resourceType")
+																	.append("resourceType", new BasicDBObject("$first","$resourceType"))
+																	.append("totalCount", new BasicDBObject("$sum","$totalCount"))
+																	.append("fields", new BasicDBObject("$addToSet","$fields"))))),
+						DoctorClinicProfileCollection.class, ResourcesCountResponse.class).getMappedResults();
+				
+				
+//				ResourcesCountResponse doctors = new ResourcesCountResponse();
+//				doctors.setResourceType("DOCTORS");
+//				doctors.setFields(fields);
+			}
+			
+			if(types.contains("PHARMACY")) {
+				
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Resources Count" + e.getMessage());
+		}
+		return response;
 	}
 }

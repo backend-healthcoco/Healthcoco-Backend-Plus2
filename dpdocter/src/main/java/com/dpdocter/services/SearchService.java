@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
 
 public interface SearchService {
@@ -10,5 +11,7 @@ public interface SearchService {
 			String speciality,
 			String symptom, Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime,
 			List<String> days, String gender, int minExperience, int maxExperience, String service, String locality, Boolean otherArea);
+
+	List<ResourcesCountResponse> getResourcesCountByCity(String city, List<String> type);
 
 }

@@ -7,16 +7,19 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.elasticsearch.document.ESDoctorDocument;
-import com.dpdocter.elasticsearch.services.ESAppointmentService;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
 import com.dpdocter.services.SearchService;
 
@@ -31,6 +34,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SOLR_APPOINTMENT_BASE_URL, description = "Endpoint for search")
 public class SearchApi {
 
+	private static Logger logger = Logger.getLogger(SearchApi.class.getName());
+	
 	@Autowired
 	private SearchService searchService;
 
@@ -58,6 +63,22 @@ public class SearchApi {
 
 		Response<SearchDoctorResponse> response = new Response<SearchDoctorResponse>();
 		response.setData(doctors);
+		return response;
+	}
+	
+	@Path(value = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY)
+	@GET
+	@ApiOperation(value = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY, notes = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY)
+	public Response<ResourcesCountResponse> getResourcesCountByCity(@PathParam("city") String city, @MatrixParam("type") List<String> type) {
+
+		if(city == null) {
+			logger.warn("Invalid Input");
+		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ResourcesCountResponse> resourcesCountResponses = searchService.getResourcesCountByCity(city, type);
+
+		Response<ResourcesCountResponse> response = new Response<ResourcesCountResponse>();
+		response.setDataList(resourcesCountResponses);
 		return response;
 	}
 }
