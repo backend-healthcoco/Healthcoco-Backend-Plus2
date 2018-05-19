@@ -443,9 +443,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("service.name").regex("^" + searchTerm, "i"),
-						new Criteria("service.name").regex("^" + searchTerm),
-						new Criteria("service.name").regex(searchTerm + ".*"));
+				criteria = criteria.orOperator(new Criteria("service.serviceName").regex("^" + searchTerm, "i"),
+						new Criteria("service.serviceName").regex("^" + searchTerm),
+						new Criteria("service.serviceName").regex(searchTerm + ".*"));
 			}
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
