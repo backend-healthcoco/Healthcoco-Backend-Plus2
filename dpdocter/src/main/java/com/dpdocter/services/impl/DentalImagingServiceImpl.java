@@ -34,6 +34,7 @@ import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
@@ -44,7 +45,9 @@ import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -57,7 +60,9 @@ import com.dpdocter.repository.DoctorHospitalDentalImagingAssociationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AddEditNutritionReferenceRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
+import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
@@ -67,7 +72,9 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.DentalImagingService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -110,6 +117,16 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Autowired
 	MongoTemplate mongoTemplate;
+	
+	@Autowired
+	RegistrationService registrationService;
+	
+	@Autowired
+	ESRegistrationService esRegistrationService;
+	
+	@Autowired
+	TransactionalManagementService transnationalService;
+	
 	private static Logger logger = Logger.getLogger(DentalImagingServiceImpl.class.getName());
 
 	@Value(value = "${image.path}")
@@ -123,9 +140,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		String requestId = null;
 
 		try {
+			
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(request.getLocationId()));
 			if (request.getId() != null) {
-				
 				dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(request.getId()));
 				if (dentalImagingCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -139,6 +156,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					
 				}
 			} else {
+				
+				if (DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+					ObjectId doctorId = new ObjectId(request.getUploadedByDoctorId()),
+							locationId = new ObjectId(request.getUploadedByHospitalId()),
+							hospitalId = new ObjectId(request.getUploadedByHospitalId()), patientId = null;
+					patientId = registerPatientIfNotRegistered(request, doctorId, locationId, hospitalId);
+					request.setPatientId(patientId.toString());
+				}
 				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUploadedByDoctorId()));
 				requestId = UniqueIdInitial.DENTAL_IMAGING.getInitial() + DPDoctorUtils.generateRandomId();
 				dentalImagingCollection = new DentalImagingCollection();
@@ -150,7 +175,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setCreatedBy(userCollection.getFirstName());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-					pushNotificationServices.notifyUser(String.valueOf(doctorClinicProfileCollection.getDoctorId()), "Request Has been updated.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
+					pushNotificationServices.notifyUser(String.valueOf(doctorClinicProfileCollection.getDoctorId()),
+							"Request Has been updated.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),
+							String.valueOf(dentalImagingCollection.getId()), null);
 				}
 			}
 			response = new DentalImaging();
@@ -232,6 +259,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+							.append("specialInstructions", new BasicDBObject("$first", "$specialInstructions"))
 							));
 			
 		/*	CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -583,7 +611,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		ImageURLResponse imageURLResponse = null;
 		try {
 			Date createdTime = new Date();
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUploadedByDoctorId()));
 			if (fileDetails != null) {
 				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
 
@@ -767,6 +795,61 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			e.printStackTrace();
 		}
 		return response;
+	}
+	
+	private ObjectId registerPatientIfNotRegistered(DentalImagingRequest request, ObjectId doctorId, ObjectId locationId,
+			ObjectId hospitalId) {
+		ObjectId patientId = null;
+		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
+			
+			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
+				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
+			}
+			PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+			patientRegistrationRequest.setFirstName(request.getLocalPatientName());
+			patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
+			patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
+			patientRegistrationRequest.setDoctorId(request.getUploadedByDoctorId());
+			patientRegistrationRequest.setLocationId(request.getUploadedByLocationId());
+			patientRegistrationRequest.setHospitalId(request.getUploadedByHospitalId());
+			RegisteredPatientDetails patientDetails = null;
+			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
+			if (patientDetails != null) {
+				request.setPatientId(patientDetails.getUserId());
+			}
+			transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
+			esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
+			patientId = new ObjectId(request.getPatientId());
+		} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+
+			patientId = new ObjectId(request.getPatientId());
+			PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(patientId, locationId,
+					hospitalId);
+			if (patient == null) {
+				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setDoctorId(request.getDoctorId());
+				patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
+				patientRegistrationRequest.setFirstName(request.getLocalPatientName());
+				patientRegistrationRequest.setUserId(request.getPatientId());
+				patientRegistrationRequest.setLocationId(request.getUploadedByLocationId());
+				patientRegistrationRequest.setHospitalId(request.getUploadedByHospitalId());
+				RegisteredPatientDetails patientDetails = registrationService
+						.registerExistingPatient(patientRegistrationRequest, null);
+				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
+				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
+			} else {
+				List<ObjectId> consultantDoctorIds = patient.getConsultantDoctorIds();
+				if (consultantDoctorIds == null)
+					consultantDoctorIds = new ArrayList<ObjectId>();
+				if (!consultantDoctorIds.contains(doctorId))
+					consultantDoctorIds.add(doctorId);
+				patient.setConsultantDoctorIds(consultantDoctorIds);
+				patient.setUpdatedTime(new Date());
+				patientRepository.save(patient);
+			}
+		}
+
+		return patientId;
 	}
 
 

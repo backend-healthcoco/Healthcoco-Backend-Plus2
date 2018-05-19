@@ -6,6 +6,8 @@ public class DentalImagingRequest {
 
 	private String id;
 	private String patientId;
+	private String localPatientName;
+	private String mobileNumber;
 	private String doctorId;
 	private String hospitalId;
 	private String locationId;
@@ -43,7 +45,7 @@ public class DentalImagingRequest {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getLocationId() { 
+	public String getLocationId() {
 		return locationId;
 	}
 
@@ -90,7 +92,7 @@ public class DentalImagingRequest {
 	public void setServices(List<DentalDiagnosticServiceRequest> services) {
 		this.services = services;
 	}
-	
+
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -106,7 +108,7 @@ public class DentalImagingRequest {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getUploadedByDoctorId() {
 		return uploadedByDoctorId;
 	}
@@ -131,12 +133,31 @@ public class DentalImagingRequest {
 		this.uploadedByLocationId = uploadedByLocationId;
 	}
 
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
 	@Override
 	public String toString() {
-		return "DentalImagingRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId
-				+ ", locationId=" + locationId + ", referringDoctor=" + referringDoctor + ", clinicalNotes="
-				+ clinicalNotes + ", reportsRequired=" + reportsRequired + ", specialInstructions="
-				+ specialInstructions + "]";
+		return "DentalImagingRequest [id=" + id + ", patientId=" + patientId + ", localPatientName=" + localPatientName
+				+ ", mobileNumber=" + mobileNumber + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId
+				+ ", locationId=" + locationId + ", uploadedByDoctorId=" + uploadedByDoctorId
+				+ ", uploadedByHospitalId=" + uploadedByHospitalId + ", uploadedByLocationId=" + uploadedByLocationId
+				+ ", referringDoctor=" + referringDoctor + ", clinicalNotes=" + clinicalNotes + ", reportsRequired="
+				+ reportsRequired + ", specialInstructions=" + specialInstructions + ", services=" + services
+				+ ", discarded=" + discarded + "]";
 	}
 
 }
