@@ -10,7 +10,7 @@ import com.dpdocter.collections.DentalImagingReportsCollection;
 
 public interface DentalImagingReportsRepository extends MongoRepository<DentalImagingReportsCollection, ObjectId>{
 
-	@Query("{'requestId' :?0}")
-	List<DentalImagingReportsCollection> getReportsByRequestId(ObjectId requestId);
+	@Query("{'requestId' :?0 , 'discarded' :?1}")
+	List<DentalImagingReportsCollection> getReportsByRequestId(ObjectId requestId ,Boolean discarded);
 	
 }

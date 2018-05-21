@@ -203,7 +203,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (type.equalsIgnoreCase("DOCTOR")) {
 				
 				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-					criteria.and("uploadedByLocationId").is(new ObjectId(locationId));
+					criteria.and("uploadedByLocationId").is(new ObjectId(locationId)).and("patient.locationId").is(new ObjectId(locationId));
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -212,13 +212,15 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				
 			} else {
 				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-					criteria.and("locationId").is(new ObjectId(locationId));
+					criteria.and("locationId").is(new ObjectId(locationId)).and("patient.locationId").is(new ObjectId(locationId));;
 				}
 
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+					criteria.and("hospitalId").is(new ObjectId(hospitalId)).and("patient.hospitalId").is(new ObjectId(hospitalId));
 				}
 			}
+			
+			
 			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("patient.firstName").regex("^" + searchTerm, "i"),
@@ -229,7 +231,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						new Criteria("location.locationName").regex(searchTerm + ".*"),
 						new Criteria("services.serviceName").regex("^" + searchTerm, "i"),
 						new Criteria("services.serviceName").regex("^" + searchTerm),
-						new Criteria("services.serviceName").regex(searchTerm + ".*"));
+						new Criteria("services.serviceName").regex(searchTerm + ".*"),
+						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
+						new Criteria("doctor.firstName").regex("^" + searchTerm),
+						new Criteria("doctor.firstName").regex(searchTerm + ".*"));
 			}
 
 			if (to != null) {
@@ -260,6 +265,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 							.append("specialInstructions", new BasicDBObject("$first", "$specialInstructions"))
+							.append("doctor", new BasicDBObject("$first", "$doctor"))
 							));
 			
 		/*	CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -299,21 +305,29 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria),aggregationOperation,
+						Aggregation.unwind("location"),Aggregation.lookup("patient_cl","patientId", "userId","patient"),
+						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+										true))),Aggregation.match(criteria),aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria),aggregationOperation,
+						Aggregation.unwind("location"), Aggregation.lookup("patient_cl","patientId", "userId","patient"),
+						Aggregation.unwind("patient"),Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+										true))), Aggregation.match(criteria),aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
+			
 			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingCollection.class, DentalImagingResponse.class);
 			response = aggregationResults.getMappedResults();
-
 			for (DentalImagingResponse dentalImagingResponse : response) {
-				if (!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getUploadedByLocationId(),
+				/*if (!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getUploadedByLocationId(),
 						dentalImagingResponse.getUploadedByHospitalId(), dentalImagingResponse.getPatientId())) {
 
 					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
@@ -325,8 +339,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						BeanUtil.map(patientCollection, patientCard);
 						dentalImagingResponse.setPatient(patientCard);
 					}
-				}
-				List<DentalImagingReportsCollection> dentalImagingReportsCollections = dentalImagingReportsRepository.getReportsByRequestId(new ObjectId(dentalImagingResponse.getId()));
+				}*/
+				List<DentalImagingReportsCollection> dentalImagingReportsCollections = dentalImagingReportsRepository.getReportsByRequestId(new ObjectId(dentalImagingResponse.getId()), false);
 				if(dentalImagingReportsCollections != null)
 				{
 					List<DentalImagingReports> dentalImagingReports = new ArrayList<>();
