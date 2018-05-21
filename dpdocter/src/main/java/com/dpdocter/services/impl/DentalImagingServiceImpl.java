@@ -138,7 +138,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		DentalImaging response = null;
 		DentalImagingCollection dentalImagingCollection = null;
 		String requestId = null;
-
+		
 		try {
 			
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(request.getLocationId()));
@@ -148,6 +148,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
 				}
 				BeanUtil.map(request, dentalImagingCollection);
+				dentalImagingCollection.setPatientName(request.getLocalPatientName());
 				dentalImagingCollection.setServices(request.getServices());
 				dentalImagingCollection.setUpdatedTime(new Date());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
@@ -156,18 +157,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					
 				}
 			} else {
-				
-				if (DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 					ObjectId doctorId = new ObjectId(request.getUploadedByDoctorId()),
-							locationId = new ObjectId(request.getUploadedByHospitalId()),
+							locationId = new ObjectId(request.getUploadedByLocationId()),
 							hospitalId = new ObjectId(request.getUploadedByHospitalId()), patientId = null;
 					patientId = registerPatientIfNotRegistered(request, doctorId, locationId, hospitalId);
+					if (DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 					request.setPatientId(patientId.toString());
 				}
 				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUploadedByDoctorId()));
 				requestId = UniqueIdInitial.DENTAL_IMAGING.getInitial() + DPDoctorUtils.generateRandomId();
 				dentalImagingCollection = new DentalImagingCollection();
 				BeanUtil.map(request, dentalImagingCollection);
+				dentalImagingCollection.setPatientName(request.getLocalPatientName());
 				dentalImagingCollection.setServices(request.getServices());
 				dentalImagingCollection.setRequestId(requestId);
 				dentalImagingCollection.setCreatedTime(new Date());
@@ -206,8 +207,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					criteria.and("uploadedByLocationId").is(new ObjectId(locationId)).and("patient.locationId").is(new ObjectId(locationId));
 				}
 
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					criteria.and("uploadedByDoctorId").is(new ObjectId(doctorId));
+				if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+					criteria.and("uploadedByHospitalId").is(new ObjectId(hospitalId)).and("patient.hospitalId").is(new ObjectId(hospitalId));
 				}
 				
 			} else {
@@ -306,7 +307,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),Aggregation.lookup("patient_cl","patientId", "userId","patient"),
-						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "doctor"),
+						Aggregation.unwind("patient"), new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays",
+										true))), Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "doctor"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 										true))),Aggregation.match(criteria),aggregationOperation,
@@ -327,19 +330,16 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					DentalImagingCollection.class, DentalImagingResponse.class);
 			response = aggregationResults.getMappedResults();
 			for (DentalImagingResponse dentalImagingResponse : response) {
-				/*if (!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getUploadedByLocationId(),
-						dentalImagingResponse.getUploadedByHospitalId(), dentalImagingResponse.getPatientId())) {
+				if(!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getPatientId())) {
 
-					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-							new ObjectId(dentalImagingResponse.getPatientId()),
-							new ObjectId(dentalImagingResponse.getUploadedByLocationId()),
-							new ObjectId(dentalImagingResponse.getUploadedByHospitalId()));
-					if (patientCollection != null) {
-						PatientCard patientCard = new PatientCard();
-						BeanUtil.map(patientCollection, patientCard);
-						dentalImagingResponse.setPatient(patientCard);
+					UserCollection userCollection = userRepository.findOne(new ObjectId(dentalImagingResponse.getPatientId()));
+					if (userCollection != null) {
+						if(dentalImagingResponse.getPatient() != null)
+						{
+							dentalImagingResponse.getPatient().setMobileNumber(userCollection.getMobileNumber());
+						}
 					}
-				}*/
+				}
 				List<DentalImagingReportsCollection> dentalImagingReportsCollections = dentalImagingReportsRepository.getReportsByRequestId(new ObjectId(dentalImagingResponse.getId()), false);
 				if(dentalImagingReportsCollections != null)
 				{
@@ -773,7 +773,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	public List<DoctorHospitalDentalImagingAssociationResponse> getHospitalAssociatedDoctor(String hospitalId,
 			String searchTerm, int size, int page) {
 		
-		List<DoctorHospitalDentalImagingAssociationResponse> response = null;
+		List<DoctorHospitalDentalImagingAssociationResponse> response = new ArrayList<>();
+		//List<DoctorHospitalDentalImagingAssociationResponse> doctorHospitalDentalImagingAssociationResponses = null;
 		try {
 			Criteria criteria = new Criteria();
 			Aggregation aggregation = null;
@@ -782,12 +783,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			criteria.and("discarded").is(false);
-			
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("service.name").regex("^" + searchTerm, "i"),
-						new Criteria("service.name").regex("^" + searchTerm),
-						new Criteria("service.name").regex(searchTerm + ".*"));
-			}
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -798,12 +793,33 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-
+			
 			AggregationResults<DoctorHospitalDentalImagingAssociationResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, DoctorHospitalDentalImagingAssociationCollection.class,
 					DoctorHospitalDentalImagingAssociationResponse.class);
-
+			
 			response = aggregationResults.getMappedResults();
+			for (DoctorHospitalDentalImagingAssociationResponse doctorHospitalDentalImagingAssociationResponse : response) {
+				if (!DPDoctorUtils.anyStringEmpty(doctorHospitalDentalImagingAssociationResponse.getDoctorId(),
+						doctorHospitalDentalImagingAssociationResponse.getDoctorLocationId())) {
+					DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+							.findByDoctorIdLocationId(
+									new ObjectId(doctorHospitalDentalImagingAssociationResponse.getDoctorId()),
+									new ObjectId(doctorHospitalDentalImagingAssociationResponse.getDoctorLocationId()));
+					if (doctorClinicProfileCollection != null) {
+						LocationCollection locationCollection = locationRepository
+								.findOne(doctorClinicProfileCollection.getLocationId());
+						if (doctorHospitalDentalImagingAssociationResponse.getDoctor() != null) {
+							System.out.println(locationCollection);
+							doctorHospitalDentalImagingAssociationResponse.getDoctor()
+									.setLocationId(String.valueOf(locationCollection.getId()));
+							doctorHospitalDentalImagingAssociationResponse.getDoctor()
+									.setHospitalId(String.valueOf(locationCollection.getHospitalId()));
+						}
+					}
+				}
+			}
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

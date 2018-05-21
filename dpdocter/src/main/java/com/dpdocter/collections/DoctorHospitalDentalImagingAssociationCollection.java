@@ -6,12 +6,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "doctor_hospital_dental_imaging_association_cl")
-public class DoctorHospitalDentalImagingAssociationCollection extends GenericCollection{
+public class DoctorHospitalDentalImagingAssociationCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
 	@Field
 	private ObjectId doctorId;
+	@Field
+	private ObjectId doctorLocationId;
 	@Field
 	private ObjectId hospitalId;
 	@Field
@@ -47,6 +49,14 @@ public class DoctorHospitalDentalImagingAssociationCollection extends GenericCol
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public ObjectId getDoctorLocationId() {
+		return doctorLocationId;
+	}
+
+	public void setDoctorLocationId(ObjectId doctorLocationId) {
+		this.doctorLocationId = doctorLocationId;
 	}
 
 	@Override

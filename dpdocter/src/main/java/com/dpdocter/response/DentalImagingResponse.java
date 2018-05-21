@@ -6,6 +6,7 @@ import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
 
@@ -25,7 +26,7 @@ public class DentalImagingResponse extends GenericCollection {
 	private String specialInstructions;
 	private List<DentalDiagnosticServiceRequest> services;
 	private Boolean discarded = false;
-	private PatientCard patient;
+	private PatientShortCard patient;
 	private Location location;
 	private User doctor;
 	private List<DentalImagingReports> reports;
@@ -118,11 +119,11 @@ public class DentalImagingResponse extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public PatientCard getPatient() {
+	public PatientShortCard getPatient() {
 		return patient;
 	}
 
-	public void setPatient(PatientCard patient) {
+	public void setPatient(PatientShortCard patient) {
 		this.patient = patient;
 	}
 
@@ -173,8 +174,5 @@ public class DentalImagingResponse extends GenericCollection {
 	public void setDoctor(User doctor) {
 		this.doctor = doctor;
 	}
-	
-	
-	
 
 }
