@@ -810,7 +810,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						LocationCollection locationCollection = locationRepository
 								.findOne(doctorClinicProfileCollection.getLocationId());
 						if (doctorHospitalDentalImagingAssociationResponse.getDoctor() != null) {
-							System.out.println(locationCollection);
 							doctorHospitalDentalImagingAssociationResponse.getDoctor()
 									.setLocationId(String.valueOf(locationCollection.getId()));
 							doctorHospitalDentalImagingAssociationResponse.getDoctor()
