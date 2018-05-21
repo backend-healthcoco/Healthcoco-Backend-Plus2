@@ -42,6 +42,10 @@ public class DentalImagingCollection extends GenericCollection {
 	private List<DentalDiagnosticServiceRequest> services;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private String patientName;
+	@Field
+	private String mobileNumber;
 
 	public ObjectId getPatientId() {
 		return patientId;
@@ -161,6 +165,22 @@ public class DentalImagingCollection extends GenericCollection {
 
 	public void setUploadedByLocationId(ObjectId uploadedByLocationId) {
 		this.uploadedByLocationId = uploadedByLocationId;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	@Override
