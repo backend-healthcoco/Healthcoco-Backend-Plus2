@@ -235,7 +235,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						new Criteria("services.serviceName").regex(searchTerm + ".*"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
 						new Criteria("doctor.firstName").regex("^" + searchTerm),
-						new Criteria("doctor.firstName").regex(searchTerm + ".*"));
+						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
+						new Criteria("patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientName").regex("^" + searchTerm),
+						new Criteria("patientName").regex(searchTerm + ".*"),
+						new Criteria("mobileNumber").regex("^" + searchTerm, "i"),
+						new Criteria("mobileNumber").regex("^" + searchTerm),
+						new Criteria("mobileNumber").regex(searchTerm + ".*")
+						);
 			}
 
 			if (to != null) {
@@ -267,6 +274,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 							.append("specialInstructions", new BasicDBObject("$first", "$specialInstructions"))
 							.append("doctor", new BasicDBObject("$first", "$doctor"))
+							.append("patientName", new BasicDBObject("$first", "$patientName"))
+							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 							));
 			
 		/*	CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -279,6 +288,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							));*/
 			
 		/*	
+		 * private String patientName;
+	private String mobileNumber;
 			private String type;
 			private String dentalDiagnosticServiceId;
 			private String serviceName;
@@ -319,7 +330,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"), Aggregation.lookup("patient_cl","patientId", "userId","patient"),
-						Aggregation.unwind("patient"),Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays",
+										true))),Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "doctor"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 										true))), Aggregation.match(criteria),aggregationOperation,
