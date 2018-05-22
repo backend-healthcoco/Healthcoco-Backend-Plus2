@@ -203,6 +203,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			if (type.equalsIgnoreCase("DOCTOR")) {
 				
+				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+					criteria.and("uploadedByDoctorId").is(new ObjectId(doctorId)).and("patient.doctorId").is(new ObjectId(doctorId));;
+				}
+				
 				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 					criteria.and("uploadedByLocationId").is(new ObjectId(locationId)).and("patient.locationId").is(new ObjectId(locationId));
 				}
@@ -277,42 +281,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("patientName", new BasicDBObject("$first", "$patientName"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 							));
-			
-		/*	CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("type", new BasicDBObject("$first", "$type"))
-							.append("dentalDiagnosticServiceId", new BasicDBObject("$first", "$dentalDiagnosticServiceId"))
-							.append("serviceName", new BasicDBObject("$first", "$serviceName"))
-							.append("toothNumber", new BasicDBObject("$first", "$toothNumber"))
-							.append("CBCTQuadrant", new BasicDBObject("$first", "$CBCTQuadrant"))
-							.append("CBCTArch", new BasicDBObject("$first", "$CBCTArch"))
-							));*/
-			
-		/*	
-		 * private String patientName;
-	private String mobileNumber;
-			private String type;
-			private String dentalDiagnosticServiceId;
-			private String serviceName;
-			private List<String> toothNumber;
-			private String CBCTQuadrant;
-			private String toothNumber;*/
-			
-			/*private String patientId;
-			private String doctorId;
-			private String hospitalId;
-			private String locationId;
-			private String uploadedByDoctorId;
-			private String uploadedByHospitalId;
-			private String uploadedByLocationId;
-			private String referringDoctor;
-			private String clinicalNotes;
-			private Boolean reportsRequired;
-			private String specialInstructions;
-			private List<DentalDiagnosticServiceRequest> services;
-			private Boolean discarded;
-			private PatientCard patient;
-			private Location location;
-			private List<DentalImagingReports> reports;*/
 			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
