@@ -866,7 +866,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					hospitalId);
 			if (patient == null) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
-				patientRegistrationRequest.setDoctorId(request.getDoctorId());
+				patientRegistrationRequest.setDoctorId(request.getUploadedByDoctorId());
 				patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
 				patientRegistrationRequest.setFirstName(request.getLocalPatientName());
 				patientRegistrationRequest.setUserId(request.getPatientId());
