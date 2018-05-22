@@ -5,7 +5,6 @@ import java.util.List;
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
@@ -30,6 +29,8 @@ public class DentalImagingResponse extends GenericCollection {
 	private Location location;
 	private User doctor;
 	private List<DentalImagingReports> reports;
+	private String patientName;
+	private String mobileNumber;
 
 	public String getId() {
 		return id;
@@ -173,6 +174,22 @@ public class DentalImagingResponse extends GenericCollection {
 
 	public void setDoctor(User doctor) {
 		this.doctor = doctor;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 }
