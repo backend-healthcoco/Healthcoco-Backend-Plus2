@@ -486,4 +486,48 @@ public class LoginServiceImpl implements LoginService {
 		}
 		return response;
 	}
+
+	@Override
+	public Boolean isLocationAdmin(LoginRequest request) {
+		Boolean response = false;
+		try {
+			Criteria criteria = new Criteria("userName").is(request.getUsername());
+			Query query = new Query();
+			query.addCriteria(criteria);
+			UserCollection userCollection = mongoTemplate.findOne(query, UserCollection.class);
+
+			if (userCollection == null) {
+				return response;
+			} else {
+				char[] salt = userCollection.getSalt();
+				if (salt != null && salt.length > 0) {
+					char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
+					for (int i = 0; i < request.getPassword().length; i++)
+						passwordWithSalt[i] = request.getPassword()[i];
+					for (int i = 0; i < salt.length; i++)
+						passwordWithSalt[i + request.getPassword().length] = salt[i];
+					if (!Arrays.equals(userCollection.getPassword(),
+							DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))) {
+						return response;
+					}
+				} else {
+					return response;
+				}
+			}
+			
+			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId())),
+							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
+							Aggregation.unwind("roleCollection"),
+							Aggregation.match(new Criteria("roleCollection.role").is("LOCATION_ADMIN"))),
+					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
+
+			if(userRoleLookupResponses != null && userRoleLookupResponses.isEmpty())response = true;
+	}catch (Exception e) {
+		e.printStackTrace();
+		logger.error(e + " Error occured while checking is Location Admin");
+		throw new BusinessException(ServiceError.Unknown, "Error occured while checking is Location Admin");
+	}
+	return response;
+	}
 }
