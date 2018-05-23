@@ -26,6 +26,7 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CustomAppointment;
+import com.dpdocter.beans.Event;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.PatientQueue;
@@ -633,6 +634,38 @@ public class AppointmentApi {
 		}
 		Response<String> response = new Response<String>();
 		response.setData(appointmentService.printPatientCard(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.AppointmentUrls.GET_EVENTS)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.GET_EVENTS, notes = PathProxy.AppointmentUrls.GET_EVENTS)
+	public Response<Event> getEvents(@QueryParam(value = "locationId") String locationId,
+			@MatrixParam(value = "doctorId") List<String> doctorId,
+			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
+			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
+			@QueryParam(value = "sortBy") String sortBy,
+			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime) {
+
+		List<Event> events = appointmentService.getEvents(locationId, doctorId, from, to,
+				page, size, updatedTime, sortBy, fromTime, toTime);
+		Response<Event> response = new Response<Event>();
+		response.setDataList(events);
+		return response;
+	}
+
+	@Path(value = PathProxy.AppointmentUrls.GET_EVENT_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.GET_EVENT_BY_ID, notes = PathProxy.AppointmentUrls.GET_EVENT_BY_ID)
+	public Response<Event> getEventById(@PathParam(value = "eventId") String eventId) {
+		if (DPDoctorUtils.anyStringEmpty(eventId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Event event = appointmentService.getEventById(eventId);
+		Response<Event> response = new Response<Event>();
+		response.setData(event);
 		return response;
 	}
 }

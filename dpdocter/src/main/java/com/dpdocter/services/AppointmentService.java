@@ -2,11 +2,6 @@ package com.dpdocter.services;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.QueryParam;
 
 import org.bson.types.ObjectId;
 
@@ -14,10 +9,10 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CustomAppointment;
+import com.dpdocter.beans.Event;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.PatientQueue;
-import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
@@ -116,5 +111,10 @@ public interface AppointmentService {
 	public String downloadCalender(List<String> doctorIds, String locationId, String hospitalId, String from, String to,
 			Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes,
 			Boolean showPatientGroups);
+
+	List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
+			String updatedTime, String sortBy, String fromTime, String toTime);
+
+	Event getEventById(String eventId);
 
 }

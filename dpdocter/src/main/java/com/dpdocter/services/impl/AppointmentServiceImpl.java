@@ -52,6 +52,7 @@ import com.dpdocter.beans.CustomAppointment;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Doctor;
 import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.Event;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LabTest;
@@ -2299,7 +2300,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection = new AppointmentCollection();
 					BeanUtil.map(request, appointmentCollection);
 					appointmentCollection.setAppointmentId(
-							UniqueIdInitial.APPOINTMENT.getInitial() + DPDoctorUtils.generateRandomId());
+							UniqueIdInitial.EVENT.getInitial() + DPDoctorUtils.generateRandomId());
 					appointmentCollection.setDoctorId(doctorObjectId);
 					appointmentCollection.setLocationId(locationObjectId);
 					appointmentCollection.setState(AppointmentState.CONFIRM);
@@ -4286,6 +4287,99 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<GroupCollection> groupCollections = mongoTemplate
 				.aggregate(aggregation, GroupCollection.class, GroupCollection.class).getMappedResults();
 		return groupCollections;
+	}
+
+	@Override
+	public List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
+			String updatedTime, String sortBy, String fromTime, String toTime) {
+		List<Event> response = null;
+		try {
+			long updatedTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("type").is("EVENT").and("updatedTime").gte(new Date(updatedTimeStamp));
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+
+			if (doctorId != null && !doctorId.isEmpty()) {
+				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
+				for (String id : doctorId)
+					doctorObjectIds.add(new ObjectId(id));
+				criteria.and("doctorId").in(doctorObjectIds);
+			}
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("fromDate").gte(fromDateTime);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("toDate").lte(toDateTime);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(fromTime))
+				criteria.and("time.fromTime").is(Integer.parseInt(fromTime));
+
+			if (!DPDoctorUtils.anyStringEmpty(toTime))
+				criteria.and("time.toTime").is(Integer.parseInt(toTime));
+
+			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime"));
+
+			if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
+				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
+			}
+
+			if (size > 0) {
+				response = mongoTemplate
+						.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+								sortOperation, Aggregation.skip((page) * size),
+								Aggregation.limit(size)), AppointmentCollection.class, Event.class)
+						.getMappedResults();
+			} else {
+				response = mongoTemplate
+						.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+								sortOperation), AppointmentCollection.class,
+								Event.class)
+						.getMappedResults();
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Event getEventById(String eventId) {
+		Event response = null;
+		try {
+			AppointmentCollection appointmentCollection = appointmentRepository.findOne(new ObjectId(eventId));
+			if(appointmentCollection != null) {
+				response = new Event();
+				BeanUtil.map(appointmentCollection, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 
 }

@@ -1008,9 +1008,9 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_APPOINTMENT_CALENDER = "/calendar/{locationId}/{hospitalId}/download";
 		
-//		public static final String GET_EVENTS = "/event/get";
-//		
-//		public static final String GET_EVENT_BY_ID = "/event/{eventId}";
+		public static final String GET_EVENTS = "/event/get";
+		
+		public static final String GET_EVENT_BY_ID = "/event/{eventId}";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
