@@ -5,70 +5,57 @@ import java.util.Date;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.AppointmentState;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Event extends GenericCollection {
 
     private String id;
 
+    private AppointmentState state;
+
     private String subject;
 
     private String explanation;
 
-    private String userLocationId;
+    private String locationId;
+
+    private String doctorId;
 
     private WorkingHours time;
 
     private Boolean isCalenderBlocked = false;
 
-    private Date date;
+    private Date fromDate;
+    
+    private Date toDate;
 
-    public String getId() {
-	return id;
-    }
+    private Boolean isAllDayEvent = false;
+    
+    private Boolean isRescheduled = false;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getSubject() {
-	return subject;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setSubject(String subject) {
-	this.subject = subject;
-    }
+	public AppointmentState getState() {
+		return state;
+	}
 
-    public String getUserLocationId() {
-	return userLocationId;
-    }
+	public void setState(AppointmentState state) {
+		this.state = state;
+	}
 
-    public void setUserLocationId(String userLocationId) {
-	this.userLocationId = userLocationId;
-    }
+	public String getSubject() {
+		return subject;
+	}
 
-    public WorkingHours getTime() {
-	return time;
-    }
-
-    public void setTime(WorkingHours time) {
-	this.time = time;
-    }
-
-    public Boolean getIsCalenderBlocked() {
-	return isCalenderBlocked;
-    }
-
-    public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
-	this.isCalenderBlocked = isCalenderBlocked;
-    }
-
-    public Date getDate() {
-	return date;
-    }
-
-    public void setDate(Date date) {
-	this.date = date;
-    }
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 
 	public String getExplanation() {
 		return explanation;
@@ -78,11 +65,75 @@ public class Event extends GenericCollection {
 		this.explanation = explanation;
 	}
 
-	@Override
-	public String toString() {
-		return "Event [id=" + id + ", subject=" + subject + ", explanation=" + explanation + ", userLocationId="
-				+ userLocationId + ", time=" + time + ", isCalenderBlocked=" + isCalenderBlocked + ", date=" + date
-				+ "]";
+	public String getLocationId() {
+		return locationId;
 	}
 
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Boolean getIsCalenderBlocked() {
+		return isCalenderBlocked;
+	}
+
+	public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
+		this.isCalenderBlocked = isCalenderBlocked;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	public Boolean getIsAllDayEvent() {
+		return isAllDayEvent;
+	}
+
+	public void setIsAllDayEvent(Boolean isAllDayEvent) {
+		this.isAllDayEvent = isAllDayEvent;
+	}
+
+	public Boolean getIsRescheduled() {
+		return isRescheduled;
+	}
+
+	public void setIsRescheduled(Boolean isRescheduled) {
+		this.isRescheduled = isRescheduled;
+	}
+
+	@Override
+	public String toString() {
+		return "Event [id=" + id + ", state=" + state + ", subject=" + subject + ", explanation=" + explanation
+				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked="
+				+ isCalenderBlocked + ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent="
+				+ isAllDayEvent + ", isRescheduled=" + isRescheduled + "]";
+	}
 }
