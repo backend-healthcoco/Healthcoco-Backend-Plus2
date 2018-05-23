@@ -306,7 +306,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			for (DentalImagingResponse dentalImagingResponse : response) {
 
 				if (type.equalsIgnoreCase("DOCTOR")) {
-					if (!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getPatientId(),
+					if (!DPDoctorUtils.anyStringEmpty(dentalImagingResponse.getPatientId(),
 							dentalImagingResponse.getUploadedByDoctorId(),
 							dentalImagingResponse.getUploadedByHospitalId(),
 							dentalImagingResponse.getUploadedByLocationId())) {
@@ -316,7 +316,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(new ObjectId(dentalImagingResponse.getPatientId()), new ObjectId(dentalImagingResponse.getUploadedByDoctorId()), new ObjectId(dentalImagingResponse.getUploadedByLocationId()), new ObjectId(dentalImagingResponse.getUploadedByHospitalId()));
 						
 						PatientShortCard patientShortCard = new PatientShortCard();
-						BeanUtil.map(patientCollection, patientCollection);
+						BeanUtil.map(patientCollection, patientShortCard);
 						dentalImagingResponse.setPatient(patientShortCard);
 						
 						UserCollection userCollection = userRepository
@@ -331,14 +331,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				
 
 				else {
-					if (!DPDoctorUtils.allStringsEmpty(dentalImagingResponse.getPatientId(),
+					if (!DPDoctorUtils.anyStringEmpty(dentalImagingResponse.getPatientId(),
 							dentalImagingResponse.getLocationId(),
 							dentalImagingResponse.getUploadedByLocationId())) {
 
 						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(dentalImagingResponse.getPatientId()),  new ObjectId(dentalImagingResponse.getLocationId()), new ObjectId(dentalImagingResponse.getHospitalId()));
 						
 						PatientShortCard patientShortCard = new PatientShortCard();
-						BeanUtil.map(patientCollection, patientCollection);
+						BeanUtil.map(patientCollection, patientShortCard);
 						dentalImagingResponse.setPatient(patientShortCard);
 						
 						UserCollection userCollection = userRepository
