@@ -33,4 +33,7 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 
 	@Query("{'uniqueReceiptId' : ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3}")
 	DoctorPatientReceiptCollection find(String uniqueReceiptId, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+	
+	@Query("{'uniqueReceiptId' : ?0, 'locationId': ?1, 'hospitalId': ?2}")
+	DoctorPatientReceiptCollection find(String uniqueReceiptId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 }

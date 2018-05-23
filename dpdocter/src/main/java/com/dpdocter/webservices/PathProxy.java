@@ -48,6 +48,8 @@ public interface PathProxy {
 		public static final String LOGIN_USER = "/user";
 
 		public static final String LOGIN_PATIENT = "/patient";
+
+		public static final String IS_LOCATION_ADMIN = "/isLocationAdmin";
 	}
 
 	public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
@@ -1005,6 +1007,10 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PATIENT_CARD = "/downloadpatientCard";
 
 		public static final String DOWNLOAD_APPOINTMENT_CALENDER = "/calendar/{locationId}/{hospitalId}/download";
+		
+//		public static final String GET_EVENTS = "/event/get";
+//		
+//		public static final String GET_EVENT_BY_ID = "/event/{eventId}";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";

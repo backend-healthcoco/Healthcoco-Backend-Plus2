@@ -74,6 +74,7 @@ public class LoginApi {
 		}
 	    }
 	}
+	
 	Response<LoginResponse> response = new Response<LoginResponse>();
 	if (response != null)
 	    response.setData(loginResponse);
@@ -115,4 +116,19 @@ public class LoginApi {
 	    return null;
 
     }
+
+    @Path(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
+    @POST
+    @ApiOperation(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN, notes = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
+    public Response<Boolean> isLocationAdmin(LoginRequest request) {
+		if (request == null|| DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null || request.getPassword().length == 0) {
+		    logger.warn("Invalid Input");
+		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Boolean isLocationAdmin = loginService.isLocationAdmin(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(isLocationAdmin);
+		return response;
+    }
+
 }
