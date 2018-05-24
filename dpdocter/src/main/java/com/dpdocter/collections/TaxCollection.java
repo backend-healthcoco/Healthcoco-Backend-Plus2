@@ -26,6 +26,9 @@ public class TaxCollection extends GenericCollection {
 	@Field
 	private Double percentage;
 
+	@Field
+	private Boolean discarded = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -39,7 +42,7 @@ public class TaxCollection extends GenericCollection {
 	}
 
 	public void setDoctorId(ObjectId doctorId) {
-		
+
 		this.doctorId = doctorId;
 	}
 
@@ -81,6 +84,14 @@ public class TaxCollection extends GenericCollection {
 
 	public void setPercentage(Double percentage) {
 		this.percentage = percentage;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	@Override

@@ -15,6 +15,8 @@ import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.User;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.request.AddEditCustomWorkRequest;
+import com.dpdocter.request.AddEditTaxRequest;
+import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.UpdateDentalStagingRequest;
@@ -23,6 +25,7 @@ import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.TaxResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface DentalLabService {
@@ -131,6 +134,10 @@ public interface DentalLabService {
 	public List<DentalLabPickupResponse> getRequestByIds(List<ObjectId> ids);
 
 	public String downloadMultipleInspectionReportPrint(List<String> requestId);
+
+	TaxResponse addEditTax(AddEditTaxRequest request);
+
+	Boolean DentalLabDoctorRegistration(DentalLabDoctorRegistrationRequest request);
 
 	/*
 	 * DentalLabDoctorAssociation

@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 import com.dpdocter.enums.UnitType;
 
 public class Discount {
-	private double value;
+	private Double value = 0.0;
 	private UnitType unit = UnitType.INR;
 	
 	public UnitType getUnit() {
@@ -12,10 +12,10 @@ public class Discount {
 	public void setUnit(UnitType unit) {
 		this.unit = unit;
 	}
-	public double getValue() {
+	public Double getValue() {
 		return value;
 	}
-	public void setValue(double value) {
+	public void setValue(Double value) {
 		this.value = value;
 	}
 	
