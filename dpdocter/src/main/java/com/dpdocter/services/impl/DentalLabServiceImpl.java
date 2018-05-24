@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
@@ -37,6 +38,7 @@ import com.dpdocter.beans.DentalToothNumber;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorkCardValue;
 import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.InseptionReportJasperBean;
 import com.dpdocter.beans.Location;
@@ -58,6 +60,7 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.TaxCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.enums.ComponentType;
@@ -80,13 +83,17 @@ import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
 import com.dpdocter.repository.RateCardDoctorAssociationRepository;
+import com.dpdocter.repository.TaxRepository;
 import com.dpdocter.repository.UserDeviceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditCustomWorkRequest;
+import com.dpdocter.request.AddEditTaxRequest;
+import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.DentalStageRequest;
 import com.dpdocter.request.DentalWorksSampleRequest;
+import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.request.UpdateETARequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
@@ -95,12 +102,14 @@ import com.dpdocter.response.DentalLabPickupLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.TaxResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.SignUpService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
@@ -167,6 +176,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private SMSServices smsServices;
+	
+	@Autowired
+	private TaxRepository taxRepository;
+	
+	@Autowired
+	private SignUpService signUpService;
 
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
@@ -2683,6 +2698,70 @@ public class DentalLabServiceImpl implements DentalLabService {
 			e.printStackTrace();
 		}
 
+	}
+	
+	@Override
+	@Transactional
+	public TaxResponse addEditTax(AddEditTaxRequest request)
+	{
+		TaxResponse response = null;
+		try {
+			TaxCollection taxCollection = new TaxCollection();
+			BeanUtil.map(request, taxCollection);
+			if (DPDoctorUtils.anyStringEmpty(taxCollection.getId())) {
+				taxCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(taxCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(taxCollection.getDoctorId());
+					if (userCollection != null) {
+						taxCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					taxCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				TaxCollection oldTaxCollection = taxRepository
+						.findOne(taxCollection.getId());
+				taxCollection.setCreatedBy(oldTaxCollection.getCreatedBy());
+				taxCollection.setCreatedTime(oldTaxCollection.getCreatedTime());
+				taxCollection.setDiscarded(oldTaxCollection.getDiscarded());
+			}
+			taxCollection = taxRepository.save(taxCollection);
+			response = new TaxResponse();
+			BeanUtil.map(taxCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean DentalLabDoctorRegistration(DentalLabDoctorRegistrationRequest request)
+	{
+		Boolean response =false;
+		
+		try {
+			DoctorSignupRequest doctorSignupRequest = new DoctorSignupRequest();
+			BeanUtil.map(doctorSignupRequest, request);
+			DoctorSignUp doctorSignUp = signUpService.doctorSignUp(doctorSignupRequest);
+			if(doctorSignUp != null)
+			{
+				DentalLabDoctorAssociationCollection dentalLabDoctorAssociationCollection = new DentalLabDoctorAssociationCollection();
+				dentalLabDoctorAssociationCollection.setDentalLabId(new ObjectId(request.getDentalLabId()));
+				dentalLabDoctorAssociationCollection.setDoctorId(new ObjectId(doctorSignUp.getUser().getId()));
+				dentalLabDoctorAssociationCollection.setIsActive(true);
+				dentalLabDoctorAssociationCollection = dentalLabDoctorAssociationRepository.save(dentalLabDoctorAssociationCollection);
+			}
+			response = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 }

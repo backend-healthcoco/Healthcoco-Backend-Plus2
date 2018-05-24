@@ -4,15 +4,15 @@ import com.dpdocter.enums.UnitType;
 
 public class Tax {
 
-	private double value;
+	private Double value = 0.0;
 	
 	private UnitType unit;
 
-	public double getValue() {
+	public Double getValue() {
 		return value;
 	}
 
-	public void setValue(double value) {
+	public void setValue(Double value) {
 		this.value = value;
 	}
 

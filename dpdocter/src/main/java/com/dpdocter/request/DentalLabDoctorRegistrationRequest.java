@@ -1,0 +1,169 @@
+package com.dpdocter.request;
+
+import java.util.Arrays;
+import java.util.List;
+
+import com.dpdocter.beans.DOB;
+
+public class DentalLabDoctorRegistrationRequest {
+
+	private String title;
+
+	private String firstName;
+
+	private char[] password;
+
+	private String emailAddress;
+
+	private String mobileNumber;
+
+	private String gender;
+
+	private DOB dob;
+
+	private List<String> specialities;
+
+	private String locationName;
+
+	private String country;
+
+	private String state;
+
+	private String city;
+
+	private String streetAddress;
+
+	private String registerNumber;
+
+	private String dentalLabId;
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public char[] getPassword() {
+		return password;
+	}
+
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getStreetAddress() {
+		return streetAddress;
+	}
+
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
+
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
+
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
+
+	public String getDentalLabId() {
+		return dentalLabId;
+	}
+
+	public void setDentalLabId(String dentalLabId) {
+		this.dentalLabId = dentalLabId;
+	}
+
+	@Override
+	public String toString() {
+		return "DentalLabDoctorRegistrationRequest [title=" + title + ", firstName=" + firstName + ", password="
+				+ Arrays.toString(password) + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", gender=" + gender + ", dob=" + dob + ", specialities=" + specialities + ", locationName="
+				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", streetAddress="
+				+ streetAddress + ", registerNumber=" + registerNumber + ", dentalLabId=" + dentalLabId + "]";
+	}
+
+}
