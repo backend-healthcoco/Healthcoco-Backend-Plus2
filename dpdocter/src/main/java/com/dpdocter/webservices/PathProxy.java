@@ -48,8 +48,6 @@ public interface PathProxy {
 		public static final String LOGIN_USER = "/user";
 
 		public static final String LOGIN_PATIENT = "/patient";
-
-		public static final String IS_LOCATION_ADMIN = "/isLocationAdmin";
 	}
 
 	public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";
@@ -1732,6 +1730,8 @@ public interface PathProxy {
 
 	}
 	
+
+
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
 
 	public interface DentalImagingUrl {
@@ -1755,5 +1755,14 @@ public interface PathProxy {
 
 		public static final String SEARCH_DOCTORS = "/doctors";
 		public static final String GET_RESOURCES_COUNT_BY_CITY = "/resources/countByCity/{city}";
+	}
+
+	public static final String Lab_PRINT_BASE_URL = BASE_URL + "/labPrint";
+
+	public interface LabPrintUrls {
+		public static final String ADD_EDIT_PRINT_SETTING = "/setting/add";
+		public static final String GET_PRINT_SETTING = "/setting/{locationId)/{hospitalId}/get";
+		public static final String ADD_EDIT_PRINT_HEADER = "header/addEdit";
+		public static final String ADD_EDIT_PRINT_FOOTER = "footer/addEdit";
 	}
 }
