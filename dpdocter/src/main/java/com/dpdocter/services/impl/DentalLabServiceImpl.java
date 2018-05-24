@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalStage;
@@ -53,6 +54,7 @@ import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -76,6 +78,7 @@ import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
 import com.dpdocter.repository.RateCardDoctorAssociationRepository;
 import com.dpdocter.repository.UserDeviceRepository;
@@ -155,6 +158,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 	private UserDeviceRepository userDeviceRepository;
 
 	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+
+	@Autowired
 	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
 
 	@Autowired
@@ -192,6 +198,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Value(value = "${jasper.print.dental.works.reports.fileName}")
 	private String dentalWorksFormA4FileName;
+	
+	@Value(value = "${jasper.print.dental.works.invoice.fileName}")
+	private String dentalWorksInvoiceA4FileName;
 
 	@Value(value = "${jasper.print.dental.Inspection.reports.fileName}")
 	private String dentalInspectionReportA4FileName;
@@ -621,8 +630,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
 			response = new DentalLabPickup();
 			BeanUtil.map(dentalLabPickupCollection, response);
-			if(locationCollection != null)
-			{
+			if (locationCollection != null) {
 				Location location = new Location();
 				BeanUtil.map(locationCollection, location);
 				response.setDentalLab(location);
@@ -2597,6 +2605,50 @@ public class DentalLabServiceImpl implements DentalLabService {
 			e.printStackTrace();
 		}
 
+	}
+
+	private JasperReportResponse createDentalWOrkLedger() throws NumberFormatException, IOException {
+		JasperReportResponse response = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		PrintSettingsCollection printSettings = null;
+		// printSettingsRepository.getSettings(
+		// patientTreatmentCollection.getDoctorId(),
+		// patientTreatmentCollection.getLocationId(),
+		// patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+		String pdfName = "DENTALINVOICE-" + new Date().getTime();
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.DENTAL_WORK_LEDGER, parameters,
+				dentalWorksInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
 	}
 
 }

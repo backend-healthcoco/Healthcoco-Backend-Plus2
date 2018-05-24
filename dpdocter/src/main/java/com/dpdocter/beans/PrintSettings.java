@@ -42,6 +42,7 @@ public class PrintSettings extends GenericCollection {
 	private boolean showDrugGenericNames = false;
 
 	private String generalNotes;
+	
 
 	public String getId() {
 		return id;

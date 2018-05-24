@@ -21,6 +21,16 @@ public class PrintSettingsText {
 
 	private FieldAlign instructionAlign = FieldAlign.VERTICAL;
 
+	private String gstIn;
+
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
 	public Boolean getShowTreatmentcost() {
 		return showTreatmentcost;
 	}
