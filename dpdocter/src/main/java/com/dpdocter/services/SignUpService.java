@@ -3,8 +3,10 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.CollectionBoy;
+import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
+import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
@@ -40,5 +42,7 @@ public interface SignUpService {
 	CollectionBoyResponse signupCollectionBoys(CollectionBoy collectionBoy);
 
 	String verifyLocale(String tokenId);
+
+	DoctorSignUp doctorSignUp(DoctorSignupRequest request);
 
 }

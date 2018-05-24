@@ -15,24 +15,28 @@ public class DentalWorksInvoice {
 
 	private String patientId;
 
-	private String uploadedByDoctorId;
+	private String patientName;
 
-	private String uploadedByLocationId;
+	private String mobileNumber;
 
-	private String uploadedByHospitalId;
-	
+	private String dentalLabLocationId;
+
+	private String dentalLabHospitalId;
+
 	private String uniqueInvoiceId;
 
 	private Discount totalDiscount;
 
-	private double totalCost = 0.0;
+	private Double totalCost = 0.0;
 
 	private Tax totalTax;
+
+	private List<InvoiceTax> invoiceTaxes;
 
 	private Double grandTotal = 0.0;
 
 	private Double oldGrantTotal = this.grandTotal;
-	
+
 	private Double usedAdvanceAmount = 0.0;
 
 	private Double refundAmount = 0.0;
@@ -43,7 +47,27 @@ public class DentalWorksInvoice {
 
 	private List<String> receiptIds;
 
+	private Boolean isTaxNotApplicable = false;
+
 	private Date invoiceDate;
+
+	private List<DentalWorksInvoiceItem> dentalWorksInvoiceItems;
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
 	public String getId() {
 		return id;
@@ -85,28 +109,20 @@ public class DentalWorksInvoice {
 		this.patientId = patientId;
 	}
 
-	public String getUploadedByDoctorId() {
-		return uploadedByDoctorId;
+	public String getDentalLabLocationId() {
+		return dentalLabLocationId;
 	}
 
-	public void setUploadedByDoctorId(String uploadedByDoctorId) {
-		this.uploadedByDoctorId = uploadedByDoctorId;
+	public void setDentalLabLocationId(String dentalLabLocationId) {
+		this.dentalLabLocationId = dentalLabLocationId;
 	}
 
-	public String getUploadedByLocationId() {
-		return uploadedByLocationId;
+	public String getDentalLabHospitalId() {
+		return dentalLabHospitalId;
 	}
 
-	public void setUploadedByLocationId(String uploadedByLocationId) {
-		this.uploadedByLocationId = uploadedByLocationId;
-	}
-
-	public String getUploadedByHospitalId() {
-		return uploadedByHospitalId;
-	}
-
-	public void setUploadedByHospitalId(String uploadedByHospitalId) {
-		this.uploadedByHospitalId = uploadedByHospitalId;
+	public void setDentalLabHospitalId(String dentalLabHospitalId) {
+		this.dentalLabHospitalId = dentalLabHospitalId;
 	}
 
 	public String getUniqueInvoiceId() {
@@ -125,11 +141,11 @@ public class DentalWorksInvoice {
 		this.totalDiscount = totalDiscount;
 	}
 
-	public double getTotalCost() {
+	public Double getTotalCost() {
 		return totalCost;
 	}
 
-	public void setTotalCost(double totalCost) {
+	public void setTotalCost(Double totalCost) {
 		this.totalCost = totalCost;
 	}
 
@@ -204,7 +220,29 @@ public class DentalWorksInvoice {
 	public void setInvoiceDate(Date invoiceDate) {
 		this.invoiceDate = invoiceDate;
 	}
-	
-	
-	
+
+	public List<InvoiceTax> getInvoiceTaxes() {
+		return invoiceTaxes;
+	}
+
+	public void setInvoiceTaxes(List<InvoiceTax> invoiceTaxes) {
+		this.invoiceTaxes = invoiceTaxes;
+	}
+
+	public Boolean getIsTaxNotApplicable() {
+		return isTaxNotApplicable;
+	}
+
+	public void setIsTaxNotApplicable(Boolean isTaxNotApplicable) {
+		this.isTaxNotApplicable = isTaxNotApplicable;
+	}
+
+	public List<DentalWorksInvoiceItem> getDentalWorksInvoiceItems() {
+		return dentalWorksInvoiceItems;
+	}
+
+	public void setDentalWorksInvoiceItems(List<DentalWorksInvoiceItem> dentalWorksInvoiceItems) {
+		this.dentalWorksInvoiceItems = dentalWorksInvoiceItems;
+	}
+
 }

@@ -1,6 +1,8 @@
-package com.dpdocter.request;
+package com.dpdocter.response;
 
-public class AddEditTaxRequest {
+import com.dpdocter.collections.GenericCollection;
+
+public class TaxResponse extends GenericCollection {
 
 	private String id;
 
@@ -15,7 +17,8 @@ public class AddEditTaxRequest {
 	private String note;
 
 	private Double percentage;
-	private Boolean discarded = false;
+
+	private Boolean discarded;
 
 	public String getId() {
 		return id;
