@@ -113,7 +113,6 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Autowired
 	private RecommendationsRepository recommendationsRepository;
-
 	@Autowired
 	private LabTestPickupRepository labTestPickupRepository;
 

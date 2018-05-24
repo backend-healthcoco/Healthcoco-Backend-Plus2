@@ -3306,4 +3306,48 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 
+	private JasperReportResponse createDentalWOrkLedger() throws NumberFormatException, IOException {
+		JasperReportResponse response = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		PrintSettingsCollection printSettings = null;
+		// printSettingsRepository.getSettings(
+		// patientTreatmentCollection.getDoctorId(),
+		// patientTreatmentCollection.getLocationId(),
+		// patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+		String pdfName = "DENTALINVOICE-" + new Date().getTime();
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.DENTAL_WORK_LEDGER, parameters,
+				dentalWorksInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+	}
+
 }
