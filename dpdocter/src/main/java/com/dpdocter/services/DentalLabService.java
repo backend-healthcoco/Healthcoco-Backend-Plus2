@@ -137,7 +137,7 @@ public interface DentalLabService {
 
 	TaxResponse addEditTax(AddEditTaxRequest request);
 
-	Boolean DentalLabDoctorRegistration(DentalLabDoctorRegistrationRequest request);
+	Boolean dentalLabDoctorRegistration(DentalLabDoctorRegistrationRequest request);
 
 	/*
 	 * DentalLabDoctorAssociation

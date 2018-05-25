@@ -2662,7 +2662,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Override
 	@Transactional
-	public Boolean DentalLabDoctorRegistration(DentalLabDoctorRegistrationRequest request)
+	public Boolean dentalLabDoctorRegistration(DentalLabDoctorRegistrationRequest request)
 	{
 		Boolean response =false;
 		
