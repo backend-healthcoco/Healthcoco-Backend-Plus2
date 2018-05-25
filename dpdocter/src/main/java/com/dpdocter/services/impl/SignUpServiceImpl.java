@@ -41,6 +41,7 @@ import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
