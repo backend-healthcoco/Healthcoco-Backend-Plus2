@@ -7,6 +7,8 @@ public class DentalWorksInvoice {
 
 	private String id;
 
+	private String dentalWorksId;
+
 	private String doctorId;
 
 	private String locationId;
@@ -243,6 +245,28 @@ public class DentalWorksInvoice {
 
 	public void setDentalWorksInvoiceItems(List<DentalWorksInvoiceItem> dentalWorksInvoiceItems) {
 		this.dentalWorksInvoiceItems = dentalWorksInvoiceItems;
+	}
+
+	public String getDentalWorksId() {
+		return dentalWorksId;
+	}
+
+	public void setDentalWorksId(String dentalWorksId) {
+		this.dentalWorksId = dentalWorksId;
+	}
+
+	@Override
+	public String toString() {
+		return "DentalWorksInvoice [id=" + id + ", dentalWorksId=" + dentalWorksId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
+				+ ", patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", dentalLabLocationId="
+				+ dentalLabLocationId + ", dentalLabHospitalId=" + dentalLabHospitalId + ", uniqueInvoiceId="
+				+ uniqueInvoiceId + ", totalDiscount=" + totalDiscount + ", totalCost=" + totalCost + ", totalTax="
+				+ totalTax + ", invoiceTaxes=" + invoiceTaxes + ", grandTotal=" + grandTotal + ", oldGrantTotal="
+				+ oldGrantTotal + ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount
+				+ ", balanceAmount=" + balanceAmount + ", discarded=" + discarded + ", receiptIds=" + receiptIds
+				+ ", isTaxNotApplicable=" + isTaxNotApplicable + ", invoiceDate=" + invoiceDate
+				+ ", dentalWorksInvoiceItems=" + dentalWorksInvoiceItems + "]";
 	}
 
 }
