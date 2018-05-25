@@ -117,7 +117,7 @@ public class LoginApi {
 
     }
 
-    @Path(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
+   /* @Path(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN, notes = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
     public Response<Boolean> isLocationAdmin(LoginRequest request) {
@@ -129,6 +129,6 @@ public class LoginApi {
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(isLocationAdmin);
 		return response;
-    }
+    }*/
 
 }
