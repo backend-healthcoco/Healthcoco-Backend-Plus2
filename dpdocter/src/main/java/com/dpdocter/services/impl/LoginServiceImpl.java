@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -515,13 +516,13 @@ public class LoginServiceImpl implements LoginService {
 			}
 			
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId())),
+					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId").is(new ObjectId(request.getLocationId()))),
 							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
 							Aggregation.unwind("roleCollection"),
 							Aggregation.match(new Criteria("roleCollection.role").is("LOCATION_ADMIN"))),
 					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
 
-			if(userRoleLookupResponses != null && userRoleLookupResponses.isEmpty())response = true;
+			if(userRoleLookupResponses != null && !userRoleLookupResponses.isEmpty())response = true;
 	}catch (Exception e) {
 		e.printStackTrace();
 		logger.error(e + " Error occured while checking is Location Admin");
