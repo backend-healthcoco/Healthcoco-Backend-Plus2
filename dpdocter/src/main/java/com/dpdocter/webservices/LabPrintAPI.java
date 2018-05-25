@@ -34,9 +34,9 @@ public class LabPrintAPI {
 	@Autowired
 	private LabPrintServices labprintservices;
 
-	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_SETTING)
+	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_SETTING)
 	@POST
-	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_SETTING, notes = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_SETTING)
+	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_SETTING, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_SETTING)
 	public Response<LabPrintSetting> addEditPrintSetting(LabPrintSetting request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -52,9 +52,9 @@ public class LabPrintAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.LabPrintUrls.GET_PRINT_SETTING)
+	@Path(value = PathProxy.LabPrintUrls.GET_Lab_PRINT_SETTING)
 	@GET
-	@ApiOperation(value = PathProxy.LabPrintUrls.GET_PRINT_SETTING, notes = PathProxy.LabPrintUrls.GET_PRINT_SETTING)
+	@ApiOperation(value = PathProxy.LabPrintUrls.GET_Lab_PRINT_SETTING, notes = PathProxy.LabPrintUrls.GET_Lab_PRINT_SETTING)
 	public Response<LabPrintSetting> addEditPrintSetting(@PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
@@ -67,9 +67,9 @@ public class LabPrintAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_HEADER)
+	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER)
 	@POST
-	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_HEADER, notes = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_HEADER)
+	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER)
 	public Response<LabPrintSetting> addEditPrintHeader(LabPrintContentRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -84,9 +84,10 @@ public class LabPrintAPI {
 
 		return response;
 	}
-	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_FOOTER)
+	
+	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
 	@POST
-	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_FOOTER, notes = PathProxy.LabPrintUrls.ADD_EDIT_PRINT_FOOTER)
+	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
 	public Response<LabPrintSetting> addEditPrintFooter(LabPrintContentRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");

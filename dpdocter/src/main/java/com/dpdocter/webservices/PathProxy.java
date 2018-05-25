@@ -1762,9 +1762,9 @@ public interface PathProxy {
 	public static final String Lab_PRINT_BASE_URL = BASE_URL + "/labPrint";
 
 	public interface LabPrintUrls {
-		public static final String ADD_EDIT_PRINT_SETTING = "/setting/add";
-		public static final String GET_PRINT_SETTING = "/setting/{locationId)/{hospitalId}/get";
-		public static final String ADD_EDIT_PRINT_HEADER = "header/addEdit";
-		public static final String ADD_EDIT_PRINT_FOOTER = "footer/addEdit";
+		public static final String ADD_EDIT_LAB_PRINT_SETTING = "/setting/add";
+		public static final String GET_Lab_PRINT_SETTING = "/setting/{locationId)/{hospitalId}/get";
+		public static final String ADD_EDIT_LAB_PRINT_HEADER = "header/addEdit";
+		public static final String ADD_EDIT_LAB_PRINT_FOOTER = "footer/addEdit";
 	}
 }
