@@ -27,5 +27,9 @@ public interface AppointmentRepository extends MongoRepository<AppointmentCollec
 
 	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'appointmentId': ?4}")
 	AppointmentCollection find(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, String appointmentId);
+	
+	
+	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'time.fromTime': ?4, 'time.toTime': ?5, 'fromDate': ?6, 'toDate': ?7}")
+	AppointmentCollection find(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, int from, int to, Date fromDate, Date toDate);
 
 }

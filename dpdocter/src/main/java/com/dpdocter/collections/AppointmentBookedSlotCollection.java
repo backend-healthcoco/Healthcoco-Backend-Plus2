@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -47,6 +48,9 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
 
     @Field
 	private Boolean isPatientDiscarded = false;
+    
+    @Field
+    private List<ObjectId> doctorIds;
     
 	public ObjectId getId() {
 		return id;
@@ -128,12 +132,20 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public List<ObjectId> getDoctorIds() {
+		return doctorIds;
+	}
+
+	public void setDoctorIds(List<ObjectId> doctorIds) {
+		this.doctorIds = doctorIds;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentBookedSlotCollection [id=" + id + ", appointmentId=" + appointmentId + ", doctorId="
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time
 				+ ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent=" + isAllDayEvent
-				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", doctorIds=" + doctorIds + "]";
 	}
 
 }

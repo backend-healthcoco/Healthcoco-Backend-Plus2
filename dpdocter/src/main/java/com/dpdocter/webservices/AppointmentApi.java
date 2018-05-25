@@ -323,19 +323,19 @@ public class AppointmentApi {
 	@Path(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
 	@POST
 	@ApiOperation(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT, notes = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
-	public Response<Appointment> addEditEvent(EventRequest request) throws MessagingException {
+	public Response<Event> addEditEvent(EventRequest request) throws MessagingException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
 			logger.warn("Invalid Input");
 			mailService.sendExceptionMail("Invalid input :: Doctor Id ,Location Id  cannot be empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Appointment event = null;
+		Event event = null;
 		if (request.getId() == null)
 			event = appointmentService.addEvent(request);
 		else
 			event = appointmentService.updateEvent(request);
 
-		Response<Appointment> response = new Response<Appointment>();
+		Response<Event> response = new Response<Event>();
 		response.setData(event);
 		return response;
 	}
@@ -646,9 +646,15 @@ public class AppointmentApi {
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "sortBy") String sortBy,
-			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime) {
+			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime,
+			@DefaultValue(value = "false") @QueryParam(value = "byMonth") Boolean byMonth) {
 
-		List<Event> events = appointmentService.getEvents(locationId, doctorId, from, to,
+		List<Event> events = null;
+		
+		if(byMonth)events = appointmentService.getEventsByMonth(locationId, doctorId, from, to,
+				page, size, updatedTime, sortBy, fromTime, toTime);
+		
+		else events = appointmentService.getEvents(locationId, doctorId, from, to,
 				page, size, updatedTime, sortBy, fromTime, toTime);
 		Response<Event> response = new Response<Event>();
 		response.setDataList(events);

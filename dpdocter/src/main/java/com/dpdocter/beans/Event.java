@@ -1,11 +1,13 @@
 package com.dpdocter.beans;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
+import com.dpdocter.response.DoctorResponse;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Event extends GenericCollection {
 
@@ -32,7 +34,17 @@ public class Event extends GenericCollection {
     private Boolean isAllDayEvent = false;
     
     private Boolean isRescheduled = false;
+    
+    private List<String> doctorIds;
 
+    private String localPatientName;
+    
+    private List<DoctorResponse> doctors;
+    
+    private String hospitalId;
+    
+    private String patientId;
+    
 	public String getId() {
 		return id;
 	}
@@ -129,11 +141,54 @@ public class Event extends GenericCollection {
 		this.isRescheduled = isRescheduled;
 	}
 
+	public List<String> getDoctorIds() {
+		return doctorIds;
+	}
+
+	public void setDoctorIds(List<String> doctorIds) {
+		this.doctorIds = doctorIds;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
+	public List<DoctorResponse> getDoctors() {
+		return doctors;
+	}
+
+	public void setDoctors(List<DoctorResponse> doctors) {
+		this.doctors = doctors;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
 	@Override
 	public String toString() {
 		return "Event [id=" + id + ", state=" + state + ", subject=" + subject + ", explanation=" + explanation
 				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked="
 				+ isCalenderBlocked + ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent="
-				+ isAllDayEvent + ", isRescheduled=" + isRescheduled + "]";
+				+ isAllDayEvent + ", isRescheduled=" + isRescheduled + ", doctorIds=" + doctorIds
+				+ ", localPatientName=" + localPatientName + ", doctors=" + doctors + ", hospitalId=" + hospitalId
+				+ ", patientId=" + patientId + "]";
 	}
+
 }

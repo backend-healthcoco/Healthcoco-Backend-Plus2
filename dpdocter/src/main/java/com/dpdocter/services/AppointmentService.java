@@ -59,9 +59,9 @@ public interface AppointmentService {
 
 	Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit, Boolean isStatusChange);
 
-	Appointment addEvent(EventRequest request);
+	Event addEvent(EventRequest request);
 
-	Appointment updateEvent(EventRequest request);
+	Event updateEvent(EventRequest request);
 
 	Boolean sendReminderToPatient(String appointmentId);
 
@@ -116,5 +116,8 @@ public interface AppointmentService {
 			String updatedTime, String sortBy, String fromTime, String toTime);
 
 	Event getEventById(String eventId);
+
+	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
+			String updatedTime, String sortBy, String fromTime, String toTime);
 
 }

@@ -36,7 +36,6 @@ import com.dpdocter.repository.PushNotificationRepository;
 import com.dpdocter.repository.UserDeviceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.BroadcastNotificationRequest;
-import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.PushNotificationServices;
@@ -280,6 +279,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
 					notification.setRi(componentTypeId);
 					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+					notification.setEi(componentTypeId);
+					notification.setNotificationType(componentType);
 				}
 				else
 				{
@@ -437,6 +439,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "DI");
+				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+					customValues.put("EI", componentTypeId);
+					customValues.put("T", "E");
 				}
 			}
 			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
