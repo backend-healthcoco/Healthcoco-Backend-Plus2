@@ -13,7 +13,6 @@ import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DoctorFacility;
-import com.dpdocter.enums.PackageType;
 
 public class DoctorClinicProfileLookupResponse extends GenericCollection {
 

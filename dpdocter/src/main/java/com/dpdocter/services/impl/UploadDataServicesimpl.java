@@ -47,6 +47,7 @@ import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiseasesCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
@@ -100,6 +101,7 @@ import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PrescriptionServices;
@@ -880,8 +882,18 @@ System.out.println(lineCount +".."+ fields[2]);
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			UserCollection drCollection = userRepository.findOne(doctorObjectId);
-			doctors.put(drCollection.getFirstName(), drCollection);
+			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 
+			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+			if(doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
+				for(DoctorClinicProfileLookupResponse clinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+					doctors.put(clinicProfileLookupResponse.getUser().getFirstName().toLowerCase(), clinicProfileLookupResponse.getUser());
+				}
+			}
 			AppointmentCollection appointmentCollection = null;
 
 			while ((line = br.readLine()) != null) {
@@ -918,21 +930,21 @@ System.out.println(fields[0] +""+ fields[1]);
 							appointmentCollection.setAppointmentId(
 									UniqueIdInitial.APPOINTMENT.getInitial() + DPDoctorUtils.generateRandomId());
 
-							if (checkIfNotNullOrNone(fields[8])) {
-								String state = fields[8].replace("'", "");
+							if (fields.length > 5 && checkIfNotNullOrNone(fields[5])) {
+								String state = fields[5].replace("'", "");
 								if (state.equalsIgnoreCase("CANCEL") || state.equalsIgnoreCase("CANCELLED"))
 									appointmentCollection.setState(AppointmentState.CANCEL);
 								else
 									appointmentCollection.setState(AppointmentState.CONFIRM);
 							}
-							if (checkIfNotNullOrNone(fields[6]))
-								appointmentCollection.setExplanation(fields[6].replace("'", ""));
+							if(fields.length > 3 && checkIfNotNullOrNone(fields[3]))
+								appointmentCollection.setExplanation(fields[3].replace("'", ""));
 
 							appointmentCollection.setLocationId(locationObjectId);
 							appointmentCollection.setHospitalId(hospitalObjectId);
 							appointmentCollection.setPatientId(patientCollection.getUserId());
 
-							String drName = fields[7].replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							String drName = fields[4].replace("'", "").replace("Dr. ", "").replace("Dr ", "").replace("Dr.", "").replace("Dr", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -959,15 +971,25 @@ System.out.println(fields[0] +""+ fields[1]);
 										.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 								appointmentCollection.setDoctorId(userCollection.getId());
 
-								appointmentCollection = appointmentRepository.save(appointmentCollection);
+								AppointmentCollection appointmentToCheck = appointmentRepository.find(appointmentCollection.getDoctorId(), locationObjectId, hospitalObjectId, 
+																	appointmentCollection.getPatientId(), appointmentCollection.getTime().getFromTime(), appointmentCollection.getTime().getToTime(),
+																	appointmentCollection.getFromDate(), appointmentCollection.getToDate());
+								if(appointmentToCheck == null) {
+									appointmentCollection = appointmentRepository.save(appointmentCollection);
 
-								AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
-								BeanUtil.map(appointmentCollection, bookedSlotCollection);
-								bookedSlotCollection.setDoctorId(appointmentCollection.getDoctorId());
-								bookedSlotCollection.setLocationId(appointmentCollection.getLocationId());
-								bookedSlotCollection.setHospitalId(appointmentCollection.getHospitalId());
-								bookedSlotCollection.setId(null);
-								appointmentBookedSlotRepository.save(bookedSlotCollection);
+									AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
+									BeanUtil.map(appointmentCollection, bookedSlotCollection);
+									bookedSlotCollection.setDoctorId(appointmentCollection.getDoctorId());
+									bookedSlotCollection.setLocationId(appointmentCollection.getLocationId());
+									bookedSlotCollection.setHospitalId(appointmentCollection.getHospitalId());
+									bookedSlotCollection.setId(null);
+									appointmentBookedSlotRepository.save(bookedSlotCollection);
+									
+									System.out.println(fields[0] +"..." +fields[1]+"..." +appointmentCollection.getCreatedBy());
+								}else {
+									System.out.println("Already present:" +fields[0] +"..." +fields[1]+"..." +appointmentCollection.getCreatedBy());
+								}
+								
 							} else
 								dataCountNotUploaded++;
 						} else

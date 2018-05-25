@@ -31,6 +31,8 @@ public class Notification {
 
 	private String uri;
 
+	private String ei;
+	
 	public String getReq() {
 		return req;
 	}
@@ -135,11 +137,19 @@ public class Notification {
 		this.uri = uri;
 	}
 
+	public String getEi() {
+		return ei;
+	}
+
+	public void setEi(String ei) {
+		this.ei = ei;
+	}
+
 	@Override
 	public String toString() {
 		return "Notification [title=" + title + ", text=" + text + ", img=" + img + ", notificationType="
 				+ notificationType + ", xi=" + xi + ", ri=" + ri + ", pi=" + pi + ", di=" + di + ", ai=" + ai + ", ci="
-				+ ci + ", uri=" + uri + "]";
+				+ ci + ", req=" + req + ", res=" + res + ", uri=" + uri + ", ei=" + ei + "]";
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.dpdocter.request;
 
 import java.util.Date;
+import java.util.List;
 
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;
@@ -17,6 +18,8 @@ public class EventRequest {
 
     private String locationId;
 
+    private String hospitalId;
+    
     private String doctorId;
 
     private WorkingHours time;
@@ -29,6 +32,14 @@ public class EventRequest {
 
     private Boolean isAllDayEvent = false;
     
+    private List<String> doctorIds;
+    
+	private String localPatientName;
+
+	private String mobileNumber;
+	
+	private Boolean isPatientRequired;
+	
     public String getId() {
 	return id;
     }
@@ -117,12 +128,54 @@ public class EventRequest {
 		this.isAllDayEvent = isAllDayEvent;
 	}
 
+	public List<String> getDoctorIds() {
+		return doctorIds;
+	}
+
+	public void setDoctorIds(List<String> doctorIds) {
+		this.doctorIds = doctorIds;
+	}
+	
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public Boolean getIsPatientRequired() {
+		return isPatientRequired;
+	}
+
+	public void setIsPatientRequired(Boolean isPatientRequired) {
+		this.isPatientRequired = isPatientRequired;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
 		return "EventRequest [id=" + id + ", state=" + state + ", subject=" + subject + ", explanation=" + explanation
-				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", time=" + time + ", isCalenderBlocked="
-				+ isCalenderBlocked + ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent="
-				+ isAllDayEvent + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + ", time="
+				+ time + ", isCalenderBlocked=" + isCalenderBlocked + ", fromDate=" + fromDate + ", toDate=" + toDate
+				+ ", isAllDayEvent=" + isAllDayEvent + ", doctorIds=" + doctorIds + ", localPatientName="
+				+ localPatientName + ", mobileNumber=" + mobileNumber + ", isPatientRequired=" + isPatientRequired
+				+ "]";
 	}
 
 }

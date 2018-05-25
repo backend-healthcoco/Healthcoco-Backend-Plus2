@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -117,6 +118,9 @@ public class AppointmentCollection extends GenericCollection {
 	
 	@Field
 	private Boolean isPatientDiscarded = false;
+
+	@Field
+	private List<ObjectId> doctorIds;
 	
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
@@ -382,6 +386,14 @@ public class AppointmentCollection extends GenericCollection {
 		this.localPatientName = localPatientName;
 	}
 
+	public List<ObjectId> getDoctorIds() {
+		return doctorIds;
+	}
+
+	public void setDoctorIds(List<ObjectId> doctorIds) {
+		this.doctorIds = doctorIds;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -394,7 +406,7 @@ public class AppointmentCollection extends GenericCollection {
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
 				+ ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", category="
-				+ category + ", cancelledByProfile=" + cancelledByProfile + ", localPatientName=" + localPatientName
-				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ category + ", isPatientDiscarded=" + isPatientDiscarded + ", cancelledByProfile=" + cancelledByProfile
+				+ ", localPatientName=" + localPatientName + ", doctorIds=" + doctorIds + "]";
 	}
 }

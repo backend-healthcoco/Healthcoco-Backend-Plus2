@@ -33,7 +33,11 @@ public enum ComponentType {
 
 																																																									"APPOINTMENT_STATUS_CHANGE"), MULTIPLE_INSPECTION_REPORT(
 																																																											"MULTIPLE_INSPECTION_REPORT"), APPOINTMENT_REFRESH(
-																																																													"APPOINTMENT_REFRESH") , DENTAL_IMAGING_REQUEST("DENTAL_IMAGING_REQUEST"), REFRESH_DENTAL_IMAGING("REFRESH_DENTAL_IMAGING");
+
+																																																													"APPOINTMENT_REFRESH"), DENTAL_IMAGING_REQUEST(
+																																																															"DENTAL_IMAGING_REQUEST"), REFRESH_DENTAL_IMAGING(
+																																																																	"REFRESH_DENTAL_IMAGING"), DENTAL_WORK_LEDGER(
+																																																																			"DENTAL_WORK_LEDGER"), EVENT("EVENT");
 
 	private String type;
 
