@@ -36,6 +36,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditCustomWorkRequest;
+import com.dpdocter.request.AddEditTaxRequest;
+import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.LabReportsAddRequest;
@@ -44,6 +46,7 @@ import com.dpdocter.request.UpdateETARequest;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.TaxResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.LocationServices;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -486,5 +489,31 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.downloadMultipleInspectionReportPrint(requestId));
 		return response;
 	}
+	
+
+	@Path(value = PathProxy.DentalLabUrls.DOCTOR_REGISTRATION)
+	@POST
+	@ApiOperation(value = PathProxy.DentalLabUrls.DOCTOR_REGISTRATION, notes = PathProxy.DentalLabUrls.DOCTOR_REGISTRATION)
+	public Response<Boolean> doctorRegistration(DentalLabDoctorRegistrationRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalLabService.dentalLabDoctorRegistration(request));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_TAX)
+	@POST
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_TAX, notes = PathProxy.DentalLabUrls.ADD_EDIT_TAX)
+	public Response<TaxResponse> addEditTax(AddEditTaxRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<TaxResponse> response = new Response<TaxResponse>();
+		response.setData(dentalLabService.addEditTax(request));
+		return response;
+	}
+
 
 }
