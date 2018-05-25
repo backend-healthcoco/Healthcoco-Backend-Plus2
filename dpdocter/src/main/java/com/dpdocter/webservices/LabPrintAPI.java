@@ -87,7 +87,7 @@ public class LabPrintAPI {
 	
 	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
 	@POST
-	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
+	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
 	public Response<LabPrintSetting> addEditPrintFooter(LabPrintContentRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
