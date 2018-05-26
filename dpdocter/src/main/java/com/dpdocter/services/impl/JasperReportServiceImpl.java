@@ -228,10 +228,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			Boolean showTableOne = (Boolean) parameters.get("showTableOne");
 			jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters));
-			if (parameters.get("headerHtml") != null)
-				if (!DPDoctorUtils.allStringsEmpty(parameters.get("headerHtml").toString()))
-					((JRDesignSection) jasperDesign.getDetailSection())
-							.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+
+			if (parameters.get("headerHtml") != null && !String.valueOf(parameters.get("headerHtml")).trim().isEmpty())
+
+				((JRDesignSection) jasperDesign.getDetailSection())
+						.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 
 			if (parameters.get("patientLeftText") != null && parameters.get("patientRightText") != null) {
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign,
@@ -846,10 +847,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		reportElement.setHeight(10);
 		reportElement.setWidth(columnWidth);
 		reportElement.setX(0);
-		if (headerHtml != null)
+
+		if (headerHtml != null && !String.valueOf(headerHtml).trim().isEmpty())
 			reportElement.setY(0);
 		else if (showTableOne)
-			reportElement.setY(-20);
+			reportElement.setY(0);
 		else
 			reportElement.setY(0);
 		reportElement.setComponent(table);
@@ -906,7 +908,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			dsr.addParameter(param);
 
 			DesignCell columnHeader = new DesignCell();
-			columnHeader.setHeight(60);
+			columnHeader.setHeight(40);
 
 			jrDesignTextField = new JRDesignTextField();
 			expression = new JRDesignExpression();
@@ -919,21 +921,20 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			columnHeader.addElement(jrDesignTextField);
-			String logoUrl = parameters.get("logoURL") != null ? parameters.get("logoURL").toString() : "";
-			if (!DPDoctorUtils.anyStringEmpty(logoUrl)) {
-				JRDesignImage jrDesignImage = new JRDesignImage(null);
-				jrDesignImage.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty()"));
-				jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
-				jrDesignImage.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
-				expression = new JRDesignExpression();
-				expression.setText("$P{logoURL}");
-				jrDesignImage.setExpression(expression);
-				jrDesignImage.setX(((38 * columnWidth) / 100) + 1);
-				jrDesignImage.setY(0);
-				jrDesignImage.setHeight(50);
-				jrDesignImage.setWidth(50);
-				columnHeader.addElement(jrDesignImage);
-			}
+
+			JRDesignImage jrDesignImage = new JRDesignImage(null);
+			jrDesignImage.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty()"));
+			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
+			expression = new JRDesignExpression();
+			expression.setText("$P{logoURL}");
+			jrDesignImage.setExpression(expression);
+			jrDesignImage.setX(((38 * columnWidth) / 100) + 1);
+			jrDesignImage.setY(0);
+			jrDesignImage.setHeight(40);
+			jrDesignImage.setWidth(50);
+			jrDesignImage.setStretchType(StretchTypeEnum.RELATIVE_TO_BAND_HEIGHT);
+			columnHeader.addElement(jrDesignImage);
+
 			jrDesignTextField = new JRDesignTextField();
 			expression = new JRDesignExpression();
 			expression.setText("$P{headerRightText}");
@@ -969,14 +970,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setHeight(1);
 			jrDesignLine.setWidth(columnWidth);
 			if (showTableOne)
-				jrDesignLine.setY(-27);
+				jrDesignLine.setY(-10);
 			else
 				jrDesignLine.setY(0);
 
 			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
-			band.setSplitType(SplitTypeEnum.STRETCH);
 			band.addElement(jrDesignLine);
-
 		}
 
 		return band;
