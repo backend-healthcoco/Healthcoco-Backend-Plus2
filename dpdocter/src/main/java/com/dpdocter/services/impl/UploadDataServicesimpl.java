@@ -1054,7 +1054,16 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 			UserCollection drCollection = userRepository.findOne(doctorObjectId);
 			doctors.put(drCollection.getFirstName(), drCollection);
-
+			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+			if(doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
+				for(DoctorClinicProfileLookupResponse clinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+					doctors.put(clinicProfileLookupResponse.getUser().getFirstName().toLowerCase(), clinicProfileLookupResponse.getUser());
+				}
+			}
 			PatientTreatmentCollection patientTreatmentCollection = null;
 
 			while ((line = br.readLine()) != null) {
@@ -1268,7 +1277,16 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 			UserCollection drCollection = userRepository.findOne(doctorObjectId);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
-
+			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+			if(doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
+				for(DoctorClinicProfileLookupResponse clinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+					doctors.put(clinicProfileLookupResponse.getUser().getFirstName().toLowerCase(), clinicProfileLookupResponse.getUser());
+				}
+			}
 			PatientTreatmentCollection patientTreatmentCollection = null;
 
 			while ((line = br.readLine()) != null) {
@@ -1709,7 +1727,16 @@ public class UploadDataServicesimpl implements UploadDateService {
 			
 			UserCollection drCollection = userRepository.findOne(doctorObjectId);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
-			
+			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+			if(doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
+				for(DoctorClinicProfileLookupResponse clinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+					doctors.put(clinicProfileLookupResponse.getUser().getFirstName().toLowerCase(), clinicProfileLookupResponse.getUser());
+				}
+			}
 			ClinicalNotesCollection clinicalNotesCollection = null;
 
 			while ((line = br.readLine()) != null) {
@@ -1867,7 +1894,16 @@ public class UploadDataServicesimpl implements UploadDateService {
 			
 			UserCollection drCollection = userRepository.findOne(doctorObjectId);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
-			
+			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+			if(doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
+				for(DoctorClinicProfileLookupResponse clinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+					doctors.put(clinicProfileLookupResponse.getUser().getFirstName().toLowerCase(), clinicProfileLookupResponse.getUser());
+				}
+			}
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
 
 			while ((line = br.readLine()) != null) {

@@ -45,6 +45,16 @@ public class Event extends GenericCollection {
     
     private String patientId;
     
+    private int fromDateMonth;
+    
+    private int fromDateYear;
+    
+    private int toDateYear;
+    
+    private int toDateMonth;
+    
+    private Object patientCard;
+    
 	public String getId() {
 		return id;
 	}
@@ -181,6 +191,46 @@ public class Event extends GenericCollection {
 		this.patientId = patientId;
 	}
 
+	public int getFromDateMonth() {
+		return fromDateMonth;
+	}
+
+	public void setFromDateMonth(int fromDateMonth) {
+		this.fromDateMonth = fromDateMonth;
+	}
+
+	public int getFromDateYear() {
+		return fromDateYear;
+	}
+
+	public void setFromDateYear(int fromDateYear) {
+		this.fromDateYear = fromDateYear;
+	}
+
+	public int getToDateYear() {
+		return toDateYear;
+	}
+
+	public void setToDateYear(int toDateYear) {
+		this.toDateYear = toDateYear;
+	}
+
+	public int getToDateMonth() {
+		return toDateMonth;
+	}
+
+	public void setToDateMonth(int toDateMonth) {
+		this.toDateMonth = toDateMonth;
+	}
+
+	public Object getPatientCard() {
+		return patientCard;
+	}
+
+	public void setPatientCard(Object patientCard) {
+		this.patientCard = patientCard;
+	}
+
 	@Override
 	public String toString() {
 		return "Event [id=" + id + ", state=" + state + ", subject=" + subject + ", explanation=" + explanation
@@ -188,7 +238,8 @@ public class Event extends GenericCollection {
 				+ isCalenderBlocked + ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent="
 				+ isAllDayEvent + ", isRescheduled=" + isRescheduled + ", doctorIds=" + doctorIds
 				+ ", localPatientName=" + localPatientName + ", doctors=" + doctors + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + "]";
+				+ ", patientId=" + patientId + ", fromDateMonth=" + fromDateMonth + ", fromDateYear=" + fromDateYear
+				+ ", toDateYear=" + toDateYear + ", toDateMonth=" + toDateMonth + ", patientCard=" + patientCard + "]";
 	}
 
 }
