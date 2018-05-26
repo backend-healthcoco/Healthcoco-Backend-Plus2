@@ -82,7 +82,9 @@ public class SearchServiceImpl implements SearchService {
 			Set<String> specialityIdSet = new HashSet<String>();
 			Set<String> locationIds = null, doctorIds = null;
 
-			
+			if(city.equalsIgnoreCase("undefined")) {
+				return null;
+			}
 			if (!DPDoctorUtils.anyStringEmpty(service)) {
 				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
 						.findByName(service);
@@ -177,7 +179,7 @@ public class SearchServiceImpl implements SearchService {
 				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
 				SearchQuery searchQuery = null;
 				
-				if(DPDoctorUtils.anyStringEmpty(locality)) {
+				if(DPDoctorUtils.anyStringEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
 					if (size > 0)
 						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
