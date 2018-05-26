@@ -6,12 +6,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,6 +26,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,10 +40,19 @@ import com.dpdocter.beans.DentalStage;
 import com.dpdocter.beans.DentalStagejasperBean;
 import com.dpdocter.beans.DentalToothNumber;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorksInvoice;
+import com.dpdocter.beans.DentalWorksInvoiceItem;
+import com.dpdocter.beans.DentalWorksReceipt;
 import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorSignUp;
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.InseptionReportJasperBean;
+import com.dpdocter.beans.InventoryBatch;
+import com.dpdocter.beans.InventoryItem;
+import com.dpdocter.beans.InventoryStock;
+import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
@@ -53,7 +66,13 @@ import com.dpdocter.collections.CollectionBoyDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
 import com.dpdocter.collections.DentalWorkCollection;
+import com.dpdocter.collections.DentalWorksInvoiceCollection;
+import com.dpdocter.collections.DentalWorksReceiptCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorPatientDueAmountCollection;
+import com.dpdocter.collections.DoctorPatientInvoiceCollection;
+import com.dpdocter.collections.DoctorPatientLedgerCollection;
+import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -64,6 +83,7 @@ import com.dpdocter.collections.TaxCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.RoleEnum;
@@ -78,6 +98,7 @@ import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.DentalLabDoctorAssociationRepository;
 import com.dpdocter.repository.DentalLabTestPickupRepository;
 import com.dpdocter.repository.DentalWorkRepository;
+import com.dpdocter.repository.DentalWorksInvoiceRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -101,7 +122,9 @@ import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
+import com.dpdocter.response.DentalWorksInvoiceItemResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.InvoiceItemResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.TaxResponse;
 import com.dpdocter.services.DentalLabService;
@@ -186,6 +209,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 	
 	@Autowired
 	private SignUpService signUpService;
+	
+	@Autowired
+	private DentalWorksInvoiceRepository dentalWorksInvoiceRepository;
 
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
@@ -2729,5 +2755,134 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		return response;
 	}
+	
+	
+	public DentalWorksInvoice addEditInvoice(DentalWorksInvoice request)
+	{
+		DentalWorksInvoice response = null;
+		try {
+			DentalWorksInvoiceCollection dentalWorksInvoiceCollection = new DentalWorksInvoiceCollection();
+
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				BeanUtil.map(request, dentalWorksInvoiceCollection);
+
+				LocationCollection locationCollection = locationRepository
+						.findOne(new ObjectId(request.getDentalLabLocationId()));
+				if (locationCollection == null)
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
+				dentalWorksInvoiceCollection
+						.setUniqueInvoiceId(
+								locationCollection.getInvoiceInitial()
+										+ ((int) mongoTemplate.count(
+												new Query(new Criteria("locationId")
+														.is(dentalWorksInvoiceCollection.getDentalLabLocationId())
+														.and("hospitalId")
+														.is(dentalWorksInvoiceCollection.getDentalLabHospitalId())),
+												DoctorPatientInvoiceCollection.class) + 1));
+				dentalWorksInvoiceCollection.setBalanceAmount(request.getGrandTotal());
+				if (dentalWorksInvoiceCollection.getInvoiceDate() == null)
+					dentalWorksInvoiceCollection.setInvoiceDate(new Date());
+				if (request.getCreatedTime() == null) {
+					dentalWorksInvoiceCollection.setCreatedTime(new Date());
+				}
+				dentalWorksInvoiceCollection.setAdminCreatedTime(new Date());
+			} else {
+				dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findOne(new ObjectId(request.getId()));
+				
+				BeanUtil.map(request, dentalWorksInvoiceCollection);
+				if (request.getCreatedTime() != null) {
+					dentalWorksInvoiceCollection.setCreatedTime(request.getCreatedTime());
+				}
+
+				dentalWorksInvoiceCollection.setUpdatedTime(new Date());
+				dentalWorksInvoiceCollection.setTotalCost(request.getTotalCost());
+				dentalWorksInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
+				dentalWorksInvoiceCollection.setTotalTax(request.getTotalTax());
+				dentalWorksInvoiceCollection.setGrandTotal(request.getGrandTotal());
+	
+			}
+			List<DentalWorksInvoiceItem> invoiceItems = new ArrayList<DentalWorksInvoiceItem>();
+			for (DentalWorksInvoiceItemResponse invoiceItemResponse : request.getDentalWorksInvoiceItems()) {
+				DentalWorksInvoiceItem dentalWorksInvoiceItem = new DentalWorksInvoiceItem();
+				BeanUtil.map(invoiceItemResponse, dentalWorksInvoiceItem);
+				invoiceItems.add(dentalWorksInvoiceItem);
+			}
+			dentalWorksInvoiceCollection.setDentalWorksInvoiceItems(invoiceItems);
+			dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.save(dentalWorksInvoiceCollection);
+			
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			logger.error("Error while adding invoice" + e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while adding invoice" + e);
+		}
+		return response;
+	}
+	/*
+	public DentalWorksReceipt addEditReceipt(DentalWorksReceipt request)
+	{
+		DentalWorksReceipt response = null;
+		try {
+			DentalWorksReceiptCollection dentalWorksReceiptCollection = new DentalWorksReceiptCollection();
+
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				BeanUtil.map(request, dentalWorksReceiptCollection);
+
+				LocationCollection locationCollection = locationRepository
+						.findOne(new ObjectId(request.getDentalLabLocationId()));
+				if (locationCollection == null)
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
+				dentalWorksReceiptCollection
+						.setUniqueInvoiceId(
+								locationCollection.getInvoiceInitial()
+										+ ((int) mongoTemplate.count(
+												new Query(new Criteria("locationId")
+														.is(dentalWorksReceiptCollection.getDentalLabLocationId())
+														.and("hospitalId")
+														.is(dentalWorksReceiptCollection.getDentalLabHospitalId())),
+												DoctorPatientInvoiceCollection.class) + 1));
+				if (dentalWorksReceiptCollection.getReceivedDate() == null)
+					dentalWorksReceiptCollection.setReceivedDate(System.currentTimeMillis() );
+				if (request.getCreatedTime() == null) {
+					dentalWorksInvoiceCollection.setCreatedTime(new Date());
+				}
+				dentalWorksInvoiceCollection.setAdminCreatedTime(new Date());
+			} else {
+				dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findOne(new ObjectId(request.getId()));
+				
+				BeanUtil.map(request, dentalWorksInvoiceCollection);
+				if (request.getCreatedTime() != null) {
+					dentalWorksInvoiceCollection.setCreatedTime(request.getCreatedTime());
+				}
+
+				dentalWorksInvoiceCollection.setUpdatedTime(new Date());
+				dentalWorksInvoiceCollection.setTotalCost(request.getTotalCost());
+				dentalWorksInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
+				dentalWorksInvoiceCollection.setTotalTax(request.getTotalTax());
+				dentalWorksInvoiceCollection.setGrandTotal(request.getGrandTotal());
+	
+			}
+			List<DentalWorksInvoiceItem> invoiceItems = new ArrayList<DentalWorksInvoiceItem>();
+			for (DentalWorksInvoiceItemResponse invoiceItemResponse : request.getDentalWorksInvoiceItems()) {
+				DentalWorksInvoiceItem dentalWorksInvoiceItem = new DentalWorksInvoiceItem();
+				BeanUtil.map(invoiceItemResponse, dentalWorksInvoiceItem);
+				invoiceItems.add(dentalWorksInvoiceItem);
+			}
+			dentalWorksInvoiceCollection.setDentalWorksInvoiceItems(invoiceItems);
+			dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.save(dentalWorksInvoiceCollection);
+			
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			logger.error("Error while adding invoice" + e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while adding invoice" + e);
+		}
+		return response;
+	}*/
+	
 
 }

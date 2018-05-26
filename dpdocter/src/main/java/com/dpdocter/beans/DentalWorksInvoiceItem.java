@@ -2,24 +2,18 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 
 public class DentalWorksInvoiceItem {
 
-	private DentalWork dentalWork;
+	private ObjectId workId;
+	private String workName;
 	private List<DentalToothNumber> dentalToothNumbers;
 	private Integer quantity;
 	private Double cost = 0.0;
 	private Discount discount;
 	private Tax tax;
 	private Double finalCost = 0.0;
-
-	public DentalWork getDentalWork() {
-		return dentalWork;
-	}
-
-	public void setDentalWork(DentalWork dentalWork) {
-		this.dentalWork = dentalWork;
-	}
 
 	public List<DentalToothNumber> getDentalToothNumbers() {
 		return dentalToothNumbers;
@@ -67,6 +61,22 @@ public class DentalWorksInvoiceItem {
 
 	public void setFinalCost(Double finalCost) {
 		this.finalCost = finalCost;
+	}
+
+	public ObjectId getWorkId() {
+		return workId;
+	}
+
+	public void setWorkId(ObjectId workId) {
+		this.workId = workId;
+	}
+
+	public String getWorkName() {
+		return workName;
+	}
+
+	public void setWorkName(String workName) {
+		this.workName = workName;
 	}
 
 }

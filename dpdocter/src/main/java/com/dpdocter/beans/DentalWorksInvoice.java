@@ -3,7 +3,10 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
-public class DentalWorksInvoice {
+import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.response.DentalWorksInvoiceItemResponse;
+
+public class DentalWorksInvoice extends GenericCollection{
 
 	private String id;
 
@@ -53,7 +56,7 @@ public class DentalWorksInvoice {
 
 	private Date invoiceDate;
 
-	private List<DentalWorksInvoiceItem> dentalWorksInvoiceItems;
+	private List<DentalWorksInvoiceItemResponse> dentalWorksInvoiceItems;
 
 	public String getPatientName() {
 		return patientName;
@@ -239,11 +242,11 @@ public class DentalWorksInvoice {
 		this.isTaxNotApplicable = isTaxNotApplicable;
 	}
 
-	public List<DentalWorksInvoiceItem> getDentalWorksInvoiceItems() {
+	public List<DentalWorksInvoiceItemResponse> getDentalWorksInvoiceItems() {
 		return dentalWorksInvoiceItems;
 	}
 
-	public void setDentalWorksInvoiceItems(List<DentalWorksInvoiceItem> dentalWorksInvoiceItems) {
+	public void setDentalWorksInvoiceItems(List<DentalWorksInvoiceItemResponse> dentalWorksInvoiceItems) {
 		this.dentalWorksInvoiceItems = dentalWorksInvoiceItems;
 	}
 

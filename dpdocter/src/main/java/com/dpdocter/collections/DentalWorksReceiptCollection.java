@@ -1,25 +1,27 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
+
+import org.bson.types.ObjectId;
 
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 
-public class DentalWorksReceipt {
+public class DentalWorksReceiptCollection extends GenericCollection {
 
-	private String id;
+	private ObjectId id;
 
 	private String uniqueReceiptId;
 
 	private ReceiptType receiptType;
 
-	private String doctorId;
+	private ObjectId doctorId;
 
-	private String locationId;
+	private ObjectId locationId;
 
-	private String hospitalId;
+	private ObjectId hospitalId;
 
-	private String dentalLabLocationId;
+	private ObjectId dentalLabLocationId;
 
-	private String dentalLabHospitalId;
+	private ObjectId dentalLabHospitalId;
 
 	private ModeOfPayment modeOfPayment;
 
@@ -31,11 +33,11 @@ public class DentalWorksReceipt {
 
 	private Boolean discarded = false;
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
@@ -55,43 +57,43 @@ public class DentalWorksReceipt {
 		this.receiptType = receiptType;
 	}
 
-	public String getDoctorId() {
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public String getLocationId() {
+	public ObjectId getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(String locationId) {
+	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
 
-	public String getHospitalId() {
+	public ObjectId getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(String hospitalId) {
+	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getDentalLabLocationId() {
+	public ObjectId getDentalLabLocationId() {
 		return dentalLabLocationId;
 	}
 
-	public void setDentalLabLocationId(String dentalLabLocationId) {
+	public void setDentalLabLocationId(ObjectId dentalLabLocationId) {
 		this.dentalLabLocationId = dentalLabLocationId;
 	}
 
-	public String getDentalLabHospitalId() {
+	public ObjectId getDentalLabHospitalId() {
 		return dentalLabHospitalId;
 	}
 
-	public void setDentalLabHospitalId(String dentalLabHospitalId) {
+	public void setDentalLabHospitalId(ObjectId dentalLabHospitalId) {
 		this.dentalLabHospitalId = dentalLabHospitalId;
 	}
 
@@ -111,6 +113,14 @@ public class DentalWorksReceipt {
 		this.amountPaid = amountPaid;
 	}
 
+	public Double getRemainingAmount() {
+		return remainingAmount;
+	}
+
+	public void setRemainingAmount(Double remainingAmount) {
+		this.remainingAmount = remainingAmount;
+	}
+
 	public Long getReceivedDate() {
 		return receivedDate;
 	}
@@ -125,15 +135,6 @@ public class DentalWorksReceipt {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
-	}
-
-	@Override
-	public String toString() {
-		return "DentalWorksReceipt [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType=" + receiptType
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", dentalLabLocationId=" + dentalLabLocationId + ", dentalLabHospitalId=" + dentalLabHospitalId
-				+ ", modeOfPayment=" + modeOfPayment + ", amountPaid=" + amountPaid + ", remainingAmount="
-				+ remainingAmount + ", receivedDate=" + receivedDate + ", discarded=" + discarded + "]";
 	}
 
 }

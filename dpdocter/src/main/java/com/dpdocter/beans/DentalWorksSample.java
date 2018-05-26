@@ -17,6 +17,7 @@ public class DentalWorksSample {
 	private String ponticDesign;
 	private String collarAndMetalDesign;
 	private String uniqueWorkId;
+	private Double cost;
 	private List<ImageURLResponse> dentalImages;
 	private List<DentalWorkCardValue> dentalWorkCardValues;
 	private String shade;
@@ -175,6 +176,14 @@ public class DentalWorksSample {
 
 	public void setDentalToothNumbers(List<DentalToothNumber> dentalToothNumbers) {
 		this.dentalToothNumbers = dentalToothNumbers;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
 	}
 
 	@Override

@@ -22,6 +22,8 @@ import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorksInvoice;
+import com.dpdocter.beans.DentalWorksReceipt;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
@@ -496,6 +498,30 @@ public class DentalLabAPI {
 		}
 		Response<TaxResponse> response = new Response<TaxResponse>();
 		response.setData(dentalLabService.addEditTax(request));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_INVOICE)
+	@POST
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_INVOICE, notes = PathProxy.DentalLabUrls.ADD_EDIT_INVOICE)
+	public Response<DentalWorksInvoice> addEditInvoice(DentalWorksInvoice request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksInvoice> response = new Response<DentalWorksInvoice>();
+		//response.setData(dentalLabService.addEdit);
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_TAX)
+	@POST
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_TAX, notes = PathProxy.DentalLabUrls.ADD_EDIT_TAX)
+	public Response<DentalWorksReceipt> addEditReceipt(DentalWorksReceipt request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksReceipt> response = new Response<DentalWorksReceipt>();
+		//response.setData(dentalLabService.addEditTax(request));
 		return response;
 	}
 

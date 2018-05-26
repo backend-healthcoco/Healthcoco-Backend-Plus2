@@ -1669,6 +1669,8 @@ public interface PathProxy {
 		public static final String DOWNLOAD_MULTIPLE_DENTAL_LAB_INSPECTION_REPORT = "/inspectionReport/download";
 		public static final String DOCTOR_REGISTRATION = "/doctorRegistration";
 		public static final String ADD_EDIT_TAX = "/addEditTax";
+		public static final String ADD_EDIT_INVOICE = "/billing/addEditInvoice";
+		public static final String ADD_EDIT_RECEIPT = "/billing/addEditReceipt";
 
 	}
 
