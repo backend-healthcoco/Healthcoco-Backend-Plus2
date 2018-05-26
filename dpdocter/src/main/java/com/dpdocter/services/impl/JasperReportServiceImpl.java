@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -228,8 +229,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			Boolean showTableOne = (Boolean) parameters.get("showTableOne");
 			jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters));
 			if (parameters.get("headerHtml") != null)
-				((JRDesignSection) jasperDesign.getDetailSection())
-						.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+				if (!DPDoctorUtils.allStringsEmpty(parameters.get("headerHtml").toString()))
+					((JRDesignSection) jasperDesign.getDetailSection())
+							.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 
 			if (parameters.get("patientLeftText") != null && parameters.get("patientRightText") != null) {
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign,
@@ -904,7 +906,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			dsr.addParameter(param);
 
 			DesignCell columnHeader = new DesignCell();
-			columnHeader.setHeight(60);	
+			columnHeader.setHeight(60);
 
 			jrDesignTextField = new JRDesignTextField();
 			expression = new JRDesignExpression();
@@ -998,11 +1000,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 		Boolean showTitle = (Boolean) parameters.get("showPCTitle");
 
-		int fieldWidth = 118;
+		int fieldWidth = 108;
 		if (contentFontSize > 13)
-			fieldWidth = 145;
+			fieldWidth = 135;
 		else if (contentFontSize > 11)
-			fieldWidth = 128;
+			fieldWidth = 118;
 
 		band = new JRDesignBand();
 		band.setHeight(1);
@@ -5661,6 +5663,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 
 	}
+
 	private void createMultipleReceipt(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)
 			throws JRException {
@@ -6485,7 +6488,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		return band;
 	}
-
 
 	private void createMultipleInspectionReport(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)

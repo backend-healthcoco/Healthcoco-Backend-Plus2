@@ -25,9 +25,9 @@
 	<task:annotation-driven executor="taskExecutor" />
 	<bean id="taskExecutor"
 		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<property name="corePoolSize" value="5" />
-		<property name="maxPoolSize" value="10" />
-		<property name="queueCapacity" value="25" />
+		<property name="corePoolSize" value="15" />
+		<property name="maxPoolSize" value="25" />
+		<property name="queueCapacity" value="70" />
 	</bean>
 
 	<context:property-placeholder
