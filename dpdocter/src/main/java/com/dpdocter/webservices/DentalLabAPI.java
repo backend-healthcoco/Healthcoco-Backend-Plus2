@@ -529,9 +529,9 @@ public class DentalLabAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_TAX)
+	@Path(value = PathProxy.DentalLabUrls.ADD_EDIT_RECEIPT)
 	@POST
-	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_TAX, notes = PathProxy.DentalLabUrls.ADD_EDIT_TAX)
+	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RECEIPT, notes = PathProxy.DentalLabUrls.ADD_EDIT_RECEIPT)
 	public Response<DentalWorksReceipt> addEditReceipt(DentalWorksReceipt request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
