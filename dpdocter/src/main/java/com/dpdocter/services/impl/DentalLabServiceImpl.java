@@ -2694,7 +2694,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		
 		try {
 			DoctorSignupRequest doctorSignupRequest = new DoctorSignupRequest();
-			BeanUtil.map(doctorSignupRequest, request);
+			BeanUtil.map(request, doctorSignupRequest);
 			DoctorSignUp doctorSignUp = signUpService.doctorSignUp(doctorSignupRequest);
 			if(doctorSignUp != null)
 			{
