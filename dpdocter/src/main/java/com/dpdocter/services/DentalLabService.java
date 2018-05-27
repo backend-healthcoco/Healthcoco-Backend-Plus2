@@ -8,6 +8,8 @@ import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorksInvoice;
+import com.dpdocter.beans.DentalWorksReceipt;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
@@ -24,6 +26,8 @@ import com.dpdocter.request.UpdateETARequest;
 import com.dpdocter.response.CBDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
+import com.dpdocter.response.DentalWorksInvoiceResponse;
+import com.dpdocter.response.DentalWorksReceiptResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.TaxResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -138,6 +142,22 @@ public interface DentalLabService {
 	TaxResponse addEditTax(AddEditTaxRequest request);
 
 	Boolean dentalLabDoctorRegistration(DentalLabDoctorRegistrationRequest request);
+
+	DentalWorksInvoice addEditInvoice(DentalWorksInvoice request);
+
+	List<DentalWorksInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
+			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
+			int page);
+
+	DentalWorksReceiptResponse getReceiptById(String id);
+
+	DentalWorksInvoiceResponse getInvoiceById(String id);
+
+	DentalWorksReceipt addEditReceipt(DentalWorksReceipt request);
+
+	List<DentalWorksReceiptResponse> getReceipts(String doctorId, String locationId, String hospitalId,
+			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
+			int page);
 
 	/*
 	 * DentalLabDoctorAssociation

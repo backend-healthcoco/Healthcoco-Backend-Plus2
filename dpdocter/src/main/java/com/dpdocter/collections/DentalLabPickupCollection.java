@@ -37,6 +37,14 @@ public class DentalLabPickupCollection extends GenericCollection {
 	@Field
 	private ObjectId doctorId;
 	@Field
+	private ObjectId locationId;
+	@Field
+	private ObjectId hospitalId;
+	@Field
+	private ObjectId dentalLabLocationId;
+	@Field
+	private ObjectId dentalLabHospitalId;
+	@Field
 	private ObjectId dentalLabId;
 	@Field
 	private Boolean discarded = false;
@@ -64,6 +72,10 @@ public class DentalLabPickupCollection extends GenericCollection {
 	private Integer feedBackRating;
 	@Field
 	private String feedBackComment;
+	@Field
+	private ObjectId invoiceId;
+	@Field
+	private String uniqueInvoiceId;
 
 	public ObjectId getId() {
 		return id;
@@ -271,6 +283,54 @@ public class DentalLabPickupCollection extends GenericCollection {
 
 	public void setFeedBackComment(String feedBackComment) {
 		this.feedBackComment = feedBackComment;
+	}
+
+	public ObjectId getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(ObjectId invoiceId) {
+		this.invoiceId = invoiceId;
+	}
+
+	public String getUniqueInvoiceId() {
+		return uniqueInvoiceId;
+	}
+
+	public void setUniqueInvoiceId(String uniqueInvoiceId) {
+		this.uniqueInvoiceId = uniqueInvoiceId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public ObjectId getDentalLabLocationId() {
+		return dentalLabLocationId;
+	}
+
+	public void setDentalLabLocationId(ObjectId dentalLabLocationId) {
+		this.dentalLabLocationId = dentalLabLocationId;
+	}
+
+	public ObjectId getDentalLabHospitalId() {
+		return dentalLabHospitalId;
+	}
+
+	public void setDentalLabHospitalId(ObjectId dentalLabHospitalId) {
+		this.dentalLabHospitalId = dentalLabHospitalId;
 	}
 
 	@Override

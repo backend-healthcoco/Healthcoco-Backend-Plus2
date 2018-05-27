@@ -22,7 +22,10 @@ public class DentalLabPickupLookupResponse extends GenericCollection {
 	private Long deliveryTime;
 	private String status;
 	private String doctorId;
-	private String dentalLabId;
+	private String locationId;
+	private String hospitalId;
+	private String dentalLabLocationId;
+	private String dentalLabHospitalId;
 	private Boolean discarded = false;
 	private Integer numberOfSamplesRequested;
 	private Integer numberOfSamplesPicked;
@@ -39,6 +42,8 @@ public class DentalLabPickupLookupResponse extends GenericCollection {
 	private String cancelledBy;
 	private Integer feedBackRating;
 	private String feedBackComment;
+	private String invoiceId;
+	private String uniqueInvoiceId;
 
 	public String getId() {
 		return id;
@@ -134,14 +139,6 @@ public class DentalLabPickupLookupResponse extends GenericCollection {
 
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
-	}
-
-	public String getDentalLabId() {
-		return dentalLabId;
-	}
-
-	public void setDentalLabId(String dentalLabId) {
-		this.dentalLabId = dentalLabId;
 	}
 
 	public Boolean getDiscarded() {
@@ -272,19 +269,69 @@ public class DentalLabPickupLookupResponse extends GenericCollection {
 		this.feedBackComment = feedBackComment;
 	}
 
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getDentalLabLocationId() {
+		return dentalLabLocationId;
+	}
+
+	public void setDentalLabLocationId(String dentalLabLocationId) {
+		this.dentalLabLocationId = dentalLabLocationId;
+	}
+
+	public String getDentalLabHospitalId() {
+		return dentalLabHospitalId;
+	}
+
+	public void setDentalLabHospitalId(String dentalLabHospitalId) {
+		this.dentalLabHospitalId = dentalLabHospitalId;
+	}
+
+	public String getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(String invoiceId) {
+		this.invoiceId = invoiceId;
+	}
+
+	public String getUniqueInvoiceId() {
+		return uniqueInvoiceId;
+	}
+
+	public void setUniqueInvoiceId(String uniqueInvoiceId) {
+		this.uniqueInvoiceId = uniqueInvoiceId;
+	}
+
 	@Override
 	public String toString() {
 		return "DentalLabPickupLookupResponse [id=" + id + ", patientId=" + patientId + ", patientName=" + patientName
 				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", age=" + age + ", dentalWorksSamples="
 				+ dentalWorksSamples + ", crn=" + crn + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime
-				+ ", status=" + status + ", doctorId=" + doctorId + ", dentalLabId=" + dentalLabId + ", discarded="
-				+ discarded + ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
-				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isAcceptedAtLab=" + isAcceptedAtLab
-				+ ", isCompleted=" + isCompleted + ", collectionBoyId=" + collectionBoyId + ", isCollectedAtDoctor="
-				+ isCollectedAtDoctor + ", serialNumber=" + serialNumber + ", dentalLab=" + dentalLab + ", doctor="
-				+ doctor + ", collectionBoy=" + collectionBoy + ", reasonForCancel=" + reasonForCancel
-				+ ", cancelledBy=" + cancelledBy + ", feedBackRating=" + feedBackRating + ", feedBackComment="
-				+ feedBackComment + "]";
+				+ ", status=" + status + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", dentalLabLocationId=" + dentalLabLocationId + ", dentalLabHospitalId="
+				+ dentalLabHospitalId + ", discarded=" + discarded + ", numberOfSamplesRequested="
+				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
+				+ requestId + ", isAcceptedAtLab=" + isAcceptedAtLab + ", isCompleted=" + isCompleted
+				+ ", collectionBoyId=" + collectionBoyId + ", isCollectedAtDoctor=" + isCollectedAtDoctor
+				+ ", serialNumber=" + serialNumber + ", dentalLab=" + dentalLab + ", doctor=" + doctor
+				+ ", collectionBoy=" + collectionBoy + ", reasonForCancel=" + reasonForCancel + ", cancelledBy="
+				+ cancelledBy + ", feedBackRating=" + feedBackRating + ", feedBackComment=" + feedBackComment
+				+ ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId + "]";
 	}
 
 }
