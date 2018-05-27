@@ -10,7 +10,6 @@ public class DentalWorksAmountCollection {
 
 	@Id
 	private ObjectId id;
-
 	@Field
 	private ObjectId doctorId;
 	@Field

@@ -2816,7 +2816,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				}
 				dentalWorksInvoiceCollection.setAdminCreatedTime(new Date());
 				
-				dentalWorksAmountCollection = dentalWorksAmountRepository.getByDoctorDentalLabIds(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+				dentalWorksAmountCollection = dentalWorksAmountRepository.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 						new ObjectId(request.getHospitalId()), new ObjectId(request.getDentalLabLocationId()), new ObjectId(request.getDentalLabHospitalId()));
 				
 				if(dentalWorksAmountCollection == null)
@@ -2847,7 +2847,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorksInvoiceCollection.setTotalTax(request.getTotalTax());
 				dentalWorksInvoiceCollection.setGrandTotal(request.getGrandTotal());
 				
-				dentalWorksAmountCollection = dentalWorksAmountRepository.getByDoctorDentalLabIds(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+				dentalWorksAmountCollection = dentalWorksAmountRepository.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 						new ObjectId(request.getHospitalId()), new ObjectId(request.getDentalLabLocationId()), new ObjectId(request.getDentalLabHospitalId()));
 				
 				if(dentalWorksAmountCollection != null)
@@ -2924,7 +2924,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorksReceiptCollection.setUpdatedTime(new Date());
 			}
 			
-			dentalWorksAmountCollection = dentalWorksAmountRepository.getByDoctorDentalLabIds(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+			dentalWorksAmountCollection = dentalWorksAmountRepository.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()), new ObjectId(request.getDentalLabLocationId()), new ObjectId(request.getDentalLabHospitalId()));
 			
 			if(dentalWorksAmountCollection != null)
