@@ -1,69 +1,76 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "dental_works_amount_cl")
 public class DentalWorksAmountCollection {
 
-	private String id;
+	@Id
+	private ObjectId id;
 
-	private String doctorId;
-
-	private String locationId;
-
-	private String hospitalId;
-
-	private String dentalLabLocationId;
-
-	private String dentalLabHospitalId;
-	
+	@Field
+	private ObjectId doctorId;
+	@Field
+	private ObjectId locationId;
+	@Field
+	private ObjectId hospitalId;
+	@Field
+	private ObjectId dentalLabLocationId;
+	@Field
+	private ObjectId dentalLabHospitalId;
+	@Field
 	private Double remainingAmount = 0.0;
 
-	public String getId() {
+	
+
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public String getDoctorId() {
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public String getLocationId() {
+	public ObjectId getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(String locationId) {
+	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
 
-	public String getHospitalId() {
+	public ObjectId getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(String hospitalId) {
+	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getDentalLabLocationId() {
+	public ObjectId getDentalLabLocationId() {
 		return dentalLabLocationId;
 	}
 
-	public void setDentalLabLocationId(String dentalLabLocationId) {
+	public void setDentalLabLocationId(ObjectId dentalLabLocationId) {
 		this.dentalLabLocationId = dentalLabLocationId;
 	}
 
-	public String getDentalLabHospitalId() {
+	public ObjectId getDentalLabHospitalId() {
 		return dentalLabHospitalId;
 	}
 
-	public void setDentalLabHospitalId(String dentalLabHospitalId) {
+	public void setDentalLabHospitalId(ObjectId dentalLabHospitalId) {
 		this.dentalLabHospitalId = dentalLabHospitalId;
 	}
 

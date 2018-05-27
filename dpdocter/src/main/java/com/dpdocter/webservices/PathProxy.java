@@ -1662,6 +1662,12 @@ public interface PathProxy {
 		public static final String ADD_EDIT_TAX = "/addEditTax";
 		public static final String ADD_EDIT_INVOICE = "/billing/addEditInvoice";
 		public static final String ADD_EDIT_RECEIPT = "/billing/addEditReceipt";
+		public static final String GET_INVOICES = "/billing/getInvoices";
+		public static final String GET_RECEIPTS = "/billing/getReceipts";
+		public static final String GET_INVOICE_BY_ID = "/billing/getInvoiceById";
+		public static final String GET_RECEIPT_BY_ID = "/billing/getReceiptById";
+		public static final String DISCARD_INVOICE = "/billing/discardInvoice";
+		public static final String DISCARD_RECEIPT = "/billing/discardReceipt";
 
 	}
 

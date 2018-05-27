@@ -47,6 +47,8 @@ import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.request.UpdateETARequest;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
+import com.dpdocter.response.DentalWorksInvoiceResponse;
+import com.dpdocter.response.DentalWorksReceiptResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.TaxResponse;
 import com.dpdocter.services.DentalLabService;
@@ -525,7 +527,7 @@ public class DentalLabAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<DentalWorksInvoice> response = new Response<DentalWorksInvoice>();
-		//response.setData(dentalLabService.addEdit);
+		response.setData(dentalLabService.addEditInvoice(request));
 		return response;
 	}
 	
@@ -537,9 +539,62 @@ public class DentalLabAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<DentalWorksReceipt> response = new Response<DentalWorksReceipt>();
-		//response.setData(dentalLabService.addEditTax(request));
+		response.setData(dentalLabService.addEditReceipt(request));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.GET_INVOICES)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_INVOICES, notes = PathProxy.DentalLabUrls.GET_INVOICES)
+	public Response<DentalWorksInvoice> getInvoices(@QueryParam ("doctorId")String doctorId, @QueryParam ("locationId")String locationId,@QueryParam ("hospitalId") String hospitalId,
+			@QueryParam ("dentalLabLocationId")String dentalLabLocationId, @QueryParam ("dentalLabHospitalId")String dentalLabHospitalId, @QueryParam ("from")Long from, @QueryParam ("to")Long to, @QueryParam ("searchTerm")String searchTerm, @QueryParam ("size") int size,
+			@QueryParam ("page")int page) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId,locationId,hospitalId,dentalLabHospitalId,dentalLabLocationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksInvoice> response = new Response<DentalWorksInvoice>();
+		response.setDataList(dentalLabService.getInvoices(doctorId, locationId, hospitalId, dentalLabLocationId, dentalLabHospitalId, from, to, searchTerm, size, page));
 		return response;
 	}
 
+	
+	@Path(value = PathProxy.DentalLabUrls.GET_RECEIPTS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RECEIPTS, notes = PathProxy.DentalLabUrls.GET_RECEIPTS)
+	public Response<DentalWorksReceipt> getReceipts(@QueryParam ("doctorId")String doctorId, @QueryParam ("locationId")String locationId,@QueryParam ("hospitalId") String hospitalId,
+			@QueryParam ("dentalLabLocationId")String dentalLabLocationId, @QueryParam ("dentalLabHospitalId")String dentalLabHospitalId, @QueryParam ("from")Long from, @QueryParam ("to")Long to, @QueryParam ("searchTerm")String searchTerm, @QueryParam ("size") int size,
+			@QueryParam ("page")int page) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId,locationId,hospitalId,dentalLabHospitalId,dentalLabLocationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksReceipt> response = new Response<DentalWorksReceipt>();
+		response.setDataList(dentalLabService.getReceipts(doctorId, locationId, hospitalId, dentalLabLocationId, dentalLabHospitalId, from, to, searchTerm, size, page));
+		return response;
+	}
+	
+
+	@Path(value = PathProxy.DentalLabUrls.GET_INVOICE_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_INVOICE_BY_ID, notes = PathProxy.DentalLabUrls.GET_INVOICE_BY_ID)
+	public Response<DentalWorksInvoiceResponse> getInvoiceById(@QueryParam ("id") String id) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksInvoiceResponse> response = new Response<DentalWorksInvoiceResponse>();
+		response.setData(dentalLabService.getInvoiceById(id));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalLabUrls.GET_RECEIPT_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RECEIPT_BY_ID, notes = PathProxy.DentalLabUrls.GET_RECEIPT_BY_ID)
+	public Response<DentalWorksReceiptResponse> getReceiptById(@QueryParam ("id") String id) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksReceiptResponse> response = new Response<DentalWorksReceiptResponse>();
+		response.setData(dentalLabService.getReceiptById(id));
+		return response;
+	}
 
 }
