@@ -6,7 +6,10 @@ public class DentalLabDoctorAssociation extends GenericCollection {
 
 	private String id;
 	private String doctorId;
-	private String dentalLabId;
+	private String locationId;
+	private String hospitalId;
+	private String dentalLabLocationId;
+	private String dentalLabHospitalId;
 	private Boolean isActive = true;
 
 	public String getId() {
@@ -25,12 +28,36 @@ public class DentalLabDoctorAssociation extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public String getDentalLabId() {
-		return dentalLabId;
+	public String getLocationId() {
+		return locationId;
 	}
 
-	public void setDentalLabId(String dentalLabId) {
-		this.dentalLabId = dentalLabId;
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getDentalLabLocationId() {
+		return dentalLabLocationId;
+	}
+
+	public void setDentalLabLocationId(String dentalLabLocationId) {
+		this.dentalLabLocationId = dentalLabLocationId;
+	}
+
+	public String getDentalLabHospitalId() {
+		return dentalLabHospitalId;
+	}
+
+	public void setDentalLabHospitalId(String dentalLabHospitalId) {
+		this.dentalLabHospitalId = dentalLabHospitalId;
 	}
 
 	public Boolean getIsActive() {
@@ -43,8 +70,9 @@ public class DentalLabDoctorAssociation extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DentalLabDoctorAssociation [id=" + id + ", doctorId=" + doctorId + ", dentalLabId=" + dentalLabId
-				+ ", isActive=" + isActive + "]";
+		return "DentalLabDoctorAssociation [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", dentalLabLocationId=" + dentalLabLocationId
+				+ ", dentalLabHospitalId=" + dentalLabHospitalId + ", isActive=" + isActive + "]";
 	}
 
 }
