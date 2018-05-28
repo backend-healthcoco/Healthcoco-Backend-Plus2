@@ -442,7 +442,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria = new Criteria().and("dentalLabId").is(new ObjectId(locationId));
+				criteria = new Criteria().and("dentalLabLocationId").is(new ObjectId(locationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = new Criteria().and("doctorId").is(new ObjectId(doctorId));
@@ -456,14 +456,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
-						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
-						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
@@ -504,14 +504,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
-						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
-						Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
+						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
 						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(

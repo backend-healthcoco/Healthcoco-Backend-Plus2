@@ -13,7 +13,13 @@ public class DentalLabDoctorAssociationCollection extends GenericCollection {
 	@Field
 	private ObjectId doctorId;
 	@Field
-	private ObjectId dentalLabId;
+	private ObjectId locationId;
+	@Field
+	private ObjectId hospitalId;
+	@Field
+	private ObjectId dentalLabLocationId;
+	@Field
+	private ObjectId dentalLabHospitalId;
 	@Field
 	private Boolean isActive = true;
 
@@ -33,12 +39,36 @@ public class DentalLabDoctorAssociationCollection extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getDentalLabId() {
-		return dentalLabId;
+	public ObjectId getLocationId() {
+		return locationId;
 	}
 
-	public void setDentalLabId(ObjectId dentalLabId) {
-		this.dentalLabId = dentalLabId;
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public ObjectId getDentalLabLocationId() {
+		return dentalLabLocationId;
+	}
+
+	public void setDentalLabLocationId(ObjectId dentalLabLocationId) {
+		this.dentalLabLocationId = dentalLabLocationId;
+	}
+
+	public ObjectId getDentalLabHospitalId() {
+		return dentalLabHospitalId;
+	}
+
+	public void setDentalLabHospitalId(ObjectId dentalLabHospitalId) {
+		this.dentalLabHospitalId = dentalLabHospitalId;
 	}
 
 	public Boolean getIsActive() {
@@ -51,8 +81,9 @@ public class DentalLabDoctorAssociationCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DentalLabDoctorAssociationCollection [id=" + id + ", doctorId=" + doctorId + ", dentalLabId="
-				+ dentalLabId + ", isActive=" + isActive + "]";
+		return "DentalLabDoctorAssociationCollection [id=" + id + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", dentalLabLocationId=" + dentalLabLocationId
+				+ ", dentalLabHospitalId=" + dentalLabHospitalId + ", isActive=" + isActive + "]";
 	}
 
 }
