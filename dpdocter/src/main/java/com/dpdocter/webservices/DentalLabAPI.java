@@ -580,5 +580,31 @@ public class DentalLabAPI {
 		response.setData(dentalLabService.getReceiptById(id));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalLabUrls.DISCARD_INVOICE)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.DISCARD_INVOICE, notes = PathProxy.DentalLabUrls.DISCARD_INVOICE)
+	public Response<DentalWorksInvoice> discardInvoice(@QueryParam ("id") String id , @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksInvoice> response = new Response<DentalWorksInvoice>();
+		response.setData(dentalLabService.discardInvoice(id, discarded));
+		return response;
+	}
+
+	
+	@Path(value = PathProxy.DentalLabUrls.DISCARD_RECEIPT)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.DISCARD_RECEIPT, notes = PathProxy.DentalLabUrls.DISCARD_RECEIPT)
+	public Response<DentalWorksReceipt> discardReceipt(@QueryParam ("id") String id , @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksReceipt> response = new Response<DentalWorksReceipt>();
+		response.setData(dentalLabService.discardReceipt(id, discarded));
+		return response;
+	}
+
 
 }
