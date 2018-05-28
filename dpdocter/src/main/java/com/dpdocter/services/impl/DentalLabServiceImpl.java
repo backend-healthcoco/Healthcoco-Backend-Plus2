@@ -40,6 +40,7 @@ import com.dpdocter.beans.DentalStage;
 import com.dpdocter.beans.DentalStagejasperBean;
 import com.dpdocter.beans.DentalToothNumber;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorksAmount;
 import com.dpdocter.beans.DentalWorksInvoice;
 import com.dpdocter.beans.DentalWorksInvoiceItem;
 import com.dpdocter.beans.DentalWorksReceipt;
@@ -2890,6 +2891,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalLabPickupCollection.setInvoiceId(dentalWorksInvoiceCollection.getId());
 			dentalLabPickupCollection.setUniqueInvoiceId(dentalWorksInvoiceCollection.getUniqueInvoiceId());
 			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
+			
+			response = new DentalWorksInvoice();
+			BeanUtil.map(dentalWorksInvoiceCollection, response);
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -2944,6 +2948,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 			dentalWorksReceiptCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount());
 			dentalWorksReceiptCollection = dentalWorksReceiptRepository.save(dentalWorksReceiptCollection);
+			response  = new DentalWorksReceipt();
+			BeanUtil.map(dentalWorksReceiptCollection, response);
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -3251,5 +3257,44 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public DentalWorksAmount getAmount( String doctorId,  String locationId , String hospitalId,String dentalLabLocationId, String dentalLabHospitalId) {
+		
+		DentalWorksAmount response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabLocationId)) {
+				criteria.and("dentalLabLocationId").is(new ObjectId(dentalLabLocationId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabHospitalId)) {
+				criteria.and("dentalLabHospitalId").is(new ObjectId(dentalLabHospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<DentalWorksAmount> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalWorksInvoiceCollection.class, DentalWorksAmount.class);
+			response = aggregationResults.getUniqueMappedResult();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
 
 }

@@ -1677,6 +1677,7 @@ public interface PathProxy {
 		public static final String GET_RECEIPT_BY_ID = "/billing/getReceiptById";
 		public static final String DISCARD_INVOICE = "/billing/discardInvoice";
 		public static final String DISCARD_RECEIPT = "/billing/discardReceipt";
+		public static final String GET_AMOUNT = "/billing/getAmount";
 
 	}
 
