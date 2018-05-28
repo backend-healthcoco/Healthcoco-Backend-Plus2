@@ -3001,7 +3001,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
 						new Criteria("patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patientName").regex("^" + searchTerm),
-						new Criteria("patientName").regex(searchTerm + ".*"));
+						new Criteria("patientName").regex(searchTerm + ".*"),
+						new Criteria("uniqueInvoiceId").regex("^" + searchTerm, "i"),
+						new Criteria("uniqueInvoiceId").regex("^" + searchTerm),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + "$", "i"),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + "$"),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + ".*"));
 			}
 
 			/* (SEVEN) */
@@ -3081,7 +3086,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
 						new Criteria("patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patientName").regex("^" + searchTerm),
-						new Criteria("patientName").regex(searchTerm + ".*"));
+						new Criteria("patientName").regex(searchTerm + ".*"),
+						new Criteria("uniqueReceiptId").regex("^" + searchTerm, "i"),
+						new Criteria("uniqueReceiptId").regex("^" + searchTerm),
+						new Criteria("uniqueReceiptId").regex(searchTerm + "$", "i"),
+						new Criteria("uniqueReceiptId").regex(searchTerm + "$"),
+						new Criteria("uniqueReceiptId").regex(searchTerm + ".*"));
 			}
 
 			/* (SEVEN) */
