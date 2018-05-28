@@ -474,6 +474,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			customWorks = aggregationResults.getMappedResults();
 
 			for (DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : customWorks) {
+				BeanUtil.map(doctorAssociationLookupResponse, doctorAssociationLookupResponse.getDoctor());
 				users.add(doctorAssociationLookupResponse.getDoctor());
 			}
 
