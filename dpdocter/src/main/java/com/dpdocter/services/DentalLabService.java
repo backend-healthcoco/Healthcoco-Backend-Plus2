@@ -159,6 +159,10 @@ public interface DentalLabService {
 			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
 			int page);
 
+	DentalWorksInvoice discardInvoice(String id, Boolean discarded);
+
+	DentalWorksReceipt discardReceipt(String id, Boolean discarded);
+
 	/*
 	 * DentalLabDoctorAssociation
 	 * addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request);

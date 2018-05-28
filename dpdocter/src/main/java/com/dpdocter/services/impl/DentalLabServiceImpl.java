@@ -55,6 +55,7 @@ import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.SMS;
@@ -2718,6 +2719,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public Boolean dentalLabDoctorRegistration(DentalLabDoctorRegistrationRequest request)
 	{
 		Boolean response =false;
+		LocationAndAccessControl locationAndAccessControl = null;
 		
 		try {
 			DoctorSignupRequest doctorSignupRequest = new DoctorSignupRequest();
@@ -2726,8 +2728,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if(doctorSignUp != null)
 			{
 				DentalLabDoctorAssociationCollection dentalLabDoctorAssociationCollection = new DentalLabDoctorAssociationCollection();
-				dentalLabDoctorAssociationCollection.setDentalLabId(new ObjectId(request.getDentalLabId()));
+				dentalLabDoctorAssociationCollection.setDentalLabLocationId(new ObjectId(request.getDentalLablocationId()));
+				dentalLabDoctorAssociationCollection.setDentalLabHospitalId(new ObjectId(request.getDentalLabHospitalId()));
 				dentalLabDoctorAssociationCollection.setDoctorId(new ObjectId(doctorSignUp.getUser().getId()));
+				if(doctorSignUp.getHospital() != null) {
+					if(doctorSignUp.getHospital().getLocationsAndAccessControl().size() > 0) {
+						locationAndAccessControl = doctorSignUp.getHospital().getLocationsAndAccessControl().get(0);
+						dentalLabDoctorAssociationCollection.setLocationId(new ObjectId(locationAndAccessControl.getId()));
+						dentalLabDoctorAssociationCollection.setHospitalId(new ObjectId(locationAndAccessControl.getHospitalId()));
+					}
+				}
 				dentalLabDoctorAssociationCollection.setIsActive(true);
 				dentalLabDoctorAssociationCollection = dentalLabDoctorAssociationRepository.save(dentalLabDoctorAssociationCollection);
 			}
@@ -3150,6 +3160,93 @@ public class DentalLabServiceImpl implements DentalLabService {
 			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, " Error while getting Receipt By Ids");
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public DentalWorksInvoice discardInvoice(String id , Boolean discarded) {
+		DentalWorksInvoice response = null;
+		DentalWorksInvoiceCollection dentalWorksInvoiceCollection = null;
+		DentalWorksAmountCollection dentalWorksAmountCollection = null;
+		try {
+			dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findOne(new ObjectId(id));
+			if(dentalWorksInvoiceCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord , "Record not found");
+			}
+			dentalWorksInvoiceCollection.setDiscarded(discarded);
+			dentalWorksInvoiceRepository.save(dentalWorksInvoiceCollection);
+			
+			if(discarded.equals(Boolean.TRUE))
+			{
+				dentalWorksAmountCollection = dentalWorksAmountRepository.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(dentalWorksInvoiceCollection.getDoctorId(), dentalWorksInvoiceCollection.getLocationId(), dentalWorksInvoiceCollection.getHospitalId(), dentalWorksInvoiceCollection.getDentalLabLocationId(), dentalWorksInvoiceCollection.getDentalLabHospitalId());
+				
+				if(dentalWorksAmountCollection != null)
+				{
+					dentalWorksAmountCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() - dentalWorksInvoiceCollection.getTotalCost());
+				}
+				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+				
+			}
+			else if(discarded.equals(Boolean.FALSE))
+			{
+				dentalWorksAmountCollection = dentalWorksAmountRepository.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(dentalWorksInvoiceCollection.getDoctorId(), dentalWorksInvoiceCollection.getLocationId(), dentalWorksInvoiceCollection.getHospitalId(), dentalWorksInvoiceCollection.getDentalLabLocationId(), dentalWorksInvoiceCollection.getDentalLabHospitalId());
+				
+				if(dentalWorksAmountCollection != null)
+				{
+					dentalWorksAmountCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() + dentalWorksInvoiceCollection.getTotalCost());
+				}
+				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, " Error while getting Invoice By Id");
+		}
+		return response;
+	}
+	
+	
+	@Override
+	@Transactional
+	public DentalWorksReceipt discardReceipt(String id , Boolean discarded) {
+		DentalWorksReceipt response = null;
+		DentalWorksReceiptCollection dentalWorksReceiptCollection = null;
+		DentalWorksAmountCollection dentalWorksAmountCollection = null;
+		try {
+			dentalWorksReceiptCollection = dentalWorksReceiptRepository.findOne(new ObjectId(id));
+			if(dentalWorksReceiptCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord , "Record not found");
+			}
+			dentalWorksReceiptCollection.setDiscarded(discarded);
+			dentalWorksReceiptRepository.save(dentalWorksReceiptCollection);
+			
+			if(discarded.equals(Boolean.TRUE))
+			{
+				dentalWorksAmountCollection = dentalWorksAmountRepository.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(dentalWorksReceiptCollection.getDoctorId(), dentalWorksReceiptCollection.getLocationId(), dentalWorksReceiptCollection.getHospitalId(), dentalWorksReceiptCollection.getDentalLabLocationId(), dentalWorksReceiptCollection.getDentalLabHospitalId());
+				
+				if(dentalWorksAmountCollection != null)
+				{
+					dentalWorksAmountCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() + dentalWorksReceiptCollection.getAmountPaid());
+				}
+				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+				
+			}
+			else if(discarded.equals(Boolean.FALSE))
+			{
+				dentalWorksAmountCollection = dentalWorksAmountRepository.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(dentalWorksReceiptCollection.getDoctorId(), dentalWorksReceiptCollection.getLocationId(), dentalWorksReceiptCollection.getHospitalId(), dentalWorksReceiptCollection.getDentalLabLocationId(), dentalWorksReceiptCollection.getDentalLabHospitalId());
+				
+				if(dentalWorksAmountCollection != null)
+				{
+					dentalWorksAmountCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() - dentalWorksReceiptCollection.getAmountPaid());
+				}
+				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, " Error while getting Invoice By Id");
 		}
 		return response;
 	}

@@ -35,7 +35,9 @@ public class DentalLabDoctorRegistrationRequest {
 
 	private String registerNumber;
 
-	private String dentalLabId;
+	private String dentalLablocationId;
+
+	private String dentalLabHospitalId;
 
 	public String getTitle() {
 		return title;
@@ -149,12 +151,20 @@ public class DentalLabDoctorRegistrationRequest {
 		this.registerNumber = registerNumber;
 	}
 
-	public String getDentalLabId() {
-		return dentalLabId;
+	public String getDentalLablocationId() {
+		return dentalLablocationId;
 	}
 
-	public void setDentalLabId(String dentalLabId) {
-		this.dentalLabId = dentalLabId;
+	public void setDentalLablocationId(String dentalLablocationId) {
+		this.dentalLablocationId = dentalLablocationId;
+	}
+
+	public String getDentalLabHospitalId() {
+		return dentalLabHospitalId;
+	}
+
+	public void setDentalLabHospitalId(String dentalLabHospitalId) {
+		this.dentalLabHospitalId = dentalLabHospitalId;
 	}
 
 	@Override
@@ -163,7 +173,8 @@ public class DentalLabDoctorRegistrationRequest {
 				+ Arrays.toString(password) + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
 				+ ", gender=" + gender + ", dob=" + dob + ", specialities=" + specialities + ", locationName="
 				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", streetAddress="
-				+ streetAddress + ", registerNumber=" + registerNumber + ", dentalLabId=" + dentalLabId + "]";
+				+ streetAddress + ", registerNumber=" + registerNumber + ", dentalLablocationId=" + dentalLablocationId
+				+ ", dentalLabHospitalId=" + dentalLabHospitalId + "]";
 	}
 
 }
