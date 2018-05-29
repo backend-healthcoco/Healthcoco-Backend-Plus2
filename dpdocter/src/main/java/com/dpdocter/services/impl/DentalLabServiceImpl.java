@@ -1912,12 +1912,17 @@ public class DentalLabServiceImpl implements DentalLabService {
 			criteria.and("_id").in(ids);
 
 			aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("location_cl", "dentalLabId", "_id", "dentalLab"),
-					Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-					Aggregation.unwind("doctor"),
+					Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays",
+									true))), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+									true))),
 					Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
+							new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
+									true))),
 					Aggregation.match(criteria));
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
