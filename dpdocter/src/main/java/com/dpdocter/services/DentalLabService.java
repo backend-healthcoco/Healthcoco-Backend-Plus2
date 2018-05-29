@@ -166,6 +166,8 @@ public interface DentalLabService {
 
 	DentalWorksAmount getAmount(String doctorId, String locationId, String hospitalId, String dentalLabLocationId,
 			String dentalLabHospitalId);
+	
+	public String downloadDentalWorkInvoice(String invoiceId);
 
 	/*
 	 * DentalLabDoctorAssociation

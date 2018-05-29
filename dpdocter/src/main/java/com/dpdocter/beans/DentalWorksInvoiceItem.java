@@ -17,6 +17,7 @@ public class DentalWorksInvoiceItem {
 	private Double finalCost = 0.0;
 	private Date createdTime;
 
+
 	public List<DentalToothNumber> getDentalToothNumbers() {
 		return dentalToothNumbers;
 	}
