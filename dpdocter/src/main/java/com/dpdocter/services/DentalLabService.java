@@ -61,7 +61,7 @@ public interface DentalLabService {
 	List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm, String doctorId,
 			String dentalLabId, Boolean discarded);
 
-	List<User> getDentalLabDoctorAssociations(String locationId, String doctorId, int page, int size,
+	List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, String doctorId, int page, int size,
 			String searchTerm);
 
 	List<Location> getDentalLabDoctorAssociationsForDoctor(String doctorId, int page, int size, String searchTerm);

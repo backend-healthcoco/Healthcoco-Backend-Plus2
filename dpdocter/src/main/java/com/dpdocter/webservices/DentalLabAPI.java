@@ -43,6 +43,7 @@ import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
 import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.request.UpdateETARequest;
+import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.DentalWorksInvoiceResponse;
 import com.dpdocter.response.DentalWorksReceiptResponse;
@@ -160,10 +161,10 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
-	public Response<User> getDentalLabDoctorAssociationForLocation(@QueryParam("locationId") String locationId,
+	public Response<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociationForLocation(@QueryParam("locationId") String locationId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm) {
-		Response<User> response = new Response<User>();
+		Response<DentalLabDoctorAssociationLookupResponse> response = new Response<DentalLabDoctorAssociationLookupResponse>();
 		response.setDataList(
 				dentalLabService.getDentalLabDoctorAssociations(locationId, doctorId, page, size, searchTerm));
 		return response;
