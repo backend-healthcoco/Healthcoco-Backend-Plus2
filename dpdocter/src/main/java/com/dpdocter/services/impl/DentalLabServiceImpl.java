@@ -1216,7 +1216,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.match(criteria), aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-			System.out.println(aggregation);
 			
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
