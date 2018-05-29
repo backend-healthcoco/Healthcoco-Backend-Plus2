@@ -48,7 +48,7 @@ public interface PathProxy {
 		public static final String LOGIN_USER = "/user";
 
 		public static final String LOGIN_PATIENT = "/patient";
-		
+
 		public static final String IS_LOCATION_ADMIN = "/isLocationAdmin";
 	}
 
@@ -1007,9 +1007,9 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PATIENT_CARD = "/downloadpatientCard";
 
 		public static final String DOWNLOAD_APPOINTMENT_CALENDER = "/calendar/{locationId}/{hospitalId}/download";
-		
+
 		public static final String GET_EVENTS = "/event/get";
-		
+
 		public static final String GET_EVENT_BY_ID = "/event/{eventId}";
 	}
 
@@ -1678,7 +1678,7 @@ public interface PathProxy {
 		public static final String DISCARD_INVOICE = "/billing/discardInvoice";
 		public static final String DISCARD_RECEIPT = "/billing/discardReceipt";
 		public static final String GET_AMOUNT = "/billing/getAmount";
-
+		public static final String DOWNLOAD_DENTAL_WORK_INVOICE = "/billing/invoice/{invoiceId}/download";
 	}
 
 	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";
@@ -1741,8 +1741,6 @@ public interface PathProxy {
 		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
 
 	}
-	
-
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
 
