@@ -53,7 +53,7 @@ public class Event extends GenericCollection {
     
     private int toDateMonth;
     
-    private Object patientCard;
+    private PatientCard patientCard;
     
 	public String getId() {
 		return id;
@@ -223,11 +223,11 @@ public class Event extends GenericCollection {
 		this.toDateMonth = toDateMonth;
 	}
 
-	public Object getPatientCard() {
+	public PatientCard getPatientCard() {
 		return patientCard;
 	}
 
-	public void setPatientCard(Object patientCard) {
+	public void setPatientCard(PatientCard patientCard) {
 		this.patientCard = patientCard;
 	}
 

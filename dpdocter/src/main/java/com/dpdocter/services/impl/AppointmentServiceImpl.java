@@ -4457,7 +4457,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (doctorId != null && !doctorId.isEmpty()) {
 				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
 				for (String id : doctorId)doctorObjectIds.add(new ObjectId(id));
-				criteria.and("doctorId").in(doctorObjectIds);
+				criteria.and("doctorIds").in(doctorObjectIds);
 			}
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -4501,7 +4501,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$_id")
 					.append("state", "$state").append("subject", "$subject").append("explanation", "$explanation").append("locationId", "$locationId").append("doctorId", "$doctorId")
 					.append("time", "$time").append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate").append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
-					.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds").append("localPatientName", "$patientCard.localPatientName")
+					.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
+//					.append("localPatientName", "$patientCard.localPatientName")
 					.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
 					.append("hospitalId", "$hospitalId").append("patientId", "$patientId").append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
 					.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
@@ -4516,7 +4517,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					.append("fromDate", new BasicDBObject("$first","$fromDate")).append("toDate", new BasicDBObject("$first","$toDate"))
 					.append("isAllDayEvent", new BasicDBObject("$first","$isAllDayEvent"))
 					.append("isRescheduled", new BasicDBObject("$first","$isRescheduled"))
-					.append("doctorIds", new BasicDBObject("$push","$doctorIds")).append("localPatientName", new BasicDBObject("$first","$patientCard.localPatientName"))
+					.append("doctorIds", new BasicDBObject("$push","$doctorIds"))
+//					.append("localPatientName", new BasicDBObject("$first","$patientCard.localPatientName"))
 					.append("doctors", new BasicDBObject("$push","$doctors"))
 					.append("hospitalId", new BasicDBObject("$first","$hospitalId")).append("patientId", new BasicDBObject("$first","$patientId"))
 					.append("adminCreatedTime", new BasicDBObject("$first","$adminCreatedTime"))
@@ -4535,19 +4537,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 												true))),
 								
-								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
-												true))),
-								new CustomAggregationOperation(new BasicDBObject("$redact",
-										new BasicDBObject("$cond",
-												new BasicDBObject("if", new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
-														.append("then", new BasicDBObject("$cond", 
-																new BasicDBObject("if", new BasicDBObject("$eq",
-																		Arrays.asList("$patientCard.locationId",
-																				"$locationId"))).append("then", "$$KEEP")
-																						.append("else", "$$PRUNE"))) 
-										.append("else", "$$KEEP")))),
+//								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+//								new CustomAggregationOperation(new BasicDBObject("$unwind",
+//										new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
+//												true))),
+//								new CustomAggregationOperation(new BasicDBObject("$redact",
+//										new BasicDBObject("$cond",
+//												new BasicDBObject("if", new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
+//														.append("then", new BasicDBObject("$cond", 
+//																new BasicDBObject("if", new BasicDBObject("$eq",
+//																		Arrays.asList("$patientCard.locationId",
+//																				"$locationId"))).append("then", "$$KEEP")
+//																						.append("else", "$$PRUNE"))) 
+//										.append("else", "$$KEEP")))),
 								project, group,
 								sortOperation, Aggregation.skip((page) * size),
 								Aggregation.limit(size)), AppointmentCollection.class, Event.class)
@@ -4563,24 +4565,32 @@ public class AppointmentServiceImpl implements AppointmentService {
 										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 												true))),
 								
-								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
-												true))),
-								new CustomAggregationOperation(new BasicDBObject("$redact",
-										new BasicDBObject("$cond",
-												new BasicDBObject("if", new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
-														.append("then", new BasicDBObject("$cond", 
-																new BasicDBObject("if", new BasicDBObject("$eq",
-																		Arrays.asList("$patientCard.locationId",
-																				"$locationId"))).append("then", "$$KEEP")
-																						.append("else", "$$PRUNE"))) 
-										.append("else", "$$KEEP")))),
+//								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+//								new CustomAggregationOperation(new BasicDBObject("$unwind",
+//										new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
+//												true))),
+//								new CustomAggregationOperation(new BasicDBObject("$redact",
+//										new BasicDBObject("$cond",
+//												new BasicDBObject("if", new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
+//														.append("then", new BasicDBObject("$cond", 
+//																new BasicDBObject("if", new BasicDBObject("$eq",
+//																		Arrays.asList("$patientCard.locationId",
+//																				"$locationId"))).append("then", "$$KEEP")
+//																						.append("else", "$$PRUNE"))) 
+//										.append("else", "$$KEEP")))),
 								project, group,
 								sortOperation), AppointmentCollection.class,
 								Event.class)
 						.getMappedResults();
 
+			}
+			if(response != null) {
+				for(Event event : response){
+					if(!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(event.getPatientId()),new ObjectId(locationId), new ObjectId(event.getHospitalId()));
+						if(patientCollection != null)event.setLocalPatientName(patientCollection.getLocalPatientName());
+					}
+				}
 			}
 
 		} catch (Exception e) {
@@ -4673,7 +4683,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (doctorId != null && !doctorId.isEmpty()) {
 				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
 				for (String id : doctorId)doctorObjectIds.add(new ObjectId(id));
-				criteria.and("doctorId").in(doctorObjectIds);
+				criteria.and("doctorIds").in(doctorObjectIds);
 			}
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -4681,10 +4691,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(from)) localCalendar.setTime(new Date(Long.parseLong(from)));
 			else localCalendar.setTime(new Date(Long.parseLong(to)));
 			
-			long dateMonth = 1;
-			long dateYear = 2017;
-					System.out.println(localCalendar.get(Calendar.YEAR));;
-
+			long dateMonth = localCalendar.get(Calendar.MONTH) + 1;
+			long dateYear = localCalendar.get(Calendar.YEAR);
 			
 			if (!DPDoctorUtils.anyStringEmpty(fromTime))
 				criteria.and("time.fromTime").is(Integer.parseInt(fromTime));
@@ -4715,7 +4723,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					.append("time", "$time").append("isCalenderBlocked", "$isCalenderBlocked")
 					.append("fromDate", "$fromDate").append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
 					.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
-					.append("localPatientName", "$patientCard.localPatientName")
+//					.append("localPatientName", "$patientCard.localPatientName")
 					.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
 					.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
 					.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
@@ -4738,7 +4746,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					.append("isAllDayEvent", new BasicDBObject("$first","$isAllDayEvent"))
 					.append("isRescheduled", new BasicDBObject("$first","$isRescheduled"))
 					.append("doctorIds", new BasicDBObject("$push","$doctorIds"))
-					.append("localPatientName", new BasicDBObject("$first","$patientCard.localPatientName"))
+//					.append("localPatientName", new BasicDBObject("$first","$patientCard.localPatientName"))
 					.append("doctors", new BasicDBObject("$push","$doctors"))
 					.append("hospitalId", new BasicDBObject("$first","$hospitalId"))
 					.append("patientId", new BasicDBObject("$first","$patientId"))
@@ -4768,19 +4776,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 												true))),
 								
-								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
-												true))),
-								new CustomAggregationOperation(new BasicDBObject("$redact",
-										new BasicDBObject("$cond",
-												new BasicDBObject("if", new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
-														.append("then", new BasicDBObject("$cond", 
-																new BasicDBObject("if", new BasicDBObject("$eq",
-																		Arrays.asList("$patientCard.locationId",
-																				"$locationId"))).append("then", "$$KEEP")
-																						.append("else", "$$PRUNE"))) 
-										.append("else", "$$KEEP")))),
+//								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+//								new CustomAggregationOperation(new BasicDBObject("$unwind",
+//										new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
+//												true))),
+//								new CustomAggregationOperation(new BasicDBObject("$redact",
+//										new BasicDBObject("$cond",
+//												new BasicDBObject("if", new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
+//														.append("then", new BasicDBObject("$cond", 
+//																new BasicDBObject("if", new BasicDBObject("$eq",
+//																		Arrays.asList("$patientCard.locationId",
+//																				"$locationId"))).append("then", "$$KEEP")
+//																						.append("else", "$$PRUNE"))) 
+//										.append("else", "$$KEEP")))),
 								project,
 								group,
 								sortOperation, Aggregation.skip((page) * size),
@@ -4807,20 +4815,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 												true))),
 								
-								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
-												true))),
-								new CustomAggregationOperation(new BasicDBObject("$redact",
-										new BasicDBObject("$cond",
-												new BasicDBObject("if", new BasicDBObject("$or", Arrays.asList(new BasicDBObject("$ne", Arrays.asList("$patientCard", null)),
-																											  new BasicDBObject("$patientCard", new BasicDBObject("$exists", true)))))
-														.append("then", new BasicDBObject("$cond", 
-																new BasicDBObject("if", new BasicDBObject("$eq",
-																		Arrays.asList("$patientCard.locationId",
-																				"$locationId"))).append("then", "$$KEEP")
-																						.append("else", "$$PRUNE"))) 
-										.append("else", "$$KEEP")))),
+//								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+//								new CustomAggregationOperation(new BasicDBObject("$unwind",
+//										new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays",
+//												true))),
+//								new CustomAggregationOperation(new BasicDBObject("$redact",
+//										new BasicDBObject("$cond",
+//												new BasicDBObject("if", new BasicDBObject("$or", Arrays.asList(new BasicDBObject("$ne", Arrays.asList("$patientCard", null)),
+//																											  new BasicDBObject("$patientCard", new BasicDBObject("$exists", true)))))
+//														.append("then", new BasicDBObject("$cond", 
+//																new BasicDBObject("if", new BasicDBObject("$eq",
+//																		Arrays.asList("$patientCard.locationId",
+//																				"$locationId"))).append("then", "$$KEEP")
+//																						.append("else", "$$PRUNE"))) 
+//										.append("else", "$$KEEP")))),
 								project,
 								group,
 								sortOperation), "appointment_cl",
@@ -4828,14 +4836,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.getMappedResults();
 
 			}
+			if(response != null) {
+				for(Event event : response){
+					if(!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(event.getPatientId()),new ObjectId(locationId), new ObjectId(event.getHospitalId()));
+						if(patientCollection != null)event.setLocalPatientName(patientCollection.getLocalPatientName());
+					}
+				}
+			}
 
 			
-		} catch (MongoException m) {
-			m.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, m.getMessage());
-		}
-		
-		catch (Exception e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
