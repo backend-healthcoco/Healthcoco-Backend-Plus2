@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.DentalToothNumber;
@@ -16,6 +17,7 @@ public class DentalWorksInvoiceItemResponse {
 	private Discount discount;
 	private Tax tax;
 	private Double finalCost = 0.0;
+	private Date createdTime;
 
 	public String getWorkId() {
 		return workId;
@@ -79,6 +81,14 @@ public class DentalWorksInvoiceItemResponse {
 
 	public void setFinalCost(Double finalCost) {
 		this.finalCost = finalCost;
+	}
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
 	}
 
 }

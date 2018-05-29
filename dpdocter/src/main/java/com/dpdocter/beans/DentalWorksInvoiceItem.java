@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -14,6 +15,7 @@ public class DentalWorksInvoiceItem {
 	private Discount discount;
 	private Tax tax;
 	private Double finalCost = 0.0;
+	private Date createdTime;
 
 	public List<DentalToothNumber> getDentalToothNumbers() {
 		return dentalToothNumbers;
@@ -78,5 +80,15 @@ public class DentalWorksInvoiceItem {
 	public void setWorkName(String workName) {
 		this.workName = workName;
 	}
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+	
+	
 
 }

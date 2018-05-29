@@ -2886,6 +2886,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalWorksInvoiceItem.setWorkId( new ObjectId( dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWorkId()));
 					dentalWorksInvoiceItem.setDentalToothNumbers(dentalWorksSample.getDentalToothNumbers());
 					dentalWorksInvoiceItem.setWorkName(dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork().getWorkName());
+					dentalWorksInvoiceItem.setCreatedTime(dentalLabPickupCollection.getCreatedTime());
 					invoiceItems.add(dentalWorksInvoiceItem);
 				}
 			}
