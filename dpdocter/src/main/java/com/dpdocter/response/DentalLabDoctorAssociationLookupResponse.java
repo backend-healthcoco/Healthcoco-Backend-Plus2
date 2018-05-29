@@ -15,6 +15,7 @@ public class DentalLabDoctorAssociationLookupResponse extends GenericCollection 
 	private Boolean isActive = true;
 	private User doctor;
 	private Location dentalLab;
+	private Location location;
 
 	public String getId() {
 		return id;
@@ -86,6 +87,14 @@ public class DentalLabDoctorAssociationLookupResponse extends GenericCollection 
 
 	public void setDentalLab(Location dentalLab) {
 		this.dentalLab = dentalLab;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 
 	@Override

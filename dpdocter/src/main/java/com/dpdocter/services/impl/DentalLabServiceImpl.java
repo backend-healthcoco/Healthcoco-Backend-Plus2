@@ -467,14 +467,18 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
+						Aggregation.unwind("dentalLab"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						Aggregation.unwind("dentalLab"), Aggregation.match(criteria),
+						Aggregation.unwind("dentalLab"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, DentalLabDoctorAssociationCollection.class,
@@ -2822,7 +2826,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 														.is(dentalWorksInvoiceCollection.getDentalLabLocationId())
 														.and("dentalLabHospitalId")
 														.is(dentalWorksInvoiceCollection.getDentalLabHospitalId())),
-												DoctorPatientInvoiceCollection.class) + 1));
+												DentalWorksInvoiceCollection.class) + 1));
 				dentalWorksInvoiceCollection.setBalanceAmount(request.getGrandTotal());
 				if (dentalWorksInvoiceCollection.getInvoiceDate() == null)
 					dentalWorksInvoiceCollection.setInvoiceDate(new Date());
@@ -2926,7 +2930,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						+ ((int) mongoTemplate.count(new Query(new Criteria("dentalLabLocationId")
 								.is(dentalWorksReceiptCollection.getDentalLabLocationId()).and("dentalLabHospitalId")
 								.is(dentalWorksReceiptCollection.getDentalLabHospitalId())),
-								DoctorPatientInvoiceCollection.class) + 1));
+								DentalWorksReceiptCollection.class) + 1));
 				if (dentalWorksReceiptCollection.getReceivedDate() == null) {
 					dentalWorksReceiptCollection.setReceivedDate(System.currentTimeMillis());
 				}
