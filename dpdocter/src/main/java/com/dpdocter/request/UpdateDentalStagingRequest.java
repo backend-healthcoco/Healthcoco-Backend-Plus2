@@ -76,5 +76,4 @@ public class UpdateDentalStagingRequest {
 				+ ", dentalStages=" + dentalStages + ", status=" + status + ", processStatus=" + processStatus
 				+ ", isCompleted=" + isCompleted + ", isTrialChanged=" + isTrialChanged + "]";
 	}
-
 }
