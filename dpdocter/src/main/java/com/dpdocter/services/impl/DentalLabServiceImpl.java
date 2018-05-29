@@ -2892,7 +2892,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalWorksInvoiceItem.setCost(dentalWorksSample.getCost());
 					dentalWorksInvoiceItem.setWorkId( new ObjectId( dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWorkId()));
 					dentalWorksInvoiceItem.setDentalToothNumbers(dentalWorksSample.getDentalToothNumbers());
-					dentalWorksInvoiceItem.setWorkName(dentalWorksSample.getDentalWork().getWorkName());
+					dentalWorksInvoiceItem.setWorkName(dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork().getWorkName());
 					invoiceItems.add(dentalWorksInvoiceItem);
 				}
 			}
