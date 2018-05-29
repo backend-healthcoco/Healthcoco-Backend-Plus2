@@ -22,6 +22,8 @@ public class EventRequest {
     
     private String doctorId;
 
+    private String patientId;
+
     private WorkingHours time;
 
     private Boolean isCalenderBlocked = false;
@@ -168,14 +170,21 @@ public class EventRequest {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
 	@Override
 	public String toString() {
 		return "EventRequest [id=" + id + ", state=" + state + ", subject=" + subject + ", explanation=" + explanation
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + ", time="
-				+ time + ", isCalenderBlocked=" + isCalenderBlocked + ", fromDate=" + fromDate + ", toDate=" + toDate
-				+ ", isAllDayEvent=" + isAllDayEvent + ", doctorIds=" + doctorIds + ", localPatientName="
-				+ localPatientName + ", mobileNumber=" + mobileNumber + ", isPatientRequired=" + isPatientRequired
-				+ "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ ", patientId=" + patientId + ", time=" + time + ", isCalenderBlocked=" + isCalenderBlocked
+				+ ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent=" + isAllDayEvent + ", doctorIds="
+				+ doctorIds + ", localPatientName=" + localPatientName + ", mobileNumber=" + mobileNumber
+				+ ", isPatientRequired=" + isPatientRequired + "]";
 	}
-
 }
