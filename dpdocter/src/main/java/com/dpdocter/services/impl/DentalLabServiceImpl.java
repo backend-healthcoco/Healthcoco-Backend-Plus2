@@ -2890,7 +2890,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				for (DentalWorksSample dentalWorksSample : dentalLabPickupCollection.getDentalWorksSamples()) {
 					DentalWorksInvoiceItem dentalWorksInvoiceItem = new DentalWorksInvoiceItem();
 					dentalWorksInvoiceItem.setCost(dentalWorksSample.getCost());
-					dentalWorksInvoiceItem.setWorkId( new ObjectId(dentalWorksSample.getDentalWork().getId()));
+					dentalWorksInvoiceItem.setWorkId( new ObjectId( dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWorkId()));
 					dentalWorksInvoiceItem.setDentalToothNumbers(dentalWorksSample.getDentalToothNumbers());
 					dentalWorksInvoiceItem.setWorkName(dentalWorksSample.getDentalWork().getWorkName());
 					invoiceItems.add(dentalWorksInvoiceItem);
