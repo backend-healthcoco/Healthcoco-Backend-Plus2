@@ -444,9 +444,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Override
 	@Transactional
-	public List<User> getDentalLabDoctorAssociations(String locationId, String doctorId, int page, int size,
+	public List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, String doctorId, int page, int size,
 			String searchTerm) {
-		List<DentalLabDoctorAssociationLookupResponse> customWorks = null;
+		List<DentalLabDoctorAssociationLookupResponse> responses = null;
 		List<User> users = new ArrayList<>();
 		try {
 			Aggregation aggregation = null;
@@ -479,10 +479,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 			AggregationResults<DentalLabDoctorAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, DentalLabDoctorAssociationCollection.class,
 					DentalLabDoctorAssociationLookupResponse.class);
-			customWorks = aggregationResults.getMappedResults();
+			responses = aggregationResults.getMappedResults();
 
-			for (DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : customWorks) {
-				users.add(doctorAssociationLookupResponse.getDoctor());
+
+			for (DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : responses) {
+				doctorAssociationLookupResponse.getDoctor().setLocationId(doctorAssociationLookupResponse.getLocationId());
+				doctorAssociationLookupResponse.getDoctor().setHospitalId(doctorAssociationLookupResponse.getHospitalId());
 			}
 
 		} catch (Exception e) {
@@ -490,7 +492,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			logger.error(e + " Error getting dental lab doctor association");
 			throw new BusinessException(ServiceError.Unknown, "Error getting dental lab doctor association");
 		}
-		return users;
+		return responses;
 	}
 
 	@Override
