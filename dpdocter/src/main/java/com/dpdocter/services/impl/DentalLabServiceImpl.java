@@ -3315,9 +3315,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 					Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			AggregationResults<DentalWorksAmount> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DentalWorksInvoiceCollection.class, DentalWorksAmount.class);
+					DentalWorksAmountCollection.class, DentalWorksAmount.class);
 			response = aggregationResults.getUniqueMappedResult();
-
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
