@@ -41,7 +41,7 @@ public class ESDentalLabAPI {
 	@Path(value = PathProxy.ESDentalLabsUrl.SEARCH_DENTAL_WORKS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS)
-	public Response<ESDentalWorksDocument> searchComplaints(@PathParam("range") String range,
+	public Response<ESDentalWorksDocument> searchDentalWorks(@PathParam("range") String range,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,

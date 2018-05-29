@@ -474,7 +474,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 			customWorks = aggregationResults.getMappedResults();
 
 			for (DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : customWorks) {
-				BeanUtil.map(doctorAssociationLookupResponse, doctorAssociationLookupResponse.getDoctor());
+				doctorAssociationLookupResponse.getDoctor().setLocationId(doctorAssociationLookupResponse.getLocationId());
+				doctorAssociationLookupResponse.getDoctor().setHospitalId(doctorAssociationLookupResponse.getHospitalId());
+				
 				users.add(doctorAssociationLookupResponse.getDoctor());
 			}
 
@@ -1178,7 +1180,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+										true))),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
@@ -1193,7 +1197,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays",
 										true))), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+										true))),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
@@ -1201,6 +1207,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.match(criteria), aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
+			System.out.println(aggregation);
+			
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalLabPickupCollection.class, DentalLabPickupLookupResponse.class);
 			lookupResponses = aggregationResults.getMappedResults();
