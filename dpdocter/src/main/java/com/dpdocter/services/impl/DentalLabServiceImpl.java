@@ -3163,9 +3163,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (to != null) {
-				criteria.and("receivedDate").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+				criteria.and("receivedDate").gte(from).lte(to);
 			} else {
-				criteria.and("receivedDate").gte(new Date(from));
+				criteria.and("receivedDate").gte(from);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
