@@ -149,7 +149,7 @@ public class PrintSettingsApi {
 		if (printSettings != null)
 			printSettings.setClinicLogoUrl(getFinalImageURL(printSettings.getClinicLogoUrl()));
 		Response<DentalLabPrintSetting> response = new Response<DentalLabPrintSetting>();
-		
+
 		response.setData(printSettings);
 		return response;
 	}
@@ -168,12 +168,12 @@ public class PrintSettingsApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 		}
-		List<DentalLabPrintSetting> printSettings = printSettingsService.getDentalLabSettings( locationId,
-				hospitalId, page, size, updatedTime, discarded);
-		if (printSettings != null) {
-			for (Object pSettings : printSettings) {
-				((PrintSettings) pSettings)
-						.setClinicLogoUrl(getFinalImageURL(((PrintSettings) pSettings).getClinicLogoUrl()));
+		List<DentalLabPrintSetting> printSettings = printSettingsService.getDentalLabSettings(locationId, hospitalId,
+				page, size, updatedTime, discarded);
+		if (printSettings != null && !printSettings.isEmpty()) {
+			for (DentalLabPrintSetting pSetting : printSettings) {
+
+				pSetting.setClinicLogoUrl(getFinalImageURL(pSetting.getClinicLogoUrl()));
 			}
 		}
 		Response<DentalLabPrintSetting> response = new Response<DentalLabPrintSetting>();
