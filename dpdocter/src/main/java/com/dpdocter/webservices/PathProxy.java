@@ -1684,7 +1684,7 @@ public interface PathProxy {
 		public static final String DISCARD_RECEIPT = "/billing/discardReceipt";
 		public static final String GET_AMOUNT = "/billing/getAmount";
 		public static final String DOWNLOAD_DENTAL_WORK_INVOICE = "/billing/invoice/{invoiceId}/download";
-		public static final String DOWNLOAD_DENTAL_WORK_RECEIPT = "/billing/receipt/{receId}/download";
+		public static final String DOWNLOAD_DENTAL_WORK_RECEIPT = "/billing/receipt/{receiptId}/download";
 	}
 
 	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";
