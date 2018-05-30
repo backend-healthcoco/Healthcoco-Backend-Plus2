@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.DentalLabPrintSetting;
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -42,10 +43,10 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Autowired
 	private HospitalRepository hospitalRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	@Override
@@ -80,7 +81,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 					printSettingsCollection.setCreatedBy(oldPrintSettingsCollection.getCreatedBy());
 					printSettingsCollection.setDiscarded(oldPrintSettingsCollection.getDiscarded());
 					printSettingsCollection.setHospitalUId(oldPrintSettingsCollection.getHospitalUId());
-					
+
 					if (request.getPageSetup() == null)
 						printSettingsCollection.setPageSetup(oldPrintSettingsCollection.getPageSetup());
 
@@ -93,18 +94,19 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 			}
 
-			if(DPDoctorUtils.allStringsEmpty(printSettingsCollection.getHospitalUId())) {
-				HospitalCollection hospitalCollection = hospitalRepository.findOne(new ObjectId(request.getHospitalId()));
+			if (DPDoctorUtils.allStringsEmpty(printSettingsCollection.getHospitalUId())) {
+				HospitalCollection hospitalCollection = hospitalRepository
+						.findOne(new ObjectId(request.getHospitalId()));
 				if (hospitalCollection != null) {
 					printSettingsCollection.setHospitalUId(hospitalCollection.getHospitalUId());
 				}
 			}
-			
+
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			if (locationCollection != null) {
 				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 			}
-			
+
 			printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 			BeanUtil.map(printSettingsCollection, response);
 
@@ -196,51 +198,44 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	}
 
-	
-	
+
 	@Override
 	@Transactional
-	public String getPrintSettingsGeneralNote( String doctorId, String locationId, String hospitalId) {
+	public String getPrintSettingsGeneralNote(String doctorId, String locationId, String hospitalId) {
 		String response = null;
 		List<PrintSettings> printSettings = null;
 		Aggregation aggregation = null;
-		
+
 		try {
-			
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-			{
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId);
 			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-			{
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				locationObjectId = new ObjectId(locationId);
 				criteria.and("locationId").is(locationObjectId);
 			}
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-			{
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				hospitalObjectId = new ObjectId(hospitalId);
 				criteria.and("hospitalId").is(hospitalObjectId);
 			}
 
-		
-			aggregation = Aggregation.newAggregation( Aggregation.match(criteria),
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			
-			AggregationResults<PrintSettings> aggregationResults = mongoTemplate.aggregate(
-					aggregation, PrintSettingsCollection.class,
-					PrintSettings.class);
-			
+
+			AggregationResults<PrintSettings> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PrintSettingsCollection.class, PrintSettings.class);
+
 			printSettings = aggregationResults.getMappedResults();
 			for (PrintSettings printSetting : printSettings) {
 				if (printSetting.getGeneralNotes() != null) {
 					response = printSetting.getGeneralNotes();
 				}
 			}
-					
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Print Settings Notes");
@@ -289,6 +284,124 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	@Override
+	@Transactional
+	public DentalLabPrintSetting saveDentalLabSettings(DentalLabPrintSetting request) {
+		DentalLabPrintSetting response = new DentalLabPrintSetting();
+		PrintSettingsCollection printSettingsCollection = new PrintSettingsCollection();
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
+				locationObjectId = new ObjectId(request.getLocationId());
+			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
+				hospitalObjectId = new ObjectId(request.getHospitalId());
+
+			if (request.getId() == null) {
+				PrintSettingsCollection collection = printSettingsRepository.getSettings(locationObjectId,
+						hospitalObjectId);
+				if (collection != null && !collection.getDiscarded())
+					request.setId(collection.getId().toString());
+			}
+			BeanUtil.map(request, printSettingsCollection);
+			if (request.getId() == null) {
+				printSettingsCollection.setCreatedTime(new Date());
+			} else {
+				PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository
+						.findOne(new ObjectId(request.getId()));
+				if (oldPrintSettingsCollection != null) {
+					printSettingsCollection.setCreatedTime(oldPrintSettingsCollection.getCreatedTime());
+					printSettingsCollection.setCreatedBy(oldPrintSettingsCollection.getCreatedBy());
+					printSettingsCollection.setDiscarded(oldPrintSettingsCollection.getDiscarded());
+					printSettingsCollection.setHospitalUId(oldPrintSettingsCollection.getHospitalUId());
+
+					if (request.getHeaderSetup() == null)
+						printSettingsCollection.setHeaderSetup(oldPrintSettingsCollection.getHeaderSetup());
+
+				}
+
+			}
+
+			if (DPDoctorUtils.allStringsEmpty(printSettingsCollection.getHospitalUId())) {
+				HospitalCollection hospitalCollection = hospitalRepository
+						.findOne(new ObjectId(request.getHospitalId()));
+				if (hospitalCollection != null) {
+					printSettingsCollection.setHospitalUId(hospitalCollection.getHospitalUId());
+				}
+			}
+
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			if (locationCollection != null) {
+				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
+			}
+
+			printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
+			BeanUtil.map(printSettingsCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while saving Dental Lab settings");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while saving Dental Lab settings");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<DentalLabPrintSetting> getDentalLabSettings( String locationId, String hospitalId,
+			int page, int size, String updatedTime, Boolean discarded) {
+		List<DentalLabPrintSetting> response = null;
+		List<PrintSettingsCollection> printSettingsCollections = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
+		try {
+			if (discarded)
+				discards[1] = true;
+
+			ObjectId  locationObjectId = null, hospitalObjectId = null;
+	
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			
+			
+
+			if (size > 0)
+				printSettingsCollections = printSettingsRepository.getSettings( locationObjectId,
+						hospitalObjectId, new Date(createdTimeStamp), discards,
+						new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else
+				printSettingsCollections = printSettingsRepository.getSettings( locationObjectId,
+						hospitalObjectId, new Date(createdTimeStamp), discards,
+						new Sort(Sort.Direction.DESC, "createdTime"));
+		
+			
+				
+			if (printSettingsCollections != null) {
+				response = new ArrayList<DentalLabPrintSetting>();
+
+				for (PrintSettingsCollection collection : printSettingsCollections) {
+					DentalLabPrintSetting printSettings = new DentalLabPrintSetting();
+					
+					
+					
+					BeanUtil.map(collection, printSettings);
+					response.add(printSettings);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting dental Lab Print Settings");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Dental Lan Print Settings");
+		}
+		return response;
+
 	}
 
 }
