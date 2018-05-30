@@ -15,7 +15,6 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
-import com.dpdocter.beans.User;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditTaxRequest;
@@ -79,8 +78,8 @@ public interface DentalLabService {
 	List<RateCardDoctorAssociation> getRateCards(int page, int size, String searchTerm, String doctorId,
 			String dentalLabId, Boolean discarded);
 
-	List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, String doctorId, int page, int size,
-			String searchTerm);
+	List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, String doctorId,
+			int page, int size, String searchTerm);
 
 	/*
 	 * List<DentalLabPickupResponse> getRequests(String dentalLabId, String
@@ -137,7 +136,7 @@ public interface DentalLabService {
 	String downloadDentalLabReportPrint(String id, Boolean isInspectionReport);
 
 	public List<DentalLabPickupResponse> getRequestByIds(List<ObjectId> ids);
-	
+
 	public String downloadMultipleInspectionReportPrint(List<String> requestId);
 
 	TaxResponse addEditTax(AddEditTaxRequest request);
@@ -166,11 +165,10 @@ public interface DentalLabService {
 
 	DentalWorksAmount getAmount(String doctorId, String locationId, String hospitalId, String dentalLabLocationId,
 			String dentalLabHospitalId);
-	
-	public String downloadDentalWorkInvoice(String invoiceId);
-	
-	public String downloadDentalLabReceipt(String receiptId);
 
+	public String downloadDentalWorkInvoice(String invoiceId);
+
+	public String downloadDentalLabReceipt(String receiptId);
 
 	/*
 	 * DentalLabDoctorAssociation

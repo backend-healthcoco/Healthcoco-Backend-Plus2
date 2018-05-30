@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -32,6 +33,7 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
+import com.dpdocter.beans.DentalLabPrintSetting;
 import com.dpdocter.beans.DentalStage;
 import com.dpdocter.beans.DentalStagejasperBean;
 import com.dpdocter.beans.DentalToothNumber;
@@ -47,6 +49,7 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.InseptionReportJasperBean;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
+import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.SMS;
@@ -63,8 +66,10 @@ import com.dpdocter.collections.DentalWorksAmountCollection;
 import com.dpdocter.collections.DentalWorksInvoiceCollection;
 import com.dpdocter.collections.DentalWorksReceiptCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
@@ -73,6 +78,8 @@ import com.dpdocter.collections.TaxCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FONTSTYLE;
+import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.RoleEnum;
@@ -122,6 +129,7 @@ import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
@@ -254,6 +262,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Value("${dental.lab.finished.message.cb}")
 	private String FINISHED_LAB_NOTIFICATION_CB;
+
+	@Value(value = "${jasper.print.receipt.a4.fileName}")
+	private String receiptA4FileName;
+
+	@Value(value = "${jasper.print.receipt.a5.fileName}")
+	private String receiptA5FileName;
+
+	@Autowired
+	private PatientVisitService patientVisitService;
 
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -2812,6 +2829,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorkInvoiceJasperResponse.setTeethNo("--");
 			}
 			dentalWorkInvoiceJasperResponse.setTotal(dentalWorksInvoiceCollection.getTotalCost());
+			dentalWorkInvoiceJasperResponse.setsNo(1);
 			dentalWorkInvoiceJasperResponses.add(dentalWorkInvoiceJasperResponse);
 		}
 		parameters.put("items", dentalWorkInvoiceJasperResponses);
@@ -2822,17 +2840,22 @@ public class DentalLabServiceImpl implements DentalLabService {
 				+ doctor.getFirstName() + "</b><br>" + location.getLocationName() + ",<br>" + location.getCity()
 				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? ",<br>" + location.getState() : "");
 		parameters.put("title", "INVOICE");
-		grantTotal = dentalWorksInvoiceCollection.getGrandTotal();
+		grantTotal = dentalWorksInvoiceCollection.getTotalCost();
 		parameters.put("grandTotal", "Total : " + grantTotal + " INR");
 		parameters.put("doctor", doctorName);
 		parameters.put("invoiceId", "<b>InvoiceId : </b>" + dentalWorksInvoiceCollection.getUniqueInvoiceId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
 
+		printSettings = printSettingsRepository.getSettings(dentalWorksInvoiceCollection.getDentalLabLocationId(),
+				dentalWorksInvoiceCollection.getDentalLabHospitalId());
+
 		if (printSettings == null) {
-			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
+		patientVisitService.generatePrintSetup(parameters, printSettings, null);
+		parameters.put("followUpAppointment", null);
+
 		String pdfName = "DENTALINVOICE-" + dentalWorksInvoiceCollection.getUniqueInvoiceId() + new Date().getTime();
 		String layout = "PORTRAIT";
 		String pageSize = "A4";
@@ -2840,6 +2863,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		Integer bottonMargin = 20;
 		Integer leftMargin = 20;
 		Integer rightMargin = 20;
+		parameters.put("followUpAppointment", null);
 		parameters.put("footerSignature", "");
 		parameters.put("bottomSignText", "");
 		parameters.put("contentFontSize", 11);
@@ -3391,7 +3415,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (receiptResponse == null) {
 				throw new BusinessException(ServiceError.NoRecord, " No Dental Work receipt found with id");
 			}
-
+			jasperReportResponse = createJasperForDentalLabReceipt(receiptResponse);
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
 			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -3405,6 +3429,70 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		return response;
 	}
+
+
+	private JasperReportResponse createJasperForDentalLabReceipt(DentalWorksReceiptResponse dentalWorksReceiptResponse)
+			throws IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		String userName = "";
+		User user = dentalWorksReceiptResponse.getDoctor();
+		if (!DPDoctorUtils.allStringsEmpty(user.getTitle())) {
+			userName = user.getTitle();
+		}
+		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
+				+ "<br>The sum of Rupees:- " + dentalWorksReceiptResponse.getAmountPaid() + "<br> By "
+				+ dentalWorksReceiptResponse.getModeOfPayment()
+				+ " towords professional charge &nbsp;&nbsp;&nbsp;On Date:-"
+				+ simpleDateFormat.format(dentalWorksReceiptResponse.getReceivedDate());
+		parameters.put("content", content);
+		parameters.put("paid", "Rs.&nbsp;" + dentalWorksReceiptResponse.getAmountPaid());
+		parameters.put("receiptId", "<b>receiptId : </b>" + dentalWorksReceiptResponse.getUniqueReceiptId());
+		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
+
+		LocationCollection location = locationRepository
+				.findOne(new ObjectId(dentalWorksReceiptResponse.getLocationId()));
+		String doctorName = "<b>" + (!DPDoctorUtils.anyStringEmpty(user.getTitle()) ? user.getTitle() : "") + " "
+				+ user.getFirstName() + "</b><br>" + location.getLocationName() + ",<br>" + location.getCity()
+				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? ",<br>" + location.getState() : "");
+		parameters.put("doctor", doctorName);
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				new ObjectId(dentalWorksReceiptResponse.getDentalLabLocationId()),
+				new ObjectId(dentalWorksReceiptResponse.getDentalLabHospitalId()));
+
+		if (printSettings == null) {
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+		patientVisitService.generatePrintSetup(parameters, printSettings, null);
+		parameters.put("followUpAppointment", null);
+		String pdfName = "DENTAL-RECEIPT-" + dentalWorksReceiptResponse.getUniqueReceiptId() + new Date().getTime();
+		String layout = "PORTRAIT";
+		String pageSize = "A4";
+		Integer topMargin = 20;
+		Integer bottonMargin = 20;
+		Integer leftMargin = 20;
+		Integer rightMargin = 20;
+		parameters.put("footerSignature", "");
+		parameters.put("bottomSignText", "");
+		parameters.put("contentFontSize", 11);
+		parameters.put("headerLeftText", "");
+		parameters.put("headerRightText", "");
+		parameters.put("footerBottomText", "");
+		parameters.put("logoURL", "");
+		parameters.put("showTableOne", false);
+		parameters.put("poweredBy", footerText);
+		parameters.put("contentLineSpace", LineSpace.SMALL.name());
+		response = jasperReportService.createPDF(ComponentType.DENTAL_WORK_RECEIPT, parameters, receiptA4FileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+	}
+
+	
 
 
 }

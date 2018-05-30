@@ -70,7 +70,7 @@ public interface BillingService {
 	String downloadMultipleReceipt(List<String> ids);
 
 	void emailMultipleReceipt(List<String> ids, String emailAddress);
-	
- 	Boolean changeInvoiceTreatmentStatus(InvoiceItemChangeStatusRequest request);
+
+	Boolean changeInvoiceTreatmentStatus(InvoiceItemChangeStatusRequest request);
 
 }
