@@ -486,7 +486,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					DentalLabDoctorAssociationLookupResponse.class);
 			responses = aggregationResults.getMappedResults();
 
-
 			for (DentalLabDoctorAssociationLookupResponse doctorAssociationLookupResponse : responses) {
 				doctorAssociationLookupResponse.getDoctor()
 						.setLocationId(doctorAssociationLookupResponse.getLocationId());
@@ -3362,7 +3361,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 
-
 	@Override
 	@Transactional
 	public DentalWorksAmount getAmount(String doctorId, String locationId, String hospitalId,
@@ -3403,7 +3401,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 
-
 	@Override
 	@Transactional
 	public String downloadDentalLabReceipt(String receiptId) {
@@ -3430,7 +3427,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 		return response;
 	}
 
-
 	private JasperReportResponse createJasperForDentalLabReceipt(DentalWorksReceiptResponse dentalWorksReceiptResponse)
 			throws IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -3442,14 +3438,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 		if (!DPDoctorUtils.allStringsEmpty(user.getTitle())) {
 			userName = user.getTitle();
 		}
-		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
-				+ "<br>The sum of Rupees:- " + dentalWorksReceiptResponse.getAmountPaid() + "<br> By "
-				+ dentalWorksReceiptResponse.getModeOfPayment()
-				+ " towords professional charge &nbsp;&nbsp;&nbsp;On Date:-"
-				+ simpleDateFormat.format(dentalWorksReceiptResponse.getReceivedDate());
+		String content = "<br>Received with thanks from &nbsp;&nbsp;<b>" + userName + user.getFirstName()
+				+ "</b>. a sum of Rs:- " + dentalWorksReceiptResponse.getAmountPaid() + "<br> by <b>"
+				+ dentalWorksReceiptResponse.getModeOfPayment() + "</b> towords professional charge .&nbsp;&nbsp;&nbsp;";
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + dentalWorksReceiptResponse.getAmountPaid());
-		parameters.put("receiptId", "<b>receiptId : </b>" + dentalWorksReceiptResponse.getUniqueReceiptId());
+		parameters.put("receiptId", "<b>ReceiptId : </b>" + dentalWorksReceiptResponse.getUniqueReceiptId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
 
 		LocationCollection location = locationRepository
@@ -3475,6 +3469,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		Integer bottonMargin = 20;
 		Integer leftMargin = 20;
 		Integer rightMargin = 20;
+		parameters.put("followUpAppointment", null);
 		parameters.put("footerSignature", "");
 		parameters.put("bottomSignText", "");
 		parameters.put("contentFontSize", 11);
@@ -3491,8 +3486,5 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		return response;
 	}
-
-	
-
 
 }
