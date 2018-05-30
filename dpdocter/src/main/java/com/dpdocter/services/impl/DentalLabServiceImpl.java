@@ -3095,7 +3095,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			/* (SEVEN) */
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("dentalWorksSamples"),
+				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -3107,7 +3107,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("dentalWorksSamples"),
+				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
