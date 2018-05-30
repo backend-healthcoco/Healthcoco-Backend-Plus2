@@ -6,7 +6,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 
-public class DentalWorksReceiptResponse extends GenericCollection{
+public class DentalWorksReceiptResponse extends GenericCollection {
 
 	private String id;
 
@@ -37,6 +37,9 @@ public class DentalWorksReceiptResponse extends GenericCollection{
 	private User doctor;
 
 	private Location dentalLab;
+	private String chequeNumber;
+
+	private String note;
 
 	public String getId() {
 		return id;
@@ -156,6 +159,22 @@ public class DentalWorksReceiptResponse extends GenericCollection{
 
 	public void setDentalLab(Location dentalLab) {
 		this.dentalLab = dentalLab;
+	}
+
+	public String getChequeNumber() {
+		return chequeNumber;
+	}
+
+	public void setChequeNumber(String chequeNumber) {
+		this.chequeNumber = chequeNumber;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	@Override
