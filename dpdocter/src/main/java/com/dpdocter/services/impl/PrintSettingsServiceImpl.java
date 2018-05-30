@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DentalLabPrintSetting;
 import com.dpdocter.beans.PrintSettings;
-import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -30,7 +29,6 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
-import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
 import com.dpdocter.services.PrintSettingsService;
 
 import common.util.web.DPDoctorUtils;
@@ -352,49 +350,23 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Override
 	@Transactional
-	public List<DentalLabPrintSetting> getDentalLabSettings( String locationId, String hospitalId,
-			int page, int size, String updatedTime, Boolean discarded) {
-		List<DentalLabPrintSetting> response = null;
-		List<PrintSettingsCollection> printSettingsCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	public DentalLabPrintSetting getDentalLabSettings(String locationId, String hospitalId) {
+		DentalLabPrintSetting response = null;
+		PrintSettingsCollection printSettingsCollection = null;
 		try {
-			if (discarded)
-				discards[1] = true;
+			ObjectId locationObjectId = null, hospitalObjectId = null;
 
-			ObjectId  locationObjectId = null, hospitalObjectId = null;
-	
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			
-			
+			printSettingsCollection = printSettingsRepository.getSettings(locationObjectId, hospitalObjectId);
 
-			if (size > 0)
-				printSettingsCollections = printSettingsRepository.getSettings( locationObjectId,
-						hospitalObjectId, new Date(createdTimeStamp), discards,
-						new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else
-				printSettingsCollections = printSettingsRepository.getSettings( locationObjectId,
-						hospitalObjectId, new Date(createdTimeStamp), discards,
-						new Sort(Sort.Direction.DESC, "createdTime"));
-		
-			
-				
-			if (printSettingsCollections != null) {
-				response = new ArrayList<DentalLabPrintSetting>();
+			if (printSettingsCollection != null) {
+				response = new DentalLabPrintSetting();
+				BeanUtil.map(printSettingsCollection, response);
 
-				for (PrintSettingsCollection collection : printSettingsCollections) {
-					DentalLabPrintSetting printSettings = new DentalLabPrintSetting();
-					
-					
-					
-					BeanUtil.map(collection, printSettings);
-					response.add(printSettings);
-				}
 			}
 
 		} catch (Exception e) {
