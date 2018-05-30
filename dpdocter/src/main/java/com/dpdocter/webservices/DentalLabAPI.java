@@ -570,9 +570,9 @@ public class DentalLabAPI {
 	public Response<DentalWorksReceipt> getReceipts(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("dentalLabLocationId") String dentalLabLocationId,
-			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId, @QueryParam("from") Long from,
-			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page) {
+			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId,
+			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalLabHospitalId, dentalLabLocationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -647,7 +647,6 @@ public class DentalLabAPI {
 				dentalLabService.getAmount(doctorId, locationId, hospitalId, dentalLabLocationId, dentalLabHospitalId));
 		return response;
 	}
-
 
 	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_WORK_INVOICE)
 	@GET

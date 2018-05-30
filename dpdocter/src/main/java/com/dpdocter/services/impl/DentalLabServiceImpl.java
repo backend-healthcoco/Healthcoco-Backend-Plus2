@@ -2849,6 +2849,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorksInvoiceCollection.getDentalLabHospitalId());
 
 		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
@@ -3440,7 +3441,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 		}
 		String content = "<br>Received with thanks from &nbsp;&nbsp;<b>" + userName + user.getFirstName()
 				+ "</b>. a sum of Rs:- " + dentalWorksReceiptResponse.getAmountPaid() + "<br> by <b>"
-				+ dentalWorksReceiptResponse.getModeOfPayment() + "</b> towords professional charge .&nbsp;&nbsp;&nbsp;";
+				+ dentalWorksReceiptResponse.getModeOfPayment()
+				+ "</b> towords professional charge .&nbsp;&nbsp;&nbsp;";
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + dentalWorksReceiptResponse.getAmountPaid());
 		parameters.put("receiptId", "<b>ReceiptId : </b>" + dentalWorksReceiptResponse.getUniqueReceiptId());
@@ -3457,6 +3459,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				new ObjectId(dentalWorksReceiptResponse.getDentalLabHospitalId()));
 
 		if (printSettings == null) {
+			printSettings=new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
