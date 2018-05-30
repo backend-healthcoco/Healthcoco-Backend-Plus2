@@ -844,6 +844,11 @@ public interface PathProxy {
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String SAVE_DENTAL_LAB_PRINT_SETTINGS = "/dentalLab/add";
+
+		public static final String GET_DENTAL_LAB_PRINT_SETTINGS = "/dentalLab/{locationId}/{hospitalId}";
+
 	}
 
 	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
@@ -1679,6 +1684,7 @@ public interface PathProxy {
 		public static final String DISCARD_RECEIPT = "/billing/discardReceipt";
 		public static final String GET_AMOUNT = "/billing/getAmount";
 		public static final String DOWNLOAD_DENTAL_WORK_INVOICE = "/billing/invoice/{invoiceId}/download";
+		public static final String DOWNLOAD_DENTAL_WORK_RECEIPT = "/billing/receipt/{invoiceId}/download";
 	}
 
 	public static final String CERTIFICATE_BASE_URL = BASE_URL + "/certificate/";

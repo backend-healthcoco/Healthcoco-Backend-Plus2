@@ -7153,7 +7153,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.setColumnFooter(band);
 
 		JasperCompileManager.compileReportToFile(jasperDesign,
-				JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-work-invoice-subreports..jasper");
+				JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-work-invoice-subreports.jasper");
 
 		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
 		jSubreport.setUsingCache(false);
@@ -7168,7 +7168,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + servicesValue + ")"));
 
 		jSubreport.setExpression(new JRDesignExpression(
-				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-work-invoice-subreports..jasper\""));
+				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-dental-work-invoice-subreports.jasper\""));
 
 		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
 		designSubreportParameter.setName("REPORT_CONNECTION");

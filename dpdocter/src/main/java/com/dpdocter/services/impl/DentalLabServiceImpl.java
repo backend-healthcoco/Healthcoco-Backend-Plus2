@@ -63,7 +63,6 @@ import com.dpdocter.collections.DentalWorksAmountCollection;
 import com.dpdocter.collections.DentalWorksInvoiceCollection;
 import com.dpdocter.collections.DentalWorksReceiptCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -2813,17 +2812,18 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorkInvoiceJasperResponse.setTeethNo("--");
 			}
 			dentalWorkInvoiceJasperResponse.setTotal(dentalWorksInvoiceCollection.getTotalCost());
-			grantTotal = grantTotal + dentalWorkInvoiceJasperResponse.getTotal();
+
 		}
-		parameters.put("item", dentalWorkInvoiceJasperResponses);
+		parameters.put("items", dentalWorkInvoiceJasperResponses);
 		LocationCollection location = locationRepository.findOne(locationId);
 		UserCollection doctor = userRepository.findOne(doctorId);
 
 		doctorName = "<b>" + (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "") + " "
 				+ doctor.getFirstName() + "</b><br>" + location.getLocationName() + ",<br>" + location.getCity()
-				+ ",<br>" + location.getState();
+				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? ",<br>" + location.getState() : "");
 		parameters.put("title", "INVOICE");
-		parameters.put("grantTotal", "Total : " + grantTotal + " INR");
+		grantTotal = dentalWorksInvoiceCollection.getGrandTotal();
+		parameters.put("grandTotal", "Total : " + grantTotal + " INR");
 		parameters.put("doctor", doctorName);
 		parameters.put("invoiceId", "<b>InvoiceId : </b>" + dentalWorksInvoiceCollection.getUniqueInvoiceId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
