@@ -8,6 +8,7 @@ import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorksAmount;
 import com.dpdocter.beans.DentalWorksInvoice;
 import com.dpdocter.beans.DentalWorksReceipt;
 import com.dpdocter.beans.FileDetails;
@@ -162,6 +163,9 @@ public interface DentalLabService {
 	DentalWorksInvoice discardInvoice(String id, Boolean discarded);
 
 	DentalWorksReceipt discardReceipt(String id, Boolean discarded);
+
+	DentalWorksAmount getAmount(String doctorId, String locationId, String hospitalId, String dentalLabLocationId,
+			String dentalLabHospitalId);
 
 	/*
 	 * DentalLabDoctorAssociation

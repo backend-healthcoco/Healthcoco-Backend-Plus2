@@ -23,6 +23,7 @@ import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
 import com.dpdocter.beans.DentalStage;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorksAmount;
 import com.dpdocter.beans.DentalWorksInvoice;
 import com.dpdocter.beans.DentalWorksReceipt;
 import com.dpdocter.beans.FileDetails;
@@ -626,5 +627,20 @@ public class DentalLabAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.DentalLabUrls.GET_AMOUNT)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.GET_AMOUNT, notes = PathProxy.DentalLabUrls.GET_AMOUNT)
+	public Response<DentalWorksAmount> getAmount(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("dentalLabLocationId") String dentalLabLocationId,
+			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalLabLocationId, dentalLabHospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWorksAmount> response = new Response<DentalWorksAmount>();
+		response.setData(
+				dentalLabService.getAmount(doctorId, locationId, hospitalId, dentalLabLocationId, dentalLabHospitalId));
+		return response;
+	}
 
 }
