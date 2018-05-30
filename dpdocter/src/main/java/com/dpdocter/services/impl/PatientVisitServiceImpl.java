@@ -246,7 +246,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private EyePrescriptionRepository eyePrescriptionRepository;
-	
+
 	@Autowired
 	private ContactsService contactsService;
 
@@ -673,17 +673,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
 
 		PrescriptionAddEditResponse prescriptionResponse = null;
-		PrescriptionAddEditResponseDetails editResponseDetails = null; 
+		PrescriptionAddEditResponseDetails editResponseDetails = null;
 		if (request.getPrescription().getId() == null) {
 			prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription(), false, createdBy,
 					appointment);
-		}
-		else
-		{
-			
+		} else {
+
 			editResponseDetails = prescriptionServices.editPrescription(request.getPrescription());
-			if(editResponseDetails != null)
-			{
+			if (editResponseDetails != null) {
 				prescriptionResponse = new PrescriptionAddEditResponse();
 				BeanUtil.map(editResponseDetails, prescriptionResponse);
 			}
@@ -806,8 +803,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
-								"appointmentRequest"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
@@ -891,24 +887,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		try {
 
-			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays",
-									true))),
-					new CustomAggregationOperation(new BasicDBObject("$redact",
-							new BasicDBObject("$cond",
+			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							new CustomAggregationOperation(new BasicDBObject(
+									"$unwind",
+									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))
 															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
-					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-					Aggregation.unwind("patientUser")), PatientVisitCollection.class, PatientVisitLookupResponse.class)
-					.getUniqueMappedResult();
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser")),
+					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
 				PatientCollection patient = patientVisitLookupResponse.getPatient();
@@ -939,19 +935,26 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					UserCollection doctorUser = patientVisitLookupResponse.getDoctor();
 					LocationCollection locationCollection = patientVisitLookupResponse.getLocation();
 					String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-							? locationCollection.getStreetAddress() + ", " : "")
+							? locationCollection.getStreetAddress() + ", "
+							: "")
 							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-									? locationCollection.getLandmarkDetails() + ", " : "")
+									? locationCollection.getLandmarkDetails() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-									? locationCollection.getLocality() + ", " : "")
+									? locationCollection.getLocality() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-									? locationCollection.getCity() + ", " : "")
+									? locationCollection.getCity() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-									? locationCollection.getState() + ", " : "")
+									? locationCollection.getState() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-									? locationCollection.getCountry() + ", " : "")
+									? locationCollection.getCountry() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-									? locationCollection.getPostalCode() : "");
+									? locationCollection.getPostalCode()
+									: "");
 
 					if (address.charAt(address.length() - 2) == ',') {
 						address = address.substring(0, address.length() - 2);
@@ -996,8 +999,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		String resourceId = "<b>VID: </b>" + (patientVisitLookupResponse.getUniqueEmrId() != null
-				? patientVisitLookupResponse.getUniqueEmrId() : "--");
+		String resourceId = "<b>VID: </b>"
+				+ (patientVisitLookupResponse.getUniqueEmrId() != null ? patientVisitLookupResponse.getUniqueEmrId()
+						: "--");
 
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				patientVisitLookupResponse.getDoctorId(), patientVisitLookupResponse.getLocationId(),
@@ -1040,7 +1044,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 				String contentLineStyle = (printSettings != null
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
-								? printSettings.getContentLineStyle() : LineStyle.INLINE.name();
+								? printSettings.getContentLineStyle()
+								: LineStyle.INLINE.name();
 				for (ObjectId clinicalNotesId : patientVisitLookupResponse.getClinicalNotesId()) {
 					if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 						ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
@@ -1149,8 +1154,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 				parameters.put("quality", eyePrescriptionCollection.getQuality());
 				parameters.put("type", eyePrescriptionCollection.getType());
-				parameters.put("pupilaryDistance", eyePrescriptionCollection.getPupilaryDistance() != null
-						? eyePrescriptionCollection.getPupilaryDistance() + " mm" : null);
+				parameters.put("pupilaryDistance",
+						eyePrescriptionCollection.getPupilaryDistance() != null
+								? eyePrescriptionCollection.getPupilaryDistance() + " mm"
+								: null);
 				parameters.put("lensType", eyePrescriptionCollection.getLensType());
 				parameters.put("usage", eyePrescriptionCollection.getUsage());
 				parameters.put("remarks", eyePrescriptionCollection.getRemarks());
@@ -1164,7 +1171,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
-						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
 		parameters.put("prescriptions", prescriptions);
 		parameters.put("clinicalNotes", clinicalNotes);
 		parameters.put("treatments", patientTreatments);
@@ -1193,31 +1201,36 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			parameters.put("showHistory", false);
 		generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
 				patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				patientVisitLookupResponse.getCreatedTime(), printSettings.getHospitalUId());
 		generatePrintSetup(parameters, printSettings, patientVisitLookupResponse.getDoctorId());
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
-		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? (printSettings.getPageSetup().getPageSize() != null
-						? printSettings.getPageSetup().getPageSize() : "A4") : "A4")
-				: "A4";
+		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null
+				? (printSettings.getPageSetup().getPageSize() != null ? printSettings.getPageSetup().getPageSize()
+						: "A4")
+				: "A4") : "A4";
 
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "VISITS-"
 				+ patientVisitLookupResponse.getUniqueEmrId() + new Date().getTime();
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 
 		response = jasperReportService.createPDF(ComponentType.VISITS, parameters, visitA4FileName, layout, pageSize,
@@ -1257,7 +1270,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								patientTreatments.setStatus("--");
 							}
 							String serviceName = treatmentServicesCollection.getName() != null
-									? treatmentServicesCollection.getName() : "";
+									? treatmentServicesCollection.getName()
+									: "";
 							String fieldName = "";
 							if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
 								String key = "";
@@ -1291,7 +1305,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							if (treatment.getDiscount() != null && treatment.getDiscount().getValue() > 0)
 								showTreatmentDiscount = true;
 							patientTreatments.setNote(treatment.getNote() != null
-									? "<font size='1'><b>Note :</b> " + treatment.getNote() + "</font>" : "");
+									? "<font size='1'><b>Note :</b> " + treatment.getNote() + "</font>"
+									: "");
 							patientTreatments.setCost(treatment.getCost() + "");
 							patientTreatments
 									.setDiscount((treatment.getDiscount() != null) ? treatment.getDiscount().getValue()
@@ -1407,7 +1422,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		if (printSettings != null) {
 			if (printSettings.getContentSetup() != null) {
 				contentFontSize = !DPDoctorUtils.anyStringEmpty(printSettings.getContentSetup().getFontSize())
-						? Integer.parseInt(printSettings.getContentSetup().getFontSize().replaceAll("pt", "")) : 10;
+						? Integer.parseInt(printSettings.getContentSetup().getFontSize().replaceAll("pt", ""))
+						: 10;
 				if (printSettings.getContentSetup().getInstructionAlign() != null) {
 					parameters.put("instructionAlign",
 							printSettings.getContentSetup().getInstructionAlign().getAlign());
@@ -1485,7 +1501,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 
-			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
+			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()
+					&& !DPDoctorUtils.anyStringEmpty(doctorId)) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
 				if (doctorUser != null)
 					parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
@@ -1538,16 +1555,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			List<String> patientDetailList = new ArrayList<String>();
 			patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
 
-				if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
-					if (patientDetails.getPIDKey().equalsIgnoreCase("false")) {
-						patientDetails.setPIDKey("UHID");
-					}
-					patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
-							+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
-				} else {
-					patientDetailList.add("<b>Patient ID: </b>"
-							+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
+				if (patientDetails.getPIDKey().equalsIgnoreCase("false")) {
+					patientDetails.setPIDKey("UHID");
 				}
+				patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
+						+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			} else {
+				patientDetailList.add("<b>Patient ID: </b>"
+						+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			}
 
 			if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
 				Age ageObj = patientCard.getDob().getAge();
@@ -1614,11 +1631,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 
 			boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
-					? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
+					? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle())
+					: false;
 			boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
-					? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
+					? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle())
+					: false;
 			String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null
-					? patientDetails.getStyle().getFontSize() : "";
+					? patientDetails.getStyle().getFontSize()
+					: "";
 
 			for (int i = 0; i < patientDetailList.size(); i++) {
 				String text = patientDetailList.get(i);
@@ -1654,7 +1674,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		Boolean showTitle = false;
 		try {
-			if(clinicalNotesCollection == null)clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
+			if (clinicalNotesCollection == null)
+				clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
 			if (clinicalNotesCollection != null) {
 				if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
 						&& clinicalNotesCollection.getLocationId() != null) {
@@ -1665,13 +1686,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
 						pulse = (pulse != null && !pulse.isEmpty()
-								? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit() : "");
+								? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
+								: "");
 						if (!DPDoctorUtils.allStringsEmpty(pulse))
 							vitalSigns = pulse;
 
 						String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
 						temp = (temp != null && !temp.isEmpty()
-								? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
+								? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit()
+								: "");
 						if (!DPDoctorUtils.allStringsEmpty(temp)) {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + temp;
@@ -1681,7 +1704,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
 						breathing = (breathing != null && !breathing.isEmpty()
-								? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit() : "");
+								? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit()
+								: "");
 						if (!DPDoctorUtils.allStringsEmpty(breathing)) {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + breathing;
@@ -1691,7 +1715,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						String weight = clinicalNotesCollection.getVitalSigns().getWeight();
 						weight = (weight != null && !weight.isEmpty()
-								? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
+								? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
+								: "");
 						if (!DPDoctorUtils.allStringsEmpty(weight)) {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + weight;
@@ -1730,7 +1755,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						}
 						String height = clinicalNotesCollection.getVitalSigns().getHeight();
 						height = (height != null && !height.isEmpty()
-								? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit() : "");
+								? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+								: "");
 						if (!DPDoctorUtils.allStringsEmpty(height)) {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + height;
@@ -1926,7 +1952,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (prescriptionCollection != null) {
 				prescriptionItemsObj.put("resourceId",
 						"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
-								? prescriptionCollection.getUniqueEmrId() : "--"));
+								? prescriptionCollection.getUniqueEmrId()
+								: "--"));
 				if (prescriptionCollection.getDiagnosticTests() != null
 						&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 					String labTest = "";
@@ -1973,18 +2000,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 											: drugType + " " + drugName + genericName;
 									String durationValue = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getValue() != null
-													? prescriptionItem.getDuration().getValue() : "")
+													? prescriptionItem.getDuration().getValue()
+													: "")
 											: "";
-									String durationUnit = prescriptionItem
-											.getDuration() != null
-													? (prescriptionItem.getDuration().getDurationUnit() != null
-															? (!DPDoctorUtils.anyStringEmpty(prescriptionItem
-																	.getDuration().getDurationUnit().getUnit())
-																			? prescriptionItem.getDuration()
-																					.getDurationUnit().getUnit()
-																			: "")
-															: "")
-													: "";
+									String durationUnit = prescriptionItem.getDuration() != null
+											? (prescriptionItem.getDuration().getDurationUnit() != null
+													? (!DPDoctorUtils.anyStringEmpty(
+															prescriptionItem.getDuration().getDurationUnit().getUnit())
+																	? prescriptionItem.getDuration().getDurationUnit()
+																			.getUnit()
+																	: "")
+													: "")
+											: "";
 
 									String directions = "";
 									if (prescriptionItem.getDirection() != null
@@ -2013,12 +2040,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 											} else {
 												prescriptionItem.setInstructions(!DPDoctorUtils
 														.anyStringEmpty(prescriptionItem.getInstructions())
-																? prescriptionItem.getInstructions() : null);
+																? prescriptionItem.getInstructions()
+																: null);
 											}
 										} else {
 											prescriptionItem.setInstructions(
 													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-															? prescriptionItem.getInstructions() : null);
+															? prescriptionItem.getInstructions()
+															: null);
 										}
 									}
 									String duration = "";
@@ -2034,27 +2063,33 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 											prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
 													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-															? prescriptionItem.getDosage() : "--",
+															? prescriptionItem.getDosage()
+															: "--",
 													duration, directions.isEmpty() ? "--" : directions,
 													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-															? prescriptionItem.getInstructions() : null,
+															? prescriptionItem.getInstructions()
+															: null,
 													genericName);
 										} else {
 											prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
 													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-															? prescriptionItem.getDosage() : "--",
+															? prescriptionItem.getDosage()
+															: "--",
 													duration, directions.isEmpty() ? "--" : directions,
 													!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-															? prescriptionItem.getInstructions() : "--",
+															? prescriptionItem.getInstructions()
+															: "--",
 													genericName);
 										}
 									} else {
 										prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
 												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-														? prescriptionItem.getDosage() : "--",
+														? prescriptionItem.getDosage()
+														: "--",
 												duration, directions.isEmpty() ? "--" : directions,
 												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-														? prescriptionItem.getInstructions() : "--",
+														? prescriptionItem.getInstructions()
+														: "--",
 												genericName);
 
 									}
@@ -2440,24 +2475,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
-			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays",
-									true))),
-					new CustomAggregationOperation(new BasicDBObject("$redact",
-							new BasicDBObject("$cond",
+			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							new CustomAggregationOperation(new BasicDBObject(
+									"$unwind",
+									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))
 															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
-					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-					Aggregation.unwind("patientUser")), PatientVisitCollection.class, PatientVisitLookupResponse.class)
-					.getUniqueMappedResult();
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser")),
+					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
 				PatientCollection patient = patientVisitLookupResponse.getPatient();
