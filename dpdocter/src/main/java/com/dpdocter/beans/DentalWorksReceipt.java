@@ -31,6 +31,10 @@ public class DentalWorksReceipt {
 
 	private Boolean discarded = false;
 
+	private String chequeNumber;
+
+	private String note;
+
 	public String getId() {
 		return id;
 	}
@@ -125,6 +129,30 @@ public class DentalWorksReceipt {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public Double getRemainingAmount() {
+		return remainingAmount;
+	}
+
+	public void setRemainingAmount(Double remainingAmount) {
+		this.remainingAmount = remainingAmount;
+	}
+
+	public String getChequeNumber() {
+		return chequeNumber;
+	}
+
+	public void setChequeNumber(String chequeNumber) {
+		this.chequeNumber = chequeNumber;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	@Override

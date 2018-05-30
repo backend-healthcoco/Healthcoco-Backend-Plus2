@@ -1,37 +1,60 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 
+@Document(collection = "dental_works_receipt_cl")
 public class DentalWorksReceiptCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
 
+	@Field
 	private String uniqueReceiptId;
 
+	@Field
 	private ReceiptType receiptType;
 
+	@Field
 	private ObjectId doctorId;
 
+	@Field
 	private ObjectId locationId;
 
+	@Field
 	private ObjectId hospitalId;
 
+	@Field
 	private ObjectId dentalLabLocationId;
 
+	@Field
 	private ObjectId dentalLabHospitalId;
 
+	@Field
 	private ModeOfPayment modeOfPayment;
 
+	@Field
 	private Double amountPaid = 0.0;
 
+	@Field
 	private Double remainingAmount = 0.0;
 
+	@Field
 	private Long receivedDate;
 
+	@Field
 	private Boolean discarded = false;
+
+	@Field
+	private String chequeNumber;
+
+	@Field
+	private String note;
 
 	public ObjectId getId() {
 		return id;
@@ -72,7 +95,7 @@ public class DentalWorksReceiptCollection extends GenericCollection {
 	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
-
+	
 	public ObjectId getHospitalId() {
 		return hospitalId;
 	}
@@ -135,6 +158,22 @@ public class DentalWorksReceiptCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getChequeNumber() {
+		return chequeNumber;
+	}
+
+	public void setChequeNumber(String chequeNumber) {
+		this.chequeNumber = chequeNumber;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 }
