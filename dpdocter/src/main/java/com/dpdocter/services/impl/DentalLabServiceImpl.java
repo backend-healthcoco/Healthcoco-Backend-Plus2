@@ -3450,11 +3450,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 		if (!DPDoctorUtils.allStringsEmpty(user.getTitle())) {
 			userName = user.getTitle();
 		}
-		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
-				+ "<br>The sum of Rupees:- " + dentalWorksReceiptResponse.getAmountPaid() + "<br> By "
-				+ dentalWorksReceiptResponse.getModeOfPayment()
-				+ " towords professional charge &nbsp;&nbsp;&nbsp;On Date:-"
-				+ simpleDateFormat.format(dentalWorksReceiptResponse.getReceivedDate());
+		String content = "<br>Received with thanks from &nbsp;&nbsp;<b>" + userName + user.getFirstName()
+				+ "</b>. a sum of Rupees:- " + dentalWorksReceiptResponse.getAmountPaid() + "<br> By <b>"
+				+ dentalWorksReceiptResponse.getModeOfPayment() + "</b> towords professional charge &nbsp;&nbsp;&nbsp;";
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + dentalWorksReceiptResponse.getAmountPaid());
 		parameters.put("receiptId", "<b>receiptId : </b>" + dentalWorksReceiptResponse.getUniqueReceiptId());
@@ -3483,6 +3481,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		Integer bottonMargin = 20;
 		Integer leftMargin = 20;
 		Integer rightMargin = 20;
+		parameters.put("followUpAppointment", null);
 		parameters.put("footerSignature", "");
 		parameters.put("bottomSignText", "");
 		parameters.put("contentFontSize", 11);
@@ -3499,7 +3498,5 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		return response;
 	}
-
-	
 
 }

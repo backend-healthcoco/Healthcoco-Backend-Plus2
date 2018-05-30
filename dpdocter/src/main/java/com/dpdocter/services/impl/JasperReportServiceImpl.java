@@ -338,8 +338,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			createDentalWorkInvoiceSubreport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth,
 					pageHeight, normalStyle);
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORK_RECEIPT.getType()))
-			createDentalLabReceipt(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
-					normalStyle);
+			createDentalLabReceipt(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
+		System.out.println(columnWidth);
 
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
@@ -6875,6 +6875,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(20);
 		jrDesignTextField.setWidth(columnWidth);
+
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 		jrDesignTextField.setBold(true);
