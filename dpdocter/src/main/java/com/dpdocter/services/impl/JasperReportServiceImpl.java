@@ -7220,7 +7220,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{invoiceId}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{receiptId}"));
 		jrDesignTextField.setX(205);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(15);
