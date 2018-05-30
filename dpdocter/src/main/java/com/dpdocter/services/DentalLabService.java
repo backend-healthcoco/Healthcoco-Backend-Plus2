@@ -137,7 +137,7 @@ public interface DentalLabService {
 	String downloadDentalLabReportPrint(String id, Boolean isInspectionReport);
 
 	public List<DentalLabPickupResponse> getRequestByIds(List<ObjectId> ids);
-
+	
 	public String downloadMultipleInspectionReportPrint(List<String> requestId);
 
 	TaxResponse addEditTax(AddEditTaxRequest request);
@@ -168,6 +168,9 @@ public interface DentalLabService {
 			String dentalLabHospitalId);
 	
 	public String downloadDentalWorkInvoice(String invoiceId);
+	
+	public String downloadDentalLabReceipt(String receiptId);
+
 
 	/*
 	 * DentalLabDoctorAssociation
