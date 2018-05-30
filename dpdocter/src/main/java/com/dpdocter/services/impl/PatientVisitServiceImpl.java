@@ -2389,7 +2389,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 
-			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
+			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()
+					&& !DPDoctorUtils.anyStringEmpty(doctorId)) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
 				if (doctorUser != null)
 					footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
