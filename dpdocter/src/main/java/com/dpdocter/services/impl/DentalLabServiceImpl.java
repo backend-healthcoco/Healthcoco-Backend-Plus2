@@ -2788,11 +2788,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		String toothNumbers = "";
 		List<DentalWorkInvoiceJasperResponse> dentalWorkInvoiceJasperResponses = new ArrayList<DentalWorkInvoiceJasperResponse>();
-
+		DentalWorkInvoiceJasperResponse dentalWorkInvoiceJasperResponse = null;
 		for (DentalWorksInvoiceItem dentalWorksInvoiceItem : dentalWorksInvoiceCollection
 				.getDentalWorksInvoiceItems()) {
 			toothNumbers = "";
-			DentalWorkInvoiceJasperResponse dentalWorkInvoiceJasperResponse = new DentalWorkInvoiceJasperResponse();
+			dentalWorkInvoiceJasperResponse = new DentalWorkInvoiceJasperResponse();
 			dentalWorkInvoiceJasperResponse.setOrderDate(dentalWorksInvoiceItem.getCreatedTime() != null
 					? simpleDateFormat.format(dentalWorksInvoiceItem.getCreatedTime())
 					: "--");
@@ -2812,7 +2812,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorkInvoiceJasperResponse.setTeethNo("--");
 			}
 			dentalWorkInvoiceJasperResponse.setTotal(dentalWorksInvoiceCollection.getTotalCost());
-
+			dentalWorkInvoiceJasperResponses.add(dentalWorkInvoiceJasperResponse);
 		}
 		parameters.put("items", dentalWorkInvoiceJasperResponses);
 		LocationCollection location = locationRepository.findOne(locationId);
@@ -3385,6 +3385,32 @@ public class DentalLabServiceImpl implements DentalLabService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public String downloadDentalLabReceipt(String receiptId) {
+		String response = null;
+		JasperReportResponse jasperReportResponse = null;
+
+		try {
+			DentalWorksReceiptResponse receiptResponse = getReceiptById(receiptId);
+			if (receiptResponse == null) {
+				throw new BusinessException(ServiceError.NoRecord, " No Dental Work receipt found with id");
+			}
+
+			if (jasperReportResponse != null)
+				response = getFinalImageURL(jasperReportResponse.getPath());
+			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+				if (jasperReportResponse.getFileSystemResource().getFile().exists())
+					jasperReportResponse.getFileSystemResource().getFile().delete();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while download dental Lab Receipt");
 		}
 		return response;
 	}

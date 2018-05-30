@@ -161,9 +161,9 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
-	public Response<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociationForLocation(@QueryParam("locationId") String locationId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm) {
+	public Response<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociationForLocation(
+			@QueryParam("locationId") String locationId, @QueryParam("doctorId") String doctorId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		Response<DentalLabDoctorAssociationLookupResponse> response = new Response<DentalLabDoctorAssociationLookupResponse>();
 		response.setDataList(
 				dentalLabService.getDentalLabDoctorAssociations(locationId, doctorId, page, size, searchTerm));
@@ -532,10 +532,13 @@ public class DentalLabAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_INVOICES, notes = PathProxy.DentalLabUrls.GET_INVOICES)
 
-	public Response<DentalWorksInvoice> getInvoices(@QueryParam ("doctorId")String doctorId, @QueryParam ("locationId")String locationId,@QueryParam ("hospitalId") String hospitalId,
-			@QueryParam ("dentalLabLocationId")String dentalLabLocationId, @QueryParam ("dentalLabHospitalId")String dentalLabHospitalId,@DefaultValue("0") @QueryParam ("from")Long from, @QueryParam ("to")Long to, @QueryParam ("searchTerm")String searchTerm, @QueryParam ("size") int size,
-			@QueryParam ("page")int page) {
-		if (DPDoctorUtils.allStringsEmpty(doctorId,locationId,hospitalId,dentalLabHospitalId,dentalLabLocationId)) {
+	public Response<DentalWorksInvoice> getInvoices(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("dentalLabLocationId") String dentalLabLocationId,
+			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId,
+			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalLabHospitalId, dentalLabLocationId)) {
 
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -632,13 +635,24 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_WORK_INVOICE)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_WORK_INVOICE, notes = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_WORK_INVOICE)
-	public Response<String> downloadDentalInvoice(@PathParam("invoiceId") String invoiceId){
+	public Response<String> downloadDentalInvoice(@PathParam("invoiceId") String invoiceId) {
 		if (DPDoctorUtils.allStringsEmpty(invoiceId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(
-				dentalLabService.downloadDentalWorkInvoice(invoiceId));
+		response.setData(dentalLabService.downloadDentalWorkInvoice(invoiceId));
+		return response;
+	}
+
+	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_WORK_RECEIPT)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_WORK_RECEIPT, notes = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_WORK_RECEIPT)
+	public Response<String> downloadDentalLabReceipt(@PathParam("receiptId") String receiptId) {
+		if (DPDoctorUtils.allStringsEmpty(receiptId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(dentalLabService.downloadDentalLabReceipt(receiptId));
 		return response;
 	}
 
