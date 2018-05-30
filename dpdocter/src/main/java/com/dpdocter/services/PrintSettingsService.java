@@ -18,8 +18,7 @@ public interface PrintSettingsService {
 	
 	public DentalLabPrintSetting saveDentalLabSettings(DentalLabPrintSetting request);
 	
-	public List<DentalLabPrintSetting> getDentalLabSettings( String locationId, String hospitalId,
-			int page, int size, String updatedTime, Boolean discarded);
+	public DentalLabPrintSetting getDentalLabSettings(String locationId, String hospitalId);
 	
 	
 

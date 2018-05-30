@@ -168,16 +168,14 @@ public class PrintSettingsApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 		}
-		List<DentalLabPrintSetting> printSettings = printSettingsService.getDentalLabSettings(locationId, hospitalId,
-				page, size, updatedTime, discarded);
-		if (printSettings != null && !printSettings.isEmpty()) {
-			for (DentalLabPrintSetting pSetting : printSettings) {
+		DentalLabPrintSetting printSettings = printSettingsService.getDentalLabSettings(locationId, hospitalId);
+		if (printSettings != null) {
 
-				pSetting.setClinicLogoUrl(getFinalImageURL(pSetting.getClinicLogoUrl()));
-			}
+			printSettings.setClinicLogoUrl(getFinalImageURL(printSettings.getClinicLogoUrl()));
 		}
+
 		Response<DentalLabPrintSetting> response = new Response<DentalLabPrintSetting>();
-		response.setDataList(printSettings);
+		response.setData(printSettings);
 		return response;
 	}
 
