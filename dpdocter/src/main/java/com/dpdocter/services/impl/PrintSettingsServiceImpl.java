@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DentalLabPrintSetting;
 import com.dpdocter.beans.PrintSettings;
+import com.dpdocter.collections.DentalLabPrintSettingCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -26,6 +27,7 @@ import com.dpdocter.enums.PrintFilter;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DentalLabPrintSettingRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -46,6 +48,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Autowired
 	private HospitalRepository hospitalRepository;
+
+	private DentalLabPrintSettingRepository dentalLabPrintSettingRepository;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -290,9 +294,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	@Transactional
 	public DentalLabPrintSetting saveDentalLabSettings(DentalLabPrintSetting request) {
 		DentalLabPrintSetting response = new DentalLabPrintSetting();
-		PrintSettingsCollection printSettingsCollection = new PrintSettingsCollection();
+		DentalLabPrintSettingCollection printSettingsCollection = new DentalLabPrintSettingCollection();
 		try {
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			ObjectId locationObjectId = null, hospitalObjectId = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 				locationObjectId = new ObjectId(request.getLocationId());
@@ -300,8 +304,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 
 			if (request.getId() == null) {
-				PrintSettingsCollection collection = printSettingsRepository.getSettings(locationObjectId,
-						hospitalObjectId);
+				DentalLabPrintSettingCollection collection = dentalLabPrintSettingRepository
+						.getSettings(locationObjectId, hospitalObjectId);
 				if (collection != null && !collection.getDiscarded())
 					request.setId(collection.getId().toString());
 			}
@@ -309,7 +313,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			if (request.getId() == null) {
 				printSettingsCollection.setCreatedTime(new Date());
 			} else {
-				PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository
+				DentalLabPrintSettingCollection oldPrintSettingsCollection = dentalLabPrintSettingRepository
 						.findOne(new ObjectId(request.getId()));
 				if (oldPrintSettingsCollection != null) {
 					printSettingsCollection.setCreatedTime(oldPrintSettingsCollection.getCreatedTime());
@@ -337,7 +341,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 			}
 
-			printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
+			printSettingsCollection = dentalLabPrintSettingRepository.save(printSettingsCollection);
 			BeanUtil.map(printSettingsCollection, response);
 
 		} catch (Exception e) {
@@ -352,7 +356,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	@Transactional
 	public DentalLabPrintSetting getDentalLabSettings(String locationId, String hospitalId) {
 		DentalLabPrintSetting response = null;
-		PrintSettingsCollection printSettingsCollection = null;
+		DentalLabPrintSettingCollection printSettingsCollection = null;
 		try {
 			ObjectId locationObjectId = null, hospitalObjectId = null;
 
@@ -361,7 +365,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			printSettingsCollection = printSettingsRepository.getSettings(locationObjectId, hospitalObjectId);
+			printSettingsCollection = dentalLabPrintSettingRepository.getSettings(locationObjectId, hospitalObjectId);
 
 			if (printSettingsCollection != null) {
 				response = new DentalLabPrintSetting();

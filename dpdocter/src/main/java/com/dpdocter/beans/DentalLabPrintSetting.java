@@ -8,8 +8,6 @@ public class DentalLabPrintSetting extends GenericCollection {
 	private HeaderSetup headerSetup;
 	private String locationId;
 	private String hospitalId;
-	private Boolean customHeader = true;
-	private Boolean customLogo = true;
 	private Boolean discarded = false;
 	private String clinicLogoUrl;
 	private String hospitalUId;
@@ -45,22 +43,6 @@ public class DentalLabPrintSetting extends GenericCollection {
 
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
-	}
-
-	public Boolean getCustomHeader() {
-		return customHeader;
-	}
-
-	public void setCustomHeader(Boolean customHeader) {
-		this.customHeader = customHeader;
-	}
-
-	public Boolean getCustomLogo() {
-		return customLogo;
-	}
-
-	public void setCustomLogo(Boolean customLogo) {
-		this.customLogo = customLogo;
 	}
 
 	public Boolean getDiscarded() {
