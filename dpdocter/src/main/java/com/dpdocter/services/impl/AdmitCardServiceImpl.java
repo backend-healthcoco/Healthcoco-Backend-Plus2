@@ -603,9 +603,9 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Admit Card", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Admit Card", body,
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Admit Card", body,
 					mailResponse.getMailAttachment());
-			if (mailResponse.getMailAttachment() != null
+			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
@@ -688,9 +688,9 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Admit Card", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Admit Card", body,
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Admit Card", body,
 					mailResponse.getMailAttachment());
-			if (mailResponse.getMailAttachment() != null
+			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();

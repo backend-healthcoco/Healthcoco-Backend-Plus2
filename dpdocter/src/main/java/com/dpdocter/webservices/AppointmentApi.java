@@ -287,16 +287,14 @@ public class AppointmentApi {
 	@Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS, notes = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
-	public Response<Appointment> getPatientAppointments(@QueryParam(value = "locationId") String locationId,
+	public Response<Object> getPatientAppointments(@QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
 
-		List<Appointment> appointment = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
+		Response<Object> response = = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
 				to, page, size, updatedTime);
-		Response<Appointment> response = new Response<Appointment>();
-		response.setDataList(appointment);
 		return response;
 	}
 

@@ -29,8 +29,6 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,9 +68,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
-import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
-import com.twilio.sdk.resource.factory.MessageFactory;
 
 import common.util.web.DPDoctorUtils;
 
@@ -761,7 +757,8 @@ public class SMSServicesImpl implements SMSServices {
 				response.append(inputLine);
 
 			}
-			in.close();
+
+			in.close();			
 			if(responseCode == 200)boolResponse = true;
 		} catch (Exception e) {
 

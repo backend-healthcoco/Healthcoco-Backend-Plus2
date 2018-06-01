@@ -1628,6 +1628,8 @@ public interface PathProxy {
 
 		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
 
+		public static final String UPDATE_RECEIPTS = "/payments/{doctorId}/{locationId}/{hospitalId}/update";
+
 	}
 
 	public static final String DOWNLOAD_DATA_BASE_URL = BASE_URL + "/download";

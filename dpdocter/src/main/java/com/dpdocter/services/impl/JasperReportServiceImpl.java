@@ -339,7 +339,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 					pageHeight, normalStyle);
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORK_RECEIPT.getType()))
 			createDentalLabReceipt(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		System.out.println(columnWidth);
 
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())

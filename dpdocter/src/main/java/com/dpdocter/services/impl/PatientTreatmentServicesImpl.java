@@ -1281,9 +1281,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Treatment", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Treatment", body,
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Treatment", body,
 					mailResponse.getMailAttachment());
-			if (mailResponse.getMailAttachment() != null
+			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();

@@ -37,6 +37,8 @@ import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+import common.util.web.Response;
+
 public interface PrescriptionServices {
 	Drug addDrug(DrugAddEditRequest request);
 
@@ -128,7 +130,7 @@ public interface PrescriptionServices {
 
 	List<DiagnosticTestCollection> getDiagnosticTest();
 
-	List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
+	Response<Object> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
 	DiagnosticTest addEditDiagnosticTest(DiagnosticTest request);
 

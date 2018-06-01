@@ -850,6 +850,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs)
 	{
 		for (DrugDocument drug : drugs) {
+
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getDrugCode())) {
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
 						drug.getHospitalId(), drug.getDrugCode());

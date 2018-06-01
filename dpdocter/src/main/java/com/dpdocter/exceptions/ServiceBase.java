@@ -201,14 +201,12 @@ public class ServiceBase {
 		try {
 		    bean = jsonProcessor.readValue(new StringReader(jsonResp), resultType);
 		} catch (Exception e) {
-		    System.out.println("---------- jsonResp: " + jsonResp);
 		    e.printStackTrace();
 		}
 		return bean;
 	    }
 	} else {
 	    ServiceError err = ServiceError.getErrorByCode(statusCode);
-	    System.out.println("---------- web service returns error. status code is " + statusCode + ", errorCode is " + err);
 	    String errMsg = null;
 	    if (response.getEntity() != null)
 		errMsg = EntityUtils.toString(response.getEntity(), "UTF-8");

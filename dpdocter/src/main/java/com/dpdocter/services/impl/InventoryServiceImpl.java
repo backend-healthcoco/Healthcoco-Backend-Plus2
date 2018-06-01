@@ -113,6 +113,7 @@ public class InventoryServiceImpl implements InventoryService {
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
 			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 				Drug drug = makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+
 				transnationalService.addResource(new ObjectId(drug.getId()), Resource.DRUG, false);
 				if (drug != null) {
 					ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -343,6 +344,10 @@ public class InventoryServiceImpl implements InventoryService {
 	public InventoryStock addInventoryStock(InventoryStock inventoryStock) {
 		InventoryStock response = null;
 		InventoryBatchCollection inventoryBatchCollection = null;
+<<<<<<< HEAD
+=======
+		InventoryItemCollection inventoryItemCollection = null;
+>>>>>>> a8982ceb... -Solved Mail issue
 		try {
 
 			InventoryStockCollection inventoryStockCollection = new InventoryStockCollection();

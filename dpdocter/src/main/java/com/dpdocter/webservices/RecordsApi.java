@@ -149,7 +149,7 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
 	@GET
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID, notes = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
-	public Response<Records> getRecordsByPatientId(@PathParam("patientId") String patientId,
+	public Response<Object> getRecordsByPatientId(@PathParam("patientId") String patientId,
 			@QueryParam("page") int page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
@@ -159,11 +159,8 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 		}
 
-		List<Records> records = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded,
+		Response<Object> response = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded,
 				isDoctorApp);
-
-		Response<Records> response = new Response<Records>();
-		response.setDataList(records);
 		return response;
 
 	}
@@ -476,7 +473,7 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS)
 	@GET
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS, notes = PathProxy.RecordsUrls.GET_USER_RECORDS)
-	public Response<UserRecords> getUserRecords(@QueryParam("patientId") String patientId, @QueryParam("page") int page,
+	public Response<Object> getUserRecords(@QueryParam("patientId") String patientId, @QueryParam("page") int page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
@@ -486,10 +483,9 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id or hospitalId ,doctorId ,locationId Cannot Be Empty");
 		}
-		Response<UserRecords> response = new Response<UserRecords>();
-		List<UserRecords> records = recordsService.getUserRecordsByuserId(patientId, doctorId, locationId, hospitalId,
+		Response<Object> response = recordsService.getUserRecordsByuserId(patientId, doctorId, locationId, hospitalId,
 				page, size, updatedTime, discarded);
-		response.setDataList(records);
+		
 		return response;
 
 	}

@@ -502,19 +502,14 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
-	public Response<Prescription> getPrescriptionByPatientId(@PathParam("patientId") String patientId,
+	public Response<Object> getPrescriptionByPatientId(@PathParam("patientId") String patientId,
 			@QueryParam("page") int page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 		}
-		List<Prescription> prescriptions = null;
-
-		prescriptions = prescriptionServices.getPrescriptions(patientId, page, size, updatedTime, discarded);
-
-		Response<Prescription> response = new Response<Prescription>();
-		response.setDataList(prescriptions);
+		Response<Object> response = prescriptionServices.getPrescriptions(patientId, page, size, updatedTime, discarded);
 		return response;
 	}
 

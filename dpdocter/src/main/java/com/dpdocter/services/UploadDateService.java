@@ -25,4 +25,6 @@ public interface UploadDateService {
 	Boolean uploadInvoicesData(String doctorId, String locationId, String hospitalId);
 
 	Boolean uploadPaymentsData(String doctorId, String locationId, String hospitalId);
+
+	Boolean updatePaymentsData(String doctorId, String locationId, String hospitalId);
 }

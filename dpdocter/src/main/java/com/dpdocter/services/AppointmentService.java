@@ -22,6 +22,8 @@ import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
 import com.dpdocter.response.SlotDataResponse;
 
+import common.util.web.Response;
+
 public interface AppointmentService {
 
 	City addCity(City city);
@@ -42,7 +44,7 @@ public interface AppointmentService {
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime);
 
-	List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
+	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
 
 	Lab getLab(String locationId, String patientId, Boolean active);
