@@ -343,7 +343,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 					pageHeight, normalStyle);
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORK_RECEIPT.getType()))
 			createDentalLabReceipt(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
-		System.out.println(columnWidth);
 
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
@@ -1950,7 +1949,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
-			System.out.println("test");
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
 			jrDesignTextField.setBold(true);

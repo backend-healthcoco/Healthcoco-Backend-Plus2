@@ -154,10 +154,10 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.services.UserFavouriteService;
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoException;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
+import common.util.web.Response;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -1984,9 +1984,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
+	public Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime) {
-		List<Appointment> response = null;
+		Response<Object> response = new Response<Object>();
+		List<Appointment> appointments = null;
 		List<AppointmentLookupResponse> appointmentLookupResponses = null;
 		try {
 
@@ -2001,72 +2002,94 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
-			DateTime dateTime;
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
-				dateTime = DPDoctorUtils.getStartTime(new Date(Long.parseLong(from)));
-				criteria.and("time.fromDate").gte(dateTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
-				dateTime = DPDoctorUtils.getEndTime(new Date(Long.parseLong(to)));
-				criteria.and("toDate").lte(dateTime);
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("fromDate").gte(fromDateTime);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("toDate").lte(toDateTime);
 			}
 
-			if (size > 0) {
-				appointmentLookupResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.unwind("doctor"),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.unwind("location"),
-								Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime")),
-								Aggregation.skip((page) * size), Aggregation.limit(size)),
-						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
-			} else {
-				appointmentLookupResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.unwind("doctor"),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.unwind("location"),
-								Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))),
-						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
-			}
-
-			if (appointmentLookupResponses != null) {
-				response = new ArrayList<Appointment>();
-				for (AppointmentLookupResponse collection : appointmentLookupResponses) {
-					Appointment appointment = new Appointment();
-					BeanUtil.map(collection, appointment);
-					if (collection.getDoctor() != null) {
-						appointment.setDoctorName(
-								collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
-					}
-					if (collection.getLocation() != null) {
-						appointment.setLocationName(collection.getLocation().getLocationName());
-						appointment.setClinicNumber(collection.getLocation().getClinicNumber());
-						String address = (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getStreetAddress())
-								? collection.getLocation().getStreetAddress() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLandmarkDetails())
-										? collection.getLocation().getLandmarkDetails() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLocality())
-										? collection.getLocation().getLocality() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCity())
-										? collection.getLocation().getCity() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getState())
-										? collection.getLocation().getState() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCountry())
-										? collection.getLocation().getCountry() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getPostalCode())
-										? collection.getLocation().getPostalCode() : "");
-
-						if (address.charAt(address.length() - 2) == ',') {
-							address = address.substring(0, address.length() - 2);
-						}
-						appointment.setClinicAddress(address);
-						appointment.setLatitude(collection.getLocation().getLatitude());
-						appointment.setLongitude(collection.getLocation().getLongitude());
-					}
-					response.add(appointment);
+			long count = mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+			if(count > 0) {
+				response.setData(count);
+				if (size > 0) {
+					appointmentLookupResponses = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+									Aggregation.unwind("doctor"),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+									Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime")),
+									Aggregation.skip((page) * size), Aggregation.limit(size)),
+							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+				} else {
+					appointmentLookupResponses = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+									Aggregation.unwind("doctor"),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+									Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))),
+							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
 				}
+
+				if (appointmentLookupResponses != null) {
+					appointments = new ArrayList<Appointment>();
+					for (AppointmentLookupResponse collection : appointmentLookupResponses) {
+						Appointment appointment = new Appointment();
+						BeanUtil.map(collection, appointment);
+						if (collection.getDoctor() != null) {
+							appointment.setDoctorName(
+									collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
+						}
+						if (collection.getLocation() != null) {
+							appointment.setLocationName(collection.getLocation().getLocationName());
+							appointment.setClinicNumber(collection.getLocation().getClinicNumber());
+							String address = (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getStreetAddress())
+									? collection.getLocation().getStreetAddress() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLandmarkDetails())
+											? collection.getLocation().getLandmarkDetails() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLocality())
+											? collection.getLocation().getLocality() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCity())
+											? collection.getLocation().getCity() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getState())
+											? collection.getLocation().getState() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCountry())
+											? collection.getLocation().getCountry() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getPostalCode())
+											? collection.getLocation().getPostalCode() : "");
+
+							if (address.charAt(address.length() - 2) == ',') {
+								address = address.substring(0, address.length() - 2);
+							}
+							appointment.setClinicAddress(address);
+							appointment.setLatitude(collection.getLocation().getLatitude());
+							appointment.setLongitude(collection.getLocation().getLongitude());
+						}
+						appointments.add(appointment);
+					}
+				}
+				response.setDataList(appointments);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

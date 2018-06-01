@@ -3974,10 +3974,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Clinical Notes", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Clinical Notes", body,
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Clinical Notes", body,
 					mailResponse.getMailAttachment());
 
-			if (mailResponse.getMailAttachment() != null
+			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
@@ -8716,10 +8716,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 						mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 						"", "Clinical Notes", "multipleEmrMailTemplate.vm");
-				mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Clinical Notes", body,
+				Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Clinical Notes", body,
 						mailResponse.getMailAttachment());
 
-				if (mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (response != null && mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
 					if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 						mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();				
 			}else {

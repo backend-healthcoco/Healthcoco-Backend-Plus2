@@ -1,8 +1,8 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
@@ -22,11 +23,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.Address;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
@@ -38,15 +38,15 @@ import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.Quantity;
-import com.dpdocter.beans.Reference;
-import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
-import com.dpdocter.collections.DiseasesCollection;
+import com.dpdocter.collections.DeliveryReportsCollection;
+import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
@@ -56,19 +56,20 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugDirectionCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
-import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.collections.IPDReportsCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.OPDReportsCollection;
+import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
-import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
+import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
-import com.dpdocter.elasticsearch.services.ESRegistrationService;
+import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.ModeOfPayment;
@@ -79,38 +80,38 @@ import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.UnitType;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AdmitCardRepository;
 import com.dpdocter.repository.AppointmentBookedSlotRepository;
 import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
-import com.dpdocter.repository.DiseasesRepository;
+import com.dpdocter.repository.DeliveryReportsRepository;
+import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DoctorPatientDueAmountRepository;
 import com.dpdocter.repository.DoctorPatientInvoiceRepository;
 import com.dpdocter.repository.DoctorPatientLedgerRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
-import com.dpdocter.repository.GroupRepository;
+import com.dpdocter.repository.IPDReportsRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.OPDReportsRepository;
+import com.dpdocter.repository.OTReportsRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
-import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
-import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
-import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PrescriptionServices;
-import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.ReportsService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.services.UploadDateService;
 import com.mongodb.BasicDBObject;
 
+import common.util.web.CSVUtils;
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
 
@@ -126,17 +127,17 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Autowired
 	private LocationRepository locationRepository;
 	
-	@Autowired
-	private ReferenceRepository referenceRepository;
-
-	@Autowired
-	private GroupRepository groupRepository;
-
-	@Autowired
-	private DiseasesRepository diseasesRepository;
-
-	@Autowired
-	private RegistrationService registrationService;
+//	@Autowired
+//	private ReferenceRepository referenceRepository;
+//
+//	@Autowired
+//	private GroupRepository groupRepository;
+//
+//	@Autowired
+//	private DiseasesRepository diseasesRepository;
+//
+//	@Autowired
+//	private RegistrationService registrationService;
 
 	@Autowired
 	private PatientVisitRepository patientVisitRepository;
@@ -146,12 +147,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 	@Autowired
 	private TransactionalManagementService transactionalManagementService;
-
-	@Autowired
-	private ESRegistrationService esRegistrationService;
-
-	@Autowired
-	private HistoryServices historyServices;
+//
+//	@Autowired
+//	private ESRegistrationService esRegistrationService;
+//
+//	@Autowired
+//	private HistoryServices historyServices;
 
 	@Autowired
 	private PatientRepository patientRepository;
@@ -168,6 +169,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Autowired
 	private TreatmentServicesRepository treatmentServicesRepository;
 
+	@Autowired
+	private ESTreatmentService esTreatmentService;
+	
 	@Autowired
 	private PatientTreatmentServices patientTreatmentServices;
 
@@ -189,20 +193,23 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Autowired
 	private DoctorPatientReceiptRepository doctorPatientReceiptRepository;
 
-//	@Autowired
-//	private DischargeSummaryRepository dischargeSummaryRepository;
-//
-//	@Autowired
-//	private AdmitCardRepository admitCardRepository;
-//
-//	@Autowired
-//	private DeliveryReportsRepository deliveryReportsRepository;
-//
-//	@Autowired
-//	private IPDReportsRepository ipdReportsRepository;
+	@Autowired
+	private DischargeSummaryRepository dischargeSummaryRepository;
+
+	@Autowired
+	private AdmitCardRepository admitCardRepository;
+
+	@Autowired
+	private DeliveryReportsRepository deliveryReportsRepository;
+
+	@Autowired
+	private IPDReportsRepository ipdReportsRepository;
 
 	@Autowired
 	private OPDReportsRepository opdReportsRepository;
+	
+	@Autowired
+	private OTReportsRepository otReportsRepository;
 
 	@Autowired
 	private PrescriptionServices prescriptionServices;
@@ -216,11 +223,11 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Value(value = "${patient.count}")
 	private String patientCount;
 
-	private static final String COMMA_DELIMITER = ",";
-
-	private static final String NEW_LINE_SEPARATOR = "\n";
-
-	private static final String FILE_HEADER = "PatientNumber,PatientName";
+//	private static final String COMMA_DELIMITER = ",";
+//
+//	private static final String NEW_LINE_SEPARATOR = "\n";
+//
+//	private static final String FILE_HEADER = "PatientNumber,PatientName";
 
 	@Value(value = "${upload.patients.data.file}")
 	private String UPLOAD_PATIENTS_DATA_FILE;
@@ -293,7 +300,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// elasticsearchTemplate.queryForList(searchQuery,
 			// ESDrugDocument.class);
 			// if(drugDocuments != null) {
-			// System.out.println(drugDocuments.size());
 			// for(ESDrugDocument esDrugDocument : drugDocuments) {
 			// esDrugRepository.delete(esDrugDocument.getId());
 			// }
@@ -319,7 +325,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// elasticsearchTemplate.queryForList(searchQuery,
 			// ESTreatmentServiceDocument.class);
 			// if(esTreatmentServiceDocuments != null) {
-			// System.out.println(esTreatmentServiceDocuments.size());
 			// for(ESTreatmentServiceDocument esTreatmentServiceDocument :
 			// esTreatmentServiceDocuments) {
 			// esTreatmentServiceRepository.delete(esTreatmentServiceDocument.getId());
@@ -344,240 +349,308 @@ public class UploadDataServicesimpl implements UploadDateService {
 		return true;
 	}
 
-	@Override
-	public Boolean uploadPatientData(String doctorId, String locationId, String hospitalId) {
+	public Boolean parsePatientFile(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
-		FileWriter fileWriter = null;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "%";
-		int lineCount = 0;
-
+		
 		try {
-			fileWriter = new FileWriter(LIST_PATIENTS_NOT_REGISTERED_FILE);
-			fileWriter.append(FILE_HEADER.toString());
-			fileWriter.append(NEW_LINE_SEPARATOR);
-
-			br = new BufferedReader(new FileReader(UPLOAD_PATIENTS_DATA_FILE));
-
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
-
-			PatientRegistrationRequest request = null;
-
-			while ((line = br.readLine()) != null) {
-
-				if (lineCount > 0) {
-					int count = 0;
-					String[] fields = line.split(cvsSplitBy);
-					request = new PatientRegistrationRequest();
-					if (fields.length > 2 &&!DPDoctorUtils.anyStringEmpty(fields[2]) && !fields[2].equalsIgnoreCase("NONE'")) {
-
-						
-						String mobileNumber = fields[2].replace("'", "");
-						if (mobileNumber.startsWith("+91"))
-							mobileNumber = mobileNumber.replace("+91", "");
-						request.setMobileNumber(mobileNumber);
-						
-
-						List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
-						if (userCollections != null && !userCollections.isEmpty()) {
-							for (UserCollection userCollection : userCollections) {
-								if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
-									count++;
-							}
-						}
-					}
-						if (count < Integer.parseInt(patientCount)) {
-							if (!DPDoctorUtils.anyStringEmpty(fields[1]) && !fields[1].equalsIgnoreCase("NONE'")) {
-								request.setFirstName(fields[1].replace("'", ""));
-								request.setLocalPatientName(fields[1].replace("'", ""));
-							}
-							if (fields.length > 6 && !DPDoctorUtils.anyStringEmpty(fields[6]) && !fields[6].equalsIgnoreCase("NONE'"))
-								request.setGender(fields[6].replace("'", ""));
-
-							if (fields.length > 12 && !DPDoctorUtils.anyStringEmpty(fields[12]) && !fields[12].equalsIgnoreCase("NONE'")) {
-								String[] dob = fields[12].replace("'", "").split("-");
-								DOB dobObject = new DOB(Integer.parseInt(dob[2]), Integer.parseInt(dob[1]),
-										Integer.parseInt(dob[0]));
-								request.setDob(dobObject);
-							}
-
-							if (fields.length > 13 && !DPDoctorUtils.anyStringEmpty(fields[13]) && !fields[13].equalsIgnoreCase("NONE'"))
-								request.setAge(Integer.parseInt(fields[13].replace("'", "")));
-
-							if (fields.length > 4 && !DPDoctorUtils.anyStringEmpty(fields[4]) && !fields[4].equalsIgnoreCase("NONE'"))
-								request.setEmailAddress(fields[4].replace("'", ""));
-
-							if (fields.length > 15 && !DPDoctorUtils.anyStringEmpty(fields[15]) && !fields[15].equalsIgnoreCase("NONE'"))
-								request.setBloodGroup(fields[15].replace("'", ""));
-
-							if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NONE'"))
-								request.setSecMobile(fields[3].replace("'", ""));
-
-							if (fields.length > 5 && !DPDoctorUtils.anyStringEmpty(fields[5]) && !fields[5].equalsIgnoreCase("NONE'"))
-								request.setSecMobile(fields[5].replace("'", ""));
-
-							String country = null, city = null, state = null, postalCode = null, locality = null,
-									streetAddress = null;
-
-							if (fields.length > 7 && !DPDoctorUtils.anyStringEmpty(fields[7]) && !fields[7].equalsIgnoreCase("NONE'"))
-								streetAddress = fields[7].replace("'", "");
-
-							if (fields.length > 8 && !DPDoctorUtils.anyStringEmpty(fields[8]) && !fields[8].equalsIgnoreCase("NONE'"))
-								locality = fields[8].replace("'", "");
-
-							if (fields.length > 9 && !DPDoctorUtils.anyStringEmpty(fields[9]) && !fields[9].equalsIgnoreCase("NONE'"))
-								city = fields[9].replace("'", "");
-
-							// if (!DPDoctorUtils.anyStringEmpty(fields[16]) &&
-							// !fields[16].equalsIgnoreCase("NULL"))
-							// state = fields[16];
-							// if (!DPDoctorUtils.anyStringEmpty(fields[17]) &&
-							// !fields[17].equalsIgnoreCase("NULL"))
-							country = "India";
-
-							if (fields.length > 10 && !DPDoctorUtils.anyStringEmpty(fields[10]) && !fields[10].equalsIgnoreCase("NONE'"))
-								postalCode = fields[10].replace("'", "");
-
-							if (!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality,
-									streetAddress)) {
-								Address address = new Address(country, city, state, postalCode, locality, null, null,
-										null, streetAddress);
-								request.setAddress(address);
-							}
-
-							if (fields.length > 18 && !DPDoctorUtils.anyStringEmpty(fields[18])
-									&& !fields[18].equalsIgnoreCase("NONE'")) {
-								String referredBy = fields[18].replace("'", "");
-								Reference reference = new Reference();
-								reference.setReference(referredBy);
-
-								ReferencesCollection referencesCollection = referenceRepository.find(referredBy,
-										doctorObjectId, locationObjectId, hospitalObjectId);
-								if (referencesCollection != null)
-									reference.setId(referencesCollection.getId().toString());
-
-								request.setReferredBy(reference);
-							}
-
-							if (fields.length > 19 && !DPDoctorUtils.anyStringEmpty(fields[19])
-									&& !fields[19].equalsIgnoreCase("NONE'")) {
-								String groupName = fields[19].replace("'", "");
-								GroupCollection groupCollection = groupRepository.findByName(groupName, doctorObjectId,
-										locationObjectId, hospitalObjectId, false);
-								if (groupCollection == null) {
-									groupCollection = new GroupCollection();
-									groupCollection.setDoctorId(doctorObjectId);
-									groupCollection.setLocationId(locationObjectId);
-									groupCollection.setHospitalId(hospitalObjectId);
-									groupCollection.setName(groupName);
-									groupCollection.setCreatedTime(new Date());
-									if (drCollection != null) {
-										groupCollection.setCreatedBy(
-												(drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
-														+ drCollection.getFirstName());
-									}
-									groupCollection = groupRepository.save(groupCollection);
-								}
-								request.setGroups(Arrays.asList(groupCollection.getId().toString()));
-							}
-							request.setDoctorId(doctorId);
-							request.setLocationId(locationId);
-							request.setHospitalId(hospitalId);
-
-							if (!DPDoctorUtils.anyStringEmpty(fields[0])) {
-								request.setPNUM(fields[0].replace("'", ""));
-
-								patientInitial = request.getPNUM().replaceAll("[0-9]", "");
-								BufferedReader br1 = new BufferedReader(new FileReader(UPLOAD_APPOINTMENTS_DATA_FILE));
-								String appointmentDataLine = null;
-								while ((appointmentDataLine = br1.readLine()) != null) {
-									String[] splittedAppointmentData = appointmentDataLine.split("\\|");
-									if (splittedAppointmentData[1].equalsIgnoreCase(fields[0])) {
-										SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
-
-										String dateSTri = splittedAppointmentData[0].replace("'", "");
-										dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-										Date date = dateFormat.parse(dateSTri);
-										request.setRegistrationDate(date.getTime());
-										br1.close();
-										break;
-									}
-								}
-							} else {
-								request.setRegistrationDate(new Date().getTime());
-							}
-
-							RegisteredPatientDetails registeredPatientDetails = registrationService
-									.registerNewPatient(request);
-
-							transactionalManagementService.addResource(
-									new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
-							esRegistrationService
-									.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
-
-							if (fields.length > 17 && !DPDoctorUtils.anyStringEmpty(fields[17]) && !fields[17].equalsIgnoreCase("NONE'")) {
-								fields[17] = fields[17].replace("'", "");
-								String diseases[] = fields[17].split(",");
-								for (String disease : diseases) {
-									DiseasesCollection diseasesCollection = diseasesRepository.find(
-											disease.replace("?", "\\\\?"), doctorObjectId, locationObjectId,
-											hospitalObjectId, false);
-									if (diseasesCollection == null) {
-										diseasesCollection = new DiseasesCollection();
-										diseasesCollection.setCreatedTime(new Date());
-										diseasesCollection.setDoctorId(doctorObjectId);
-										diseasesCollection.setLocationId(locationObjectId);
-										diseasesCollection.setHospitalId(hospitalObjectId);
-										diseasesCollection.setDisease(disease);
-
-										if (drCollection != null) {
-											diseasesCollection.setCreatedBy(
-													(drCollection.getTitle() != null ? drCollection.getTitle() + " "
-															: "") + drCollection.getFirstName());
-										}
-										diseasesCollection = diseasesRepository.save(diseasesCollection);
-									}
-									historyServices.assignMedicalHistory(diseasesCollection.getId().toString(),
-											registeredPatientDetails.getUserId(), doctorId, hospitalId, locationId);
-								}
-								System.out.println(patientCount + registeredPatientDetails.getMobileNumber());
-							}
-
-						} else {
-							System.out.println(patientCount + " patients already exist with mobile number "
-									+ request.getMobileNumber());
-						}
-				}
-				lineCount++;
-				response = true;
-			}
-
+//			CSVUtils.parseFile(UPLOAD_PATIENTS_DATA_FILE);
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-					if (fileWriter != null) {
-						fileWriter.flush();
-						fileWriter.close();
-					}
-
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		return response;
+		
+	}
+
+	@Override
+	public Boolean uploadPatientData(String doctorId, String locationId, String hospitalId) {
+		return null;
+//		Boolean response = false;
+//		FileWriter fileWriter = null;
+//		Scanner scanner = null;
+//		int lineCount = 0;
+//
+//		try {
+//			fileWriter = new FileWriter(LIST_PATIENTS_NOT_REGISTERED_FILE);
+//			fileWriter.append(FILE_HEADER.toString());
+//			fileWriter.append(NEW_LINE_SEPARATOR);
+//
+////			br = new BufferedReader(new FileReader(UPLOAD_PATIENTS_DATA_FILE));
+//
+//			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+//			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+//				doctorObjectId = new ObjectId(doctorId);
+//			if (!DPDoctorUtils.anyStringEmpty(locationId))
+//				locationObjectId = new ObjectId(locationId);
+//			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+//				hospitalObjectId = new ObjectId(hospitalId);
+//
+//			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+//
+//			PatientRegistrationRequest request = null;
+//			
+//			scanner = new Scanner(new File(UPLOAD_PATIENTS_DATA_FILE));
+//			
+//			Integer pNUMIndex, patientNameIndex, mobileNumberIndex, contactNumberIndex, emailAddressIndex, alternateMobileNumberIndex,
+//					genderIndex, streetAddressIndex, localityIndex, cityIndex, pincodeIndex,
+//					nationalIdIndex, dobIndex, ageIndex, bloodGroupIndex, remarksIndex,
+//					medicalHistoryIndex, referredByIndex, groupsIndex, patientNotesIndex;
+//
+//			while (scanner.hasNext()) {
+//	            List<String> line = CSVUtils.parseLine(scanner.nextLine());
+//	            
+//	            if(lineCount == 0) {
+//	            		if(line != null && !line.isEmpty()) {
+//	            			for(int i=0; i<line.size(); i++) {
+//	            				
+//	            				String key = line.get(i).trim().replaceAll("[^a-zA-Z]", "").toUpperCase();
+//	            				
+//	            				switch (key) {
+//								case "PATIENTNUMBER": pNUMIndex = i;break;
+//								case "PATIENTNAME": patientNameIndex = i;break;
+//								case "MOBILENUMBER": mobileNumberIndex = i;break;
+//								case "CONTACTNUMBER": contactNumberIndex = i;break;
+//								case "EMAILADDRESS": emailAddressIndex = i;break;
+//								case "SECONDARYNUMBER": alternateMobileNumberIndex = i;break;
+//								case "GENDER": genderIndex = i;break;
+//								case "ADDRESS": streetAddressIndex = i;break;
+//								case "LOCALITY": localityIndex = i;break;
+//								case "CITY": cityIndex = i;break;
+//								case "PINCODE": pincodeIndex = i;break;
+//								case "DATEOFBIRTH": dobIndex = i;break;
+//								case "AGE": ageIndex = i;break;
+//								case "BLOODGROUP": bloodGroupIndex = i;break;
+//								case "MEDICALHISTORY": medicalHistoryIndex = i;break;
+//								case "REFERREDBY": referredByIndex = i;break;
+//								case "GROUPS": groupsIndex = i;break;
+//								case "PATIENTNOTES": patientNotesIndex = i;break;
+//								
+//								
+//								default:
+//									break;
+//								}
+//	            			}
+//	            		}
+//	            }else {
+//					int count = 0;
+//					request = new PatientRegistrationRequest();
+//					
+//					if (!DPDoctorUtils.anyStringEmpty(line.get(mobileNumberIndex))) {
+//						String mobileNumberValue = line.get(mobileNumberIndex).replaceAll("'", "").replaceAll("\"", "");
+//						if(!mobileNumberValue.equalsIgnoreCase("NONE")) {
+//							if (mobileNumberValue.startsWith("+91"))
+//								mobileNumberValue = mobileNumberValue.replace("+91", "");
+//							request.setMobileNumber(mobileNumberValue);
+//							
+//
+//							List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumberValue);
+//							if (userCollections != null && !userCollections.isEmpty()) {
+//								for (UserCollection userCollection : userCollections) {
+//									if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
+//										count++;
+//								}
+//							}
+//						}
+//						
+//					}
+//					
+//					if (count < Integer.parseInt(patientCount)) {
+//							if (patientNameIndex != null) {
+//								String patientName = line.get(patientNameIndex).replaceAll("'", "").replaceAll("\"", "");
+//								if(checkIfNotNullOrNone(patientName)) {
+//									request.setFirstName(patientName);
+//									request.setLocalPatientName(patientName);
+//							   }
+//							}
+//								
+//								
+//							if (genderIndex != null) {
+//								String gender = line.get(genderIndex).replaceAll("'", "").replaceAll("\"", "");
+//								if(checkIfNotNullOrNone(gender)){
+//									if(gender.equalsIgnoreCase("F"))gender="FEMALE";
+//									else if(gender.equalsIgnoreCase("M"))gender="MALE";
+//									request.setGender(gender);
+//								}
+//							}
+//
+//							if(dobIndex != null) {
+//								String dateOfBirth = line.get(dobIndex).replaceAll("'", "").replaceAll("\"", "");
+//								if (checkIfNotNullOrNone(dateOfBirth)) {
+//									String[] dob = dateOfBirth.split("-");
+//									DOB dobObject = new DOB(Integer.parseInt(dob[2]), Integer.parseInt(dob[1]), Integer.parseInt(dob[0]));
+//									request.setDob(dobObject);
+//								}
+//							}
+//
+//							if(ageIndex != null && checkIfNotNullOrNone(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+//								request.setAge(Integer.parseInt(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "")));
+//							}
+//								
+//							if (emailAddressIndex != null && checkIfNotNullOrNone(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", "")))
+//								request.setEmailAddress(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", ""));
+//
+//							if (fields.length > 15 && !DPDoctorUtils.anyStringEmpty(fields[15]) && !fields[15].equalsIgnoreCase("NONE'"))
+//								request.setBloodGroup(fields[15].replace("'", ""));
+//
+//							if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NONE'"))
+//								request.setSecMobile(fields[3].replace("'", ""));
+//
+//							if (fields.length > 5 && !DPDoctorUtils.anyStringEmpty(fields[5]) && !fields[5].equalsIgnoreCase("NONE'"))
+//								request.setSecMobile(fields[5].replace("'", ""));
+//
+//							String country = null, city = null, state = null, postalCode = null, locality = null,
+//									streetAddress = null;
+//
+//							if (fields.length > 7 && !DPDoctorUtils.anyStringEmpty(fields[7]) && !fields[7].equalsIgnoreCase("NONE'"))
+//								streetAddress = fields[7].replace("'", "");
+//
+//							if (fields.length > 8 && !DPDoctorUtils.anyStringEmpty(fields[8]) && !fields[8].equalsIgnoreCase("NONE'"))
+//								locality = fields[8].replace("'", "");
+//
+//							if (fields.length > 9 && !DPDoctorUtils.anyStringEmpty(fields[9]) && !fields[9].equalsIgnoreCase("NONE'"))
+//								city = fields[9].replace("'", "");
+//
+//							// if (!DPDoctorUtils.anyStringEmpty(fields[16]) &&
+//							// !fields[16].equalsIgnoreCase("NULL"))
+//							// state = fields[16];
+//							// if (!DPDoctorUtils.anyStringEmpty(fields[17]) &&
+//							// !fields[17].equalsIgnoreCase("NULL"))
+//							country = "India";
+//
+//							if (fields.length > 10 && !DPDoctorUtils.anyStringEmpty(fields[10]) && !fields[10].equalsIgnoreCase("NONE'"))
+//								postalCode = fields[10].replace("'", "");
+//
+//							if (!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality,
+//									streetAddress)) {
+//								Address address = new Address(country, city, state, postalCode, locality, null, null,
+//										null, streetAddress);
+//								request.setAddress(address);
+//							}
+//
+//							if (fields.length > 18 && !DPDoctorUtils.anyStringEmpty(fields[18])
+//									&& !fields[18].equalsIgnoreCase("NONE'")) {
+//								String referredBy = fields[18].replace("'", "");
+//								Reference reference = new Reference();
+//								reference.setReference(referredBy);
+//
+//								ReferencesCollection referencesCollection = referenceRepository.find(referredBy,
+//										doctorObjectId, locationObjectId, hospitalObjectId);
+//								if (referencesCollection != null)
+//									reference.setId(referencesCollection.getId().toString());
+//
+//								request.setReferredBy(reference);
+//							}
+//
+//							if (fields.length > 19 && !DPDoctorUtils.anyStringEmpty(fields[19])
+//									&& !fields[19].equalsIgnoreCase("NONE'")) {
+//								String groupName = fields[19].replace("'", "");
+//								GroupCollection groupCollection = groupRepository.findByName(groupName, doctorObjectId,
+//										locationObjectId, hospitalObjectId, false);
+//								if (groupCollection == null) {
+//									groupCollection = new GroupCollection();
+//									groupCollection.setDoctorId(doctorObjectId);
+//									groupCollection.setLocationId(locationObjectId);
+//									groupCollection.setHospitalId(hospitalObjectId);
+//									groupCollection.setName(groupName);
+//									groupCollection.setCreatedTime(new Date());
+//									if (drCollection != null) {
+//										groupCollection.setCreatedBy(
+//												(drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
+//														+ drCollection.getFirstName());
+//									}
+//									groupCollection = groupRepository.save(groupCollection);
+//								}
+//								request.setGroups(Arrays.asList(groupCollection.getId().toString()));
+//							}
+//							request.setDoctorId(doctorId);
+//							request.setLocationId(locationId);
+//							request.setHospitalId(hospitalId);
+//
+//							if (!DPDoctorUtils.anyStringEmpty(fields[0])) {
+//								request.setPNUM(fields[0].replace("'", ""));
+//
+//								patientInitial = request.getPNUM().replaceAll("[0-9]", "");
+//								BufferedReader br1 = new BufferedReader(new FileReader(UPLOAD_APPOINTMENTS_DATA_FILE));
+//								String appointmentDataLine = null;
+//								while ((appointmentDataLine = br1.readLine()) != null) {
+//									String[] splittedAppointmentData = appointmentDataLine.split("\\|");
+//									if (splittedAppointmentData[1].equalsIgnoreCase(fields[0])) {
+//										SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
+//
+//										String dateSTri = splittedAppointmentData[0].replace("'", "");
+//										dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+//										Date date = dateFormat.parse(dateSTri);
+//										request.setRegistrationDate(date.getTime());
+//										br1.close();
+//										break;
+//									}
+//								}
+//							} else {
+//								request.setRegistrationDate(new Date().getTime());
+//							}
+//
+//							RegisteredPatientDetails registeredPatientDetails = registrationService
+//									.registerNewPatient(request);
+//
+//							transactionalManagementService.addResource(
+//									new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
+//							esRegistrationService
+//									.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
+//
+//							if (fields.length > 17 && !DPDoctorUtils.anyStringEmpty(fields[17]) && !fields[17].equalsIgnoreCase("NONE'")) {
+//								fields[17] = fields[17].replace("'", "");
+//								String diseases[] = fields[17].split(",");
+//								for (String disease : diseases) {
+//									DiseasesCollection diseasesCollection = diseasesRepository.find(
+//											disease.replace("?", "\\\\?"), doctorObjectId, locationObjectId,
+//											hospitalObjectId, false);
+//									if (diseasesCollection == null) {
+//										diseasesCollection = new DiseasesCollection();
+//										diseasesCollection.setCreatedTime(new Date());
+//										diseasesCollection.setDoctorId(doctorObjectId);
+//										diseasesCollection.setLocationId(locationObjectId);
+//										diseasesCollection.setHospitalId(hospitalObjectId);
+//										diseasesCollection.setDisease(disease);
+//
+//										if (drCollection != null) {
+//											diseasesCollection.setCreatedBy(
+//													(drCollection.getTitle() != null ? drCollection.getTitle() + " "
+//															: "") + drCollection.getFirstName());
+//										}
+//										diseasesCollection = diseasesRepository.save(diseasesCollection);
+//									}
+//									historyServices.assignMedicalHistory(diseasesCollection.getId().toString(),
+//											registeredPatientDetails.getUserId(), doctorId, hospitalId, locationId);
+//								}
+//								System.out.println(patientCount + registeredPatientDetails.getMobileNumber());
+//							}
+//							
+//						} else {
+//							System.out.println(patientCount + " patients already exist with mobile number "
+//									+ request.getMobileNumber());
+//						}
+//				}
+//				lineCount++;
+//				response = true;
+//			}
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			if (br != null) {
+//				try {
+//					br.close();
+//					if (fileWriter != null) {
+//						fileWriter.flush();
+//						fileWriter.close();
+//					}
+//
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//		return response;
 	}
 
 	@Override
@@ -638,7 +711,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 				if (lineCount > 0) {
 					Boolean createVisit = false;
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(lineCount +".."+ fields[2]);
 					if (!DPDoctorUtils.anyStringEmpty(fields[2], fields[3])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[2].replace("'", ""));
@@ -900,7 +972,6 @@ System.out.println(lineCount +".."+ fields[2]);
 
 				if (lineCount > 0) {
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(fields[0] +""+ fields[1]);
 					if (!DPDoctorUtils.anyStringEmpty(fields[0], fields[1])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
@@ -1211,6 +1282,7 @@ System.out.println(fields[0] +""+ fields[1]);
 								patientTreatmentCollection.setGrandTotal(grandTotal + treatment.getFinalCost());
 								patientTreatmentCollection.setTotalDiscount(totalDiscount);
 
+								System.out.println(fields[0]+".."+fields[1]);
 								patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
 								if (createVisit)
@@ -1225,7 +1297,6 @@ System.out.println(fields[0] +""+ fields[1]);
 
 						} else
 							dataCountNotUploaded++;
-						System.out.println(lineCount + ".." + fields[1]);
 					}
 				}
 				lineCount++;
@@ -1319,123 +1390,131 @@ System.out.println(fields[0] +""+ fields[1]);
 								}
 							}
 							
-							patientTreatmentCollection = patientTreamentRepository.find(userCollection.getId(),
-									locationObjectId, hospitalObjectId, patientCollection.getUserId(), fromDate);
+							if(userCollection != null) {
+									
+								Boolean addTreatment = true;
+								String treatmentName = fields[3].replace("'", "");
+								if(addTreatment) {
+									patientTreatmentCollection = patientTreamentRepository.find(userCollection.getId(),
+											locationObjectId, hospitalObjectId, patientCollection.getUserId(), fromDate);
 
-							Discount totalDiscount = null;
-							double totalCost = 0.0;
-							double grandTotal = 0.0;
+									Discount totalDiscount = null;
+									double totalCost = 0.0;
+									double grandTotal = 0.0;
 
-							if (patientTreatmentCollection == null) {
-								createVisit = true;
-								patientTreatmentCollection = new PatientTreatmentCollection();
+									if (patientTreatmentCollection == null) {
+										createVisit = true;
+										patientTreatmentCollection = new PatientTreatmentCollection();
 
-								patientTreatmentCollection.setCreatedTime(fromDate);
-								patientTreatmentCollection.setUpdatedTime(fromDate);
-								patientTreatmentCollection.setFromDate(fromDate);
-								patientTreatmentCollection.setUniqueEmrId(
-										UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
-								patientTreatmentCollection.setLocationId(locationObjectId);
-								patientTreatmentCollection.setHospitalId(hospitalObjectId);
-								patientTreatmentCollection.setPatientId(patientCollection.getUserId());
+										patientTreatmentCollection.setCreatedTime(fromDate);
+										patientTreatmentCollection.setUpdatedTime(fromDate);
+										patientTreatmentCollection.setFromDate(fromDate);
+										patientTreatmentCollection.setUniqueEmrId(
+												UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
+										patientTreatmentCollection.setLocationId(locationObjectId);
+										patientTreatmentCollection.setHospitalId(hospitalObjectId);
+										patientTreatmentCollection.setPatientId(patientCollection.getUserId());
 
-								patientTreatmentCollection
-										.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
-								patientTreatmentCollection.setDoctorId(userCollection.getId());
-							} else {
-								totalDiscount = patientTreatmentCollection.getTotalDiscount();
-								totalCost = patientTreatmentCollection.getTotalCost();
-								grandTotal = patientTreatmentCollection.getGrandTotal();
-							}
-							List<Treatment> treatments = patientTreatmentCollection.getTreatments();
-
-							String treatmentName = fields[3].replace("'", "");
-							List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository
-									.findByNameAndDoctorLocationHospital(treatmentName, doctorObjectId,
-											locationObjectId, hospitalObjectId);
-
-							TreatmentServicesCollection treatmentServicesCollection = null;
-							TreatmentService treatmentService = new TreatmentService();
-							if (treatmentServicesCollections != null && !treatmentServicesCollections.isEmpty()) {
-								treatmentServicesCollection = treatmentServicesCollections.get(0);
-								BeanUtil.map(treatmentServicesCollection, treatmentService);
-							} else {
-								treatmentService.setName(treatmentName);
-							}
-
-							if (checkIfNotNullOrNone(fields[6]))
-								treatmentService.setCost(Double.parseDouble(fields[6].replace("'", "")));
-
-							treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
-							treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
-							treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
-							treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService,
-									patientTreatmentCollection.getCreatedBy());
-
-							Treatment treatment = new Treatment();
-							BeanUtil.map(treatmentService, treatment);
-							treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
-							if(checkIfNotNullOrNone(fields[4])) {
-								List<Fields> treatmentFieldList = new ArrayList<>();
-								Fields treatmentFields = new Fields();
-								treatmentFields.setKey("toothNumber");treatmentFields.setValue(fields[4].replace("'", ""));
-								treatmentFieldList.add(treatmentFields);
-								treatment.setTreatmentFields(treatmentFieldList);
-							}
-
-							if (checkIfNotNullOrNone(fields[5]))
-								treatment.setNote(fields[5].replace("'", ""));
-
-							treatment.setFinalCost(treatment.getCost());
-
-							if (checkIfNotNullOrNone(fields[7])) {
-								Discount discount = new Discount();
-								if (!checkIfNotNullOrNone(fields[8])) {
-									discount.setUnit(UnitType.INR);
-								} else if ((fields[8].replace("'", "")).equalsIgnoreCase("NUMBER")) {
-									discount.setUnit(UnitType.INR);
-								} else {
-									discount.setUnit(UnitType.valueOf(fields[8].replace("'", "")));
-								}
-								discount.setValue(Double.parseDouble(fields[7].replace("'", "")));
-								treatment.setDiscount(discount);
-
-								if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-									treatment.setFinalCost(
-											treatment.getCost() - (treatment.getCost() * (discount.getValue() / 100)));
-								} else {
-									treatment.setFinalCost(treatment.getCost() - (discount.getValue() / 100));
-								}
-
-								if (totalDiscount == null) {
-									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-										totalDiscount = new Discount();
-										totalDiscount.setUnit(UnitType.INR);
-										totalDiscount.setValue(treatment.getCost() * (discount.getValue() / 100));
+										patientTreatmentCollection
+												.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+										patientTreatmentCollection.setDoctorId(userCollection.getId());
 									} else {
-										totalDiscount = discount;
+										totalDiscount = patientTreatmentCollection.getTotalDiscount();
+										totalCost = patientTreatmentCollection.getTotalCost();
+										grandTotal = patientTreatmentCollection.getGrandTotal();
 									}
-								} else {
-									totalDiscount.setValue(totalDiscount.getValue() + discount.getValue());
+									List<Treatment> treatments = patientTreatmentCollection.getTreatments();
+
+									
+									List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository
+											.findByNameAndDoctorLocationHospital(treatmentName, doctorObjectId,
+													locationObjectId, hospitalObjectId);
+
+									TreatmentServicesCollection treatmentServicesCollection = null;
+									TreatmentService treatmentService = new TreatmentService();
+									if (treatmentServicesCollections != null && !treatmentServicesCollections.isEmpty()) {
+										treatmentServicesCollection = treatmentServicesCollections.get(0);
+										BeanUtil.map(treatmentServicesCollection, treatmentService);
+									} else {
+										treatmentService.setName(treatmentName);
+									}
+
+									if (checkIfNotNullOrNone(fields[6]))
+										treatmentService.setCost(Double.parseDouble(fields[6].replace("'", "")));
+
+									treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
+									treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
+									treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
+									treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService,
+											patientTreatmentCollection.getCreatedBy());
+
+									Treatment treatment = new Treatment();
+									BeanUtil.map(treatmentService, treatment);
+									treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
+									if(checkIfNotNullOrNone(fields[4])) {
+										List<Fields> treatmentFieldList = new ArrayList<>();
+										Fields treatmentFields = new Fields();
+										treatmentFields.setKey("toothNumber");treatmentFields.setValue(fields[4].replace("'", ""));
+										treatmentFieldList.add(treatmentFields);
+										treatment.setTreatmentFields(treatmentFieldList);
+									}
+
+									if (checkIfNotNullOrNone(fields[5]))
+										treatment.setNote(fields[5].replace("'", ""));
+
+									treatment.setFinalCost(treatment.getCost());
+
+									if (checkIfNotNullOrNone(fields[7])) {
+										Discount discount = new Discount();
+										if (!checkIfNotNullOrNone(fields[8])) {
+											discount.setUnit(UnitType.INR);
+										} else if ((fields[8].replace("'", "")).equalsIgnoreCase("NUMBER")) {
+											discount.setUnit(UnitType.INR);
+										} else {
+											discount.setUnit(UnitType.valueOf(fields[8].replace("'", "")));
+										}
+										discount.setValue(Double.parseDouble(fields[7].replace("'", "")));
+										treatment.setDiscount(discount);
+
+										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+											treatment.setFinalCost(
+													treatment.getCost() - (treatment.getCost() * (discount.getValue() / 100)));
+										} else {
+											treatment.setFinalCost(treatment.getCost() - (discount.getValue() / 100));
+										}
+
+										if (totalDiscount == null) {
+											if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+												totalDiscount = new Discount();
+												totalDiscount.setUnit(UnitType.INR);
+												totalDiscount.setValue(treatment.getCost() * (discount.getValue() / 100));
+											} else {
+												totalDiscount = discount;
+											}
+										} else {
+											totalDiscount.setValue(totalDiscount.getValue() + discount.getValue());
+										}
+									}
+
+									if (treatments == null)
+										treatments = new ArrayList<Treatment>();
+									treatments.add(treatment);
+									patientTreatmentCollection.setTreatments(treatments);
+
+									patientTreatmentCollection.setTotalCost(totalCost + treatment.getCost());
+									patientTreatmentCollection.setGrandTotal(grandTotal + treatment.getFinalCost());
+									patientTreatmentCollection.setTotalDiscount(totalDiscount);
+
+									System.out.println(fields[0]+".."+fields[1]);
+									patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
+									if (createVisit)
+										addRecord(patientTreatmentCollection, VisitedFor.TREATMENT, null,
+												patientTreatmentCollection.getPatientId(),
+												patientTreatmentCollection.getDoctorId(),
+												patientTreatmentCollection.getLocationId(),
+												patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getId());
 								}
 							}
-
-							if (treatments == null)
-								treatments = new ArrayList<Treatment>();
-							treatments.add(treatment);
-							patientTreatmentCollection.setTreatments(treatments);
-
-							patientTreatmentCollection.setTotalCost(totalCost + treatment.getCost());
-							patientTreatmentCollection.setGrandTotal(grandTotal + treatment.getFinalCost());
-							patientTreatmentCollection.setTotalDiscount(totalDiscount);
-
-							patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
-							if (createVisit)
-								addRecord(patientTreatmentCollection, VisitedFor.TREATMENT, null,
-										patientTreatmentCollection.getPatientId(),
-										patientTreatmentCollection.getDoctorId(),
-										patientTreatmentCollection.getLocationId(),
-										patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getId());
 						} else {
 							dataCountNotUploaded++;
 						}
@@ -1462,7 +1541,6 @@ System.out.println(fields[0] +""+ fields[1]);
 	@Override
 	public Boolean assignPNUMToPatientsHavingPNUMAsNull(String doctorId, String locationId, String hospitalId) {
 		try {
-			System.out.println(patientInitial);
 			if (DPDoctorUtils.anyStringEmpty(patientInitial))
 				patientInitial = "P";
 
@@ -1563,101 +1641,151 @@ System.out.println(fields[0] +""+ fields[1]);
 
 	@Override
 	public Boolean updateEMR() {
-
 		try {
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("opd_report_cl", "_id", "prescriptionId", "opd"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$opd").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.match(new Criteria("opd.prescriptionId").exists(false)));
-			List<PrescriptionCollection> prescriptionCollections = mongoTemplate
-					.aggregate(aggregation, "prescription_cl", PrescriptionCollection.class).getMappedResults();
-			OPDReportsCollection opdReportsCollection = null;
-			List<OPDReportsCollection> opdReportsCollections = new ArrayList<OPDReportsCollection>();
-			if (prescriptionCollections != null && !prescriptionCollections.isEmpty()) {
-				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
-					OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
-							String.valueOf(prescriptionCollection.getId()),
-							String.valueOf(prescriptionCollection.getDoctorId()),
-							String.valueOf(prescriptionCollection.getLocationId()),
-							String.valueOf(prescriptionCollection.getHospitalId()),
-							prescriptionCollection.getCreatedTime());
-					opdReportsCollection = new OPDReportsCollection();
-					UserCollection userCollection = null;
-					if (!DPDoctorUtils.anyStringEmpty(opdReports.getDoctorId())) {
-						userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
-					}
-					BeanUtil.map(opdReports, opdReportsCollection);
-					if (userCollection != null) {
-						opdReportsCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
-								? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
-					}
-					opdReportsCollection.setAdminCreatedTime(prescriptionCollection.getAdminCreatedTime());
-					if (prescriptionCollection.getAdminCreatedTime() == null) {
-						opdReportsCollection.setAdminCreatedTime(new Date());
-					}
-					if (opdReports.getCreatedTime() == null) {
-						opdReportsCollection.setCreatedTime(new Date());
-					}
-					opdReportsCollections.add(opdReportsCollection);
-				}
+			List<PatientVisitCollection> patientVisitCollections = patientVisitRepository.findAll();
+			for (PatientVisitCollection patientVisitCollection : patientVisitCollections) {
+
+				patientVisitCollection.setAdminCreatedTime(patientVisitCollection.getCreatedTime());
+			}
+			patientVisitRepository.save(patientVisitCollections);
+
+			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository.findAll();
+			for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
+
+				patientTreatmentCollection.setAdminCreatedTime(patientTreatmentCollection.getCreatedTime());
+			}
+			patientTreamentRepository.save(patientTreatmentCollections);
+			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findAll();
+			for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
+
+				clinicalNotesCollection.setAdminCreatedTime(clinicalNotesCollection.getCreatedTime());
+			}
+			clinicalNotesRepository.save(clinicalNotesCollections);
+			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findAll();
+			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+
+				prescriptionCollection.setAdminCreatedTime(prescriptionCollection.getCreatedTime());
+			}
+			prescriptionRepository.save(prescriptionCollections);
+			List<OTReportsCollection> otReportsCollections = otReportsRepository.findAll();
+			for (OTReportsCollection otReportsCollection : otReportsCollections) {
+
+				otReportsCollection.setAdminCreatedTime(otReportsCollection.getCreatedTime());
+			}
+			otReportsRepository.save(otReportsCollections);
+			List<DeliveryReportsCollection> deliveryReportsCollections = deliveryReportsRepository.findAll();
+			for (DeliveryReportsCollection deliveryReportsCollection : deliveryReportsCollections) {
+
+				deliveryReportsCollection.setAdminCreatedTime(deliveryReportsCollection.getCreatedTime());
+			}
+			deliveryReportsRepository.save(deliveryReportsCollections);
+
+			List<OPDReportsCollection> opdReportsCollections = opdReportsRepository.findAll();
+			for (OPDReportsCollection opdReportsCollection : opdReportsCollections) {
+
+				opdReportsCollection.setAdminCreatedTime(opdReportsCollection.getCreatedTime());
 			}
 			opdReportsRepository.save(opdReportsCollections);
+
+			List<IPDReportsCollection> ipdReportsCollections = ipdReportsRepository.findAll();
+			for (IPDReportsCollection ipdReportsCollection : ipdReportsCollections) {
+
+				ipdReportsCollection.setAdminCreatedTime(ipdReportsCollection.getCreatedTime());
+			}
+			ipdReportsRepository.save(ipdReportsCollections);
+
+			List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = doctorPatientInvoiceRepository
+					.findAll();
+			for (DoctorPatientInvoiceCollection doctorPatientInvoiceCollection : doctorPatientInvoiceCollections) {
+
+				doctorPatientInvoiceCollection.setAdminCreatedTime(doctorPatientInvoiceCollection.getCreatedTime());
+			}
+			doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollections);
+
+			List<AdmitCardCollection> admitCardCollections = admitCardRepository.findAll();
+			for (AdmitCardCollection admitCardCollection : admitCardCollections) {
+
+				admitCardCollection.setAdminCreatedTime(admitCardCollection.getCreatedTime());
+			}
+			admitCardRepository.save(admitCardCollections);
+
+			List<DischargeSummaryCollection> dischargeSummaryCollections = dischargeSummaryRepository.findAll();
+			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
+
+				dischargeSummaryCollection.setAdminCreatedTime(dischargeSummaryCollection.getCreatedTime());
+			}
+			dischargeSummaryRepository.save(dischargeSummaryCollections);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		return true;
 	}
 
 	@Override
 	public Boolean uploadTreatmentServicesData(String doctorId, String locationId, String hospitalId) {
-//		Boolean response = false;
-//		BufferedReader br = null;
-//		String line = "";
-//		String cvsSplitBy = ",";
-//		int dataCountNotUploaded = 0;
-//		int lineCount = 0;
-//		try {
-//
-//			br = new BufferedReader(new FileReader(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
-//
-//			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-//			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-//				doctorObjectId = new ObjectId(doctorId);
-//			if (!DPDoctorUtils.anyStringEmpty(locationId))
-//				locationObjectId = new ObjectId(locationId);
-//			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-//				hospitalObjectId = new ObjectId(hospitalId);
-//
-//			UserCollection drCollection = userRepository.findOne(doctorObjectId);
-//			
-//			TreatmentServicesCollection treatmentServicesCollection = null;
-//
-//			while ((line = br.readLine()) != null) {
-//
-//				if (lineCount > 0) {
-//					String[] fields = line.split(cvsSplitBy);
-//					
-////					treatmentServicesCollection = treatmentServicesRepository.fin
-//						
-//					
-//				}
-//				lineCount++;
-//				response = true;
-//			}
-//			System.out.println("Treatments Done. dataCountNotUploaded: " + dataCountNotUploaded);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (br != null) {
-//				try {
-//					br.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-		return null;
+		Boolean response = false;
+		int dataCountNotUploaded = 0;
+		int lineCount = 0;
+		try {
+
+
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			
+			List<TreatmentServicesCollection> treatmentServicesCollections = null;
+
+			Scanner scanner = new Scanner(new File(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
+	        while (scanner.hasNext()) {
+	            List<String> line = CSVUtils.parseLine(scanner.nextLine(), '|', "'".toCharArray()[0]);
+	            
+	            if (lineCount > 0) {
+					treatmentServicesCollections = treatmentServicesRepository.findByNameAndLocationHospital(line.get(0), locationObjectId, hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
+					if(treatmentServicesCollections == null || treatmentServicesCollections.isEmpty()) {
+						TreatmentServicesCollection servicesCollection = new TreatmentServicesCollection();
+						servicesCollection.setAdminCreatedTime(new Date());
+						if(!DPDoctorUtils.anyStringEmpty(line.get(1)))servicesCollection.setCost(Double.parseDouble(line.get(1)));
+						servicesCollection.setCreatedBy("Dr. Ravi Malik");
+						servicesCollection.setCreatedTime(new Date());
+						servicesCollection.setDiscarded(false);
+						servicesCollection.setDoctorId(doctorObjectId);
+						servicesCollection.setHospitalId(hospitalObjectId);
+						servicesCollection.setLocationId(locationObjectId);
+						servicesCollection.setName(line.get(0));
+						servicesCollection.setUpdatedTime(new Date());
+						servicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
+						servicesCollection.setRankingCount(1);
+						
+						servicesCollection = treatmentServicesRepository.save(servicesCollection);
+						
+						transactionalManagementService.addResource(servicesCollection.getId(), Resource.TREATMENTSERVICE,
+								false);
+						ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+						BeanUtil.map(servicesCollection, esTreatmentServiceDocument);
+						esTreatmentService.addEditService(esTreatmentServiceDocument);
+						System.out.println(line.get(0));
+					}
+					
+				}
+				lineCount++;
+				response = true;
+				
+	        }
+	        scanner.close();
+			System.out.println("Treatments Services Done. dataCountNotUploaded: " + dataCountNotUploaded);
+		} catch (Exception e) {
+			response = false;
+			e.printStackTrace();
+		}
+		return response;
 	}
 
 	@Override
@@ -1701,7 +1829,6 @@ System.out.println(fields[0] +""+ fields[1]);
 				if (lineCount > 0) {
 					Boolean createVisit = false;
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(lineCount +".."+ fields[2]);
 					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[4])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
@@ -1795,7 +1922,7 @@ System.out.println(lineCount +".."+ fields[2]);
 								}
 							}
 								
-								
+							System.out.println(fields[0]+".."+fields[1]);
 
 							clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
@@ -1868,10 +1995,9 @@ System.out.println(lineCount +".."+ fields[2]);
 
 				if (lineCount > 0) {
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
-					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[5])) {
+					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[5], fields[4])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));	
 						if (patientCollection != null) {
 
 							Date createdTime = new Date();
@@ -1904,147 +2030,146 @@ System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
 									doctors.put(userCollection.getFirstName().toLowerCase(), userCollection);
 								}
 							}
-							
-							Discount totalDiscount = null;
-							double totalCost = 0.0;
-							double grandTotal = 0.0;
-							
-							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(fields[4].replace("'", ""), userCollection.getId(), locationObjectId, hospitalObjectId);
-							if (doctorPatientInvoiceCollection == null) {
-								System.out.println("new invoice");
-								doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
+							if(userCollection!=null) {
+								Discount totalDiscount = null;
+								double totalCost = 0.0;
+								double grandTotal = 0.0;
+								
+								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find("INV"+fields[4].replace("'", ""), userCollection.getId(), locationObjectId, hospitalObjectId);
+								if (doctorPatientInvoiceCollection == null) {
+									doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
 
-								doctorPatientInvoiceCollection.setDoctorId(userCollection.getId());
-								doctorPatientInvoiceCollection.setLocationId(locationObjectId);
-								doctorPatientInvoiceCollection.setHospitalId(hospitalObjectId);
-								doctorPatientInvoiceCollection.setPatientId(patientCollection.getUserId());
-								doctorPatientInvoiceCollection.setInvoiceDate(createdTime);
-								doctorPatientInvoiceCollection.setCreatedTime(createdTime);
-								doctorPatientInvoiceCollection.setUpdatedTime(createdTime);
-								doctorPatientInvoiceCollection.setAdminCreatedTime(createdTime);
-								doctorPatientInvoiceCollection.setUniqueInvoiceId(fields[4].replace("'", ""));
-								doctorPatientInvoiceCollection.setCreatedBy(
-										(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-												+ userCollection.getFirstName());
+									doctorPatientInvoiceCollection.setDoctorId(userCollection.getId());
+									doctorPatientInvoiceCollection.setLocationId(locationObjectId);
+									doctorPatientInvoiceCollection.setHospitalId(hospitalObjectId);
+									doctorPatientInvoiceCollection.setPatientId(patientCollection.getUserId());
+									doctorPatientInvoiceCollection.setInvoiceDate(createdTime);
+									doctorPatientInvoiceCollection.setCreatedTime(createdTime);
+									doctorPatientInvoiceCollection.setUpdatedTime(createdTime);
+									doctorPatientInvoiceCollection.setAdminCreatedTime(createdTime);
+									doctorPatientInvoiceCollection.setUniqueInvoiceId("INV"+fields[4].replace("'", ""));
+									doctorPatientInvoiceCollection.setCreatedBy(
+											(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+													+ userCollection.getFirstName());
 
-							}else {System.out.println("not new invoice");
-								totalDiscount = doctorPatientInvoiceCollection.getTotalDiscount();
-								totalCost = doctorPatientInvoiceCollection.getTotalCost();
-								grandTotal = doctorPatientInvoiceCollection.getGrandTotal();
-							}
-							
-							List<InvoiceItem> invoiceItems = doctorPatientInvoiceCollection.getInvoiceItems();
-							if(invoiceItems == null) invoiceItems = new ArrayList<InvoiceItem>();
-							
-							InvoiceItem invoiceItem = new InvoiceItem();
-							invoiceItem.setDoctorId(userCollection.getId());
-							invoiceItem.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
-							invoiceItem.setName(fields[5].replace("'", ""));invoiceItem.setType(InvoiceItemType.SERVICE);
-							
-							if (fields.length > 7 && checkIfNotNullOrNone(fields[7])) {
-								Quantity quantity = new Quantity();
-								quantity.setType(QuantityEnum.QTY);
-								quantity.setValue(Integer.parseInt(fields[7].replace("'", "")));
-								invoiceItem.setQuantity(quantity);
-							}
-							
-							if (fields.length > 6 && checkIfNotNullOrNone(fields[6]))
-								invoiceItem.setCost(Double.parseDouble(fields[6].replace("'", "")));
-							
-							
-							if (fields.length > 8 && checkIfNotNullOrNone(fields[8])) {
-								Discount discount = new Discount();
-								if (fields.length > 9 && !checkIfNotNullOrNone(fields[9])) {
-									discount.setUnit(UnitType.INR);
-								} else if ((fields[9].replace("'", "")).equalsIgnoreCase("NUMBER")) {
-									discount.setUnit(UnitType.INR);
-								} else {
-									discount.setUnit(UnitType.valueOf(fields[9].replace("'", "")));
+								}else {
+									totalDiscount = doctorPatientInvoiceCollection.getTotalDiscount();
+									totalCost = doctorPatientInvoiceCollection.getTotalCost();
+									grandTotal = doctorPatientInvoiceCollection.getGrandTotal();
 								}
-								discount.setValue(Double.parseDouble(fields[8].replace("'", "")));
-								invoiceItem.setDiscount(discount);
-
-								if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-									invoiceItem.setFinalCost(
-											invoiceItem.getCost() - (invoiceItem.getCost() * (discount.getValue() / 100)));
-								} else {
-									invoiceItem.setFinalCost(invoiceItem.getCost() - (discount.getValue() / 100));
+								
+								List<InvoiceItem> invoiceItems = doctorPatientInvoiceCollection.getInvoiceItems();
+								if(invoiceItems == null) invoiceItems = new ArrayList<InvoiceItem>();
+								
+								InvoiceItem invoiceItem = new InvoiceItem();
+								invoiceItem.setDoctorId(userCollection.getId());
+								invoiceItem.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
+								invoiceItem.setName(fields[5].replace("'", ""));invoiceItem.setType(InvoiceItemType.SERVICE);
+								
+								if (fields.length > 7 && checkIfNotNullOrNone(fields[7])) {
+									Quantity quantity = new Quantity();
+									quantity.setType(QuantityEnum.QTY);
+									quantity.setValue(Integer.parseInt(fields[7].replace("'", "")));
+									invoiceItem.setQuantity(quantity);
 								}
-
-								if (totalDiscount == null) {
-									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-										totalDiscount = new Discount();
-										totalDiscount.setUnit(UnitType.INR);
-										totalDiscount.setValue(invoiceItem.getCost() * (discount.getValue() / 100));
+								
+								if (fields.length > 6 && checkIfNotNullOrNone(fields[6]))
+									invoiceItem.setCost(Double.parseDouble(fields[6].replace("'", "")));
+								
+								
+								if (fields.length > 8 && checkIfNotNullOrNone(fields[8])) {
+									Discount discount = new Discount();
+									if (fields.length > 9 && !checkIfNotNullOrNone(fields[9])) {
+										discount.setUnit(UnitType.INR);
+									} else if ((fields[9].replace("'", "")).equalsIgnoreCase("NUMBER")) {
+										discount.setUnit(UnitType.INR);
 									} else {
-										totalDiscount = discount;
+										discount.setUnit(UnitType.valueOf(fields[9].replace("'", "")));
 									}
-								} else {
-									double value = 0;
+									discount.setValue(Double.parseDouble(fields[8].replace("'", "")));
+									invoiceItem.setDiscount(discount);
+
 									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-										value = invoiceItem.getCost() * (discount.getValue() / 100);
-									} 
-									
-									totalDiscount.setValue(totalDiscount.getValue() + value);
+										invoiceItem.setFinalCost(
+												invoiceItem.getCost() - (invoiceItem.getCost() * (discount.getValue() / 100)));
+									} else {
+										invoiceItem.setFinalCost(invoiceItem.getCost() - (discount.getValue() / 100));
+									}
+
+									if (totalDiscount == null) {
+										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+											totalDiscount = new Discount();
+											totalDiscount.setUnit(UnitType.INR);
+											totalDiscount.setValue(invoiceItem.getCost() * (discount.getValue() / 100));
+										} else {
+											totalDiscount = discount;
+										}
+									} else {
+										double value = 0;
+										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+											value = invoiceItem.getCost() * (discount.getValue() / 100);
+										} 
+										
+										totalDiscount.setValue(totalDiscount.getValue() + value);
+									}
 								}
-							}
-							
-							if (fields.length > 16 && checkIfNotNullOrNone(fields[16]))
-								invoiceItem.setNote(fields[16].replace("'", ""));
-							
-							invoiceItems.add(invoiceItem);
-							totalCost = totalCost + invoiceItem.getCost();
-							grandTotal = grandTotal + invoiceItem.getFinalCost();
-							
-							doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
-							doctorPatientInvoiceCollection.setGrandTotal(grandTotal);
-							doctorPatientInvoiceCollection.setTotalCost(totalCost);
-							doctorPatientInvoiceCollection.setTotalDiscount(totalDiscount);
-							doctorPatientInvoiceCollection.setBalanceAmount(grandTotal);
-							
-							if (fields.length > 14 && fields[14].equalsIgnoreCase("'1'")) {
-								doctorPatientInvoiceCollection.setDiscarded(true);
-							}
-							
-							System.out.println(doctorPatientInvoiceCollection);
-							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
-							
-							
-							DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository
-									.findByInvoiceId(doctorPatientInvoiceCollection.getId());
-							if (doctorPatientLedgerCollection == null) {
-								doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
-								doctorPatientLedgerCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
-								doctorPatientLedgerCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
-								doctorPatientLedgerCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
-								doctorPatientLedgerCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
-								doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-								doctorPatientLedgerCollection.setCreatedTime(new Date());
-								doctorPatientLedgerCollection.setUpdatedTime(new Date());
-							} else {
-								doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-								doctorPatientLedgerCollection.setUpdatedTime(new Date());
-							}
-							doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
+								
+								if (fields.length > 16 && checkIfNotNullOrNone(fields[16]))
+									invoiceItem.setNote(fields[16].replace("'", ""));
+								
+								invoiceItems.add(invoiceItem);
+								totalCost = totalCost + invoiceItem.getCost();
+								grandTotal = grandTotal + invoiceItem.getFinalCost();
+								
+								doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
+								doctorPatientInvoiceCollection.setGrandTotal(grandTotal);
+								doctorPatientInvoiceCollection.setTotalCost(totalCost);
+								doctorPatientInvoiceCollection.setTotalDiscount(totalDiscount);
+								doctorPatientInvoiceCollection.setBalanceAmount(grandTotal);
+								
+								if (fields.length > 14 && fields[14].equalsIgnoreCase("'1'")) {
+									doctorPatientInvoiceCollection.setDiscarded(true);
+								}
+								
+								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+								
+								
+								DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository
+										.findByInvoiceId(doctorPatientInvoiceCollection.getId());
+								if (doctorPatientLedgerCollection == null) {
+									doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
+									doctorPatientLedgerCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
+									doctorPatientLedgerCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
+									doctorPatientLedgerCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
+									doctorPatientLedgerCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
+									doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+									doctorPatientLedgerCollection.setCreatedTime(new Date());
+									doctorPatientLedgerCollection.setUpdatedTime(new Date());
+								} else {
+									doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+									doctorPatientLedgerCollection.setUpdatedTime(new Date());
+								}
+								doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
 
-							DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
-									.find(doctorPatientInvoiceCollection.getPatientId(),
-											doctorPatientInvoiceCollection.getDoctorId(),
-											doctorPatientInvoiceCollection.getLocationId(),
-											doctorPatientInvoiceCollection.getHospitalId());
+								DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+										.find(doctorPatientInvoiceCollection.getPatientId(),
+												doctorPatientInvoiceCollection.getDoctorId(),
+												doctorPatientInvoiceCollection.getLocationId(),
+												doctorPatientInvoiceCollection.getHospitalId());
 
-							if (doctorPatientDueAmountCollection == null) {
-								doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
-								doctorPatientDueAmountCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
-								doctorPatientDueAmountCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
-								doctorPatientDueAmountCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
-								doctorPatientDueAmountCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
-								doctorPatientDueAmountCollection.setDueAmount(0.0);
+								if (doctorPatientDueAmountCollection == null) {
+									doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
+									doctorPatientDueAmountCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
+									doctorPatientDueAmountCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
+									doctorPatientDueAmountCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
+									doctorPatientDueAmountCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
+									doctorPatientDueAmountCollection.setDueAmount(0.0);
+								}
+								doctorPatientDueAmountCollection
+										.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + invoiceItem.getFinalCost());
+								doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
+								System.out.println(fields[1]+".."+fields[5]);
 							}
-							doctorPatientDueAmountCollection
-									.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + invoiceItem.getFinalCost());
-							doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
-							System.out.println(fields[1]+".."+fields[5]);
 						} else {
 							dataCountNotUploaded++;
 						}
@@ -2079,7 +2204,7 @@ System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
 		int lineCount = 0;
 		int dataCountNotUploaded = 0;
 		try {
-
+			Boolean save = true;
 			br = new BufferedReader(new FileReader(UPLOAD_PAYMENTS_DATA_FILE));
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -2100,11 +2225,10 @@ System.out.println(lineCount +".."+ fields[1]+".."+ fields[5]);
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = null;
 
 			while ((line = br.readLine()) != null) {
-
+				save = true;
 				if (lineCount > 0) {
 					String[] fields = line.split(cvsSplitBy);
-System.out.println(lineCount +".."+ fields[2]);
-					if (!DPDoctorUtils.anyStringEmpty(fields[1])) {
+					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[6])) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
 						if (patientCollection != null) {
@@ -2117,7 +2241,8 @@ System.out.println(lineCount +".."+ fields[2]);
 								createdTime = dateFormat.parse(dateSTri);
 							}
 
-							doctorPatientReceiptCollection = doctorPatientReceiptRepository.find(fields[3].replace("'", ""), locationObjectId, hospitalObjectId);
+							doctorPatientReceiptCollection = doctorPatientReceiptRepository.findByUniqueInvoiceId("INV"+fields[6].replace("'", ""), locationObjectId, hospitalObjectId);
+
 							if (doctorPatientReceiptCollection == null) {
 								doctorPatientReceiptCollection = new DoctorPatientReceiptCollection();
 
@@ -2129,16 +2254,23 @@ System.out.println(lineCount +".."+ fields[2]);
 								doctorPatientReceiptCollection.setCreatedTime(createdTime);
 								doctorPatientReceiptCollection.setUpdatedTime(createdTime);
 								doctorPatientReceiptCollection.setAdminCreatedTime(createdTime);
-								doctorPatientReceiptCollection.setUniqueInvoiceId(fields[4].replace("'", ""));
+//								doctorPatientReceiptCollection.setUniqueReceiptId(fields[3].replace("'", ""));
+								doctorPatientReceiptCollection.setUniqueInvoiceId("INV"+fields[6].replace("'", ""));
 								doctorPatientReceiptCollection.setCreatedBy(
 										(drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
 												+ drCollection.getFirstName());
+								
+								doctorPatientReceiptCollection
+								.setUniqueReceiptId("RCPT"+ ((int) mongoTemplate.count(
+										new Query(new Criteria("locationId").is(doctorPatientReceiptCollection.getLocationId())
+												.and("hospitalId").is(doctorPatientReceiptCollection.getHospitalId())),
+										DoctorPatientReceiptCollection.class) + 1));
 
 							}
 							
 							DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
 							if (fields.length > 14 && fields[14].equalsIgnoreCase("'1'")) {
-								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(fields[6].replace("'", ""), doctorObjectId, locationObjectId, hospitalObjectId);
+								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find("INV"+fields[6].replace("'", ""), locationObjectId, hospitalObjectId);
 								doctorPatientReceiptCollection.setDiscarded(true);
 								doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(fields[5].replace("'", "")));
 								
@@ -2148,20 +2280,22 @@ System.out.println(lineCount +".."+ fields[2]);
 								
 							}else {
 								
-								if(fields.length > 4 && checkIfNotNullOrNone(fields[4])) {
-									doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(fields[6].replace("'", ""), doctorObjectId, locationObjectId, hospitalObjectId);
-									if(doctorPatientInvoiceCollection == null)break;
-									doctorPatientReceiptCollection.setReceiptType(ReceiptType.INVOICE);
-									doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(fields[5].replace("'", "")));
-									doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() - doctorPatientReceiptCollection.getAmountPaid());
-									doctorPatientReceiptCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
-									doctorPatientInvoiceCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
-									
-									doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientReceiptCollection.getBalanceAmount());
-									
-									doctorPatientReceiptCollection.setCreatedBy(doctorPatientInvoiceCollection.getCreatedBy());
-									doctorPatientReceiptCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
-									doctorObjectId = doctorPatientInvoiceCollection.getDoctorId();
+								if(fields.length > 6 && checkIfNotNullOrNone(fields[6])) {
+									doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find("INV"+fields[6].replace("'", ""), locationObjectId, hospitalObjectId);
+									if(doctorPatientInvoiceCollection == null)save = false;
+									else {
+										doctorPatientReceiptCollection.setReceiptType(ReceiptType.INVOICE);
+										doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(fields[5].replace("'", "")));
+										doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() - doctorPatientReceiptCollection.getAmountPaid());
+										doctorPatientReceiptCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
+										doctorPatientInvoiceCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
+										
+										doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientReceiptCollection.getBalanceAmount());
+										
+										doctorPatientReceiptCollection.setCreatedBy(doctorPatientInvoiceCollection.getCreatedBy());
+										doctorPatientReceiptCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
+										doctorObjectId = doctorPatientInvoiceCollection.getDoctorId();
+									}
 								}else {
 									doctorPatientReceiptCollection.setReceiptType(ReceiptType.ADVANCE);
 									doctorPatientReceiptCollection.setRemainingAdvanceAmount(Double.parseDouble(fields[5].replace("'", "")));
@@ -2170,54 +2304,57 @@ System.out.println(lineCount +".."+ fields[2]);
 								}
 								
 							}
-							doctorPatientReceiptCollection.setModeOfPayment(ModeOfPayment.CASH);
-							doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
-							
-							if(doctorPatientInvoiceCollection != null) {
-								List<ObjectId> receiptIds = doctorPatientInvoiceCollection.getReceiptIds();
-								if(receiptIds == null) receiptIds = new ArrayList<ObjectId>();
-								receiptIds.add(doctorPatientReceiptCollection.getId());
+							if(save) {
+								doctorPatientReceiptCollection.setModeOfPayment(ModeOfPayment.CASH);
+								doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
 								
-								doctorPatientInvoiceCollection.setReceiptIds(receiptIds);
-								doctorPatientInvoiceCollection.setUpdatedTime(doctorPatientReceiptCollection.getUpdatedTime());
-								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
-							}
-							DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository
-									.findByReceiptId(doctorPatientReceiptCollection.getId());
-							if (doctorPatientLedgerCollection == null) {
-								doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
-								doctorPatientLedgerCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
-								doctorPatientLedgerCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
-								doctorPatientLedgerCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
-								doctorPatientLedgerCollection.setReceiptId(doctorPatientReceiptCollection.getId());
-								doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
-								doctorPatientLedgerCollection.setCreatedTime(new Date());
-								doctorPatientLedgerCollection.setUpdatedTime(new Date());
-							} else {
-								doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
-								doctorPatientLedgerCollection.setUpdatedTime(new Date());
-							}
-							doctorPatientLedgerCollection.setDiscarded(doctorPatientReceiptCollection.getDiscarded());
-							doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
-
-							if(!doctorPatientReceiptCollection.getDiscarded()) {
-								DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
-										.find(doctorPatientReceiptCollection.getPatientId(),
-												doctorPatientReceiptCollection.getDoctorId(),
-												doctorPatientReceiptCollection.getLocationId(),
-												doctorPatientReceiptCollection.getHospitalId());
-								if (doctorPatientDueAmountCollection == null) {
-									doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
-									doctorPatientDueAmountCollection.setDoctorId(doctorPatientReceiptCollection.getDoctorId());
-									doctorPatientDueAmountCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
-									doctorPatientDueAmountCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
-									doctorPatientDueAmountCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
+								if(doctorPatientInvoiceCollection != null) {
+									List<ObjectId> receiptIds = doctorPatientInvoiceCollection.getReceiptIds();
+									if(receiptIds == null) receiptIds = new ArrayList<ObjectId>();
+									receiptIds.add(doctorPatientReceiptCollection.getId());
+									
+									doctorPatientInvoiceCollection.setReceiptIds(receiptIds);
+									doctorPatientInvoiceCollection.setUpdatedTime(doctorPatientReceiptCollection.getUpdatedTime());
+									doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
 								}
-								doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - doctorPatientReceiptCollection.getAmountPaid());
-								doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
+								DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository
+										.findByReceiptId(doctorPatientReceiptCollection.getId());
+								if (doctorPatientLedgerCollection == null) {
+									doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
+									doctorPatientLedgerCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
+									doctorPatientLedgerCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
+									doctorPatientLedgerCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
+									doctorPatientLedgerCollection.setReceiptId(doctorPatientReceiptCollection.getId());
+									doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
+									doctorPatientLedgerCollection.setCreatedTime(new Date());
+									doctorPatientLedgerCollection.setUpdatedTime(new Date());
+								} else {
+									doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
+									doctorPatientLedgerCollection.setUpdatedTime(new Date());
+								}
+								doctorPatientLedgerCollection.setDiscarded(doctorPatientReceiptCollection.getDiscarded());
+								doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
+
+								if(!doctorPatientReceiptCollection.getDiscarded()) {
+									DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+											.find(doctorPatientReceiptCollection.getPatientId(),
+													doctorPatientReceiptCollection.getDoctorId(),
+													doctorPatientReceiptCollection.getLocationId(),
+													doctorPatientReceiptCollection.getHospitalId());
+									if (doctorPatientDueAmountCollection == null) {
+										doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
+										doctorPatientDueAmountCollection.setDoctorId(doctorPatientReceiptCollection.getDoctorId());
+										doctorPatientDueAmountCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
+										doctorPatientDueAmountCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
+										doctorPatientDueAmountCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
+									}
+									doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - doctorPatientReceiptCollection.getAmountPaid());
+									doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
+								}
+								System.out.println(fields[1]+".."+fields[4]);
+							}else {
+								dataCountNotUploaded++;
 							}
-							System.out.println(fields[1]+".."+fields[4]);
-						
 						} else {
 							dataCountNotUploaded++;
 						}
@@ -2237,6 +2374,83 @@ System.out.println(lineCount +".."+ fields[2]);
 					e.printStackTrace();
 				}
 			}
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updatePaymentsData(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		try {
+			
+				List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("invoiceitems.itemId").is(null)),
+						Aggregation.limit(5007)), DoctorPatientInvoiceCollection.class, DoctorPatientInvoiceCollection.class).getMappedResults();
+				
+				if(doctorPatientInvoiceCollections != null) {
+					System.out.println(doctorPatientInvoiceCollections.size());
+					for(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection : doctorPatientInvoiceCollections) {
+						Boolean update = false;
+						if(doctorPatientInvoiceCollection.getInvoiceItems() != null) {
+							for(InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
+								if(DPDoctorUtils.anyStringEmpty(invoiceItem.getItemId()) && (invoiceItem.getType() != null) && invoiceItem.getType().name().equalsIgnoreCase(InvoiceItemType.SERVICE.name())) {
+									List<TreatmentServicesCollection> treatmentServicesCollections = mongoTemplate.aggregate(
+											Aggregation.newAggregation(Aggregation.match(new Criteria("name").regex(invoiceItem.getName(), "i")
+													.orOperator(new Criteria("locationId").is(doctorPatientInvoiceCollection.getLocationId()).and("hospitalId").is(doctorPatientInvoiceCollection.getHospitalId()),
+															new Criteria("locationId").is(null).and("hospitalId").is(null)))), TreatmentServicesCollection.class, TreatmentServicesCollection.class).getMappedResults();
+											
+											
+//											treatmentServicesRepository
+//											.findByNameAndLocationHospital(invoiceItem.getName(), doctorPatientInvoiceCollection.getLocationId(), doctorPatientInvoiceCollection.getHospitalId(), 
+//													new Sort(Direction.DESC, "createdTime"));
+									if(treatmentServicesCollections != null && !treatmentServicesCollections.isEmpty()) {
+										invoiceItem.setItemId(treatmentServicesCollections.get(0).getId());
+										System.out.println("Updated :"+doctorPatientInvoiceCollection.getUniqueInvoiceId()+".."+invoiceItem.getName());
+										update = true;
+									}else {
+										System.out.println("Not Found :"+doctorPatientInvoiceCollection.getUniqueInvoiceId()+".."+invoiceItem.getName());
+										
+										TreatmentServicesCollection servicesCollection = new TreatmentServicesCollection();
+										servicesCollection.setAdminCreatedTime(new Date());
+										servicesCollection.setCost(invoiceItem.getCost());
+										servicesCollection.setCreatedBy(doctorPatientInvoiceCollection.getCreatedBy());
+										servicesCollection.setCreatedTime(new Date());
+										servicesCollection.setDiscarded(false);
+										servicesCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
+										servicesCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
+										servicesCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
+										servicesCollection.setName(invoiceItem.getName());
+										servicesCollection.setUpdatedTime(new Date());
+										servicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
+										servicesCollection.setRankingCount(1);
+										
+										servicesCollection = treatmentServicesRepository.save(servicesCollection);
+										
+										transactionalManagementService.addResource(servicesCollection.getId(), Resource.TREATMENTSERVICE,
+												false);
+										ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+										BeanUtil.map(servicesCollection, esTreatmentServiceDocument);
+										esTreatmentService.addEditService(esTreatmentServiceDocument);
+										invoiceItem.setItemId(servicesCollection.getId());
+										update = true;
+										
+									}
+													
+								}
+							}
+							if(update) {
+								System.out.println(doctorPatientInvoiceCollection.getInvoiceItems());
+								doctorPatientInvoiceCollection.setUpdatedTime(new Date());
+								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+								response = true;
+							}
+						}
+					}
+				}
+			
+			
+		}catch (Exception e) {
+			response = false;
+			e.printStackTrace();
 		}
 		return response;
 	}

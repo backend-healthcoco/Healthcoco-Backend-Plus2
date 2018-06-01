@@ -3183,7 +3183,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))
 					roleId = hospitalAdminGlobalRoleCollection.getId();
-				System.out.println(userRoleCollections.size());
 				for (UserRoleCollection userRoleCollection : userRoleCollections) {
 					userRoleCollection.setHospitalId(roleCollection.getHospitalId());
 					userRoleCollection.setLocationId(roleCollection.getLocationId());
@@ -3570,9 +3569,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Consent Form", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Consent Form", body,
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Consent Form", body,
 					mailResponse.getMailAttachment());
-			if (mailResponse.getMailAttachment() != null
+			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();

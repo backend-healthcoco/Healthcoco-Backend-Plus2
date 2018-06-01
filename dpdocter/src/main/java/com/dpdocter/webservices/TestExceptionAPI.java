@@ -87,7 +87,6 @@ public class TestExceptionAPI {
 					// used to send the message to the client directly from
 					// Firebase Console's Notification tab.
 					Result result = sender.send(message, patientToken, 1);
-					System.out.println("Result: " + result.toString());
 					}
 					else
 					{
@@ -99,7 +98,6 @@ public class TestExceptionAPI {
 						// used to send the message to the client directly from
 						// Firebase Console's Notification tab.
 						Result result = sender.send(message, doctorToken, 1);
-						System.out.println("Result: " + result.toString());
 					}
 						
 				} catch (Exception e) {

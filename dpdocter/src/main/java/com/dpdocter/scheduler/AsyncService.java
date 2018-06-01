@@ -62,8 +62,6 @@ public class AsyncService {
 	@Async
 	public void checkFakeRequestCount(String userId, BlockUserCollection blockUserCollection)
 			throws InterruptedException {
-		System.out.println("task start");
-		System.out.println("Execute method asynchronously. " + Thread.currentThread().getName());
 		UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(userId);
 		if (detailResponse.getNoOfAttemptInHour() >= Integer.parseInt(requestLimitForhour)
 				|| detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
@@ -89,7 +87,6 @@ public class AsyncService {
 			blockUserCollection.setUserIds(detailResponse.getUserIds());
 			blockUserCollection.setUpdatedTime(new Date());
 			blockUserCollection = blockUserRepository.save(blockUserCollection);
-			System.out.println("Task completed");
 
 		}
 
@@ -178,7 +175,6 @@ public class AsyncService {
 
 	@Async
 	public void changeRequestStatus(String uniqueRequestId, ObjectId localeId) throws InterruptedException {
-		System.out.println("Execute method asynchronously. " + Thread.currentThread().getName());
 		List<ObjectId> LocaleIds = new ArrayList<ObjectId>();
 
 		Criteria criteria = new Criteria().and("uniqueRequestId").is(uniqueRequestId)
@@ -202,7 +198,6 @@ public class AsyncService {
 	@Async
 	public void changeOrderStatus(String uniqueRequestId, ObjectId localeId, ObjectId userId)
 			throws InterruptedException {
-		System.out.println("Execute method asynchronously. " + Thread.currentThread().getName());
 
 		List<SearchRequestToPharmacyCollection> searchRequestToPharmacyCollections = searchRequestToPharmacyRepository
 				.findByUniqueRequestIdPharmacyIdAndReplyType(uniqueRequestId, "YES", localeId);

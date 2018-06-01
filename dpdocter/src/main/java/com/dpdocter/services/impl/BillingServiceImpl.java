@@ -311,10 +311,6 @@ public class BillingServiceImpl implements BillingService {
 			if (doctorPatientInvoiceCollection != null && doctorPatientInvoiceCollection.getInvoiceItems() != null) {
 				itemIds = CollectionUtils.collect(doctorPatientInvoiceCollection.getInvoiceItems(),
 						new BeanToPropertyValueTransformer("itemId"));
-				/*
-				 * // System.out.println("Item ids ->"); for(ObjectId itemid : itemIds) {
-				 * System.out.println("id :: " + itemid); }
-				 */
 			}
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
@@ -324,7 +320,6 @@ public class BillingServiceImpl implements BillingService {
 				if (invoiceItemResponse.getType().equals(InvoiceItemType.PRODUCT)) {
 					drug = prescriptionServices.getDrugById(invoiceItemResponse.getItemId());
 				}
-				// System.out.println("In Billing service - drug :: " +drug );
 				itemIds.remove(new ObjectId(invoiceItemResponse.getItemId()));
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
@@ -349,12 +344,9 @@ public class BillingServiceImpl implements BillingService {
 						inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(
 								request.getLocationId(), request.getHospitalId(), drug.getDrugCode(),
 								doctorPatientInvoiceCollection.getId().toString());
-						// System.out.println("In Billing service - inventoryStock :: " +inventoryStock
-						// );
 						quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
 								request.getHospitalId(), drug.getDrugCode(),
 								doctorPatientInvoiceCollection.getId().toString());
-						// System.out.println("In Billing service - quantity :: " +quantity );
 					}
 
 					if (quantity != null && quantity > 0 && invoiceItemResponse.getInventoryBatch() != null) {
@@ -387,11 +379,6 @@ public class BillingServiceImpl implements BillingService {
 
 							InventoryBatch oldInventoryBatch = inventoryService
 									.getInventoryBatchById(inventoryStock.getBatchId());
-
-							// System.out.println("In Billing service - oldInventoryBatch :: "
-							// +oldInventoryBatch );
-							// InventoryBatch newInventoryBatch =
-							// inventoryService.getInventoryBatchById(inventoryStock.getBatchId());
 
 							if (quantity > invoiceItemResponse.getQuantity().getValue()) {
 								Long diff = quantity - invoiceItemResponse.getQuantity().getValue();
@@ -451,26 +438,20 @@ public class BillingServiceImpl implements BillingService {
 			}
 
 			for (ObjectId itemId : itemIds) {
-				// System.out.println("inside added section . item id :: " +
 				// itemId);
 				DrugCollection drug = drugRepository.findOne(itemId);
 				if (drug != null) {
 					InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(
 							request.getLocationId(), request.getHospitalId(), drug.getDrugCode(),
 							doctorPatientInvoiceCollection.getId().toString());
-					// System.out.println(inventoryStock);
 					Long quantity = inventoryService.getInventoryStockItemCount(request.getLocationId(),
 							request.getHospitalId(), drug.getDrugCode(),
 							doctorPatientInvoiceCollection.getId().toString());
-					// System.out.println("Added quantity :: " + quantity);
 					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
 							request.getHospitalId(), drug.getDrugCode());
-					// System.out.println(inventoryItem);
-					// System.out.println("Batch id :: " + inventoryStock.getBatchId());
 					if (inventoryStock != null) {
 						InventoryBatch inventoryBatch = inventoryService
 								.getInventoryBatchById(inventoryStock.getBatchId());
-						// System.out.println(inventoryBatch);
 						if (inventoryBatch != null && inventoryItem != null) {
 							createInventoryStock(drug.getDrugCode(), inventoryItem.getId(), inventoryBatch,
 									request.getPatientId(), request.getDoctorId(), request.getLocationId(),
@@ -1901,9 +1882,9 @@ public class BillingServiceImpl implements BillingService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Invoice", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice", body,
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice", body,
 					mailResponse.getMailAttachment());
-			if (mailResponse.getMailAttachment() != null
+			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
@@ -2007,9 +1988,9 @@ public class BillingServiceImpl implements BillingService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Receipt", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipt", body,
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipt", body,
 					mailResponse.getMailAttachment());
-			if (mailResponse.getMailAttachment() != null
+			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
@@ -2095,7 +2076,6 @@ public class BillingServiceImpl implements BillingService {
 		if (inventoryQuantity != null) {
 			inventoryStock.setQuantity(inventoryQuantity.longValue());
 		}
-		// System.out.println(inventoryStock);
 
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
@@ -2358,9 +2338,9 @@ public class BillingServiceImpl implements BillingService {
 				String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 						mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), "",
 						"Receipts", "multipleEmrMailTemplate.vm");
-				mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipts", body,
+				Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipts", body,
 						mailResponse.getMailAttachment());
-				if (mailResponse.getMailAttachment() != null
+				if (response != null && mailResponse.getMailAttachment() != null
 						&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 					if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 						mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();

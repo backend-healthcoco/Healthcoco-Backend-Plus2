@@ -816,7 +816,6 @@ public class AdminServicesImpl implements AdminServices {
 				for(UserRoleCollection userRoleCollection : userRoleCollections) {
 					List<LocationCollection> locationCollections = locationRepository.findByHospitalId(userRoleCollection.getHospitalId(), new Sort(Direction.ASC, "createdTime"));
 					if(locationCollections != null && !locationCollections.isEmpty()) {
-						System.out.println(locationCollections.get(0).getLocationName());
 						userRoleCollection.setLocationId(locationCollections.get(0).getId());
 						userRoleRepository.save(userRoleCollection);
 						response = true;

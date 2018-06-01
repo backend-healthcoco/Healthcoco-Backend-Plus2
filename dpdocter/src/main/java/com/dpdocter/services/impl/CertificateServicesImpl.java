@@ -444,8 +444,6 @@ public class CertificateServicesImpl implements CertificatesServices {
 				if(!htmlText.endsWith("</html>"))htmlText = htmlText+"</html>";
 				htmlText = "<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Strict//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\'>" + htmlText;
 				
-				
-				System.out.println(htmlText);
 				String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CERTIFICATE-"+ new Date().getTime();
 				pdfName = pdfName.replaceAll("\\s+", "");
 				
@@ -510,7 +508,6 @@ public class CertificateServicesImpl implements CertificatesServices {
 //				}
 //			}
 //		}
-//		System.out.println(htmlText);
 //		parameters.put("certificateId", consentFormCollection.getId());
 //		parameters.put("htmlText", htmlText);
 //		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(

@@ -121,7 +121,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	@Transactional
 	public UserDevice addDevice(UserDevice request) {
 		UserDevice response = null;
-		System.out.println(request);
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getDeviceId())) {
 				UserDeviceCollection userDeviceCollection = userDeviceRepository.findByDeviceId(request.getDeviceId());
@@ -300,7 +299,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
-			System.out.println(jsonOutput);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 
 			Result result = sender.send(messageObj, pushToken, 1);
@@ -846,7 +844,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 			notification.setNotificationType(componentType);
 			String jsonOutput = mapper.writeValueAsString(notification);
-			System.out.println(jsonOutput);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 			Result result = sender.send(messageObj, pushToken, 1);
 			List<String> deviceIds = new ArrayList<String>();

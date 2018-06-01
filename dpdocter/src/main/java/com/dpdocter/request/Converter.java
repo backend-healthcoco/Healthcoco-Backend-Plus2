@@ -28,6 +28,5 @@ public class Converter {
     public static void main(String[] args) {
 	String JSONResult = ObjectToJSON(new Reference());
 
-	System.out.println(JSONResult);
     }
 }

@@ -844,7 +844,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			}
 
-			System.out.println(aggregation);
 			AggregationResults<RateCardDentalWorkAssociation> aggregationResults = mongoTemplate.aggregate(aggregation,
 					RateCardDentalWorkAssociationCollection.class, RateCardDentalWorkAssociation.class);
 

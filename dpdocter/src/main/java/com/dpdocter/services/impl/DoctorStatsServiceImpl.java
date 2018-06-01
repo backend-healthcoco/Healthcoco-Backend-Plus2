@@ -135,7 +135,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			criteria.and("month").is(month);
 			Aggregation aggregation = Aggregation.newAggregation(projectList, Aggregation.match(criteria),
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
-			// System.out.println(aggregation);
 			AggregationResults<DoctorStats> results = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class,
 					DoctorStats.class);
 			doctorStats = new ArrayList<DoctorStats>();
@@ -266,7 +265,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			logger.warn(e);
 			e.printStackTrace();
 		}
-		System.out.println(doctorStats.size());
 		return doctorStats.size();
 	}
 
@@ -291,7 +289,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			logger.warn(e);
 			e.printStackTrace();
 		}
-		System.out.println(doctorStats.size());
 		return doctorStats.size();
 	}
 
@@ -316,7 +313,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			logger.warn(e);
 			e.printStackTrace();
 		}
-		System.out.println(doctorStats.size());
 		return doctorStats.size();
 	}
 

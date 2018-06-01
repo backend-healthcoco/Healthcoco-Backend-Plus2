@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
 
 public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPatientReceiptCollection, ObjectId>,
@@ -36,4 +35,7 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 	
 	@Query("{'uniqueReceiptId' : ?0, 'locationId': ?1, 'hospitalId': ?2}")
 	DoctorPatientReceiptCollection find(String uniqueReceiptId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+	
+	@Query("{'uniqueInvoiceId' : ?0, 'locationId': ?1, 'hospitalId': ?2}")
+	DoctorPatientReceiptCollection findByUniqueInvoiceId(String uniqueInvoiceId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 }

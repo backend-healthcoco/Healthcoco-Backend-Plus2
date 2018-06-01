@@ -235,9 +235,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 				message = message.replace("{patientName}", request.getPatientName());
 				message = message.replace("{specimenName}", labTestSampleCollection.getSampleType());
 				message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
-				System.out.println(message);
 				sms.setSmsText(message);
-				System.out.println(daughterlocationCollection.getClinicNumber());
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(daughterlocationCollection.getClinicNumber());
 				sms.setSmsAddress(smsAddress);
@@ -484,7 +482,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 		try {
 			LabReportsCollection labReportsCollection = labReportsRepository
 					.getByRequestIdandSAmpleId(new ObjectId(request.getId()));
-			System.out.println("\n\n\n" + request.getId() + "\n\n");
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}

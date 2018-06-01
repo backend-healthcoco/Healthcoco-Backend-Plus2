@@ -154,7 +154,6 @@ public class HealthcocoScheduler {
 	@Transactional
 	public List<RegularCheckupResponse> getRegularCheckupListbyRegistrationDate( int months)
 	{
-		//System.out.println("Scheuler started");
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		/*int monthMaxDays = c.getActualMaximum(Calendar.DAY_OF_MONTH);
 		int days = -(months * monthMaxDays);*/
@@ -235,7 +234,6 @@ public class HealthcocoScheduler {
 		int daysInYear = c.getActualMaximum(Calendar.DAY_OF_YEAR);
 		
 		int today = c.get(Calendar.DAY_OF_MONTH);
-		System.out.println(c.get(Calendar.HOUR_OF_DAY));
 	}
 	
 }

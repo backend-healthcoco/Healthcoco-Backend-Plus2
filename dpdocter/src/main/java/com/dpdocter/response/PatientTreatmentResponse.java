@@ -7,6 +7,7 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
 
 public class PatientTreatmentResponse extends GenericCollection {
 
@@ -43,6 +44,8 @@ public class PatientTreatmentResponse extends GenericCollection {
 	private Date fromDate;
 	private List<TreatmentResponse> treatments;
 
+	private List<TreatmentServicesCollection> treatmentServicesCollections;
+	
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -163,13 +166,6 @@ public class PatientTreatmentResponse extends GenericCollection {
 		this.inHistory = inHistory;
 	}
 
-	@Override
-	public String toString() {
-		return "PatientTreatmentResponse [id=" + id + ", treatments=" + treatments + ", patientId=" + patientId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", totalCost=" + totalCost + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
-	}
-
 	public String getUniqueEmrId() {
 		return uniqueEmrId;
 	}
@@ -186,7 +182,22 @@ public class PatientTreatmentResponse extends GenericCollection {
 		this.appointmentRequest = appointmentRequest;
 	}
 
-	
-	
-	
+	public List<TreatmentServicesCollection> getTreatmentServicesCollections() {
+		return treatmentServicesCollections;
+	}
+
+	public void setTreatmentServicesCollections(List<TreatmentServicesCollection> treatmentServicesCollections) {
+		this.treatmentServicesCollections = treatmentServicesCollections;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientTreatmentResponse [id=" + id + ", patientId=" + patientId + ", uniqueEmrId=" + uniqueEmrId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ ", totalCost=" + totalCost + ", totalDiscount=" + totalDiscount + ", grandTotal=" + grandTotal
+				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", visitId=" + visitId + ", appointmentId="
+				+ appointmentId + ", time=" + time + ", appointmentRequest=" + appointmentRequest + ", fromDate="
+				+ fromDate + ", treatments=" + treatments + ", treatmentServicesCollections="
+				+ treatmentServicesCollections + "]";
+	}	
 }

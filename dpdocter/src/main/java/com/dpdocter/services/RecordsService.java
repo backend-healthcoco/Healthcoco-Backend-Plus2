@@ -20,6 +20,8 @@ import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.response.MailResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+import common.util.web.Response;
+
 public interface RecordsService {
 	Records addRecord(RecordsAddRequest request, String createdBy);
 
@@ -60,7 +62,7 @@ public interface RecordsService {
 
 	void changeLabelAndDescription(String recordId, String label, String explanation);
 
-	List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded,
+	Response<Object> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded,
 			Boolean isDoctorApp);
 
 	Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
@@ -73,7 +75,7 @@ public interface RecordsService {
 
 	UserRecords getUserRecordById(String recordId);
 
-	List<UserRecords> getUserRecordsByuserId(String patientId, String doctorId, String locationId, String hospitalId,
+	Response<Object> getUserRecordsByuserId(String patientId, String doctorId, String locationId, String hospitalId,
 			int page, int size, String updatedTime, Boolean discarded);
 
 	UserAllowanceDetails getUserRecordAllowance(String userId, String mobileNumber);
@@ -89,5 +91,8 @@ public interface RecordsService {
 	List<Records> getRecordsByDoctorId(String doctorId, int page, int size, String updatedTime, Boolean discarded);
 
 	public Boolean updateShareWithPatient(String recordId);
+
+	Integer getUserRecordsByuserIdCount(String patientId, String doctorId, String locationId, String hospitalId,
+			int page, int size, String updatedTime, Boolean discarded);
 
 }

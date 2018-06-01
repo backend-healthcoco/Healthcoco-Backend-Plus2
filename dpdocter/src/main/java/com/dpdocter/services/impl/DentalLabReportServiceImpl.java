@@ -104,9 +104,7 @@ public class DentalLabReportServiceImpl implements DentalLabReportService{
 				message = message.replace("{patientName}", request.getPatientName());
 				message = message.replace("{specimenName}", labTestSampleCollection.getSampleType());
 				message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
-				System.out.println(message);
 				sms.setSmsText(message);
-				System.out.println(daughterlocationCollection.getClinicNumber());
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(daughterlocationCollection.getClinicNumber());
 				sms.setSmsAddress(smsAddress);

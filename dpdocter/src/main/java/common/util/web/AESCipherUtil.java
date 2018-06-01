@@ -6,6 +6,9 @@
 //import javax.crypto.Cipher;
 //import javax.crypto.spec.SecretKeySpec;
 //
+//import org.springframework.security.crypto.codec.Base64;
+//
+//
 //public class AESCipherUtil {
 //
 //	private static final String ALGO = "AES";
@@ -94,11 +97,8 @@
 //
 //	public static void main(String[] args) throws Exception {
 //		String plainText = "asrwsv2124rfdsdafv";
-//		System.out.println(plainText);
 //		String encodedText = encrypt(plainText);
-//		System.out.println(encodedText);
 //		String decodedText = decrypt(encodedText);
-//		System.out.println(decodedText);
 //	}
 //
 //}
