@@ -61,6 +61,7 @@ import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
+import com.dpdocter.collections.DentalLabPrintSettingCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DentalWorksAmountCollection;
 import com.dpdocter.collections.DentalWorksInvoiceCollection;
@@ -92,6 +93,7 @@ import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyDoctorAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.DentalLabDoctorAssociationRepository;
+import com.dpdocter.repository.DentalLabPrintSettingRepository;
 import com.dpdocter.repository.DentalLabTestPickupRepository;
 import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DentalWorksAmountRepository;
@@ -271,6 +273,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private PatientVisitService patientVisitService;
+
+	@Autowired
+	private DentalLabPrintSettingRepository dentalLabPrintSettingRepository;
 
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -2845,13 +2850,21 @@ public class DentalLabServiceImpl implements DentalLabService {
 		parameters.put("doctor", doctorName);
 		parameters.put("invoiceId", "<b>InvoiceId : </b>" + dentalWorksInvoiceCollection.getUniqueInvoiceId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
-
-		printSettings = printSettingsRepository.getSettings(dentalWorksInvoiceCollection.getDentalLabLocationId(),
+		DentalLabPrintSettingCollection dentalLabPrintSettingCollection = dentalLabPrintSettingRepository.getSettings(
+				dentalWorksInvoiceCollection.getDentalLabLocationId(),
 				dentalWorksInvoiceCollection.getDentalLabHospitalId());
+		printSettings = new PrintSettingsCollection();
 
-		if (printSettings == null) {
+		if (dentalLabPrintSettingCollection == null) {
+
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
+
+		} else {
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(dentalLabPrintSettingCollection, defaultPrintSettings);
+			BeanUtil.map(defaultPrintSettings, printSettings);
+
 		}
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
@@ -3464,13 +3477,21 @@ public class DentalLabServiceImpl implements DentalLabService {
 				+ user.getFirstName() + "</b><br>" + location.getLocationName() + ",<br>" + location.getCity()
 				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? ",<br>" + location.getState() : "");
 		parameters.put("doctor", doctorName);
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		DentalLabPrintSettingCollection dentalLabPrintSettingCollection = dentalLabPrintSettingRepository.getSettings(
 				new ObjectId(dentalWorksReceiptResponse.getDentalLabLocationId()),
 				new ObjectId(dentalWorksReceiptResponse.getDentalLabHospitalId()));
+		PrintSettingsCollection printSettings = new PrintSettingsCollection();
 
-		if (printSettings == null) {
+		if (dentalLabPrintSettingCollection == null) {
+
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
+
+		} else {
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(dentalLabPrintSettingCollection, defaultPrintSettings);
+			BeanUtil.map(defaultPrintSettings, printSettings);
+
 		}
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
