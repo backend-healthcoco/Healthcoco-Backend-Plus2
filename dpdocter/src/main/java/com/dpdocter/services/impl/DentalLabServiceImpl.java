@@ -3483,6 +3483,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		if (dentalLabPrintSettingCollection == null) {
 
+			printSettings = new PrintSettingsCollection();
+
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 

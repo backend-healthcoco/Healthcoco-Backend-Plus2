@@ -1269,31 +1269,31 @@ public class LocationServiceImpl implements LocationServices {
 							labTestPickupCollection
 									.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
 
-						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
-								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
-					}
-				} else {
-					 collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-							.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
-									new ObjectId(request.getDaughterLabLocationId()), true);
-					if (collectionBoyLabAssociationCollection != null) {
-						labTestPickupCollection
-								.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
-						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-								.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
-						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
-								null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+							pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
+									null, null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
+						}
+					} else {
+						collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
+								.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
+										new ObjectId(request.getDaughterLabLocationId()), true);
+						if (collectionBoyLabAssociationCollection != null) {
+							labTestPickupCollection
+									.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
+							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
+									.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
+							pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(),
+									null, null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 
+						}
 					}
+					labTestPickupCollection.setCreatedTime(new Date());
+					labTestPickupCollection.setIsCompleted(false);
+					labTestPickupCollection.setStatus(request.getStatus());
+					labTestPickupCollection.setUpdatedTime(new Date());
+					labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
+
 				}
-				labTestPickupCollection.setCreatedTime(new Date());
-				labTestPickupCollection.setIsCompleted(false);
-				labTestPickupCollection.setStatus(request.getStatus());
-				labTestPickupCollection.setUpdatedTime(new Date());
-				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
-
 			}
-
 			response = new LabTestPickup();
 			BeanUtil.map(labTestPickupCollection, response);
 			response.setPatientLabTestSamples(patientLabTestSamples);
@@ -1354,10 +1354,7 @@ public class LocationServiceImpl implements LocationServices {
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));
-<<<<<<< HEAD
-=======
-			
->>>>>>> a8982ceb... -Solved Mail issue
+
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
@@ -1368,10 +1365,7 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<CollectionBoyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyCollection.class, CollectionBoyResponse.class);
 			response = aggregationResults.getMappedResults();
-<<<<<<< HEAD
-=======
-			
->>>>>>> a8982ceb... -Solved Mail issue
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Collection Boys");

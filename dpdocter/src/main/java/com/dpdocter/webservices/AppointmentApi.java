@@ -293,8 +293,8 @@ public class AppointmentApi {
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
 
-		Response<Object> response = = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
-				to, page, size, updatedTime);
+		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from, to,
+				page, size, updatedTime);
 		return response;
 	}
 
@@ -639,21 +639,23 @@ public class AppointmentApi {
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_EVENTS, notes = PathProxy.AppointmentUrls.GET_EVENTS)
 	public Response<Event> getEvents(@QueryParam(value = "locationId") String locationId,
-			@MatrixParam(value = "doctorId") List<String> doctorId,
-			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "from") String from,
+			@QueryParam(value = "to") String to, @QueryParam(value = "page") int page,
+			@QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "sortBy") String sortBy,
-			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime,
+			@QueryParam(value = "sortBy") String sortBy, @QueryParam(value = "fromTime") String fromTime,
+			@QueryParam(value = "toTime") String toTime,
 			@DefaultValue(value = "false") @QueryParam(value = "byMonth") Boolean byMonth) {
 
 		List<Event> events = null;
-		
-		if(byMonth)events = appointmentService.getEventsByMonth(locationId, doctorId, from, to,
-				page, size, updatedTime, sortBy, fromTime, toTime);
-		
-		else events = appointmentService.getEvents(locationId, doctorId, from, to,
-				page, size, updatedTime, sortBy, fromTime, toTime);
+
+		if (byMonth)
+			events = appointmentService.getEventsByMonth(locationId, doctorId, from, to, page, size, updatedTime,
+					sortBy, fromTime, toTime);
+
+		else
+			events = appointmentService.getEvents(locationId, doctorId, from, to, page, size, updatedTime, sortBy,
+					fromTime, toTime);
 		Response<Event> response = new Response<Event>();
 		response.setDataList(events);
 		return response;
