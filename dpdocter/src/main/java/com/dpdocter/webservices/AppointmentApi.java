@@ -294,7 +294,7 @@ public class AppointmentApi {
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
 
-		Response<Object> response = = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
+		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
 				to, page, size, updatedTime);
 		return response;
 	}
