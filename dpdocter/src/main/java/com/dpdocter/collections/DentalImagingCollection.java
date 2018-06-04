@@ -23,11 +23,11 @@ public class DentalImagingCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 	@Field
-	private ObjectId uploadedByDoctorId;
+	private ObjectId dentalImagingDoctorId;
 	@Field
-	private ObjectId uploadedByHospitalId;
+	private ObjectId dentalImagingHospitalId;
 	@Field
-	private ObjectId uploadedByLocationId;
+	private ObjectId dentalImagingLocationId;
 	@Field
 	private ObjectId locationId;
 	@Field
@@ -143,28 +143,28 @@ public class DentalImagingCollection extends GenericCollection {
 		this.requestId = requestId;
 	}
 
-	public ObjectId getUploadedByDoctorId() {
-		return uploadedByDoctorId;
+	public ObjectId getDentalImagingDoctorId() {
+		return dentalImagingDoctorId;
 	}
 
-	public void setUploadedByDoctorId(ObjectId uploadedByDoctorId) {
-		this.uploadedByDoctorId = uploadedByDoctorId;
+	public void setDentalImagingDoctorId(ObjectId dentalImagingDoctorId) {
+		this.dentalImagingDoctorId = dentalImagingDoctorId;
 	}
 
-	public ObjectId getUploadedByHospitalId() {
-		return uploadedByHospitalId;
+	public ObjectId getDentalImagingHospitalId() {
+		return dentalImagingHospitalId;
 	}
 
-	public void setUploadedByHospitalId(ObjectId uploadedByHospitalId) {
-		this.uploadedByHospitalId = uploadedByHospitalId;
+	public void setDentalImagingHospitalId(ObjectId dentalImagingHospitalId) {
+		this.dentalImagingHospitalId = dentalImagingHospitalId;
 	}
 
-	public ObjectId getUploadedByLocationId() {
-		return uploadedByLocationId;
+	public ObjectId getDentalImagingLocationId() {
+		return dentalImagingLocationId;
 	}
 
-	public void setUploadedByLocationId(ObjectId uploadedByLocationId) {
-		this.uploadedByLocationId = uploadedByLocationId;
+	public void setDentalImagingLocationId(ObjectId dentalImagingLocationId) {
+		this.dentalImagingLocationId = dentalImagingLocationId;
 	}
 
 	public String getPatientName() {

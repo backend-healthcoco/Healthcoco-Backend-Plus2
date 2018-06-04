@@ -1,0 +1,295 @@
+package com.dpdocter.collections;
+
+import java.util.Date;
+import java.util.List;
+
+import com.dpdocter.beans.DentalImagingInvoiceItem;
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.InvoiceTax;
+import com.dpdocter.beans.Location;
+import com.dpdocter.beans.Tax;
+import com.dpdocter.beans.User;
+
+public class DentalImagingInvoiceResponse extends GenericCollection{
+
+	private String id;
+
+	private String dentalImagingId;
+
+	private String doctorId;
+
+	private String locationId;
+
+	private String hospitalId;
+
+	private String patientId;
+
+	private String patientName;
+
+	private String mobileNumber;
+
+	private String dentalImagingLocationId;
+
+	private String dentalImagingHospitalId;
+
+	private String uniqueInvoiceId;
+
+	private Discount totalDiscount;
+
+	private Double totalCost = 0.0;
+
+	private Tax totalTax;
+
+	private List<InvoiceTax> invoiceTaxes;
+
+	private Double grandTotal = 0.0;
+
+	private Double oldGrantTotal = this.grandTotal;
+
+	private Double usedAdvanceAmount = 0.0;
+
+	private Double refundAmount = 0.0;
+
+	private Double balanceAmount = 0.0;
+
+	private Boolean discarded = false;
+
+	private List<String> receiptIds;
+
+	private Boolean isTaxNotApplicable = false;
+
+	private Date invoiceDate;
+
+	private List<DentalImagingInvoiceItem> invoiceItems;
+
+	private Location dentalImagingLab;
+
+	private User Doctor;
+
+	private Location location;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getDentalImagingId() {
+		return dentalImagingId;
+	}
+
+	public void setDentalImagingId(String dentalImagingId) {
+		this.dentalImagingId = dentalImagingId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getDentalImagingLocationId() {
+		return dentalImagingLocationId;
+	}
+
+	public void setDentalImagingLocationId(String dentalImagingLocationId) {
+		this.dentalImagingLocationId = dentalImagingLocationId;
+	}
+
+	public String getDentalImagingHospitalId() {
+		return dentalImagingHospitalId;
+	}
+
+	public void setDentalImagingHospitalId(String dentalImagingHospitalId) {
+		this.dentalImagingHospitalId = dentalImagingHospitalId;
+	}
+
+	public String getUniqueInvoiceId() {
+		return uniqueInvoiceId;
+	}
+
+	public void setUniqueInvoiceId(String uniqueInvoiceId) {
+		this.uniqueInvoiceId = uniqueInvoiceId;
+	}
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public Double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
+	}
+
+	public List<InvoiceTax> getInvoiceTaxes() {
+		return invoiceTaxes;
+	}
+
+	public void setInvoiceTaxes(List<InvoiceTax> invoiceTaxes) {
+		this.invoiceTaxes = invoiceTaxes;
+	}
+
+	public Double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(Double grandTotal) {
+		this.grandTotal = grandTotal;
+	}
+
+	public Double getOldGrantTotal() {
+		return oldGrantTotal;
+	}
+
+	public void setOldGrantTotal(Double oldGrantTotal) {
+		this.oldGrantTotal = oldGrantTotal;
+	}
+
+	public Double getUsedAdvanceAmount() {
+		return usedAdvanceAmount;
+	}
+
+	public void setUsedAdvanceAmount(Double usedAdvanceAmount) {
+		this.usedAdvanceAmount = usedAdvanceAmount;
+	}
+
+	public Double getRefundAmount() {
+		return refundAmount;
+	}
+
+	public void setRefundAmount(Double refundAmount) {
+		this.refundAmount = refundAmount;
+	}
+
+	public Double getBalanceAmount() {
+		return balanceAmount;
+	}
+
+	public void setBalanceAmount(Double balanceAmount) {
+		this.balanceAmount = balanceAmount;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public List<String> getReceiptIds() {
+		return receiptIds;
+	}
+
+	public void setReceiptIds(List<String> receiptIds) {
+		this.receiptIds = receiptIds;
+	}
+
+	public Boolean getIsTaxNotApplicable() {
+		return isTaxNotApplicable;
+	}
+
+	public void setIsTaxNotApplicable(Boolean isTaxNotApplicable) {
+		this.isTaxNotApplicable = isTaxNotApplicable;
+	}
+
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
+	public List<DentalImagingInvoiceItem> getInvoiceItems() {
+		return invoiceItems;
+	}
+
+	public void setInvoiceItems(List<DentalImagingInvoiceItem> invoiceItems) {
+		this.invoiceItems = invoiceItems;
+	}
+
+	public Location getDentalImagingLab() {
+		return dentalImagingLab;
+	}
+
+	public void setDentalImagingLab(Location dentalImagingLab) {
+		this.dentalImagingLab = dentalImagingLab;
+	}
+
+	public User getDoctor() {
+		return Doctor;
+	}
+
+	public void setDoctor(User doctor) {
+		Doctor = doctor;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+}

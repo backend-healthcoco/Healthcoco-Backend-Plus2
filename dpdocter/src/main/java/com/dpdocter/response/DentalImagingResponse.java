@@ -16,9 +16,9 @@ public class DentalImagingResponse extends GenericCollection {
 	private String doctorId;
 	private String hospitalId;
 	private String locationId;
-	private String uploadedByDoctorId;
-	private String uploadedByHospitalId;
-	private String uploadedByLocationId;
+	private String dentalImagingDoctorId;
+	private String dentalImagingHospitalId;
+	private String dentalImagingLocationId;
 	private String referringDoctor;
 	private String clinicalNotes;
 	private Boolean reportsRequired;
@@ -136,28 +136,28 @@ public class DentalImagingResponse extends GenericCollection {
 		this.location = location;
 	}
 
-	public String getUploadedByDoctorId() {
-		return uploadedByDoctorId;
+	public String getDentalImagingDoctorId() {
+		return dentalImagingDoctorId;
 	}
 
-	public void setUploadedByDoctorId(String uploadedByDoctorId) {
-		this.uploadedByDoctorId = uploadedByDoctorId;
+	public void setDentalImagingDoctorId(String dentalImagingDoctorId) {
+		this.dentalImagingDoctorId = dentalImagingDoctorId;
 	}
 
-	public String getUploadedByHospitalId() {
-		return uploadedByHospitalId;
+	public String getDentalImagingHospitalId() {
+		return dentalImagingHospitalId;
 	}
 
-	public void setUploadedByHospitalId(String uploadedByHospitalId) {
-		this.uploadedByHospitalId = uploadedByHospitalId;
+	public void setDentalImagingHospitalId(String dentalImagingHospitalId) {
+		this.dentalImagingHospitalId = dentalImagingHospitalId;
 	}
 
-	public String getUploadedByLocationId() {
-		return uploadedByLocationId;
+	public String getDentalImagingLocationId() {
+		return dentalImagingLocationId;
 	}
 
-	public void setUploadedByLocationId(String uploadedByLocationId) {
-		this.uploadedByLocationId = uploadedByLocationId;
+	public void setDentalImagingLocationId(String dentalImagingLocationId) {
+		this.dentalImagingLocationId = dentalImagingLocationId;
 	}
 
 	public List<DentalImagingReports> getReports() {

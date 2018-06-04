@@ -11,6 +11,9 @@ public class DentalImaging extends GenericCollection {
 	private String doctorId;
 	private String hospitalId;
 	private String locationId;
+	private String dentalImagingDoctorId;
+	private String dentalImagingHospitalId;
+	private String dentalImagingLocationId;
 	private String referringDoctor;
 	private String clinicalNotes;
 	private Boolean reportsRequired;
@@ -104,6 +107,30 @@ public class DentalImaging extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getDentalImagingDoctorId() {
+		return dentalImagingDoctorId;
+	}
+
+	public void setDentalImagingDoctorId(String dentalImagingDoctorId) {
+		this.dentalImagingDoctorId = dentalImagingDoctorId;
+	}
+
+	public String getDentalImagingHospitalId() {
+		return dentalImagingHospitalId;
+	}
+
+	public void setDentalImagingHospitalId(String dentalImagingHospitalId) {
+		this.dentalImagingHospitalId = dentalImagingHospitalId;
+	}
+
+	public String getDentalImagingLocationId() {
+		return dentalImagingLocationId;
+	}
+
+	public void setDentalImagingLocationId(String dentalImagingLocationId) {
+		this.dentalImagingLocationId = dentalImagingLocationId;
 	}
 
 }

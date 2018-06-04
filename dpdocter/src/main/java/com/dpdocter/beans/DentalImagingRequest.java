@@ -11,9 +11,9 @@ public class DentalImagingRequest {
 	private String doctorId;
 	private String hospitalId;
 	private String locationId;
-	private String uploadedByDoctorId;
-	private String uploadedByHospitalId;
-	private String uploadedByLocationId;
+	private String dentalImagingDoctorId;
+	private String dentalImagingHospitalId;
+	private String dentalImagingLocationId;
 	private String referringDoctor;
 	private String clinicalNotes;
 	private Boolean reportsRequired;
@@ -110,28 +110,28 @@ public class DentalImagingRequest {
 		this.id = id;
 	}
 
-	public String getUploadedByDoctorId() {
-		return uploadedByDoctorId;
+	public String getDentalImagingDoctorId() {
+		return dentalImagingDoctorId;
 	}
 
-	public void setUploadedByDoctorId(String uploadedByDoctorId) {
-		this.uploadedByDoctorId = uploadedByDoctorId;
+	public void setDentalImagingDoctorId(String dentalImagingDoctorId) {
+		this.dentalImagingDoctorId = dentalImagingDoctorId;
 	}
 
-	public String getUploadedByHospitalId() {
-		return uploadedByHospitalId;
+	public String getDentalImagingHospitalId() {
+		return dentalImagingHospitalId;
 	}
 
-	public void setUploadedByHospitalId(String uploadedByHospitalId) {
-		this.uploadedByHospitalId = uploadedByHospitalId;
+	public void setDentalImagingHospitalId(String dentalImagingHospitalId) {
+		this.dentalImagingHospitalId = dentalImagingHospitalId;
 	}
 
-	public String getUploadedByLocationId() {
-		return uploadedByLocationId;
+	public String getDentalImagingLocationId() {
+		return dentalImagingLocationId;
 	}
 
-	public void setUploadedByLocationId(String uploadedByLocationId) {
-		this.uploadedByLocationId = uploadedByLocationId;
+	public void setDentalImagingLocationId(String dentalImagingLocationId) {
+		this.dentalImagingLocationId = dentalImagingLocationId;
 	}
 
 	public String getLocalPatientName() {
@@ -162,11 +162,11 @@ public class DentalImagingRequest {
 	public String toString() {
 		return "DentalImagingRequest [id=" + id + ", patientId=" + patientId + ", localPatientName=" + localPatientName
 				+ ", mobileNumber=" + mobileNumber + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId
-				+ ", locationId=" + locationId + ", uploadedByDoctorId=" + uploadedByDoctorId
-				+ ", uploadedByHospitalId=" + uploadedByHospitalId + ", uploadedByLocationId=" + uploadedByLocationId
-				+ ", referringDoctor=" + referringDoctor + ", clinicalNotes=" + clinicalNotes + ", reportsRequired="
-				+ reportsRequired + ", specialInstructions=" + specialInstructions + ", services=" + services
-				+ ", discarded=" + discarded + "]";
+				+ ", locationId=" + locationId + ", dentalImagingDoctorId=" + dentalImagingDoctorId
+				+ ", dentalImagingHospitalId=" + dentalImagingHospitalId + ", dentalImagingLocationId="
+				+ dentalImagingLocationId + ", referringDoctor=" + referringDoctor + ", clinicalNotes=" + clinicalNotes
+				+ ", reportsRequired=" + reportsRequired + ", specialInstructions=" + specialInstructions
+				+ ", services=" + services + ", discarded=" + discarded + ", type=" + type + "]";
 	}
 
 }
