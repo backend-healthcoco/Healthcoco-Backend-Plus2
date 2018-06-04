@@ -3293,7 +3293,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			dentalWorksInvoiceCollection.setDiscarded(discarded);
-			dentalWorksInvoiceRepository.save(dentalWorksInvoiceCollection);
+			dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.save(dentalWorksInvoiceCollection);
 
 			if (discarded.equals(Boolean.TRUE)) {
 				dentalWorksAmountCollection = dentalWorksAmountRepository
@@ -3322,9 +3322,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 				if (dentalWorksAmountCollection != null) {
 					dentalWorksAmountCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount()
 							+ dentalWorksInvoiceCollection.getTotalCost());
+					dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 				}
-				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 			}
+			
+			response = new DentalWorksInvoice();
+			BeanUtil.map(dentalWorksInvoiceCollection, response);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -3374,9 +3377,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 				if (dentalWorksAmountCollection != null) {
 					dentalWorksAmountCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount()
 							- dentalWorksReceiptCollection.getAmountPaid());
+					dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 				}
-				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+			
 			}
+			response = new DentalWorksReceipt();
+			BeanUtil.map(dentalWorksReceiptCollection, response);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
