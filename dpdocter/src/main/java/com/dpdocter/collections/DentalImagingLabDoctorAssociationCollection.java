@@ -1,52 +1,73 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document
-public class DentalImagingLabDoctorAssociationCollection extends GenericCollection{
+public class DentalImagingLabDoctorAssociationCollection extends GenericCollection {
 
 	@Id
-	private String id;
+	private ObjectId id;
 	@Field
-	private String doctorId;
+	private ObjectId doctorId;
 	@Field
-	private String dentalImagingLocationId;
+	private ObjectId locationId;
 	@Field
-	private String dentalImagingHospitalId;
+	private ObjectId hospitalId;
+	@Field
+	private ObjectId dentalImagingLocationId;
+	@Field
+	private ObjectId dentalImagingHospitalId;
 	@Field
 	private Boolean discarded = false;
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public String getDoctorId() {
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public String getDentalImagingLocationId() {
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public ObjectId getDentalImagingLocationId() {
 		return dentalImagingLocationId;
 	}
 
-	public void setDentalImagingLocationId(String dentalImagingLocationId) {
+	public void setDentalImagingLocationId(ObjectId dentalImagingLocationId) {
 		this.dentalImagingLocationId = dentalImagingLocationId;
 	}
 
-	public String getDentalImagingHospitalId() {
+	public ObjectId getDentalImagingHospitalId() {
 		return dentalImagingHospitalId;
 	}
 
-	public void setDentalImagingHospitalId(String dentalImagingHospitalId) {
+	public void setDentalImagingHospitalId(ObjectId dentalImagingHospitalId) {
 		this.dentalImagingHospitalId = dentalImagingHospitalId;
 	}
 

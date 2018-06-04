@@ -1,7 +1,5 @@
 package com.dpdocter.request;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 public class DentalImagingReportsAddRequest {
 
 	private String patientId;
@@ -33,6 +31,8 @@ public class DentalImagingReportsAddRequest {
 	private String title;
 
 	private String note;
+
+	private String createdBy;
 
 	public String getPatientId() {
 		return patientId;
@@ -152,6 +152,14 @@ public class DentalImagingReportsAddRequest {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
 	@Override
