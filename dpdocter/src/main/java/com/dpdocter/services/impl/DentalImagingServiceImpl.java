@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,12 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImaging;
+import com.dpdocter.beans.DentalImagingLabDoctorAssociation;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
+import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
@@ -39,8 +40,10 @@ import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
+import com.dpdocter.collections.DentalImagingLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
 import com.dpdocter.collections.DentalImagingReportsCollection;
+import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorHospitalDentalImagingAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
@@ -63,7 +66,10 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditNutritionReferenceRequest;
+import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
+import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
+import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
@@ -76,8 +82,10 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
+import com.sun.jersey.api.spring.Autowire;
 
 import common.util.web.DPDoctorUtils;
 
@@ -129,6 +137,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	@Autowired
 	TransactionalManagementService transnationalService;
 	
+	@Autowired
+	SignUpService signUpService;
+	
 	private static Logger logger = Logger.getLogger(DentalImagingServiceImpl.class.getName());
 
 	@Value(value = "${image.path}")
@@ -136,11 +147,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Override
 	@Transactional
-	public DentalImaging addEditDentalImagingRequest(DentalImagingRequest request) {
-		DentalImaging response = null;
+	public DentalImagingResponse addEditDentalImagingRequest(DentalImagingRequest request) {
+		DentalImagingResponse response = null;
 		DentalImagingCollection dentalImagingCollection = null;
 		String requestId = null;
-		
+		LocationCollection locationCollection = null;
 		try {
 			
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(request.getLocationId()));
@@ -148,7 +159,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(request.getId()));
 				if (dentalImagingCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
-				}
+				} 
 				BeanUtil.map(request, dentalImagingCollection);
 				dentalImagingCollection.setPatientName(request.getLocalPatientName());
 				dentalImagingCollection.setServices(request.getServices());
@@ -188,8 +199,66 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						"Request Has been updated.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),
 						String.valueOf(dentalImagingCollection.getId()), null);
 			}
-			response = new DentalImaging();
+			response = new DentalImagingResponse();
 			BeanUtil.map(dentalImagingCollection, response);
+			 
+			
+			if (request.getType() != null) {
+				
+				locationCollection = locationRepository.findOne(new ObjectId(response.getLocationId()));
+				
+				if(locationCollection != null)
+				{
+					Location location = new Location();
+					BeanUtil.map(locationCollection, location);
+					response.setLocation(location);
+				}
+				
+				if (request.getType().equalsIgnoreCase("DOCTOR")) {
+					if (!DPDoctorUtils.anyStringEmpty(response.getPatientId(), response.getUploadedByDoctorId(),
+							response.getUploadedByHospitalId(), response.getUploadedByLocationId())) {
+						PatientCollection patientCollection = patientRepository
+								.findByUserIdDoctorIdLocationIdAndHospitalId(new ObjectId(response.getPatientId()),
+										new ObjectId(response.getUploadedByDoctorId()),
+										new ObjectId(response.getUploadedByLocationId()),
+										new ObjectId(response.getUploadedByHospitalId()));
+						if (patientCollection != null) {
+							PatientShortCard patientShortCard = new PatientShortCard();
+							BeanUtil.map(patientCollection, patientShortCard);
+							response.setPatient(patientShortCard);
+
+							UserCollection userCollection = userRepository
+									.findOne(new ObjectId(response.getPatientId()));
+							if (userCollection != null) {
+								if (response.getPatient() != null) {
+									response.getPatient().setMobileNumber(userCollection.getMobileNumber());
+								}
+							}
+						}
+					}
+				} else {
+					if (!DPDoctorUtils.anyStringEmpty(response.getPatientId(), response.getLocationId(),
+							response.getHospitalId())) {
+
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
+								new ObjectId(response.getHospitalId()));
+						if (patientCollection != null) {
+							PatientShortCard patientShortCard = new PatientShortCard();
+							BeanUtil.map(patientCollection, patientShortCard);
+							response.setPatient(patientShortCard);
+
+							UserCollection userCollection = userRepository
+									.findOne(new ObjectId(response.getPatientId()));
+							if (userCollection != null) {
+								if (response.getPatient() != null) {
+									response.getPatient().setMobileNumber(userCollection.getMobileNumber());
+								}
+							}
+						}
+					}
+				}
+			}
 		} catch (Exception e) {
 			logger.warn(e);
 			e.printStackTrace();
@@ -199,7 +268,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Override
 	@Transactional
-
 	public List<DentalImagingResponse> getRequests(String locationId, String hospitalId, String doctorId, Long from,
 			Long to, String searchTerm, int size, int page, String type) {
 
@@ -900,4 +968,38 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	}
 
 
+	@Override
+	@Transactional
+	public Boolean dentalLabDoctorRegistration(DentalImagingLabDoctorRegistrationRequest request) {
+		Boolean response = false;
+		LocationAndAccessControl locationAndAccessControl = null;
+
+		try {
+			DoctorSignupRequest doctorSignupRequest = new DoctorSignupRequest();
+			BeanUtil.map(request, doctorSignupRequest);
+			DoctorSignUp doctorSignUp = signUpService.doctorSignUp(doctorSignupRequest);
+			if (doctorSignUp != null) {
+				DoctorHospitalDentalImagingAssociationCollection doctorHospitalDentalImagingAssociationCollection = new DoctorHospitalDentalImagingAssociationCollection();
+				doctorHospitalDentalImagingAssociationCollection
+						.setHospitalId(new ObjectId(request.getDentalImagingHospitalId()));
+				doctorHospitalDentalImagingAssociationCollection.setDoctorId(new ObjectId(doctorSignUp.getUser().getId()));
+				if (doctorSignUp.getHospital() != null) {
+					if (doctorSignUp.getHospital().getLocationsAndAccessControl().size() > 0) {
+						locationAndAccessControl = doctorSignUp.getHospital().getLocationsAndAccessControl().get(0);
+						doctorHospitalDentalImagingAssociationCollection
+								.setDoctorLocationId(new ObjectId(locationAndAccessControl.getId()));
+					
+					}
+				}
+				doctorHospitalDentalImagingAssociationCollection = doctorHospitalDentalImagingAssociationRepository
+						.save(doctorHospitalDentalImagingAssociationCollection);
+			}
+			response = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 }

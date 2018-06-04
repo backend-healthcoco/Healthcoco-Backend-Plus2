@@ -20,6 +20,7 @@ public class DentalImagingRequest {
 	private String specialInstructions;
 	private List<DentalDiagnosticServiceRequest> services;
 	private Boolean discarded;
+	private String type;
 
 	public String getPatientId() {
 		return patientId;
@@ -147,6 +148,14 @@ public class DentalImagingRequest {
 
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override

@@ -36,6 +36,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorHospitalDentalImagingAssociationRepository;
+import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
+import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalimagingReportsUploadRequest;
 import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
@@ -68,12 +70,12 @@ public class DentalImagingAPI {
 	@Path(value = PathProxy.DentalImagingUrl.ADD_EDIT_DENTAL_IMAGING_REQUEST)
 	@POST
 	@ApiOperation(value = PathProxy.DentalImagingUrl.ADD_EDIT_DENTAL_IMAGING_REQUEST, notes = PathProxy.DentalImagingUrl.ADD_EDIT_DENTAL_IMAGING_REQUEST)
-	public Response<DentalImaging> addEditDentalRequest(DentalImagingRequest request) {
+	public Response<DentalImagingResponse> addEditDentalRequest(DentalImagingRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<DentalImaging> response = new Response<DentalImaging>();
+		Response<DentalImagingResponse> response = new Response<DentalImagingResponse>();
 		response.setData(dentalImagingService.addEditDentalImagingRequest(request));
 		return response;
 	}
@@ -213,5 +215,17 @@ public class DentalImagingAPI {
 		return response;
 	}
 	
+	
+	@Path(value = PathProxy.DentalImagingUrl.DOCTOR_REGISTRATION)
+	@POST
+	@ApiOperation(value = PathProxy.DentalImagingUrl.DOCTOR_REGISTRATION, notes = PathProxy.DentalImagingUrl.DOCTOR_REGISTRATION)
+	public Response<Boolean> doctorRegistration(DentalImagingLabDoctorRegistrationRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalImagingService.dentalLabDoctorRegistration(request));
+		return response;
+	}
 }
 

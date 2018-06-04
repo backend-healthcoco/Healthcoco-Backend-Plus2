@@ -10,7 +10,9 @@ import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
+import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
+import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
@@ -22,7 +24,7 @@ import common.util.web.Response;
 
 public interface DentalImagingService {
 
-	DentalImaging addEditDentalImagingRequest(DentalImagingRequest request);
+	DentalImagingResponse addEditDentalImagingRequest(DentalImagingRequest request);
 
 	List<DentalDiagnosticService> getServices(String searchTerm, String type, int page, int size);
 
@@ -51,6 +53,8 @@ public interface DentalImagingService {
 
 	List<DoctorHospitalDentalImagingAssociationResponse> getHospitalAssociatedDoctor(String hospitalId,
 			String searchTerm, int size, int page);
+
+	Boolean dentalLabDoctorRegistration(DentalImagingLabDoctorRegistrationRequest request);
 
 
 }
