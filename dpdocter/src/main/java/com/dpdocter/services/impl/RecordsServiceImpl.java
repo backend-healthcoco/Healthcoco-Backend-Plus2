@@ -575,7 +575,8 @@ public class RecordsServiceImpl implements RecordsService {
 					hospitalObjectId = new ObjectId(request.getHospitalId());
 
 				Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId")
-						.is(patientObjectId).and("isPatientDiscarded").ne(true);;
+						.is(patientObjectId).and("isPatientDiscarded").ne(true);
+				;
 				if (!request.getDiscarded())
 					criteria.and("discarded").is(request.getDiscarded());
 
@@ -844,7 +845,8 @@ public class RecordsServiceImpl implements RecordsService {
 		Integer recordCount = 0;
 		try {
 
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
+					.and("isPatientDiscarded").ne(true);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -1136,7 +1138,8 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId").and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId")
+					.and("isPatientDiscarded").ne(true);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
@@ -1217,14 +1220,14 @@ public class RecordsServiceImpl implements RecordsService {
 				patientObjectId = new ObjectId(patientId);
 
 			if (isDoctorApp) {
-				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("patientId").
-						and("isPatientDiscarded").ne(true);
+				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("patientId")
+						.and("isPatientDiscarded").ne(true);
 
 				if (!discarded)
 					criteria.and("discarded").is(discarded);
 
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
-				if(count > 0) {
+				if (count > 0) {
 					response.setData(count);
 					Aggregation aggregation = null;
 
@@ -1255,7 +1258,7 @@ public class RecordsServiceImpl implements RecordsService {
 					criteria.and("discarded").is(discarded);
 
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
-				if(count > 0) {
+				if (count > 0) {
 					response.setData(count);
 					Aggregation aggregation = null;
 
@@ -1278,14 +1281,16 @@ public class RecordsServiceImpl implements RecordsService {
 
 			}
 
-			records = new ArrayList<Records>();
-			for (RecordsLookupResponse recordsLookupResponse : recordsLookupResponses) {
-				Records record = new Records();
-				BeanUtil.map(recordsLookupResponse, record);
-				if (recordsLookupResponse.getPatientVisit() != null)
-					record.setVisitId(recordsLookupResponse.getPatientVisit().getId().toString());
-				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
-				records.add(record);
+			if (recordsLookupResponses != null && !recordsLookupResponses.isEmpty()) {
+				records = new ArrayList<Records>();
+				for (RecordsLookupResponse recordsLookupResponse : recordsLookupResponses) {
+					Records record = new Records();
+					BeanUtil.map(recordsLookupResponse, record);
+					if (recordsLookupResponse.getPatientVisit() != null)
+						record.setVisitId(recordsLookupResponse.getPatientVisit().getId().toString());
+					record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+					records.add(record);
+				}
 			}
 			response.setDataList(records);
 		} catch (Exception e) {
@@ -1797,15 +1802,15 @@ public class RecordsServiceImpl implements RecordsService {
 				criteria.and("discarded").is(discarded);
 
 			long count = mongoTemplate.count(new Query(criteria), UserRecordsCollection.class);
-			
-			if(count > 0) {
+
+			if (count > 0) {
 				response.setData(count);
 				Aggregation aggregation = null;
 
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-							Aggregation.limit(size));
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
 				else
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
