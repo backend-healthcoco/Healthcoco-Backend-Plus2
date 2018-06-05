@@ -16,6 +16,7 @@ public class DentalImaging extends GenericCollection {
 	private String dentalImagingLocationId;
 	private String referringDoctor;
 	private String clinicalNotes;
+	private String uniqueInvoiceId;
 	private Boolean reportsRequired;
 	private String specialInstructions;
 	private List<DentalDiagnosticServiceRequest> services;
@@ -131,6 +132,14 @@ public class DentalImaging extends GenericCollection {
 
 	public void setDentalImagingLocationId(String dentalImagingLocationId) {
 		this.dentalImagingLocationId = dentalImagingLocationId;
+	}
+
+	public String getUniqueInvoiceId() {
+		return uniqueInvoiceId;
+	}
+
+	public void setUniqueInvoiceId(String uniqueInvoiceId) {
+		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
 
 }

@@ -3,6 +3,8 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.response.DentalImagingInvoiceItemResponse;
+
 public class DentalImagingInvoice {
 
 	private String id;
@@ -53,7 +55,7 @@ public class DentalImagingInvoice {
 
 	private Date invoiceDate;
 
-	private List<DentalImagingInvoiceItem> invoiceItems;
+	private List<DentalImagingInvoiceItemResponse> invoiceItems;
 
 	public String getId() {
 		return id;
@@ -247,11 +249,11 @@ public class DentalImagingInvoice {
 		this.invoiceDate = invoiceDate;
 	}
 
-	public List<DentalImagingInvoiceItem> getInvoiceItems() {
+	public List<DentalImagingInvoiceItemResponse> getInvoiceItems() {
 		return invoiceItems;
 	}
 
-	public void setInvoiceItems(List<DentalImagingInvoiceItem> invoiceItems) {
+	public void setInvoiceItems(List<DentalImagingInvoiceItemResponse> invoiceItems) {
 		this.invoiceItems = invoiceItems;
 	}
 

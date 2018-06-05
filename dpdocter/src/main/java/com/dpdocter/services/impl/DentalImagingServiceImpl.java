@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +25,15 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImaging;
+import com.dpdocter.beans.DentalImagingInvoice;
+import com.dpdocter.beans.DentalImagingInvoiceItem;
 import com.dpdocter.beans.DentalImagingLabDoctorAssociation;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.DentalWorksInvoice;
+import com.dpdocter.beans.DentalWorksInvoiceItem;
+import com.dpdocter.beans.DentalWorksSample;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.FileDetails;
@@ -40,10 +46,14 @@ import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
+import com.dpdocter.collections.DentalImagingInvoiceCollection;
 import com.dpdocter.collections.DentalImagingLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
 import com.dpdocter.collections.DentalImagingReportsCollection;
 import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
+import com.dpdocter.collections.DentalLabPickupCollection;
+import com.dpdocter.collections.DentalWorksAmountCollection;
+import com.dpdocter.collections.DentalWorksInvoiceCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorHospitalDentalImagingAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
@@ -57,6 +67,7 @@ import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DentalImagingInvoiceRepository;
 import com.dpdocter.repository.DentalImagingLocationServiceAssociationRepository;
 import com.dpdocter.repository.DentalImagingReportsRepository;
 import com.dpdocter.repository.DentalImagingRepository;
@@ -139,6 +150,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	
 	@Autowired
 	SignUpService signUpService;
+	
+	@Autowired
+	DentalImagingInvoiceRepository dentalImagingInvoiceRepository;
 	
 	private static Logger logger = Logger.getLogger(DentalImagingServiceImpl.class.getName());
 
@@ -872,12 +886,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"), Aggregation.match(criteria),
+						Aggregation.unwind("doctor"), Aggregation.lookup("location_cl", "doctorLocationId", "_id", "location"),
+						Aggregation.unwind("location"),Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"), Aggregation.match(criteria),
+						Aggregation.unwind("doctor"),Aggregation.lookup("location_cl", "doctorLocationId", "_id", "location"),
+						Aggregation.unwind("location"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			
 			AggregationResults<DoctorHospitalDentalImagingAssociationResponse> aggregationResults = mongoTemplate.aggregate(
@@ -1001,5 +1017,116 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		return response;
 	}
+	
+	
+	/*@Override
+	@Transactional
+	public DentalImagingInvoice addEditInvoice(DentalImagingInvoice request) {
+		DentalImagingInvoice response = null;
+		List<DentalImagingInvoiceItem> invoiceItems = null;
+		//DentalWorksAmountCollection dentalWorksAmountCollection = null;
+		try {
+			DentalImagingInvoiceCollection dentalImagingInvoiceCollection = new DentalImagingInvoiceCollection();
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+				BeanUtil.map(request, dentalImagingInvoiceCollection);
+
+				LocationCollection locationCollection = locationRepository
+						.findOne(new ObjectId(request.getDentalImagingLocationId()));
+				if (locationCollection == null)
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
+				dentalImagingInvoiceCollection.setUniqueInvoiceId(locationCollection.getInvoiceInitial()
+						+ ((int) mongoTemplate.count(new Query(new Criteria("dentalLabLocationId")
+								.is(dentalImagingInvoiceCollection.getDentalImagingLocationId()).and("dentalLabHospitalId")
+								.is(dentalImagingInvoiceCollection.getDentalImagingHospitalId())),
+								DentalWorksInvoiceCollection.class) + 1));
+
+				dentalImagingInvoiceCollection.setBalanceAmount(request.getGrandTotal());
+				if (dentalImagingInvoiceCollection.getInvoiceDate() == null)
+					dentalImagingInvoiceCollection.setInvoiceDate(new Date());
+
+				dentalImagingInvoiceCollection.setAdminCreatedTime(new Date());
+
+				dentalWorksAmountCollection = dentalWorksAmountRepository
+						.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(
+								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+								new ObjectId(request.getHospitalId()), new ObjectId(request.getDentalLabLocationId()),
+								new ObjectId(request.getDentalLabHospitalId()));
+
+				if (dentalWorksAmountCollection == null) {
+					dentalWorksAmountCollection = new DentalWorksAmountCollection();
+					BeanUtil.map(request, dentalWorksAmountCollection);
+					dentalWorksAmountCollection.setRemainingAmount(request.getTotalCost());
+				} else {
+					dentalWorksAmountCollection.setRemainingAmount(
+							dentalWorksAmountCollection.getRemainingAmount() + request.getTotalCost());
+				}
+
+				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+
+			} else {
+				dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.findOne(new ObjectId(request.getId()));
+				Double OldCost = dentalImagingInvoiceCollection.getTotalCost();
+				BeanUtil.map(request, dentalImagingInvoiceCollection);
+				dentalImagingInvoiceCollection.setCreatedTime(new Date());
+				dentalImagingInvoiceCollection.setUpdatedTime(new Date());
+				dentalImagingInvoiceCollection.setTotalCost(request.getTotalCost());
+				dentalImagingInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
+				dentalImagingInvoiceCollection.setTotalTax(request.getTotalTax());
+				dentalImagingInvoiceCollection.setGrandTotal(request.getGrandTotal());
+
+				dentalWorksAmountCollection = dentalWorksAmountRepository
+						.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(
+								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+								new ObjectId(request.getHospitalId()), new ObjectId(request.getDentalLabLocationId()),
+								new ObjectId(request.getDentalLabHospitalId()));
+
+				if (dentalWorksAmountCollection != null) {
+					dentalWorksAmountCollection
+							.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() - OldCost);
+					dentalWorksAmountCollection.setRemainingAmount(
+							dentalWorksAmountCollection.getRemainingAmount() + request.getTotalCost());
+
+				}
+				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+
+			}
+
+			DentalImagingCollection dentalImagingCollection = dentalImagingRepository
+					.findOne(new ObjectId(request.getDentalImagingId()));
+			if (dentalImagingCollection != null) {
+				invoiceItems = new ArrayList<DentalImagingInvoiceItem>();
+				for (DentalWorksSample dentalWorksSample : dentalImagingCollection.getServices()) {
+					DentalWorksInvoiceItem dentalWorksInvoiceItem = new DentalWorksInvoiceItem();
+					dentalWorksInvoiceItem.setCost(dentalWorksSample.getCost());
+					dentalWorksInvoiceItem.setWorkId(
+							new ObjectId(dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWorkId()));
+
+					dentalWorksInvoiceItem.setDentalToothNumbers(dentalWorksSample.getDentalToothNumbers());
+					dentalWorksInvoiceItem.setWorkName(
+							dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork().getWorkName());
+					dentalWorksInvoiceItem.setCreatedTime(dentalLabPickupCollection.getCreatedTime());
+					invoiceItems.add(dentalWorksInvoiceItem);
+				}
+			}
+
+			dentalWorksInvoiceCollection.setDentalWorksInvoiceItems(invoiceItems);
+			dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
+			dentalLabPickupCollection.setInvoiceId(dentalWorksInvoiceCollection.getId());
+			dentalLabPickupCollection.setUniqueInvoiceId(dentalWorksInvoiceCollection.getUniqueInvoiceId());
+			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
+
+			response = new DentalImagingInvoice();
+			BeanUtil.map(dentalImagingInvoiceCollection, response);
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			logger.error("Error while adding invoice" + e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while adding invoice" + e);
+		}
+		return response;
+	}*/
+
 	
 }

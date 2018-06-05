@@ -3,117 +3,134 @@ package com.dpdocter.collections;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.DentalImagingInvoiceItem;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InvoiceTax;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Tax;
-import com.dpdocter.beans.User;
-import com.dpdocter.response.DentalImagingInvoiceItemResponse;
 
-public class DentalImagingInvoiceResponse extends GenericCollection{
+public class DentalImagingInvoiceCollection extends GenericCollection {
 
-	private String id;
+	@Id
+	private ObjectId id;
 
-	private String dentalImagingId;
+	@Field
+	private ObjectId dentalImagingId;
 
-	private String doctorId;
+	@Field
+	private ObjectId doctorId;
 
-	private String locationId;
+	@Field
+	private ObjectId locationId;
 
-	private String hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-	private String patientId;
+	@Field
+	private ObjectId patientId;
 
+	@Field
 	private String patientName;
 
+	@Field
 	private String mobileNumber;
 
-	private String dentalImagingLocationId;
+	@Field
+	private ObjectId dentalImagingLocationId;
 
-	private String dentalImagingHospitalId;
+	@Field
+	private ObjectId dentalImagingHospitalId;
 
+	@Field
 	private String uniqueInvoiceId;
 
+	@Field
 	private Discount totalDiscount;
 
+	@Field
 	private Double totalCost = 0.0;
 
+	@Field
 	private Tax totalTax;
 
+	@Field
 	private List<InvoiceTax> invoiceTaxes;
 
+	@Field
 	private Double grandTotal = 0.0;
 
+	@Field
 	private Double oldGrantTotal = this.grandTotal;
 
+	@Field
 	private Double usedAdvanceAmount = 0.0;
 
+	@Field
 	private Double refundAmount = 0.0;
 
+	@Field
 	private Double balanceAmount = 0.0;
 
+	@Field
 	private Boolean discarded = false;
 
-	private List<String> receiptIds;
-
+	@Field
 	private Boolean isTaxNotApplicable = false;
 
+	@Field
 	private Date invoiceDate;
 
-	private List<DentalImagingInvoiceItemResponse> invoiceItems;
+	@Field
+	private List<DentalImagingInvoiceItem> invoiceItems;
 
-	private Location dentalImagingLab;
-
-	private User Doctor;
-
-	private Location location;
-
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public String getDentalImagingId() {
+	public ObjectId getDentalImagingId() {
 		return dentalImagingId;
 	}
 
-	public void setDentalImagingId(String dentalImagingId) {
+	public void setDentalImagingId(ObjectId dentalImagingId) {
 		this.dentalImagingId = dentalImagingId;
 	}
 
-	public String getDoctorId() {
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public String getLocationId() {
+	public ObjectId getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(String locationId) {
+	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
 
-	public String getHospitalId() {
+	public ObjectId getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(String hospitalId) {
+	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getPatientId() {
+	public ObjectId getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(String patientId) {
+	public void setPatientId(ObjectId patientId) {
 		this.patientId = patientId;
 	}
 
@@ -133,19 +150,19 @@ public class DentalImagingInvoiceResponse extends GenericCollection{
 		this.mobileNumber = mobileNumber;
 	}
 
-	public String getDentalImagingLocationId() {
+	public ObjectId getDentalImagingLocationId() {
 		return dentalImagingLocationId;
 	}
 
-	public void setDentalImagingLocationId(String dentalImagingLocationId) {
+	public void setDentalImagingLocationId(ObjectId dentalImagingLocationId) {
 		this.dentalImagingLocationId = dentalImagingLocationId;
 	}
 
-	public String getDentalImagingHospitalId() {
+	public ObjectId getDentalImagingHospitalId() {
 		return dentalImagingHospitalId;
 	}
 
-	public void setDentalImagingHospitalId(String dentalImagingHospitalId) {
+	public void setDentalImagingHospitalId(ObjectId dentalImagingHospitalId) {
 		this.dentalImagingHospitalId = dentalImagingHospitalId;
 	}
 
@@ -237,14 +254,6 @@ public class DentalImagingInvoiceResponse extends GenericCollection{
 		this.discarded = discarded;
 	}
 
-	public List<String> getReceiptIds() {
-		return receiptIds;
-	}
-
-	public void setReceiptIds(List<String> receiptIds) {
-		this.receiptIds = receiptIds;
-	}
-
 	public Boolean getIsTaxNotApplicable() {
 		return isTaxNotApplicable;
 	}
@@ -261,36 +270,12 @@ public class DentalImagingInvoiceResponse extends GenericCollection{
 		this.invoiceDate = invoiceDate;
 	}
 
-	public List<DentalImagingInvoiceItemResponse> getInvoiceItems() {
+	public List<DentalImagingInvoiceItem> getInvoiceItems() {
 		return invoiceItems;
 	}
 
-	public void setInvoiceItems(List<DentalImagingInvoiceItemResponse> invoiceItems) {
+	public void setInvoiceItems(List<DentalImagingInvoiceItem> invoiceItems) {
 		this.invoiceItems = invoiceItems;
-	}
-
-	public Location getDentalImagingLab() {
-		return dentalImagingLab;
-	}
-
-	public void setDentalImagingLab(Location dentalImagingLab) {
-		this.dentalImagingLab = dentalImagingLab;
-	}
-
-	public User getDoctor() {
-		return Doctor;
-	}
-
-	public void setDoctor(User doctor) {
-		Doctor = doctor;
-	}
-
-	public Location getLocation() {
-		return location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
 	}
 
 }
