@@ -8,6 +8,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.QueueStatus;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Appointment extends GenericCollection {
 
@@ -18,7 +19,7 @@ public class Appointment extends GenericCollection {
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String patientId;
 
 	private WorkingHours time;
@@ -72,25 +73,27 @@ public class Appointment extends GenericCollection {
 	private String visitId;
 
 	private QueueStatus status = QueueStatus.SCHEDULED;
-    
-    private long waitedFor = 0;
-    
-    private long engagedFor = 0;
-    
-    private long engagedAt = 0;
-    
-    private long checkedInAt = 0;
-    
-    private long checkedOutAt = 0;
 
-    private Integer count; 
-    
-    private String category;
-    
+	private long waitedFor = 0;
+
+	private long engagedFor = 0;
+
+	private long engagedAt = 0;
+
+	private long checkedInAt = 0;
+
+	private long checkedOutAt = 0;
+
+	private Integer count;
+
+	private String category;
+
 	private String cancelledByProfile;
-    
+
 	private String localPatientName;
-	
+
+	private RegisteredPatientDetails registeredPatientDetails;
+
 	public String getId() {
 		return id;
 	}
@@ -409,6 +412,14 @@ public class Appointment extends GenericCollection {
 
 	public void setLocalPatientName(String localPatientName) {
 		this.localPatientName = localPatientName;
+	}
+
+	public RegisteredPatientDetails getRegisteredPatientDetails() {
+		return registeredPatientDetails;
+	}
+
+	public void setRegisteredPatientDetails(RegisteredPatientDetails registeredPatientDetails) {
+		this.registeredPatientDetails = registeredPatientDetails;
 	}
 
 	@Override

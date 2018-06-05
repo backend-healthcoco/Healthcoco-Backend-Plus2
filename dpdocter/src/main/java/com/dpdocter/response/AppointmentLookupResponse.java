@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
@@ -14,79 +15,81 @@ import com.dpdocter.enums.QueueStatus;
 public class AppointmentLookupResponse extends GenericCollection {
 
 	private String id;
-    
-    private String subject;
-    
-    private String explanation;
 
-    private String doctorId;
-    
-    private String locationId;
-    
-    private String hospitalId;
-    
-    private String appointmentId;
-    
-    private WorkingHours time;
+	private String subject;
 
-    private String patientId;
-    
-    private AppointmentState state = AppointmentState.NEW;
-    
-    private AppointmentType type = AppointmentType.APPOINTMENT;
-    
-    private Boolean isRescheduled = false;
-    
-    private Date fromDate;
+	private String explanation;
 
-    private Date toDate;
-        
-    private Boolean isCalenderBlocked = false;
-    
-    private Boolean isFeedbackAvailable = false;
+	private String doctorId;
 
-    private Boolean isAllDayEvent = false;
-    
-    private String cancelledBy;
-        
-    private Boolean notifyPatientBySms;
-    
-    private Boolean notifyPatientByEmail;
-    
-    private Boolean notifyDoctorBySms;
+	private String locationId;
 
-    private Boolean notifyDoctorByEmail;
-    
-    private String visitId;
-    
-    private User doctor;
-    
-    private Location location;
-    
-    private User patient;
-	
-    private PatientCard patientCard;
-    
-    private QueueStatus status = QueueStatus.SCHEDULED;
-    
-    private long waitedFor = 0;
-    
-    private long engagedFor = 0;
-    
-    private long engagedAt = 0;
-    
-    private long checkedInAt = 0;
-    
-    private long checkedOutAt = 0;
+	private String hospitalId;
 
-    private Integer count; 
-    
-    private String category;
-    
-    private String cancelledByProfile;
-    
-    private String localPatientName;
-    
+	private String appointmentId;
+
+	private WorkingHours time;
+
+	private String patientId;
+
+	private AppointmentState state = AppointmentState.NEW;
+
+	private AppointmentType type = AppointmentType.APPOINTMENT;
+
+	private Boolean isRescheduled = false;
+
+	private Date fromDate;
+
+	private Date toDate;
+
+	private Boolean isCalenderBlocked = false;
+
+	private Boolean isFeedbackAvailable = false;
+
+	private Boolean isAllDayEvent = false;
+
+	private String cancelledBy;
+
+	private Boolean notifyPatientBySms;
+
+	private Boolean notifyPatientByEmail;
+
+	private Boolean notifyDoctorBySms;
+
+	private Boolean notifyDoctorByEmail;
+
+	private String visitId;
+
+	private User doctor;
+
+	private Location location;
+
+	private User patient;
+
+	private PatientCard patientCard;
+
+	private QueueStatus status = QueueStatus.SCHEDULED;
+
+	private long waitedFor = 0;
+
+	private long engagedFor = 0;
+
+	private long engagedAt = 0;
+
+	private long checkedInAt = 0;
+
+	private long checkedOutAt = 0;
+
+	private Integer count;
+
+	private String category;
+
+	private String cancelledByProfile;
+
+	private String localPatientName;
+
+	private RegisteredPatientDetails registeredPatientDetails;
+
 	public String getId() {
 		return id;
 	}
@@ -381,6 +384,14 @@ public class AppointmentLookupResponse extends GenericCollection {
 
 	public void setLocalPatientName(String localPatientName) {
 		this.localPatientName = localPatientName;
+	}
+
+	public RegisteredPatientDetails getRegisteredPatientDetails() {
+		return registeredPatientDetails;
+	}
+
+	public void setRegisteredPatientDetails(RegisteredPatientDetails registeredPatientDetails) {
+		this.registeredPatientDetails = registeredPatientDetails;
 	}
 
 	@Override

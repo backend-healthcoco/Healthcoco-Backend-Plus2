@@ -54,12 +54,15 @@ import com.dpdocter.beans.Doctor;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.Event;
 import com.dpdocter.beans.GeocodedLocation;
+import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientQueue;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
@@ -84,6 +87,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RecommendationsCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -110,14 +114,18 @@ import com.dpdocter.repository.AppointmentBookedSlotRepository;
 import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.AppointmentWorkFlowRepository;
 import com.dpdocter.repository.CityRepository;
+import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.CustomAppointmentRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientQueueRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.RecommendationsRepository;
+import com.dpdocter.repository.RecordsRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SpecialityRepository;
@@ -147,6 +155,7 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
@@ -224,7 +233,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RegistrationService registrationService;
+	
+	@Autowired
+	private PrescriptionRepository prescriptionRepository;
 
+	@Autowired
+	private ClinicalNotesRepository clinicalNotesRepository;
+
+	@Autowired
+	private RecordsRepository recordsRepository;
+	
+	@Autowired
+	private OTPService otpService;
+	
+	@Autowired
+	private ReferenceRepository referenceRepository;
+	
 	@Value(value = "${Appointment.timeSlotIsBooked}")
 	private String timeSlotIsBooked;
 
@@ -1685,7 +1709,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime) {
+			String toTime , Boolean isRegisteredPatientRequired) {
 		List<Appointment> response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1812,25 +1836,130 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
 				response = new ArrayList<Appointment>();
 
+				
+				
 				for (AppointmentLookupResponse collection : appointmentLookupResponses) {
+					ObjectId doctorObjectId = new ObjectId(collection.getDoctorId());
+					ObjectId locationObjectId = new ObjectId(collection.getLocationId());
+					ObjectId hospitalObjectId = new ObjectId(collection.getHospitalId());
 					Appointment appointment = new Appointment();
-					PatientCard patient = null;
+					PatientCard patientCard = null;
 					if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
-						patient = collection.getPatientCard();
-						if (patient != null) {
-							patient.setId(patient.getUserId());
+						patientCard = collection.getPatientCard();
+						if (patientCard != null) {
+							patientCard.setId(patientCard.getUserId());
 
-							if (patient.getUser() != null) {
-								patient.setColorCode(patient.getUser().getColorCode());
-								patient.setMobileNumber(patient.getUser().getMobileNumber());
+							if (patientCard.getUser() != null) {
+								patientCard.setColorCode(patientCard.getUser().getColorCode());
+								patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
 							}
-							patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
-							patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
+							patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+							patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 
 						}
 					}
 					BeanUtil.map(collection, appointment);
-					appointment.setPatient(patient);
+					appointment.setPatient(patientCard);
+					
+					//-----------------------------------------
+					
+					if (isRegisteredPatientRequired == true && patientCard != null) {
+						/*@SuppressWarnings("unchecked")
+						Collection<ObjectId> groupIds = CollectionUtils.collect(
+								patientCard.getPatientGroupCollections(),
+								new BeanToPropertyValueTransformer("groupId"));
+						patientCard.setPatientGroupCollections(null);*/
+						RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
+						if (patientCard.getUser() != null) {
+							BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
+							if (patientCard.getUser().getId() != null) {
+								registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
+							}
+						}
+
+						Patient patient = new Patient();
+						BeanUtil.map(patientCard, patient);
+						patient.setPatientId(patientCard.getUser().getId().toString());
+						ObjectId referredBy = null;
+						if (patientCard.getReferredBy() != null) {
+							referredBy = new ObjectId(patientCard.getReferredBy());
+						}
+
+						patientCard.setReferredBy(null);
+						BeanUtil.map(patientCard, registeredPatientDetail);
+
+					/*	Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
+						if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
+							prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
+									doctorObjectId, new ObjectId(patientCard.getUser().getId()), hospitalObjectId,
+									locationObjectId);
+							clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
+									doctorObjectId, new ObjectId(patientCard.getUser().getId()), hospitalObjectId,
+									locationObjectId);
+							recordsCount = recordsRepository.getRecordsForOtherDoctors(
+									new ObjectId(patientCard.getDoctorId()),
+									new ObjectId(patientCard.getUser().getId()),
+									new ObjectId(patientCard.getHospitalId()),
+									new ObjectId(patientCard.getLocationId()));
+						} else {
+							prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
+									new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
+							clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
+									new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
+							recordsCount = recordsRepository.getRecordsForOtherLocations(
+									new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
+						}
+
+						if ((prescriptionCount != null && prescriptionCount > 0)
+								|| (clinicalNotesCount != null && clinicalNotesCount > 0)
+								|| (recordsCount != null && recordsCount > 0))
+							patient.setIsDataAvailableWithOtherDoctor(true);
+						patient.setIsPatientOTPVerified(
+								otpService.checkOTPVerified(collection.getDoctorId(), collection.getLocationId(),
+										collection.getHospitalId(), patientCard.getUser().getId().toString()));*/
+						registeredPatientDetail.setPatient(patient);
+						registeredPatientDetail.setAddress(patientCard.getAddress());
+
+						//Criteria groupCriteria = new Criteria("id").in(groupIds).and("discarded").is(false);
+
+					/*	if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) {
+							groupCriteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+						}
+						if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
+							groupCriteria.and("doctorId").is(doctorObjectId);
+						}
+						groups = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(groupCriteria)),
+								GroupCollection.class, Group.class).getMappedResults();
+						registeredPatientDetail.setGroups(groups);*/
+
+						registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
+						registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
+						registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
+						registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
+						registeredPatientDetail.setPID(patientCard.getPID());
+						registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
+
+						if (patientCard.getDob() != null) {
+							registeredPatientDetail.setDob(patientCard.getDob());
+						}
+
+						Reference reference = new Reference();
+						if (referredBy != null) {
+							ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
+							if (referencesCollection != null)
+								BeanUtil.map(referencesCollection, reference);
+						}
+						registeredPatientDetail.setReferredBy(reference);
+						registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
+						appointment.setRegisteredPatientDetails(registeredPatientDetail);
+						appointment.setPatient(null);
+					}
+					
+					
+					//-----------------------------------------
+					
+					
+					
 					if (collection.getDoctor() != null) {
 						appointment.setDoctorName(
 								collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());

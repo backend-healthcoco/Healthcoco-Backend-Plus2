@@ -40,10 +40,10 @@ public interface AppointmentService {
 
 	Clinic getClinic(String slugUrl);
 
-	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
+	/*List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime);
-
+*/
 	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
 
@@ -121,5 +121,9 @@ public interface AppointmentService {
 
 	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime);
+
+	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
+			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
+			String toTime, Boolean isRegisteredPatientRequired);
 
 }
