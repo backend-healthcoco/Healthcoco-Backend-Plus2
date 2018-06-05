@@ -46,6 +46,8 @@ public class DentalImagingCollection extends GenericCollection {
 	private String patientName;
 	@Field
 	private String mobileNumber;
+	@Field
+	private String uniqueInvoiceId;
 
 	public ObjectId getPatientId() {
 		return patientId;
@@ -183,12 +185,24 @@ public class DentalImagingCollection extends GenericCollection {
 		this.mobileNumber = mobileNumber;
 	}
 
+	public String getUniqueInvoiceId() {
+		return uniqueInvoiceId;
+	}
+
+	public void setUniqueInvoiceId(String uniqueInvoiceId) {
+		this.uniqueInvoiceId = uniqueInvoiceId;
+	}
+
 	@Override
 	public String toString() {
-		return "DentalImagingCollection [patientId=" + patientId + ", doctorId=" + doctorId + ", hospitalId="
-				+ hospitalId + ", locationId=" + locationId + ", referringDoctor=" + referringDoctor
-				+ ", clinicalNotes=" + clinicalNotes + ", reportsRequired=" + reportsRequired + ", specialInstructions="
-				+ specialInstructions + ", services=" + services + ", discarded=" + discarded + "]";
+		return "DentalImagingCollection [id=" + id + ", patientId=" + patientId + ", requestId=" + requestId
+				+ ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", dentalImagingDoctorId="
+				+ dentalImagingDoctorId + ", dentalImagingHospitalId=" + dentalImagingHospitalId
+				+ ", dentalImagingLocationId=" + dentalImagingLocationId + ", locationId=" + locationId
+				+ ", referringDoctor=" + referringDoctor + ", clinicalNotes=" + clinicalNotes + ", reportsRequired="
+				+ reportsRequired + ", specialInstructions=" + specialInstructions + ", services=" + services
+				+ ", discarded=" + discarded + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber
+				+ ", uniqueInvoiceId=" + uniqueInvoiceId + "]";
 	}
 
 }
