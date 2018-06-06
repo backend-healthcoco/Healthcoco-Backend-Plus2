@@ -1220,9 +1220,12 @@ public class RecordsServiceImpl implements RecordsService {
 				patientObjectId = new ObjectId(patientId);
 
 			if (isDoctorApp) {
-				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("patientId")
+				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong))
 						.and("isPatientDiscarded").ne(true);
 
+				if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
+					criteria.and("patientId").is(patientObjectId);
+					
 				if (!discarded)
 					criteria.and("discarded").is(discarded);
 
