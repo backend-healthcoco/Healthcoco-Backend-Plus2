@@ -1216,33 +1216,37 @@ public class RecordsServiceImpl implements RecordsService {
 				patientObjectId = new ObjectId(patientId);
 
 			if (isDoctorApp) {
-				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("patientId")
-						.and("isPatientDiscarded").ne(true);
+				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("isPatientDiscarded")
+						.ne(true);
+
+				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+					criteria.and("patientId").is(patientObjectId);
+				}
 
 				if (!discarded)
 					criteria.and("discarded").is(discarded);
 
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
-				if (count > 0) {
-					response.setData(count);
-					Aggregation aggregation = null;
 
-					if (size > 0)
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-								Aggregation.skip((page) * size), Aggregation.limit(size));
-					else
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				response.setData(count);
+				Aggregation aggregation = null;
 
-					AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-							RecordsCollection.class, RecordsLookupResponse.class);
-					recordsLookupResponses = aggregationResults.getMappedResults();
-				}
+				if (size > 0)
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
+							Aggregation.unwind("patientVisit"),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+				else
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
+							Aggregation.unwind("patientVisit"),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+				AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+						RecordsCollection.class, RecordsLookupResponse.class);
+				recordsLookupResponses = aggregationResults.getMappedResults();
+
 			} else {
 				List<String> recordStates = new ArrayList<String>();
 				recordStates.add(RecordsState.APPROVAL_NOT_REQUIRED.toString());
@@ -1254,26 +1258,24 @@ public class RecordsServiceImpl implements RecordsService {
 					criteria.and("discarded").is(discarded);
 
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
-				if (count > 0) {
-					response.setData(count);
-					Aggregation aggregation = null;
+				response.setData(count);
+				Aggregation aggregation = null;
 
-					if (size > 0)
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-								Aggregation.skip((page) * size), Aggregation.limit(size));
-					else
-						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
-								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				if (size > 0)
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
+							Aggregation.unwind("patientVisit"),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+				else
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
+							Aggregation.unwind("patientVisit"),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-					AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-							RecordsCollection.class, RecordsLookupResponse.class);
-					recordsLookupResponses = aggregationResults.getMappedResults();
-				}
+				AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+						RecordsCollection.class, RecordsLookupResponse.class);
+				recordsLookupResponses = aggregationResults.getMappedResults();
 
 			}
 
@@ -1287,7 +1289,6 @@ public class RecordsServiceImpl implements RecordsService {
 					record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 					records.add(record);
 				}
-
 				response.setDataList(records);
 			}
 		} catch (Exception e) {
