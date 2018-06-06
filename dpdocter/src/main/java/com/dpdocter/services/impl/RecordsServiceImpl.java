@@ -1283,7 +1283,6 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 
 			}
-
 			if (recordsLookupResponses != null && !recordsLookupResponses.isEmpty()) {
 				records = new ArrayList<Records>();
 				for (RecordsLookupResponse recordsLookupResponse : recordsLookupResponses) {
@@ -1294,8 +1293,9 @@ public class RecordsServiceImpl implements RecordsService {
 					record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 					records.add(record);
 				}
+				response.setDataList(records);
 			}
-			response.setDataList(records);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

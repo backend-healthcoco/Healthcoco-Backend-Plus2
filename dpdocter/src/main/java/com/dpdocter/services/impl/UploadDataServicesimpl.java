@@ -1,8 +1,7 @@
 package com.dpdocter.services.impl;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +25,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
@@ -38,6 +39,8 @@ import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.Quantity;
+import com.dpdocter.beans.Reference;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.WorkingHours;
@@ -47,6 +50,7 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DeliveryReportsCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
+import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
@@ -56,6 +60,7 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugDirectionCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
+import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.IPDReportsCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.OPDReportsCollection;
@@ -64,11 +69,13 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.InvoiceItemType;
@@ -86,12 +93,14 @@ import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DeliveryReportsRepository;
 import com.dpdocter.repository.DischargeSummaryRepository;
+import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DoctorPatientDueAmountRepository;
 import com.dpdocter.repository.DoctorPatientInvoiceRepository;
 import com.dpdocter.repository.DoctorPatientLedgerRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
+import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.IPDReportsRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.OPDReportsRepository;
@@ -100,12 +109,16 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
+import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.ReportsService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.services.UploadDateService;
@@ -127,17 +140,17 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Autowired
 	private LocationRepository locationRepository;
 	
-//	@Autowired
-//	private ReferenceRepository referenceRepository;
-//
-//	@Autowired
-//	private GroupRepository groupRepository;
-//
-//	@Autowired
-//	private DiseasesRepository diseasesRepository;
-//
-//	@Autowired
-//	private RegistrationService registrationService;
+	@Autowired
+	private ReferenceRepository referenceRepository;
+
+	@Autowired
+	private GroupRepository groupRepository;
+
+	@Autowired
+	private DiseasesRepository diseasesRepository;
+
+	@Autowired
+	private RegistrationService registrationService;
 
 	@Autowired
 	private PatientVisitRepository patientVisitRepository;
@@ -147,12 +160,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 	@Autowired
 	private TransactionalManagementService transactionalManagementService;
-//
-//	@Autowired
-//	private ESRegistrationService esRegistrationService;
-//
-//	@Autowired
-//	private HistoryServices historyServices;
+
+	@Autowired
+	private ESRegistrationService esRegistrationService;
+
+	@Autowired
+	private HistoryServices historyServices;
 
 	@Autowired
 	private PatientRepository patientRepository;
@@ -223,11 +236,11 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Value(value = "${patient.count}")
 	private String patientCount;
 
-//	private static final String COMMA_DELIMITER = ",";
-//
-//	private static final String NEW_LINE_SEPARATOR = "\n";
-//
-//	private static final String FILE_HEADER = "PatientNumber,PatientName";
+	private static final String COMMA_DELIMITER = ",";
+
+	private static final String NEW_LINE_SEPARATOR = "\n";
+
+	private static final String FILE_HEADER = "PatientNumber,PatientName";
 
 	@Value(value = "${upload.patients.data.file}")
 	private String UPLOAD_PATIENTS_DATA_FILE;
@@ -240,7 +253,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 	@Value(value = "${list.patients.not.registered.file}")
 	private String LIST_PATIENTS_NOT_REGISTERED_FILE;
-
+	
 	@Value(value = "${upload.treatments.data.file}")
 	private String UPLOAD_TREATMENTS_DATA_FILE;
 
@@ -259,6 +272,30 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Value(value = "${upload.treatments.plan.data.file}")
 	private String UPLOAD_TREATMENTS_PLAN_DATA_FILE;
 
+	@Value(value = "${list.prescriptions.not.uploaded.file}")
+	private String LIST_PRESCRIPTIONS_NOT_UPLOADED_FILE;
+	
+	@Value(value = "${list.clinicalnotes.not.uploaded.file}")
+	private String LIST_CLINICAL_NOTES_NOT_UPLOADED_FILE;
+	
+	@Value(value = "${list.appointments.not.uploaded.file}")
+	private String LIST_APPOINTMENTS_NOT_UPLOADED_FILE;
+	
+	@Value(value = "${list.treatments.not.uploaded.file}")
+	private String LIST_TREATMENTS_NOT_UPLOADED_FILE;
+	
+	@Value(value = "${list.treatment.plans.not.uploaded.file}")
+	private String LIST_TREATMENT_PLANS_NOT_UPLOADED_FILE;
+	
+	@Value(value = "${list.invoices.not.uploaded.file}")
+	private String LIST_INVOICES_NOT_UPLOADED_FILE;
+	
+	@Value(value = "${list.payments.not.uploaded.file}")
+	private String LIST_PAYMENTS_NOT_UPLOADED_FILE;
+	
+	@Value(value = "${list.treatment.services.not.uploaded.file}")
+	private String LIST_TREATMENT_SERVICES_NOT_UPLOADED_FILE;
+	
 	private String patientInitial = "";
 
 	@Autowired
@@ -353,9 +390,161 @@ public class UploadDataServicesimpl implements UploadDateService {
 		Boolean response = false;
 		
 		try {
-//			CSVUtils.parseFile(UPLOAD_PATIENTS_DATA_FILE);
+			Scanner scanner = new Scanner(new File(UPLOAD_PATIENTS_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        			
+	            System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
+		
+	}
+	
+	public Boolean parseRXFile(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File(UPLOAD_PRESCRIPTIONS_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        			
+	            System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+		
+	}
+	
+	public Boolean parseClinicalNotesFile(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File(UPLOAD_CLINICAL_NOTES_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        			
+	            System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+		
+	}
+	
+	public Boolean parseAppointmentFile(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File(UPLOAD_APPOINTMENTS_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+		
+	}
+	
+	public Boolean parseTreatmentFile(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File(UPLOAD_TREATMENTS_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+		
+	}
+	
+	public Boolean parseTreatmentPlanFile(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File(UPLOAD_TREATMENTS_PLAN_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+		
+	}
+	
+	public Boolean parseInvoiceFile(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File(UPLOAD_INVOICES_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+		
+	}
+	
+	public Boolean parsePaymentsFile(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File(UPLOAD_PAYMENTS_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+		
+	}
+	
+	public Boolean parseProcedureDataFile(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		System.out.println(line.get(0) +"..."+line.get(1));
+	        }
+	        scanner.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;
@@ -364,307 +553,311 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 	@Override
 	public Boolean uploadPatientData(String doctorId, String locationId, String hospitalId) {
-		return null;
-//		Boolean response = false;
-//		FileWriter fileWriter = null;
-//		Scanner scanner = null;
-//		int lineCount = 0;
-//
-//		try {
-//			fileWriter = new FileWriter(LIST_PATIENTS_NOT_REGISTERED_FILE);
-//			fileWriter.append(FILE_HEADER.toString());
-//			fileWriter.append(NEW_LINE_SEPARATOR);
-//
-////			br = new BufferedReader(new FileReader(UPLOAD_PATIENTS_DATA_FILE));
-//
-//			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-//			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-//				doctorObjectId = new ObjectId(doctorId);
-//			if (!DPDoctorUtils.anyStringEmpty(locationId))
-//				locationObjectId = new ObjectId(locationId);
-//			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-//				hospitalObjectId = new ObjectId(hospitalId);
-//
-//			UserCollection drCollection = userRepository.findOne(doctorObjectId);
-//
-//			PatientRegistrationRequest request = null;
-//			
-//			scanner = new Scanner(new File(UPLOAD_PATIENTS_DATA_FILE));
-//			
-//			Integer pNUMIndex, patientNameIndex, mobileNumberIndex, contactNumberIndex, emailAddressIndex, alternateMobileNumberIndex,
-//					genderIndex, streetAddressIndex, localityIndex, cityIndex, pincodeIndex,
-//					nationalIdIndex, dobIndex, ageIndex, bloodGroupIndex, remarksIndex,
-//					medicalHistoryIndex, referredByIndex, groupsIndex, patientNotesIndex;
-//
-//			while (scanner.hasNext()) {
-//	            List<String> line = CSVUtils.parseLine(scanner.nextLine());
-//	            
-//	            if(lineCount == 0) {
-//	            		if(line != null && !line.isEmpty()) {
-//	            			for(int i=0; i<line.size(); i++) {
-//	            				
-//	            				String key = line.get(i).trim().replaceAll("[^a-zA-Z]", "").toUpperCase();
-//	            				
-//	            				switch (key) {
-//								case "PATIENTNUMBER": pNUMIndex = i;break;
-//								case "PATIENTNAME": patientNameIndex = i;break;
-//								case "MOBILENUMBER": mobileNumberIndex = i;break;
-//								case "CONTACTNUMBER": contactNumberIndex = i;break;
-//								case "EMAILADDRESS": emailAddressIndex = i;break;
-//								case "SECONDARYNUMBER": alternateMobileNumberIndex = i;break;
-//								case "GENDER": genderIndex = i;break;
-//								case "ADDRESS": streetAddressIndex = i;break;
-//								case "LOCALITY": localityIndex = i;break;
-//								case "CITY": cityIndex = i;break;
-//								case "PINCODE": pincodeIndex = i;break;
-//								case "DATEOFBIRTH": dobIndex = i;break;
-//								case "AGE": ageIndex = i;break;
-//								case "BLOODGROUP": bloodGroupIndex = i;break;
-//								case "MEDICALHISTORY": medicalHistoryIndex = i;break;
-//								case "REFERREDBY": referredByIndex = i;break;
-//								case "GROUPS": groupsIndex = i;break;
-//								case "PATIENTNOTES": patientNotesIndex = i;break;
-//								
-//								
-//								default:
-//									break;
-//								}
-//	            			}
-//	            		}
-//	            }else {
-//					int count = 0;
-//					request = new PatientRegistrationRequest();
-//					
-//					if (!DPDoctorUtils.anyStringEmpty(line.get(mobileNumberIndex))) {
-//						String mobileNumberValue = line.get(mobileNumberIndex).replaceAll("'", "").replaceAll("\"", "");
-//						if(!mobileNumberValue.equalsIgnoreCase("NONE")) {
-//							if (mobileNumberValue.startsWith("+91"))
-//								mobileNumberValue = mobileNumberValue.replace("+91", "");
-//							request.setMobileNumber(mobileNumberValue);
-//							
-//
-//							List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumberValue);
-//							if (userCollections != null && !userCollections.isEmpty()) {
-//								for (UserCollection userCollection : userCollections) {
-//									if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
-//										count++;
-//								}
-//							}
-//						}
-//						
-//					}
-//					
-//					if (count < Integer.parseInt(patientCount)) {
-//							if (patientNameIndex != null) {
-//								String patientName = line.get(patientNameIndex).replaceAll("'", "").replaceAll("\"", "");
-//								if(checkIfNotNullOrNone(patientName)) {
-//									request.setFirstName(patientName);
-//									request.setLocalPatientName(patientName);
-//							   }
-//							}
-//								
-//								
-//							if (genderIndex != null) {
-//								String gender = line.get(genderIndex).replaceAll("'", "").replaceAll("\"", "");
-//								if(checkIfNotNullOrNone(gender)){
-//									if(gender.equalsIgnoreCase("F"))gender="FEMALE";
-//									else if(gender.equalsIgnoreCase("M"))gender="MALE";
-//									request.setGender(gender);
-//								}
-//							}
-//
-//							if(dobIndex != null) {
-//								String dateOfBirth = line.get(dobIndex).replaceAll("'", "").replaceAll("\"", "");
-//								if (checkIfNotNullOrNone(dateOfBirth)) {
-//									String[] dob = dateOfBirth.split("-");
-//									DOB dobObject = new DOB(Integer.parseInt(dob[2]), Integer.parseInt(dob[1]), Integer.parseInt(dob[0]));
-//									request.setDob(dobObject);
-//								}
-//							}
-//
-//							if(ageIndex != null && checkIfNotNullOrNone(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", ""))) {
-//								request.setAge(Integer.parseInt(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "")));
-//							}
-//								
-//							if (emailAddressIndex != null && checkIfNotNullOrNone(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", "")))
-//								request.setEmailAddress(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", ""));
-//
-//							if (fields.length > 15 && !DPDoctorUtils.anyStringEmpty(fields[15]) && !fields[15].equalsIgnoreCase("NONE'"))
-//								request.setBloodGroup(fields[15].replace("'", ""));
-//
-//							if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NONE'"))
-//								request.setSecMobile(fields[3].replace("'", ""));
-//
-//							if (fields.length > 5 && !DPDoctorUtils.anyStringEmpty(fields[5]) && !fields[5].equalsIgnoreCase("NONE'"))
-//								request.setSecMobile(fields[5].replace("'", ""));
-//
-//							String country = null, city = null, state = null, postalCode = null, locality = null,
-//									streetAddress = null;
-//
-//							if (fields.length > 7 && !DPDoctorUtils.anyStringEmpty(fields[7]) && !fields[7].equalsIgnoreCase("NONE'"))
-//								streetAddress = fields[7].replace("'", "");
-//
-//							if (fields.length > 8 && !DPDoctorUtils.anyStringEmpty(fields[8]) && !fields[8].equalsIgnoreCase("NONE'"))
-//								locality = fields[8].replace("'", "");
-//
-//							if (fields.length > 9 && !DPDoctorUtils.anyStringEmpty(fields[9]) && !fields[9].equalsIgnoreCase("NONE'"))
-//								city = fields[9].replace("'", "");
-//
-//							// if (!DPDoctorUtils.anyStringEmpty(fields[16]) &&
-//							// !fields[16].equalsIgnoreCase("NULL"))
-//							// state = fields[16];
-//							// if (!DPDoctorUtils.anyStringEmpty(fields[17]) &&
-//							// !fields[17].equalsIgnoreCase("NULL"))
-//							country = "India";
-//
-//							if (fields.length > 10 && !DPDoctorUtils.anyStringEmpty(fields[10]) && !fields[10].equalsIgnoreCase("NONE'"))
-//								postalCode = fields[10].replace("'", "");
-//
-//							if (!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality,
-//									streetAddress)) {
-//								Address address = new Address(country, city, state, postalCode, locality, null, null,
-//										null, streetAddress);
-//								request.setAddress(address);
-//							}
-//
-//							if (fields.length > 18 && !DPDoctorUtils.anyStringEmpty(fields[18])
-//									&& !fields[18].equalsIgnoreCase("NONE'")) {
-//								String referredBy = fields[18].replace("'", "");
-//								Reference reference = new Reference();
-//								reference.setReference(referredBy);
-//
-//								ReferencesCollection referencesCollection = referenceRepository.find(referredBy,
-//										doctorObjectId, locationObjectId, hospitalObjectId);
-//								if (referencesCollection != null)
-//									reference.setId(referencesCollection.getId().toString());
-//
-//								request.setReferredBy(reference);
-//							}
-//
-//							if (fields.length > 19 && !DPDoctorUtils.anyStringEmpty(fields[19])
-//									&& !fields[19].equalsIgnoreCase("NONE'")) {
-//								String groupName = fields[19].replace("'", "");
-//								GroupCollection groupCollection = groupRepository.findByName(groupName, doctorObjectId,
-//										locationObjectId, hospitalObjectId, false);
-//								if (groupCollection == null) {
-//									groupCollection = new GroupCollection();
-//									groupCollection.setDoctorId(doctorObjectId);
-//									groupCollection.setLocationId(locationObjectId);
-//									groupCollection.setHospitalId(hospitalObjectId);
-//									groupCollection.setName(groupName);
-//									groupCollection.setCreatedTime(new Date());
-//									if (drCollection != null) {
-//										groupCollection.setCreatedBy(
-//												(drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
-//														+ drCollection.getFirstName());
-//									}
-//									groupCollection = groupRepository.save(groupCollection);
-//								}
-//								request.setGroups(Arrays.asList(groupCollection.getId().toString()));
-//							}
-//							request.setDoctorId(doctorId);
-//							request.setLocationId(locationId);
-//							request.setHospitalId(hospitalId);
-//
-//							if (!DPDoctorUtils.anyStringEmpty(fields[0])) {
-//								request.setPNUM(fields[0].replace("'", ""));
-//
-//								patientInitial = request.getPNUM().replaceAll("[0-9]", "");
-//								BufferedReader br1 = new BufferedReader(new FileReader(UPLOAD_APPOINTMENTS_DATA_FILE));
-//								String appointmentDataLine = null;
-//								while ((appointmentDataLine = br1.readLine()) != null) {
-//									String[] splittedAppointmentData = appointmentDataLine.split("\\|");
-//									if (splittedAppointmentData[1].equalsIgnoreCase(fields[0])) {
-//										SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
-//
-//										String dateSTri = splittedAppointmentData[0].replace("'", "");
-//										dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-//										Date date = dateFormat.parse(dateSTri);
-//										request.setRegistrationDate(date.getTime());
-//										br1.close();
-//										break;
-//									}
-//								}
-//							} else {
-//								request.setRegistrationDate(new Date().getTime());
-//							}
-//
-//							RegisteredPatientDetails registeredPatientDetails = registrationService
-//									.registerNewPatient(request);
-//
-//							transactionalManagementService.addResource(
-//									new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
-//							esRegistrationService
-//									.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
-//
-//							if (fields.length > 17 && !DPDoctorUtils.anyStringEmpty(fields[17]) && !fields[17].equalsIgnoreCase("NONE'")) {
-//								fields[17] = fields[17].replace("'", "");
-//								String diseases[] = fields[17].split(",");
-//								for (String disease : diseases) {
-//									DiseasesCollection diseasesCollection = diseasesRepository.find(
-//											disease.replace("?", "\\\\?"), doctorObjectId, locationObjectId,
-//											hospitalObjectId, false);
-//									if (diseasesCollection == null) {
-//										diseasesCollection = new DiseasesCollection();
-//										diseasesCollection.setCreatedTime(new Date());
-//										diseasesCollection.setDoctorId(doctorObjectId);
-//										diseasesCollection.setLocationId(locationObjectId);
-//										diseasesCollection.setHospitalId(hospitalObjectId);
-//										diseasesCollection.setDisease(disease);
-//
-//										if (drCollection != null) {
-//											diseasesCollection.setCreatedBy(
-//													(drCollection.getTitle() != null ? drCollection.getTitle() + " "
-//															: "") + drCollection.getFirstName());
-//										}
-//										diseasesCollection = diseasesRepository.save(diseasesCollection);
-//									}
-//									historyServices.assignMedicalHistory(diseasesCollection.getId().toString(),
-//											registeredPatientDetails.getUserId(), doctorId, hospitalId, locationId);
-//								}
-//								System.out.println(patientCount + registeredPatientDetails.getMobileNumber());
-//							}
-//							
-//						} else {
-//							System.out.println(patientCount + " patients already exist with mobile number "
-//									+ request.getMobileNumber());
-//						}
-//				}
-//				lineCount++;
-//				response = true;
-//			}
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (br != null) {
-//				try {
-//					br.close();
-//					if (fileWriter != null) {
-//						fileWriter.flush();
-//						fileWriter.close();
-//					}
-//
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//		return response;
+		Boolean response = false;
+		FileWriter fileWriter = null;
+		Scanner scanner = null;
+		int lineCount = 0;
+		String csvLine = null;
+		try {
+			fileWriter = new FileWriter(LIST_PATIENTS_NOT_REGISTERED_FILE);
+			fileWriter.append(FILE_HEADER.toString());
+			fileWriter.append(NEW_LINE_SEPARATOR);
+
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+
+			PatientRegistrationRequest request = null;
+			
+			scanner = new Scanner(new File(UPLOAD_PATIENTS_DATA_FILE));
+			
+			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
+					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
+					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
+					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
+
+			while (scanner.hasNext()) {
+				csvLine = scanner.nextLine();
+	            List<String> line = CSVUtils.parseLine(csvLine);
+	            
+	            if(lineCount == 0) {
+	            		if(line != null && !line.isEmpty()) {
+	            			for(int i=0; i<line.size(); i++) {
+	            				
+	            				String key = line.get(i).trim().replaceAll("[^a-zA-Z]", "").toUpperCase();
+	            				
+	            				switch (key) {
+								case "PATIENTNUMBER": pNUMIndex = i;break;
+								case "PATIENTNAME": patientNameIndex = i;break;
+								case "MOBILENUMBER": mobileNumberIndex = i;break;
+								case "CONTACTNUMBER": contactNumberIndex = i;break;
+								case "EMAILADDRESS": emailAddressIndex = i;break;
+								case "SECONDARYNUMBER": alternateMobileNumberIndex = i;break;
+								case "GENDER": genderIndex = i;break;
+								case "ADDRESS": streetAddressIndex = i;break;
+								case "LOCALITY": localityIndex = i;break;
+								case "CITY": cityIndex = i;break;
+								case "PINCODE": pincodeIndex = i;break;
+								case "DATEOFBIRTH": dobIndex = i;break;
+								case "AGE": ageIndex = i;break;
+								case "BLOODGROUP": bloodGroupIndex = i;break;
+								case "MEDICALHISTORY": medicalHistoryIndex = i;break;
+								case "REFERREDBY": referredByIndex = i;break;
+								case "GROUPS": groupsIndex = i;break;
+								case "PATIENTNOTES": patientNotesIndex = i;break;
+								
+								
+								default:
+									break;
+								}
+	            			}
+	            		}
+	            }else {
+					int count = 0;
+					request = new PatientRegistrationRequest();
+					
+					if (!DPDoctorUtils.anyStringEmpty(line.get(mobileNumberIndex))) {
+						String mobileNumberValue = line.get(mobileNumberIndex).replaceAll("'", "").replaceAll("\"", "");
+						if(!mobileNumberValue.equalsIgnoreCase("NONE")) {
+							if (mobileNumberValue.startsWith("+91"))
+								mobileNumberValue = mobileNumberValue.replace("+91", "");
+							request.setMobileNumber(mobileNumberValue);
+							
+
+							List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumberValue);
+							if (userCollections != null && !userCollections.isEmpty()) {
+								for (UserCollection userCollection : userCollections) {
+									if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
+										count++;
+								}
+							}
+						}
+						
+					}
+					
+					if (count < Integer.parseInt(patientCount)) {
+							if (patientNameIndex != null) {
+								String patientName = line.get(patientNameIndex).replaceAll("'", "").replaceAll("\"", "");
+								if(checkIfNotNullOrNone(patientName)) {
+									request.setFirstName(patientName);
+									request.setLocalPatientName(patientName);
+							   }
+							}
+								
+								
+							if (genderIndex != null) {
+								String gender = line.get(genderIndex).replaceAll("'", "").replaceAll("\"", "");
+								if(checkIfNotNullOrNone(gender)){
+									if(gender.equalsIgnoreCase("F"))gender="FEMALE";
+									else if(gender.equalsIgnoreCase("M"))gender="MALE";
+									request.setGender(gender);
+								}
+							}
+
+							if(dobIndex != null) {
+								String dateOfBirth = line.get(dobIndex).replaceAll("'", "").replaceAll("\"", "");
+								if (checkIfNotNullOrNone(dateOfBirth)) {
+									String[] dob = dateOfBirth.split("-");
+									
+									DOB dobObject = new DOB(Integer.parseInt(dob[2]), Integer.parseInt(dob[1]), Integer.parseInt(dob[0]));
+									request.setDob(dobObject);
+								}
+							}
+
+							if(ageIndex != null && checkIfNotNullOrNone(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+								request.setAge(Integer.parseInt(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "")));
+							}
+								
+							if (emailAddressIndex != null && checkIfNotNullOrNone(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", "")))
+								request.setEmailAddress(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", ""));
+
+							if (bloodGroupIndex != null && checkIfNotNullOrNone(line.get(bloodGroupIndex).replaceAll("'", "").replaceAll("\"", "")))
+								request.setBloodGroup(line.get(bloodGroupIndex).replaceAll("'", ""));
+
+							if (alternateMobileNumberIndex != null && checkIfNotNullOrNone(line.get(alternateMobileNumberIndex).replaceAll("'", "").replaceAll("\"", "")))
+								request.setSecMobile(line.get(alternateMobileNumberIndex).replaceAll("'", ""));
+							
+							if (request.getSecMobile() == null && contactNumberIndex != null && checkIfNotNullOrNone(line.get(contactNumberIndex).replaceAll("'", "").replaceAll("\"", "")))
+								request.setSecMobile(line.get(contactNumberIndex).replaceAll("'", ""));
+							
+							
+							String country = null, city = null, state = null, postalCode = null, locality = null,
+									streetAddress = null;
+
+							if (streetAddressIndex != null && checkIfNotNullOrNone(line.get(streetAddressIndex).replaceAll("'", "").replaceAll("\"", "")))
+								streetAddress = line.get(streetAddressIndex).replaceAll("'", "");
+							
+							if (localityIndex != null && checkIfNotNullOrNone(line.get(localityIndex).replaceAll("'", "").replaceAll("\"", "")))
+								locality = line.get(localityIndex).replaceAll("'", "");
+							
+							if (cityIndex != null && checkIfNotNullOrNone(line.get(cityIndex).replaceAll("'", "").replaceAll("\"", "")))
+								city = line.get(cityIndex).replaceAll("'", "");
+							
+							country = "India";
+
+							if (pincodeIndex != null && checkIfNotNullOrNone(line.get(pincodeIndex).replaceAll("'", "").replaceAll("\"", "")))
+								postalCode = line.get(pincodeIndex).replaceAll("'", "");
+
+							if (!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality,
+									streetAddress)) {
+								Address address = new Address(country, city, state, postalCode, locality, null, null,
+										null, streetAddress);
+								request.setAddress(address);
+							}
+
+							if (referredByIndex != null && checkIfNotNullOrNone(line.get(referredByIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+								String referredBy = line.get(referredByIndex).replaceAll("'", "");
+								Reference reference = new Reference();
+								reference.setReference(referredBy);
+
+								ReferencesCollection referencesCollection = referenceRepository.find(referredBy,
+										doctorObjectId, locationObjectId, hospitalObjectId);
+								if (referencesCollection != null)
+									reference.setId(referencesCollection.getId().toString());
+
+								request.setReferredBy(reference);
+							}
+
+							if (groupsIndex != null && checkIfNotNullOrNone(line.get(groupsIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+								String groupName = line.get(groupsIndex).replaceAll("'", "");
+								GroupCollection groupCollection = groupRepository.findByName(groupName, doctorObjectId,
+										locationObjectId, hospitalObjectId, false);
+								if (groupCollection == null) {
+									groupCollection = new GroupCollection();
+									groupCollection.setDoctorId(doctorObjectId);
+									groupCollection.setLocationId(locationObjectId);
+									groupCollection.setHospitalId(hospitalObjectId);
+									groupCollection.setName(groupName);
+									groupCollection.setCreatedTime(new Date());
+									if (drCollection != null) {
+										groupCollection.setCreatedBy(
+												(drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
+														+ drCollection.getFirstName());
+									}
+									groupCollection = groupRepository.save(groupCollection);
+								}
+								if(groupCollection != null && groupCollection.getId() != null)request.setGroups(Arrays.asList(groupCollection.getId().toString()));
+							}
+							request.setDoctorId(doctorId);
+							request.setLocationId(locationId);
+							request.setHospitalId(hospitalId);
+
+							if (pNUMIndex != null && checkIfNotNullOrNone(line.get(pNUMIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+								request.setPNUM(line.get(pNUMIndex).replaceAll("'", ""));
+
+								patientInitial = request.getPNUM().replaceAll("[0-9]", "");
+								
+								Scanner scannerForApp = new Scanner(new File(UPLOAD_APPOINTMENTS_DATA_FILE));
+						        while (scannerForApp.hasNext()) {
+						        		List<String> appLine = CSVUtils.parseLine(scannerForApp.nextLine());
+						        		if (appLine.get(1).equalsIgnoreCase(line.get(pNUMIndex))) {
+											SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+
+											String dateSTri = appLine.get(0).replace("\"", "");
+											dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+											Date date = dateFormat.parse(dateSTri);
+											request.setRegistrationDate(date.getTime());
+											scannerForApp.close();
+											break;
+										}
+				       		        }
+							} else {
+								request.setRegistrationDate(new Date().getTime());
+							}
+							
+							List<String> notes = request.getNotes();
+							if(remarksIndex != null && checkIfNotNullOrNone(line.get(remarksIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+								if(notes == null)notes = new ArrayList<String>();
+								notes.add(line.get(remarksIndex).replaceAll("'", ""));
+							}
+							
+							if(patientNotesIndex != null && checkIfNotNullOrNone(line.get(patientNotesIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+								if(notes == null)notes = new ArrayList<String>();
+								notes.add(line.get(patientNotesIndex).replaceAll("'", ""));
+							}
+							request.setNotes(notes);
+							RegisteredPatientDetails registeredPatientDetails = registrationService
+									.registerNewPatient(request);
+
+							transactionalManagementService.addResource(
+									new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
+							esRegistrationService
+									.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
+
+							if (medicalHistoryIndex != null && checkIfNotNullOrNone(line.get(medicalHistoryIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+								String diseases[] = line.get(medicalHistoryIndex).replaceAll("'", "").split(",");
+								for (String disease : diseases) {
+									DiseasesCollection diseasesCollection = diseasesRepository.find(
+											disease.replace("?", "\\\\?"), doctorObjectId, locationObjectId,
+											hospitalObjectId, false);
+									if (diseasesCollection == null) {
+										diseasesCollection = new DiseasesCollection();
+										diseasesCollection.setCreatedTime(new Date());
+										diseasesCollection.setDoctorId(doctorObjectId);
+										diseasesCollection.setLocationId(locationObjectId);
+										diseasesCollection.setHospitalId(hospitalObjectId);
+										diseasesCollection.setDisease(disease);
+
+										if (drCollection != null) {
+											diseasesCollection.setCreatedBy(
+													(drCollection.getTitle() != null ? drCollection.getTitle() + " "
+															: "") + drCollection.getFirstName());
+										}
+										diseasesCollection = diseasesRepository.save(diseasesCollection);
+									}
+									historyServices.assignMedicalHistory(diseasesCollection.getId().toString(),
+											registeredPatientDetails.getUserId(), doctorId, hospitalId, locationId);
+								}
+							}
+							System.out.println(line.get(mobileNumberIndex));
+							response = true;
+						} else {
+							System.out.println(patientCount + " patients already exist with mobile number "
+									+ request.getMobileNumber());
+							fileWriter.append(csvLine);fileWriter.append(NEW_LINE_SEPARATOR);
+						}
+				}
+				lineCount++;
+			}
+
+		} catch (Exception e) {
+			response = false;
+			e.printStackTrace();
+		} finally {
+			if (scanner != null) {
+				try {
+					scanner.close();
+					if (fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
 	}
 
 	@Override
 	public Boolean uploadPrescriptionData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "\\|";
+		Scanner scanner = null;
 		int lineCount = 0;
+		String csvLine = null;
 		int dataCountNotUploaded = 0;
+		FileWriter fileWriter = null;
 		try {
-
-			br = new BufferedReader(new FileReader(UPLOAD_PRESCRIPTIONS_DATA_FILE));
-
+			
+			fileWriter = new FileWriter(LIST_PRESCRIPTIONS_NOT_UPLOADED_FILE);
+			
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
@@ -706,21 +899,30 @@ public class UploadDataServicesimpl implements UploadDateService {
 							Aggregation.match(new Criteria("direction").is("After meal").and("doctorId").is(null))),
 					DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
 
-			while ((line = br.readLine()) != null) {
+			scanner = new Scanner(new File(UPLOAD_PRESCRIPTIONS_DATA_FILE));
+			
+//			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
+//					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
+//					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
+//					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
 
+			while (scanner.hasNext()) {
+				csvLine = scanner.nextLine();
+	            List<String> line = CSVUtils.parseLine(csvLine);
+			
 				if (lineCount > 0) {
 					Boolean createVisit = false;
-					String[] fields = line.split(cvsSplitBy);
-					if (!DPDoctorUtils.anyStringEmpty(fields[2], fields[3])) {
+			
+					if (!DPDoctorUtils.anyStringEmpty(line.get(2), line.get(3))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-								locationObjectId, hospitalObjectId, fields[2].replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(2).replace("'", ""));
 						if (patientCollection != null) {
 
 							Date createdTime = new Date();
-							if (!DPDoctorUtils.anyStringEmpty(fields[0])) {
-								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
+							if (!DPDoctorUtils.anyStringEmpty(line.get(0))) {
+								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
 
-								String dateSTri = fields[0].replace("'", "")+ " 13:00:00";
+								String dateSTri = line.get(0).replace("'", "")+ " 13:00:00";
 								System.out.println(dateSTri);
 								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 								createdTime = dateFormat.parse(dateSTri);
@@ -750,14 +952,14 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							List<PrescriptionItem> items = prescriptionCollection.getItems();
 
-							String drugName = fields[3].replace("'", "")
-									+ ((checkIfNotNullOrNone(fields[5]) && !DPDoctorUtils.anyStringEmpty(fields[5]))
-											? " " + fields[5].replace("'", "") : "")
-									+ ((checkIfNotNullOrNone(fields[5]) && checkIfNotNullOrNone(fields[6])
-											&& !DPDoctorUtils.anyStringEmpty(fields[6]))
-													? " " + fields[6].replace("'", "") : "");
+							String drugName = line.get(3).replace("'", "")
+									+ ((checkIfNotNullOrNone(line.get(5)) && !DPDoctorUtils.anyStringEmpty(line.get(5)))
+											? " " + line.get(5).replace("'", "") : "")
+									+ ((checkIfNotNullOrNone(line.get(5)) && checkIfNotNullOrNone(line.get(6))
+											&& !DPDoctorUtils.anyStringEmpty(line.get(6)))
+													? " " + line.get(6).replace("'", "") : "");
 
-							String drugType = (!DPDoctorUtils.anyStringEmpty(fields[4])) ? fields[4].replace("'", "")
+							String drugType = (!DPDoctorUtils.anyStringEmpty(line.get(4))) ? line.get(4).replace("'", "")
 									: null;
 							// DrugType
 							DrugType drugTypeObj = null;
@@ -852,11 +1054,11 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							// DrugDirection
 							List<DrugDirection> drugDirections = null;
-							if (fields.length > 7 && checkIfNotNullOrNone(fields[7]) && fields[7].contains("1")) {
+							if (checkIfNotNullOrNone(line.get(7)) && line.get(7).contains("1")) {
 								drugDirections = new ArrayList<DrugDirection>();
 								drugDirections.add(beforeMealDirection);
 							}
-							if (fields.length > 8 && checkIfNotNullOrNone(fields[8]) && fields[8].contains("1")) {
+							if (checkIfNotNullOrNone(line.get(8)) && line.get(8).contains("1")) {
 								if (drugDirections == null)
 									drugDirections = new ArrayList<DrugDirection>();
 								drugDirections.add(afterMealDirection);
@@ -865,10 +1067,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							// DrugDuration13 14 
 							Duration duration = null;
-							if (fields.length > 13 && checkIfNotNullOrNone(fields[13]) && checkIfNotNullOrNone(fields[14])){
+							if (checkIfNotNullOrNone(line.get(13)) && checkIfNotNullOrNone(line.get(14))){
 								duration = new Duration();
-								duration.setValue(checkIfNotNullOrNone(fields[13]) ? fields[13].replace("'", "") : "");
-								duration.setDurationUnit(drugDurationMap.get(fields[14].replace("'", "")));
+								duration.setValue(checkIfNotNullOrNone(line.get(13)) ? line.get(13).replace("'", "") : "");
+								duration.setDurationUnit(drugDurationMap.get(line.get(14).replace("'", "")));
 								drugAddEditRequest.setDuration(duration);
 							}
 							
@@ -876,7 +1078,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							// DrugDosage
 
 							// Instructions12
-							String instruction = (fields.length > 12) ? fields[12].replace("'", "") : null;
+							String instruction = (!DPDoctorUtils.anyStringEmpty(line.get(12))) ? line.get(12).replace("'", "") : null;
 
 							Drug drug = prescriptionServices.addFavouriteDrug(drugAddEditRequest, drugCollection,
 									prescriptionCollection.getCreatedBy());
@@ -911,6 +1113,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							}
 						} else {
 							dataCountNotUploaded++;
+							fileWriter.append(csvLine);fileWriter.append(NEW_LINE_SEPARATOR);
 						}
 					}
 				}
@@ -921,9 +1124,14 @@ public class UploadDataServicesimpl implements UploadDateService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (br != null) {
+			if (scanner != null) {
 				try {
-					br.close();
+					scanner.close();
+					if (fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -935,16 +1143,17 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Override
 	public Boolean uploadAppointmentData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "\\|";
-		int dataCountNotUploaded = 0;
-		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		Scanner scanner = null;
 		int lineCount = 0;
+		String csvLine = null;
+		int dataCountNotUploaded = 0;
+		FileWriter fileWriter = null;
+		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		
 		try {
-
-			br = new BufferedReader(new FileReader(UPLOAD_APPOINTMENTS_DATA_FILE));
-
+			
+			fileWriter = new FileWriter(LIST_APPOINTMENTS_NOT_UPLOADED_FILE);
+		
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
@@ -968,17 +1177,24 @@ public class UploadDataServicesimpl implements UploadDateService {
 			}
 			AppointmentCollection appointmentCollection = null;
 
-			while ((line = br.readLine()) != null) {
+			scanner = new Scanner(new File(UPLOAD_APPOINTMENTS_DATA_FILE));
+						
+			//			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
+			//					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
+			//					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
+			//					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
 
+			while (scanner.hasNext()) {
+				csvLine = scanner.nextLine();
+	            List<String> line = CSVUtils.parseLine(csvLine);
 				if (lineCount > 0) {
-					String[] fields = line.split(cvsSplitBy);
-					if (!DPDoctorUtils.anyStringEmpty(fields[0], fields[1])) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(0), line.get(1))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
-							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
-							String dateSTri = fields[0].replace("'", "");
+							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+							String dateSTri = line.get(0).replace("'", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 
@@ -986,7 +1202,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							c.setTimeZone(TimeZone.getTimeZone("IST"));
 							c.setTime(fromDate);
 							int hour = c.get(Calendar.HOUR_OF_DAY);
-							int fromTime = hour * 60 + c.get(Calendar.MINUTE);
+							int fromTime = (hour * 60) + c.get(Calendar.MINUTE);
 
 							WorkingHours workingHours = new WorkingHours();
 							workingHours.setFromTime(fromTime);
@@ -1001,21 +1217,21 @@ public class UploadDataServicesimpl implements UploadDateService {
 							appointmentCollection.setAppointmentId(
 									UniqueIdInitial.APPOINTMENT.getInitial() + DPDoctorUtils.generateRandomId());
 
-							if (fields.length > 5 && checkIfNotNullOrNone(fields[5])) {
-								String state = fields[5].replace("'", "");
+							if (checkIfNotNullOrNone(line.get(5))) {
+								String state = line.get(5).replace("'", "");
 								if (state.equalsIgnoreCase("CANCEL") || state.equalsIgnoreCase("CANCELLED"))
 									appointmentCollection.setState(AppointmentState.CANCEL);
 								else
 									appointmentCollection.setState(AppointmentState.CONFIRM);
 							}
-							if(fields.length > 3 && checkIfNotNullOrNone(fields[3]))
-								appointmentCollection.setExplanation(fields[3].replace("'", ""));
+							if(checkIfNotNullOrNone(line.get(3)))
+								appointmentCollection.setExplanation(line.get(3).replace("'", ""));
 
 							appointmentCollection.setLocationId(locationObjectId);
 							appointmentCollection.setHospitalId(hospitalObjectId);
 							appointmentCollection.setPatientId(patientCollection.getUserId());
 
-							String drName = fields[4].replace("'", "").replace("Dr. ", "").replace("Dr ", "").replace("Dr.", "").replace("Dr", "");
+							String drName = line.get(4).replace("'", "").replace("Dr. ", "").replace("Dr ", "").replace("Dr.", "").replace("Dr", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -1038,10 +1254,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 								}
 							}
 							if (userCollection != null) {
-								appointmentCollection
-										.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+								appointmentCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 								appointmentCollection.setDoctorId(userCollection.getId());
 
+								
 								AppointmentCollection appointmentToCheck = appointmentRepository.find(appointmentCollection.getDoctorId(), locationObjectId, hospitalObjectId, 
 																	appointmentCollection.getPatientId(), appointmentCollection.getTime().getFromTime(), appointmentCollection.getTime().getToTime(),
 																	appointmentCollection.getFromDate(), appointmentCollection.getToDate());
@@ -1056,27 +1272,38 @@ public class UploadDataServicesimpl implements UploadDateService {
 									bookedSlotCollection.setId(null);
 									appointmentBookedSlotRepository.save(bookedSlotCollection);
 									
-									System.out.println(fields[0] +"..." +fields[1]+"..." +appointmentCollection.getCreatedBy());
+									System.out.println(line.get(0) +"..." +line.get(1)+"..." +appointmentCollection.getCreatedBy());
+									response = true;
 								}else {
-									System.out.println("Already present:" +fields[0] +"..." +fields[1]+"..." +appointmentCollection.getCreatedBy());
+									System.out.println("Already present:" +line.get(0) +"..." +line.get(1)+"..." +appointmentCollection.getCreatedBy());
 								}
 								
-							} else
+							} else {
 								dataCountNotUploaded++;
-						} else
+								fileWriter.append("Doctor not Found : "+csvLine);
+								fileWriter.append(NEW_LINE_SEPARATOR);
+							}
+						} else {
 							dataCountNotUploaded++;
+							fileWriter.append("Patient not Found : "+csvLine);
+							fileWriter.append(NEW_LINE_SEPARATOR);
+						}
 					}
 				}
 				lineCount++;
-				response = true;
 			}
 			System.out.println("Appointments Done. dataCountNotUploaded: " + dataCountNotUploaded);
 		} catch (Exception e) {
+			response = false;
 			e.printStackTrace();
 		} finally {
-			if (br != null) {
+			if (scanner != null) {
 				try {
-					br.close();
+					scanner.close();
+					if (fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -1096,16 +1323,17 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Override
 	public Boolean uploadTreatmentPlansData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "\\|";
-		int dataCountNotUploaded = 0;
-		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		Scanner scanner = null;
 		int lineCount = 0;
+		String csvLine = null;
+		int dataCountNotUploaded = 0;
+		FileWriter fileWriter = null;
+		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		
 		try {
-
-			br = new BufferedReader(new FileReader(UPLOAD_TREATMENTS_PLAN_DATA_FILE));
-
+			
+			fileWriter = new FileWriter(LIST_TREATMENT_PLANS_NOT_UPLOADED_FILE);
+			
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
@@ -1128,22 +1356,30 @@ public class UploadDataServicesimpl implements UploadDateService {
 			}
 			PatientTreatmentCollection patientTreatmentCollection = null;
 
-			while ((line = br.readLine()) != null) {
+			scanner = new Scanner(new File(UPLOAD_TREATMENTS_PLAN_DATA_FILE));
+			
+			//			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
+			//					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
+			//					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
+			//					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
+
+			while (scanner.hasNext()) {
+				csvLine = scanner.nextLine();
+	            List<String> line = CSVUtils.parseLine(csvLine);
 
 				if (lineCount > 0) {
-					String[] fields = line.split(cvsSplitBy);
 					Boolean createVisit = false;
-					if (!DPDoctorUtils.anyStringEmpty(fields[0], fields[1])) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(0), line.get(1))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
-							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
-							String dateSTri = fields[0].replace("'", "") + " 13:00:00";
+							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+							String dateSTri = line.get(0).replace("'", "") + " 13:00:00";
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 
-							String drName = fields[3].replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							String drName = line.get(3).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -1198,7 +1434,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								}
 								List<Treatment> treatments = patientTreatmentCollection.getTreatments();
 
-								String treatmentName = fields[4].replace("'", "");
+								String treatmentName = line.get(4).replace("'", "");
 								List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository
 										.findByNameAndDoctorLocationHospital(treatmentName, doctorObjectId,
 												locationObjectId, hospitalObjectId);
@@ -1212,8 +1448,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 									treatmentService.setName(treatmentName);
 								}
 
-								if (checkIfNotNullOrNone(fields[5]))
-									treatmentService.setCost(Double.parseDouble(fields[5].replace("'", "")));
+								if (checkIfNotNullOrNone(line.get(5)))
+									treatmentService.setCost(Double.parseDouble(line.get(5).replace("'", "")));
 
 								treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
 								treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
@@ -1225,25 +1461,25 @@ public class UploadDataServicesimpl implements UploadDateService {
 								BeanUtil.map(treatmentService, treatment);
 								treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
 
-								if (checkIfNotNullOrNone(fields[6])) {
+								if (checkIfNotNullOrNone(line.get(6))) {
 									Quantity quantity = new Quantity();
 									quantity.setType(QuantityEnum.QTY);
-									quantity.setValue(Integer.parseInt(fields[6].replace("'", "")));
+									quantity.setValue(Integer.parseInt(line.get(6).replace("'", "")));
 									treatment.setQuantity(quantity);
 								}
 
 								treatment.setFinalCost(treatment.getCost());
 
-								if (checkIfNotNullOrNone(fields[7])) {
+								if (checkIfNotNullOrNone(line.get(7))) {
 									Discount discount = new Discount();
-									if (!checkIfNotNullOrNone(fields[8])) {
+									if (!checkIfNotNullOrNone(line.get(8))) {
 										discount.setUnit(UnitType.INR);
-									} else if ((fields[8].replace("'", "")).equalsIgnoreCase("NUMBER")) {
+									} else if ((line.get(8).replace("'", "")).equalsIgnoreCase("NUMBER")) {
 										discount.setUnit(UnitType.INR);
 									} else {
-										discount.setUnit(UnitType.valueOf(fields[8].replace("'", "")));
+										discount.setUnit(UnitType.valueOf(line.get(8).replace("'", "")));
 									}
-									discount.setValue(Double.parseDouble(fields[7].replace("'", "")));
+									discount.setValue(Double.parseDouble(line.get(7).replace("'", "")));
 									treatment.setDiscount(discount);
 
 									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
@@ -1266,11 +1502,11 @@ public class UploadDataServicesimpl implements UploadDateService {
 									}
 								}
 
-								if (checkIfNotNullOrNone(fields[9]))
-									treatment.setFinalCost(Double.parseDouble(fields[9].replace("'", "")));
+								if (checkIfNotNullOrNone(line.get(9)))
+									treatment.setFinalCost(Double.parseDouble(line.get(9).replace("'", "")));
 
-								if (fields.length > 10 && checkIfNotNullOrNone(fields[10]))
-									treatment.setNote(fields[10].replace("'", ""));
+								if (checkIfNotNullOrNone(line.get(10)))
+									treatment.setNote(line.get(10).replace("'", ""));
 
 								if (treatments == null)
 									treatments = new ArrayList<Treatment>();
@@ -1282,7 +1518,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								patientTreatmentCollection.setGrandTotal(grandTotal + treatment.getFinalCost());
 								patientTreatmentCollection.setTotalDiscount(totalDiscount);
 
-								System.out.println(fields[0]+".."+fields[1]);
+								System.out.println(line.get(0)+".."+line.get(1));
 								patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
 								if (createVisit)
@@ -1292,11 +1528,17 @@ public class UploadDataServicesimpl implements UploadDateService {
 											patientTreatmentCollection.getLocationId(),
 											patientTreatmentCollection.getHospitalId(),
 											patientTreatmentCollection.getId());
-							} else
+							} else {
 								dataCountNotUploaded++;
+								fileWriter.append("Doctor Not found:"+csvLine);
+								fileWriter.append(NEW_LINE_SEPARATOR);
+							}
 
-						} else
+						} else {
 							dataCountNotUploaded++;
+							fileWriter.append("Patient Not found:"+csvLine);
+							fileWriter.append(NEW_LINE_SEPARATOR);
+						}
 					}
 				}
 				lineCount++;
@@ -1306,9 +1548,13 @@ public class UploadDataServicesimpl implements UploadDateService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (br != null) {
+			if (scanner != null) {
 				try {
-					br.close();
+					scanner.close();
+					if (fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -1320,15 +1566,16 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Override
 	public Boolean uploadTreatmentData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "\\|";
-		int dataCountNotUploaded = 0;
-		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		Scanner scanner = null;
 		int lineCount = 0;
+		String csvLine = null;
+		int dataCountNotUploaded = 0;
+		FileWriter fileWriter = null;
+		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		
 		try {
-
-			br = new BufferedReader(new FileReader(UPLOAD_TREATMENTS_DATA_FILE));
+			
+			fileWriter = new FileWriter(LIST_TREATMENTS_NOT_UPLOADED_FILE);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -1340,6 +1587,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 			UserCollection drCollection = userRepository.findOne(doctorObjectId);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
+			
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
@@ -1352,22 +1600,29 @@ public class UploadDataServicesimpl implements UploadDateService {
 			}
 			PatientTreatmentCollection patientTreatmentCollection = null;
 
-			while ((line = br.readLine()) != null) {
+			scanner = new Scanner(new File(UPLOAD_TREATMENTS_DATA_FILE));
+			
+			//			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
+			//					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
+			//					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
+			//					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
 
+			while (scanner.hasNext()) {
+				csvLine = scanner.nextLine();
+	            List<String> line = CSVUtils.parseLine(csvLine);
 				if (lineCount > 0) {
-					String[] fields = line.split(cvsSplitBy);
 					Boolean createVisit = false;
-					if (!DPDoctorUtils.anyStringEmpty(fields[0], fields[1])) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(0), line.get(1))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
-							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
-							String dateSTri = fields[0].replace("'", "") + " 13:00:00";
+							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+							String dateSTri = line.get(0).replace("'", "") + " 13:00:00";
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 
-							String drName = fields[9].replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							String drName = line.get(9).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -1392,10 +1647,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 							
 							if(userCollection != null) {
 									
-								Boolean addTreatment = true;
-								String treatmentName = fields[3].replace("'", "");
-								if(addTreatment) {
-									patientTreatmentCollection = patientTreamentRepository.find(userCollection.getId(),
+								String treatmentName = line.get(3).replace("'", "");
+								patientTreatmentCollection = patientTreamentRepository.find(userCollection.getId(),
 											locationObjectId, hospitalObjectId, patientCollection.getUserId(), fromDate);
 
 									Discount totalDiscount = null;
@@ -1439,8 +1692,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 										treatmentService.setName(treatmentName);
 									}
 
-									if (checkIfNotNullOrNone(fields[6]))
-										treatmentService.setCost(Double.parseDouble(fields[6].replace("'", "")));
+									if (checkIfNotNullOrNone(line.get(6)))
+										treatmentService.setCost(Double.parseDouble(line.get(6).replace("'", "")));
 
 									treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
 									treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
@@ -1451,29 +1704,29 @@ public class UploadDataServicesimpl implements UploadDateService {
 									Treatment treatment = new Treatment();
 									BeanUtil.map(treatmentService, treatment);
 									treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
-									if(checkIfNotNullOrNone(fields[4])) {
+									if(checkIfNotNullOrNone(line.get(4))) {
 										List<Fields> treatmentFieldList = new ArrayList<>();
 										Fields treatmentFields = new Fields();
-										treatmentFields.setKey("toothNumber");treatmentFields.setValue(fields[4].replace("'", ""));
+										treatmentFields.setKey("toothNumber");treatmentFields.setValue(line.get(4).replace("'", ""));
 										treatmentFieldList.add(treatmentFields);
 										treatment.setTreatmentFields(treatmentFieldList);
 									}
 
-									if (checkIfNotNullOrNone(fields[5]))
-										treatment.setNote(fields[5].replace("'", ""));
+									if (checkIfNotNullOrNone(line.get(5)))
+										treatment.setNote(line.get(5).replace("'", ""));
 
 									treatment.setFinalCost(treatment.getCost());
 
-									if (checkIfNotNullOrNone(fields[7])) {
+									if (checkIfNotNullOrNone(line.get(7))) {
 										Discount discount = new Discount();
-										if (!checkIfNotNullOrNone(fields[8])) {
+										if (!checkIfNotNullOrNone(line.get(8))) {
 											discount.setUnit(UnitType.INR);
-										} else if ((fields[8].replace("'", "")).equalsIgnoreCase("NUMBER")) {
+										} else if ((line.get(8).replace("'", "")).equalsIgnoreCase("NUMBER")) {
 											discount.setUnit(UnitType.INR);
 										} else {
-											discount.setUnit(UnitType.valueOf(fields[8].replace("'", "")));
+											discount.setUnit(UnitType.valueOf(line.get(8).replace("'", "")));
 										}
-										discount.setValue(Double.parseDouble(fields[7].replace("'", "")));
+										discount.setValue(Double.parseDouble(line.get(7).replace("'", "")));
 										treatment.setDiscount(discount);
 
 										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
@@ -1505,7 +1758,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 									patientTreatmentCollection.setGrandTotal(grandTotal + treatment.getFinalCost());
 									patientTreatmentCollection.setTotalDiscount(totalDiscount);
 
-									System.out.println(fields[0]+".."+fields[1]);
+									System.out.println(line.get(0)+".."+line.get(1));
 									patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 									if (createVisit)
 										addRecord(patientTreatmentCollection, VisitedFor.TREATMENT, null,
@@ -1513,10 +1766,15 @@ public class UploadDataServicesimpl implements UploadDateService {
 												patientTreatmentCollection.getDoctorId(),
 												patientTreatmentCollection.getLocationId(),
 												patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getId());
-								}
+							}else {
+								dataCountNotUploaded++;
+								fileWriter.append("Doctor Not found:"+csvLine);
+								fileWriter.append(NEW_LINE_SEPARATOR);
 							}
 						} else {
 							dataCountNotUploaded++;
+							fileWriter.append("Patient Not found:"+csvLine);
+							fileWriter.append(NEW_LINE_SEPARATOR);
 						}
 					}
 				}
@@ -1527,9 +1785,13 @@ public class UploadDataServicesimpl implements UploadDateService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (br != null) {
+			if (scanner != null) {
 				try {
-					br.close();
+					scanner.close();
+					if (fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -1723,6 +1985,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 		return true;
 	}
 
+	
 	@Override
 	public Boolean uploadTreatmentServicesData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
@@ -1745,7 +2008,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 			Scanner scanner = new Scanner(new File(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
 	        while (scanner.hasNext()) {
-	            List<String> line = CSVUtils.parseLine(scanner.nextLine(), '|', "'".toCharArray()[0]);
+	            List<String> line = CSVUtils.parseLine(scanner.nextLine());
 	            
 	            if (lineCount > 0) {
 					treatmentServicesCollections = treatmentServicesRepository.findByNameAndLocationHospital(line.get(0), locationObjectId, hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
@@ -1753,7 +2016,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 						TreatmentServicesCollection servicesCollection = new TreatmentServicesCollection();
 						servicesCollection.setAdminCreatedTime(new Date());
 						if(!DPDoctorUtils.anyStringEmpty(line.get(1)))servicesCollection.setCost(Double.parseDouble(line.get(1)));
-						servicesCollection.setCreatedBy("Dr. Ravi Malik");
+						servicesCollection.setCreatedBy(drCollection.getTitle() + " " + drCollection.getFirstName());
 						servicesCollection.setCreatedTime(new Date());
 						servicesCollection.setDiscarded(false);
 						servicesCollection.setDoctorId(doctorObjectId);
@@ -1791,15 +2054,16 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Override
 	public Boolean uploadClinicalNotesData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "\\|";
+		Scanner scanner = null;
 		int lineCount = 0;
+		String csvLine = null;
 		int dataCountNotUploaded = 0;
+		FileWriter fileWriter = null;
 		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		
 		try {
-
-			br = new BufferedReader(new FileReader(UPLOAD_CLINICAL_NOTES_DATA_FILE));
+			
+			fileWriter = new FileWriter(LIST_CLINICAL_NOTES_NOT_UPLOADED_FILE);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -1824,25 +2088,32 @@ public class UploadDataServicesimpl implements UploadDateService {
 			}
 			ClinicalNotesCollection clinicalNotesCollection = null;
 
-			while ((line = br.readLine()) != null) {
+			scanner = new Scanner(new File(UPLOAD_CLINICAL_NOTES_DATA_FILE));
+			
+			//			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
+			//					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
+			//					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
+			//					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
 
-				if (lineCount > 0) {
+			while (scanner.hasNext()) {
+				csvLine = scanner.nextLine();
+	            List<String> line = CSVUtils.parseLine(csvLine);
+	            if (lineCount > 0) {
 					Boolean createVisit = false;
-					String[] fields = line.split(cvsSplitBy);
-					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[4])) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(1), line.get(4))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
 							Date createdTime = new Date();
-							if (!DPDoctorUtils.anyStringEmpty(fields[0])) {
-								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
-								String dateSTri = fields[0].replace("'", "")+ " 13:00:00";
+							if (!DPDoctorUtils.anyStringEmpty(line.get(0))) {
+								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+								String dateSTri = line.get(0).replace("'", "")+ " 13:00:00";
 								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 								createdTime = dateFormat.parse(dateSTri);
 							}
 
-							String drName = fields[3].replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							String drName = line.get(3).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -1865,88 +2136,99 @@ public class UploadDataServicesimpl implements UploadDateService {
 								}
 							}
 								
-							clinicalNotesCollection = clinicalNotesRepository.find(userCollection.getId(), locationObjectId,
-									hospitalObjectId, patientCollection.getUserId(), createdTime);
-							if (clinicalNotesCollection == null) {
-								createVisit = true;
-								clinicalNotesCollection = new ClinicalNotesCollection();
+							if(userCollection != null) {
+								clinicalNotesCollection = clinicalNotesRepository.find(userCollection.getId(), locationObjectId,
+										hospitalObjectId, patientCollection.getUserId(), createdTime);
+								if (clinicalNotesCollection == null) {
+									createVisit = true;
+									clinicalNotesCollection = new ClinicalNotesCollection();
 
-								clinicalNotesCollection.setDoctorId(doctorObjectId);
-								clinicalNotesCollection.setLocationId(locationObjectId);
-								clinicalNotesCollection.setHospitalId(hospitalObjectId);
-								clinicalNotesCollection.setPatientId(patientCollection.getUserId());
-								clinicalNotesCollection.setCreatedTime(createdTime);
-								clinicalNotesCollection.setUpdatedTime(createdTime);
-								clinicalNotesCollection.setUniqueEmrId(
-										UniqueIdInitial.CLINICALNOTES.getInitial() + DPDoctorUtils.generateRandomId());
-								clinicalNotesCollection.setCreatedBy(
-										(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-												+ userCollection.getFirstName());
+									clinicalNotesCollection.setDoctorId(doctorObjectId);
+									clinicalNotesCollection.setLocationId(locationObjectId);
+									clinicalNotesCollection.setHospitalId(hospitalObjectId);
+									clinicalNotesCollection.setPatientId(patientCollection.getUserId());
+									clinicalNotesCollection.setCreatedTime(createdTime);
+									clinicalNotesCollection.setUpdatedTime(createdTime);
+									clinicalNotesCollection.setUniqueEmrId(
+											UniqueIdInitial.CLINICALNOTES.getInitial() + DPDoctorUtils.generateRandomId());
+									clinicalNotesCollection.setCreatedBy(
+											(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+													+ userCollection.getFirstName());
 
-							}
-							
-							String type = fields.length > 4 ? fields[4].replace("'", ""):"";
-							
-							String description = fields.length > 5 ? fields[5].replace("'", "") : "";
-							
-							
-							if(type.equalsIgnoreCase("diagnoses")) {
-								if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getDiagnosis())) {
-									clinicalNotesCollection.setDiagnosis(description);
-								}else {
-									clinicalNotesCollection.setDiagnosis(clinicalNotesCollection.getDiagnosis() + ", " +description);
 								}
-							}else if(type.equalsIgnoreCase("complaints")) {
-								if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getComplaint())) {
-									clinicalNotesCollection.setComplaint(description);
-								}else {
-									clinicalNotesCollection.setComplaint(clinicalNotesCollection.getComplaint() + ", " +description);
-								}
-							}else if(type.equalsIgnoreCase("treatmentnotes")) {
-								if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getProcedureNote())) {
-									clinicalNotesCollection.setProcedureNote(description);
-								}else {
-									clinicalNotesCollection.setProcedureNote(clinicalNotesCollection.getProcedureNote() + ", " +description);
-								}
-							}else if(type.equalsIgnoreCase("observations")) {
-								if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getObservation())) {
-									clinicalNotesCollection.setObservation(description);
-								}else {
-									clinicalNotesCollection.setObservation(clinicalNotesCollection.getObservation() + ", " +description);
-								}
-							}else if(type.equalsIgnoreCase("investigations")) {
-								if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getInvestigation())) {
-									clinicalNotesCollection.setInvestigation(description);
-								}else {
-									clinicalNotesCollection.setInvestigation(clinicalNotesCollection.getInvestigation() + ", " +description);
-								}
-							}
 								
-							System.out.println(fields[0]+".."+fields[1]);
+								String type = !DPDoctorUtils.anyStringEmpty(line.get(4)) ? line.get(4).replace("'", ""):"";
+								
+								String description = !DPDoctorUtils.anyStringEmpty(line.get(5)) ? line.get(5).replace("'", "") : "";
+								
+								
+								if(type.equalsIgnoreCase("diagnoses")) {
+									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getDiagnosis())) {
+										clinicalNotesCollection.setDiagnosis(description);
+									}else {
+										clinicalNotesCollection.setDiagnosis(clinicalNotesCollection.getDiagnosis() + ", " +description);
+									}
+								}else if(type.equalsIgnoreCase("complaints")) {
+									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getComplaint())) {
+										clinicalNotesCollection.setComplaint(description);
+									}else {
+										clinicalNotesCollection.setComplaint(clinicalNotesCollection.getComplaint() + ", " +description);
+									}
+								}else if(type.equalsIgnoreCase("treatmentnotes")) {
+									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getProcedureNote())) {
+										clinicalNotesCollection.setProcedureNote(description);
+									}else {
+										clinicalNotesCollection.setProcedureNote(clinicalNotesCollection.getProcedureNote() + ", " +description);
+									}
+								}else if(type.equalsIgnoreCase("observations")) {
+									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getObservation())) {
+										clinicalNotesCollection.setObservation(description);
+									}else {
+										clinicalNotesCollection.setObservation(clinicalNotesCollection.getObservation() + ", " +description);
+									}
+								}else if(type.equalsIgnoreCase("investigations")) {
+									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getInvestigation())) {
+										clinicalNotesCollection.setInvestigation(description);
+									}else {
+										clinicalNotesCollection.setInvestigation(clinicalNotesCollection.getInvestigation() + ", " +description);
+									}
+								}
+									
+								System.out.println(line.get(0)+".."+line.get(1));
 
-							clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
+								clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
-							if (createVisit)
-								addRecord(clinicalNotesCollection, VisitedFor.CLINICAL_NOTES, null,
-										clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getDoctorId(),
-										clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(),
-										clinicalNotesCollection.getId());
+								if (createVisit)
+									addRecord(clinicalNotesCollection, VisitedFor.CLINICAL_NOTES, null,
+											clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getDoctorId(),
+											clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(),
+											clinicalNotesCollection.getId());
+								response = true;
+							}else {
+								dataCountNotUploaded++;
+								fileWriter.append("Doctor Not Found :"+csvLine);
+							}
 
 						} else {
 							dataCountNotUploaded++;
+							fileWriter.append("Patient Not Found :"+csvLine);
 						}
 					}
 				}
 				lineCount++;
-				response = true;
 			}
 			System.out.println("CN Done. dataCountNotUploaded: " + dataCountNotUploaded);
 		} catch (Exception e) {
+			response = false;
 			e.printStackTrace();
 		} finally {
-			if (br != null) {
+			if (scanner != null) {
 				try {
-					br.close();
+					scanner.close();
+					if (fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -1954,19 +2236,21 @@ public class UploadDataServicesimpl implements UploadDateService {
 		}
 		return response;
 	}
+	
 
 	@Override
 	public Boolean uploadInvoicesData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "\\|";
+		Scanner scanner = null;
 		int lineCount = 0;
+		String csvLine = null;
 		int dataCountNotUploaded = 0;
+		FileWriter fileWriter = null;
 		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		
 		try {
-
-			br = new BufferedReader(new FileReader(UPLOAD_INVOICES_DATA_FILE));
+			
+			fileWriter = new FileWriter(LIST_INVOICES_NOT_UPLOADED_FILE);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -1991,24 +2275,32 @@ public class UploadDataServicesimpl implements UploadDateService {
 			}
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
 
-			while ((line = br.readLine()) != null) {
+			scanner = new Scanner(new File(UPLOAD_INVOICES_DATA_FILE));
+			
+			//			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
+			//					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
+			//					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
+			//					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
+
+			while (scanner.hasNext()) {
+				csvLine = scanner.nextLine();
+	            List<String> line = CSVUtils.parseLine(csvLine);
 
 				if (lineCount > 0) {
-					String[] fields = line.split(cvsSplitBy);
-					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[5], fields[4])) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(1), line.get(5), line.get(4))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));	
+								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));	
 						if (patientCollection != null) {
 
 							Date createdTime = new Date();
-							if (!DPDoctorUtils.anyStringEmpty(fields[0])) {
+							if (!DPDoctorUtils.anyStringEmpty(line.get(0))) {
 								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
-								String dateSTri = fields[0].replace("'", "")+ " 13:00:00";
+								String dateSTri = line.get(0).replace("'", "")+ " 13:00:00";
 								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 								createdTime = dateFormat.parse(dateSTri);
 							}
 
-							String drName = fields[3].replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							String drName = line.get(3).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -2035,7 +2327,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								double totalCost = 0.0;
 								double grandTotal = 0.0;
 								
-								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find("INV"+fields[4].replace("'", ""), userCollection.getId(), locationObjectId, hospitalObjectId);
+								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(line.get(4).replace("'", ""), userCollection.getId(), locationObjectId, hospitalObjectId);
 								if (doctorPatientInvoiceCollection == null) {
 									doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
 
@@ -2047,7 +2339,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 									doctorPatientInvoiceCollection.setCreatedTime(createdTime);
 									doctorPatientInvoiceCollection.setUpdatedTime(createdTime);
 									doctorPatientInvoiceCollection.setAdminCreatedTime(createdTime);
-									doctorPatientInvoiceCollection.setUniqueInvoiceId("INV"+fields[4].replace("'", ""));
+									doctorPatientInvoiceCollection.setUniqueInvoiceId(line.get(4).replace("'", ""));
 									doctorPatientInvoiceCollection.setCreatedBy(
 											(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 													+ userCollection.getFirstName());
@@ -2064,29 +2356,29 @@ public class UploadDataServicesimpl implements UploadDateService {
 								InvoiceItem invoiceItem = new InvoiceItem();
 								invoiceItem.setDoctorId(userCollection.getId());
 								invoiceItem.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
-								invoiceItem.setName(fields[5].replace("'", ""));invoiceItem.setType(InvoiceItemType.SERVICE);
+								invoiceItem.setName(line.get(5).replace("'", ""));invoiceItem.setType(InvoiceItemType.SERVICE);
 								
-								if (fields.length > 7 && checkIfNotNullOrNone(fields[7])) {
+								if (checkIfNotNullOrNone(line.get(7))) {
 									Quantity quantity = new Quantity();
 									quantity.setType(QuantityEnum.QTY);
-									quantity.setValue(Integer.parseInt(fields[7].replace("'", "")));
+									quantity.setValue(Integer.parseInt(line.get(7).replace("'", "")));
 									invoiceItem.setQuantity(quantity);
 								}
 								
-								if (fields.length > 6 && checkIfNotNullOrNone(fields[6]))
-									invoiceItem.setCost(Double.parseDouble(fields[6].replace("'", "")));
+								if (checkIfNotNullOrNone(line.get(6)))
+									invoiceItem.setCost(Double.parseDouble(line.get(6).replace("'", "")));
 								
 								
-								if (fields.length > 8 && checkIfNotNullOrNone(fields[8])) {
+								if (checkIfNotNullOrNone(line.get(8))) {
 									Discount discount = new Discount();
-									if (fields.length > 9 && !checkIfNotNullOrNone(fields[9])) {
+									if (!checkIfNotNullOrNone(line.get(9))) {
 										discount.setUnit(UnitType.INR);
-									} else if ((fields[9].replace("'", "")).equalsIgnoreCase("NUMBER")) {
+									} else if ((line.get(9).replace("'", "")).equalsIgnoreCase("NUMBER")) {
 										discount.setUnit(UnitType.INR);
 									} else {
-										discount.setUnit(UnitType.valueOf(fields[9].replace("'", "")));
+										discount.setUnit(UnitType.valueOf(line.get(9).replace("'", "")));
 									}
-									discount.setValue(Double.parseDouble(fields[8].replace("'", "")));
+									discount.setValue(Double.parseDouble(line.get(8).replace("'", "")));
 									invoiceItem.setDiscount(discount);
 
 									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
@@ -2114,8 +2406,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 									}
 								}
 								
-								if (fields.length > 16 && checkIfNotNullOrNone(fields[16]))
-									invoiceItem.setNote(fields[16].replace("'", ""));
+								if (checkIfNotNullOrNone(line.get(16)))
+									invoiceItem.setNote(line.get(16).replace("'", ""));
 								
 								invoiceItems.add(invoiceItem);
 								totalCost = totalCost + invoiceItem.getCost();
@@ -2127,7 +2419,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								doctorPatientInvoiceCollection.setTotalDiscount(totalDiscount);
 								doctorPatientInvoiceCollection.setBalanceAmount(grandTotal);
 								
-								if (fields.length > 14 && fields[14].equalsIgnoreCase("'1'")) {
+								if (line.get(14).equalsIgnoreCase("'1'")) {
 									doctorPatientInvoiceCollection.setDiscarded(true);
 								}
 								
@@ -2168,13 +2460,21 @@ public class UploadDataServicesimpl implements UploadDateService {
 								doctorPatientDueAmountCollection
 										.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + invoiceItem.getFinalCost());
 								doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
-								System.out.println(fields[1]+".."+fields[5]);
+								System.out.println(line.get(1)+".."+line.get(5));
+							}else {
+								dataCountNotUploaded++;
+								fileWriter.append("Doctor Not found:"+csvLine);
+								fileWriter.append(NEW_LINE_SEPARATOR);
 							}
 						} else {
 							dataCountNotUploaded++;
+							fileWriter.append("Patient Not found:"+csvLine);
+							fileWriter.append(NEW_LINE_SEPARATOR);
 						}
 					}else {
 						dataCountNotUploaded++;
+						fileWriter.append("Data incomplete:"+csvLine);
+						fileWriter.append(NEW_LINE_SEPARATOR);
 					}
 				}
 				lineCount++;
@@ -2184,9 +2484,13 @@ public class UploadDataServicesimpl implements UploadDateService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (br != null) {
+			if (scanner != null) {
 				try {
-					br.close();
+					scanner.close();
+					if (fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -2194,18 +2498,19 @@ public class UploadDataServicesimpl implements UploadDateService {
 		}
 		return response;
 	}
+	
 
 	@Override
 	public Boolean uploadPaymentsData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "\\|";
+		Scanner scanner = null;
 		int lineCount = 0;
+		String csvLine = null;
 		int dataCountNotUploaded = 0;
+		FileWriter fileWriter = null;
 		try {
-			Boolean save = true;
-			br = new BufferedReader(new FileReader(UPLOAD_PAYMENTS_DATA_FILE));
+			
+			fileWriter = new FileWriter(LIST_PAYMENTS_NOT_UPLOADED_FILE);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -2216,32 +2521,36 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			LocationCollection  locationCollection = locationRepository.findOne(locationObjectId);
-			if(locationCollection!= null) {
-				locationCollection.setInvoiceInitial("INV");
-				locationCollection.setReceiptInitial("RCPT");
-				locationCollection = locationRepository.save(locationCollection);
-			}
+			
 			UserCollection drCollection = userRepository.findOne(doctorObjectId);
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = null;
 
-			while ((line = br.readLine()) != null) {
-				save = true;
+			scanner = new Scanner(new File(UPLOAD_PAYMENTS_DATA_FILE));
+			
+			//			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
+			//					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
+			//					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
+			//					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
+
+			while (scanner.hasNext()) {
+				Boolean save = true;
+				csvLine = scanner.nextLine();
+	            List<String> line = CSVUtils.parseLine(csvLine);
 				if (lineCount > 0) {
-					String[] fields = line.split(cvsSplitBy);
-					if (!DPDoctorUtils.anyStringEmpty(fields[1], fields[6])) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(1), line.get(6))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
-								locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
 							Date createdTime = new Date();
-							if (!DPDoctorUtils.anyStringEmpty(fields[0])) {
-								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
-								String dateSTri = fields[0].replace("'", "")+ " 13:00:00";
+							if (!DPDoctorUtils.anyStringEmpty(line.get(0))) {
+								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+								String dateSTri = line.get(0).replace("'", "")+ " 13:00:00";
 								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 								createdTime = dateFormat.parse(dateSTri);
 							}
 
-							doctorPatientReceiptCollection = doctorPatientReceiptRepository.findByUniqueInvoiceId("INV"+fields[6].replace("'", ""), locationObjectId, hospitalObjectId);
+							doctorPatientReceiptCollection = doctorPatientReceiptRepository.findByUniqueInvoiceId(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
 
 							if (doctorPatientReceiptCollection == null) {
 								doctorPatientReceiptCollection = new DoctorPatientReceiptCollection();
@@ -2254,25 +2563,27 @@ public class UploadDataServicesimpl implements UploadDateService {
 								doctorPatientReceiptCollection.setCreatedTime(createdTime);
 								doctorPatientReceiptCollection.setUpdatedTime(createdTime);
 								doctorPatientReceiptCollection.setAdminCreatedTime(createdTime);
-//								doctorPatientReceiptCollection.setUniqueReceiptId(fields[3].replace("'", ""));
-								doctorPatientReceiptCollection.setUniqueInvoiceId("INV"+fields[6].replace("'", ""));
+								doctorPatientReceiptCollection.setUniqueInvoiceId(line.get(6).replace("'", ""));
 								doctorPatientReceiptCollection.setCreatedBy(
 										(drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
 												+ drCollection.getFirstName());
 								
-								doctorPatientReceiptCollection
-								.setUniqueReceiptId("RCPT"+ ((int) mongoTemplate.count(
-										new Query(new Criteria("locationId").is(doctorPatientReceiptCollection.getLocationId())
-												.and("hospitalId").is(doctorPatientReceiptCollection.getHospitalId())),
-										DoctorPatientReceiptCollection.class) + 1));
-
+								if(checkIfNotNullOrNone(line.get(3))) {
+									doctorPatientReceiptCollection.setUniqueReceiptId(line.get(3).replace("'", ""));
+								}else {
+									doctorPatientReceiptCollection
+									.setUniqueReceiptId(locationCollection.getReceiptInitial()+ ((int) mongoTemplate.count(
+											new Query(new Criteria("locationId").is(doctorPatientReceiptCollection.getLocationId())
+													.and("hospitalId").is(doctorPatientReceiptCollection.getHospitalId())),
+											DoctorPatientReceiptCollection.class) + 1));
+								}
 							}
 							
 							DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
-							if (fields.length > 14 && fields[14].equalsIgnoreCase("'1'")) {
-								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find("INV"+fields[6].replace("'", ""), locationObjectId, hospitalObjectId);
+							if (line.get(14).equalsIgnoreCase("'1'")) {
+								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
 								doctorPatientReceiptCollection.setDiscarded(true);
-								doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(fields[5].replace("'", "")));
+								doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(line.get(5).replace("'", "")));
 								
 								doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() - doctorPatientReceiptCollection.getAmountPaid());
 								doctorPatientReceiptCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
@@ -2280,12 +2591,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 								
 							}else {
 								
-								if(fields.length > 6 && checkIfNotNullOrNone(fields[6])) {
-									doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find("INV"+fields[6].replace("'", ""), locationObjectId, hospitalObjectId);
+								if(checkIfNotNullOrNone(line.get(6))) {
+									doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
 									if(doctorPatientInvoiceCollection == null)save = false;
 									else {
 										doctorPatientReceiptCollection.setReceiptType(ReceiptType.INVOICE);
-										doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(fields[5].replace("'", "")));
+										doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(line.get(5).replace("'", "")));
 										doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() - doctorPatientReceiptCollection.getAmountPaid());
 										doctorPatientReceiptCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
 										doctorPatientInvoiceCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
@@ -2298,8 +2609,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 									}
 								}else {
 									doctorPatientReceiptCollection.setReceiptType(ReceiptType.ADVANCE);
-									doctorPatientReceiptCollection.setRemainingAdvanceAmount(Double.parseDouble(fields[5].replace("'", "")));
-									doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(fields[5].replace("'", "")));
+									doctorPatientReceiptCollection.setRemainingAdvanceAmount(Double.parseDouble(line.get(5).replace("'", "")));
+									doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(line.get(5).replace("'", "")));
 									doctorPatientReceiptCollection.setBalanceAmount(0.0);
 								}
 								
@@ -2351,25 +2662,38 @@ public class UploadDataServicesimpl implements UploadDateService {
 									doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - doctorPatientReceiptCollection.getAmountPaid());
 									doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 								}
-								System.out.println(fields[1]+".."+fields[4]);
+								System.out.println(line.get(1)+".."+line.get(4));
+								response = true;
 							}else {
 								dataCountNotUploaded++;
+								fileWriter.append("Doctor Not Found:"+csvLine);
+								fileWriter.append(NEW_LINE_SEPARATOR);
 							}
 						} else {
 							dataCountNotUploaded++;
+							fileWriter.append("Patient Not Found:"+csvLine);
+							fileWriter.append(NEW_LINE_SEPARATOR);
 						}
+					}else {
+						dataCountNotUploaded++;
+						fileWriter.append("Data incomplete:"+csvLine);
+						fileWriter.append(NEW_LINE_SEPARATOR);
 					}
 				}
 				lineCount++;
-				response = true;
 			}
 			System.out.println("Payments Done. dataCountNotUploaded: " + dataCountNotUploaded);
 		} catch (Exception e) {
+			response = false;
 			e.printStackTrace();
 		} finally {
-			if (br != null) {
+			if (scanner != null) {
 				try {
-					br.close();
+					scanner.close();
+					if (fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

@@ -1756,7 +1756,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public Boolean email(String visitId, String emailAddress) {
-		Boolean response = false;
+		Boolean response = null;
 		MailAttachment mailAttachment = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 
@@ -1841,7 +1841,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							locationCollection.getLocationName(), address,
 							sdf.format(patientVisitLookupResponse.getCreatedTime()), "Visit Details",
 							"emrMailTemplate.vm");
-					mailService.sendEmailMultiAttach(emailAddress,
+					response = mailService.sendEmailMultiAttach(emailAddress,
 							doctorUser.getTitle() + " " + doctorUser.getFirstName() + " sent you Visit Details", body,
 							mailAttachments);
 
@@ -1851,8 +1851,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					emailTrackCollection.setType(ComponentType.ALL.getType());
 					emailTrackCollection.setSubject("Patient Visit");
 					emailTackService.saveEmailTrack(emailTrackCollection);
-					response = true;
-					if (mailAttachment != null && mailAttachment.getFileSystemResource() != null)
+					if (response != null && mailAttachment != null && mailAttachment.getFileSystemResource() != null)
 						if (mailAttachment.getFileSystemResource().getFile().exists())
 							mailAttachment.getFileSystemResource().getFile().delete();
 				}
