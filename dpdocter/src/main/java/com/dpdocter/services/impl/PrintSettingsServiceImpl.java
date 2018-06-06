@@ -49,6 +49,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	@Autowired
 	private HospitalRepository hospitalRepository;
 
+	@Autowired
 	private DentalLabPrintSettingRepository dentalLabPrintSettingRepository;
 
 	@Autowired
