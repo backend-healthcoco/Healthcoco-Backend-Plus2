@@ -11,6 +11,7 @@ import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
+import com.dpdocter.collections.DentalImagingInvoiceResponse;
 import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
@@ -58,6 +59,10 @@ public interface DentalImagingService {
 	Boolean dentalLabDoctorRegistration(DentalImagingLabDoctorRegistrationRequest request);
 
 	DentalImagingInvoice addEditInvoice(DentalImagingInvoice request);
+
+	List<DentalImagingInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
+			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
+			int page);
 
 
 }

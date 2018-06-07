@@ -47,6 +47,7 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingInvoiceCollection;
+import com.dpdocter.collections.DentalImagingInvoiceResponse;
 import com.dpdocter.collections.DentalImagingLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
 import com.dpdocter.collections.DentalImagingReportsCollection;
@@ -85,6 +86,7 @@ import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
+import com.dpdocter.response.DentalWorksInvoiceResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ImageURLResponse;
@@ -210,6 +212,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						DentalImagingInvoice dentalImagingInvoice = new DentalImagingInvoice();
 						request.setId(null);
 						BeanUtil.map(request, dentalImagingInvoice);
+						dentalImagingInvoice.setPatientName(request.getLocalPatientName());
 						addEditInvoice(dentalImagingInvoice);
 					}
 				}
@@ -1129,6 +1132,97 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			logger.error("Error while adding invoice" + e);
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while adding invoice" + e);
+		}
+		return response;
+	}
+	
+	
+	@Override
+	@Transactional
+	public List<DentalImagingInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
+			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
+			int page) {
+
+		List<DentalImagingInvoiceResponse> response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabLocationId)) {
+				criteria.and("dentalLabLocationId").is(new ObjectId(dentalLabLocationId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(dentalLabHospitalId)) {
+				criteria.and("dentalLabHospitalId").is(new ObjectId(dentalLabHospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (to != null) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+			} else {
+				criteria.and("updatedTime").gte(new Date(from));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("dentalLab.locationName").regex("^" + searchTerm),
+						new Criteria("dentalLab.locationName").regex(searchTerm + ".*"),
+						new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
+						new Criteria("doctor.firstName").regex("^" + searchTerm),
+						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
+						new Criteria("patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientName").regex("^" + searchTerm),
+						new Criteria("patientName").regex(searchTerm + ".*"),
+						new Criteria("uniqueInvoiceId").regex("^" + searchTerm, "i"),
+						new Criteria("uniqueInvoiceId").regex("^" + searchTerm),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + "$", "i"),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + "$"),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + ".*"));
+			}
+
+			/* (SEVEN) */
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(
+						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
+						Aggregation.lookup("location_cl", "dentalImagingLocationId", "_id", "dentalImagingLab"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$dentalImagingLab").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+
+			else
+				aggregation = Aggregation.newAggregation(
+						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
+						Aggregation.lookup("location_cl", "dentalImagingLocationId", "_id", "dentalImagingLab"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$dentalImagingLab").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<DentalImagingInvoiceResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DentalImagingInvoiceCollection.class, DentalImagingInvoiceResponse.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return response;
 	}
