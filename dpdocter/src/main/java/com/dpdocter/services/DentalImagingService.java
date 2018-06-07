@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
+import com.dpdocter.beans.DentalImagingInvoice;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
@@ -55,6 +56,8 @@ public interface DentalImagingService {
 			String searchTerm, int size, int page);
 
 	Boolean dentalLabDoctorRegistration(DentalImagingLabDoctorRegistrationRequest request);
+
+	DentalImagingInvoice addEditInvoice(DentalImagingInvoice request);
 
 
 }

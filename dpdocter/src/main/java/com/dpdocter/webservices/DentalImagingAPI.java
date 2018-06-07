@@ -22,10 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
+import com.dpdocter.beans.DentalImagingInvoice;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DentalWork;
+import com.dpdocter.beans.DentalWorksInvoice;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.Location;
@@ -227,5 +229,39 @@ public class DentalImagingAPI {
 		response.setData(dentalImagingService.dentalLabDoctorRegistration(request));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.ADD_EDIT_INVOICE)
+	@POST
+	@ApiOperation(value = PathProxy.DentalImagingUrl.ADD_EDIT_INVOICE, notes = PathProxy.DentalImagingUrl.ADD_EDIT_INVOICE)
+	public Response<DentalImagingInvoice> addEditDentalImaging(DentalImagingInvoice request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
+		response.setData(dentalImagingService.addEditInvoice(request));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_INVOICES)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_INVOICES, notes = PathProxy.DentalImagingUrl.GET_INVOICES)
+
+	public Response<DentalImagingInvoice> getInvoices(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("dentalLabLocationId") String dentalLabLocationId,
+			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId,
+			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalLabHospitalId, dentalLabLocationId)) {
+
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
+		response.setDataList(dentalImagingService.getInvoices(doctorId, locationId, hospitalId, dentalLabLocationId,
+				dentalLabHospitalId, from, to, searchTerm, size, page));
+		return response;
+	}
+
+	
 }
 

@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 public class DentalImagingRequest {
@@ -21,6 +22,18 @@ public class DentalImagingRequest {
 	private List<DentalDiagnosticServiceRequest> services;
 	private Boolean discarded;
 	private String type;
+	private Boolean isPayAndSave;
+	private Discount totalDiscount;
+	private Double totalCost = 0.0;
+	private Tax totalTax;
+	private List<InvoiceTax> invoiceTaxes;
+	private Double grandTotal = 0.0;
+	private Double usedAdvanceAmount = 0.0;
+	private Double refundAmount = 0.0;
+	private Double balanceAmount = 0.0;
+	private Boolean isTaxNotApplicable = false;
+	private Date invoiceDate;
+	private String uniqueInvoiceId;
 
 	public String getPatientId() {
 		return patientId;
@@ -156,6 +169,102 @@ public class DentalImagingRequest {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Boolean getIsPayAndSave() {
+		return isPayAndSave;
+	}
+
+	public void setIsPayAndSave(Boolean isPayAndSave) {
+		this.isPayAndSave = isPayAndSave;
+	}
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public Double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
+	}
+
+	public List<InvoiceTax> getInvoiceTaxes() {
+		return invoiceTaxes;
+	}
+
+	public void setInvoiceTaxes(List<InvoiceTax> invoiceTaxes) {
+		this.invoiceTaxes = invoiceTaxes;
+	}
+
+	public Double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(Double grandTotal) {
+		this.grandTotal = grandTotal;
+	}
+
+	public Double getUsedAdvanceAmount() {
+		return usedAdvanceAmount;
+	}
+
+	public void setUsedAdvanceAmount(Double usedAdvanceAmount) {
+		this.usedAdvanceAmount = usedAdvanceAmount;
+	}
+
+	public Double getRefundAmount() {
+		return refundAmount;
+	}
+
+	public void setRefundAmount(Double refundAmount) {
+		this.refundAmount = refundAmount;
+	}
+
+	public Double getBalanceAmount() {
+		return balanceAmount;
+	}
+
+	public void setBalanceAmount(Double balanceAmount) {
+		this.balanceAmount = balanceAmount;
+	}
+
+	public Boolean getIsTaxNotApplicable() {
+		return isTaxNotApplicable;
+	}
+
+	public void setIsTaxNotApplicable(Boolean isTaxNotApplicable) {
+		this.isTaxNotApplicable = isTaxNotApplicable;
+	}
+
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
+	public String getUniqueInvoiceId() {
+		return uniqueInvoiceId;
+	}
+
+	public void setUniqueInvoiceId(String uniqueInvoiceId) {
+		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
 
 	@Override
