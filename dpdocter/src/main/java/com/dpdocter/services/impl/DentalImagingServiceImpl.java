@@ -203,6 +203,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setUpdatedTime(new Date());
 				dentalImagingCollection.setCreatedBy(userCollection.getFirstName());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
+				
+				if(request.getIsPayAndSave().equals(Boolean.TRUE))
+				{
+					if (request.getUniqueInvoiceId() == null) {
+						DentalImagingInvoice dentalImagingInvoice = new DentalImagingInvoice();
+						request.setId(null);
+						BeanUtil.map(request, dentalImagingInvoice);
+						addEditInvoice(dentalImagingInvoice);
+					}
+				}
+				
+				
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 					pushNotificationServices.notifyUser(String.valueOf(doctorClinicProfileCollection.getDoctorId()),
 							"Request Has been updated.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),
@@ -1019,7 +1031,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	}
 	
 	
-	/*@Override
+	@Override
 	@Transactional
 	public DentalImagingInvoice addEditInvoice(DentalImagingInvoice request) {
 		DentalImagingInvoice response = null;
@@ -1046,7 +1058,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 				dentalImagingInvoiceCollection.setAdminCreatedTime(new Date());
 
-				dentalWorksAmountCollection = dentalWorksAmountRepository
+			/*	dentalWorksAmountCollection = dentalWorksAmountRepository
 						.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(
 								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 								new ObjectId(request.getHospitalId()), new ObjectId(request.getDentalLabLocationId()),
@@ -1062,7 +1074,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 
 				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
-
+*/
 			} else {
 				dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.findOne(new ObjectId(request.getId()));
 				Double OldCost = dentalImagingInvoiceCollection.getTotalCost();
@@ -1074,7 +1086,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingInvoiceCollection.setTotalTax(request.getTotalTax());
 				dentalImagingInvoiceCollection.setGrandTotal(request.getGrandTotal());
 
-				dentalWorksAmountCollection = dentalWorksAmountRepository
+			/*	dentalWorksAmountCollection = dentalWorksAmountRepository
 						.findByDoctorIdLocationIdHospitalIdDentalLabLocationIdDentalLabHospitalId(
 								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 								new ObjectId(request.getHospitalId()), new ObjectId(request.getDentalLabLocationId()),
@@ -1087,7 +1099,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							dentalWorksAmountCollection.getRemainingAmount() + request.getTotalCost());
 
 				}
-				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+				dentalWorksAmountRepository.save(dentalWorksAmountCollection);*/
 
 			}
 
@@ -1095,25 +1107,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					.findOne(new ObjectId(request.getDentalImagingId()));
 			if (dentalImagingCollection != null) {
 				invoiceItems = new ArrayList<DentalImagingInvoiceItem>();
-				for (DentalWorksSample dentalWorksSample : dentalImagingCollection.getServices()) {
-					DentalWorksInvoiceItem dentalWorksInvoiceItem = new DentalWorksInvoiceItem();
-					dentalWorksInvoiceItem.setCost(dentalWorksSample.getCost());
-					dentalWorksInvoiceItem.setWorkId(
-							new ObjectId(dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWorkId()));
-
-					dentalWorksInvoiceItem.setDentalToothNumbers(dentalWorksSample.getDentalToothNumbers());
-					dentalWorksInvoiceItem.setWorkName(
-							dentalWorksSample.getRateCardDentalWorkAssociation().getDentalWork().getWorkName());
-					dentalWorksInvoiceItem.setCreatedTime(dentalLabPickupCollection.getCreatedTime());
-					invoiceItems.add(dentalWorksInvoiceItem);
+				for (DentalDiagnosticServiceRequest serviceRequest : dentalImagingCollection.getServices()) {
+					DentalImagingInvoiceItem dentalImagingInvoiceItem = new DentalImagingInvoiceItem();
+					BeanUtil.map(serviceRequest, dentalImagingInvoiceItem);
+					invoiceItems.add(dentalImagingInvoiceItem);
 				}
 			}
 
-			dentalWorksInvoiceCollection.setDentalWorksInvoiceItems(invoiceItems);
+			dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
 			dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
-			dentalLabPickupCollection.setInvoiceId(dentalWorksInvoiceCollection.getId());
-			dentalLabPickupCollection.setUniqueInvoiceId(dentalWorksInvoiceCollection.getUniqueInvoiceId());
-			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
+			dentalImagingCollection.setInvoiceId(dentalImagingInvoiceCollection.getId());
+			dentalImagingCollection.setUniqueInvoiceId(dentalImagingInvoiceCollection.getUniqueInvoiceId());
+			dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
 
 			response = new DentalImagingInvoice();
 			BeanUtil.map(dentalImagingInvoiceCollection, response);
@@ -1126,7 +1131,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			throw new BusinessException(ServiceError.Unknown, "Error while adding invoice" + e);
 		}
 		return response;
-	}*/
+	}
 
 	
 }

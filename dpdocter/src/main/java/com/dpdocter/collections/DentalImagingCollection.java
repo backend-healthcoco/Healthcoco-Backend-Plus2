@@ -47,6 +47,8 @@ public class DentalImagingCollection extends GenericCollection {
 	@Field
 	private String mobileNumber;
 	@Field
+	private ObjectId invoiceId;
+	@Field
 	private String uniqueInvoiceId;
 
 	public ObjectId getPatientId() {
@@ -191,6 +193,14 @@ public class DentalImagingCollection extends GenericCollection {
 
 	public void setUniqueInvoiceId(String uniqueInvoiceId) {
 		this.uniqueInvoiceId = uniqueInvoiceId;
+	}
+
+	public ObjectId getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(ObjectId invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 
 	@Override

@@ -10,6 +10,7 @@ public class DentalDiagnosticServiceRequest {
 	private List<String> toothNumber;
 	private String CBCTQuadrant;
 	private String CBCTArch;
+	private Double cost = 0.0;
 
 	public String getType() {
 		return type;
@@ -58,5 +59,15 @@ public class DentalDiagnosticServiceRequest {
 	public void setDentalDiagnosticServiceId(String dentalDiagnosticServiceId) {
 		this.dentalDiagnosticServiceId = dentalDiagnosticServiceId;
 	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+	
+	
 
 }
