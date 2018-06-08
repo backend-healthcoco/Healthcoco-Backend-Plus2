@@ -106,6 +106,7 @@ public class BlogServicesImpl implements BlogService {
 			for (BlogCollection blogCollection : blogCollections) {
 				Blog blog = new Blog();
 				BeanUtil.map(blogCollection, blog);
+				
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
