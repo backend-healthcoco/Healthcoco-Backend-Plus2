@@ -106,7 +106,7 @@ public class BlogServicesImpl implements BlogService {
 			for (BlogCollection blogCollection : blogCollections) {
 				Blog blog = new Blog();
 				BeanUtil.map(blogCollection, blog);
-				
+
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
@@ -436,7 +436,7 @@ public class BlogServicesImpl implements BlogService {
 		try {
 
 			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("_id", "$id").append("title", "$title")
+					new BasicDBObject("id", "$id").append("title", "$title")
 							.append("titleImage", new BasicDBObject("$cond",
 									new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$titleImage", null)))
 											.append("then",
@@ -476,6 +476,7 @@ public class BlogServicesImpl implements BlogService {
 
 			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$id").append("title", new BasicDBObject("$first", "$title"))
+							.append("id", new BasicDBObject("$first", "$id"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("superCategory", new BasicDBObject("$first", "$superCategory"))
 							.append("category", new BasicDBObject("$first", "$category"))
