@@ -248,17 +248,17 @@ public class DentalImagingAPI {
 
 	public Response<DentalImagingInvoice> getInvoices(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("dentalLabLocationId") String dentalLabLocationId,
-			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId,
+			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
+			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
 			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
-		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalLabHospitalId, dentalLabLocationId)) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalImagingLocationId, dentalImagingHospitalId)) {
 
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
-		response.setDataList(dentalImagingService.getInvoices(doctorId, locationId, hospitalId, dentalLabLocationId,
-				dentalLabHospitalId, from, to, searchTerm, size, page));
+		response.setDataList(dentalImagingService.getInvoices(doctorId, locationId, hospitalId, dentalImagingLocationId,
+				dentalImagingHospitalId, from, to, searchTerm, size, page));
 		return response;
 	}
 

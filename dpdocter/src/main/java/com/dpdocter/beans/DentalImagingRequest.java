@@ -22,7 +22,7 @@ public class DentalImagingRequest {
 	private List<DentalDiagnosticServiceRequest> services;
 	private Boolean discarded;
 	private String type;
-	private Boolean isPayAndSave;
+	private Boolean isPayAndSave = false;
 	private Discount totalDiscount;
 	private Double totalCost = 0.0;
 	private Tax totalTax;
