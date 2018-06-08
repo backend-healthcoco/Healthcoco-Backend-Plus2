@@ -1140,7 +1140,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	@Override
 	@Transactional
 	public List<DentalImagingInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
-			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
+			String dentalImagingLocationId, String dentalImagingHospitalId, Long from, Long to, String searchTerm, int size,
 			int page) {
 
 		List<DentalImagingInvoiceResponse> response = null;
@@ -1148,12 +1148,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 
-			if (!DPDoctorUtils.anyStringEmpty(dentalLabLocationId)) {
-				criteria.and("dentalLabLocationId").is(new ObjectId(dentalLabLocationId));
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
+				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(dentalLabHospitalId)) {
-				criteria.and("dentalLabHospitalId").is(new ObjectId(dentalLabHospitalId));
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
+				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
