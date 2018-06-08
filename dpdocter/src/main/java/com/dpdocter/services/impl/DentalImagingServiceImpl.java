@@ -362,9 +362,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("uploadedByDoctorId", new BasicDBObject("$first", "$uploadedByDoctorId"))
-							.append("uploadedByHospitalId", new BasicDBObject("$first", "$uploadedByHospitalId"))
-							.append("uploadedByLocationId", new BasicDBObject("$first", "$uploadedByLocationId"))
+							.append("dentalImagingDoctorId", new BasicDBObject("$first", "$dentalImagingDoctorId"))
+							.append("dentalImagingHospitalId", new BasicDBObject("$first", "$dentalImagingHospitalId"))
+							.append("dentalImagingLocationId", new BasicDBObject("$first", "$dentalImagingLocationId"))
 							.append("services", new BasicDBObject("$push", "$services"))
 							.append("referringDoctor", new BasicDBObject("$first", "$referringDoctor"))
 							.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
@@ -381,6 +381,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("doctor", new BasicDBObject("$first", "$doctor"))
 							.append("patientName", new BasicDBObject("$first", "$patientName"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
+							.append("totalCost", new BasicDBObject("$first", "$totalCost"))
 							));
 			
 			if (size > 0)
