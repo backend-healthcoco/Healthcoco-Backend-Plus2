@@ -50,6 +50,8 @@ public class DentalImagingCollection extends GenericCollection {
 	private ObjectId invoiceId;
 	@Field
 	private String uniqueInvoiceId;
+	@Field
+	private Double totalCost = 0.0;
 
 	public ObjectId getPatientId() {
 		return patientId;
@@ -201,6 +203,14 @@ public class DentalImagingCollection extends GenericCollection {
 
 	public void setInvoiceId(ObjectId invoiceId) {
 		this.invoiceId = invoiceId;
+	}
+
+	public Double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
 	}
 
 	@Override

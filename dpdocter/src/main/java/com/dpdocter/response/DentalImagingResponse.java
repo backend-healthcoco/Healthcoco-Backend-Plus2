@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
@@ -31,6 +32,9 @@ public class DentalImagingResponse extends GenericCollection {
 	private List<DentalImagingReports> reports;
 	private String patientName;
 	private String mobileNumber;
+	private Date invoiceDate;
+	private String uniqueInvoiceId;
+	private Double totalCost = 0.0;
 
 	public String getId() {
 		return id;
@@ -190,6 +194,30 @@ public class DentalImagingResponse extends GenericCollection {
 
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
+	}
+
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
+	public String getUniqueInvoiceId() {
+		return uniqueInvoiceId;
+	}
+
+	public void setUniqueInvoiceId(String uniqueInvoiceId) {
+		this.uniqueInvoiceId = uniqueInvoiceId;
+	}
+
+	public Double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
 	}
 
 }
