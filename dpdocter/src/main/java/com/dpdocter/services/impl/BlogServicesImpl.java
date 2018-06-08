@@ -506,12 +506,14 @@ public class BlogServicesImpl implements BlogService {
 				if (!DPDoctorUtils.anyStringEmpty(request.getCategory())) {
 					criteria = criteria.and("category").is(request.getCategory());
 				}
+				Criteria SecondCriteria = null;
 
 				for (BlogCategoryWithPageSize blogCategoryWithPageSize : request.getBlogSuperCategories()) {
+					SecondCriteria = new Criteria().andOperator(criteria,
+							new Criteria("superCategory").is(blogCategoryWithPageSize.getSuperCategory().getType()));
 					if (blogCategoryWithPageSize.getSize() > 0) {
-						aggregation = Aggregation.newAggregation(
-								Aggregation.match(criteria.and("superCategory")
-										.is(blogCategoryWithPageSize.getSuperCategory().getType())),
+
+						aggregation = Aggregation.newAggregation(Aggregation.match(SecondCriteria),
 								// Aggregation.lookup("blog_likes_cl", "_id", "blogId", "blogLikesCollection"),
 								// new CustomAggregationOperation(new BasicDBObject("$unwind", new
 								// BasicDBObject("path", "$blogLikesCollection")
@@ -531,9 +533,7 @@ public class BlogServicesImpl implements BlogService {
 										(blogCategoryWithPageSize.getPage()) * blogCategoryWithPageSize.getSize()),
 								Aggregation.limit(blogCategoryWithPageSize.getSize()));
 					} else {
-						aggregation = Aggregation.newAggregation(
-								Aggregation.match(criteria.and("superCategory")
-										.is(blogCategoryWithPageSize.getSuperCategory().getType())),
+						aggregation = Aggregation.newAggregation(Aggregation.match(SecondCriteria),
 								// Aggregation.lookup("blog_likes_cl", "_id", "blogId", "blogLikesCollection"),
 								// new CustomAggregationOperation(new BasicDBObject("$unwind", new
 								// BasicDBObject("path", "$blogLikesCollection")
