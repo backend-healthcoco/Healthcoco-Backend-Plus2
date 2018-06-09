@@ -3274,7 +3274,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-					Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("dentalLab"), Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
+					Aggregation.unwind("clinic"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.match(criteria));
 			AggregationResults<DentalWorksReceiptResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalWorksReceiptCollection.class, DentalWorksReceiptResponse.class);
