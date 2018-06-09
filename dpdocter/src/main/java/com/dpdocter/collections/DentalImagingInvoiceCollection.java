@@ -88,6 +88,9 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPaid = false;
+	
+	@Field
+	private String referringDoctor;
 
 	public ObjectId getId() {
 		return id;

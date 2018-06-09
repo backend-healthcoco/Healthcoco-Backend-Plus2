@@ -215,6 +215,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						dentalImagingInvoice.setDentalImagingId(String.valueOf(dentalImagingCollection.getId()));
 						dentalImagingInvoice.setPatientName(request.getLocalPatientName());
 						dentalImagingInvoice.setIsPaid(true);
+						dentalImagingInvoice.setReferringDoctor(request.getReferringDoctor());
 						addEditInvoice(dentalImagingInvoice);
 					}
 				}
@@ -387,6 +388,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("isPaid", new BasicDBObject("$first", "$isPaid"))
 							));
 			
+		/**/
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "dentalImagingLocationId", "_id", "location"),
@@ -1057,7 +1059,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						+ ((int) mongoTemplate.count(new Query(new Criteria("dentalImagingLocationId")
 								.is(dentalImagingInvoiceCollection.getDentalImagingLocationId()).and("dentalImagingHospitalId")
 								.is(dentalImagingInvoiceCollection.getDentalImagingHospitalId())),
-								DentalWorksInvoiceCollection.class) + 1));
+								DentalImagingInvoiceCollection.class) + 1));
 
 				dentalImagingInvoiceCollection.setBalanceAmount(request.getGrandTotal());
 				if (dentalImagingInvoiceCollection.getInvoiceDate() == null)

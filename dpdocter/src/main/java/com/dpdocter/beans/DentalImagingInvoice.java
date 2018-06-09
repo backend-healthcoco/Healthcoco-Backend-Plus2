@@ -59,6 +59,8 @@ public class DentalImagingInvoice {
 
 	private Boolean isPaid = false;
 
+	private String referringDoctor;
+
 	public String getId() {
 		return id;
 	}
@@ -265,6 +267,14 @@ public class DentalImagingInvoice {
 
 	public void setIsPaid(Boolean isPaid) {
 		this.isPaid = isPaid;
+	}
+
+	public String getReferringDoctor() {
+		return referringDoctor;
+	}
+
+	public void setReferringDoctor(String referringDoctor) {
+		this.referringDoctor = referringDoctor;
 	}
 
 	@Override
