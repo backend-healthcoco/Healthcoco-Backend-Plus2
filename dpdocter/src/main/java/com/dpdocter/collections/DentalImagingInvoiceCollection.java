@@ -86,6 +86,9 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 	@Field
 	private List<DentalImagingInvoiceItem> invoiceItems;
 
+	@Field
+	private Boolean isPaid = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -276,6 +279,14 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 
 	public void setInvoiceItems(List<DentalImagingInvoiceItem> invoiceItems) {
 		this.invoiceItems = invoiceItems;
+	}
+
+	public Boolean getIsPaid() {
+		return isPaid;
+	}
+
+	public void setIsPaid(Boolean isPaid) {
+		this.isPaid = isPaid;
 	}
 
 }

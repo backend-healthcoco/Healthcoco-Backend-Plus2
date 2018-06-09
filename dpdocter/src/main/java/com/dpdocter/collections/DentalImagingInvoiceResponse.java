@@ -11,7 +11,7 @@ import com.dpdocter.beans.Tax;
 import com.dpdocter.beans.User;
 import com.dpdocter.response.DentalImagingInvoiceItemResponse;
 
-public class DentalImagingInvoiceResponse extends GenericCollection{
+public class DentalImagingInvoiceResponse extends GenericCollection {
 
 	private String id;
 
@@ -65,9 +65,11 @@ public class DentalImagingInvoiceResponse extends GenericCollection{
 
 	private Location dentalImagingLab;
 
-	private User Doctor;
+	private User doctor;
 
 	private Location location;
+
+	private Boolean isPaid = false;
 
 	public String getId() {
 		return id;
@@ -278,11 +280,11 @@ public class DentalImagingInvoiceResponse extends GenericCollection{
 	}
 
 	public User getDoctor() {
-		return Doctor;
+		return doctor;
 	}
 
 	public void setDoctor(User doctor) {
-		Doctor = doctor;
+		this.doctor = doctor;
 	}
 
 	public Location getLocation() {
@@ -291,6 +293,14 @@ public class DentalImagingInvoiceResponse extends GenericCollection{
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public Boolean getIsPaid() {
+		return isPaid;
+	}
+
+	public void setIsPaid(Boolean isPaid) {
+		this.isPaid = isPaid;
 	}
 
 }
