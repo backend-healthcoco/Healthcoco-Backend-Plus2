@@ -35,6 +35,8 @@ public class DentalWorksReceiptResponse extends GenericCollection {
 	private Boolean discarded = false;
 
 	private User doctor;
+	
+	private Location lab;
 
 	private Location dentalLab;
 	private String chequeNumber;
