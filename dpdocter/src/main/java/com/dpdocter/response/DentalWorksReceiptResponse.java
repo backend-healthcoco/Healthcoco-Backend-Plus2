@@ -36,9 +36,18 @@ public class DentalWorksReceiptResponse extends GenericCollection {
 
 	private User doctor;
 	
-	private Location lab;
+	private Location clinic;
+
+	public Location getClinic() {
+		return clinic;
+	}
+
+	public void setClinic(Location clinic) {
+		this.clinic = clinic;
+	}
 
 	private Location dentalLab;
+	
 	private String chequeNumber;
 
 	private String note;
