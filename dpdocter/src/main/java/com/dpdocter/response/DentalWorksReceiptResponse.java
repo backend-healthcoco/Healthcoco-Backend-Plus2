@@ -35,8 +35,14 @@ public class DentalWorksReceiptResponse extends GenericCollection {
 	private Boolean discarded = false;
 
 	private User doctor;
-	
+
 	private Location clinic;
+
+	private Location dentalLab;
+
+	private String chequeNumber;
+
+	private String note;
 
 	public Location getClinic() {
 		return clinic;
@@ -45,12 +51,6 @@ public class DentalWorksReceiptResponse extends GenericCollection {
 	public void setClinic(Location clinic) {
 		this.clinic = clinic;
 	}
-
-	private Location dentalLab;
-	
-	private String chequeNumber;
-
-	private String note;
 
 	public String getId() {
 		return id;
