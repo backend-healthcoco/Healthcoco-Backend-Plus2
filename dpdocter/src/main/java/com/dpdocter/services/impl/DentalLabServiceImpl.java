@@ -3121,8 +3121,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
@@ -3136,6 +3138,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
@@ -3250,7 +3255,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-					Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("dentalLab"),Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
+					Aggregation.unwind("clinic"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.match(criteria));
 			AggregationResults<DentalWorksInvoiceResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalWorksInvoiceCollection.class, DentalWorksInvoiceResponse.class);
