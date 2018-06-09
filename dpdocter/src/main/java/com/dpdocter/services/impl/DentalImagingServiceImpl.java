@@ -212,11 +212,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						DentalImagingInvoice dentalImagingInvoice = new DentalImagingInvoice();
 						request.setId(null);
 						BeanUtil.map(request, dentalImagingInvoice);
+						dentalImagingInvoice.setDentalImagingId(String.valueOf(dentalImagingCollection.getId()));
 						dentalImagingInvoice.setPatientName(request.getLocalPatientName());
+						dentalImagingInvoice.setIsPaid(true);
 						addEditInvoice(dentalImagingInvoice);
 					}
 				}
-				
 				
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 					pushNotificationServices.notifyUser(String.valueOf(doctorClinicProfileCollection.getDoctorId()),
@@ -382,6 +383,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("patientName", new BasicDBObject("$first", "$patientName"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 							.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
+							.append("isPaid", new BasicDBObject("$first", "$isPaid"))
 							));
 			
 			if (size > 0)
@@ -1051,8 +1054,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				if (locationCollection == null)
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
 				dentalImagingInvoiceCollection.setUniqueInvoiceId(locationCollection.getInvoiceInitial()
-						+ ((int) mongoTemplate.count(new Query(new Criteria("dentalLabLocationId")
-								.is(dentalImagingInvoiceCollection.getDentalImagingLocationId()).and("dentalLabHospitalId")
+						+ ((int) mongoTemplate.count(new Query(new Criteria("dentalImagingLocationId")
+								.is(dentalImagingInvoiceCollection.getDentalImagingLocationId()).and("dentalImagingHospitalId")
 								.is(dentalImagingInvoiceCollection.getDentalImagingHospitalId())),
 								DentalWorksInvoiceCollection.class) + 1));
 
@@ -1122,6 +1125,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
 			dentalImagingCollection.setInvoiceId(dentalImagingInvoiceCollection.getId());
 			dentalImagingCollection.setUniqueInvoiceId(dentalImagingInvoiceCollection.getUniqueInvoiceId());
+			dentalImagingCollection.setTotalCost(dentalImagingInvoiceCollection.getTotalCost());
+			dentalImagingCollection.setIsPaid(dentalImagingInvoiceCollection.getIsPaid());
 			dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
 
 			response = new DentalImagingInvoice();

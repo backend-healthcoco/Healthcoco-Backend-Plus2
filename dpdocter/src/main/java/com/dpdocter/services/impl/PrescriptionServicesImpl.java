@@ -2915,9 +2915,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptionCollection != null) {
 				if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 						&& prescriptionCollection.getLocationId() != null) {
-					if (prescriptionCollection.getDoctorId().equals(doctorId)
-							&& prescriptionCollection.getHospitalId().equals(hospitalId)
-							&& prescriptionCollection.getLocationId().equals(locationId)) {
+					if (prescriptionCollection.getDoctorId().equals(new ObjectId(doctorId))
+							&& prescriptionCollection.getHospitalId().equals(new ObjectId(hospitalId))
+							&& prescriptionCollection.getLocationId().equals(new ObjectId(locationId))) {
 
 						UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
 						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
