@@ -57,6 +57,8 @@ public class DentalImagingInvoice {
 
 	private List<DentalImagingInvoiceItemResponse> invoiceItems;
 
+	private Boolean isPaid = false;
+
 	public String getId() {
 		return id;
 	}
@@ -255,6 +257,14 @@ public class DentalImagingInvoice {
 
 	public void setInvoiceItems(List<DentalImagingInvoiceItemResponse> invoiceItems) {
 		this.invoiceItems = invoiceItems;
+	}
+
+	public Boolean getIsPaid() {
+		return isPaid;
+	}
+
+	public void setIsPaid(Boolean isPaid) {
+		this.isPaid = isPaid;
 	}
 
 	@Override
