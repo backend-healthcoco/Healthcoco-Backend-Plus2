@@ -35,6 +35,8 @@ public class DentalImagingInvoiceResponse extends GenericCollection {
 
 	private String uniqueInvoiceId;
 
+	private String referringDoctor;
+
 	private Discount totalDiscount;
 
 	private Double totalCost = 0.0;
@@ -301,6 +303,14 @@ public class DentalImagingInvoiceResponse extends GenericCollection {
 
 	public void setIsPaid(Boolean isPaid) {
 		this.isPaid = isPaid;
+	}
+
+	public String getReferringDoctor() {
+		return referringDoctor;
+	}
+
+	public void setReferringDoctor(String referringDoctor) {
+		this.referringDoctor = referringDoctor;
 	}
 
 }
