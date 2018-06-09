@@ -3210,6 +3210,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
@@ -3218,6 +3221,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
@@ -3325,7 +3331,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 				}
 			}
-			
+
 			response = new DentalWorksInvoice();
 			BeanUtil.map(dentalWorksInvoiceCollection, response);
 		} catch (Exception e) {
@@ -3379,7 +3385,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 							- dentalWorksReceiptCollection.getAmountPaid());
 					dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 				}
-			
+
 			}
 			response = new DentalWorksReceipt();
 			BeanUtil.map(dentalWorksReceiptCollection, response);

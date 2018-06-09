@@ -64,6 +64,8 @@ public class DentalWorksInvoiceResponse extends GenericCollection {
 
 	private User doctor;
 
+	private Location clinic;
+
 	private Location dentalLab;
 
 	public String getId() {
@@ -280,6 +282,14 @@ public class DentalWorksInvoiceResponse extends GenericCollection {
 
 	public void setDentalLab(Location dentalLab) {
 		this.dentalLab = dentalLab;
+	}
+
+	public Location getClinic() {
+		return clinic;
+	}
+
+	public void setClinic(Location clinic) {
+		this.clinic = clinic;
 	}
 
 }
