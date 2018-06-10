@@ -2143,7 +2143,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
 									.findOne(treatment.getTreatmentServiceId());
 							patientTreatments.setNo(++no);
-							if (treatment.getStatus() != null) {
+							if (!DPDoctorUtils.anyStringEmpty(treatment.getStatus())) {
 								String status = treatment.getStatus().replaceAll("_", " ");
 								status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
 								patientTreatments.setStatus(status);
