@@ -9,6 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -248,16 +249,51 @@ public class DentalImagingAPI {
 			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
 			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
 			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page , @QueryParam("isPaid") Boolean isPaid) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalImagingLocationId, dentalImagingHospitalId)) {
 
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
 		response.setDataList(dentalImagingService.getInvoices(doctorId, locationId, hospitalId, dentalImagingLocationId,
-				dentalImagingHospitalId, from, to, searchTerm, size, page));
+				dentalImagingHospitalId, from, to, searchTerm, size, page, isPaid));
 		return response;
 	}
 
 	
+	
+	@Path(value = PathProxy.DentalImagingUrl.DISCARD_INVOICE)
+	@DELETE
+	@ApiOperation(value = PathProxy.DentalImagingUrl.DISCARD_INVOICE, notes = PathProxy.DentalImagingUrl.DISCARD_INVOICE)
+	public Response<DentalImagingInvoice> discardInvoice(@PathParam("id") String id,
+			@QueryParam("discarded") boolean discarded) {
+
+		DentalImagingInvoice dentalImagingInvoice = null;
+		if (id == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		dentalImagingInvoice = dentalImagingService.discardInvoice(id, discarded);
+		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
+		response.setData(dentalImagingInvoice);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.DentalImagingUrl.CHANGE_PAYMENT_STATUS)
+	@DELETE
+	@ApiOperation(value = PathProxy.DentalImagingUrl.CHANGE_PAYMENT_STATUS, notes = PathProxy.DentalImagingUrl.CHANGE_PAYMENT_STATUS)
+	public Response<DentalImagingInvoice> changePaymentStatus(@PathParam("id") String id,
+			@QueryParam("isPaid") boolean isPaid) {
+
+		DentalImagingInvoice dentalImagingInvoice = null;
+		if (id == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		dentalImagingInvoice = dentalImagingService.changeInvoicePaymentStatus(id, isPaid);
+		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
+		response.setData(dentalImagingInvoice);
+		return response;
+	}
 }

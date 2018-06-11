@@ -34,6 +34,7 @@ public class DentalImagingRequest {
 	private Boolean isTaxNotApplicable = false;
 	private Date invoiceDate;
 	private String uniqueInvoiceId;
+	private String invoiceId;
 
 	public String getPatientId() {
 		return patientId;
@@ -265,6 +266,14 @@ public class DentalImagingRequest {
 
 	public void setUniqueInvoiceId(String uniqueInvoiceId) {
 		this.uniqueInvoiceId = uniqueInvoiceId;
+	}
+
+	public String getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(String invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 
 	@Override

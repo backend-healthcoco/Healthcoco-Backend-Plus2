@@ -2,13 +2,18 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -57,6 +62,7 @@ import com.dpdocter.collections.DentalWorksAmountCollection;
 import com.dpdocter.collections.DentalWorksInvoiceCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorHospitalDentalImagingAssociationCollection;
+import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -83,6 +89,7 @@ import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
@@ -208,16 +215,15 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				
 				if(request.getIsPayAndSave().equals(Boolean.TRUE))
 				{
-					if (request.getUniqueInvoiceId() == null) {
 						DentalImagingInvoice dentalImagingInvoice = new DentalImagingInvoice();
 						request.setId(null);
 						BeanUtil.map(request, dentalImagingInvoice);
+						dentalImagingInvoice.setId(request.getInvoiceId());
 						dentalImagingInvoice.setDentalImagingId(String.valueOf(dentalImagingCollection.getId()));
 						dentalImagingInvoice.setPatientName(request.getLocalPatientName());
 						dentalImagingInvoice.setIsPaid(true);
 						dentalImagingInvoice.setReferringDoctor(request.getReferringDoctor());
 						addEditInvoice(dentalImagingInvoice);
-					}
 				}
 				
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
@@ -386,6 +392,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("totalCost", new BasicDBObject("$first", "$totalCost"))
 							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
 							.append("isPaid", new BasicDBObject("$first", "$isPaid"))
+							.append("invoiceId", new BasicDBObject("$first", "$invoiceId"))
 							));
 			
 		/**/
@@ -905,6 +912,15 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 			criteria.and("discarded").is(false);
 
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("doctor.firstName").regex("^" + searchTerm, "i"),
+						new Criteria("doctor.firstName").regex("^" + searchTerm),
+						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
+						new Criteria("location.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("location.locationName").regex("^" + searchTerm),
+						new Criteria("location.locationName").regex(searchTerm + ".*"));
+			}
+			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"), Aggregation.lookup("location_cl", "doctorLocationId", "_id", "location"),
@@ -1149,7 +1165,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	@Transactional
 	public List<DentalImagingInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
 			String dentalImagingLocationId, String dentalImagingHospitalId, Long from, Long to, String searchTerm, int size,
-			int page) {
+			int page , Boolean isPaid) {
 
 		List<DentalImagingInvoiceResponse> response = null;
 		try {
@@ -1176,6 +1192,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else {
 				criteria.and("updatedTime").gte(new Date(from));
+			}
+			if(isPaid != null)
+			{
+				criteria.and("isPaid").is(isPaid);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
@@ -1235,5 +1255,131 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public Double getInvoiceAmount(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String dentalImagingLocationId, String dentalImagingHospitalId, int page,
+			int size)
+	{
+		Double response = 0.0;
+		Aggregation aggregation = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").in(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
+				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
+				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
+			}
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("invoiceDate").gt(start);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("invoiceDate").lte(end);
+			} 
+			
+			CustomAggregationOperation customAggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$id")
+					.append("totalCost", new BasicDBObject("$sum", "$totalCost"))));
+			
+			
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					customAggregationOperation,
+						Aggregation.skip(page * size), Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						customAggregationOperation);
+			}
+			
+			response = mongoTemplate
+					.aggregate(aggregation, DentalImagingInvoiceCollection.class, Double.class)
+					.getUniqueMappedResult();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public DentalImagingInvoice discardInvoice(String id, boolean discarded) {
+		DentalImagingInvoice response = null;
+		DentalImagingInvoiceCollection dentalImagingInvoiceCollection = null;
+		try {
+			if (!DPDoctorUtils.anyStringEmpty(id)) {
+				dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.findOne(new ObjectId(id));
+			}
+			
+			if (dentalImagingInvoiceCollection != null) {
+			//	UserCollection userCollection = userRepository.findOne(dentalImagingInvoiceCollection.getDoctorId());
+				dentalImagingInvoiceCollection.setDiscarded(discarded);
+				dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
+			//	pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request has been discarded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput, "Record not found");
+			}
+			response = new DentalImagingInvoice();
+			BeanUtil.map(dentalImagingInvoiceCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	
+	@Override
+	@Transactional
+	public DentalImagingInvoice changeInvoicePaymentStatus(String id, boolean isPaid) {
+		DentalImagingInvoice response = null;
+		DentalImagingInvoiceCollection dentalImagingInvoiceCollection = null;
+		try {
+			if (!DPDoctorUtils.anyStringEmpty(id)) {
+				dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.findOne(new ObjectId(id));
+			}
+			
+			if (dentalImagingInvoiceCollection != null) {
+			//	UserCollection userCollection = userRepository.findOne(dentalImagingInvoiceCollection.getDoctorId());
+				dentalImagingInvoiceCollection.setIsPaid(isPaid);
+				dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
+			//	pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request has been discarded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput, "Record not found");
+			}
+			response = new DentalImagingInvoice();
+			BeanUtil.map(dentalImagingInvoiceCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 	
 }

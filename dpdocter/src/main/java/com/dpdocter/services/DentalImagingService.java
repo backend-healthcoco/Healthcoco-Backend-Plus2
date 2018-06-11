@@ -60,9 +60,16 @@ public interface DentalImagingService {
 
 	DentalImagingInvoice addEditInvoice(DentalImagingInvoice request);
 
+	Double getInvoiceAmount(String doctorId, String locationId, String hospitalId, String fromDate, String toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId, int page, int size);
+
+	DentalImagingInvoice discardInvoice(String id, boolean discarded);
+
+	DentalImagingInvoice changeInvoicePaymentStatus(String id, boolean isPaid);
+
 	List<DentalImagingInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
-			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
-			int page);
+			String dentalImagingLocationId, String dentalImagingHospitalId, Long from, Long to, String searchTerm,
+			int size, int page, Boolean isPaid);
 
 
 }

@@ -1769,6 +1769,7 @@ public interface PathProxy {
 		public static final String 	ADD_EDIT_INVOICE = "/addEditInvoice";
 		public static final String 	GET_INVOICES = "/getInvoices";
 		public static final String 	DISCARD_INVOICE = "/discardInvoice/{id}";
+		public static final String 	CHANGE_PAYMENT_STATUS = "/changePaymentStatus/{id}";
 		
 	}
 

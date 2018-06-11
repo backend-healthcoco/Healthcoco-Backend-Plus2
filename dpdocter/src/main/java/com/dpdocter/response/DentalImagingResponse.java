@@ -34,6 +34,7 @@ public class DentalImagingResponse extends GenericCollection {
 	private String mobileNumber;
 	private Date invoiceDate;
 	private String uniqueInvoiceId;
+	private String invoiceId;
 	private Double totalCost = 0.0;
 	private Boolean isPaid = false;
 
@@ -228,7 +229,13 @@ public class DentalImagingResponse extends GenericCollection {
 	public void setIsPaid(Boolean isPaid) {
 		this.isPaid = isPaid;
 	}
-	
-	
+
+	public String getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(String invoiceId) {
+		this.invoiceId = invoiceId;
+	}
 
 }
