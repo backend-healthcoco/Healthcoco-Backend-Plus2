@@ -1176,6 +1176,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.getMappedResults();
 			if (patientCollectionResponses != null && !patientCollectionResponses.isEmpty())
 				patientCard = patientCollectionResponses.get(0);
+			System.out.println(patientCard.getImageUrl());
 			if (patientCard != null && patientCard.getUser() != null) {
 				Reference reference = null;
 				if (patientCard.getReference() != null) {

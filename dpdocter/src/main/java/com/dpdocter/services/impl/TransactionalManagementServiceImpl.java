@@ -920,12 +920,121 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				}				
 			}
 //			sendAppointmentScheduleToStaff();
+//			sendEventReminderToDoctor();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 		}
 	}
 	
+	@Transactional
+	public void sendEventReminderToDoctor() {
+			try {
+				if (sendSMS) {
+					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+					localCalendar.setTime(new Date());
+					int currentDay = localCalendar.get(Calendar.DATE);
+					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+					int currentYear = localCalendar.get(Calendar.YEAR);
+					DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+					DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+					Aggregation aggregation = Aggregation.newAggregation(
+							Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
+									.is(AppointmentType.EVENT.getType()).and("fromDate").gte(fromTime).and("toDate")
+									.lte(toTime)),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+							Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
+							Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
+					AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
+							.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
+
+					List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults
+							.getMappedResults();
+					Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
+
+					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+
+					if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
+						for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
+							PatientCollection patientCollection = null;
+							if(!DPDoctorUtils.anyStringEmpty(appointmentDoctorReminderResponse.getPatientId())) {
+							     patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+										new ObjectId(appointmentDoctorReminderResponse.getPatientId()),
+										appointmentDoctorReminderResponse.getLocationId(),
+										appointmentDoctorReminderResponse.getHospitalId());
+							}
+
+							String _24HourTime = String.format("%02d:%02d",
+									appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
+									appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
+
+							Date _24HourDt = _24HourSDF.parse(_24HourTime);
+
+							if (doctorAppointmentSMSResponseMap
+									.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
+								DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
+										.get(appointmentDoctorReminderResponse.getDoctorId().toString());
+								if(patientCollection != null) {
+									response.setMessage(response.getMessage() + ", " + patientCollection.getLocalPatientName()
+										+ "(" + _12HourSDF.format(_24HourDt) + ")");
+								}
+								response.setNoOfAppointments(response.getNoOfAppointments() + 1);
+								doctorAppointmentSMSResponseMap
+										.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+							} else {
+								DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
+								response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
+								if(patientCollection != null) response.setMessage(patientCollection.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
+								response.setNoOfAppointments(1);
+								response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
+								doctorAppointmentSMSResponseMap
+										.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+							}
+						}
+
+					for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
+						DoctorAppointmentSMSResponse response = entry.getValue();
+						UserCollection userCollection = response.getDoctor();
+						String message = "Healthcoco! You have " + response.getNoOfAppointments()
+								+ " events scheduled today.\n" + response.getMessage()
+								+ ".\nHave a Healthy and Happy day!!";
+						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+						smsTrackDetail.setDoctorId(userCollection.getId());
+						smsTrackDetail.setType("EVENTS");
+						SMSDetail smsDetail = new SMSDetail();
+						smsDetail.setUserId(userCollection.getId());
+						SMS sms = new SMS();
+						smsDetail.setUserName(userCollection.getFirstName());
+						sms.setSmsText(message);
+
+						SMSAddress smsAddress = new SMSAddress();
+						smsAddress.setRecipient(userCollection.getMobileNumber());
+						sms.setSmsAddress(smsAddress);
+
+						smsDetail.setSms(sms);
+						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+						smsDetails.add(smsDetail);
+						smsTrackDetail.setSmsDetails(smsDetails);
+						sMSServices.sendSMS(smsTrackDetail, true);
+						if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
+							pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
+									null, response.getUserDevices());
+						}
+					}
+				}
+				sendAppointmentScheduleToClinicAdmin();
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+			}
+		}
 	@Override
 	@Transactional
 	public void sendAppointmentScheduleToStaff() {

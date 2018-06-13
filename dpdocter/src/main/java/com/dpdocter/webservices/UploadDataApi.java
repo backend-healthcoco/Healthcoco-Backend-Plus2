@@ -205,10 +205,10 @@ public class UploadDataApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.UploadDataUrls.UPDATE_RECEIPTS)
+	@Path(value = PathProxy.UploadDataUrls.UPDATE_TREATMENTS)
 	@GET
-	@ApiOperation(value = PathProxy.UploadDataUrls.PAYMENTS, notes = PathProxy.UploadDataUrls.PAYMENTS)
-	public Response<Boolean> updatePaymentsData(@PathParam("doctorId") String doctorId,
+	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_TREATMENTS, notes = PathProxy.UploadDataUrls.UPDATE_TREATMENTS)
+	public Response<Boolean> updateTreatmentsData(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
@@ -216,7 +216,22 @@ public class UploadDataApi {
 		}
 
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(uploadDataService.updatePaymentsData(doctorId, locationId, hospitalId));
+		response.setData(uploadDataService.updateTreatmentsData(doctorId, locationId, hospitalId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.UploadDataUrls.UPLOAD_IMAGES)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.UPLOAD_IMAGES, notes = PathProxy.UploadDataUrls.UPLOAD_IMAGES)
+	public Response<Boolean> upploadImages(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(uploadDataService.uploadImages(doctorId, locationId, hospitalId));
 		return response;
 	}
 }
