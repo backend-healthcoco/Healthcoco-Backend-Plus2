@@ -1766,11 +1766,11 @@ public interface PathProxy {
 		public static final String DISCARD_RECORD = "/discardRecord";
 		public static final String GET_ASSOCIATED_DOCTORS = "/getAssociatedDoctors";
 		public static final String DOCTOR_REGISTRATION = "/doctorRegistration";
-		public static final String 	ADD_EDIT_INVOICE = "/addEditInvoice";
-		public static final String 	GET_INVOICES = "/getInvoices";
-		public static final String 	DISCARD_INVOICE = "/discardInvoice/{id}";
-		public static final String 	CHANGE_PAYMENT_STATUS = "/changePaymentStatus/{id}";
-		
+		public static final String ADD_EDIT_INVOICE = "/addEditInvoice";
+		public static final String GET_INVOICES = "/getInvoices";
+		public static final String DISCARD_INVOICE = "/discardInvoice/{id}";
+		public static final String CHANGE_PAYMENT_STATUS = "/changePaymentStatus/{id}";
+
 	}
 
 	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
@@ -1786,7 +1786,11 @@ public interface PathProxy {
 	public interface LabPrintUrls {
 		public static final String ADD_EDIT_LAB_PRINT_SETTING = "/setting/add";
 		public static final String GET_Lab_PRINT_SETTING = "/setting/{locationId}/{hospitalId}/get";
-		public static final String ADD_EDIT_LAB_PRINT_HEADER = "header/addEdit";
-		public static final String ADD_EDIT_LAB_PRINT_FOOTER = "footer/addEdit";
+		public static final String ADD_EDIT_LAB_PRINT_HEADER = "/header/addEdit";
+		public static final String ADD_EDIT_LAB_PRINT_FOOTER = "/footer/addEdit";
+		public static final String ADD_EDIT_LAB_DOCUMENT = "/document/addEdit";
+		public static final String GET_LAB_DOCUMENTS = "/document/get";
+		public static final String GET_LAB_DOCUMENT = "/document/{documentId}/view";
+		public static final String DELETE_LAB_DOCUMENT = "/document/{documentId}/delete";
 	}
 }

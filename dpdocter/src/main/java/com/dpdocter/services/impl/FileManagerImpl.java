@@ -5,15 +5,22 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -252,9 +259,9 @@ public class FileManagerImpl implements FileManager {
 			byte[] contentBytes = IOUtils.toByteArray(fis);
 
 			/*
-			 * fileSizeInMB = new BigDecimal(contentBytes.length).divide(new
-			 * BigDecimal(1000 * 1000)).doubleValue(); if (fileSizeInMB > 10) {
-			 * throw new BusinessException(ServiceError.Unknown,
+			 * fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000
+			 * * 1000)).doubleValue(); if (fileSizeInMB > 10) { throw new
+			 * BusinessException(ServiceError.Unknown,
 			 * " You cannot upload file more than 1O mb"); }
 			 */
 
@@ -338,6 +345,135 @@ public class FileManagerImpl implements FileManager {
 			ObjectMetadata metadata = new ObjectMetadata();
 			metadata.setContentLength(buffer.length);
 			metadata.setContentEncoding(fileExtension);
+			metadata.setContentType(contentType);
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+			s3client.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, metadata));
+		} catch (AmazonServiceException ase) {
+			System.out.println("Error Message: " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		} catch (Exception e) {
+			System.out.println("Error Message: " + e.getMessage());
+		}
+		return thumbnailUrl;
+	}
+
+	@Override
+	@Transactional
+	public List<ImageURLResponse> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail)
+			throws Exception {
+		byte[] base64 = Base64.decodeBase64(fileDetails.getFileEncoded());
+		PDDocument document = PDDocument.load(base64);
+		PDFRenderer pdfRenderer = new PDFRenderer(document);
+		document.getPages().getCount();
+		List<ImageURLResponse> imagelist = new ArrayList<ImageURLResponse>();
+		ByteArrayOutputStream outstream = null;
+		for (int i = 0; i < document.getPages().getCount(); i++) {
+			// note that the page number parameter is zero based
+			BufferedImage bim = pdfRenderer.renderImageWithDPI(i, 500, ImageType.RGB);
+			outstream = new ByteArrayOutputStream();
+			ImageIOUtil.writeImage(bim, "jpg", outstream);
+			// suffix in filename will be used as the file format
+			imagelist.add(saveImageAndReturnImageUrl(outstream, fileDetails.getFileName() + "-" + (i), path, true));
+
+		}
+		System.out.println(imagelist.size());
+		document.close();
+		return imagelist;
+	}
+
+	@Override
+	@Transactional
+	public ImageURLResponse saveImageAndReturnImageUrl(ByteArrayOutputStream outstream, String fileName, String path,
+			Boolean createThumbnail) throws Exception {
+		ImageURLResponse response = new ImageURLResponse();
+
+		String imageUrl = path + "/" + fileName;
+
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+		AmazonS3 s3client = new AmazonS3Client(credentials);
+		try {
+
+			InputStream fis = new ByteArrayInputStream(outstream.toByteArray());
+			String contentType = URLConnection.guessContentTypeFromStream(fis);
+			if (!DPDoctorUtils.anyStringEmpty(contentType) && contentType.equalsIgnoreCase("exe")) {
+				throw new BusinessException(ServiceError.NotAcceptable, "Invalid File");
+			}
+			ObjectMetadata metadata = new ObjectMetadata();
+			byte[] contentBytes = IOUtils.toByteArray(fis);
+			metadata.setContentLength(contentBytes.length);
+			metadata.setContentEncoding("jpg");
+			metadata.setContentType(contentType);
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+
+			s3client.putObject(new PutObjectRequest(bucketName, imageUrl, fis, metadata));
+			response.setImageUrl(imageUrl);
+			if (createThumbnail) {
+				response.setThumbnailUrl(saveThumbnailAndReturnThumbNailUrl(fileName, path));
+			}
+		} catch (AmazonServiceException ase) {
+			System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public String saveThumbnailAndReturnThumbNailUrl(String fileName, String path) {
+		String thumbnailUrl = "";
+
+		try {
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonS3 s3client = new AmazonS3Client(credentials);
+
+			S3Object object = s3client
+					.getObject(new GetObjectRequest(bucketName, path + File.separator + fileName + "." + "jpg"));
+			InputStream objectData = object.getObjectContent();
+
+			BufferedImage originalImage = ImageIO.read(objectData);
+			double ratio = (double) originalImage.getWidth() / originalImage.getHeight();
+			int height = originalImage.getHeight();
+
+			int width = originalImage.getWidth();
+			int max = 120;
+			if (width == height) {
+				width = max;
+				height = max;
+			} else if (width > height) {
+				height = max;
+				width = (int) (ratio * max);
+			} else {
+				width = max;
+				height = (int) (max / ratio);
+			}
+			BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			img.createGraphics().drawImage(originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0,
+					null);
+			fileName = fileName + "_thumb." + "jpg";
+			thumbnailUrl = path + "/" + fileName;
+
+			originalImage.flush();
+			originalImage = null;
+
+			ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+			ImageIO.write(img, "jpg", outstream);
+			byte[] buffer = outstream.toByteArray();
+			objectData = new ByteArrayInputStream(buffer);
+
+			String contentType = URLConnection.guessContentTypeFromStream(objectData);
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentLength(buffer.length);
+			metadata.setContentEncoding("jpg");
 			metadata.setContentType(contentType);
 			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
 			s3client.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, metadata));
