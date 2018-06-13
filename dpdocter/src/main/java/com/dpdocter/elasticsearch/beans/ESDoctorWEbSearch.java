@@ -69,6 +69,10 @@ public class ESDoctorWEbSearch {
 
 	private List<String> appointmentBookingNumber;
 	
+	private String locationId;
+
+	private String hospitalId;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -309,6 +313,22 @@ public class ESDoctorWEbSearch {
 		this.appointmentBookingNumber = appointmentBookingNumber;
 	}
 
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDoctorWEbSearch [colorCode=" + colorCode + ", userId=" + userId + ", title=" + title + ", firstName="
@@ -320,7 +340,8 @@ public class ESDoctorWEbSearch {
 				+ longitude + ", landmarkDetails=" + landmarkDetails + ", locality=" + locality + ", clinicNumber="
 				+ clinicNumber + ", locationName=" + locationName + ", facility=" + facility + ", userUId=" + userUId
 				+ ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL + ", rankingCount="
-				+ rankingCount + ", appointmentBookingNumber=" + appointmentBookingNumber + "]";
+				+ rankingCount + ", appointmentBookingNumber=" + appointmentBookingNumber + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + "]";
 	}
 
 }

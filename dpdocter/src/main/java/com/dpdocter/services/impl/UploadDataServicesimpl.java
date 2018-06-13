@@ -1,8 +1,14 @@
 package com.dpdocter.services.impl;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +20,9 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TimeZone;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FilenameUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +30,25 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
+import com.amazonaws.services.s3.model.CopyPartRequest;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
@@ -39,6 +63,7 @@ import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.Quantity;
+import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Treatment;
@@ -69,6 +94,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
@@ -109,6 +135,7 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
@@ -117,6 +144,7 @@ import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientTreatmentServices;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.ReportsService;
@@ -233,6 +261,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Autowired
 	DoctorPatientDueAmountRepository doctorPatientDueAmountRepository;
 
+	@Autowired
+	RecordsRepository recordsRepository;
+	
+	@Autowired
+	private PatientVisitService patientVisitService;
+	
 	@Value(value = "${patient.count}")
 	private String patientCount;
 
@@ -301,6 +335,18 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Autowired
 	private ESPatientRepository esPatientRepository;
 
+	@Value(value = "${bucket.name}")
+	private String bucketName;
+
+	@Value(value = "${mail.aws.key.id}")
+	private String AWS_KEY;
+
+	@Value(value = "${mail.aws.secret.key}")
+	private String AWS_SECRET_KEY;
+	
+	@Value(value = "${list.images.result}")
+	private String LIST_IMAGES_RESULT;
+	
 //	@Autowired
 //	private ESDrugRepository esDrugRepository;
 //	
@@ -1486,7 +1532,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 										treatment.setFinalCost(treatment.getCost()
 												- (treatment.getCost() * (discount.getValue() / 100)));
 									} else {
-										treatment.setFinalCost(treatment.getCost() - (discount.getValue() / 100));
+										treatment.setFinalCost(treatment.getCost() - discount.getValue());
 									}
 
 									if (totalDiscount == null) {
@@ -1733,7 +1779,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 											treatment.setFinalCost(
 													treatment.getCost() - (treatment.getCost() * (discount.getValue() / 100)));
 										} else {
-											treatment.setFinalCost(treatment.getCost() - (discount.getValue() / 100));
+											treatment.setFinalCost(treatment.getCost() - discount.getValue());
 										}
 
 										if (totalDiscount == null) {
@@ -2385,7 +2431,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 										invoiceItem.setFinalCost(
 												invoiceItem.getCost() - (invoiceItem.getCost() * (discount.getValue() / 100)));
 									} else {
-										invoiceItem.setFinalCost(invoiceItem.getCost() - (discount.getValue() / 100));
+										invoiceItem.setFinalCost(invoiceItem.getCost() - discount.getValue());
 									}
 
 									if (totalDiscount == null) {
@@ -2703,75 +2749,76 @@ public class UploadDataServicesimpl implements UploadDateService {
 	}
 
 	@Override
-	public Boolean updatePaymentsData(String doctorId, String locationId, String hospitalId) {
+	public Boolean updateTreatmentsData(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
 		try {
 			
-				List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("invoiceitems.itemId").is(null)),
-						Aggregation.limit(5007)), DoctorPatientInvoiceCollection.class, DoctorPatientInvoiceCollection.class).getMappedResults();
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			long count = mongoTemplate.count(new Query(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)), PatientTreatmentCollection.class);
+			
+			if(count > 0) {
+				float j = count/2000;
+				int i = (int) Math.ceil(j);
 				
-				if(doctorPatientInvoiceCollections != null) {
-					System.out.println(doctorPatientInvoiceCollections.size());
-					for(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection : doctorPatientInvoiceCollections) {
-						Boolean update = false;
-						if(doctorPatientInvoiceCollection.getInvoiceItems() != null) {
-							for(InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
-								if(DPDoctorUtils.anyStringEmpty(invoiceItem.getItemId()) && (invoiceItem.getType() != null) && invoiceItem.getType().name().equalsIgnoreCase(InvoiceItemType.SERVICE.name())) {
-									List<TreatmentServicesCollection> treatmentServicesCollections = mongoTemplate.aggregate(
-											Aggregation.newAggregation(Aggregation.match(new Criteria("name").regex(invoiceItem.getName(), "i")
-													.orOperator(new Criteria("locationId").is(doctorPatientInvoiceCollection.getLocationId()).and("hospitalId").is(doctorPatientInvoiceCollection.getHospitalId()),
-															new Criteria("locationId").is(null).and("hospitalId").is(null)))), TreatmentServicesCollection.class, TreatmentServicesCollection.class).getMappedResults();
+				for(int k = 0; k <= i; k++) {
+					List<PatientTreatmentCollection> patientTreatmentCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+							Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)),
+							Aggregation.skip(k*2000),Aggregation.limit(2000)), PatientTreatmentCollection.class, PatientTreatmentCollection.class).getMappedResults();
+					if(patientTreatmentCollections != null) {
+						for(PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
+							
+							double totalCost = 0.0;
+							double grandTotal = 0.0;
+							
+							List<Treatment> treatments = patientTreatmentCollection.getTreatments();
+							if(treatments != null && !treatments.isEmpty()) {
+								for(Treatment treatment : treatments) {
+									
+									double cost = treatment.getCost();
+									if(treatment.getQuantity() != null) {
+										if(treatment.getQuantity().getValue() > 0) {
 											
+											cost =  cost * treatment.getQuantity().getValue();
 											
-//											treatmentServicesRepository
-//											.findByNameAndLocationHospital(invoiceItem.getName(), doctorPatientInvoiceCollection.getLocationId(), doctorPatientInvoiceCollection.getHospitalId(), 
-//													new Sort(Direction.DESC, "createdTime"));
-									if(treatmentServicesCollections != null && !treatmentServicesCollections.isEmpty()) {
-										invoiceItem.setItemId(treatmentServicesCollections.get(0).getId());
-										System.out.println("Updated :"+doctorPatientInvoiceCollection.getUniqueInvoiceId()+".."+invoiceItem.getName());
-										update = true;
+											if(treatment.getDiscount() != null) {
+												if (treatment.getDiscount().getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+													treatment.setFinalCost(cost - (cost * (treatment.getDiscount().getValue() / 100)));
+												} else {
+													treatment.setFinalCost(cost - treatment.getDiscount().getValue());
+												}
+											}else {
+												treatment.setFinalCost(cost);
+											}										
+										}else {
+											treatment.setFinalCost(0.0);
+										}
 									}else {
-										System.out.println("Not Found :"+doctorPatientInvoiceCollection.getUniqueInvoiceId()+".."+invoiceItem.getName());
-										
-										TreatmentServicesCollection servicesCollection = new TreatmentServicesCollection();
-										servicesCollection.setAdminCreatedTime(new Date());
-										servicesCollection.setCost(invoiceItem.getCost());
-										servicesCollection.setCreatedBy(doctorPatientInvoiceCollection.getCreatedBy());
-										servicesCollection.setCreatedTime(new Date());
-										servicesCollection.setDiscarded(false);
-										servicesCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
-										servicesCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
-										servicesCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
-										servicesCollection.setName(invoiceItem.getName());
-										servicesCollection.setUpdatedTime(new Date());
-										servicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
-										servicesCollection.setRankingCount(1);
-										
-										servicesCollection = treatmentServicesRepository.save(servicesCollection);
-										
-										transactionalManagementService.addResource(servicesCollection.getId(), Resource.TREATMENTSERVICE,
-												false);
-										ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
-										BeanUtil.map(servicesCollection, esTreatmentServiceDocument);
-										esTreatmentService.addEditService(esTreatmentServiceDocument);
-										invoiceItem.setItemId(servicesCollection.getId());
-										update = true;
-										
+										treatment.setFinalCost(0.0);
 									}
-													
+									totalCost = totalCost + treatment.getCost();
+									grandTotal = grandTotal + treatment.getFinalCost();
 								}
-							}
-							if(update) {
-								System.out.println(doctorPatientInvoiceCollection.getInvoiceItems());
-								doctorPatientInvoiceCollection.setUpdatedTime(new Date());
-								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
-								response = true;
-							}
-						}
+								patientTreatmentCollection.setTreatments(null);	
+								patientTreatmentCollection.setTreatments(treatments);
+						   }
+						   
+						   patientTreatmentCollection.setTotalCost(totalCost);
+						   patientTreatmentCollection.setGrandTotal(grandTotal);
+						   patientTreatmentCollection.setUpdatedTime(new Date());
+						   patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
+						   System.out.println(patientTreatmentCollection.getUniqueEmrId());
+						   response = true;
+						}		
 					}
 				}
-			
-			
+			}
 		}catch (Exception e) {
 			response = false;
 			e.printStackTrace();
@@ -2779,4 +2826,232 @@ public class UploadDataServicesimpl implements UploadDateService {
 		return response;
 	}
 
+	@Override
+	public Boolean uploadImages(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		FileWriter fileWriter = null;
+		try {
+			fileWriter = new FileWriter(LIST_IMAGES_RESULT);
+			
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			
+			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			LocationCollection locationCollection = locationRepository.findOne(locationObjectId);
+			
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonS3 s3client = new AmazonS3Client(credentials);
+			int profileCount = 0, totalCount = 0, notFound = 0, recordsAdded = 0;;
+			ObjectListing listing = s3client.listObjects(bucketName,"2809");
+			
+			List<S3ObjectSummary> summaries = listing.getObjectSummaries();
+
+			while (listing.isTruncated()) {
+			   listing = s3client.listNextBatchOfObjects (listing);
+			   summaries.addAll (listing.getObjectSummaries());
+			}
+			
+			
+			if(summaries != null) {
+				for(S3ObjectSummary obListing : summaries) {
+					String fileName = obListing.getKey().replace("2809/", "");
+					String fileExtension = FilenameUtils.getExtension(fileName);
+					System.out.println(fileName);
+					int index = fileName.indexOf("MDC");
+					if(index > 0) {
+						String pNum = fileName.substring(index);
+						String dateStr = pNum;
+						pNum = pNum.substring(pNum.indexOf("MDC"), pNum.indexOf("_"));
+
+						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(locationObjectId, hospitalObjectId, pNum);
+						
+						if(patientCollection != null) {
+							if(fileName.startsWith("Profile")) {
+								String path = "profile-images";
+																				
+								S3Object object = s3client.getObject(new GetObjectRequest(bucketName, obListing.getKey()));
+								InputStream objectData = object.getObjectContent();
+						
+								BufferedImage originalImage = ImageIO.read(objectData);
+								ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+								ImageIO.write(originalImage, fileExtension, outstream);
+								byte[] buffer = outstream.toByteArray();
+								objectData = new ByteArrayInputStream(buffer);
+						
+								String contentType = URLConnection.guessContentTypeFromStream(objectData);
+								ObjectMetadata metadata = new ObjectMetadata();
+								metadata.setContentLength(buffer.length);
+								metadata.setContentEncoding(fileExtension);
+								metadata.setContentType(contentType);
+								metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+								s3client.putObject(new PutObjectRequest(bucketName, path+"/"+fileName, objectData, metadata));
+													
+								patientCollection.setImageUrl(path+"/"+fileName);						
+								patientCollection.setThumbnailUrl(saveThumnailImage(path, fileName, s3client));
+								
+								patientCollection.setUpdatedTime(new Date());
+								patientCollection = patientRepository.save(patientCollection);
+								transactionalManagementService.addResource(patientCollection.getUserId(), Resource.PATIENT,
+										false);
+								transactionalManagementService.checkPatient(patientCollection.getUserId());
+								fileWriter.append("Profile Picture Update    "+fileName);
+								fileWriter.append(NEW_LINE_SEPARATOR);
+								
+								profileCount=profileCount+1;
+								
+							}else {
+								
+								dateStr = dateStr.replace(pNum, "").replaceFirst("_", "");
+								String time = dateStr;
+								dateStr = dateStr.substring(0, dateStr.indexOf("_"));
+									
+								time = time.replace(dateStr, "").replaceFirst("_", "");
+								time = time.substring(0, time.indexOf("_"));
+
+								RecordsCollection recordsCollection = new RecordsCollection();
+								
+								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+								String dateSTri = dateStr +" "+time;
+								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+								Date fromDate = dateFormat.parse(dateSTri);
+								
+								recordsCollection.setPatientId(patientCollection.getUserId());
+								recordsCollection.setLocationId(locationObjectId);
+								recordsCollection.setDoctorId(doctorObjectId);
+								recordsCollection.setHospitalId(hospitalObjectId);
+								recordsCollection.setAdminCreatedTime(fromDate);
+								recordsCollection.setCreatedTime(fromDate);
+								recordsCollection.setUpdatedTime(fromDate);
+								
+								String recordLable = fileName.replace("."+fileExtension, "");
+								String path = "records" + File.separator + patientCollection.getUserId();
+
+								String recordPath = path + File.separator + fileName;
+
+								recordsCollection.setRecordsUrl(recordPath);
+								recordsCollection.setRecordsPath(recordPath);
+								recordsCollection.setRecordsLabel(recordLable);
+								
+								recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
+
+								recordsCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+
+								recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
+																
+								S3Object object = s3client.getObject(new GetObjectRequest(bucketName, obListing.getKey()));
+								InputStream objectData = object.getObjectContent();
+												
+								String contentType = URLConnection.guessContentTypeFromStream(objectData);
+								ObjectMetadata metadata = new ObjectMetadata();
+								metadata.setContentEncoding(fileExtension);
+								metadata.setContentType(contentType);
+								metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+								s3client.putObject(new PutObjectRequest(bucketName, recordPath, objectData, metadata));
+								
+								recordsCollection = recordsRepository.save(recordsCollection);
+								
+								
+								Records visitRecord = new Records();
+								BeanUtil.map(recordsCollection, visitRecord);
+								visitRecord.setPrescriptionId(null);
+								String visitId = patientVisitService.addRecord(visitRecord, VisitedFor.REPORTS, null);
+								
+								fileWriter.append("Record Added "+fileName);
+								fileWriter.append(NEW_LINE_SEPARATOR);
+								
+								recordsAdded = recordsAdded +1;
+							}
+						}else {
+							fileWriter.append("Patient Not Found "+fileName);
+							fileWriter.append(NEW_LINE_SEPARATOR);
+							notFound = notFound + 1;
+						}
+					}else {
+						
+						fileWriter.append("No PID "+fileName);
+						fileWriter.append(NEW_LINE_SEPARATOR);
+					}	
+					
+			        
+					totalCount = totalCount + 1;
+				}
+			}
+			System.out.println("totalCount" + totalCount);
+			System.out.println("recordsAdded" + recordsAdded);
+			System.out.println("profileCount" + profileCount);
+			System.out.println("notFound" + notFound);
+		}catch (Exception e) {
+			response = false;
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	private String saveThumnailImage(String path, String fileName, AmazonS3 s3client) {
+		String thumbnailUrl = null;
+		try {
+
+			S3Object object = s3client.getObject(new GetObjectRequest(bucketName, path + File.separator + fileName));
+			
+			InputStream objectData = object.getObjectContent();
+	
+			BufferedImage originalImage = ImageIO.read(objectData);
+			double ratio = (double) originalImage.getWidth() / originalImage.getHeight();
+			int height = originalImage.getHeight();
+	
+			int width = originalImage.getWidth();
+			int max = 120;
+			if (width == height) {
+				width = max;
+				height = max;
+			} else if (width > height) {
+				height = max;
+				width = (int) (ratio * max);
+			} else {
+				width = max;
+				height = (int) (max / ratio);
+			}
+			BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			img.createGraphics().drawImage(originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0,
+					null);
+			
+			String fileExtension = FilenameUtils.getExtension(fileName);
+			fileName = fileName.replace("."+fileExtension, "") + "_thumb." + fileExtension;
+			thumbnailUrl = path + File.separator + fileName;
+	
+			originalImage.flush();
+			originalImage = null;
+	
+			ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+			ImageIO.write(img, fileExtension, outstream);
+			byte[] buffer = outstream.toByteArray();
+			objectData = new ByteArrayInputStream(buffer);
+	
+			String contentType = URLConnection.guessContentTypeFromStream(objectData);
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentLength(buffer.length);
+			metadata.setContentEncoding(fileExtension);
+			metadata.setContentType(contentType);
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+			s3client.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, metadata));
+		} catch (AmazonServiceException ase) {
+			System.out.println("Error Message: " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+			+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+			+ " Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		} catch (Exception e) {
+			System.out.println("Error Message: " + e.getMessage());
+		}
+		return thumbnailUrl;
+	}
 }

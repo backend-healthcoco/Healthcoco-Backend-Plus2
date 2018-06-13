@@ -1597,7 +1597,9 @@ public interface PathProxy {
 
 		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
 
-		public static final String UPDATE_RECEIPTS = "/payments/{doctorId}/{locationId}/{hospitalId}/update";
+		public static final String UPDATE_TREATMENTS = "/treatments/{doctorId}/{locationId}/{hospitalId}/update";
+
+		public static final String UPLOAD_IMAGES = "/images/{doctorId}/{locationId}/{hospitalId}/";
 
 	}
 
