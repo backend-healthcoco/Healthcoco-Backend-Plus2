@@ -213,19 +213,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingCollection.setCreatedBy(userCollection.getFirstName());
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
 				
-				if(request.getIsPayAndSave().equals(Boolean.TRUE))
-				{
-						DentalImagingInvoice dentalImagingInvoice = new DentalImagingInvoice();
-						request.setId(null);
-						BeanUtil.map(request, dentalImagingInvoice);
-						dentalImagingInvoice.setId(request.getInvoiceId());
-						dentalImagingInvoice.setDentalImagingId(String.valueOf(dentalImagingCollection.getId()));
-						dentalImagingInvoice.setPatientName(request.getLocalPatientName());
-						dentalImagingInvoice.setIsPaid(true);
-						dentalImagingInvoice.setReferringDoctor(request.getReferringDoctor());
-						addEditInvoice(dentalImagingInvoice);
-				}
-				
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 					pushNotificationServices.notifyUser(String.valueOf(doctorClinicProfileCollection.getDoctorId()),
 							"Request Has been updated.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),
@@ -239,6 +226,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			response = new DentalImagingResponse();
 			BeanUtil.map(dentalImagingCollection, response);
 			 
+			if(request.getIsPayAndSave().equals(Boolean.TRUE))
+			{
+					DentalImagingInvoice dentalImagingInvoice = new DentalImagingInvoice();
+					request.setId(null);
+					BeanUtil.map(request, dentalImagingInvoice);
+					dentalImagingInvoice.setId(request.getInvoiceId());
+					dentalImagingInvoice.setDentalImagingId(String.valueOf(dentalImagingCollection.getId()));
+					dentalImagingInvoice.setPatientName(request.getLocalPatientName());
+					dentalImagingInvoice.setIsPaid(true);
+					dentalImagingInvoice.setReferringDoctor(request.getReferringDoctor());
+					addEditInvoice(dentalImagingInvoice);
+			}
 			
 			if (request.getType() != null) {
 				

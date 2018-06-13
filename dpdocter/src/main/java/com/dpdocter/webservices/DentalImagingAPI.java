@@ -281,7 +281,7 @@ public class DentalImagingAPI {
 	
 	
 	@Path(value = PathProxy.DentalImagingUrl.CHANGE_PAYMENT_STATUS)
-	@DELETE
+	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.CHANGE_PAYMENT_STATUS, notes = PathProxy.DentalImagingUrl.CHANGE_PAYMENT_STATUS)
 	public Response<DentalImagingInvoice> changePaymentStatus(@PathParam("id") String id,
 			@QueryParam("isPaid") boolean isPaid) {
