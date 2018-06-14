@@ -39,7 +39,8 @@ public enum ComponentType {
 																																																																	"REFRESH_DENTAL_IMAGING"), DENTAL_WORK_INVOICE(
 																																																																			"DENTAL_WORK_INVOICE"), EVENT(
 																																																																					"EVENT"), DENTAL_WORK_RECEIPT(
-																																																																							"DENTAL_WORK_RECEIPT");
+																																																																							"DENTAL_WORK_RECEIPT"), DENTAL_IMAGE_INVOICE(
+																																																																									"DENTAL_IMAGE_INVOICE");
 
 	private String type;
 

@@ -1638,6 +1638,28 @@ public interface PathProxy {
 
 	public interface DownloadDataUrls {
 
+		
+		public static final String PATIENTS = "/patients/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String PRESCRIPTIONS = "/prescriptions/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String APPOINTMENTS = "/appointments/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String TREATMENT_PLANS = "/treatments/plans/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String TREATMENTS = "/treatments/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String CLINICAL_NOTES = "/clinicalnotes/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String INVOICES = "/invoices/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
+
+		
 		public static final String DATA = "/data";
 
 	}
@@ -1772,6 +1794,7 @@ public interface PathProxy {
 		public static final String GET_INVOICES = "/getInvoices";
 		public static final String DISCARD_INVOICE = "/discardInvoice/{id}";
 		public static final String CHANGE_PAYMENT_STATUS = "/changePaymentStatus/{id}";
+		public static final String DOWNLOAD_INVOICES = "/invoice/{id}/download";
 
 	}
 
