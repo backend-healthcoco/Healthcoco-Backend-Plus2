@@ -856,6 +856,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (dentalImagingCollection != null) {
 				UserCollection userCollection = userRepository.findOne(dentalImagingCollection.getDoctorId());
 				dentalImagingCollection.setDiscarded(discarded);
+				if(dentalImagingCollection.getInvoiceId() != null) {
+					DentalImagingInvoiceCollection dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.findOne(dentalImagingCollection.getInvoiceId());
+					if(dentalImagingInvoiceCollection != null)
+					{
+						dentalImagingInvoiceCollection.setDiscarded(discarded);
+						dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
+					}
+				}
 				dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
 				pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()), "Request has been discarded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()), null);
 			} else {
