@@ -3049,10 +3049,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (dentalWorksAmountCollection != null) {
 				dentalWorksAmountCollection
 						.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() - request.getAmountPaid());
+				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
+				dentalWorksReceiptCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount());
+				dentalWorksReceiptCollection = dentalWorksReceiptRepository.save(dentalWorksReceiptCollection);
 			}
-			dentalWorksAmountRepository.save(dentalWorksAmountCollection);
-			dentalWorksReceiptCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount());
-			dentalWorksReceiptCollection = dentalWorksReceiptRepository.save(dentalWorksReceiptCollection);
+		
 			response = new DentalWorksReceipt();
 			BeanUtil.map(dentalWorksReceiptCollection, response);
 		} catch (BusinessException be) {
