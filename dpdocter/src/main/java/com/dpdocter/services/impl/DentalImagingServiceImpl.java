@@ -1150,7 +1150,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			ObjectId locationId, ObjectId hospitalId) {
 		ObjectId patientId = null;
 		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
-			
+
 			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
 			}
@@ -1161,7 +1161,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			patientRegistrationRequest.setDoctorId(request.getDoctorId());
 			patientRegistrationRequest.setLocationId(request.getLocationId());
 			patientRegistrationRequest.setHospitalId(request.getHospitalId());
-			//System.out.println("Patient registration request  in imaging service:: " + patientRegistrationRequest);
+			// System.out.println("Patient registration request in imaging service:: " +
+			// patientRegistrationRequest);
 			RegisteredPatientDetails patientDetails = null;
 			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
 			if (patientDetails != null) {
@@ -1183,7 +1184,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				patientRegistrationRequest.setUserId(request.getPatientId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
-			//	System.out.println("Patient registration request  in imaging service:: " + patientRegistrationRequest);
+				// System.out.println("Patient registration request in imaging service:: " +
+				// patientRegistrationRequest);
 				RegisteredPatientDetails patientDetails = registrationService
 						.registerExistingPatient(patientRegistrationRequest, null);
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
@@ -1692,7 +1694,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		parameters.put("items", dentalImagingInvoiceJaspers);
 		Location location = imagingInvoiceResponse.getDentalImagingLab();
 		User doctor = imagingInvoiceResponse.getDoctor();
-
 		leftDetail = "<b>" + (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "") + " "
 				+ doctor.getFirstName() + "</b><br>" + location.getLocationName()
 				+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? "," + location.getCity() : "")
@@ -1705,13 +1706,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						: "");
 		rightDetail = "<b>InvoiceId : </b>" + imagingInvoiceResponse.getUniqueInvoiceId() + "<br>" + "<b>Date : </b>"
 
-				+ simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate());
+				+ simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate()) + "<br>" + "<b>Patient : </b>"
+				+ imagingInvoiceResponse.getPatientName() + "<br>" + "<b>Doctor : </b>" + doctor.getFirstName();
 
-		parameters.put("patient", "<b> Patient Name : </b>" + imagingInvoiceResponse.getPatientName());
-		parameters.put("doctor",
-				"<b>Referring Doctor : </b>"
-						+ (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " : "")
-						+ doctor.getFirstName());
 		parameters.put("title", "INVOICE");
 		grantTotal = imagingInvoiceResponse.getTotalCost();
 		parameters.put("total", "Total : " + grantTotal + " INR");
@@ -1726,7 +1723,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
 
-		String pdfName = "DENTALINVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
+		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
 		String layout = "PORTRAIT";
 		String pageSize = "A4";
 		Integer topMargin = 20;
@@ -1744,16 +1741,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		parameters.put("showTableOne", false);
 		parameters.put("poweredBy", footerText);
 		parameters.put("contentLineSpace", LineSpace.SMALL.name());
-		// response = jasperReportService.createPDF(ComponentType.DENTAL_IMAGE_INVOICE,
-		// parameters,
-		// dentalInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin,
-		// leftMargin, rightMargin,
-		// Integer.parseInt(parameters.get("contentFontSize").toString()),
-		// pdfName.replaceAll("\\s+", ""));
+		response = jasperReportService.createPDF(ComponentType.DENTAL_IMAGE_INVOICE, parameters,
+				dentalInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
 	}
-
 
 	@Override
 	@Transactional
