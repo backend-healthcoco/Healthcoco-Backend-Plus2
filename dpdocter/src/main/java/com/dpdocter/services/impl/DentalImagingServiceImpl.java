@@ -1544,7 +1544,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		parameters.put("items", dentalImagingInvoiceJaspers);
 		Location location = imagingInvoiceResponse.getDentalImagingLab();
 		User doctor = imagingInvoiceResponse.getDoctor();
-
 		leftDetail = "<b>" + (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "") + " "
 				+ doctor.getFirstName() + "</b><br>" + location.getLocationName()
 				+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? "," + location.getCity() : "")
@@ -1556,7 +1555,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						? "<b>Ph : </b>" + location.getClinicNumber()
 						: "");
 		rightDetail = "<b>InvoiceId : </b>" + imagingInvoiceResponse.getUniqueInvoiceId() + "<br>" + "<b>Date : </b>"
-				+ simpleDateFormat.format(imagingInvoiceResponse.getCreatedTime()) + "<br>" + "<b>Patient : </b>"
+				+ simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate()) + "<br>" + "<b>Patient : </b>"
 				+ imagingInvoiceResponse.getPatientName() + "<br>" + "<b>Doctor : </b>" + doctor.getFirstName();
 		parameters.put("title", "INVOICE");
 		grantTotal = imagingInvoiceResponse.getTotalCost();
@@ -1572,7 +1571,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
 
-		String pdfName = "DENTALINVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
+		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
 		String layout = "PORTRAIT";
 		String pageSize = "A4";
 		Integer topMargin = 20;
@@ -1590,12 +1589,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		parameters.put("showTableOne", false);
 		parameters.put("poweredBy", footerText);
 		parameters.put("contentLineSpace", LineSpace.SMALL.name());
-		// response = jasperReportService.createPDF(ComponentType.DENTAL_IMAGE_INVOICE,
-		// parameters,
-		// dentalInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin,
-		// leftMargin, rightMargin,
-		// Integer.parseInt(parameters.get("contentFontSize").toString()),
-		// pdfName.replaceAll("\\s+", ""));
+		response = jasperReportService.createPDF(ComponentType.DENTAL_IMAGE_INVOICE, parameters,
+				dentalInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
 	}
