@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -36,23 +34,15 @@ import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImaging;
 import com.dpdocter.beans.DentalImagingInvoice;
 import com.dpdocter.beans.DentalImagingInvoiceItem;
-import com.dpdocter.beans.DentalImagingLabDoctorAssociation;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
-import com.dpdocter.beans.DentalToothNumber;
-import com.dpdocter.beans.DentalWorkInvoiceJasperResponse;
-import com.dpdocter.beans.DentalWorksInvoice;
-import com.dpdocter.beans.DentalWorksInvoiceItem;
-import com.dpdocter.beans.DentalWorksSample;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
-import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
@@ -60,16 +50,10 @@ import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingInvoiceCollection;
 import com.dpdocter.collections.DentalImagingInvoiceResponse;
-import com.dpdocter.collections.DentalImagingLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollection;
 import com.dpdocter.collections.DentalImagingReportsCollection;
-import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
-import com.dpdocter.collections.DentalLabPickupCollection;
-import com.dpdocter.collections.DentalWorksAmountCollection;
-import com.dpdocter.collections.DentalWorksInvoiceCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorHospitalDentalImagingAssociationCollection;
-import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -92,20 +76,16 @@ import com.dpdocter.repository.DoctorHospitalDentalImagingAssociationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.request.AddEditNutritionReferenceRequest;
 import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
-import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
-import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.DentalImagingInvoiceItemResponse;
 import com.dpdocter.response.DentalImagingInvoiceJasper;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
-import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
-import com.dpdocter.response.DentalWorksInvoiceResponse;
+
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ImageURLResponse;
@@ -120,7 +100,6 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
-import com.sun.jersey.api.spring.Autowire;
 
 import common.util.web.DPDoctorUtils;
 
@@ -1438,16 +1417,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			aggregation = Aggregation.newAggregation(
 					// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
+					Aggregation.match(criteria),
 					Aggregation.lookup("location_cl", "dentalImagingLocationId", "_id", "dentalImagingLab"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$dentalImagingLab").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+					Aggregation.unwind("dentalImagingLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"), Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.unwind("location"));
 
 			AggregationResults<DentalImagingInvoiceResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingInvoiceCollection.class, DentalImagingInvoiceResponse.class);
@@ -1551,24 +1525,20 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? "," + location.getCity() : "")
 				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? "," + location.getState() : "")
 				+ (!DPDoctorUtils.anyStringEmpty(location.getLocationEmailAddress())
-						? "<b>Email : </b>" + location.getLocationEmailAddress()
+						? "<br><b>Email : </b>" + location.getLocationEmailAddress()
 						: "")
 				+ (!DPDoctorUtils.anyStringEmpty(location.getClinicNumber())
-						? "<b>Ph : </b>" + location.getClinicNumber()
+						? "<br><b>Ph : </b>" + location.getClinicNumber()
 						: "");
 		rightDetail = "<b>InvoiceId : </b>" + imagingInvoiceResponse.getUniqueInvoiceId() + "<br>" + "<b>Date : </b>"
 				+ simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate()) + "<br>" + "<b>Patient : </b>"
-				+ imagingInvoiceResponse.getPatientName() + "<br>" + "<b>Doctor : </b>" + doctor.getFirstName();
+				+ imagingInvoiceResponse.getPatientName() + "<br>" + "<b>Doctor : </b> DR. " + doctor.getFirstName();
 		parameters.put("title", "INVOICE");
 		grantTotal = imagingInvoiceResponse.getTotalCost();
 		parameters.put("total", "Total : " + grantTotal + " INR");
 		parameters.put("leftDetail", leftDetail);
 		parameters.put("rightDetail", rightDetail);
 		parameters.put("paid", (imagingInvoiceResponse.getIsPaid() ? "(PAID)" : "(UNPAID)"));
-
-		printSettings = new PrintSettingsCollection();
-		DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
-		BeanUtil.map(defaultPrintSettings, printSettings);
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
@@ -1581,14 +1551,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		Integer leftMargin = 20;
 		Integer rightMargin = 20;
 		parameters.put("followUpAppointment", null);
-		parameters.put("footerSignature", "");
-		parameters.put("bottomSignText", "");
-		parameters.put("contentFontSize", 11);
-		parameters.put("headerLeftText", "");
-		parameters.put("headerRightText", "");
-		parameters.put("footerBottomText", "");
-		parameters.put("logoURL", "");
-		parameters.put("showTableOne", false);
 		parameters.put("poweredBy", footerText);
 		parameters.put("contentLineSpace", LineSpace.SMALL.name());
 		response = jasperReportService.createPDF(ComponentType.DENTAL_IMAGE_INVOICE, parameters,
@@ -1598,121 +1560,88 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return response;
 	}
 
+	/*
+	 * public DentalImagingVisitAnalyticsResponse getVisitAnalytics(String fromDate,
+	 * String toDate, String dentalImagingLocationId, String
+	 * dentalImagingHospitalId) { List<DentalImagingResponse> response = null;
+	 * 
+	 * try { Aggregation aggregation = null; Criteria criteria = new Criteria();
+	 * 
+	 * if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
+	 * criteria.and("dentalImagingLocationId").is(new
+	 * ObjectId(dentalImagingLocationId)); }
+	 * 
+	 * if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
+	 * criteria.and("dentalImagingHospitalId").is(new
+	 * ObjectId(dentalImagingHospitalId)); }
+	 * 
+	 * Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+	 * if (!DPDoctorUtils.anyStringEmpty(fromDate)) { localCalendar.setTime(new
+	 * Date(Long.parseLong(fromDate))); int currentDay =
+	 * localCalendar.get(Calendar.DATE); int currentMonth =
+	 * localCalendar.get(Calendar.MONTH) + 1; int currentYear =
+	 * localCalendar.get(Calendar.YEAR);
+	 * 
+	 * DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+	 * DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+	 * criteria.and("invoiceDate").gt(start); } if
+	 * (!DPDoctorUtils.anyStringEmpty(toDate)) { localCalendar.setTime(new
+	 * Date(Long.parseLong(toDate))); int currentDay =
+	 * localCalendar.get(Calendar.DATE); int currentMonth =
+	 * localCalendar.get(Calendar.MONTH) + 1; int currentYear =
+	 * localCalendar.get(Calendar.YEAR);
+	 * 
+	 * DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59,
+	 * 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+	 * criteria.and("invoiceDate").lte(end); }
+	 * 
+	 * 
+	 * /* CustomAggregationOperation aggregationOperation = new
+	 * CustomAggregationOperation(new BasicDBObject("$group", new
+	 * BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first",
+	 * "$patientId")) .append("doctorId", new BasicDBObject("$first", "$doctorId"))
+	 * .append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+	 * .append("locationId", new BasicDBObject("$first", "$locationId"))
+	 * .append("dentalImagingDoctorId", new BasicDBObject("$first",
+	 * "$dentalImagingDoctorId")) .append("dentalImagingHospitalId", new
+	 * BasicDBObject("$first", "$dentalImagingHospitalId"))
+	 * .append("dentalImagingLocationId", new BasicDBObject("$first",
+	 * "$dentalImagingLocationId")) .append("services", new BasicDBObject("$push",
+	 * "$services")) .append("referringDoctor", new BasicDBObject("$first",
+	 * "$referringDoctor")) .append("clinicalNotes", new BasicDBObject("$first",
+	 * "$clinicalNotes")) .append("reportsRequired", new BasicDBObject("$first",
+	 * "$reportsRequired")) .append("discarded", new BasicDBObject("$first",
+	 * "$discarded")) .append("patient", new BasicDBObject("$first", "$patient"))
+	 * .append("location", new BasicDBObject("$first", "$location"))
+	 * .append("reports", new BasicDBObject("$first", "$reports"))
+	 * .append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+	 * .append("createdTime", new BasicDBObject("$first", "$createdTime"))
+	 * .append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+	 * .append("createdBy", new BasicDBObject("$first", "$createdBy"))
+	 * .append("specialInstructions", new BasicDBObject("$first",
+	 * "$specialInstructions")) .append("doctor", new BasicDBObject("$first",
+	 * "$doctor")) .append("patientName", new BasicDBObject("$first",
+	 * "$patientName")) .append("mobileNumber", new BasicDBObject("$first",
+	 * "$mobileNumber")) .append("totalCost", new BasicDBObject("$first",
+	 * "$totalCost")) .append("uniqueInvoiceId", new BasicDBObject("$first",
+	 * "$uniqueInvoiceId")) .append("isPaid", new BasicDBObject("$first",
+	 * "$isPaid")) .append("invoiceId", new BasicDBObject("$first", "$invoiceId"))
+	 * ));
+	 * 
+	 * aggregation=Aggregation.newAggregation(Aggregation.match(criteria),
+	 * Aggregation.unwind("services"),Aggregation.group("services.serviceName").sum(
+	 * "1").as("count"),Aggregation.sort(new
+	 * Sort(Sort.Direction.DESC,"count")),Aggregation.limit(1));
+	 * 
+	 * System.out.println(aggregation);
+	 * 
+	 * AggregationResults<DentalImagingResponse> aggregationResults =
+	 * mongoTemplate.aggregate(aggregation, DentalImagingCollection.class,
+	 * DentalImagingResponse.class);response=aggregationResults.getMappedResults();
+	 * 
+	 * }catch(Exception e) { // TODO: handle exception e.printStackTrace(); }
+	 * 
+	 * return null; }
+	 */
 
-
-public DentalImagingVisitAnalyticsResponse getVisitAnalytics(String fromDate, String toDate, String dentalImagingLocationId, String dentalImagingHospitalId)
-{
-	List<DentalImagingResponse> response = null;
-		
-	try {
-		Aggregation aggregation = null;
-		Criteria criteria = new Criteria();
-
-				if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
-					criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
-				}
-
-				if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
-					criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
-				}
-			
-				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-				if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-					localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-					int currentDay = localCalendar.get(Calendar.DATE);
-					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-					int currentYear = localCalendar.get(Calendar.YEAR);
-
-					DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-					criteria.and("invoiceDate").gt(start);
-				}
-				if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-					localCalendar.setTime(new Date(Long.parseLong(toDate)));
-					int currentDay = localCalendar.get(Calendar.DATE);
-					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-					int currentYear = localCalendar.get(Calendar.YEAR);
-
-					DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-					criteria.and("invoiceDate").lte(end);
-				} 
-			
-			
-		/*	CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("dentalImagingDoctorId", new BasicDBObject("$first", "$dentalImagingDoctorId"))
-							.append("dentalImagingHospitalId", new BasicDBObject("$first", "$dentalImagingHospitalId"))
-							.append("dentalImagingLocationId", new BasicDBObject("$first", "$dentalImagingLocationId"))
-							.append("services", new BasicDBObject("$push", "$services"))
-							.append("referringDoctor", new BasicDBObject("$first", "$referringDoctor"))
-							.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
-							.append("reportsRequired", new BasicDBObject("$first", "$reportsRequired"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("patient", new BasicDBObject("$first", "$patient"))
-							.append("location", new BasicDBObject("$first", "$location"))
-							.append("reports", new BasicDBObject("$first", "$reports"))
-							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-							.append("specialInstructions", new BasicDBObject("$first", "$specialInstructions"))
-							.append("doctor", new BasicDBObject("$first", "$doctor"))
-							.append("patientName", new BasicDBObject("$first", "$patientName"))
-							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-							.append("totalCost", new BasicDBObject("$first", "$totalCost"))
-							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
-							.append("isPaid", new BasicDBObject("$first", "$isPaid"))
-							.append("invoiceId", new BasicDBObject("$first", "$invoiceId"))
-							));
-
-			*/
-				
-				
-				
-				aggregation = Aggregation.newAggregation(
-					 Aggregation.match(criteria),Aggregation.unwind("services"),Aggregation.group("services.serviceName").sum("1").as("count"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "count")),Aggregation.limit(1));
-
-				System.out.println(aggregation);
-			
-			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DentalImagingCollection.class, DentalImagingResponse.class);
-			response = aggregationResults.getMappedResults();
-			
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
-	public static void main(String[] args) {
-		
-		Aggregation aggregation = null;
-		Criteria criteria = new Criteria();
-
-	
-			if (!DPDoctorUtils.anyStringEmpty("")) {
-				criteria.and("dentalImagingLocationId").is(new ObjectId(""));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty("")) {
-				criteria.and("dentalImagingHospitalId").is(new ObjectId(""));
-			}
-			
-			aggregation = Aggregation.newAggregation(
-					 Aggregation.match(criteria),Aggregation.unwind("services"),Aggregation.group("services.serviceName").sum("1").as("count"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "count")),Aggregation.limit(1));
-
-			
-			System.out.println(aggregation);
-		
-	}
-	
 }
