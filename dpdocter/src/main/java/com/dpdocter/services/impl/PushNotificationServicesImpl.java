@@ -296,7 +296,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				{
 					notification.setNotificationType(componentType);
 				}
-
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();

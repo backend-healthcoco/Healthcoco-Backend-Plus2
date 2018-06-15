@@ -610,6 +610,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 						.getMappedResults();
 			}
 			registeredPatientDetails.setGroups(groups);
+
+			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
+					ComponentType.PATIENT_REFRESH.getType(), null, null);
 			pushNotificationServices.notifyUser(patientCollection.getUserId().toString(),
 					"Welcome to " + locationCollection.getLocationName()
 							+ ", let us know about your visit. We will be happy to serve you again.",
@@ -624,8 +627,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 
-			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
-					ComponentType.PATIENT_REFRESH.getType(), null, null);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1001,6 +1002,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					doctorLabReportRepository.save(doctorLabReportCollection);
 				}
 			}
+			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
+					ComponentType.PATIENT_REFRESH.getType(), null, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

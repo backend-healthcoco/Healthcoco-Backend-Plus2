@@ -1005,7 +1005,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			ObjectId locationId, ObjectId hospitalId) {
 		ObjectId patientId = null;
 		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
-
+			
 			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
 			}
@@ -1016,6 +1016,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			patientRegistrationRequest.setDoctorId(request.getDoctorId());
 			patientRegistrationRequest.setLocationId(request.getLocationId());
 			patientRegistrationRequest.setHospitalId(request.getHospitalId());
+			//System.out.println("Patient registration request  in imaging service:: " + patientRegistrationRequest);
 			RegisteredPatientDetails patientDetails = null;
 			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
 			if (patientDetails != null) {
@@ -1037,6 +1038,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				patientRegistrationRequest.setUserId(request.getPatientId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
+			//	System.out.println("Patient registration request  in imaging service:: " + patientRegistrationRequest);
 				RegisteredPatientDetails patientDetails = registrationService
 						.registerExistingPatient(patientRegistrationRequest, null);
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
