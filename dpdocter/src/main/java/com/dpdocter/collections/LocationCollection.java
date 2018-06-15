@@ -115,6 +115,9 @@ public class LocationCollection extends GenericCollection {
 	private int patientCounter = 1;
 
 	@Field
+	private Boolean isPidHasDate = true;
+	
+	@Field
 	private long clinicRankingCount = 0;
 
 	@Field
@@ -140,11 +143,10 @@ public class LocationCollection extends GenericCollection {
 
 	@Field
 	private String locationSlugUrl;
-	/*
-	 * @Field private ObjectId defaultParentLabId;
-	 */
+
 	@Field
 	private Boolean isDentalWorksLab = false;
+
 	@Field
 	private Boolean isDentalImagingLab = false;
 
@@ -487,31 +489,12 @@ public class LocationCollection extends GenericCollection {
 		this.associatedLabs = associatedLabs;
 	}
 
-	/*
-	 * public ObjectId getDefaultParentLabId() { return defaultParentLabId; }
-	 * 
-	 * public void setDefaultParentLabId(ObjectId defaultParentLabId) {
-	 * this.defaultParentLabId = defaultParentLabId; }
-	 */
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
 
-	@Override
-	public String toString() {
-		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
-				+ state + ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images="
-				+ images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId="
-				+ hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine
-				+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
-				+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality
-				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
-				+ ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isTwentyFourSevenOpen="
-				+ isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
-				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
-				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate
-				+ ", isLocationListed=" + isLocationListed + ", patientInitial=" + patientInitial + ", patientCounter="
-				+ patientCounter + ", clinicRankingCount=" + clinicRankingCount + ", noOfClinicRecommendations="
-				+ noOfClinicRecommendations + ", locationType=" + locationType + ", invoiceInitial=" + invoiceInitial
-				+ ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview + ", isParent="
-				+ isParent + ", associatedLabs=" + associatedLabs + "]";
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
 	}
 
 	public Boolean getIsDentalWorksLab() {
@@ -538,4 +521,26 @@ public class LocationCollection extends GenericCollection {
 		this.isMobileNumberOptional = isMobileNumberOptional;
 	}
 
+	@Override
+	public String toString() {
+		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
+				+ state + ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images="
+				+ images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId="
+				+ hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine
+				+ ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
+				+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
+				+ ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isTwentyFourSevenOpen="
+				+ isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
+				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
+				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate
+				+ ", isLocationListed=" + isLocationListed + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + ", isPidHasDate=" + isPidHasDate + ", clinicRankingCount=" + clinicRankingCount
+				+ ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", locationType=" + locationType
+				+ ", invoiceInitial=" + invoiceInitial + ", receiptInitial=" + receiptInitial + ", noOfClinicReview="
+				+ noOfClinicReview + ", isParent=" + isParent + ", associatedLabs=" + associatedLabs
+				+ ", locationSlugUrl=" + locationSlugUrl + ", isDentalWorksLab=" + isDentalWorksLab
+				+ ", isDentalImagingLab=" + isDentalImagingLab + ", isMobileNumberOptional=" + isMobileNumberOptional
+				+ "]";
+	}
 }

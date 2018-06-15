@@ -483,11 +483,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRegistrationDate(new Date().getTime());
 
 			patientCollection.setCreatedTime(createdTime);
+			Map<String, String> generatedId = patientIdGenerator(request.getLocationId(), request.getHospitalId(), patientCollection.getRegistrationDate());
 			if (DPDoctorUtils.anyStringEmpty(request.getPID())) {
-				patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
-						patientCollection.getRegistrationDate()));
+				patientCollection.setPID(generatedId.get("PID"));
 			}
 
+			if (DPDoctorUtils.anyStringEmpty(request.getPNUM())) {
+				patientCollection.setPNUM(generatedId.get("PNUM"));
+			}
+			
 			// if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
 			List<ObjectId> consultantDoctorIds = new ArrayList<ObjectId>();
 			consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
@@ -797,12 +801,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 			} else {
 				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId,
 						locationObjectId, hospitalObjectId);
-				String PID = null;
+				String PID = null, PNUM = null;
 				if (patientCollection != null) {
 					ObjectId patientId = patientCollection.getId();
 					ObjectId patientDoctorId = patientCollection.getDoctorId();
 					PID = patientCollection.getPID();
-					
+				    PNUM = patientCollection.getPNUM();
+				    
 					request.setRegistrationDate(patientCollection.getRegistrationDate());
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
@@ -821,14 +826,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRelations(request.getRelations());
 				patientCollection.setNotes(request.getNotes());
 
+				Map<String, String> generatedId = patientIdGenerator(request.getLocationId(), request.getHospitalId(), patientCollection.getRegistrationDate());
+
 				if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 					patientCollection.setPID(request.getPID());
 				} else if (!DPDoctorUtils.anyStringEmpty(PID)) {
 					patientCollection.setPID(PID);
 				} else {
-					patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
-							patientCollection.getRegistrationDate()));
+					patientCollection.setPID(generatedId.get("PID"));
 				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(request.getPNUM())) {
+					patientCollection.setPNUM(request.getPNUM());
+				} else if (!DPDoctorUtils.anyStringEmpty(PNUM)) {
+					patientCollection.setPNUM(PNUM);
+				} else {
+					patientCollection.setPNUM(generatedId.get("PNUM"));
+				}
+				
 				if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
 					patientCollection.setProfession(request.getProfession());
 				}
@@ -1391,20 +1406,27 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	private String patientIdGenerator(String locationId, String hospitalId, Long registrationDate) {
-		String generatedId = null;
+	private Map<String, String> patientIdGenerator(String locationId, String hospitalId, Long registrationDate) {
+		Map<String, String> generatedId = new HashMap<String, String>();
 		try {
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			localCalendar.setTime(new Date(registrationDate));
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
-
+			
 			ObjectId locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
+			
+			LocationCollection location = locationRepository.findOne(locationObjectId);
+			if (location == null) {
+				logger.warn("Invalid Location Id");
+				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+			}
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			localCalendar.setTime(new Date(registrationDate));
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
 
 			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
@@ -1417,19 +1439,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (patientSize == null)
 				patientSize = 0;
-			LocationCollection location = locationRepository.findOne(locationObjectId);
-			if (location == null) {
-				logger.warn("Invalid Location Id");
-				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
-			}
+			
 			String patientInitial = location.getPatientInitial();
 			int patientCounter = location.getPatientCounter();
 			if (patientCounter <= patientSize)
 				patientCounter = patientCounter + patientSize;
-			generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
+			String PID = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
 					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
 					+ DPDoctorUtils.getPrefixedNumber(patientCounter);
-
+			
+			patientSize = patientRepository.countRegisteredPatient(locationObjectId, hospitalObjectId);
+			if (patientSize == null)patientSize = 0;
+			String PNUM = patientInitial + (patientSize + 1);
+	
+			generatedId.put("PID", PID);
+			generatedId.put("PNUM", PNUM);
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			throw e;
@@ -1467,7 +1491,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Override
 	@Transactional
-	public Boolean updatePatientInitialAndCounter(String locationId, String patientInitial, int patientCounter) {
+	public Boolean updatePatientInitialAndCounter(String locationId, String patientInitial, int patientCounter, Boolean isPidHasDate) {
 		Boolean response = false;
 		try {
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
@@ -1477,6 +1501,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					locationCollection.setPatientInitial(patientInitial);
 					locationCollection.setPatientCounter(patientCounter);
 					locationCollection.setUpdatedTime(new Date());
+					if(isPidHasDate != null)locationCollection.setIsPidHasDate(isPidHasDate);
 					locationCollection = locationRepository.save(locationCollection);
 					response = true;
 				}
@@ -3497,9 +3522,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (consentFormCollection != null) {
 				if (consentFormCollection.getDoctorId() != null && consentFormCollection.getHospitalId() != null
 						&& consentFormCollection.getLocationId() != null) {
-					if (consentFormCollection.getDoctorId().equals(doctorId)
-							&& consentFormCollection.getHospitalId().equals(hospitalId)
-							&& consentFormCollection.getLocationId().equals(locationId)) {
+					if (consentFormCollection.getDoctorId().toString().equals(doctorId)
+							&& consentFormCollection.getHospitalId().toString().equals(hospitalId)
+							&& consentFormCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findOne(consentFormCollection.getPatientId());
 
