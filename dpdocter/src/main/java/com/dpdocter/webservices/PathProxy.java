@@ -1638,7 +1638,6 @@ public interface PathProxy {
 
 	public interface DownloadDataUrls {
 
-		
 		public static final String PATIENTS = "/patients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String PRESCRIPTIONS = "/prescriptions/{doctorId}/{locationId}/{hospitalId}";
@@ -1659,7 +1658,6 @@ public interface PathProxy {
 
 		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
 
-		
 		public static final String DATA = "/data";
 
 	}
