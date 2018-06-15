@@ -73,14 +73,11 @@ public interface DentalImagingService {
 	List<DentalImagingInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
 			String dentalImagingLocationId, String dentalImagingHospitalId, Long from, Long to, String searchTerm,
 			int size, int page, Boolean isPaid);
+
 	public DentalImagingInvoiceResponse getInvoice(String invoiceId);
-
-
-	public String downloadInvoice(String invoiceId);
 
 	DentalImagingVisitAnalyticsResponse getVisitAnalytics(String fromDate, String toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId);
-
 
 	List<DentalImagingReports> getReports(String doctorId, String locationId, String hospitalId,
 			String dentalImagingLocationId, String dentalImagingHospitalId, String patientId, Long from, Long to,
@@ -91,5 +88,7 @@ public interface DentalImagingService {
 
 	List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalytics(Long fromDate, Long toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId, String searchType);
+
+	public String downloadInvoice(String invoiceId);
 
 }

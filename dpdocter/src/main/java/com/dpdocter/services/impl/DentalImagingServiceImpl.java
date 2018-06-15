@@ -1607,6 +1607,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return response;
 	}
 
+	@Override
+	@Transactional
 	public String downloadInvoice(String invoiceId) {
 
 		String response = null;
@@ -1715,7 +1717,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		parameters.put("total", "Total : " + grantTotal + " INR");
 		parameters.put("leftDetail", leftDetail);
 		parameters.put("rightDetail", rightDetail);
-		parameters.put("paid", (imagingInvoiceResponse.getIsPaid() ? "PAID" : "UNPAID"));
+		parameters.put("paid", (imagingInvoiceResponse.getIsPaid() ? "(PAID)" : "(UNPAID)"));
 
 		printSettings = new PrintSettingsCollection();
 		DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();

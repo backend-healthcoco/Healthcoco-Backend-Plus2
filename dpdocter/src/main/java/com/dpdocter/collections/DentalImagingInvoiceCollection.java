@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DentalImagingInvoiceItem;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Tax;
-
+@Document(collection = "dental_imaging_invoice_cl")
 public class DentalImagingInvoiceCollection extends GenericCollection {
 
 	@Id
