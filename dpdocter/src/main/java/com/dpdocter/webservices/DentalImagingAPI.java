@@ -301,15 +301,13 @@ public class DentalImagingAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.DOWNLOAD_INVOICES, notes = PathProxy.DentalImagingUrl.DOWNLOAD_INVOICES)
 
-	public Response<String> downloadInvoices(@QueryParam("id") String id) {
+	public Response<String> downloadInvoices(@PathParam("id") String id) {
 		if (DPDoctorUtils.allStringsEmpty(id)) {
 
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		// response.setDataList(dentalImagingService.getInvoices(doctorId, locationId,
-		// hospitalId, dentalImagingLocationId,
-		// dentalImagingHospitalId, from, to, searchTerm, size, page, isPaid));
+		response.setData(dentalImagingService.downloadInvoice(id));
 		return response;
 	}
 

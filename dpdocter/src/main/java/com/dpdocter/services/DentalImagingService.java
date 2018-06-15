@@ -70,6 +70,9 @@ public interface DentalImagingService {
 	List<DentalImagingInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
 			String dentalImagingLocationId, String dentalImagingHospitalId, Long from, Long to, String searchTerm,
 			int size, int page, Boolean isPaid);
+
 	public DentalImagingInvoiceResponse getInvoice(String invoiceId);
+
+	public String downloadInvoice(String invoiceId);
 
 }
