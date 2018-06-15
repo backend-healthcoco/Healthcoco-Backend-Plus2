@@ -3012,6 +3012,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public DentalWorksReceipt addEditReceipt(DentalWorksReceipt request) {
 		DentalWorksReceipt response = null;
 		DentalWorksAmountCollection dentalWorksAmountCollection = null;
+		Double oldCost = 0.0;
+		
 		try {
 			DentalWorksReceiptCollection dentalWorksReceiptCollection = new DentalWorksReceiptCollection();
 
@@ -3036,6 +3038,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			} else {
 				dentalWorksReceiptCollection = dentalWorksReceiptRepository.findOne(new ObjectId(request.getId()));
+				oldCost = dentalWorksReceiptCollection.getAmountPaid();
 				BeanUtil.map(request, dentalWorksReceiptCollection);
 				dentalWorksReceiptCollection.setUpdatedTime(new Date());
 			}
@@ -3048,7 +3051,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			if (dentalWorksAmountCollection != null) {
 				dentalWorksAmountCollection
-						.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() - request.getAmountPaid());
+						.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() - request.getAmountPaid() + oldCost);
 				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 				dentalWorksReceiptCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount());
 				dentalWorksReceiptCollection = dentalWorksReceiptRepository.save(dentalWorksReceiptCollection);
