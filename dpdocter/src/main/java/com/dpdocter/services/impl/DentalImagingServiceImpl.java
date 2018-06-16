@@ -1521,9 +1521,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		parameters.put("items", dentalImagingInvoiceJaspers);
 		Location location = imagingInvoiceResponse.getDentalImagingLab();
 		User doctor = imagingInvoiceResponse.getDoctor();
-		leftDetail = "<b>" + (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "") + " "
-				+ doctor.getFirstName() + "</b><br>" + location.getLocationName()
-				+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? "," + location.getCity() : "")
+		leftDetail = "<b>" + location.getLocationName() + "</b>"
+				+ (!DPDoctorUtils.anyStringEmpty(location.getStreetAddress()) ? ",<br>" + location.getStreetAddress()
+						: "")
+				+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? ",<br>" + location.getCity() : "")
 				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? "," + location.getState() : "")
 				+ (!DPDoctorUtils.anyStringEmpty(location.getLocationEmailAddress())
 						? "<br><b>Email : </b>" + location.getLocationEmailAddress()
@@ -1532,18 +1533,22 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						? "<br><b>Ph : </b>" + location.getClinicNumber()
 						: "");
 		rightDetail = "<b>InvoiceId : </b>" + imagingInvoiceResponse.getUniqueInvoiceId() + "<br>" + "<b>Date : </b>"
-				+ simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate()) + "<br>" + "<b>Patient : </b>"
-				+ imagingInvoiceResponse.getPatientName() + "<br>" + "<b>Doctor : </b> DR. " + doctor.getFirstName();
+				+ simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate());
+
+		parameters.put("patient", "<b> Patient Name : </b>"
+				+ imagingInvoiceResponse.getPatientName());
+		parameters.put("doctor",
+				"<b>Referring Doctor : </b>"
+						+ (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " : "")
+						+ doctor.getFirstName());
 		parameters.put("title", "INVOICE");
 		grantTotal = imagingInvoiceResponse.getTotalCost();
-		parameters.put("total", "Total : " + grantTotal + " INR");
+		parameters.put("total",
+				"Total : " + grantTotal + " INR" + (imagingInvoiceResponse.getIsPaid() ? " (PAID)" : " (UNPAID)"));
 		parameters.put("leftDetail", leftDetail);
 		parameters.put("rightDetail", rightDetail);
-		parameters.put("paid", (imagingInvoiceResponse.getIsPaid() ? "(PAID)" : "(UNPAID)"));
-
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
-
 		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
 		String layout = "PORTRAIT";
 		String pageSize = "A4";

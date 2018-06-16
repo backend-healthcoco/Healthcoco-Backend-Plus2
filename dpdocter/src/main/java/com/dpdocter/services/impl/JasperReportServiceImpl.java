@@ -7354,24 +7354,44 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDentalImagingItem(parameters, contentFontSize,
-				columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
 		band = new JRDesignBand();
-		band.setHeight(18);
-		band.setPrintWhenExpression(new JRDesignExpression("!$P{paid}.equals(null) && !$P{paid}.isEmpty()"));
+		band.setHeight(22);
+
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{paid}"));
-		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{patient}"));
+		jrDesignTextField.setX(35);
+		jrDesignTextField.setY(3);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(205);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
-		jrDesignTextField.setWidth(columnWidth - 10);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{doctor}"));
+		jrDesignTextField.setX(275);
+		jrDesignTextField.setY(3);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(columnWidth - 275);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDentalImagingItem(parameters, contentFontSize,
+				columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
 		band = new JRDesignBand();
 		band.setHeight(18);
 		band.setPrintWhenExpression(new JRDesignExpression("!$P{total}.equals(null) && !$P{total}.isEmpty()"));
@@ -7447,17 +7467,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
 		band.addElement(jrDesignLine);
 
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{SNo}"));
-		jrDesignTextField.setX(xSpace);
-		jrDesignTextField.setY(4);
-		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-		jrDesignTextField.setWidth(35);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-
 		xSpace = 35;
 
 		jrDesignTextField = new JRDesignTextField();
@@ -7504,17 +7513,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
-		band.setHeight(30);
+		band.setHeight(25);
 
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{sNo}"));
-		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-		jrDesignTextField.setWidth(35);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
 		xSpace = 35;
 
 		jrDesignTextField = new JRDesignTextField();
