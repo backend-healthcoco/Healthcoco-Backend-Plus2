@@ -26,6 +26,7 @@ import com.dpdocter.beans.DentalImagingInvoice;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
+import com.dpdocter.beans.DentalImagingServiceVisitCount;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorksInvoice;
 import com.dpdocter.beans.Hospital;
@@ -45,6 +46,7 @@ import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
+import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.services.DentalImagingService;
@@ -308,6 +310,24 @@ public class DentalImagingAPI {
 		}
 		Response<String> response = new Response<String>();
 		response.setData(dentalImagingService.downloadInvoice(id));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_SERVICE_VISIT_ANALYTICS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_SERVICE_VISIT_ANALYTICS, notes = PathProxy.DentalImagingUrl.GET_SERVICE_VISIT_ANALYTICS)
+
+	public Response<DentalImagingVisitAnalyticsResponse> getVisitAnalytics(
+			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
+			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
+			@DefaultValue("0") @QueryParam("from") String from, @QueryParam("to") String to) {
+		if (DPDoctorUtils.allStringsEmpty(dentalImagingLocationId,
+				dentalImagingHospitalId)) {
+
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalImagingVisitAnalyticsResponse> response = new Response<DentalImagingVisitAnalyticsResponse>();
+		response.setData(dentalImagingService.getVisitAnalytics(from, to, dentalImagingLocationId, dentalImagingHospitalId));
 		return response;
 	}
 

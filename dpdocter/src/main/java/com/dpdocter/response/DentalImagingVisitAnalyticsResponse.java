@@ -1,28 +1,12 @@
 package com.dpdocter.response;
 
+import com.dpdocter.beans.DentalImagingServiceVisitCount;
+
 public class DentalImagingVisitAnalyticsResponse {
 
-	private String mostVisitedServiceName;
-	private String leastVisitedServiceName;
 	private Integer patientVisitCount = 0;
-	private Integer mostVisitedServiceCount = 0;
-	private Integer leastVisitedIntegerCount = 0;
-
-	public String getMostVisitedServiceName() {
-		return mostVisitedServiceName;
-	}
-
-	public void setMostVisitedServiceName(String mostVisitedServiceName) {
-		this.mostVisitedServiceName = mostVisitedServiceName;
-	}
-
-	public String getLeastVisitedServiceName() {
-		return leastVisitedServiceName;
-	}
-
-	public void setLeastVisitedServiceName(String leastVisitedServiceName) {
-		this.leastVisitedServiceName = leastVisitedServiceName;
-	}
+	private DentalImagingServiceVisitCount mostVisitedService;
+	private DentalImagingServiceVisitCount leastVisitedService;
 
 	public Integer getPatientVisitCount() {
 		return patientVisitCount;
@@ -32,28 +16,26 @@ public class DentalImagingVisitAnalyticsResponse {
 		this.patientVisitCount = patientVisitCount;
 	}
 
-	public Integer getMostVisitedServiceCount() {
-		return mostVisitedServiceCount;
+	public DentalImagingServiceVisitCount getMostVisitedService() {
+		return mostVisitedService;
 	}
 
-	public void setMostVisitedServiceCount(Integer mostVisitedServiceCount) {
-		this.mostVisitedServiceCount = mostVisitedServiceCount;
+	public void setMostVisitedService(DentalImagingServiceVisitCount mostVisitedService) {
+		this.mostVisitedService = mostVisitedService;
 	}
 
-	public Integer getLeastVisitedIntegerCount() {
-		return leastVisitedIntegerCount;
+	public DentalImagingServiceVisitCount getLeastVisitedService() {
+		return leastVisitedService;
 	}
 
-	public void setLeastVisitedIntegerCount(Integer leastVisitedIntegerCount) {
-		this.leastVisitedIntegerCount = leastVisitedIntegerCount;
+	public void setLeastVisitedService(DentalImagingServiceVisitCount leastVisitedService) {
+		this.leastVisitedService = leastVisitedService;
 	}
 
 	@Override
 	public String toString() {
-		return "DentalImagingVisitAnalyticsResponse [mostVisitedServiceName=" + mostVisitedServiceName
-				+ ", leastVisitedServiceName=" + leastVisitedServiceName + ", patientVisitCount=" + patientVisitCount
-				+ ", mostVisitedServiceCount=" + mostVisitedServiceCount + ", leastVisitedIntegerCount="
-				+ leastVisitedIntegerCount + "]";
+		return "DentalImagingVisitAnalyticsResponse [patientVisitCount=" + patientVisitCount + ", mostVisitedService="
+				+ mostVisitedService + ", leastVisitedService=" + leastVisitedService + "]";
 	}
 
 }
