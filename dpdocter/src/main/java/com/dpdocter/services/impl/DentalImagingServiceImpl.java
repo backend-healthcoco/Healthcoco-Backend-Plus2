@@ -45,6 +45,7 @@ import com.dpdocter.beans.DentalWorkInvoiceJasperResponse;
 import com.dpdocter.beans.DentalWorksInvoice;
 import com.dpdocter.beans.DentalWorksInvoiceItem;
 import com.dpdocter.beans.DentalWorksSample;
+import com.dpdocter.beans.DentalImagingServiceVisitCount;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.FileDetails;
@@ -1603,120 +1604,93 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	}
 
 
+	@Override
+	@Transactional
+	public DentalImagingVisitAnalyticsResponse getVisitAnalytics(String fromDate, String toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId) {
+		DentalImagingVisitAnalyticsResponse response = null;
+		List<DentalImagingResponse>  dentalImagingResponses = null;
+		DentalImagingServiceVisitCount mostVisitedService = null;
+		DentalImagingServiceVisitCount leastVisitedService = null;
+		try {
+			Integer patientCount = 0;
+			Aggregation aggregation = null;
+			Aggregation mostVisitAggregation = null;
+			Aggregation leastVisitAggregation = null;
+			Criteria criteria = new Criteria();
+			
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
+				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
+			}
 
-public DentalImagingVisitAnalyticsResponse getVisitAnalytics(String fromDate, String toDate, String dentalImagingLocationId, String dentalImagingHospitalId)
-{
-	List<DentalImagingResponse> response = null;
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
+				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
+			}
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("updatedTime").gt(start);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("updatedTime").lte(end);
+			}
+
+			mostVisitAggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("services"),
+					Aggregation.group("services.serviceName").count().as("count"),Aggregation.project("count").and("serviceName").previousOperation(),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "count")), Aggregation.limit(1));
+			AggregationResults<DentalImagingServiceVisitCount> mostVisitAggregationResult = mongoTemplate.aggregate(mostVisitAggregation,
+					DentalImagingCollection.class, DentalImagingServiceVisitCount.class);
+			
+			mostVisitedService = mostVisitAggregationResult.getUniqueMappedResult();
+			
+			leastVisitAggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("services"),
+					Aggregation.group("services.serviceName").count().as("count"),Aggregation.project("count").and("serviceName").previousOperation(),
+					Aggregation.sort(new Sort(Sort.Direction.ASC, "count")), Aggregation.limit(1));
+
+			AggregationResults<DentalImagingServiceVisitCount> leastVisitAggregationResult = mongoTemplate.aggregate(leastVisitAggregation,
+					DentalImagingCollection.class, DentalImagingServiceVisitCount.class);
+			leastVisitedService = leastVisitAggregationResult.getUniqueMappedResult();
 		
-	try {
-		Aggregation aggregation = null;
-		Criteria criteria = new Criteria();
-
-				if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
-					criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
-				}
-
-				if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
-					criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
-				}
-			
-				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-				if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-					localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-					int currentDay = localCalendar.get(Calendar.DATE);
-					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-					int currentYear = localCalendar.get(Calendar.YEAR);
-
-					DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-					criteria.and("invoiceDate").gt(start);
-				}
-				if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-					localCalendar.setTime(new Date(Long.parseLong(toDate)));
-					int currentDay = localCalendar.get(Calendar.DATE);
-					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-					int currentYear = localCalendar.get(Calendar.YEAR);
-
-					DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-					criteria.and("invoiceDate").lte(end);
-				} 
-			
-			
-		/*	CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("dentalImagingDoctorId", new BasicDBObject("$first", "$dentalImagingDoctorId"))
-							.append("dentalImagingHospitalId", new BasicDBObject("$first", "$dentalImagingHospitalId"))
-							.append("dentalImagingLocationId", new BasicDBObject("$first", "$dentalImagingLocationId"))
-							.append("services", new BasicDBObject("$push", "$services"))
-							.append("referringDoctor", new BasicDBObject("$first", "$referringDoctor"))
-							.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
-							.append("reportsRequired", new BasicDBObject("$first", "$reportsRequired"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("patient", new BasicDBObject("$first", "$patient"))
-							.append("location", new BasicDBObject("$first", "$location"))
-							.append("reports", new BasicDBObject("$first", "$reports"))
-							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-							.append("specialInstructions", new BasicDBObject("$first", "$specialInstructions"))
-							.append("doctor", new BasicDBObject("$first", "$doctor"))
-							.append("patientName", new BasicDBObject("$first", "$patientName"))
-							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-							.append("totalCost", new BasicDBObject("$first", "$totalCost"))
-							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
-							.append("isPaid", new BasicDBObject("$first", "$isPaid"))
-							.append("invoiceId", new BasicDBObject("$first", "$invoiceId"))
-							));
-
-			*/
-				
-				
-				
-				aggregation = Aggregation.newAggregation(
-					 Aggregation.match(criteria),Aggregation.unwind("services"),Aggregation.group("services.serviceName").sum("1").as("count"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "count")),Aggregation.limit(1));
-
-				System.out.println(aggregation);
-			
-			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+			aggregation =Aggregation.newAggregation(Aggregation.match(criteria));
+			AggregationResults<DentalImagingResponse> aggregationResult = mongoTemplate.aggregate(aggregation,
 					DentalImagingCollection.class, DentalImagingResponse.class);
-			response = aggregationResults.getMappedResults();
+			dentalImagingResponses = aggregationResult.getMappedResults();
 			
+			for (DentalImagingResponse dentalImagingResponse : dentalImagingResponses) {
+				
+				List<DentalImagingReportsCollection> dentalImagingReportsCollections = dentalImagingReportsRepository
+						.getReportsByRequestId(new ObjectId(dentalImagingResponse.getId()), false);
+				if (dentalImagingReportsCollections != null && !dentalImagingReportsCollections.isEmpty()) {
+					patientCount++;
+				}
+				
+			}
+			
+			response = new DentalImagingVisitAnalyticsResponse();
+			response.setPatientVisitCount(patientCount);
+			response.setMostVisitedService(mostVisitedService);
+			response.setLeastVisitedService(leastVisitedService);
 
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (Exception e) { 
 			e.printStackTrace();
+
 		}
-		
-		return null;
+
+		return response;
 	}
-	
-	public static void main(String[] args) {
-		
-		Aggregation aggregation = null;
-		Criteria criteria = new Criteria();
-
-	
-			if (!DPDoctorUtils.anyStringEmpty("")) {
-				criteria.and("dentalImagingLocationId").is(new ObjectId(""));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty("")) {
-				criteria.and("dentalImagingHospitalId").is(new ObjectId(""));
-			}
-			
-			aggregation = Aggregation.newAggregation(
-					 Aggregation.match(criteria),Aggregation.unwind("services"),Aggregation.group("services.serviceName").sum("1").as("count"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "count")),Aggregation.limit(1));
-
-			
-			System.out.println(aggregation);
-		
-	}
-	
+	 
 }

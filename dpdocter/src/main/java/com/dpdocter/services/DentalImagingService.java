@@ -19,6 +19,7 @@ import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
+import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 
@@ -71,5 +72,11 @@ public interface DentalImagingService {
 			String dentalImagingLocationId, String dentalImagingHospitalId, Long from, Long to, String searchTerm,
 			int size, int page, Boolean isPaid);
 	public DentalImagingInvoiceResponse getInvoice(String invoiceId);
+
+
+	public String downloadInvoice(String invoiceId);
+
+	DentalImagingVisitAnalyticsResponse getVisitAnalytics(String fromDate, String toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId);
 
 }
