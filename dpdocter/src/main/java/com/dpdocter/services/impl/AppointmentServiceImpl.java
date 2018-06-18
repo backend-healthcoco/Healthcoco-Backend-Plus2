@@ -668,9 +668,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 											.and("hospitalId").is(new ObjectId(request.getHospitalId()))),
 									Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
 							PatientCollection.class, PatientCard.class).getMappedResults();
-					if (patientCards != null && !patientCards.isEmpty())
+					if (patientCards != null && !patientCards.isEmpty()) {
 						patientCard = patientCards.get(0);
 					appointmentCollection.setLocalPatientName(patientCard.getLocalPatientName());
+					}
 				} else {
 					appointmentCollection.setLocalPatientName(request.getLocalPatientName());
 				}
