@@ -122,11 +122,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		ESPatientResponseDetails patientResponseDetails = null;
 		try {
 			AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
-
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-			if (locationCollection != null && locationCollection.getIsPidHasDate() != null) {
-				if (!locationCollection.getIsPidHasDate())
-					advancedSearchTypeForPID = AdvancedSearchType.PNUM;
+			if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
+				if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
 			}
 			searchTerm = searchTerm.toLowerCase();
 			String patientName = searchTerm.replaceAll("[^a-zA-Z0-9]", "");
@@ -297,17 +295,15 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 									new BeanToPropertyValueTransformer("id"));
 							builder = QueryBuilders.termsQuery(searchType, referenceIds);
 						}
-					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())) {
+					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())){
 						AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
-
+						
 						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-						if (locationCollection != null && locationCollection.getIsPidHasDate() != null) {
-							if (!locationCollection.getIsPidHasDate())
-								advancedSearchTypeForPID = AdvancedSearchType.PNUM;
+						if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
+							if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
 						}
-						builder = QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(),
-								searchValue);
-					} else {
+						builder = QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchValue);
+				     }else {
 						builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 					}
 					boolQueryBuilder.must(builder);

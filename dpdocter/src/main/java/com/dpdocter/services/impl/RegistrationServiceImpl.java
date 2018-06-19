@@ -1441,7 +1441,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
 					+ DPDoctorUtils.getPrefixedNumber(patientSize + 1);
 			
-			
 			int patientCounter = location.getPatientCounter();
 			PatientCollection patientCollection = patientRepository.findLastRegisteredPatientWithPNUM(locationObjectId, hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
 			if(patientCollection != null) {
