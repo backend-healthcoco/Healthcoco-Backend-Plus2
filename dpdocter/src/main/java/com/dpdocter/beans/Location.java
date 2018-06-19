@@ -83,6 +83,8 @@ public class Location {
 
 	private int patientCounter = 0;
 
+	private Boolean isPidHasDate = true;
+
 	private int noOfClinicRecommendations = 0;
 
 	private Boolean isClinicRecommended = false;
@@ -478,27 +480,13 @@ public class Location {
 		this.isFavourite = isFavourite;
 	}
 
-	@Override
-	public String toString() {
-		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
-				+ ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
-				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
-				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization="
-				+ specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", clinicNumber="
-				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", clinicWorkingSchedules="
-				+ clinicWorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
-				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
-				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
-				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate
-				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount
-				+ ", locationType=" + locationType + ", patientInitial=" + patientInitial + ", patientCounter="
-				+ patientCounter + ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", isClinicRecommended="
-				+ isClinicRecommended + ", isFavourite=" + isFavourite + ", hospital=" + hospital + ", invoiceInitial="
-				+ invoiceInitial + ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview
-				+ ", isParent=" + isParent + ", associatedLabs=" + associatedLabs + "]";
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
 	}
 
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
 
 	public String getLocationSlugUrl() {
 		return locationSlugUrl;
@@ -522,6 +510,30 @@ public class Location {
 
 	public void setIsDentalImagingLab(Boolean isDentalImagingLab) {
 		this.isDentalImagingLab = isDentalImagingLab;
+	}
+
+	@Override
+	public String toString() {
+		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
+				+ ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
+				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
+				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization="
+				+ specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", clinicNumber="
+				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", clinicWorkingSchedules="
+				+ clinicWorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
+				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
+				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
+				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate
+				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount
+				+ ", locationType=" + locationType + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + ", isPidHasDate=" + isPidHasDate + ", noOfClinicRecommendations="
+				+ noOfClinicRecommendations + ", isClinicRecommended=" + isClinicRecommended + ", isFavourite="
+				+ isFavourite + ", hospital=" + hospital + ", invoiceInitial=" + invoiceInitial + ", receiptInitial="
+				+ receiptInitial + ", noOfClinicReview=" + noOfClinicReview + ", isParent=" + isParent
+				+ ", associatedLabs=" + associatedLabs + ", locationSlugUrl=" + locationSlugUrl + ", isDentalWorksLab="
+				+ isDentalWorksLab + ", isDentalImagingLab=" + isDentalImagingLab + ", isMobileNumberOptional="
+				+ isMobileNumberOptional + "]";
 	}
 
 }

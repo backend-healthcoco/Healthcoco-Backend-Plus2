@@ -10,6 +10,8 @@ public class PatientInitialAndCounter {
 
     private int patientCounter;
 
+	private Boolean isPidHasDate = true;
+
     public String getDoctorId() {
 		return doctorId;
 	}
@@ -42,9 +44,18 @@ public class PatientInitialAndCounter {
 	this.patientCounter = patientCounter;
     }
 
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientInitialAndCounter [doctorId=" + doctorId + ", locationId=" + locationId + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + "]";
+				+ patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate=" + isPidHasDate + "]";
 	}
+
 }

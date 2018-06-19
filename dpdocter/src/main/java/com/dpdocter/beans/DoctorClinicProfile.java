@@ -3,7 +3,6 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.PackageType;
@@ -115,6 +114,12 @@ public class DoctorClinicProfile {
 
 	private Boolean isMobileNumberOptional = false;
 
+	private String patientInitial = "P";
+
+	private int patientCounter = 0;
+
+	private Boolean isPidHasDate = true;
+	
 	public String getId() {
 		return id;
 	}
@@ -483,27 +488,6 @@ public class DoctorClinicProfile {
 		this.packageType = packageType;
 	}
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
-				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
-				+ revisitConsultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules="
-				+ workingSchedules + ", facility=" + facility + ", images=" + images + ", logoUrl=" + logoUrl
-				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations="
-				+ noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
-				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
-				+ isHomeServiceAvailable + ", locality=" + locality + ", timeZone=" + timeZone
-				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", feedbacks="
-				+ feedbacks + ", noOfFeedbacks=" + noOfFeedbacks + ", roles=" + roles + ", isDoctorListed="
-				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isFavourite=" + isFavourite + ", isAutoSMS="
-				+ isAutoSMS + ", isActivate=" + isActivate + ", isSendRegularCheckupSMS=" + isSendRegularCheckupSMS
-				+ ", regularCheckupMonth=" + regularCheckupMonth + ", checkUpTypeEnum=" + checkUpTypeEnum + "]";
-	}
-
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
 	}
@@ -553,4 +537,53 @@ public class DoctorClinicProfile {
 		this.isMobileNumberOptional = isMobileNumberOptional;
 	}
 
+	public String getPatientInitial() {
+		return patientInitial;
+	}
+
+	public void setPatientInitial(String patientInitial) {
+		this.patientInitial = patientInitial;
+	}
+
+	public int getPatientCounter() {
+		return patientCounter;
+	}
+
+	public void setPatientCounter(int patientCounter) {
+		this.patientCounter = patientCounter;
+	}
+
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
+				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
+				+ revisitConsultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules="
+				+ workingSchedules + ", facility=" + facility + ", images=" + images + ", logoUrl=" + logoUrl
+				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations="
+				+ noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isParent=" + isParent
+				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality + ", timeZone="
+				+ timeZone + ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices
+				+ ", feedbacks=" + feedbacks + ", noOfFeedbacks=" + noOfFeedbacks + ", roles=" + roles
+				+ ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS="
+				+ isSendBirthdaySMS + ", isDoctorRecommended=" + isDoctorRecommended + ", isFavourite=" + isFavourite
+				+ ", isAutoSMS=" + isAutoSMS + ", isActivate=" + isActivate + ", isSendRegularCheckupSMS="
+				+ isSendRegularCheckupSMS + ", regularCheckupMonth=" + regularCheckupMonth + ", checkUpTypeEnum="
+				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
+				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
+				+ ", saveToInventory=" + saveToInventory + ", isMobileNumberOptional=" + isMobileNumberOptional
+				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate="
+				+ isPidHasDate + "]";
+	}
 }
