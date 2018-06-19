@@ -125,7 +125,7 @@ public class DoctorClinicProfile {
 	private int patientCounter = 0;
 
 	private Boolean isPidHasDate = true;
-
+	
 	public String getId() {
 		return id;
 	}
@@ -612,7 +612,9 @@ public class DoctorClinicProfile {
 				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
 				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
 				+ ", saveToInventory=" + saveToInventory + ", isMobileNumberOptional=" + isMobileNumberOptional
-				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate="
-				+ isPidHasDate + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + "]";
+				+ ", iskiosk=" + iskiosk + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess="
+				+ hasBillingAccess + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
+				+ ", isPidHasDate=" + isPidHasDate + "]";
 	}
+
 }
