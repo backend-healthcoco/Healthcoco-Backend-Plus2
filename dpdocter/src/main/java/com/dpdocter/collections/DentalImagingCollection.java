@@ -54,6 +54,8 @@ public class DentalImagingCollection extends GenericCollection {
 	private Double totalCost = 0.0;
 	@Field
 	private Boolean isPaid = false;
+	@Field
+	private Boolean isReportsUploaded = false;
 
 	public ObjectId getPatientId() {
 		return patientId;
@@ -221,6 +223,14 @@ public class DentalImagingCollection extends GenericCollection {
 
 	public void setIsPaid(Boolean isPaid) {
 		this.isPaid = isPaid;
+	}
+
+	public Boolean getIsReportsUploaded() {
+		return isReportsUploaded;
+	}
+
+	public void setIsReportsUploaded(Boolean isReportsUploaded) {
+		this.isReportsUploaded = isReportsUploaded;
 	}
 
 	@Override

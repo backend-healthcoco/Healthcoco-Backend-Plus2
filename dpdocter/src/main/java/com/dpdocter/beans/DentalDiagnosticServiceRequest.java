@@ -11,6 +11,10 @@ public class DentalDiagnosticServiceRequest {
 	private String CBCTQuadrant;
 	private String CBCTArch;
 	private Double cost = 0.0;
+	private Discount totalDiscount;
+	private Double totalCost = 0.0;
+	private Tax totalTax;
+	private List<InvoiceTax> invoiceTaxes;
 
 	public String getType() {
 		return type;
@@ -67,7 +71,46 @@ public class DentalDiagnosticServiceRequest {
 	public void setCost(Double cost) {
 		this.cost = cost;
 	}
-	
-	
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public Double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
+	}
+
+	public List<InvoiceTax> getInvoiceTaxes() {
+		return invoiceTaxes;
+	}
+
+	public void setInvoiceTaxes(List<InvoiceTax> invoiceTaxes) {
+		this.invoiceTaxes = invoiceTaxes;
+	}
+
+	@Override
+	public String toString() {
+		return "DentalDiagnosticServiceRequest [type=" + type + ", dentalDiagnosticServiceId="
+				+ dentalDiagnosticServiceId + ", serviceName=" + serviceName + ", toothNumber=" + toothNumber
+				+ ", CBCTQuadrant=" + CBCTQuadrant + ", CBCTArch=" + CBCTArch + ", cost=" + cost + ", totalDiscount="
+				+ totalDiscount + ", totalCost=" + totalCost + ", totalTax=" + totalTax + ", invoiceTaxes="
+				+ invoiceTaxes + "]";
+	}
 
 }
