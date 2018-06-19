@@ -107,7 +107,7 @@ public interface PathProxy {
 
 		public static final String GET_REFERRENCES = "/reference/{range}";
 
-		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{locationId}/{patientInitial}/{patientCounter}";
+		public static final String UPDATE_PATIENT_INITIAL_AND_COUNTER = "/updatePatientIdGeneratorLogic/{locationId}/{patientInitial}/{patientCounter}";
 
 		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{locationId}";
 

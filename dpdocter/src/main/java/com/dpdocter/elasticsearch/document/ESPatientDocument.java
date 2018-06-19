@@ -24,6 +24,9 @@ public class ESPatientDocument {
 	private String PID;
 
 	@Field(type = FieldType.String)
+	private String PNUM;
+	
+	@Field(type = FieldType.String)
 	private String userName;
 
 	@Field(type = FieldType.String)
@@ -335,17 +338,26 @@ public class ESPatientDocument {
 		this.discarded = discarded;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
-		return "ESPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
-				+ ", firstName=" + firstName + ", localPatientName=" + localPatientName + ", localPatientNameFormatted="
-				+ localPatientNameFormatted + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
-				+ emailAddress + ", dob=" + dob + ", city=" + city + ", locality=" + locality + ", postalCode="
-				+ postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy
-				+ ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
-				+ ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + ", userUId=" + userUId
-				+ ", consultantDoctorIds=" + consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded
-				+ ", discarded=" + discarded + "]";
+		return "ESPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", PNUM=" + PNUM + ", userName="
+				+ userName + ", firstName=" + firstName + ", localPatientName=" + localPatientName
+				+ ", localPatientNameFormatted=" + localPatientNameFormatted + ", gender=" + gender + ", bloodGroup="
+				+ bloodGroup + ", emailAddress=" + emailAddress + ", dob=" + dob + ", city=" + city + ", locality="
+				+ locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession="
+				+ profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate="
+				+ registrationDate + ", userUId=" + userUId + ", consultantDoctorIds=" + consultantDoctorIds
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", discarded=" + discarded + "]";
 	}
+
 }
