@@ -29,6 +29,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.beans.AdvancedSearchParameter;
@@ -52,6 +53,7 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -83,6 +85,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	@Autowired
 	private ESCollectionBoyRepository esCollectionBoyRepository;
 
+	@Autowired
+	private LocationRepository locationRepository;
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -116,6 +121,12 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		List<ESPatientResponse> patientsResponse = null;
 		ESPatientResponseDetails patientResponseDetails = null;
 		try {
+			AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
+			
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+			if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
+				if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
+			}
 			searchTerm = searchTerm.toLowerCase();
 			String patientName = searchTerm.replaceAll("[^a-zA-Z0-9]", "");
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -129,7 +140,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)
 							.boost(1.2f))
-					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
+					.should(QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchTerm)
 							.boost(1.0f))
 					.minimumNumberShouldMatch(1);
 			if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
@@ -281,7 +292,15 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 									new BeanToPropertyValueTransformer("id"));
 							builder = QueryBuilders.termsQuery(searchType, referenceIds);
 						}
-					} else {
+					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())){
+						AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
+						
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
+							if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
+						}
+						builder = QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchValue);
+				     }else {
 						builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 					}
 					boolQueryBuilder.must(builder);

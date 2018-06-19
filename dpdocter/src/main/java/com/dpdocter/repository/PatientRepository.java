@@ -130,4 +130,7 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 	@Query(value = "{'locationId':?0, 'hospitalId':?1}", count = true)
 	Integer countRegisteredPatient(ObjectId locationId, ObjectId hospitalId);
 
+	@Query("{'locationId':?0, 'hospitalId':?1, 'PNUM':{'$ne': null}}")
+	PatientCollection findLastRegisteredPatientWithPNUM(ObjectId locationObjectId, ObjectId hospitalObjectId, Sort sort);
+
 }

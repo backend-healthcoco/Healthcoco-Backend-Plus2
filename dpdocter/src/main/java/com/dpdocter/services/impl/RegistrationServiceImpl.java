@@ -1441,16 +1441,27 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientSize = 0;
 			
 			String patientInitial = location.getPatientInitial();
-			int patientCounter = location.getPatientCounter();
-			if (patientCounter <= patientSize)
-				patientCounter = patientCounter + patientSize;
+			
 			String PID = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
 					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
-					+ DPDoctorUtils.getPrefixedNumber(patientCounter);
+					+ DPDoctorUtils.getPrefixedNumber(patientSize + 1);
 			
-			patientSize = patientRepository.countRegisteredPatient(locationObjectId, hospitalObjectId);
-			if (patientSize == null)patientSize = 0;
-			String PNUM = patientInitial + (patientSize + 1);
+			
+			int patientCounter = location.getPatientCounter();
+			PatientCollection patientCollection = patientRepository.findLastRegisteredPatientWithPNUM(locationObjectId, hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
+			if(patientCollection != null) {
+				String lastRegisterdPatientPNUM = patientCollection.getPNUM().replaceAll("[a-zA-Z]","");
+				Integer lastRegisterdPatientPNUMCount = 0;
+				if(lastRegisterdPatientPNUM != null)lastRegisterdPatientPNUMCount = Integer.parseInt(lastRegisterdPatientPNUM);
+				
+				if(lastRegisterdPatientPNUMCount < patientCounter) {
+					patientSize = patientCounter;
+				}else{
+					patientSize = lastRegisterdPatientPNUMCount + 1;
+				}
+			}
+			
+			String PNUM = patientInitial + patientSize;
 	
 			generatedId.put("PID", PID);
 			generatedId.put("PNUM", PNUM);
