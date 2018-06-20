@@ -103,8 +103,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private boolean saveToInventory = false;
 
 	@Field
-	private String labType = LabType.DIAGNOSTIC.getType();
+	private boolean iskiosk = false;
 
+	@Field
+	private String labType = LabType.DIAGNOSTIC.getType();
 
 	public ObjectId getId() {
 		return id;
@@ -300,6 +302,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
+	}
+
+	public boolean isIskiosk() {
+		return iskiosk;
+	}
+
+	public void setIskiosk(boolean iskiosk) {
+		this.iskiosk = iskiosk;
 	}
 
 	public void setDoctorSlugURL(String doctorSlugURL) {
