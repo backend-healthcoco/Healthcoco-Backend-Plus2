@@ -136,7 +136,7 @@ public class VideoServiceImpl implements VideoService {
 
 	@Override
 	@Transactional
-	public List<Video> getVideos(String doctorId, String searchTerm, int page, int size) {
+	public List<Video> getVideos(String doctorId, String searchTerm, List<String> tags, int page, int size) {
 		Aggregation aggregation = null;
 		List<String> specialities = null;
 		List<Video> response = null;
@@ -157,8 +157,15 @@ public class VideoServiceImpl implements VideoService {
 				}
 			}
 			
+			Criteria criteria =  new Criteria().and("speciality").in(specialities);
+			
+			if(tags != null && !tags.isEmpty())
+			{
+				criteria.and("tags").in(tags);
+			}
+			
 			aggregation = Aggregation.newAggregation(
-					Aggregation.match(new Criteria().and("speciality").in(specialities))
+					Aggregation.match(criteria)
 					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<Video> aggregationResults = mongoTemplate.aggregate(aggregation, VideoCollection.class,
 					Video.class);

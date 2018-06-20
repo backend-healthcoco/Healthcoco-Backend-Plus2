@@ -10,8 +10,6 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface VideoService {
 
-	List<Video> getVideos(String doctorId, String searchTerm, int page, int size);
-
 	Video addVideo(FormDataBodyPart file, AddVideoRequest request);
 
 	MyVideo addMyVideo(FormDataBodyPart file, AddMyVideoRequest request);
@@ -20,5 +18,7 @@ public interface VideoService {
 
 	List<Video> getLocationVideos(String doctorId, String locationId, String hospitalId, String searchTerm, int page,
 			int size, List<String> tags);
+
+	List<Video> getVideos(String doctorId, String searchTerm, List<String> tags, int page, int size);
 
 }

@@ -17,11 +17,10 @@ public class AddVideoRequest {
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String type;
 
 	private List<String> tags;
-
 
 	public String getName() {
 		return name;
@@ -71,14 +70,27 @@ public class AddVideoRequest {
 		this.hospitalId = hospitalId;
 	}
 
-	@Override
-	public String toString() {
-		return "AddVideoRequest [name=" + name + ", speciality=" + speciality + ", description=" + description + "]";
+	public String getType() {
+		return type;
 	}
 
-	public static void main(String[] args) {
-		AddVideoRequest request = new AddVideoRequest();
-		System.err.println(JacksonUtil.obj2Json(request));
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
+	}
+
+	@Override
+	public String toString() {
+		return "AddVideoRequest [name=" + name + ", speciality=" + speciality + ", description=" + description
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", type="
+				+ type + ", tags=" + tags + "]";
 	}
 
 }

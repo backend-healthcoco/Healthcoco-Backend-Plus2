@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -64,14 +65,14 @@ public class VideoApi {
 	    @Path(value = PathProxy.VideoUrls.GET_VIDEO)
 	    @GET
 	    @ApiOperation(value =PathProxy.VideoUrls.GET_VIDEO, notes = PathProxy.VideoUrls.GET_VIDEO)
-	    public Response<Video> getVideoss(@QueryParam("doctorId") String doctorId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page , @QueryParam("size") int size)
+	    public Response<Video> getVideoss(@QueryParam(value = "doctorId") String doctorId , @QueryParam(value = "searchTerm") String searchTerm, @MatrixParam(value ="tags") List<String> tags, @QueryParam(value = "page") int page , @QueryParam(value = "size") int size)
 	    {
 	    	List<Video> videos = null;
 	    	if (doctorId == null) {
 	    	    logger.warn("Request send  is NULL");
 	    	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	    	}
-	    	videos = videoService.getVideos(doctorId, searchTerm, page, size);
+	    	videos = videoService.getVideos(doctorId, searchTerm, tags, page, size);
 	    	Response<Video> response = new Response<Video>();
 	    	response.setDataList(videos);
 	    	return response;
