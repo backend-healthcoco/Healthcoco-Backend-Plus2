@@ -7,6 +7,7 @@ import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
+import com.dpdocter.response.DoctorLoginPinRequest;
 
 public interface LoginService {
 	LoginResponse login(LoginRequest request, Boolean isMobileApp);
@@ -19,7 +20,7 @@ public interface LoginService {
 
 	public DoctorLoginPin getLoginPin(String doctorId);
 
-	public Boolean checkLoginPin(String doctorId);
+	public Boolean checkLoginPin(DoctorLoginPinRequest request);
 
 	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request);
 
