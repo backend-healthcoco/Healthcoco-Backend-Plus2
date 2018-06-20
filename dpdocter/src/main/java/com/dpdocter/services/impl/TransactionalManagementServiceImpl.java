@@ -920,7 +920,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				}				
 			}
 //			sendAppointmentScheduleToStaff();
-//			sendEventReminderToDoctor();
+			sendEventReminderToDoctor();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -962,36 +962,24 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 					if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
 						for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
-							PatientCollection patientCollection = null;
-							if(!DPDoctorUtils.anyStringEmpty(appointmentDoctorReminderResponse.getPatientId())) {
-							     patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-										new ObjectId(appointmentDoctorReminderResponse.getPatientId()),
-										appointmentDoctorReminderResponse.getLocationId(),
-										appointmentDoctorReminderResponse.getHospitalId());
-							}
-
+							
 							String _24HourTime = String.format("%02d:%02d",
 									appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
 									appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
 
 							Date _24HourDt = _24HourSDF.parse(_24HourTime);
 
-							if (doctorAppointmentSMSResponseMap
-									.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
+							if (doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
 								DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
 										.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-								if(patientCollection != null) {
-									response.setMessage(response.getMessage() + ", " + patientCollection.getLocalPatientName()
+								response.setMessage(response.getMessage() + ", " + appointmentDoctorReminderResponse.getSubject()
 										+ "(" + _12HourSDF.format(_24HourDt) + ")");
-								}
-								response.setNoOfAppointments(response.getNoOfAppointments() + 1);
 								doctorAppointmentSMSResponseMap
 										.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 							} else {
 								DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
 								response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-								if(patientCollection != null) response.setMessage(patientCollection.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
-								response.setNoOfAppointments(1);
+								response.setMessage(appointmentDoctorReminderResponse.getSubject() + "(" + _12HourSDF.format(_24HourDt) + ")");
 								response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
 								doctorAppointmentSMSResponseMap
 										.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
@@ -1001,9 +989,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
 						DoctorAppointmentSMSResponse response = entry.getValue();
 						UserCollection userCollection = response.getDoctor();
-						String message = "Healthcoco! You have " + response.getNoOfAppointments()
-								+ " events scheduled today.\n" + response.getMessage()
-								+ ".\nHave a Healthy and Happy day!!";
+						String message = "Healthcoco! Today's event:\n" + response.getMessage();
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(userCollection.getId());
 						smsTrackDetail.setType("EVENTS");

@@ -37,6 +37,8 @@ public class AppointmentDoctorReminderResponse {
 	
 	private String doctorName;
 
+	private String subject;
+	
 	public String getId() {
 		return id;
 	}
@@ -141,13 +143,21 @@ public class AppointmentDoctorReminderResponse {
 		this.doctorName = doctorName;
 	}
 
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentDoctorReminderResponse [id=" + id + ", doctorId=" + doctorId + ", total=" + total
 				+ ", patientId=" + patientId + ", time=" + time + ", doctor=" + doctor + ", appointmentId="
 				+ appointmentId + ", fromDate=" + fromDate + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", userDevices=" + userDevices + ", localPatientName=" + localPatientName + ", doctorName="
-				+ doctorName + "]";
+				+ doctorName + ", subject=" + subject + "]";
 	}
 
 }
