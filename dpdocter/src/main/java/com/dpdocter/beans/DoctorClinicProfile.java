@@ -113,6 +113,8 @@ public class DoctorClinicProfile {
 	private boolean saveToInventory = false;
 
 	private Boolean isMobileNumberOptional = false;
+	
+	private Boolean iskiosk=false;
 
 	private String patientInitial = "P";
 
@@ -230,6 +232,14 @@ public class DoctorClinicProfile {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public Boolean getIskiosk() {
+		return iskiosk;
+	}
+
+	public void setIskiosk(Boolean iskiosk) {
+		this.iskiosk = iskiosk;
 	}
 
 	public String getPostalCode() {

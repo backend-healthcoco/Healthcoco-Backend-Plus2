@@ -50,6 +50,13 @@ public interface PathProxy {
 		public static final String LOGIN_PATIENT = "/patient";
 
 		public static final String IS_LOCATION_ADMIN = "/isLocationAdmin";
+
+		public static final String GET_DOCTOR_LOGIN_PIN = "/pin/{doctorId}/get";
+
+		public static final String ADD_EDIT_DOCTOR_LOGIN_PIN = "/pin/addEdit";
+
+		public static final String CHECK_DOCTOR_LOGIN_PIN = "/pin/check";
+
 	}
 
 	public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";

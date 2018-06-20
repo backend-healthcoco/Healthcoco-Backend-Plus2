@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.DoctorLoginPin;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.LoginResponse;
@@ -31,6 +32,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DoctorLoginPinCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -43,6 +45,7 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorLoginPinRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.SpecialityRepository;
@@ -76,6 +79,9 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
+
+	@Autowired
+	private DoctorLoginPinRepository doctorLoginPinRepository;
 
 	@Autowired
 	private OTPService otpService;
@@ -429,10 +435,10 @@ public class LoginServiceImpl implements LoginService {
 		try {
 			/*
 			 * RoleCollection roleCollection =
-			 * roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole()); if
-			 * (roleCollection == null) { logger.warn(role); throw new
-			 * BusinessException(ServiceError.NoRecord, role); }
-			 * List<UserRoleCollection> userRoleCollections =
+			 * roleRepository.findByRole(RoleEnum.SUPER_ADMIN.getRole()); if (roleCollection
+			 * == null) { logger.warn(role); throw new
+			 * BusinessException(ServiceError.NoRecord, role); } List<UserRoleCollection>
+			 * userRoleCollections =
 			 * userRoleRepository.findByRoleId(roleCollection.getId());
 			 * 
 			 * @SuppressWarnings("unchecked") Collection<String> userIds =
@@ -442,9 +448,9 @@ public class LoginServiceImpl implements LoginService {
 			/*
 			 * Criteria criteria = new
 			 * Criteria("mobileNumber").is(request.getMobileNumber()).and("id").
-			 * in(userIds); Query query = new Query();
-			 * query.addCriteria(criteria); List<UserCollection> userCollections
-			 * = mongoTemplate.find(query, UserCollection.class);
+			 * in(userIds); Query query = new Query(); query.addCriteria(criteria);
+			 * List<UserCollection> userCollections = mongoTemplate.find(query,
+			 * UserCollection.class);
 			 */
 			// UserCollection userCollection = null;
 			// if(userCollections != null &&
@@ -456,10 +462,10 @@ public class LoginServiceImpl implements LoginService {
 			 * BusinessException(ServiceError.InvalidInput,
 			 * "Invalid mobile Number and Password"); }else{
 			 * 
-			 * for(UserCollection userCollection : userCollections){ char[] salt
-			 * = userCollection.getSalt(); char[] passwordWithSalt = new
-			 * char[request.getPassword().length + salt.length]; for(int i = 0;
-			 * i < request.getPassword().length; i++) passwordWithSalt[i] =
+			 * for(UserCollection userCollection : userCollections){ char[] salt =
+			 * userCollection.getSalt(); char[] passwordWithSalt = new
+			 * char[request.getPassword().length + salt.length]; for(int i = 0; i <
+			 * request.getPassword().length; i++) passwordWithSalt[i] =
 			 * request.getPassword()[i]; for(int i = 0; i < salt.length; i++)
 			 * passwordWithSalt[i+request.getPassword().length] = salt[i];
 			 * if(Arrays.equals(userCollection.getPassword(),
@@ -515,20 +521,96 @@ public class LoginServiceImpl implements LoginService {
 					return response;
 				}
 			}
-			
+
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId").is(new ObjectId(request.getLocationId()))),
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId")
+									.is(new ObjectId(request.getLocationId()))),
 							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
 							Aggregation.unwind("roleCollection"),
 							Aggregation.match(new Criteria("roleCollection.role").is("LOCATION_ADMIN"))),
 					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
 
-			if(userRoleLookupResponses != null && !userRoleLookupResponses.isEmpty())response = true;
-	}catch (Exception e) {
-		e.printStackTrace();
-		logger.error(e + " Error occured while checking is Location Admin");
-		throw new BusinessException(ServiceError.Unknown, "Error occured while checking is Location Admin");
+			if (userRoleLookupResponses != null && !userRoleLookupResponses.isEmpty())
+				response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while checking is Location Admin");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while checking is Location Admin");
+		}
+		return response;
 	}
-	return response;
+
+	@Override
+	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request) {
+		DoctorLoginPin response = null;
+		DoctorLoginPinCollection doctorLoginPinCollection = null;
+		DoctorLoginPinCollection OldoctorLoginPinCollection = null;
+
+		try {
+			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			if (doctor == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "invalid DoctorId");
+			}
+			OldoctorLoginPinCollection = doctorLoginPinRepository.findByDoctorId(new ObjectId(request.getDoctorId()));
+			doctorLoginPinCollection = new DoctorLoginPinCollection();
+			if (OldoctorLoginPinCollection == null) {
+
+				BeanUtil.map(request, doctorLoginPinCollection);
+				doctorLoginPinCollection.setCreatedTime(new Date());
+				doctorLoginPinCollection
+						.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? "Dr." : doctor.getTitle())
+								+ doctor.getFirstName());
+			} else {
+				BeanUtil.map(OldoctorLoginPinCollection, doctorLoginPinCollection);
+				doctorLoginPinCollection.setPin(request.getPin());
+				doctorLoginPinCollection.setUpdatedTime(new Date());
+
+			}
+			doctorLoginPinRepository.save(doctorLoginPinCollection);
+			response = new DoctorLoginPin();
+			BeanUtil.map(doctorLoginPinCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while add edit Login Pin");
+			throw new BusinessException(ServiceError.Unknown, " Error occured while add edit Login Pin");
+
+		}
+		return response;
+	}
+
+	@Override
+	public DoctorLoginPin getLoginPin(String doctorId) {
+		DoctorLoginPin response = null;
+		try {
+			DoctorLoginPinCollection doctorLoginPinCollection = doctorLoginPinRepository
+					.findByDoctorId(new ObjectId(doctorId));
+			response = new DoctorLoginPin();
+			BeanUtil.map(doctorLoginPinCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while get Doctor Login Pin");
+			throw new BusinessException(ServiceError.Unknown, " Error occured while get Doctor Login Pin");
+
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean checkLoginPin(String doctorId) {
+		Boolean response = false;
+		try {
+			DoctorLoginPinCollection doctorLoginPinCollection = doctorLoginPinRepository
+					.findByDoctorId(new ObjectId(doctorId));
+			if (doctorLoginPinCollection != null) {
+				response = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while checking Doctor Login Pin");
+			throw new BusinessException(ServiceError.Unknown, " Error occured while checking Doctor Login Pin");
+
+		}
+		return response;
 	}
 }
