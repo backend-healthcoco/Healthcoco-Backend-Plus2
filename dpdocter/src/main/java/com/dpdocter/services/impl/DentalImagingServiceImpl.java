@@ -392,7 +392,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						new Criteria("patientName").regex(searchTerm + ".*"),
 						new Criteria("mobileNumber").regex("^" + searchTerm, "i"),
 						new Criteria("mobileNumber").regex("^" + searchTerm),
-						new Criteria("mobileNumber").regex(searchTerm + ".*"));
+						new Criteria("mobileNumber").regex(searchTerm + ".*"),
+						new Criteria("referringDoctor").regex("^" + searchTerm, "i"),
+						new Criteria("referringDoctor").regex("^" + searchTerm),
+						new Criteria("referringDoctor").regex(searchTerm + ".*"));
+				
 			}
 
 			if (to != null) {
@@ -772,6 +776,15 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			AggregationResults<DentalImagingLocationResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingLocationServiceAssociationCollection.class, DentalImagingLocationResponse.class);
 			dentalImagingLocationResponses = aggregationResults.getMappedResults();
+			
+			for (DentalImagingLocationResponse dentalImagingLocationResponse : dentalImagingLocationResponses) {
+			 if(dentalImagingLocationResponse.getLocation() != null)
+			 {
+				 dentalImagingLocationResponse.getLocation().setLogoUrl(imagePath + dentalImagingLocationResponse.getLocation().getLogoUrl());
+				 dentalImagingLocationResponse.getLocation().setLogoThumbnailUrl(imagePath + dentalImagingLocationResponse.getLocation().getLogoThumbnailUrl());
+			 }
+				 
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception
@@ -820,6 +833,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		return response;
 	}
+	
+	
 
 	@Override
 	@Transactional
@@ -1749,7 +1764,60 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return dentalImagingResponses;
 	}
 	 
-	
+	@Override
+	@Transactional
+	public List<DentalImagingReports> getReports(String doctorId,String locationId, String hospitalId,  String dentalImagingLocationId , String dentalImagingHospitalId , String patientId,  Long from,
+			Long to, String searchTerm, int size , int page) {
+
+		List<DentalImagingReports> dentalImagingReports = null;
+		
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
+				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
+				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			
+			if (to != null) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+			} else {
+				criteria.and("updatedTime").gte(new Date(from));
+			}
+			
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.skip(page * size), Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+			}
+
+			AggregationResults<DentalImagingReports> aggregationResult = mongoTemplate.aggregate(aggregation,
+					DentalImagingReportsCollection.class, DentalImagingReports.class);
+			dentalImagingReports = aggregationResult.getMappedResults();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return dentalImagingReports;
+		
+	}
 	
 	
 }

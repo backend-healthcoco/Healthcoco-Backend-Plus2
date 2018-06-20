@@ -330,5 +330,23 @@ public class DentalImagingAPI {
 		response.setData(dentalImagingService.getVisitAnalytics(from, to, dentalImagingLocationId, dentalImagingHospitalId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_REPORTS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_REPORTS, notes = PathProxy.DentalImagingUrl.GET_REPORTS)
+	public Response<DentalImagingReports> getPickupRequests(@QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
+			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
+			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
+			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("from") Long from,
+			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
+			@QueryParam("page") int page) {
+
+		Response<DentalImagingReports> response = new Response<DentalImagingReports>();
+		response.setDataList(dentalImagingService.getReports(doctorId, locationId, hospitalId, dentalImagingLocationId,
+				dentalImagingHospitalId, patientId, from, to, searchTerm, size, page));
+		return response;
+	}
+	
 
 }

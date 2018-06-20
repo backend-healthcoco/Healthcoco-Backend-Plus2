@@ -79,4 +79,8 @@ public interface DentalImagingService {
 	DentalImagingVisitAnalyticsResponse getVisitAnalytics(String fromDate, String toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId);
 
+	List<DentalImagingReports> getReports(String doctorId, String locationId, String hospitalId,
+			String dentalImagingLocationId, String dentalImagingHospitalId, String patientId, Long from, Long to,
+			String searchTerm, int size, int page);
+
 }
