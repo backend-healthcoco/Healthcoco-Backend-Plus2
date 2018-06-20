@@ -53,6 +53,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.response.DoctorLoginPinRequest;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
@@ -596,13 +597,14 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	@Override
-	public Boolean checkLoginPin(String doctorId) {
+	public Boolean checkLoginPin(DoctorLoginPinRequest request) {
 		Boolean response = false;
 		try {
 			DoctorLoginPinCollection doctorLoginPinCollection = doctorLoginPinRepository
-					.findByDoctorId(new ObjectId(doctorId));
+					.findByDoctorId(new ObjectId(request.getDoctorId()));
 			if (doctorLoginPinCollection != null) {
-				response = true;
+				if (request.getPin().equals(doctorLoginPinCollection.getPin()))
+					response = true;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

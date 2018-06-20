@@ -25,6 +25,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
+import com.dpdocter.response.DoctorLoginPinRequest;
 import com.dpdocter.response.UserAddressResponse;
 import com.dpdocter.services.LoginService;
 import com.dpdocter.services.RegistrationService;
@@ -171,12 +172,12 @@ public class LoginApi {
 	@Path(value = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN)
 	@GET
 	@ApiOperation(value = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN)
-	public Response<Boolean> checkLoginPin(String doctorId) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	public Response<Boolean> checkLoginPin(DoctorLoginPinRequest request) {
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(),request.getPin())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Boolean isLocationAdmin = loginService.checkLoginPin(doctorId);
+		Boolean isLocationAdmin = loginService.checkLoginPin(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(isLocationAdmin);
 		return response;
