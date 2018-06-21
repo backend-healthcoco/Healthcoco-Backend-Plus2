@@ -1765,7 +1765,12 @@ public interface PathProxy {
 		public static final String CHANGE_PAYMENT_STATUS = "/changePaymentStatus/{id}";
 		public static final String DOWNLOAD_INVOICES = "/invoice/{id}/download";
 		public static final String GET_SERVICE_VISIT_ANALYTICS = "/analytics/serviceVisit";
+<<<<<<< HEAD
 
+=======
+		public static final String GET_REPORTS = "/getReports";
+		public static final String GET_PATIENT_VISIT_ANALYTICS = "/analytics/patientVisit";
+>>>>>>> 2f6cb8d... Dental Imaging Analytics :: get patient visit api
 	}
 
 	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
