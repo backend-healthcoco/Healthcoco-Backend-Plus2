@@ -48,6 +48,7 @@ import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupRespon
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
+import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.services.DentalImagingService;
 
@@ -328,6 +329,24 @@ public class DentalImagingAPI {
 		}
 		Response<DentalImagingVisitAnalyticsResponse> response = new Response<DentalImagingVisitAnalyticsResponse>();
 		response.setData(dentalImagingService.getVisitAnalytics(from, to, dentalImagingLocationId, dentalImagingHospitalId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_PATIENT_VISIT_ANALYTICS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_PATIENT_VISIT_ANALYTICS, notes = PathProxy.DentalImagingUrl.GET_PATIENT_VISIT_ANALYTICS)
+
+	public Response<PatientAnalyticResponse> getPatientVisitAnalytics(
+			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
+			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
+			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to , @QueryParam("searchType") String searchType ) {
+		if (DPDoctorUtils.allStringsEmpty(dentalImagingLocationId,
+				dentalImagingHospitalId)) {
+
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<PatientAnalyticResponse> response = new Response<PatientAnalyticResponse>();
+		response.setDataList(dentalImagingService.getPatientVisitAnalytics(from, to, dentalImagingLocationId, dentalImagingHospitalId, searchType));
 		return response;
 	}
 	

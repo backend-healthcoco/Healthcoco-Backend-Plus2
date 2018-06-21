@@ -20,7 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -69,6 +72,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
+import com.dpdocter.enums.SearchType;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -96,6 +100,7 @@ import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.services.DentalImagingService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
@@ -824,6 +829,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			BeanUtil.map(request, dentalImagingReportsCollection);
 			dentalImagingReportsCollection.setReport(imageURLResponse);
 			dentalImagingReportsCollection = dentalImagingReportsRepository.save(dentalImagingReportsCollection);
+			
+			if (dentalImagingReportsCollection.getRequestId() != null) {
+				DentalImagingCollection dentalImagingCollection = dentalImagingRepository
+						.findOne(dentalImagingReportsCollection.getRequestId());
+				dentalImagingCollection.setIsReportsUploaded(true);
+				dentalImagingRepository.save(dentalImagingCollection);
+			}
 			response = new DentalImagingReports();
 			BeanUtil.map(dentalImagingReportsCollection, response);
 
@@ -1717,13 +1729,16 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return response;
 	}
 	
-	
-	public List<DentalImagingResponse> getPatientVisitAnalytics(String fromDate, String toDate,
-			String dentalImagingLocationId, String dentalImagingHospitalId)
+	@Override
+	@Transactional
+	public List<PatientAnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId , String searchType)
 	{
-		List<DentalImagingResponse>  dentalImagingResponses = null;
+		
+		List<PatientAnalyticResponse> response = null;
 		try {
 			Aggregation aggregation = null;
+			AggregationOperation aggregationOperation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
 				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
@@ -1731,37 +1746,111 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
 				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 			}
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("updatedTime").gt(start);
+			
+			//criteria.and("isReportsUploaded").is(true);
+			
+			if (toDate != null) {
+				criteria.and("updatedTime").gte(new Date(fromDate)).lte(DPDoctorUtils.getEndTime(new Date(toDate)));
+			} else {
+				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			
+			
+	
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					Fields.field("patient.id", "$patient.userId"),
+					Fields.field("patient.localPatientName", "$patient.localPatientName"),
+					Fields.field("patient.PID", "$patient.PID"),
+					Fields.field("patient.firstName", "$user.firstName"),
+					Fields.field("patient.registrationDate", "$patient.registrationDate"),
+					Fields.field("patient.createdTime", "$createdTime"), Fields.field("createdTime", "$createdTime")));
+			
+			switch (SearchType.valueOf(searchType.toUpperCase())) {
+			case DAILY: {
+				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("_id",
+								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
+										.append("day", new BasicDBObject("$first", "$day"))
+										.append("city", new BasicDBObject("$first", "$city"))
+										.append("month", new BasicDBObject("$first", "$month"))
+										.append("year", new BasicDBObject("$first", "$year"))
+										.append("date", new BasicDBObject("$first", "$createdTime"))
+										.append("patients", new BasicDBObject("$push", "$patient"))));
+				break;
+			}
 
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("updatedTime").lte(end);
-			} 
-			aggregation =Aggregation.newAggregation(Aggregation.match(criteria));
+			case WEEKLY: {
+
+				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("_id",
+								new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
+										.append("groupId", "$groupId"))
+												.append("day", new BasicDBObject("$first", "$day"))
+												.append("city", new BasicDBObject("$first", "$city"))
+												.append("month", new BasicDBObject("$first", "$month"))
+												.append("year", new BasicDBObject("$first", "$year"))
+												.append("date", new BasicDBObject("$first", "$createdTime"))
+												.append("patients", new BasicDBObject("$push", "$patient"))));
+				break;
+			}
+
+			case MONTHLY: {
+
+				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
+								.append("day", new BasicDBObject("$first", "$day"))
+								.append("city", new BasicDBObject("$first", "$city"))
+								.append("month", new BasicDBObject("$first", "$month"))
+								.append("year", new BasicDBObject("$first", "$year"))
+								.append("date", new BasicDBObject("$first", "$createdTime"))
+								.append("patients", new BasicDBObject("$push", "$patient"))));
+
+				break;
+			}
+			case YEARLY: {
+
+				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("_id", new BasicDBObject("year", "$year"))
+								.append("day", new BasicDBObject("$first", "$day"))
+								.append("city", new BasicDBObject("$first", "$city"))
+								.append("month", new BasicDBObject("$first", "$month"))
+								.append("year", new BasicDBObject("$first", "$year"))
+								.append("date", new BasicDBObject("$first", "$createdTime"))
+								.append("patients", new BasicDBObject("$push", "$patient"))));
+
+				break;
+
+			}
+
+			default:
+				break;
+			}
+			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+					Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+					Aggregation.unwind("patient"), Aggregation.match(criteria),
+					projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
+							.as("month").and("createdTime").extractYear().as("year").and("createdTime")
+							.extractWeek().as("week"),
+					aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					"dental_imaging_cl", PatientAnalyticResponse.class);
+			response = aggregationResults.getMappedResults();
+
+			for (PatientAnalyticResponse patientAnalyticResponse : response) {
+				patientAnalyticResponse.setCount(patientAnalyticResponse.getPatients().size());
+
+			}
+			
+		/*	aggregation =Aggregation.newAggregation(Aggregation.match(criteria));
 			AggregationResults<DentalImagingResponse> aggregationResult = mongoTemplate.aggregate(aggregation,
 					DentalImagingCollection.class, DentalImagingResponse.class);
-			dentalImagingResponses = aggregationResult.getMappedResults();
+			dentalImagingResponses = aggregationResult.getMappedResults();*/
 			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return dentalImagingResponses;
+		return response;
 	}
 	 
 	@Override

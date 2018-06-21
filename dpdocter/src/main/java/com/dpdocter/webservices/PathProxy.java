@@ -1802,6 +1802,7 @@ public interface PathProxy {
 		public static final String DOWNLOAD_INVOICES = "/invoice/{id}/download";
 		public static final String GET_SERVICE_VISIT_ANALYTICS = "/analytics/serviceVisit";
 		public static final String GET_REPORTS = "/getReports";
+		public static final String GET_PATIENT_VISIT_ANALYTICS = "/analytics/patientVisit";
 	}
 
 	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
