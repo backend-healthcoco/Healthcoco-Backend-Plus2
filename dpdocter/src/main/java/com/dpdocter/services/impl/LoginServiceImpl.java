@@ -180,7 +180,7 @@ public class LoginServiceImpl implements LoginService {
 							.aggregate(
 									Aggregation.newAggregation(
 											Aggregation.match(new Criteria("doctorId").is(userCollection.getId())
-													.and("isActivate").is(true)),
+													.and("isActivate").is(true).and("hasLoginAccess").ne(false)),
 											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 											Aggregation.unwind("location"),
 											Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id",
@@ -189,9 +189,8 @@ public class LoginServiceImpl implements LoginService {
 									DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
-						logger.warn("None of your clinic is active");
-						// user.setUserState(UserState.NOTACTIVATED);
-						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
+						logger.warn("None of your clinic is active or you don't have login access");
+						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active or you don't have login access");
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
@@ -262,8 +261,9 @@ public class LoginServiceImpl implements LoginService {
 									locationAndAccessControl.setRoles(roles);
 								}
 							}
+							
 							if (!isStaff) {
-								if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
+								if (!checkHospitalId.containsKey(locationCollection.getHospitalId().toString())) {
 									hospitalCollection = doctorClinicProfileLookupResponse.getHospital();
 									Hospital hospital = new Hospital();
 									BeanUtil.map(hospitalCollection, hospital);
@@ -272,7 +272,7 @@ public class LoginServiceImpl implements LoginService {
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
 									hospitals.add(hospital);
 								} else {
-									Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId());
+									Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId().toString());
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospitals.add(hospital);
 								}

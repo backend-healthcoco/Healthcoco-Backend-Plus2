@@ -2007,6 +2007,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			doctorClinicProfileCollection.setLocationId(new ObjectId(request.getLocationId()));
 			doctorClinicProfileCollection.setCreatedTime(new Date());
 			doctorClinicProfileCollection.setIsActivate(request.getIsActivate());
+			doctorClinicProfileCollection.setHasLoginAccess(request.getHasLoginAccess());
+			doctorClinicProfileCollection.setHasBillingAccess(request.getHasBillingAccess());
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 
 			// save token
@@ -2140,6 +2142,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorClinicProfileCollection.setLocationId(new ObjectId(request.getLocationId()));
 				doctorClinicProfileCollection.setCreatedTime(new Date());
 				doctorClinicProfileCollection.setIsActivate(request.getIsActivate());
+				doctorClinicProfileCollection.setHasLoginAccess(request.getHasLoginAccess());
+				doctorClinicProfileCollection.setHasBillingAccess(request.getHasBillingAccess());
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 			}
 
@@ -2522,9 +2526,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					criteria.and("user.userState").is(userState);
 				}
 			}
-
-
-
 
 			if (size > 0) {
 				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(

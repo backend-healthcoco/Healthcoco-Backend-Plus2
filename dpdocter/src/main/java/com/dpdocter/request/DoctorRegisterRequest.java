@@ -28,6 +28,10 @@ public class DoctorRegisterRequest {
 
 	private List<String> speciality;
 
+	private Boolean hasLoginAccess = true;
+	
+	private Boolean hasBillingAccess = true;
+	
 	public List<String> getSpeciality() {
 		return speciality;
 	}
@@ -124,12 +128,29 @@ public class DoctorRegisterRequest {
 		this.colorCode = colorCode;
 	}
 
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorRegisterRequest [title=" + title + ", userId=" + userId + ", firstName=" + firstName
 				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", roleId=" + roleId
-				+ ", isActivate=" + isActivate + ", colorCode=" + colorCode + "]";
+				+ ", isActivate=" + isActivate + ", colorCode=" + colorCode + ", speciality=" + speciality
+				+ ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + "]";
 	}
 
 }

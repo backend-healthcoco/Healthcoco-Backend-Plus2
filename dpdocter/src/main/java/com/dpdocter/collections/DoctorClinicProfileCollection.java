@@ -108,6 +108,12 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private String labType = LabType.DIAGNOSTIC.getType();
 
+	@Field
+	private Boolean hasLoginAccess = true;
+	
+	@Field
+	private Boolean hasBillingAccess = true;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -348,6 +354,22 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.labType = labType;
 	}
 
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
@@ -359,6 +381,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ ", timeZone=" + timeZone + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount
 				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", isAutoSMS=" + isAutoSMS + ", isSendRegularCheckupSMS="
 				+ isSendRegularCheckupSMS + ", regularCheckUpMonths=" + regularCheckUpMonths + ", checkUpTypeEnum="
-				+ checkUpTypeEnum + "]";
+				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
+				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
+				+ ", saveToInventory=" + saveToInventory + ", labType=" + labType + ", hasLoginAccess=" + hasLoginAccess
+				+ ", hasBillingAccess=" + hasBillingAccess + "]";
 	}
 }

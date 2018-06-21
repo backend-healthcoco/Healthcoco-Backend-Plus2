@@ -539,7 +539,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 
 			if (isSearched == false) {
-				criteria.and("isActivate").is(true);
+				criteria.and("isActivate").is(true).and("hasLoginAccess").ne(false);
 			}
 
 			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(

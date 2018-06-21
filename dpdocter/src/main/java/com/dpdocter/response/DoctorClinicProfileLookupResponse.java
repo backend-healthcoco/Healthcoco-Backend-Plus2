@@ -66,6 +66,10 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private String packageType;
 
+	private Boolean hasLoginAccess = true;
+	
+	private Boolean hasBillingAccess = true;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -266,7 +270,22 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.packageType = packageType;
 	}
 
-	
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -277,6 +296,9 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
 				+ ", noOfRecommenations=" + noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed="
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user + "]";
+				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user
+				+ ", packageType=" + packageType + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess="
+				+ hasBillingAccess + "]";
 	}
+
 }
