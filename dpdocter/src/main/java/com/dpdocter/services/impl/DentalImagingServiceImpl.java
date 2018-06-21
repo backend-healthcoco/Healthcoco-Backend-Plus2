@@ -480,6 +480,45 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			response = aggregationResults.getMappedResults();
 			for (DentalImagingResponse dentalImagingResponse : response) {
 
+				
+				if (dentalImagingResponse.getLocation() != null) {
+					dentalImagingResponse.getLocation()
+							.setLogoUrl(imagePath + dentalImagingResponse.getLocation().getLogoUrl());
+					dentalImagingResponse.getLocation().setLogoThumbnailUrl(
+							imagePath + dentalImagingResponse.getLocation().getLogoThumbnailUrl());
+
+					String address = (!DPDoctorUtils
+							.anyStringEmpty(dentalImagingResponse.getLocation().getStreetAddress())
+									? dentalImagingResponse.getLocation().getStreetAddress() + ", "
+									: "")
+							+ (!DPDoctorUtils
+									.anyStringEmpty(dentalImagingResponse.getLocation().getLandmarkDetails())
+											? dentalImagingResponse.getLocation().getLandmarkDetails() + ", "
+											: "")
+							+ (!DPDoctorUtils.anyStringEmpty(dentalImagingResponse.getLocation().getLocality())
+									? dentalImagingResponse.getLocation().getLocality() + ", "
+									: "")
+							+ (!DPDoctorUtils.anyStringEmpty(dentalImagingResponse.getLocation().getCity())
+									? dentalImagingResponse.getLocation().getCity() + ", "
+									: "")
+							+ (!DPDoctorUtils.anyStringEmpty(dentalImagingResponse.getLocation().getState())
+									? dentalImagingResponse.getLocation().getState() + ", "
+									: "")
+							+ (!DPDoctorUtils.anyStringEmpty(dentalImagingResponse.getLocation().getCountry())
+									? dentalImagingResponse.getLocation().getCountry() + ", "
+									: "")
+							+ (!DPDoctorUtils
+									.anyStringEmpty(dentalImagingResponse.getLocation().getPostalCode())
+											? dentalImagingResponse.getLocation().getPostalCode()
+											: "");
+
+					if (address.charAt(address.length() - 2) == ',') {
+						address = address.substring(0, address.length() - 2);
+					}
+					dentalImagingResponse.getLocation().setClinicAddress(address);
+				}
+				
+				
 				if (type.equalsIgnoreCase("DOCTOR")) {
 					if (!DPDoctorUtils.anyStringEmpty(dentalImagingResponse.getPatientId(),
 							dentalImagingResponse.getDoctorId(), dentalImagingResponse.getHospitalId(),
@@ -798,6 +837,45 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			AggregationResults<DentalImagingLocationResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingLocationServiceAssociationCollection.class, DentalImagingLocationResponse.class);
 			dentalImagingLocationResponses = aggregationResults.getMappedResults();
+
+			for (DentalImagingLocationResponse dentalImagingLocationResponse : dentalImagingLocationResponses) {
+				if (dentalImagingLocationResponse.getLocation() != null) {
+					dentalImagingLocationResponse.getLocation()
+							.setLogoUrl(imagePath + dentalImagingLocationResponse.getLocation().getLogoUrl());
+					dentalImagingLocationResponse.getLocation().setLogoThumbnailUrl(
+							imagePath + dentalImagingLocationResponse.getLocation().getLogoThumbnailUrl());
+
+					String address = (!DPDoctorUtils
+							.anyStringEmpty(dentalImagingLocationResponse.getLocation().getStreetAddress())
+									? dentalImagingLocationResponse.getLocation().getStreetAddress() + ", "
+									: "")
+							+ (!DPDoctorUtils
+									.anyStringEmpty(dentalImagingLocationResponse.getLocation().getLandmarkDetails())
+											? dentalImagingLocationResponse.getLocation().getLandmarkDetails() + ", "
+											: "")
+							+ (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationResponse.getLocation().getLocality())
+									? dentalImagingLocationResponse.getLocation().getLocality() + ", "
+									: "")
+							+ (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationResponse.getLocation().getCity())
+									? dentalImagingLocationResponse.getLocation().getCity() + ", "
+									: "")
+							+ (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationResponse.getLocation().getState())
+									? dentalImagingLocationResponse.getLocation().getState() + ", "
+									: "")
+							+ (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationResponse.getLocation().getCountry())
+									? dentalImagingLocationResponse.getLocation().getCountry() + ", "
+									: "")
+							+ (!DPDoctorUtils
+									.anyStringEmpty(dentalImagingLocationResponse.getLocation().getPostalCode())
+											? dentalImagingLocationResponse.getLocation().getPostalCode()
+											: "");
+
+					if (address.charAt(address.length() - 2) == ',') {
+						address = address.substring(0, address.length() - 2);
+					}
+					dentalImagingLocationResponse.getLocation().setClinicAddress(address);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO: handle exception
