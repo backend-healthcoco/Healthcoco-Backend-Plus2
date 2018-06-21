@@ -87,7 +87,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -122,10 +122,11 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		ESPatientResponseDetails patientResponseDetails = null;
 		try {
 			AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
-			
+
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-			if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
-				if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
+			if (locationCollection != null && locationCollection.getIsPidHasDate() != null) {
+				if (!locationCollection.getIsPidHasDate())
+					advancedSearchTypeForPID = AdvancedSearchType.PNUM;
 			}
 			searchTerm = searchTerm.toLowerCase();
 			String patientName = searchTerm.replaceAll("[^a-zA-Z0-9]", "");
@@ -135,9 +136,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 					.must(QueryBuilders.termQuery("isPatientDiscarded", false))
 
-					.should(QueryBuilders
-							.queryStringQuery("localPatientNameFormatted:"+patientName+"*")
-							.boost(4))
+					.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + patientName + "*").boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
 							.boost(1.3f))
@@ -154,9 +153,10 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size)).build();
+						.withPageable(new PageRequest(page, size, Direction.ASC, "localPatientName")).build();
 			else
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("localPatientName").order(SortOrder.ASC)).build();
 
 			patients = elasticsearchTemplate.queryForList(searchQuery, ESPatientDocument.class);
 			if (patients != null && !patients.isEmpty()) {
@@ -297,15 +297,17 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 									new BeanToPropertyValueTransformer("id"));
 							builder = QueryBuilders.termsQuery(searchType, referenceIds);
 						}
-					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())){
+					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())) {
 						AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
-						
+
 						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-						if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
-							if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
+						if (locationCollection != null && locationCollection.getIsPidHasDate() != null) {
+							if (!locationCollection.getIsPidHasDate())
+								advancedSearchTypeForPID = AdvancedSearchType.PNUM;
 						}
-						builder = QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchValue);
-				     }else {
+						builder = QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(),
+								searchValue);
+					} else {
 						builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 					}
 					boolQueryBuilder.must(builder);
