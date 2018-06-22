@@ -3,13 +3,15 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DentalImagingResponse extends GenericCollection {
 
 	private String id;
