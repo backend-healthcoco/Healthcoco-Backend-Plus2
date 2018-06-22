@@ -15,10 +15,12 @@ import com.dpdocter.beans.DataDynamicUI;
 import com.dpdocter.beans.DentalLabDynamicField;
 import com.dpdocter.beans.DentalLabDynamicUi;
 import com.dpdocter.beans.DynamicUI;
+import com.dpdocter.beans.KioskDynamicUi;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DynamicUIRequest;
+import com.dpdocter.request.KioskDynamicUiResquest;
 import com.dpdocter.response.DynamicUIResponse;
 import com.dpdocter.services.DynamicUIService;
 
@@ -102,7 +104,7 @@ public class DynamicUIApi {
 		return response;
 
 	}
-	
+
 	@Path(value = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR, notes = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR)
@@ -116,7 +118,7 @@ public class DynamicUIApi {
 		response.setData(dynamicUIResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR, notes = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR)
@@ -130,12 +132,12 @@ public class DynamicUIApi {
 		response.setData(dynamicUIResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB)
 	@GET
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB, notes = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB)
 	public Response<DentalLabDynamicField> getAllPermissionForDentalLab() {
-		
+
 		DentalLabDynamicField dentalLabDynamicField = dynamicUIService.getAllDentalLabPermissions();
 		Response<DentalLabDynamicField> response = new Response<DentalLabDynamicField>();
 		response.setData(dentalLabDynamicField);
@@ -175,5 +177,40 @@ public class DynamicUIApi {
 
 	}
 
+	@Path(value = PathProxy.DynamicUIUrls.ADD_EDIT_KIOSK_PERMISSION)
+	@POST
+	@ApiOperation(value = PathProxy.DynamicUIUrls.ADD_EDIT_KIOSK_PERMISSION, notes = "ADD_EDIT_KIOSK_PERMISSION")
+	public Response<KioskDynamicUi> addEditKoiskPermissions(KioskDynamicUiResquest dynamicUIRequest) {
+		if (dynamicUIRequest == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
+		} else if (dynamicUIRequest.getKioskPermission() == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " KIOSK UI permissions are null");
+		}
+		if (DPDoctorUtils.anyStringEmpty(dynamicUIRequest.getDoctorId())) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null or Empty");
+		}
+
+		KioskDynamicUi koiskDynamicUi = dynamicUIService.addEditKioskUiPermission(dynamicUIRequest);
+		Response<KioskDynamicUi> response = new Response<KioskDynamicUi>();
+		response.setData(koiskDynamicUi);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DynamicUIUrls.GET_KIOSK_PERMISSION)
+	@POST
+	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_KIOSK_PERMISSION, notes = "GET_KIOSK_PERMISSION")
+	public Response<KioskDynamicUi> getKoiskPermissions(@PathParam("doctorId") String doctorId) {
+
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null or Empty");
+		}
+
+		KioskDynamicUi koiskDynamicUi = dynamicUIService.getKioskUiPermission(doctorId);
+		Response<KioskDynamicUi> response = new Response<KioskDynamicUi>();
+		response.setData(koiskDynamicUi);
+		return response;
+
+	}
 
 }
