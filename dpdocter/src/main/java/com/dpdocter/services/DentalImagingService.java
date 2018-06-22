@@ -22,6 +22,7 @@ import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
+import com.dpdocter.response.PatientDentalImagignVisitAnalyticsResponse;
 import com.dpdocter.response.ServiceLocationResponse;
 
 import common.util.web.Response;
@@ -86,5 +87,8 @@ public interface DentalImagingService {
 
 	List<PatientAnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate, String dentalImagingLocationId,
 			String dentalImagingHospitalId, String searchType);
+
+	List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalytics(Long fromDate, Long toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId, String searchType);
 
 }
