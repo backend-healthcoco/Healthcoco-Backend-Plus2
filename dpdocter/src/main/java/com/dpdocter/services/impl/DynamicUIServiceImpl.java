@@ -771,6 +771,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			if (dynamicUiCollection != null) {
 				BeanUtil.map(dynamicUiCollection, response);
 			}
+			response.setDoctorId(doctorId);
 			response.setAllkioskPermission(new ArrayList<String>(
 					Arrays.asList((Arrays.toString(KioskDynamicUiEnum.values()).replaceAll("^.|.$", "").split(", ")))));
 		} catch (Exception e) {
