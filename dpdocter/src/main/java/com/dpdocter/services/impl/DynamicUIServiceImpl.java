@@ -751,8 +751,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dynamicUiCollection = kioskDynamicUiRepository.save(dynamicUiCollection);
 			response = new KioskDynamicUi();
 			BeanUtil.map(dynamicUiCollection, response);
-			response.setAllkioskPermission(new ArrayList<String>(Arrays.asList(
-					(Arrays.toString(DischargeSummaryPermissions.values()).replaceAll("^.|.$", "").split(", ")))));
+			response.setAllkioskPermission(new ArrayList<String>(
+					Arrays.asList((Arrays.toString(KioskDynamicUiEnum.values()).replaceAll("^.|.$", "").split(", ")))));
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -768,9 +768,11 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			KioskDynamicUiCollection dynamicUiCollection = kioskDynamicUiRepository
 					.findByDoctorId(new ObjectId(doctorId));
 			response = new KioskDynamicUi();
-			BeanUtil.map(dynamicUiCollection, response);
-			response.setAllkioskPermission(new ArrayList<String>(Arrays.asList(
-					(Arrays.toString(DischargeSummaryPermissions.values()).replaceAll("^.|.$", "").split(", ")))));
+			if (dynamicUiCollection != null) {
+				BeanUtil.map(dynamicUiCollection, response);
+			}
+			response.setAllkioskPermission(new ArrayList<String>(
+					Arrays.asList((Arrays.toString(KioskDynamicUiEnum.values()).replaceAll("^.|.$", "").split(", ")))));
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
