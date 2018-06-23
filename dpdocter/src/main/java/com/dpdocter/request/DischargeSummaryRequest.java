@@ -63,6 +63,16 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private String implant;
 	private String cement;
 	private String operationName;
+	private String lmp;
+	private String edd;
+	private Date surgeryDate;
+	private String surgeryNotes;
+	private String treatingConsultant;
+	private String anesthesia;
+	private String consultantDoctor;
+	private String assistantDoctor;
+	private String treatmentAdviceForMother;
+	private String treatmentAdviceForBaby;
 	private List<FlowSheet> flowSheets;
 
 	public Date getOperationDate() {
