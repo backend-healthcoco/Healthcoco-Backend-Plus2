@@ -435,13 +435,24 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "DW");
 				}
-				
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "DI");
 				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
 					customValues.put("EI", componentTypeId);
 					customValues.put("T", "E");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "PR");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "DI");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "DW");
 				}
 			}
 			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
