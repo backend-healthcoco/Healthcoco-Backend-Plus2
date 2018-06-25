@@ -76,6 +76,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String treatmentAdviceForBaby;
 	private String pediatricianName;
 	private List<FlowSheet> flowSheets;
+	private List<String> diagrams;
 
 	public String getOperationName() {
 		return operationName;
@@ -589,6 +590,14 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setPediatricianName(String pediatricianName) {
 		this.pediatricianName = pediatricianName;
+	}
+
+	public List<String> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<String> diagrams) {
+		this.diagrams = diagrams;
 	}
 
 }

@@ -155,6 +155,8 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private Boolean isPatientDiscarded = false;
 	@Field
 	private List<FlowSheet> flowSheets;
+	@Field
+	private List<String> diagrams;
 
 	public String getOperationName() {
 		return operationName;
@@ -718,6 +720,14 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setPediatricianName(String pediatricianName) {
 		this.pediatricianName = pediatricianName;
+	}
+
+	public List<String> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<String> diagrams) {
+		this.diagrams = diagrams;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,6 +34,7 @@ import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.FlowSheetJasperBean;
 import com.dpdocter.beans.GenericCode;
@@ -45,6 +49,7 @@ import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CementCollection;
+import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
@@ -72,6 +77,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BabyNoteRepository;
 import com.dpdocter.repository.CementRepository;
+import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
@@ -91,6 +97,7 @@ import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
@@ -98,6 +105,7 @@ import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.EmailTackService;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -181,7 +189,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private FlowsheetRepository flowsheetRepository;
+	
+	@Autowired
+	private FileManager fileManager;
 
+	@Autowired
+	private DiagramsRepository diagramsRepository;
+	
 	@Value(value = "${jasper.print.dischargeSummary.a4.fileName}")
 	private String dischargeSummaryReportA4FileName;
 
@@ -2680,6 +2694,68 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	public String downloadFlowSheet(String id, Boolean byFlowsheetId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	@Transactional
+	public Diagram addEditDiagram(Diagram diagram) {
+		try {
+			if (diagram.getDiagram() != null) {
+				String path = "dischargeSummary" + File.separator + "diagrams";
+				diagram.getDiagram().setFileName(diagram.getDiagram().getFileName() + new Date().getTime());
+				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path,
+						false);
+				diagram.setDiagramUrl(imageURLResponse.getImageUrl());
+
+			}
+			DiagramsCollection diagramsCollection = new DiagramsCollection();
+			BeanUtil.map(diagram, diagramsCollection);
+			if (DPDoctorUtils.allStringsEmpty(diagram.getDoctorId()))
+				diagramsCollection.setDoctorId(null);
+			if (DPDoctorUtils.allStringsEmpty(diagram.getLocationId()))
+				diagramsCollection.setLocationId(null);
+			if (DPDoctorUtils.allStringsEmpty(diagram.getHospitalId()))
+				diagramsCollection.setHospitalId(null);
+
+			if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
+				diagramsCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(diagramsCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(diagramsCollection.getDoctorId());
+					if (userCollection != null) {
+						diagramsCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					diagramsCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				DiagramsCollection oldDiagramsCollection = diagramsRepository.findOne(diagramsCollection.getId());
+				diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
+				diagramsCollection.setCreatedTime(oldDiagramsCollection.getCreatedTime());
+				diagramsCollection.setDiscarded(oldDiagramsCollection.getDiscarded());
+				if (diagram.getDiagram() == null) {
+					diagramsCollection.setDiagramUrl(oldDiagramsCollection.getDiagramUrl());
+					diagramsCollection.setFileExtension(oldDiagramsCollection.getFileExtension());
+				}
+			}
+			diagramsCollection = diagramsRepository.save(diagramsCollection);
+			BeanUtil.map(diagramsCollection, diagram);
+			diagram.setDiagram(null);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing diagram",
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return diagram;
 	}
 
 }

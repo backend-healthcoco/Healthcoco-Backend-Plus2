@@ -18,15 +18,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
+import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
 import com.dpdocter.elasticsearch.document.ESCementDocument;
+import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESImplantDocument;
 import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
@@ -64,6 +67,9 @@ public class DischargeSummaryAPI {
 
 	@Autowired
 	private ESDischargeSummaryService esDischargeSummaryService;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
 
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@POST
@@ -552,4 +558,32 @@ public class DischargeSummaryAPI {
 
 	}
 
+	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
+	@POST
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
+	public Response<Diagram> addDiagram(Diagram request) {
+		if (request == null
+				|| DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())
+				|| request.getDiagram() == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Diagram diagram = dischargeSummaryService.addEditDiagram(request);
+		
+		if (diagram.getDiagramUrl() != null) {
+			diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+		}
+		
+		Response<Diagram> response = new Response<Diagram>();
+		response.setData(diagram);
+		return response;
+	}
+	
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
 }

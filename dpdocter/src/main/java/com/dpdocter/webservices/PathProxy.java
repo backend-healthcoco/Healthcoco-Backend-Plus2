@@ -1422,7 +1422,7 @@ public interface PathProxy {
 		public static final String DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID = "/flowsheet/download/{dischargeSummaryId}";
 		public static final String GET_FLOWSHEETS = "/getFlowsheets";
 		public static final String GET_FLOWSHEET_BY_ID = "/getFlowsheetById/{id}";
-
+		public static final String ADD_DIAGRAM = "/addDiagram";
 	}
 
 	public static final String SOLR_DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/solr/dischargeSummary";
