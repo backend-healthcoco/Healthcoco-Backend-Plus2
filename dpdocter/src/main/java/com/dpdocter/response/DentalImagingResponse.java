@@ -7,10 +7,14 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImagingReports;
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientShortCard;
+import com.dpdocter.beans.Tax;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DentalImagingResponse extends GenericCollection {
 
@@ -39,6 +43,10 @@ public class DentalImagingResponse extends GenericCollection {
 	private String invoiceId;
 	private Double totalCost = 0.0;
 	private Boolean isPaid = false;
+	private Discount totalDiscount;
+	private Tax totalTax;
+	private List<InvoiceTax> invoiceTaxes;
+	private Double grandTotal = 0.0;
 
 	public String getId() {
 		return id;
@@ -238,6 +246,38 @@ public class DentalImagingResponse extends GenericCollection {
 
 	public void setInvoiceId(String invoiceId) {
 		this.invoiceId = invoiceId;
+	}
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
+	}
+
+	public List<InvoiceTax> getInvoiceTaxes() {
+		return invoiceTaxes;
+	}
+
+	public void setInvoiceTaxes(List<InvoiceTax> invoiceTaxes) {
+		this.invoiceTaxes = invoiceTaxes;
+	}
+
+	public Double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(Double grandTotal) {
+		this.grandTotal = grandTotal;
 	}
 
 }
