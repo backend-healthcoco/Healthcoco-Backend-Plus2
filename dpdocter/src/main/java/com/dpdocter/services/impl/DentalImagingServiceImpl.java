@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,7 @@ import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DentalImagingServiceVisitCount;
+import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.FileDetails;
@@ -52,6 +54,7 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.Tax;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
@@ -436,10 +439,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("patientName", new BasicDBObject("$first", "$patientName"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
 							.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+							.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+							.append("totalTax", new BasicDBObject("$first", "$totalTax"))
+							.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
 							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
 							.append("isPaid", new BasicDBObject("$first", "$isPaid"))
 							.append("invoiceId", new BasicDBObject("$first", "$invoiceId"))));
 
+			
 			/**/
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),

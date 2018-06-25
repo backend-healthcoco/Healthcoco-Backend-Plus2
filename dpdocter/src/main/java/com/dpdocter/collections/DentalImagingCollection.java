@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.Tax;
 
 @Document(collection = "dental_imaging_cl")
 public class DentalImagingCollection extends GenericCollection {
@@ -56,6 +58,12 @@ public class DentalImagingCollection extends GenericCollection {
 	private Boolean isPaid = false;
 	@Field
 	private Boolean isReportsUploaded = false;
+	@Field
+	private Discount totalDiscount;
+	@Field
+	private Tax totalTax;
+	@Field
+	private Double grandTotal = 0.0;
 
 	public ObjectId getPatientId() {
 		return patientId;
@@ -231,6 +239,30 @@ public class DentalImagingCollection extends GenericCollection {
 
 	public void setIsReportsUploaded(Boolean isReportsUploaded) {
 		this.isReportsUploaded = isReportsUploaded;
+	}
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
+	}
+
+	public Double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(Double grandTotal) {
+		this.grandTotal = grandTotal;
 	}
 
 	@Override
