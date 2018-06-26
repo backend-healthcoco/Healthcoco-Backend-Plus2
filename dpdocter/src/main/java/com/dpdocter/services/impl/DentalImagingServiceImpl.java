@@ -467,7 +467,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("isPaid", new BasicDBObject("$first", "$isPaid"))
 							.append("invoiceId", new BasicDBObject("$first", "$invoiceId"))));
 
-			
 			/**/
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
@@ -1833,6 +1832,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 
 			response = new DentalImagingVisitAnalyticsResponse();
+			if (dentalImagingResponses != null) {
+				response.setTotalCount(dentalImagingResponses.size());
+			}
 			response.setPatientVisitCount(patientCount);
 			response.setMostVisitedService(mostVisitedService);
 			response.setLeastVisitedService(leastVisitedService);
@@ -2090,28 +2092,24 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			for (PatientDentalImagignVisitAnalyticsResponse patientAnalyticResponse : response) {
 				patientAnalyticResponse.setCount(patientAnalyticResponse.getResponses().size());
-				
+				List<DentalImagingResponse> paidDentalImagingResponses = new ArrayList<>();
 				List<DentalImagingResponse> dentalImagingResponses = new ArrayList<>();
 				for (DentalImagingResponse dentalImagingResponse : patientAnalyticResponse.getResponses()) {
-					
-					if(dentalImagingResponse.getIsPaid().equals(Boolean.TRUE))
-					{
+
+					if (dentalImagingResponse.getIsReportsUploaded().equals(Boolean.TRUE)) {
 						dentalImagingResponses.add(dentalImagingResponse);
 					}
+					if (dentalImagingResponse.getIsPaid().equals(Boolean.TRUE)) {
+						paidDentalImagingResponses.add(dentalImagingResponse);
+					}
 				}
-				
-				patientAnalyticResponse.setResponses(dentalImagingResponses);
+
+				patientAnalyticResponse.setVisitedResponses(dentalImagingResponses);
+				patientAnalyticResponse.setPaidResponses(paidDentalImagingResponses);
 				patientAnalyticResponse.setVisitedCount(dentalImagingResponses.size());
+				patientAnalyticResponse.setPaidCount(paidDentalImagingResponses.size());
 
 			}
-
-			/*
-			 * aggregation =Aggregation.newAggregation(Aggregation.match(criteria));
-			 * AggregationResults<DentalImagingResponse> aggregationResult =
-			 * mongoTemplate.aggregate(aggregation, DentalImagingCollection.class,
-			 * DentalImagingResponse.class); dentalImagingResponses =
-			 * aggregationResult.getMappedResults();
-			 */
 
 		} catch (Exception e) {
 			// TODO: handle exception

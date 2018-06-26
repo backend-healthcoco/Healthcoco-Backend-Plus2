@@ -12,7 +12,7 @@ import com.dpdocter.beans.User;
 public class PatientDentalImagignVisitAnalyticsResponse {
 
 	private String doctorName;
-	
+
 	private String doctorId;
 
 	private User doctor;
@@ -21,7 +21,13 @@ public class PatientDentalImagignVisitAnalyticsResponse {
 
 	private Integer visitedCount;
 
+	private Integer paidCount;
+
 	private List<DentalImagingResponse> responses;
+
+	private List<DentalImagingResponse> paidResponses;
+
+	private List<DentalImagingResponse> visitedResponses;
 
 	public String getDoctorName() {
 		return doctorName;
@@ -29,14 +35,6 @@ public class PatientDentalImagignVisitAnalyticsResponse {
 
 	public void setDoctorName(String doctorName) {
 		this.doctorName = doctorName;
-	}
-
-	public List<DentalImagingResponse> getResponses() {
-		return responses;
-	}
-
-	public void setResponses(List<DentalImagingResponse> responses) {
-		this.responses = responses;
 	}
 
 	public Integer getCount() {
@@ -70,6 +68,37 @@ public class PatientDentalImagignVisitAnalyticsResponse {
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
-	
+
+	public Integer getPaidCount() {
+		return paidCount;
+	}
+
+	public void setPaidCount(Integer paidCount) {
+		this.paidCount = paidCount;
+	}
+
+	public List<DentalImagingResponse> getPaidResponses() {
+		return paidResponses;
+	}
+
+	public void setPaidResponses(List<DentalImagingResponse> paidResponses) {
+		this.paidResponses = paidResponses;
+	}
+
+	public List<DentalImagingResponse> getVisitedResponses() {
+		return visitedResponses;
+	}
+
+	public void setVisitedResponses(List<DentalImagingResponse> visitedResponses) {
+		this.visitedResponses = visitedResponses;
+	}
+
+	public List<DentalImagingResponse> getResponses() {
+		return responses;
+	}
+
+	public void setResponses(List<DentalImagingResponse> responses) {
+		this.responses = responses;
+	}
 
 }
