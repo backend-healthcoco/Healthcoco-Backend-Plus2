@@ -7,6 +7,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -158,7 +159,7 @@ public class LoginApi {
 	@Path(value = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN)
 	@GET
 	@ApiOperation(value = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN)
-	public Response<DoctorLoginPin> getLoginPin(String doctorId) {
+	public Response<DoctorLoginPin> getLoginPin(@PathParam("doctorId")String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -170,7 +171,7 @@ public class LoginApi {
 	}
 
 	@Path(value = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN)
-	@GET
+	@POST
 	@ApiOperation(value = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN)
 	public Response<Boolean> checkLoginPin(DoctorLoginPinRequest request) {
 		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(),request.getPin())) {
