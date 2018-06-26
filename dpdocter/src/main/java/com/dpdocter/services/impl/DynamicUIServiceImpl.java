@@ -745,6 +745,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 			} else {
 				BeanUtil.map(request, dynamicUiCollection);
+				dynamicUiCollection.setId(olddynamicUiCollection.getId());
 				dynamicUiCollection.setCreatedBy(olddynamicUiCollection.getCreatedBy());
 				dynamicUiCollection.setCreatedTime(olddynamicUiCollection.getCreatedTime());
 			}
