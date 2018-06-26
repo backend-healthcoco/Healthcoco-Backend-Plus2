@@ -5,6 +5,7 @@ import com.dpdocter.beans.DentalImagingServiceVisitCount;
 public class DentalImagingVisitAnalyticsResponse {
 
 	private Integer patientVisitCount = 0;
+	private Integer totalCount = 0;
 	private DentalImagingServiceVisitCount mostVisitedService;
 	private DentalImagingServiceVisitCount leastVisitedService;
 
@@ -32,10 +33,19 @@ public class DentalImagingVisitAnalyticsResponse {
 		this.leastVisitedService = leastVisitedService;
 	}
 
+	public Integer getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(Integer totalCount) {
+		this.totalCount = totalCount;
+	}
+
 	@Override
 	public String toString() {
-		return "DentalImagingVisitAnalyticsResponse [patientVisitCount=" + patientVisitCount + ", mostVisitedService="
-				+ mostVisitedService + ", leastVisitedService=" + leastVisitedService + "]";
+		return "DentalImagingVisitAnalyticsResponse [patientVisitCount=" + patientVisitCount + ", totalCount="
+				+ totalCount + ", mostVisitedService=" + mostVisitedService + ", leastVisitedService="
+				+ leastVisitedService + "]";
 	}
 
 }
