@@ -2864,6 +2864,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 					String fileExtension = FilenameUtils.getExtension(fileName);
 					System.out.println(fileName);
 					int index = fileName.indexOf("MDC");
+					
 					if(index > 0) {
 						String pNum = fileName.substring(index);
 						String dateStr = pNum;
@@ -2873,6 +2874,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 						
 						if(patientCollection != null) {
 							if(fileName.startsWith("Profile")) {
+								
+								fileName = fileName.substring(index);
 								String path = "profile-images";
 																				
 								S3Object object = s3client.getObject(new GetObjectRequest(bucketName, obListing.getKey()));
@@ -2914,6 +2917,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 								time = time.replace(dateStr, "").replaceFirst("_", "");
 								time = time.substring(0, time.indexOf("_"));
 
+								fileName = pNum+"_"+dateStr+"_"+time+"."+fileExtension;
+								
 								RecordsCollection recordsCollection = new RecordsCollection();
 								
 								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");

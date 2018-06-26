@@ -279,4 +279,5 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
 				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user + "]";
 	}
+
 }

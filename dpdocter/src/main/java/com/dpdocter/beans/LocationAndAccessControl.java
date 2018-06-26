@@ -77,6 +77,12 @@ public class LocationAndAccessControl {
 
 	private Boolean isVerified = true;
 
+	private String patientInitial = "P";
+
+	private int patientCounter = 0;
+
+	private Boolean isPidHasDate = true;
+	
 	public String getId() {
 		return id;
 	}
@@ -357,6 +363,30 @@ public class LocationAndAccessControl {
 		this.isVerified = isVerified;
 	}
 
+	public String getPatientInitial() {
+		return patientInitial;
+	}
+
+	public void setPatientInitial(String patientInitial) {
+		this.patientInitial = patientInitial;
+	}
+
+	public int getPatientCounter() {
+		return patientCounter;
+	}
+
+	public void setPatientCounter(int patientCounter) {
+		this.patientCounter = patientCounter;
+	}
+
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
+
 	@Override
 	public String toString() {
 		return "LocationAndAccessControl [id=" + id + ", locationName=" + locationName + ", country=" + country
@@ -369,6 +399,10 @@ public class LocationAndAccessControl {
 				+ ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isTwentyFourSevenOpen="
 				+ isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isParent=" + isParent
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", roles=" + roles + "]";
+				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", isDentalWorksLab=" + isDentalWorksLab
+				+ ", isDentalImagingLab=" + isDentalImagingLab + ", isMobileNumberOptional=" + isMobileNumberOptional
+				+ ", roles=" + roles + ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate=" + isPidHasDate + "]";
 	}
+
 }
