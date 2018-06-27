@@ -1507,12 +1507,23 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
 			if (locationCollection != null) {
-				response = checkIfPatientInitialAndCounterExist(locationId, patientInitial, patientCounter);
+				response = checkIfPatientInitialAndCounterExist(locationId, patientInitial, patientCounter, isPidHasDate);
 				if (response) {
 					locationCollection.setPatientInitial(patientInitial);
 					locationCollection.setPatientCounter(patientCounter);
 					locationCollection.setUpdatedTime(new Date());
-					if(isPidHasDate != null)locationCollection.setIsPidHasDate(isPidHasDate);
+					if(isPidHasDate != null) {
+						locationCollection.setIsPidHasDate(isPidHasDate);
+						
+						List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+								.findByLocationId(new ObjectId(locationId));
+						if (printSettingsCollections != null) {
+							for (PrintSettingsCollection printSettingsCollection : printSettingsCollections) {
+								printSettingsCollection.setIsPidHasDate(isPidHasDate);
+								printSettingsRepository.save(printSettingsCollection);
+							}
+						}
+					}
 					locationCollection = locationRepository.save(locationCollection);
 					response = true;
 				}
@@ -1531,7 +1542,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	private Boolean checkIfPatientInitialAndCounterExist(String locationId, String patientInitial, int patientCounter) {
+	private Boolean checkIfPatientInitialAndCounterExist(String locationId, String patientInitial, int patientCounter, Boolean isPidHasDate) {
 		Boolean response = false;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -1555,7 +1566,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (results != null && !results.isEmpty()) {
 				String PID = results.get(0).getPID();
 				PID = PID.substring((patientInitial + date).length());
-				if (patientCounter <= Integer.parseInt(PID)) {
+				if (isPidHasDate && patientCounter <= Integer.parseInt(PID)) {
 					logger.warn("Patient already exist for Prefix: " + patientInitial + " , Date: " + date
 							+ " Id Number: " + patientCounter + ". Please enter Id greater than " + PID);
 					throw new BusinessException(ServiceError.Unknown,

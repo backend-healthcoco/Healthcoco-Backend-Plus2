@@ -4450,6 +4450,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 		}
+		
 		patientVisitService
 				.generatePatientDetails(
 						(printSettings != null && printSettings.getHeaderSetup() != null
@@ -4460,7 +4461,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						patient.getLocalPatientName(), user.getMobileNumber(),
 						parameters, clinicalNotesCollection.getCreatedTime() != null
 								? clinicalNotesCollection.getCreatedTime() : new Date(),
-						printSettings.getHospitalUId());
+						printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
@@ -8611,7 +8612,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		patientVisitService.generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				new Date(), printSettings.getHospitalUId());
+				new Date(), printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		
 		patientVisitService.generatePrintSetup(parameters, printSettings, printSettings.getDoctorId());
 		

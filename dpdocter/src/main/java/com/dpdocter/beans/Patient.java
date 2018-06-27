@@ -62,6 +62,8 @@ public class Patient {
 	
 	private Boolean isPatientDiscarded = false;
 	
+	private String PNUM;
+	
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -286,6 +288,14 @@ public class Patient {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
@@ -299,6 +309,7 @@ public class Patient {
 				+ consultantDoctorIds + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
 				+ personalInformation + ", registrationDate=" + registrationDate + ", isPatientDiscarded="
-				+ isPatientDiscarded + "]";
+				+ isPatientDiscarded + ", PNUM=" + PNUM + "]";
 	}
+
 }

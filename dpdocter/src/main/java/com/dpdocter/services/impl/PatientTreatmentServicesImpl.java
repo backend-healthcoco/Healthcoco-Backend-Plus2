@@ -1515,7 +1515,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 					patientTreatmentCollection.getCreatedTime() != null ? patientTreatmentCollection.getCreatedTime()
 							: new Date(),
-					printSettings.getHospitalUId());
+					printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 			patientVisitService.generatePrintSetup(parameters, printSettings, patientTreatmentCollection.getDoctorId());
 			String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PATIENTTREARMENT-"
 					+ patientTreatmentCollection.getUniqueEmrId() + new Date().getTime();

@@ -977,7 +977,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 						dischargeSummaryCollection.getCreatedTime() != null
 								? dischargeSummaryCollection.getCreatedTime() : new Date(),
-						printSettings.getHospitalUId());
+						printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
 				+ dischargeSummaryCollection.getUniqueEmrId() + new Date().getTime();
@@ -2666,7 +2666,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				"<b>DIS-ID: </b>"
 						+ (flowsheetCollection.getUniqueId() != null ? flowsheetCollection.getUniqueId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters, flowsheetCollection.getUpdatedTime(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, flowsheetCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-FLOWSHEET-"
 				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueId()) ? flowsheetCollection.getUniqueId()

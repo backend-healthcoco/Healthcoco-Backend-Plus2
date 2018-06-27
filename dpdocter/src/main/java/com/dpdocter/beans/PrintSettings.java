@@ -39,6 +39,7 @@ public class PrintSettings extends GenericCollection {
 
 	private String generalNotes;
 	
+	private Boolean isPidHasDate = true;
 
 	public String getId() {
 		return id;
@@ -168,6 +169,14 @@ public class PrintSettings extends GenericCollection {
 		this.generalNotes = generalNotes;
 	}
 
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintSettings [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -175,6 +184,8 @@ public class PrintSettings extends GenericCollection {
 				+ headerSetup + ", footerSetup=" + footerSetup + ", contentSetup=" + contentSetup + ", discarded="
 				+ discarded + ", clinicLogoUrl=" + clinicLogoUrl + ", hospitalUId=" + hospitalUId
 				+ ", contentLineSpace=" + contentLineSpace + ", contentLineStyle=" + contentLineStyle
-				+ ", showDrugGenericNames=" + showDrugGenericNames + "]";
+				+ ", showDrugGenericNames=" + showDrugGenericNames + ", generalNotes=" + generalNotes
+				+ ", isPidHasDate=" + isPidHasDate + "]";
 	}
+
 }

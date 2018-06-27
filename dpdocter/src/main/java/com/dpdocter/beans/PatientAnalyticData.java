@@ -10,6 +10,8 @@ public class PatientAnalyticData {
 	private Long registrationDate;
 	private Date createdTime;
 	private WorkingHours visitedTime;
+	private String PNUM;
+	
 	public String getId() {
 		return id;
 	}
@@ -53,6 +55,18 @@ public class PatientAnalyticData {
 	}
 	public void setVisitedTime(WorkingHours visitedTime) {
 		this.visitedTime = visitedTime;
+	}
+	public String getPNUM() {
+		return PNUM;
+	}
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+	@Override
+	public String toString() {
+		return "PatientAnalyticData [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
+				+ ", pid=" + pid + ", registrationDate=" + registrationDate + ", createdTime=" + createdTime
+				+ ", visitedTime=" + visitedTime + ", PNUM=" + PNUM + "]";
 	}
 
 	

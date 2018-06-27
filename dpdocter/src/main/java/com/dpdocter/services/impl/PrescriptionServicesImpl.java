@@ -3934,6 +3934,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 		}
+		
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
@@ -3942,7 +3943,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						? prescriptionCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				prescriptionCollection.getCreatedTime() != null ? prescriptionCollection.getCreatedTime() : new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PRESCRIPTION-"
 				+ prescriptionCollection.getUniqueEmrId() + new Date().getTime();
@@ -5478,7 +5479,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
 						? prescriptionCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				prescriptionCollection.getUpdatedTime(), printSettings.getHospitalUId());
+				prescriptionCollection.getUpdatedTime(), printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 

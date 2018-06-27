@@ -60,6 +60,8 @@ public class RegisteredPatientDetails extends GenericCollection {
     
     private Boolean isPatientDiscarded = false;
     
+    private String PNUM;
+    
     public String getUserId() {
 	return userId;
     }
@@ -269,6 +271,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisteredPatientDetails [firstName=" + firstName + ", localPatientName=" + localPatientName
@@ -279,7 +289,6 @@ public class RegisteredPatientDetails extends GenericCollection {
 				+ locationId + ", hospitalId=" + hospitalId + ", PID=" + PID + ", colorCode=" + colorCode
 				+ ", referredBy=" + referredBy + ", isPartOfClinic=" + isPartOfClinic + ", isPartOfConsultantDoctor="
 				+ isPartOfConsultantDoctor + ", backendPatientId=" + backendPatientId + ", consultantDoctorIds="
-				+ consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + ", PNUM=" + PNUM + "]";
 	}
-
 }

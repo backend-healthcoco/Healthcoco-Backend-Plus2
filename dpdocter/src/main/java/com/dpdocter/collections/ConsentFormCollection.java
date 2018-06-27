@@ -91,6 +91,9 @@ public class ConsentFormCollection extends GenericCollection {
 	@Field
 	private String templateHtmlText;
 	
+	@Field
+	private String PNUM;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -299,6 +302,14 @@ public class ConsentFormCollection extends GenericCollection {
 		this.templateHtmlText = templateHtmlText;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "ConsentFormCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -309,7 +320,7 @@ public class ConsentFormCollection extends GenericCollection {
 				+ declaration + ", title=" + title + ", dateOfSign=" + dateOfSign + ", signImageURL=" + signImageURL
 				+ ", medicalHistory=" + medicalHistory + ", discarded=" + discarded + ", templateId=" + templateId
 				+ ", inputElements=" + inputElements + ", type=" + type + ", templateHtmlText=" + templateHtmlText
-				+ "]";
+				+ ", PNUM=" + PNUM + "]";
 	}
 
 }

@@ -1067,7 +1067,7 @@ public class ReportsServiceImpl implements ReportsService {
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				otReportsLookupResponse.getUpdatedTime() != null ? otReportsLookupResponse.getUpdatedTime()
 						: new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(otReportsLookupResponse.getDoctorId()));
@@ -1194,7 +1194,7 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("deliveryType", deliveryReportsLookupResponse.getDeliveryType());
 		parameters.put("formNo", deliveryReportsLookupResponse.getFormNo());
 		parameters.put("remarks", deliveryReportsLookupResponse.getRemarks());
-
+		
 		patientVisitService.generatePatientDetails((printSettings != null
 				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,
@@ -1204,7 +1204,7 @@ public class ReportsServiceImpl implements ReportsService {
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				deliveryReportsLookupResponse.getUpdatedTime() != null ? deliveryReportsLookupResponse.getUpdatedTime()
 						: new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(deliveryReportsLookupResponse.getDoctorId()));

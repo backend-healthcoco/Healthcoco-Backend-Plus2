@@ -81,6 +81,8 @@ public class PatientCollectionResponse {
 
 	private PersonalInformation personalInformation;
 
+	private String PNUM;
+	
 	public String getId() {
 		return id;
 	}
@@ -353,6 +355,14 @@ public class PatientCollectionResponse {
 		this.personalInformation = personalInformation;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCollectionResponse [id=" + id + ", firstName=" + firstName + ", localPatientName="
@@ -366,7 +376,7 @@ public class PatientCollectionResponse {
 				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address + ", user="
 				+ user + ", reference=" + reference + ", patientGroupCollections=" + patientGroupCollections
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
-				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + "]";
+				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", PNUM=" + PNUM + "]";
 	}
-	
+
 }

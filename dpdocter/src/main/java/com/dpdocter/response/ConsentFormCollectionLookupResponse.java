@@ -73,6 +73,8 @@ public class ConsentFormCollectionLookupResponse extends GenericCollection{
 	
 	private String templateHtmlText;
 	
+	private String PNUM;
+	
 	public String getId() {
 		return id;
 	}
@@ -305,6 +307,14 @@ public class ConsentFormCollectionLookupResponse extends GenericCollection{
 		this.templateHtmlText = templateHtmlText;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "ConsentFormCollectionLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -316,6 +326,7 @@ public class ConsentFormCollectionLookupResponse extends GenericCollection{
 				+ ", medicalHistory=" + medicalHistory + ", discarded=" + discarded + ", templateId=" + templateId
 				+ ", inputElements=" + inputElements + ", type=" + type + ", patientCollection=" + patientCollection
 				+ ", patientUser=" + patientUser + ", certificateTemplate=" + certificateTemplate
-				+ ", templateHtmlText=" + templateHtmlText + "]";
+				+ ", templateHtmlText=" + templateHtmlText + ", PNUM=" + PNUM + "]";
 	}
+
 }

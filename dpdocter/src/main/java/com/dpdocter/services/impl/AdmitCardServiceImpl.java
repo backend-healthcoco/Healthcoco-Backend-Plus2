@@ -481,7 +481,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						+ (admitCardCollection.getUniqueEmrId() != null ? admitCardCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				admitCardCollection.getCreatedTime() != null ? admitCardCollection.getCreatedTime() : new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, admitCardCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "ADMIT-CARD-"
 				+ admitCardCollection.getUniqueEmrId() + new Date().getTime();

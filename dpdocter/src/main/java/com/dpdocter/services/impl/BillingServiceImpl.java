@@ -1649,7 +1649,7 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientInvoiceCollection.getCreatedTime() != null
 							? doctorPatientInvoiceCollection.getCreatedTime()
 							: new Date(),
-					printSettings.getHospitalUId());
+					printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 			patientVisitService.generatePrintSetup(parameters, printSettings,
 					doctorPatientInvoiceCollection.getDoctorId());
 			String pdfName = (user != null ? user.getFirstName() : "") + "INVOICE-"
@@ -1753,7 +1753,7 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientReceiptCollection.getReceivedDate() != null
 						? doctorPatientReceiptCollection.getReceivedDate()
 						: doctorPatientReceiptCollection.getUpdatedTime(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, doctorPatientReceiptCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "RECEIPT-"
@@ -2214,7 +2214,7 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientReceiptLookupResponses.get(0).getCreatedTime() != null
 								? doctorPatientReceiptLookupResponses.get(0).getCreatedTime()
 								: new Date(),
-						printSettings.getHospitalUId());
+						printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()));
 		String pdfName = (user != null ? user.getFirstName() : "") + "MULTIPLERECEIPT-" + new Date().getTime();

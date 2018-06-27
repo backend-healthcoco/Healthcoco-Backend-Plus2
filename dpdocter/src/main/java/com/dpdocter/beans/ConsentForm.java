@@ -59,6 +59,8 @@ public class ConsentForm extends GenericCollection {
 	
 	private String type;
 	
+	private String PNUM;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -265,6 +267,26 @@ public class ConsentForm extends GenericCollection {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
+	@Override
+	public String toString() {
+		return "ConsentForm [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", formId=" + formId + ", title=" + title + ", patientId=" + patientId + ", PID=" + PID
+				+ ", locationName=" + locationName + ", localPatientName=" + localPatientName + ", emailAddress="
+				+ emailAddress + ", gender=" + gender + ", dob=" + dob + ", address=" + address + ", mobileNumber="
+				+ mobileNumber + ", landLineNumber=" + landLineNumber + ", bloodGroup=" + bloodGroup + ", declaration="
+				+ declaration + ", dateOfSign=" + dateOfSign + ", signImageURL=" + signImageURL + ", medicalHistory="
+				+ medicalHistory + ", discarded=" + discarded + ", templateId=" + templateId + ", inputElements="
+				+ inputElements + ", templateHtmlText=" + templateHtmlText + ", type=" + type + ", PNUM=" + PNUM + "]";
 	}
 
 

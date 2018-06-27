@@ -2085,7 +2085,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						? printSettings.getHeaderSetup().getPatientDetails()
 						: null),
 				patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				patientVisitLookupResponse.getCreatedTime(), printSettings.getHospitalUId());
+				patientVisitLookupResponse.getCreatedTime(), printSettings.getHospitalUId(), patientVisitLookupResponse.getLocation().getIsPidHasDate());
 		generatePrintSetup(parameters, printSettings, patientVisitLookupResponse.getDoctorId());
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
@@ -2422,7 +2422,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patientCard, String uniqueEMRId,
-			String firstName, String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId) {
+			String firstName, String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId, Boolean isPidHasDate) {
 		String age = null,
 				gender = (patientCard != null && patientCard.getGender() != null ? patientCard.getGender() : null),
 				patientLeftText = "", patientRightText = "";
@@ -2431,18 +2431,27 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		if (patientDetails == null) {
 			patientDetails = new PatientDetails();
 		}
-		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("<b>Patient Name: "
-				+ (!DPDoctorUtils.anyStringEmpty(firstName.toUpperCase()) ? firstName.toUpperCase() : " ") + "</b>");
+
+		if (patientDetails.getShowPatientDetailsInCertificate() != null
+				&& patientDetails.getShowPatientDetailsInCertificate()) {
+			List<String> patientDetailList = new ArrayList<String>();
+			patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
 
 		if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
 			if (patientDetails.getPIDKey().equalsIgnoreCase("false")) {
-				patientDetails.setPIDKey("PID");
+				
+				if(isPidHasDate != null && !isPidHasDate) patientDetails.setPIDKey("PNUM");
+				else patientDetails.setPIDKey("UHID");
 			}
-			patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
+			if(isPidHasDate != null && !isPidHasDate) patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
+					+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
+			
+			else patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
 					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
 		} else {
-			patientDetailList.add("<b>Patient ID: </b>"
+			if(isPidHasDate != null && !isPidHasDate) patientDetailList.add("<b>Patient ID: </b>"
+					+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
+			else patientDetailList.add("<b>Patient ID: </b>"
 					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
 		}
 
@@ -2547,7 +2556,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		parameters.put("patientLeftText", patientLeftText);
 		parameters.put("patientRightText", patientRightText);
-
+		}
 	}
 
 	@Override

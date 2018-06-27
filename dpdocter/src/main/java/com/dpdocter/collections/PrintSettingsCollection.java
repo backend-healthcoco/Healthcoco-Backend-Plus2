@@ -71,6 +71,9 @@ public class PrintSettingsCollection extends GenericCollection {
 	@Field
 	private String generalNotes;
 
+	@Field
+	private Boolean isPidHasDate = true;
+	
 	public Boolean getShowPoweredBy() {
 		return showPoweredBy;
 	}
@@ -207,6 +210,14 @@ public class PrintSettingsCollection extends GenericCollection {
 		this.generalNotes = generalNotes;
 	}
 
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -214,7 +225,8 @@ public class PrintSettingsCollection extends GenericCollection {
 				+ ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
 				+ ", clinicLogoUrl=" + clinicLogoUrl + ", hospitalUId=" + hospitalUId + ", contentSetup=" + contentSetup
 				+ ", contentLineSpace=" + contentLineSpace + ", contentLineStyle=" + contentLineStyle
-				+ ", showDrugGenericNames=" + showDrugGenericNames + ", showPoweredBy=" + showPoweredBy + "]";
+				+ ", showDrugGenericNames=" + showDrugGenericNames + ", showPoweredBy=" + showPoweredBy
+				+ ", generalNotes=" + generalNotes + ", isPidHasDate=" + isPidHasDate + "]";
 	}
 
 }

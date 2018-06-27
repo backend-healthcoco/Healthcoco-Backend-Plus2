@@ -349,7 +349,8 @@ public class RegistrationApi {
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_AND_COUNTER, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_AND_COUNTER, response = Response.class)
 	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("locationId") String locationId,
-			@PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter, @QueryParam("isPidHasDate") Boolean isPidHasDate) {
+			@PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter, 
+			@DefaultValue(value="true") @QueryParam("isPidHasDate") Boolean isPidHasDate) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, patientInitial, new Integer(patientCounter).toString())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
