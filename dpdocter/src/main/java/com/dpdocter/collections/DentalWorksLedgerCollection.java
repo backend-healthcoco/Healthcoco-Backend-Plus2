@@ -1,10 +1,12 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
 import java.util.List;
 
-import com.dpdocter.collections.GenericCollection;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-public class DentalWorksLedger extends GenericCollection {
+@Document(collection = "dental_works_ledger_cl")
+public class DentalWorksLedgerCollection extends GenericCollection{
 
 	private String id;
 
@@ -24,7 +26,7 @@ public class DentalWorksLedger extends GenericCollection {
 
 	private Double paidAmount;
 
-	List<DentalLabPickup> requests;
+	private List<ObjectId> requestIds;
 
 	private Boolean discarded = false;
 
@@ -100,12 +102,12 @@ public class DentalWorksLedger extends GenericCollection {
 		this.paidAmount = paidAmount;
 	}
 
-	public List<DentalLabPickup> getRequests() {
-		return requests;
+	public List<ObjectId> getRequestIds() {
+		return requestIds;
 	}
 
-	public void setRequests(List<DentalLabPickup> requests) {
-		this.requests = requests;
+	public void setRequestIds(List<ObjectId> requestIds) {
+		this.requestIds = requestIds;
 	}
 
 	public Boolean getDiscarded() {
@@ -115,5 +117,5 @@ public class DentalWorksLedger extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-
+	
 }
