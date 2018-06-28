@@ -53,6 +53,7 @@ import net.sf.jasperreports.engine.design.JRDesignSubreport;
 import net.sf.jasperreports.engine.design.JRDesignSubreportParameter;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
 import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.PositionTypeEnum;
@@ -7465,43 +7466,45 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(xSpace);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-		jrDesignTextField.setWidth(35);
+		jrDesignTextField.setWidth(45);
 		jrDesignTextField.setBold(true);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
-		xSpace = 35;
+		xSpace = 45;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Service}"));
 		jrDesignTextField.setX(xSpace);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(120);
+		jrDesignTextField.setWidth(175);
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		xSpace = xSpace + 120;
+		xSpace = xSpace + 175;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Quadrant}"));
 		jrDesignTextField.setX(xSpace);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(120);
+		jrDesignTextField.setWidth(175);
 		jrDesignTextField.setBold(true);
+
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		xSpace = xSpace + 120;
+		xSpace = xSpace + 175;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{TeethNo}"));
 		jrDesignTextField.setX(xSpace);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(120);
+		jrDesignTextField.setWidth(175);
 		jrDesignTextField.setBold(true);
+
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
@@ -7525,38 +7528,38 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-		jrDesignTextField.setWidth(35);
+		jrDesignTextField.setWidth(45);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		xSpace = 35;
+		xSpace = 45;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{serviceName}"));
 		jrDesignTextField.setX(xSpace);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(120);
+		jrDesignTextField.setWidth(175);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
-		xSpace = xSpace + 120;
+		xSpace = xSpace + 175;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{quadrant}"));
 		jrDesignTextField.setX(xSpace);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(120);
+		jrDesignTextField.setWidth(175);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		xSpace = xSpace + 120;
+		xSpace = xSpace + 175;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{toothNumber}"));
 		jrDesignTextField.setX(xSpace);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(120);
+		jrDesignTextField.setWidth(175);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 

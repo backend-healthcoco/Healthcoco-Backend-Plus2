@@ -1625,7 +1625,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		String toothNumbers = "";
 		List<DentalImagingInvoiceJasper> dentalImagingInvoiceJaspers = new ArrayList<DentalImagingInvoiceJasper>();
 		DentalImagingInvoiceJasper dentalImagingInvoiceJasper = null;
-		int i = 0;
+		int i = 1;
 		for (DentalImagingInvoiceItemResponse imagingItemResponse : imagingInvoiceResponse.getInvoiceItems()) {
 			toothNumbers = "";
 			dentalImagingInvoiceJasper = new DentalImagingInvoiceJasper();
@@ -2071,6 +2071,5 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		return response;
 	}
-
 
 }
