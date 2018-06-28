@@ -587,6 +587,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			registeredPatientDetails.setDob(patientCollection.getDob());
 			registeredPatientDetails.setGender(patientCollection.getGender());
 			registeredPatientDetails.setPID(patientCollection.getPID());
+			registeredPatientDetails.setPNUM(patientCollection.getPNUM());
 			registeredPatientDetails.setConsultantDoctorIds(patient.getConsultantDoctorIds());
 			if (!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))
 				registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
@@ -788,6 +789,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setUserId(userCollection.getId().toString());
 				registeredPatientDetails.setGender(patientCollection.getGender());
 				registeredPatientDetails.setPID(patientCollection.getPID());
+				registeredPatientDetails.setPNUM(patientCollection.getPNUM());
 				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))
 					registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
 				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))
@@ -985,6 +987,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setDob(patientCollection.getDob());
 				registeredPatientDetails.setGender(patientCollection.getGender());
 				registeredPatientDetails.setPID(patientCollection.getPID());
+				registeredPatientDetails.setPNUM(patientCollection.getPNUM());
 				registeredPatientDetails.setConsultantDoctorIds(patient.getConsultantDoctorIds());
 				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))
 					registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
