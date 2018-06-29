@@ -38,10 +38,10 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 
 	@Field
 	private String mobileNumber;
-
-	@Field
-	private ObjectId dentalImagingDoctorId;
 	
+	@Field
+	private ObjectId dentalImagingDoctorId;	
+
 	@Field
 	private ObjectId dentalImagingLocationId;
 
@@ -292,8 +292,26 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 		return isPaid;
 	}
 
+	public ObjectId getDentalImagingDoctorId() {
+		return dentalImagingDoctorId;
+	}
+
+	public void setDentalImagingDoctorId(ObjectId dentalImagingDoctorId) {
+		this.dentalImagingDoctorId = dentalImagingDoctorId;
+	}
+
+	public String getReferringDoctor() {
+		return referringDoctor;
+	}
+
+	public void setReferringDoctor(String referringDoctor) {
+		this.referringDoctor = referringDoctor;
+	}
+
 	public void setIsPaid(Boolean isPaid) {
 		this.isPaid = isPaid;
 	}
+
+	
 
 }

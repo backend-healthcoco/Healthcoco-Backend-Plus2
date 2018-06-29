@@ -24,7 +24,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,6 @@ import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DentalImagingServiceVisitCount;
-import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.FileDetails;
@@ -54,8 +52,6 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.Tax;
-import com.dpdocter.beans.User;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingInvoiceCollection;
@@ -72,7 +68,6 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.SearchType;
@@ -1278,6 +1273,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
 				dentalImagingInvoiceCollection.setTotalTax(request.getTotalTax());
 				dentalImagingInvoiceCollection.setGrandTotal(request.getGrandTotal());
+				dentalImagingInvoiceCollection
+						.setDentalImagingDoctorId(new ObjectId(request.getDentalImagingDoctorId()));
 
 				/*
 				 * dentalWorksAmountCollection = dentalWorksAmountRepository
