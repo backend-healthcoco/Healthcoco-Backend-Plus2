@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.DentalImaging;
@@ -84,6 +85,7 @@ import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorHospitalDentalImagingAssociationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
@@ -173,6 +175,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Autowired
 	private JasperReportService jasperReportService;
+
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
 
 	@Value(value = "${jasper.print.imaging.works.invoice.fileName}")
 	private String dentalInvoiceA4FileName;
@@ -1662,44 +1667,101 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			dentalImagingInvoiceJaspers.add(dentalImagingInvoiceJasper);
 		}
 		parameters.put("items", dentalImagingInvoiceJaspers);
-		Location location = imagingInvoiceResponse.getDentalImagingLab();
-		User doctor = imagingInvoiceResponse.getDoctor();
-		leftDetail = "<b>" + (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "") + " "
-				+ doctor.getFirstName() + "</b><br>" + location.getLocationName()
-				+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? "," + location.getCity() : "")
-				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? "," + location.getState() : "")
-				+ (!DPDoctorUtils.anyStringEmpty(location.getLocationEmailAddress())
-						? "<br><b>Email : </b>" + location.getLocationEmailAddress()
-						: "")
-				+ (!DPDoctorUtils.anyStringEmpty(location.getClinicNumber())
-						? "<br><b>Ph : </b>" + location.getClinicNumber()
-						: "");
-		rightDetail = "<b>InvoiceId : </b>" + imagingInvoiceResponse.getUniqueInvoiceId() + "<br>" + "<b>Date : </b>"
 
-				+ simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate()) + "<br>" + "<b>Patient : </b>"
 
-				+ imagingInvoiceResponse.getPatientName() + "<br>" + "<b>Doctor : </b> DR. " + doctor.getFirstName();
+		UserCollection doctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
 
+		/*
+		 * Location location = imagingInvoiceResponse.getDentalImagingLab();
+		 */
+
+		/*
+		 * leftDetail = "<b>" + location.getLocationName() + "</b>" +
+		 * (!DPDoctorUtils.anyStringEmpty(location.getStreetAddress()) ? ",<br>" +
+		 * location.getStreetAddress() : "") +
+		 * (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? ",<br>" +
+		 * location.getCity() : "") +
+		 * (!DPDoctorUtils.anyStringEmpty(location.getState()) ? "," +
+		 * location.getState() : "") +
+		 * (!DPDoctorUtils.anyStringEmpty(location.getLocationEmailAddress()) ?
+		 * "<br><b>Email : </b>" + location.getLocationEmailAddress() : "") +
+		 * (!DPDoctorUtils.anyStringEmpty(location.getClinicNumber()) ?
+		 * "<br><b>Ph : </b>" + location.getClinicNumber() : ""); rightDetail =
+		 * "<b>InvoiceId : </b>" + imagingInvoiceResponse.getUniqueInvoiceId() + "<br>"
+		 * + "<b>Date : </b>" +
+		 * simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate());
+		 */
+
+		/*
+		 * parameters.put("patient", "<b> Patient Name : </b>" +
+		 * imagingInvoiceResponse.getPatientName()); parameters.put("doctor",
+		 * "<b>Referring Doctor : </b>" +
+		 * (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " :
+		 * "") + doctor.getFirstName());
+		 */
 		parameters.put("title", "INVOICE");
 		grantTotal = imagingInvoiceResponse.getTotalCost();
-		parameters.put("total", "Total : " + grantTotal + " INR");
+		parameters.put("total", "Grand Total : " + grantTotal + " INR"
+				+ (imagingInvoiceResponse.getIsPaid() ? " (PAID)" : " (UNPAID)"));
 		parameters.put("leftDetail", leftDetail);
 		parameters.put("rightDetail", rightDetail);
-		parameters.put("paid", (imagingInvoiceResponse.getIsPaid() ? "(PAID)" : "(UNPAID)"));
+		parameters.put("signature", (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " : "")
+				+ doctor.getFirstName());
 
-		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
 
 		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
-		String layout = "PORTRAIT";
-		String pageSize = "A4";
-		Integer topMargin = 20;
-		Integer bottonMargin = 20;
-		Integer leftMargin = 20;
-		Integer rightMargin = 20;
-		parameters.put("followUpAppointment", null);
-		parameters.put("poweredBy", footerText);
-		parameters.put("contentLineSpace", LineSpace.SMALL.name());
+
+		printSettings = printSettingsRepository.getSettings(
+				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingDoctorId())
+						? new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId())
+						: null),
+				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingLocationId())
+						? new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId())
+						: null),
+				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingDoctorId())
+						? new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId())
+						: null),
+				ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+
+		}
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
+				null, "<b>INVOICE-ID: </b>" + imagingInvoiceResponse.getUniqueInvoiceId(),
+				imagingInvoiceResponse.getPatientName(), imagingInvoiceResponse.getMobileNumber(), parameters,
+				imagingInvoiceResponse.getCreatedTime() != null ? imagingInvoiceResponse.getCreatedTime() : new Date(),
+				printSettings.getHospitalUId(), true);
+		patientVisitService.generatePrintSetup(parameters, printSettings,
+				new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
 		response = jasperReportService.createPDF(ComponentType.DENTAL_IMAGE_INVOICE, parameters,
 				dentalInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
