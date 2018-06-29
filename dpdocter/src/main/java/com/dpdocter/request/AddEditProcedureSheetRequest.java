@@ -14,9 +14,10 @@ public class AddEditProcedureSheetRequest {
 	private String locationId;
 	private String hospitalId;
 	private String patientId;
+	private String procedureName;
 	private ProcedureConsentForm procedureConsentForm;
 	private List<ImageURLResponse> diagrams;
-	private Map<String, ProcedureConsentFormFields> procedureSheetFields;
+	private List<Map<String, String>> procedureSheetFields;
 	private Boolean discarded = false;
 
 	public String getId() {
@@ -75,11 +76,11 @@ public class AddEditProcedureSheetRequest {
 		this.diagrams = diagrams;
 	}
 
-	public Map<String, ProcedureConsentFormFields> getProcedureSheetFields() {
+	public List<Map<String, String>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(Map<String, ProcedureConsentFormFields> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -89,6 +90,14 @@ public class AddEditProcedureSheetRequest {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getProcedureName() {
+		return procedureName;
+	}
+
+	public void setProcedureName(String procedureName) {
+		this.procedureName = procedureName;
 	}
 
 	@Override

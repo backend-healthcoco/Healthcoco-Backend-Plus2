@@ -1,19 +1,21 @@
 package com.dpdocter.beans;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.ImageURLResponse;
 
-public class ProcedureSheetStructure extends GenericCollection{
+public class ProcedureSheetStructure extends GenericCollection {
 
 	private String id;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
+	private String procedureName;
 	private ProcedureConsentFormStructure procedureConsentFormStructure;
 	private List<ImageURLResponse> diagrams;
-	private List<String> procedureSheetFields;
+	private List<Map<String, ProcedureConsentFormFields>> procedureSheetFields;
 	private Boolean discarded = false;
 
 	public ProcedureConsentFormStructure getProcedureConsentFormStructure() {
@@ -32,11 +34,19 @@ public class ProcedureSheetStructure extends GenericCollection{
 		this.diagrams = diagrams;
 	}
 
-	public List<String> getProcedureSheetFields() {
+	public String getProcedureName() {
+		return procedureName;
+	}
+
+	public void setProcedureName(String procedureName) {
+		this.procedureName = procedureName;
+	}
+
+	public List<Map<String, ProcedureConsentFormFields>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<String> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, ProcedureConsentFormFields>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 

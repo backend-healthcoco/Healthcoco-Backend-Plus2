@@ -1828,4 +1828,17 @@ public interface PathProxy {
 		public static final String GET_LAB_DOCUMENT = "/document/{documentId}/view";
 		public static final String DELETE_LAB_DOCUMENT = "/document/{documentId}/delete";
 	}
+	
+	public static final String PROCEDURE_BASE_URL = BASE_URL + "/procedure";
+
+	public interface ProcedureUrls {
+		public static final String ADD_PROCEDURE= "/add";
+		public static final String GET_PROCEDURE = "/{id}/get";
+		public static final String GET_PROCEDURE_LIST = "/getList";
+		public static final String DISCARD_PROCEDURE = "/{id}/discard";
+		public static final String ADD_PROCEDURE_STRUCTURE= "/addStructure";
+		public static final String GET_PROCEDURE_STRUCTURE = "/{id}/getStructure";
+		public static final String GET_PROCEDURE_STRUCTURE_LIST = "/getStructureList";
+		public static final String DISCARD_PROCEDURE_STRUCTURE = "/{id}/discardStructure";
+	}
 }
