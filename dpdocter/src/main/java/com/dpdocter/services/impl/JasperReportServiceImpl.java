@@ -7506,7 +7506,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(170);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + 175;
@@ -7518,7 +7517,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(170);
 		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + 175;
 
