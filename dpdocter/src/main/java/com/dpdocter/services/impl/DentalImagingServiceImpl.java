@@ -1669,7 +1669,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		parameters.put("items", dentalImagingInvoiceJaspers);
 
 		UserCollection doctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
-
+		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				new ObjectId(imagingInvoiceResponse.getPatientId()), new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId()),
+				new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId()));
 		/*
 		 * Location location = imagingInvoiceResponse.getDentalImagingLab();
 		 */
@@ -1733,7 +1735,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails()
 						: null),
-				null, "<b>INVOICE-ID: </b>" + imagingInvoiceResponse.getUniqueInvoiceId(),
+				patientCollection, "<b>INVOICE-ID: </b>" + imagingInvoiceResponse.getUniqueInvoiceId(),
 				imagingInvoiceResponse.getPatientName(), imagingInvoiceResponse.getMobileNumber(), parameters,
 				imagingInvoiceResponse.getCreatedTime() != null ? imagingInvoiceResponse.getCreatedTime() : new Date(),
 				printSettings.getHospitalUId(), true);
