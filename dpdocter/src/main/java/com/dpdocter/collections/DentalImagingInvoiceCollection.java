@@ -40,6 +40,9 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 	private String mobileNumber;
 
 	@Field
+	private ObjectId dentalImagingDoctorId;
+	
+	@Field
 	private ObjectId dentalImagingLocationId;
 
 	@Field

@@ -23,6 +23,8 @@ public class DentalImagingInvoice {
 
 	private String mobileNumber;
 
+	private String dentalImagingDoctorId;
+
 	private String dentalImagingLocationId;
 
 	private String dentalImagingHospitalId;
@@ -275,6 +277,14 @@ public class DentalImagingInvoice {
 
 	public void setReferringDoctor(String referringDoctor) {
 		this.referringDoctor = referringDoctor;
+	}
+
+	public String getDentalImagingDoctorId() {
+		return dentalImagingDoctorId;
+	}
+
+	public void setDentalImagingDoctorId(String dentalImagingDoctorId) {
+		this.dentalImagingDoctorId = dentalImagingDoctorId;
 	}
 
 	@Override

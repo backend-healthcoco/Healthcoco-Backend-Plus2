@@ -29,6 +29,8 @@ public class DentalImagingInvoiceResponse extends GenericCollection {
 
 	private String mobileNumber;
 
+	private String dentalImagingDoctorId;
+
 	private String dentalImagingLocationId;
 
 	private String dentalImagingHospitalId;
@@ -311,6 +313,14 @@ public class DentalImagingInvoiceResponse extends GenericCollection {
 
 	public void setReferringDoctor(String referringDoctor) {
 		this.referringDoctor = referringDoctor;
+	}
+
+	public String getDentalImagingDoctorId() {
+		return dentalImagingDoctorId;
+	}
+
+	public void setDentalImagingDoctorId(String dentalImagingDoctorId) {
+		this.dentalImagingDoctorId = dentalImagingDoctorId;
 	}
 
 }
