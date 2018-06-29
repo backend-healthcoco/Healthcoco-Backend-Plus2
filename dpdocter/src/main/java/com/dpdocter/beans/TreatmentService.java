@@ -33,7 +33,7 @@ public class TreatmentService extends GenericCollection {
 	private List<String> fieldsRequired;
 
 	private Double count = 0.0;
-	
+
 	public String getId() {
 		return id;
 	}

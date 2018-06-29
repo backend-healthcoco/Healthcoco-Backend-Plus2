@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.ProcedureConsentForm;
 import com.dpdocter.beans.ProcedureConsentFormFields;
@@ -13,14 +15,25 @@ import com.dpdocter.response.ImageURLResponse;
 @Document(collection = "procedure_sheet_cl")
 public class ProcedureSheetCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private ObjectId doctorId;
+	@Field
 	private ObjectId locationId;
+	@Field
 	private ObjectId hospitalId;
+	@Field
 	private ObjectId patientId;
+	@Field
+	private String procedureName;
+	@Field
 	private ProcedureConsentForm procedureConsentForm;
+	@Field
 	private List<ImageURLResponse> diagrams;
-	private Map<String, ProcedureConsentFormFields> procedureSheetFields;
+	@Field
+	private List<Map<String, String>> procedureSheetFields;
+	@Field
 	private Boolean discarded = false;
 
 	public ObjectId getId() {
@@ -79,11 +92,11 @@ public class ProcedureSheetCollection extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public Map<String, ProcedureConsentFormFields> getProcedureSheetFields() {
+	public List<Map<String, String>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(Map<String, ProcedureConsentFormFields> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -93,6 +106,14 @@ public class ProcedureSheetCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getProcedureName() {
+		return procedureName;
+	}
+
+	public void setProcedureName(String procedureName) {
+		this.procedureName = procedureName;
 	}
 
 	@Override

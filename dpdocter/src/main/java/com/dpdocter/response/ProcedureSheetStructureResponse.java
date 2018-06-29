@@ -1,22 +1,19 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
 import java.util.List;
-import java.util.Map;
 
-import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.beans.ProcedureConsentFormStructure;
 
-public class ProcedureSheet extends GenericCollection {
+public class ProcedureSheetStructureResponse {
 
 	private String id;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
-	private String patientId;
 	private String procedureName;
-	private ProcedureConsentForm procedureConsentForm;
+	private ProcedureConsentFormStructure procedureConsentFormStructure;
 	private List<ImageURLResponse> diagrams;
-	private List<Map<String, String>> procedureSheetFields;
+	private List<String> procedureSheetFields;
 	private Boolean discarded = false;
 
 	public String getId() {
@@ -51,20 +48,20 @@ public class ProcedureSheet extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getPatientId() {
-		return patientId;
+	public String getProcedureName() {
+		return procedureName;
 	}
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
+	public void setProcedureName(String procedureName) {
+		this.procedureName = procedureName;
 	}
 
-	public ProcedureConsentForm getProcedureConsentForm() {
-		return procedureConsentForm;
+	public ProcedureConsentFormStructure getProcedureConsentFormStructure() {
+		return procedureConsentFormStructure;
 	}
 
-	public void setProcedureConsentForm(ProcedureConsentForm procedureConsentForm) {
-		this.procedureConsentForm = procedureConsentForm;
+	public void setProcedureConsentFormStructure(ProcedureConsentFormStructure procedureConsentFormStructure) {
+		this.procedureConsentFormStructure = procedureConsentFormStructure;
 	}
 
 	public List<ImageURLResponse> getDiagrams() {
@@ -75,11 +72,11 @@ public class ProcedureSheet extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public List<Map<String, String>> getProcedureSheetFields() {
+	public List<String> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
+	public void setProcedureSheetFields(List<String> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -89,14 +86,6 @@ public class ProcedureSheet extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
-	}
-
-	public String getProcedureName() {
-		return procedureName;
-	}
-
-	public void setProcedureName(String procedureName) {
-		this.procedureName = procedureName;
 	}
 
 }

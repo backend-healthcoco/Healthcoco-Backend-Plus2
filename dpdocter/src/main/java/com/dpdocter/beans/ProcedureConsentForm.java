@@ -4,15 +4,15 @@ import java.util.Map;
 
 public class ProcedureConsentForm {
 
-	private Map<String, ProcedureConsentFormFields> headerFields;
+	private Map<String, String> headerFields;
 	private String body;
-	private Map<String, ProcedureConsentFormFields> footerFields;
+	private Map<String, String> footerFields;
 
-	public Map<String, ProcedureConsentFormFields> getHeaderFields() {
+	public Map<String, String> getHeaderFields() {
 		return headerFields;
 	}
 
-	public void setHeaderFields(Map<String, ProcedureConsentFormFields> headerFields) {
+	public void setHeaderFields(Map<String, String> headerFields) {
 		this.headerFields = headerFields;
 	}
 
@@ -24,11 +24,11 @@ public class ProcedureConsentForm {
 		this.body = body;
 	}
 
-	public Map<String, ProcedureConsentFormFields> getFooterFields() {
+	public Map<String, String> getFooterFields() {
 		return footerFields;
 	}
 
-	public void setFooterFields(Map<String, ProcedureConsentFormFields> footerFields) {
+	public void setFooterFields(Map<String, String> footerFields) {
 		this.footerFields = footerFields;
 	}
 
