@@ -7376,7 +7376,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{signature}"));
 		jrDesignTextField.setX(0);
 		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(100);
+		jrDesignTextField.setHeight(251);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.BOTTOM);
 		jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
