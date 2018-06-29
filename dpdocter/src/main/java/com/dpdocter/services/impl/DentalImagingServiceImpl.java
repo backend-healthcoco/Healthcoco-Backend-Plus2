@@ -52,7 +52,6 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.User;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingInvoiceCollection;
@@ -69,7 +68,6 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.SearchType;
@@ -1279,6 +1277,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
 				dentalImagingInvoiceCollection.setTotalTax(request.getTotalTax());
 				dentalImagingInvoiceCollection.setGrandTotal(request.getGrandTotal());
+				dentalImagingInvoiceCollection
+						.setDentalImagingDoctorId(new ObjectId(request.getDentalImagingDoctorId()));
 
 				/*
 				 * dentalWorksAmountCollection = dentalWorksAmountRepository
@@ -1667,7 +1667,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			dentalImagingInvoiceJaspers.add(dentalImagingInvoiceJasper);
 		}
 		parameters.put("items", dentalImagingInvoiceJaspers);
-
 
 		UserCollection doctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
 
