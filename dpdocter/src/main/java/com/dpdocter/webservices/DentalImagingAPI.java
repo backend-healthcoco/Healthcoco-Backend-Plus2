@@ -354,7 +354,7 @@ public class DentalImagingAPI {
 	@Path(value = PathProxy.DentalImagingUrl.GET_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_REPORTS, notes = PathProxy.DentalImagingUrl.GET_REPORTS)
-	public Response<DentalImagingReports> getPickupRequests(@QueryParam("locationId") String locationId,
+	public Response<DentalImagingReports> getReports(@QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
 			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
