@@ -357,5 +357,17 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "exceptionMail.vm", "UTF-8", model);
 		return text;
 	}
+	
+
+	@Override
+	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName, String templatePath) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("doctorName", doctorName);
+		model.put("dentalImagingLab", dentalImagingLab);
+		model.put("patientName", patientName);
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		return text;
+
+	}
 
 }
