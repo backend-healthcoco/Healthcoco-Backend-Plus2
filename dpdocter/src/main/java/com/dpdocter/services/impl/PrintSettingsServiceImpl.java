@@ -149,12 +149,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			if (doctorObjectId == null) {
-				if (size > 0)
-					printSettingsCollections = printSettingsRepository.findAll(new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					printSettingsCollections = printSettingsRepository.findAll(new Date(createdTimeStamp), discards,
-							new Sort(Sort.Direction.DESC, "createdTime"));
+
+				printSettingsCollections = printSettingsRepository.getSettings(locationObjectId, hospitalObjectId,
+						new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 			} else {
 				if (locationObjectId == null && hospitalObjectId == null) {
@@ -221,8 +218,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId);
-			} else {
-				criteria.and("doctorId").exists(false);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				locationObjectId = new ObjectId(locationId);
@@ -295,6 +290,5 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		}
 		return response;
 	}
-
 
 }

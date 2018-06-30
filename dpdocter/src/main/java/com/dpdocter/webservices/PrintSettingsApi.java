@@ -72,7 +72,7 @@ public class PrintSettingsApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(printFilter,locationId, hospitalId)) {
 			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
