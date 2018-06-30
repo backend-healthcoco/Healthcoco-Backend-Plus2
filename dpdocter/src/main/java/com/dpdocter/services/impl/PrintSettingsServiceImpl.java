@@ -17,7 +17,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.DentalLabPrintSetting;
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -49,6 +48,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
 	@Override
 	@Transactional
 	public PrintSettings saveSettings(PrintSettings request) {
@@ -62,10 +62,14 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-
+			PrintSettingsCollection collection = null;
 			if (request.getId() == null) {
-				PrintSettingsCollection collection = printSettingsRepository.getSettings(doctorObjectId,
-						locationObjectId, hospitalObjectId);
+				if (request.isLab()) {
+					collection = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
+							hospitalObjectId);
+				} else {
+					collection = printSettingsRepository.getSettings(locationObjectId, hospitalObjectId);
+				}
 				if (collection != null && !collection.getDiscarded()
 						&& request.getComponentType().equals(collection.getComponentType()))
 					request.setId(collection.getId().toString());
@@ -199,7 +203,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	}
 
-
 	@Override
 	@Transactional
 	public String getPrintSettingsGeneralNote(String doctorId, String locationId, String hospitalId) {
@@ -214,6 +217,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId);
+			} else {
+				criteria.and("doctorId").exists(false);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				locationObjectId = new ObjectId(locationId);
@@ -285,98 +290,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
-	}
-
-	@Override
-	@Transactional
-	public DentalLabPrintSetting saveDentalLabSettings(DentalLabPrintSetting request) {
-		DentalLabPrintSetting response = new DentalLabPrintSetting();
-		PrintSettingsCollection printSettingsCollection = new PrintSettingsCollection();
-		try {
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-
-			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
-				locationObjectId = new ObjectId(request.getLocationId());
-			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
-				hospitalObjectId = new ObjectId(request.getHospitalId());
-
-			if (request.getId() == null) {
-				PrintSettingsCollection collection = printSettingsRepository.getSettings(locationObjectId,
-						hospitalObjectId);
-				if (collection != null && !collection.getDiscarded())
-					request.setId(collection.getId().toString());
-			}
-			BeanUtil.map(request, printSettingsCollection);
-			if (request.getId() == null) {
-				printSettingsCollection.setCreatedTime(new Date());
-			} else {
-				PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository
-						.findOne(new ObjectId(request.getId()));
-				if (oldPrintSettingsCollection != null) {
-					printSettingsCollection.setCreatedTime(oldPrintSettingsCollection.getCreatedTime());
-					printSettingsCollection.setCreatedBy(oldPrintSettingsCollection.getCreatedBy());
-					printSettingsCollection.setDiscarded(oldPrintSettingsCollection.getDiscarded());
-					printSettingsCollection.setHospitalUId(oldPrintSettingsCollection.getHospitalUId());
-
-					if (request.getHeaderSetup() == null)
-						printSettingsCollection.setHeaderSetup(oldPrintSettingsCollection.getHeaderSetup());
-
-				}
-
-			}
-
-			if (DPDoctorUtils.allStringsEmpty(printSettingsCollection.getHospitalUId())) {
-				HospitalCollection hospitalCollection = hospitalRepository
-						.findOne(new ObjectId(request.getHospitalId()));
-				if (hospitalCollection != null) {
-					printSettingsCollection.setHospitalUId(hospitalCollection.getHospitalUId());
-				}
-			}
-
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
-			if (locationCollection != null) {
-				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
-			}
-
-			printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
-			BeanUtil.map(printSettingsCollection, response);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error occured while saving Dental Lab settings");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while saving Dental Lab settings");
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public DentalLabPrintSetting getDentalLabSettings(String locationId, String hospitalId) {
-		DentalLabPrintSetting response = null;
-		PrintSettingsCollection printSettingsCollection = null;
-		try {
-			ObjectId locationObjectId = null, hospitalObjectId = null;
-
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			printSettingsCollection = printSettingsRepository.getSettings(locationObjectId, hospitalObjectId);
-
-			if (printSettingsCollection != null) {
-				response = new DentalLabPrintSetting();
-				BeanUtil.map(printSettingsCollection, response);
-
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting dental Lab Print Settings");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Dental Lan Print Settings");
-		}
-		return response;
-
 	}
 
 }

@@ -40,6 +40,17 @@ public class PrintSettings extends GenericCollection {
 	private String generalNotes;
 	
 	private Boolean isPidHasDate = true;
+	
+	private boolean isLab=false;
+	
+
+	public boolean isLab() {
+		return isLab;
+	}
+
+	public void setLab(boolean isLab) {
+		this.isLab = isLab;
+	}
 
 	public String getId() {
 		return id;

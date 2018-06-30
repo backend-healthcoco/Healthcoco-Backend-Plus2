@@ -16,9 +16,7 @@ public interface PrintSettingsService {
 
 	String getPrintSettingsGeneralNote(String doctorId, String locationId, String hospitalId);
 	
-	public DentalLabPrintSetting saveDentalLabSettings(DentalLabPrintSetting request);
 	
-	public DentalLabPrintSetting getDentalLabSettings(String locationId, String hospitalId);
 	
 	
 

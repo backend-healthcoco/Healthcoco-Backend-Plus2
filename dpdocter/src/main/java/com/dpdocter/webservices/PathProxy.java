@@ -841,10 +841,6 @@ public interface PathProxy {
 
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
-		public static final String SAVE_DENTAL_LAB_PRINT_SETTINGS = "/dentalLab/add";
-
-		public static final String GET_DENTAL_LAB_PRINT_SETTINGS = "/dentalLab/{locationId}/{hospitalId}";
-
 	}
 
 	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
