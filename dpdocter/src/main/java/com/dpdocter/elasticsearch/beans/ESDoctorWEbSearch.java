@@ -19,10 +19,6 @@ public class ESDoctorWEbSearch {
 
 	private String gender;
 
-	private String emailAddress;
-
-	private String mobileNumber;
-
 	private String imageUrl;
 
 	private ConsultationFee consultationFee;
@@ -42,8 +38,6 @@ public class ESDoctorWEbSearch {
 	private String city;
 
 	private String postalCode;
-
-	private GeoPoint geoPoint;
 
 	private Double latitude;
 
@@ -103,22 +97,6 @@ public class ESDoctorWEbSearch {
 
 	public void setGender(String gender) {
 		this.gender = gender;
-	}
-
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
 	}
 
 	public String getImageUrl() {
@@ -241,14 +219,6 @@ public class ESDoctorWEbSearch {
 		this.postalCode = postalCode;
 	}
 
-	public GeoPoint getGeoPoint() {
-		return geoPoint;
-	}
-
-	public void setGeoPoint(GeoPoint geoPoint) {
-		this.geoPoint = geoPoint;
-	}
-
 	public Double getLatitude() {
 		return latitude;
 	}
@@ -332,16 +302,16 @@ public class ESDoctorWEbSearch {
 	@Override
 	public String toString() {
 		return "ESDoctorWEbSearch [colorCode=" + colorCode + ", userId=" + userId + ", title=" + title + ", firstName="
-				+ firstName + ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
-				+ revisitConsultationFee + ", specialities=" + specialities + ", experience=" + experience
-				+ ", streetAddress=" + streetAddress + ", country=" + country + ", state=" + state + ", city=" + city
-				+ ", postalCode=" + postalCode + ", geoPoint=" + geoPoint + ", latitude=" + latitude + ", longitude="
-				+ longitude + ", landmarkDetails=" + landmarkDetails + ", locality=" + locality + ", clinicNumber="
-				+ clinicNumber + ", locationName=" + locationName + ", facility=" + facility + ", userUId=" + userUId
-				+ ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL + ", rankingCount="
-				+ rankingCount + ", appointmentBookingNumber=" + appointmentBookingNumber + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+				+ firstName + ", gender=" + gender + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee
+				+ ", revisitConsultationFee=" + revisitConsultationFee + ", specialities=" + specialities
+				+ ", experience=" + experience + ", streetAddress=" + streetAddress + ", country=" + country
+				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locality=" + locality
+				+ ", clinicNumber=" + clinicNumber + ", locationName=" + locationName + ", facility=" + facility
+				+ ", userUId=" + userUId + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL="
+				+ doctorSlugURL + ", rankingCount=" + rankingCount + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
+
 
 }
