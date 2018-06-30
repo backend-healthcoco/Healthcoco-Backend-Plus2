@@ -1961,6 +1961,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("patient._id", "$patientCard.userId").append("patient.userId", "$patientCard.userId")
 						.append("patient.localPatientName", "$patientCard.localPatientName")
 						.append("patient.PID", "$patientCard.PID")
+						.append("patient.PNUM", "$patientCard.PNUM")
 						.append("patient.imageUrl", new BasicDBObject("$cond",
 								new BasicDBObject(
 										"if", new BasicDBObject("eq", Arrays.asList("$patientCard.imageUrl", null)))
