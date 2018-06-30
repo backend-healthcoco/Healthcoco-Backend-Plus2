@@ -396,5 +396,16 @@ public class DentalImagingAPI {
 		response.setData(dentalImagingService.emailInvoice(invoiceId, emailAddress));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL)
+	@POST
+	@ApiOperation(value = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL, notes = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL)
+	public Response<Boolean> sendReportEmail(@PathParam("id") String id,
+			@QueryParam("emailAddress") String emailAddress) {
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dentalImagingService.emailReports(id, emailAddress));
+		return response;
+	}
 
 }

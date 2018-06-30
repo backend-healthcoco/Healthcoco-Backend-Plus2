@@ -76,8 +76,6 @@ public interface DentalImagingService {
 
 	public DentalImagingInvoiceResponse getInvoice(String invoiceId);
 
-	public String downloadInvoice(String invoiceId);
-
 	DentalImagingVisitAnalyticsResponse getVisitAnalytics(String fromDate, String toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId);
 
@@ -91,6 +89,11 @@ public interface DentalImagingService {
 	List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalytics(Long fromDate, Long toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId, String searchType);
 
+	public String downloadInvoice(String invoiceId);
+	
 	Boolean emailInvoice(String invoiceId, String emailAddress);
+
+	Boolean emailReports(String id, String emailAddress);
+
 
 }

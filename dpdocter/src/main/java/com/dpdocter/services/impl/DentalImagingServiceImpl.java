@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -294,10 +295,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					}
 					
 					StringBuilder builder = new StringBuilder();
-					builder.append("Healthcoco user! {doctorName} has suggested you below scan(s).\n");
+					builder.append("Healthcoco user {patientName}! {doctorName} has suggested you below scan(s).\n\n");
 					for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
 						builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType() + ") tooth no." + serviceRequest.getToothNumber() + "\n");
 					}
+					builder.append("\n");
 					builder.append("{locationName} {clinicNumber} {locationMapLink}");
 					String text = builder.toString();
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -309,6 +311,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();
 					smsDetail.setUserName(request.getLocalPatientName());
+					sms.setSmsText(text.replace("{patientName}", request.getLocalPatientName()));
 					sms.setSmsText(text.replace("{doctorName}", userCollection.getFirstName()));
 					sms.setSmsText(text.replace("{locationName}", locationCollection.getLocationName()));
 					sms.setSmsText(text.replace("{clinicNumber}", locationCollection.getClinicNumber()));
@@ -2298,6 +2301,112 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 				response.setMailRecordCreatedDate(sdf.format(dentalImagingInvoiceCollection.getCreatedTime()));
+				response.setPatientName(user.getFirstName());
+				emailTackService.saveEmailTrack(emailTrackCollection);
+
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean emailReports(String id , String emailAddress) {
+		MailResponse mailResponse = null;
+		Boolean response = false;
+		try {
+			mailResponse = createReportMailData(id);
+			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingRecordEmailTemplate.vm");
+			 response = mailService.sendEmailMultiAttach(emailAddress,
+						mailResponse.getDoctorName() + " sent you reports.", body, mailResponse.getMailAttachments());
+			if (response != null && mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	
+	private MailResponse createReportMailData(String id) {
+		MailResponse response = null;
+		DentalImagingCollection dentalImagingCollection = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		List<MailAttachment> mailAttachments = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(id));
+		
+			if(dentalImagingCollection != null) {
+				
+				user = userRepository.findOne(dentalImagingCollection.getPatientId());
+				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						dentalImagingCollection.getPatientId(), dentalImagingCollection.getLocationId(),
+						dentalImagingCollection.getHospitalId());
+				user.setFirstName(patient.getLocalPatientName());
+				emailTrackCollection.setDoctorId(dentalImagingCollection.getDoctorId());
+				emailTrackCollection.setHospitalId(dentalImagingCollection.getHospitalId());
+				emailTrackCollection.setLocationId(dentalImagingCollection.getLocationId());
+				emailTrackCollection.setType(ComponentType.DENTAL_IMAGING_REQUEST.getType());
+				emailTrackCollection.setSubject("Dental Imaging Report");
+				if (user != null) {
+					emailTrackCollection.setPatientName(patient.getLocalPatientName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
+				
+				List<DentalImagingReportsCollection> reports = dentalImagingReportsRepository.getReportsByRequestId(new ObjectId(id), false);
+				
+				if (reports == null || reports.isEmpty()) {
+					mailAttachments = new ArrayList<>();
+					for (DentalImagingReportsCollection dentalImagingReportsCollection : reports) {
+						File file = new File(dentalImagingReportsCollection.getReport().getImageUrl());
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(file.getPath()));
+						mailAttachment.setFileSystemResource(new FileSystemResource(file));
+						mailAttachments.add(mailAttachment);
+					}
+					
+				}
+				
+				UserCollection doctorUser = userRepository.findOne(dentalImagingCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository.findOne(dentalImagingCollection.getDentalImagingLocationId());
+				
+				response = new MailResponse();
+				response.setMailAttachments(mailAttachments);
+				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
+
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				response.setClinicAddress(address);
+				response.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				response.setMailRecordCreatedDate(sdf.format(dentalImagingCollection.getCreatedTime()));
 				response.setPatientName(user.getFirstName());
 				emailTackService.saveEmailTrack(emailTrackCollection);
 
