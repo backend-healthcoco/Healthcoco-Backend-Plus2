@@ -91,4 +91,6 @@ public interface DentalImagingService {
 	List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalytics(Long fromDate, Long toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId, String searchType);
 
+	Boolean emailInvoice(String invoiceId, String emailAddress);
+
 }

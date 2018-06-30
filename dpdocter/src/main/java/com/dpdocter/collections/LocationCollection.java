@@ -115,7 +115,7 @@ public class LocationCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPidHasDate = true;
-	
+
 	@Field
 	private long clinicRankingCount = 0;
 
@@ -151,6 +151,9 @@ public class LocationCollection extends GenericCollection {
 
 	@Field
 	private Boolean isMobileNumberOptional = false;
+
+	@Field
+	private String googleMapShortUrl;
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
@@ -518,6 +521,14 @@ public class LocationCollection extends GenericCollection {
 
 	public void setIsMobileNumberOptional(Boolean isMobileNumberOptional) {
 		this.isMobileNumberOptional = isMobileNumberOptional;
+	}
+
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -47,6 +48,7 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
@@ -60,9 +62,11 @@ import com.dpdocter.collections.DentalImagingLocationServiceAssociationCollectio
 import com.dpdocter.collections.DentalImagingReportsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorHospitalDentalImagingAssociationCollection;
+import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
@@ -99,11 +103,15 @@ import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.PatientDentalImagignVisitAnalyticsResponse;
 import com.dpdocter.services.DentalImagingService;
+import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
@@ -173,6 +181,15 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Autowired
 	private JasperReportService jasperReportService;
+	
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+	
+	@Autowired
+	private EmailTackService emailTackService;
+	
+	@Autowired
+	private MailService mailService;
 
 	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
@@ -249,9 +266,40 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				pushNotificationServices.notifyUser(request.getDoctorId(),
 						"New dental imaging request has been created.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),
 						String.valueOf(dentalImagingCollection.getId()), null);
+				
+				if (request.getType().equalsIgnoreCase("DOCTOR")) {
+					if (locationCollection != null) {
+						String message = "Hi, {doctorName} has suggested {patientName} for you.";
+						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+						smsTrackDetail.setDoctorId(doctorId);
+						smsTrackDetail.setLocationId(locationId);
+						smsTrackDetail.setHospitalId(hospitalId);
+						smsTrackDetail.setType("DENTAL_IMAGING_REQUEST");
+						SMSDetail smsDetail = new SMSDetail();
+						smsDetail.setUserId(userCollection.getId());
+						SMS sms = new SMS();
+						smsDetail.setUserName(userCollection.getFirstName());
+						sms.setSmsText(message.replace("{doctorName}", userCollection.getFirstName()));
+						sms.setSmsText(message.replace("{patientName}", request.getLocalPatientName()));
+						SMSAddress smsAddress = new SMSAddress();
+						smsAddress.setRecipient(locationCollection.getClinicNumber());
+						sms.setSmsAddress(smsAddress);
 
-				if (locationCollection != null) {
-					String message = "Hi, {clinicName} has created request for you. Now your reports are also available on Healthcoco App ${doctor.app.bit.link}";
+						smsDetail.setSms(sms);
+						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+						smsDetails.add(smsDetail);
+						smsTrackDetail.setSmsDetails(smsDetails);
+						smsServices.sendSMS(smsTrackDetail, true);
+					}
+					
+					StringBuilder builder = new StringBuilder();
+					builder.append("Healthcoco user! {doctorName} has suggested you below scan(s).\n");
+					for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
+						builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType() + ") tooth no." + serviceRequest.getToothNumber() + "\n");
+					}
+					builder.append("{locationName} {clinicNumber} {locationMapLink}");
+					String text = builder.toString();
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(doctorId);
 					smsTrackDetail.setLocationId(locationId);
@@ -260,11 +308,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					SMSDetail smsDetail = new SMSDetail();
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();
-					smsDetail.setUserName(userCollection.getFirstName());
-					sms.setSmsText(message.replace("{clinicName}", locationCollection.getLocationName()));
-
+					smsDetail.setUserName(request.getLocalPatientName());
+					sms.setSmsText(text.replace("{doctorName}", userCollection.getFirstName()));
+					sms.setSmsText(text.replace("{locationName}", locationCollection.getLocationName()));
+					sms.setSmsText(text.replace("{clinicNumber}", locationCollection.getClinicNumber()));
+					sms.setSmsText(text.replace("{locationMapLink}", locationCollection.getGoogleMapShortUrl()));
 					SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(locationCollection.getClinicNumber());
+					smsAddress.setRecipient(request.getMobileNumber());
 					sms.setSmsAddress(smsAddress);
 
 					smsDetail.setSms(sms);
@@ -902,10 +952,41 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			dentalImagingReportsCollection = dentalImagingReportsRepository.save(dentalImagingReportsCollection);
 
 			if (dentalImagingReportsCollection.getRequestId() != null) {
+				
+				
 				DentalImagingCollection dentalImagingCollection = dentalImagingRepository
 						.findOne(dentalImagingReportsCollection.getRequestId());
 				dentalImagingCollection.setIsReportsUploaded(true);
 				dentalImagingRepository.save(dentalImagingCollection);
+				
+				List<DentalImagingReportsCollection> reportsCollections = dentalImagingReportsRepository
+						.getReportsByRequestId(dentalImagingReportsCollection.getRequestId(), false);
+				if (reportsCollections == null || reportsCollections.isEmpty()) {
+					UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+					LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getUploadedByLocationId()));
+					String message = "Hi, {clinicName} has uploaded a report for {patientName} who was referred by you. Now your reports are also available on Healthcoco App ${doctor.app.bit.link}";
+					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+					smsTrackDetail.setDoctorId(dentalImagingReportsCollection.getDoctorId());
+					smsTrackDetail.setLocationId(dentalImagingReportsCollection.getLocationId());
+					smsTrackDetail.setHospitalId(dentalImagingReportsCollection.getHospitalId());
+					smsTrackDetail.setType("DENTAL_IMAGING_REQUEST");
+					SMSDetail smsDetail = new SMSDetail();
+					smsDetail.setUserId(userCollection.getId());
+					SMS sms = new SMS();
+					smsDetail.setUserName(userCollection.getFirstName());
+					sms.setSmsText(message.replace("{clinicName}", locationCollection.getLocationName()));
+					sms.setSmsText(message.replace("{patientName}", dentalImagingCollection.getPatientName()));
+					SMSAddress smsAddress = new SMSAddress();
+					smsAddress.setRecipient(doctor.getMobileNumber());
+					sms.setSmsAddress(smsAddress);
+
+					smsDetail.setSms(sms);
+					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+					smsDetails.add(smsDetail);
+					smsTrackDetail.setSmsDetails(smsDetails);
+					smsServices.sendSMS(smsTrackDetail, true);
+				}
 			}
 			response = new DentalImagingReports();
 			BeanUtil.map(dentalImagingReportsCollection, response);
@@ -2129,4 +2210,103 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return response;
 	}
 
+	
+	@Override
+	@Transactional
+	public Boolean emailInvoice(String invoiceId , String emailAddress) {
+		MailResponse mailResponse = null;
+		Boolean response = false;
+		try {
+			mailResponse = createMailData(invoiceId);
+			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingInvoiceEmailTemplate.vm");
+			 response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Invoice", body, mailResponse.getMailAttachment());
+			if (response != null && mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	
+	private MailResponse createMailData(String invoiceId) {
+		MailResponse response = null;
+		DentalImagingInvoiceCollection dentalImagingInvoiceCollection = null;
+		DentalImagingInvoiceResponse dentalImagingInvoiceResponse = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.findOne(new ObjectId(invoiceId));
+		
+			if(dentalImagingInvoiceCollection != null) {
+				
+				user = userRepository.findOne(dentalImagingInvoiceCollection.getPatientId());
+				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						dentalImagingInvoiceCollection.getPatientId(), dentalImagingInvoiceCollection.getLocationId(),
+						dentalImagingInvoiceCollection.getHospitalId());
+				user.setFirstName(patient.getLocalPatientName());
+				emailTrackCollection.setDoctorId(dentalImagingInvoiceCollection.getDoctorId());
+				emailTrackCollection.setHospitalId(dentalImagingInvoiceCollection.getHospitalId());
+				emailTrackCollection.setLocationId(dentalImagingInvoiceCollection.getLocationId());
+				emailTrackCollection.setType(ComponentType.DENTAL_IMAGE_INVOICE.getType());
+				emailTrackCollection.setSubject("Dental Imaging Invoice");
+				if (user != null) {
+					emailTrackCollection.setPatientName(patient.getLocalPatientName());
+					emailTrackCollection.setPatientId(user.getId());
+				}
+				
+				dentalImagingInvoiceResponse = getInvoice(invoiceId);
+				
+				JasperReportResponse jasperReportResponse = createDentalImagingInvoiceJasper(dentalImagingInvoiceResponse);
+				mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+				UserCollection doctorUser = userRepository.findOne(dentalImagingInvoiceCollection.getDoctorId());
+				LocationCollection locationCollection = locationRepository.findOne(dentalImagingInvoiceCollection.getDentalImagingLocationId());
+				
+				response = new MailResponse();
+				response.setMailAttachment(mailAttachment);
+				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+						? locationCollection.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+								? locationCollection.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+								? locationCollection.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+								? locationCollection.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+								? locationCollection.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+								? locationCollection.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+								? locationCollection.getPostalCode() : "");
+
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+				response.setClinicAddress(address);
+				response.setClinicName(locationCollection.getLocationName());
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				response.setMailRecordCreatedDate(sdf.format(dentalImagingInvoiceCollection.getCreatedTime()));
+				response.setPatientName(user.getFirstName());
+				emailTackService.saveEmailTrack(emailTrackCollection);
+
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
 }
