@@ -1711,13 +1711,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		for (DentalImagingInvoiceItemResponse imagingItemResponse : imagingInvoiceResponse.getInvoiceItems()) {
 			toothNumbers = "";
 			dentalImagingInvoiceJasper = new DentalImagingInvoiceJasper();
-			if (dentalImagingInvoiceJasper.getToothNumber() != null
-					&& !dentalImagingInvoiceJasper.getToothNumber().isEmpty()) {
+			if (imagingItemResponse.getToothNumber() != null && !imagingItemResponse.getToothNumber().isEmpty()) {
 				for (String dentalToothNumber : imagingItemResponse.getToothNumber()) {
 					if (toothNumbers == "")
 						toothNumbers = dentalToothNumber;
 					else
 						toothNumbers = toothNumbers + "," + dentalToothNumber;
+
 				}
 				dentalImagingInvoiceJasper.setToothNumber(toothNumbers);
 
@@ -1747,7 +1747,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		UserCollection doctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
 		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-				new ObjectId(imagingInvoiceResponse.getPatientId()), new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId()),
+				new ObjectId(imagingInvoiceResponse.getPatientId()),
+				new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId()),
 				new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId()));
 		/*
 		 * Location location = imagingInvoiceResponse.getDentalImagingLab();
@@ -1777,6 +1778,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		 * (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " :
 		 * "") + doctor.getFirstName());
 		 */
+		parameters.put("referredby", "<b>Referring Doctor : </b> Dr. " + doctor.getFirstName());
 		parameters.put("title", "INVOICE");
 		grantTotal = imagingInvoiceResponse.getTotalCost();
 		parameters.put("total", "Grand Total : " + grantTotal + " INR"

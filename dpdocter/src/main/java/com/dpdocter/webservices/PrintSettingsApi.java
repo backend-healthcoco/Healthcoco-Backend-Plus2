@@ -72,7 +72,7 @@ public class PrintSettingsApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-		if (DPDoctorUtils.anyStringEmpty(printFilter, doctorId, locationId, hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
 			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
@@ -136,47 +136,6 @@ public class PrintSettingsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrintSettingsUrls.SAVE_DENTAL_LAB_PRINT_SETTINGS)
-	@POST
-	@ApiOperation(value = "SAVE_DENTAL_LAB_PRINT_SETTINGS", notes = "SAVE_DENTAL_LAB_PRINT_SETTINGS")
-	public Response<DentalLabPrintSetting> saveDentalLabSettings(DentalLabPrintSetting request) {
 
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId())) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		DentalLabPrintSetting printSettings = printSettingsService.saveDentalLabSettings(request);
-		if (printSettings != null)
-			printSettings.setClinicLogoUrl(getFinalImageURL(printSettings.getClinicLogoUrl()));
-		Response<DentalLabPrintSetting> response = new Response<DentalLabPrintSetting>();
-
-		response.setData(printSettings);
-		return response;
-	}
-
-	@Path(value = PathProxy.PrintSettingsUrls.GET_DENTAL_LAB_PRINT_SETTINGS)
-	@GET
-	@ApiOperation(value = "GET_DENTAL_LAB_PRINT_SETTINGS", notes = "GET_DENTAL_LAB_PRINT_SETTINGS")
-	public Response<DentalLabPrintSetting> getDEntalLabSettings(@PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
-			@QueryParam(value = "size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
-
-		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
-			throw new BusinessException(ServiceError.InvalidInput,
-					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
-		}
-		DentalLabPrintSetting printSettings = printSettingsService.getDentalLabSettings(locationId, hospitalId);
-		if (printSettings != null) {
-
-			printSettings.setClinicLogoUrl(getFinalImageURL(printSettings.getClinicLogoUrl()));
-		}
-
-		Response<DentalLabPrintSetting> response = new Response<DentalLabPrintSetting>();
-		response.setData(printSettings);
-		return response;
-	}
 
 }
