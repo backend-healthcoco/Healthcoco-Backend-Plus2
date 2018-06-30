@@ -78,8 +78,8 @@ public class MailResponse {
 
 	@Override
 	public String toString() {
-		return "MailResponse [mailAttachment=" + mailAttachment + ", doctorName=" + doctorName + ", patientName="
-				+ patientName + ", clinicAddress=" + clinicAddress + ", clinicName=" + clinicName
-				+ ", mailRecordCreatedDate=" + mailRecordCreatedDate + "]";
+		return "MailResponse [mailAttachment=" + mailAttachment + ", mailAttachments=" + mailAttachments
+				+ ", doctorName=" + doctorName + ", patientName=" + patientName + ", clinicAddress=" + clinicAddress
+				+ ", clinicName=" + clinicName + ", mailRecordCreatedDate=" + mailRecordCreatedDate + "]";
 	}
 }

@@ -183,6 +183,7 @@ public class MailServiceImpl implements MailService {
 	    outputStream.close();
 	    respone = true;
 	} catch (Exception ex) {
+		ex.printStackTrace();
 	    System.out.println("The email was not sent.");
 	    System.out.println("Error message: " + ex.getMessage());
 	}

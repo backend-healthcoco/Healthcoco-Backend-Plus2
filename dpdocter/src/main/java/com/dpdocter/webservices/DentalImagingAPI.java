@@ -408,7 +408,10 @@ public class DentalImagingAPI {
 	@POST
 	@ApiOperation(value = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL, notes = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL)
 	public Response<Boolean> sendReportEmail(@PathParam("id") String id, @QueryParam("emailAddress") String emailAddress) {
-
+		if (DPDoctorUtils.allStringsEmpty(id)) {
+			
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(dentalImagingService.emailReports(id, emailAddress));
 		return response;

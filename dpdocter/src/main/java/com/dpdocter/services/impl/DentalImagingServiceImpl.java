@@ -268,9 +268,45 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						"New dental imaging request has been created.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),
 						String.valueOf(dentalImagingCollection.getId()), null);
 				
-				if (request.getType().equalsIgnoreCase("DOCTOR")) {
-					if (locationCollection != null) {
-						String message = "Hi, {doctorName} has suggested {patientName} for you.";
+				if (request.getType() != null) {
+
+					if (request.getType().equalsIgnoreCase("DOCTOR")) {
+						if (locationCollection != null) {
+							String message = "Hi, {doctorName} has suggested {patientName} for you.";
+							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+							smsTrackDetail.setDoctorId(doctorId);
+							smsTrackDetail.setLocationId(locationId);
+							smsTrackDetail.setHospitalId(hospitalId);
+							smsTrackDetail.setType("DENTAL_IMAGING_REQUEST");
+							SMSDetail smsDetail = new SMSDetail();
+							smsDetail.setUserId(userCollection.getId());
+							SMS sms = new SMS();
+							smsDetail.setUserName(userCollection.getFirstName());
+							message = message.replace("{doctorName}", userCollection.getFirstName());
+							message = message.replace("{patientName}", request.getLocalPatientName());
+							sms.setSmsText(message);
+							SMSAddress smsAddress = new SMSAddress();
+							smsAddress.setRecipient(locationCollection.getClinicNumber());
+							sms.setSmsAddress(smsAddress);
+
+							smsDetail.setSms(sms);
+							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+							smsDetails.add(smsDetail);
+							smsTrackDetail.setSmsDetails(smsDetails);
+							smsServices.sendSMS(smsTrackDetail, true);
+						}
+
+						StringBuilder builder = new StringBuilder();
+						builder.append(
+								"Healthcoco user {patientName} ! {doctorName} has suggested you below scan(s).\n\n");
+						for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
+							builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
+									+ ") tooth no." + serviceRequest.getToothNumber() + "\n");
+						}
+						builder.append("\n");
+						builder.append("{locationName} {clinicNumber} {locationMapLink}");
+						String text = builder.toString();
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(doctorId);
 						smsTrackDetail.setLocationId(locationId);
@@ -279,11 +315,24 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						SMSDetail smsDetail = new SMSDetail();
 						smsDetail.setUserId(userCollection.getId());
 						SMS sms = new SMS();
-						smsDetail.setUserName(userCollection.getFirstName());
-						sms.setSmsText(message.replace("{doctorName}", userCollection.getFirstName()));
-						sms.setSmsText(message.replace("{patientName}", request.getLocalPatientName()));
+						smsDetail.setUserName(request.getLocalPatientName());
+						 text = text.replace("{patientName}", request.getLocalPatientName());
+						 text =text.replace("{doctorName}", userCollection.getFirstName());
+						 text = text.replace("{locationName}", locationCollection.getLocationName());
+						if (locationCollection.getClinicNumber() != null) {
+							text =text.replace("{clinicNumber}", locationCollection.getClinicNumber());
+						} else {
+							text =text.replace("{clinicNumber}", "");
+						}
+						if (locationCollection.getGoogleMapShortUrl() != null) {
+							text =
+									text.replace("{locationMapLink}", locationCollection.getGoogleMapShortUrl());
+						} else {
+							text = text.replace("{locationMapLink}", "");
+						}
+						sms.setSmsText(text);
 						SMSAddress smsAddress = new SMSAddress();
-						smsAddress.setRecipient(locationCollection.getClinicNumber());
+						smsAddress.setRecipient(request.getMobileNumber());
 						sms.setSmsAddress(smsAddress);
 
 						smsDetail.setSms(sms);
@@ -293,39 +342,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						smsTrackDetail.setSmsDetails(smsDetails);
 						smsServices.sendSMS(smsTrackDetail, true);
 					}
-					
-					StringBuilder builder = new StringBuilder();
-					builder.append("Healthcoco user {patientName}! {doctorName} has suggested you below scan(s).\n\n");
-					for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
-						builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType() + ") tooth no." + serviceRequest.getToothNumber() + "\n");
-					}
-					builder.append("\n");
-					builder.append("{locationName} {clinicNumber} {locationMapLink}");
-					String text = builder.toString();
-					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					smsTrackDetail.setDoctorId(doctorId);
-					smsTrackDetail.setLocationId(locationId);
-					smsTrackDetail.setHospitalId(hospitalId);
-					smsTrackDetail.setType("DENTAL_IMAGING_REQUEST");
-					SMSDetail smsDetail = new SMSDetail();
-					smsDetail.setUserId(userCollection.getId());
-					SMS sms = new SMS();
-					smsDetail.setUserName(request.getLocalPatientName());
-					sms.setSmsText(text.replace("{patientName}", request.getLocalPatientName()));
-					sms.setSmsText(text.replace("{doctorName}", userCollection.getFirstName()));
-					sms.setSmsText(text.replace("{locationName}", locationCollection.getLocationName()));
-					sms.setSmsText(text.replace("{clinicNumber}", locationCollection.getClinicNumber()));
-					sms.setSmsText(text.replace("{locationMapLink}", locationCollection.getGoogleMapShortUrl()));
-					SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(request.getMobileNumber());
-					sms.setSmsAddress(smsAddress);
-
-					smsDetail.setSms(sms);
-					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					smsDetails.add(smsDetail);
-					smsTrackDetail.setSmsDetails(smsDetails);
-					smsServices.sendSMS(smsTrackDetail, true);
 				}
 			}
 			response = new DentalImagingResponse();
@@ -977,8 +993,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();
 					smsDetail.setUserName(userCollection.getFirstName());
-					sms.setSmsText(message.replace("{clinicName}", locationCollection.getLocationName()));
-					sms.setSmsText(message.replace("{patientName}", dentalImagingCollection.getPatientName()));
+					message = message.replace("{clinicName}", locationCollection.getLocationName());
+					message =message.replace("{patientName}", dentalImagingCollection.getPatientName());
+					sms.setSmsText(message);
 					SMSAddress smsAddress = new SMSAddress();
 					smsAddress.setRecipient(doctor.getMobileNumber());
 					sms.setSmsAddress(smsAddress);
@@ -2327,7 +2344,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		MailResponse mailResponse = null;
 		Boolean response = false;
 		try {
+			//System.out.println(id);
 			mailResponse = createReportMailData(id);
+			//System.out.println(mailResponse);
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingRecordEmailTemplate.vm");
 			 response = mailService.sendEmailMultiAttach(emailAddress,
 						mailResponse.getDoctorName() + " sent you reports.", body, mailResponse.getMailAttachments());
@@ -2336,6 +2355,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
@@ -2373,13 +2393,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				
 				List<DentalImagingReportsCollection> reports = dentalImagingReportsRepository.getReportsByRequestId(new ObjectId(id), false);
 				
-				if (reports == null || reports.isEmpty()) {
+				if (reports != null && !reports.isEmpty()) {
 					mailAttachments = new ArrayList<>();
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : reports) {
 						File file = new File(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(file.getPath()));
-						mailAttachment.setFileSystemResource(new FileSystemResource(file));
+						mailAttachment.setFileSystemResource(new FileSystemResource(dentalImagingReportsCollection.getReport().getImageUrl()));
 						mailAttachments.add(mailAttachment);
 					}
 					

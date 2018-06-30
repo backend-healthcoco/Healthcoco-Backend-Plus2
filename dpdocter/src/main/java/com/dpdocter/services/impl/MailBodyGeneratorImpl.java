@@ -361,11 +361,18 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	@Override
 	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName, String templatePath) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("doctorName", doctorName);
-		model.put("dentalImagingLab", dentalImagingLab);
-		model.put("patientName", patientName);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		String text = "";
+		try {
+			Map<String, Object> model = new HashMap<String, Object>();
+			model.put("doctorName", doctorName);
+			model.put("dentalImagingLab", dentalImagingLab);
+			model.put("patientName", patientName);
+			text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+			return text;
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
 		return text;
 
 	}
