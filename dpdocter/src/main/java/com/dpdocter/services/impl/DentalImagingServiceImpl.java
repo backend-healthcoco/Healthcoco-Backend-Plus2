@@ -2399,7 +2399,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						File file = new File(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(file.getPath()));
-						mailAttachment.setFileSystemResource(new FileSystemResource(dentalImagingReportsCollection.getReport().getImageUrl()));
+						mailAttachment.setFileSystemResource(new FileSystemResource(file.getPath()));
 						mailAttachments.add(mailAttachment);
 					}
 					
