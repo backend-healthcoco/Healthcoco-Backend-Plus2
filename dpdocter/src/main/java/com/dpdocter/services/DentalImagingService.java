@@ -90,5 +90,9 @@ public interface DentalImagingService {
 			String dentalImagingLocationId, String dentalImagingHospitalId, String searchType);
 
 	public String downloadInvoice(String invoiceId);
+	
+	Boolean emailInvoice(String invoiceId, String emailAddress);
+
+	Boolean emailReports(String id, String emailAddress);
 
 }

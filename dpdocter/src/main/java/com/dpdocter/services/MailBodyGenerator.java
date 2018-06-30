@@ -50,4 +50,7 @@ public interface MailBodyGenerator {
 
 	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,
 			String labName);
+
+	String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName,
+			String templatePath);
 }
