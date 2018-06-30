@@ -44,13 +44,7 @@ public class PrintSettings extends GenericCollection {
 	private boolean isLab=false;
 	
 
-	public boolean isLab() {
-		return isLab;
-	}
-
-	public void setLab(boolean isLab) {
-		this.isLab = isLab;
-	}
+	
 
 	public String getId() {
 		return id;
@@ -197,6 +191,14 @@ public class PrintSettings extends GenericCollection {
 				+ ", contentLineSpace=" + contentLineSpace + ", contentLineStyle=" + contentLineStyle
 				+ ", showDrugGenericNames=" + showDrugGenericNames + ", generalNotes=" + generalNotes
 				+ ", isPidHasDate=" + isPidHasDate + "]";
+	}
+
+	public boolean getIsLab() {
+		return isLab;
+	}
+
+	public void setIsLab(boolean isLab) {
+		this.isLab = isLab;
 	}
 
 }
