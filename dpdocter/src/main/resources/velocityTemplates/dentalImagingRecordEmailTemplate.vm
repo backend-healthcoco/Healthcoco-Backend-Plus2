@@ -10,7 +10,7 @@
             <header style="background-color: #221d90; padding:30px 5px;";>
                
                 <div align="center" style="margin: 20px 10px">
-                    <a href="#"><img src="full white1.png" alt="insert logo here" width="280px" 
+                    <a href="#"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/full white1.png" alt="insert logo here" width="280px" 
                         style="display:block; margin-left:auto; margin-right:auto;" id="insert_logo"></a>
                 </div>
                 
@@ -31,7 +31,7 @@
                 <p style="color: #221d90; font-size: 16px; text-align: center"><b>Download the FREE Healthcoco+ App now!</b></p>
                
                 <div style="text-align: center">
-                  <img src="moby.png" alt="image" style="width:300px; display:block; margin-left:auto; margin-right:auto;">
+                  <img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/mobyy.png" alt="image" style="width:100%; display:block; margin-left:auto; margin-right:auto;">
                   <p align="center" style="font-size:20px;">Now your imaging reports are available <br>on Healthcoco+ App as well</p>
 
                  <br>  <a button style="background-color: #ff4e00; border: none;color: white;padding: 15px 47px;border-radius: 5px;text-align: center;text-decoration:none;" href="http://bit.ly/2aaH4w1" target="_blank"> Download App </button> </a>
@@ -60,9 +60,9 @@
                 
                 <div style="text-align: center;">
 
-                        <a style="text-decoration:none;" href="https://play.google.com/store/apps/details?id=com.healthcoco.healthcocoplus" target="_blank"><img src="Google_play_1x.png" style="width: 117px;"></a>
+                        <a style="text-decoration:none;" href="https://play.google.com/store/apps/details?id=com.healthcoco.healthcocoplus" target="_blank"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/Google_play_1x.png" style="width: 117px;"></a>
                         
-                        <a style="text-decoration:none;" href="https://itunes.apple.com/bs/app/healthcoco+/id1013626399?mt=8" target="_blank"><img src="app-store-badge.png" style="width: 117px;margin-left: 22px"></a>     
+                        <a style="text-decoration:none;" href="https://itunes.apple.com/bs/app/healthcoco+/id1013626399?mt=8" target="_blank"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/app-store-badge.png" style="width: 117px;margin-left: 22px"></a>     
             </div>            
             </div>
 
@@ -72,15 +72,15 @@
                 
                 <div align="center">
                 
-                    <a href="https://www.facebook.com/healthcoco/"><img src="fb.png" alt="insert logo here" width="35" id="insert_logo"></a>
+                    <a href="https://www.facebook.com/healthcoco/"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/fb.png" alt="insert logo here" width="35" id="insert_logo"></a>
                 
-                    <a href="https://www.instagram.com/healthcoco/"><img src="insata.png " alt="insert logo here" width="35" id="insert_logo"></a>
+                    <a href="https://www.instagram.com/healthcoco/"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/insata.png " alt="insert logo here" width="35" id="insert_logo"></a>
                 
-                    <a href="https://plus.google.com/101326805468618396011"><img src="google pluss.png" alt="insert logo here" width="35" id="insert_logo"></a>
+                    <a href="https://plus.google.com/101326805468618396011"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/google pluss.png" alt="insert logo here" width="35" id="insert_logo"></a>
                 
-                    <a href="https://www.linkedin.com/company/healthcoco/"><img src="linkdn.png" alt="insert logo here" width="35" id="insert_logo"></a>
+                    <a href="https://www.linkedin.com/company/healthcoco/"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/linkdn.png" alt="insert logo here" width="35" id="insert_logo"></a>
                 
-                    <a href="https://twitter.com/healthcococom"><img src="twitter.png" alt="insert logo here" width="35" id="insert_logo"></a>
+                    <a href="https://twitter.com/healthcococom"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/twitter.png" alt="insert logo here" width="35" id="insert_logo"></a>
                 </div>
         </footer>
     </body>

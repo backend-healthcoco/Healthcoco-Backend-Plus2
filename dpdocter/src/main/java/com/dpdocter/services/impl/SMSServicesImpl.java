@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -47,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriUtils;
 
+import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.Message;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -791,5 +793,39 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while sendind Sms");
 		}
 		return response;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("Healthcoco user {patientName}! {doctorName} has suggested you below scan(s).\n");
+		builder.append("\n");
+		builder.append("TMJ both (2D) tooth no [4] \n");
+		builder.append("Maxillary Sinus (2D) tooth no [6,9] \n");
+		builder.append("\n");
+		builder.append("{locationName} {clinicNumber} {locationMapLink}");
+		String text = builder.toString();
+		
+		String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + "93114AV2rXJuxL56001692" + "&mobiles="
+				+ "9766914900" + "&message=" + UriUtils.encode(text, "UTF-8") + "&sender="
+				+ "HTCOCO" + "&route=" + "4" + "&country=" + "91"+ "&unicode="+"1";
+		System.out.println(url);
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		// optional default is POST
+		con.setRequestMethod("GET");
+
+		// add request header
+		// con.setRequestProperty("User-Agent", USER_AGENT);
+		con.setRequestProperty("User-Agent",
+				"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+		con.setRequestProperty("Accept-Charset", "UTF-8");
+		int responseCode = con.getResponseCode();
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		/* response = new StringBuffer(); */
+
+		
 	}
 }

@@ -295,10 +295,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					}
 					
 					StringBuilder builder = new StringBuilder();
-					builder.append("Healthcoco user! {doctorName} has suggested you below scan(s).\n");
+					builder.append("Healthcoco user {patientName}! {doctorName} has suggested you below scan(s).\n\n");
 					for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
 						builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType() + ") tooth no." + serviceRequest.getToothNumber() + "\n");
 					}
+					builder.append("\n");
 					builder.append("{locationName} {clinicNumber} {locationMapLink}");
 					String text = builder.toString();
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -310,6 +311,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();
 					smsDetail.setUserName(request.getLocalPatientName());
+					sms.setSmsText(text.replace("{patientName}", request.getLocalPatientName()));
 					sms.setSmsText(text.replace("{doctorName}", userCollection.getFirstName()));
 					sms.setSmsText(text.replace("{locationName}", locationCollection.getLocationName()));
 					sms.setSmsText(text.replace("{clinicNumber}", locationCollection.getClinicNumber()));
@@ -2326,7 +2328,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		Boolean response = false;
 		try {
 			mailResponse = createReportMailData(id);
-			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingInvoiceEmailTemplate.vm");
+			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingRecordEmailTemplate.vm");
 			 response = mailService.sendEmailMultiAttach(emailAddress,
 						mailResponse.getDoctorName() + " sent you reports.", body, mailResponse.getMailAttachments());
 			if (response != null && mailResponse.getMailAttachment() != null
