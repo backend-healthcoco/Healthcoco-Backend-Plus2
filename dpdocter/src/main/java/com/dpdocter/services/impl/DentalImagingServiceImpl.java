@@ -1,7 +1,11 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -282,7 +286,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							smsDetail.setUserId(userCollection.getId());
 							SMS sms = new SMS();
 							smsDetail.setUserName(userCollection.getFirstName());
-							message = message.replace("{doctorName}", userCollection.getFirstName());
+							message = message.replace("{doctorName}",userCollection.getTitle() + userCollection.getFirstName());
 							message = message.replace("{patientName}", request.getLocalPatientName());
 							sms.setSmsText(message);
 							SMSAddress smsAddress = new SMSAddress();
@@ -299,13 +303,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 						StringBuilder builder = new StringBuilder();
 						builder.append(
-								"Healthcoco user {patientName} ! {doctorName} has suggested you below scan(s).\n\n");
+								"Healthcoco user {patientName} ! {doctorName} has suggested you below scan(s).\n");
+						builder.append("\n");
 						for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
 							builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
 									+ ") tooth no." + serviceRequest.getToothNumber() + "\n");
 						}
 						builder.append("\n");
-						builder.append("{locationName} {clinicNumber} {locationMapLink}");
+						builder.append("Imaging centre : {locationName} ({clinicNumber}). Location - {locationMapLink}");
 						String text = builder.toString();
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(doctorId);
@@ -317,7 +322,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						SMS sms = new SMS();
 						smsDetail.setUserName(request.getLocalPatientName());
 						 text = text.replace("{patientName}", request.getLocalPatientName());
-						 text =text.replace("{doctorName}", userCollection.getFirstName());
+						 text =text.replace("{doctorName}", userCollection.getTitle() +  userCollection.getFirstName());
 						 text = text.replace("{locationName}", locationCollection.getLocationName());
 						if (locationCollection.getClinicNumber() != null) {
 							text =text.replace("{clinicNumber}", locationCollection.getClinicNumber());
@@ -2350,7 +2355,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingRecordEmailTemplate.vm");
 			 response = mailService.sendEmailMultiAttach(emailAddress,
 						mailResponse.getDoctorName() + " sent you reports.", body, mailResponse.getMailAttachments());
-			if (response != null && mailResponse.getMailAttachment() != null
+			if (response != null && mailResponse.getMailAttachments() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
@@ -2396,10 +2401,19 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				if (reports != null && !reports.isEmpty()) {
 					mailAttachments = new ArrayList<>();
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : reports) {
-						File file = new File(dentalImagingReportsCollection.getReport().getImageUrl());
+						
+						URL url = new URL(dentalImagingReportsCollection.getReport().getImageUrl());
+						//System.out.println(FilenameUtils.getName(url.getFile()));
+						//System.out.println(url.getPath());
+						File file = new File(FilenameUtils.getName(url.getFile()));
+						ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+				        FileOutputStream fos = new FileOutputStream(file);
+				        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+				        fos.close();
+				        rbc.close();
 						mailAttachment = new MailAttachment();
-						mailAttachment.setAttachmentName(FilenameUtils.getName(file.getPath()));
-						mailAttachment.setFileSystemResource(new FileSystemResource(file.getPath()));
+						mailAttachment.setAttachmentName(FilenameUtils.getName(url.getFile()));
+						mailAttachment.setFileSystemResource(new FileSystemResource(file));
 						mailAttachments.add(mailAttachment);
 					}
 					
