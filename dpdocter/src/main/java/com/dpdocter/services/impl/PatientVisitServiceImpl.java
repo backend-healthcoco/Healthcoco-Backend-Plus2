@@ -2443,13 +2443,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if(isPidHasDate != null && !isPidHasDate) patientDetails.setPIDKey("PNUM");
 				else patientDetails.setPIDKey("UHID");
 			}
-			if(isPidHasDate != null && !isPidHasDate) patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
+			if(isPidHasDate != null && !isPidHasDate && !DPDoctorUtils.anyStringEmpty(patientCard.getPNUM())) patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
 					+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
 			
 			else patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
 					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
 		} else {
-			if(isPidHasDate != null && !isPidHasDate) patientDetailList.add("<b>Patient ID: </b>"
+			if(isPidHasDate != null && !isPidHasDate && !DPDoctorUtils.anyStringEmpty(patientCard.getPNUM())) patientDetailList.add("<b>Patient ID: </b>"
 					+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
 			else patientDetailList.add("<b>Patient ID: </b>"
 					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
