@@ -2516,10 +2516,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
 			if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
 				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
-			else if (parameters.get("referredby") != null)
-				patientDetailList.add("<b>Referred By: </b>" + parameters.get("referredby").toString());
+			
+		}else if (parameters.get("referredby") != null)
+			patientDetailList.add("<b>Referred By: </b>" + parameters.get("referredby").toString());
 
-		}
 
 
 		if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId()
