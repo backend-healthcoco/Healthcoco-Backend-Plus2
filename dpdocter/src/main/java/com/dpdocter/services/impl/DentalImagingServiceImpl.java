@@ -209,6 +209,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Value(value = "${pdf.footer.text}")
 	private String footerText;
+	
+	@Value(value = "${jasper.templates.resource}")
+	private String JASPER_TEMPLATES_RESOURCE;
 
 	@Override
 	@Transactional
@@ -2413,7 +2416,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				        rbc.close();
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(url.getFile()));
-						mailAttachment.setFileSystemResource(new FileSystemResource(file));
+						mailAttachment.setFileSystemResource(new FileSystemResource(JASPER_TEMPLATES_RESOURCE + file));
 						mailAttachments.add(mailAttachment);
 					}
 					
