@@ -2254,7 +2254,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		Boolean response = false;
 		try {
 			mailResponse = createMailData(invoiceId);
-			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingInvoiceEmailTemplate.vm");
+			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(), "dentalImagingInvoiceEmailTemplate.vm");
 			 response = mailService.sendEmail(emailAddress,
 					mailResponse.getDoctorName() + " sent you Invoice", body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
