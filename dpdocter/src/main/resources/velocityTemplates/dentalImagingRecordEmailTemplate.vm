@@ -20,7 +20,13 @@
                 
                     <p>${dentalImagingLab} has uploaded a report for ${patientName} who was referred by you. </p>
 
-                    <p>The report is attached in the email to download.</p>
+                    <p>The report link(s) are attached in the email to download.</p>
+                    
+                    <ul>
+  						#foreach( $report in $reports )
+    						<li><a href="$report.url">$report.attachmentName</a></li>
+ 						#end
+					</ul>
                 
                     <p>Thanks,<br>Team Healthcoco</p>
                 

@@ -2357,7 +2357,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			//System.out.println(mailResponse);
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingRecordEmailTemplate.vm");
 			 response = mailService.sendEmailMultiAttach(emailAddress,
-						mailResponse.getDoctorName() + " sent you reports.", body, mailResponse.getMailAttachments());
+						mailResponse.getDoctorName() + " sent you reports.", body, null);
 			if (response != null && mailResponse.getMailAttachments() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2406,17 +2406,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : reports) {
 						
 						URL url = new URL(dentalImagingReportsCollection.getReport().getImageUrl());
-						//System.out.println(FilenameUtils.getName(url.getFile()));
-						//System.out.println(url.getPath());
-						File file = new File(FilenameUtils.getName(url.getFile()));
-						ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-				        FileOutputStream fos = new FileOutputStream(file);
-				        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-				        fos.close();
-				        rbc.close();
+						
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(url.getFile()));
-						mailAttachment.setFileSystemResource(new FileSystemResource(JASPER_TEMPLATES_RESOURCE + file));
+						mailAttachment.setUrl(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachments.add(mailAttachment);
 					}
 					

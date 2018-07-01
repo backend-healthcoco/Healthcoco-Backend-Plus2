@@ -12,38 +12,49 @@ import org.springframework.core.io.FileSystemResource;
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class MailAttachment {
-    private String attachmentName;
+	private String attachmentName;
 
-    private FileSystemResource fileSystemResource;
+	private FileSystemResource fileSystemResource;
 
-    private InputStream inputStream;
+	private InputStream inputStream;
 
-    public String getAttachmentName() {
-	return attachmentName;
-    }
+	private String url;
 
-    public void setAttachmentName(String attachmentName) {
-	this.attachmentName = attachmentName;
-    }
+	public String getAttachmentName() {
+		return attachmentName;
+	}
 
-    public FileSystemResource getFileSystemResource() {
-	return fileSystemResource;
-    }
+	public void setAttachmentName(String attachmentName) {
+		this.attachmentName = attachmentName;
+	}
 
-    public void setFileSystemResource(FileSystemResource fileSystemResource) {
-	this.fileSystemResource = fileSystemResource;
-    }
+	public FileSystemResource getFileSystemResource() {
+		return fileSystemResource;
+	}
 
-    public InputStream getInputStream() {
-	return inputStream;
-    }
+	public void setFileSystemResource(FileSystemResource fileSystemResource) {
+		this.fileSystemResource = fileSystemResource;
+	}
 
-    public void setInputStream(InputStream inputStream) {
-	this.inputStream = inputStream;
-    }
+	public InputStream getInputStream() {
+		return inputStream;
+	}
 
-    @Override
-    public String toString() {
-	return "MailAttachment [attachmentName=" + attachmentName + ", fileSystemResource=" + fileSystemResource + ", inputStream=" + inputStream + "]";
-    }
+	public void setInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	@Override
+	public String toString() {
+		return "MailAttachment [attachmentName=" + attachmentName + ", fileSystemResource=" + fileSystemResource
+				+ ", inputStream=" + inputStream + "]";
+	}
 }
