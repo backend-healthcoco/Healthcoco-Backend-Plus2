@@ -2355,13 +2355,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			//System.out.println(id);
 			mailResponse = createReportMailData(id);
 			//System.out.println(mailResponse);
-			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingRecordEmailTemplate.vm");
-			 response = mailService.sendEmailMultiAttach(emailAddress,
-						mailResponse.getDoctorName() + " sent you reports.", body, null);
-			if (response != null && mailResponse.getMailAttachments() != null
-					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
-				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
-					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(), "dentalImagingRecordEmailTemplate.vm");
+			 response = mailService.sendEmail(emailAddress,
+						mailResponse.getClinicName() + " sent you reports.", body, null);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

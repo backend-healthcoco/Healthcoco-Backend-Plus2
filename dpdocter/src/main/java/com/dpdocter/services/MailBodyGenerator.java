@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.DoctorContactUs;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.collections.UserCollection;
 
 public interface MailBodyGenerator {
@@ -52,5 +53,5 @@ public interface MailBodyGenerator {
 			String labName);
 
 	String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName,
-			String templatePath);
+			List<MailAttachment> reports, String templatePath);
 }
