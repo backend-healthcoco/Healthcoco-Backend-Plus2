@@ -1810,7 +1810,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		 * (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " :
 		 * "") + doctor.getFirstName());
 		 */
-		parameters.put("referredby", "<b>Referring Doctor : </b> Dr. " + doctor.getFirstName());
+		if(imagingInvoiceResponse.getReferringDoctor() != null)
+		{
+			parameters.put("referredby", "Dr. " + imagingInvoiceResponse.getReferringDoctor());
+		}
+		else
+		{
+			parameters.put("referredby", "Dr. " + doctor.getFirstName());
+		}
 		parameters.put("title", "INVOICE");
 		grantTotal = imagingInvoiceResponse.getTotalCost();
 		parameters.put("total", "Grand Total : " + grantTotal + " INR"
