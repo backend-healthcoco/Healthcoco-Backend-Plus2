@@ -186,13 +186,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Autowired
 	private JasperReportService jasperReportService;
-	
+
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
-	
+
 	@Autowired
 	private EmailTackService emailTackService;
-	
+
 	@Autowired
 	private MailService mailService;
 
@@ -209,7 +209,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Value(value = "${pdf.footer.text}")
 	private String footerText;
-	
+
 	@Value(value = "${jasper.templates.resource}")
 	private String JASPER_TEMPLATES_RESOURCE;
 
@@ -274,7 +274,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				pushNotificationServices.notifyUser(request.getDoctorId(),
 						"New dental imaging request has been created.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),
 						String.valueOf(dentalImagingCollection.getId()), null);
-				
+
 				if (request.getType() != null) {
 
 					if (request.getType().equalsIgnoreCase("DOCTOR")) {
@@ -289,7 +289,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							smsDetail.setUserId(userCollection.getId());
 							SMS sms = new SMS();
 							smsDetail.setUserName(userCollection.getFirstName());
-							message = message.replace("{doctorName}",userCollection.getTitle() + userCollection.getFirstName());
+							message = message.replace("{doctorName}",
+									userCollection.getTitle() + userCollection.getFirstName());
 							message = message.replace("{patientName}", request.getLocalPatientName());
 							sms.setSmsText(message);
 							SMSAddress smsAddress = new SMSAddress();
@@ -309,20 +310,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 								"Healthcoco user {patientName} ! {doctorName} has suggested you below scan(s).\n");
 						builder.append("\n");
 						for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
-							if(serviceRequest.getToothNumber() != null)
-							{
+							if (serviceRequest.getToothNumber() != null) {
 								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
-								+ ") tooth no." + serviceRequest.getToothNumber() + "\n");
+										+ ") tooth no." + serviceRequest.getToothNumber() + "\n");
+							} else {
+								builder.append(
+										serviceRequest.getServiceName() + "(" + serviceRequest.getType() + ")" + "\n");
 							}
-							else
-							{
-								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
-								+ ")" + "\n");
-							}
-							
+
 						}
 						builder.append("\n");
-						builder.append("Imaging centre : {locationName} ({clinicNumber}). Location - {locationMapLink}");
+						builder.append(
+								"Imaging centre : {locationName} ({clinicNumber}). Location - {locationMapLink}");
 						String text = builder.toString();
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(doctorId);
@@ -333,17 +332,16 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						smsDetail.setUserId(userCollection.getId());
 						SMS sms = new SMS();
 						smsDetail.setUserName(request.getLocalPatientName());
-						 text = text.replace("{patientName}", request.getLocalPatientName());
-						 text =text.replace("{doctorName}", userCollection.getTitle() +  userCollection.getFirstName());
-						 text = text.replace("{locationName}", locationCollection.getLocationName());
+						text = text.replace("{patientName}", request.getLocalPatientName());
+						text = text.replace("{doctorName}", userCollection.getTitle() + userCollection.getFirstName());
+						text = text.replace("{locationName}", locationCollection.getLocationName());
 						if (locationCollection.getClinicNumber() != null) {
-							text =text.replace("{clinicNumber}", locationCollection.getClinicNumber());
+							text = text.replace("{clinicNumber}", locationCollection.getClinicNumber());
 						} else {
-							text =text.replace("{clinicNumber}", "");
+							text = text.replace("{clinicNumber}", "");
 						}
 						if (locationCollection.getGoogleMapShortUrl() != null) {
-							text =
-									text.replace("{locationMapLink}", locationCollection.getGoogleMapShortUrl());
+							text = text.replace("{locationMapLink}", locationCollection.getGoogleMapShortUrl());
 						} else {
 							text = text.replace("{locationMapLink}", "");
 						}
@@ -389,10 +387,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				if (request.getType().equalsIgnoreCase("DOCTOR")) {
 					if (!DPDoctorUtils.anyStringEmpty(response.getPatientId(), response.getDoctorId(),
 							response.getHospitalId(), response.getLocationId())) {
-						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(new ObjectId(response.getPatientId()),
-										new ObjectId(response.getDoctorId()), new ObjectId(response.getLocationId()),
-										new ObjectId(response.getHospitalId()));
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
+								new ObjectId(response.getHospitalId()));
 						if (patientCollection != null) {
 							PatientShortCard patientShortCard = new PatientShortCard();
 							BeanUtil.map(patientCollection, patientShortCard);
@@ -988,18 +985,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			dentalImagingReportsCollection = dentalImagingReportsRepository.save(dentalImagingReportsCollection);
 
 			if (dentalImagingReportsCollection.getRequestId() != null) {
-				
-				
+
 				DentalImagingCollection dentalImagingCollection = dentalImagingRepository
 						.findOne(dentalImagingReportsCollection.getRequestId());
 				dentalImagingCollection.setIsReportsUploaded(true);
 				dentalImagingRepository.save(dentalImagingCollection);
-				
+
 				List<DentalImagingReportsCollection> reportsCollections = dentalImagingReportsRepository
 						.getReportsByRequestId(dentalImagingReportsCollection.getRequestId(), false);
 				if (reportsCollections == null || reportsCollections.isEmpty()) {
 					UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
-					LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getUploadedByLocationId()));
+					LocationCollection locationCollection = locationRepository
+							.findOne(new ObjectId(request.getUploadedByLocationId()));
 					String message = "Hi, {clinicName} has uploaded a report for {patientName} who was referred by you. Now your reports are also available on Healthcoco App ${doctor.app.bit.link}";
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(dentalImagingReportsCollection.getDoctorId());
@@ -1011,7 +1008,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					SMS sms = new SMS();
 					smsDetail.setUserName(userCollection.getFirstName());
 					message = message.replace("{clinicName}", locationCollection.getLocationName());
-					message =message.replace("{patientName}", dentalImagingCollection.getPatientName());
+					message = message.replace("{patientName}", dentalImagingCollection.getPatientName());
 					sms.setSmsText(message);
 					SMSAddress smsAddress = new SMSAddress();
 					smsAddress.setRecipient(doctor.getMobileNumber());
@@ -1819,12 +1816,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		 * (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " :
 		 * "") + doctor.getFirstName());
 		 */
-		if(imagingInvoiceResponse.getReferringDoctor() != null)
-		{
+		if (imagingInvoiceResponse.getReferringDoctor() != null) {
 			parameters.put("referredby", "Dr. " + imagingInvoiceResponse.getReferringDoctor());
-		}
-		else
-		{
+		} else {
 			parameters.put("referredby", "Dr. " + doctor.getFirstName());
 		}
 		parameters.put("title", "INVOICE");
@@ -2262,17 +2256,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return response;
 	}
 
-	
 	@Override
 	@Transactional
-	public Boolean emailInvoice(String invoiceId , String emailAddress) {
+	public Boolean emailInvoice(String invoiceId, String emailAddress) {
 		MailResponse mailResponse = null;
 		Boolean response = false;
 		try {
 			mailResponse = createMailData(invoiceId);
-			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(), "dentalImagingInvoiceEmailTemplate.vm");
-			 response = mailService.sendEmail(emailAddress,
-					mailResponse.getDoctorName() + " sent you Invoice", body, mailResponse.getMailAttachment());
+			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(),
+					mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(),
+					"dentalImagingInvoiceEmailTemplate.vm");
+			response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice", body,
+					mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2284,7 +2279,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return response;
 	}
 
-	
 	private MailResponse createMailData(String invoiceId) {
 		MailResponse response = null;
 		DentalImagingInvoiceCollection dentalImagingInvoiceCollection = null;
@@ -2295,9 +2289,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
 			dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.findOne(new ObjectId(invoiceId));
-		
-			if(dentalImagingInvoiceCollection != null) {
-				
+
+			if (dentalImagingInvoiceCollection != null) {
+
 				user = userRepository.findOne(dentalImagingInvoiceCollection.getPatientId());
 				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						dentalImagingInvoiceCollection.getPatientId(), dentalImagingInvoiceCollection.getLocationId(),
@@ -2312,33 +2306,42 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					emailTrackCollection.setPatientName(patient.getLocalPatientName());
 					emailTrackCollection.setPatientId(user.getId());
 				}
-				
+
 				dentalImagingInvoiceResponse = getInvoice(invoiceId);
-				
-				JasperReportResponse jasperReportResponse = createDentalImagingInvoiceJasper(dentalImagingInvoiceResponse);
+
+				JasperReportResponse jasperReportResponse = createDentalImagingInvoiceJasper(
+						dentalImagingInvoiceResponse);
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 				UserCollection doctorUser = userRepository.findOne(dentalImagingInvoiceCollection.getDoctorId());
-				LocationCollection locationCollection = locationRepository.findOne(dentalImagingInvoiceCollection.getDentalImagingLocationId());
-				
+				LocationCollection locationCollection = locationRepository
+						.findOne(dentalImagingInvoiceCollection.getDentalImagingLocationId());
+
 				response = new MailResponse();
 				response.setMailAttachment(mailAttachment);
 				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -2352,31 +2355,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				emailTackService.saveEmailTrack(emailTrackCollection);
 
 			}
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
-	}
-	
-	
-	@Override
-	@Transactional
-	public Boolean emailReports(String id , String emailAddress) {
-		MailResponse mailResponse = null;
-		Boolean response = false;
-		try {
-			//System.out.println(id);
-			mailResponse = createReportMailData(id);
-			//System.out.println(mailResponse);
-			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(), "dentalImagingRecordEmailTemplate.vm");
-			//System.out.println(body);
-			response = mailService.sendEmailWithoutAttachment(emailAddress,
-						mailResponse.getClinicName() + " sent you dental imaging reports.", body);
-			 
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2385,7 +2364,30 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		return response;
 	}
 
-	
+	@Override
+	@Transactional
+	public Boolean emailReports(String id, String emailAddress) {
+		MailResponse mailResponse = null;
+		Boolean response = false;
+		try {
+			// System.out.println(id);
+			mailResponse = createReportMailData(id);
+			// System.out.println(mailResponse);
+			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(),
+					mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(),
+					"dentalImagingRecordEmailTemplate.vm");
+			// System.out.println(body);
+			response = mailService.sendEmailWithoutAttachment(emailAddress,
+					mailResponse.getClinicName() + " sent you dental imaging reports.", body);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
 	private MailResponse createReportMailData(String id) {
 		MailResponse response = null;
 		DentalImagingCollection dentalImagingCollection = null;
@@ -2396,13 +2398,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
 			dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(id));
-		
-			if(dentalImagingCollection != null) {
-				
+
+			if (dentalImagingCollection != null) {
+
 				user = userRepository.findOne(dentalImagingCollection.getPatientId());
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						dentalImagingCollection.getPatientId(), dentalImagingCollection.getLocationId(),
-						dentalImagingCollection.getHospitalId());
+				patient = patientRepository.findByUserIdLocationIdAndHospitalId(dentalImagingCollection.getPatientId(),
+						dentalImagingCollection.getLocationId(), dentalImagingCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());
 				emailTrackCollection.setDoctorId(dentalImagingCollection.getDoctorId());
 				emailTrackCollection.setHospitalId(dentalImagingCollection.getHospitalId());
@@ -2413,43 +2414,52 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					emailTrackCollection.setPatientName(patient.getLocalPatientName());
 					emailTrackCollection.setPatientId(user.getId());
 				}
-				
-				List<DentalImagingReportsCollection> reports = dentalImagingReportsRepository.getReportsByRequestId(new ObjectId(id), false);
-				
+
+				List<DentalImagingReportsCollection> reports = dentalImagingReportsRepository
+						.getReportsByRequestId(new ObjectId(id), false);
+
 				if (reports != null && !reports.isEmpty()) {
 					mailAttachments = new ArrayList<>();
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : reports) {
-						
+
 						URL url = new URL(dentalImagingReportsCollection.getReport().getImageUrl());
-						
+
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(url.getFile()));
 						mailAttachment.setUrl(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachments.add(mailAttachment);
 					}
-					
+
 				}
-				
+
 				UserCollection doctorUser = userRepository.findOne(dentalImagingCollection.getDoctorId());
-				LocationCollection locationCollection = locationRepository.findOne(dentalImagingCollection.getDentalImagingLocationId());
-				
+				LocationCollection locationCollection = locationRepository
+						.findOne(dentalImagingCollection.getDentalImagingLocationId());
+
 				response = new MailResponse();
 				response.setMailAttachments(mailAttachments);
 				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -2463,7 +2473,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				emailTackService.saveEmailTrack(emailTrackCollection);
 
 			}
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2471,5 +2481,5 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		return response;
 	}
-	
+
 }
