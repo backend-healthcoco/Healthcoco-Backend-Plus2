@@ -24,7 +24,7 @@
                     
                     <ul>
   						#foreach( $report in $reports )
-    						<li><a href="$report.url">$report.attachmentName</a></li>
+    						<li><a "color:#FFF;" href="$report.url">$report.attachmentName</a></li>
  						#end
 					</ul>
                 
