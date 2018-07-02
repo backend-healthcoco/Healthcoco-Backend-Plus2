@@ -309,8 +309,17 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 								"Healthcoco user {patientName} ! {doctorName} has suggested you below scan(s).\n");
 						builder.append("\n");
 						for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
-							builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
-									+ ") tooth no." + serviceRequest.getToothNumber() + "\n");
+							if(serviceRequest.getToothNumber() != null)
+							{
+								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
+								+ ") tooth no." + serviceRequest.getToothNumber() + "\n");
+							}
+							else
+							{
+								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
+								+ ")" + "\n");
+							}
+							
 						}
 						builder.append("\n");
 						builder.append("Imaging centre : {locationName} ({clinicNumber}). Location - {locationMapLink}");
@@ -2364,8 +2373,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			//System.out.println(mailResponse);
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(), "dentalImagingRecordEmailTemplate.vm");
 			//System.out.println(body);
-			response = mailService.sendEmail(emailAddress,
-						mailResponse.getClinicName() + " sent you reports.", body, null);
+			response = mailService.sendEmailWithoutAttachment(emailAddress,
+						mailResponse.getClinicName() + " sent you dental imaging reports.", body);
 			 
 			
 		} catch (Exception e) {

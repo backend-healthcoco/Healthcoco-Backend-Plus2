@@ -360,6 +360,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	}
 	
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName, List<MailAttachment> reports , String templatePath) {
 		String text = "";

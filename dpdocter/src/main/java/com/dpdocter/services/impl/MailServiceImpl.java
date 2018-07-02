@@ -224,4 +224,49 @@ public class MailServiceImpl implements MailService {
 		status = sendEmail(TO_IOS,subject, body, null);
 		return status;
 	}
+	
+	@Override
+	@Transactional
+	public Boolean sendEmailWithoutAttachment(String to, String subject, String body)
+			throws MessagingException {
+		Boolean respone = false;
+		try {
+			Session session = Session.getInstance(new Properties());
+			MimeMessage mimeMessage = new MimeMessage(session);
+			mimeMessage.setSubject(subject);
+			mimeMessage.setFrom(new InternetAddress(FROM, FROM_NAME));
+			Multipart mainMultipart = new MimeMultipart("related");
+			Multipart htmlAndTextMultipart = new MimeMultipart("alternative");
+			MimeBodyPart htmlBodyPart = new MimeBodyPart();
+			htmlBodyPart.setContent(body, "text/html; charset=utf-8");
+			htmlAndTextMultipart.addBodyPart(htmlBodyPart);
+
+			MimeBodyPart htmlAndTextBodyPart = new MimeBodyPart();
+			htmlAndTextBodyPart.setContent(htmlAndTextMultipart);
+			mainMultipart.addBodyPart(htmlAndTextBodyPart);
+
+			mimeMessage.setContent(mainMultipart);
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			mimeMessage.writeTo(outputStream);
+			RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+
+			List<String> list = Arrays.asList(to);
+			SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
+			rawEmailRequest.setDestinations(list);
+			rawEmailRequest.setSource(FROM);
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(
+					credentials);
+			amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
+			amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
+			outputStream.close();
+			respone = true;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.out.println("The email was not sent.");
+			System.out.println("Error message: " + ex.getMessage());
+		}
+		return respone;
+	}
+	
 }
