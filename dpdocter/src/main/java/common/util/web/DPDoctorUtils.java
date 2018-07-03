@@ -198,7 +198,8 @@ public class DPDoctorUtils {
 			Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String category,
 			String disease, String... searchTermFieldName) {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
+						.to(new Date().toString()))
 				.mustNot(QueryBuilders.existsQuery("doctorId")).mustNot(QueryBuilders.existsQuery("locationId"))
 				.mustNot(QueryBuilders.existsQuery("hospitalId"));
 		if (!DPDoctorUtils.anyStringEmpty(disease))
@@ -274,7 +275,8 @@ public class DPDoctorUtils {
 			String disease, String... searchTermFieldName) {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
+						.to(Long.parseLong(new Date().toString())));
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("doctorId", doctorId));
 		}
@@ -339,8 +341,8 @@ public class DPDoctorUtils {
 			String searchTerm, Collection<String> specialities, String category, String disease,
 			String... searchTermFieldName) {
 
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime")
+				.from(Long.parseLong(updatedTime)).to(Long.parseLong(new Date().toString())));
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId))
 			boolQueryBuilder.must(
@@ -430,8 +432,8 @@ public class DPDoctorUtils {
 
 		long createdTimeStamp = Long.parseLong(updatedTime);
 
-		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null)
-				.and("locationId").is(null).and("hospitalId").is(null);
+		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").exists(false)
+				.and("locationId").exists(false).and("hospitalId").exists(false);
 		if (specialities != null && !specialities.isEmpty())
 			criteria.and("speciality").in(specialities);
 		if (!discarded)
@@ -517,13 +519,14 @@ public class DPDoctorUtils {
 				criteria.orOperator(
 						new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
 								.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
-						new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null));
+						new Criteria("doctorId").exists(false).and("locationId").exists(false).and("hospitalId")
+								.exists(false));
 			} else {
 				criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)),
-						new Criteria("doctorId").is(null));
+						new Criteria("doctorId").exists(false));
 			}
 		} else
-			criteria.and("doctorId").is(null);
+			criteria.and("doctorId").exists(false);
 
 		if (specialities != null && !specialities.isEmpty())
 			criteria.and("speciality").in(specialities);
@@ -560,8 +563,8 @@ public class DPDoctorUtils {
 
 		long createdTimeStamp = Long.parseLong(updatedTime);
 
-		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null)
-				.and("locationId").is(null).and("hospitalId").is(null);
+		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").exists(false)
+				.and("locationId").exists(false).and("hospitalId").exists(false);
 		if (!discarded)
 			criteria.and("discarded").is(discarded);
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
