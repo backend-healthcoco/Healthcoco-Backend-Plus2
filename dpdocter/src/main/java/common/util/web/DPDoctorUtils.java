@@ -274,9 +274,8 @@ public class DPDoctorUtils {
 			String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String category,
 			String disease, String... searchTermFieldName) {
 
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
-						.to(Long.parseLong(new Date().toString())));
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime")
+				.from(Long.parseLong(updatedTime)).to(Long.parseLong(new Date().toString())));
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("doctorId", doctorId));
 		}
@@ -432,8 +431,8 @@ public class DPDoctorUtils {
 
 		long createdTimeStamp = Long.parseLong(updatedTime);
 
-		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").exists(false)
-				.and("locationId").exists(false).and("hospitalId").exists(false);
+		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null)
+				.and("locationId").is(null).and("hospitalId").is(null);
 		if (specialities != null && !specialities.isEmpty())
 			criteria.and("speciality").in(specialities);
 		if (!discarded)
@@ -519,14 +518,15 @@ public class DPDoctorUtils {
 				criteria.orOperator(
 						new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
 								.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
-						new Criteria("doctorId").exists(false).and("locationId").exists(false).and("hospitalId")
-								.exists(false));
-			} else {
-				criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)),
-						new Criteria("doctorId").exists(false));
+						new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null));
 			}
-		} else
-			criteria.and("doctorId").exists(false);
+			else {
+				criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)), new Criteria("doctorId").is(null));
+			}
+		} else if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			criteria.orOperator(new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+					.is(new ObjectId(hospitalId)), new Criteria("locationId").is(null).and("hospitalId").is(null));
+		} 
 
 		if (specialities != null && !specialities.isEmpty())
 			criteria.and("speciality").in(specialities);
