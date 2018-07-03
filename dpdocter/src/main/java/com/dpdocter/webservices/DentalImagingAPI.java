@@ -405,7 +405,7 @@ public class DentalImagingAPI {
 	}
 	
 	@Path(value = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL)
-	@POST
+	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL, notes = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL)
 	public Response<Boolean> sendReportEmail(@PathParam("id") String id, @QueryParam("emailAddress") String emailAddress) {
 		if (DPDoctorUtils.allStringsEmpty(id)) {
