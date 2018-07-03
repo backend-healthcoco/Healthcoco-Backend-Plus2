@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -35,6 +36,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
@@ -212,6 +218,15 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Value(value = "${jasper.templates.resource}")
 	private String JASPER_TEMPLATES_RESOURCE;
+
+	@Value(value = "${bucket.name}")
+	private String bucketName;
+
+	@Value(value = "${mail.aws.key.id}")
+	private String AWS_KEY;
+
+	@Value(value = "${mail.aws.secret.key}")
+	private String AWS_SECRET_KEY;
 
 	@Override
 	@Transactional
@@ -2377,8 +2392,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(),
 					"dentalImagingRecordEmailTemplate.vm");
 			// System.out.println(body);
-			response = mailService.sendEmailWithoutAttachment(emailAddress,
-					mailResponse.getClinicName() + " sent you dental imaging reports.", body);
+			response = mailService.sendEmailMultiAttach(emailAddress,
+					mailResponse.getClinicName() + " sent you dental imaging reports.", body,mailResponse.getMailAttachments());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2422,9 +2437,16 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					mailAttachments = new ArrayList<>();
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : reports) {
 
-						URL url = new URL(dentalImagingReportsCollection.getReport().getImageUrl());
+						BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+						AmazonS3 s3client = new AmazonS3Client(credentials);
 
+						S3Object object = s3client
+								.getObject(new GetObjectRequest(bucketName, dentalImagingReportsCollection.getReport().getImageUrl()));
+						InputStream objectData = object.getObjectContent();
+						URL url = new URL(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachment = new MailAttachment();
+						mailAttachment.setFileSystemResource(null);
+						mailAttachment.setInputStream(objectData);
 						mailAttachment.setAttachmentName(FilenameUtils.getName(url.getFile()));
 						mailAttachment.setUrl(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachments.add(mailAttachment);
