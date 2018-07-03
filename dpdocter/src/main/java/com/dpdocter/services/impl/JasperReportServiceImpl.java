@@ -258,13 +258,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (parameters.get("clinicalNotes") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
 						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+			
+			if (parameters.get("clinicalNotes") != null)
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createDiagramsSubreport(parameters, dsr,
+						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
+
 
 			if (parameters.get("prescriptions") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPrescriptionSubreport(parameters,
-						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
-
-			if (parameters.get("clinicalNotes") != null)
-				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createDiagramsSubreport(parameters, dsr,
 						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
 
 			if (parameters.get("treatments") != null)
@@ -573,15 +574,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryDrugs}", "$P{generalHistoryDrugs}", fieldWidth, false, 0,
-				false);
-		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryAllergies}", "$P{generalHistoryAllergies}", fieldWidth,
-				false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryMedicine}", "$P{generalHistoryMedicine}", fieldWidth,
 				false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{GeneralHistorySurgical}", "$P{generalHistorySurgical}", fieldWidth,
 				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryDrugs}", "$P{generalHistoryDrugs}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryAllergies}", "$P{generalHistoryAllergies}", fieldWidth,
+				false, 0, false);
+		
 
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0, false);
 
@@ -646,15 +648,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		addItems(jasperDesign, columnWidth, "$P{PainScale}", "$P{painScale}", fieldWidth, false, 0, false);
 
-		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$P{investigations}", fieldWidth, false, 0, false);
-
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0, true);
+		
+		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$P{procedureNote}", fieldWidth, false, 0, false);
 
+		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$P{investigations}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0, false);
 
-		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$P{procedureNote}", fieldWidth, false, 0, false);
+		
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
 		dsr.setDatasetName("dataset1");
@@ -1149,16 +1153,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryMedicine}", "$F{generalHistoryMedicine}", fieldWidth,
+				false, 0, false);
+		
+		addItems(jasperDesign, columnWidth, "$P{GeneralHistorySurgical}", "$F{generalHistorySurgical}", fieldWidth,
+				false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryDrugs}", "$F{generalHistoryDrugs}", fieldWidth, false, 0,
 				false);
 
 		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryAllergies}", "$F{generalHistoryAllergies}", fieldWidth,
 				false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryMedicine}", "$F{generalHistoryMedicine}", fieldWidth,
-				false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{GeneralHistorySurgical}", "$F{generalHistorySurgical}", fieldWidth,
-				false, 0, false);
+		
 
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0, false);
 
@@ -1204,23 +1211,35 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{NoOfChildren}", "$F{noOfChildren}", fieldWidth, false, 0, false);
 		addLMPAndEDD(jasperDesign, columnWidth, fieldWidth, 0, "$P{LMP}", "$F{lmp}", "$P{EDD}", "$F{edd}");
 		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$F{indicationOfUSG}", fieldWidth, true, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{PA}", "$F{pa}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{PS}", "$F{ps}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{PV}", "$F{pv}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{EcgDetails}", "$F{ecgDetails}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{Echo}", "$F{echo}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{XRayDetails}", "$F{xRayDetails}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{Holter}", "$F{holter}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{Observations}", "$F{observations}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{PainScale}", "$F{painScale}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$F{investigations}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$F{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$F{diagnosis}", fieldWidth, false, 0, true);
+		
+		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$F{procedureNote}", fieldWidth, false, 0, false);
+		
+		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$F{investigations}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0, false);
 
-		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$F{procedureNote}", fieldWidth, false, 0, false);
 
 		band = new JRDesignBand();
 		band.setHeight(2);
