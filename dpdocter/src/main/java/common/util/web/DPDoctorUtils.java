@@ -199,7 +199,7 @@ public class DPDoctorUtils {
 			String disease, String... searchTermFieldName) {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
-						.to(new Date().toString()))
+						.to(new Date().getTime()))
 				.mustNot(QueryBuilders.existsQuery("doctorId")).mustNot(QueryBuilders.existsQuery("locationId"))
 				.mustNot(QueryBuilders.existsQuery("hospitalId"));
 		if (!DPDoctorUtils.anyStringEmpty(disease))
@@ -275,7 +275,7 @@ public class DPDoctorUtils {
 			String disease, String... searchTermFieldName) {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime")
-				.from(Long.parseLong(updatedTime)).to(Long.parseLong(new Date().toString())));
+				.from(Long.parseLong(updatedTime)).to(new Date().getTime()));
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("doctorId", doctorId));
 		}
@@ -341,7 +341,7 @@ public class DPDoctorUtils {
 			String... searchTermFieldName) {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime")
-				.from(Long.parseLong(updatedTime)).to(Long.parseLong(new Date().toString())));
+				.from(Long.parseLong(updatedTime)).to(new Date().getTime()));
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId))
 			boolQueryBuilder.must(

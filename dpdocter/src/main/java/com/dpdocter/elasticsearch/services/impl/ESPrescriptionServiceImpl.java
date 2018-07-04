@@ -2,6 +2,7 @@ package com.dpdocter.elasticsearch.services.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	@Autowired
 	TransportClient transportClient;
-	
+
 	@Autowired
 	InventoryService inventoryService;
 
@@ -132,7 +133,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	public List<?> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<?> response = null;
-		List<ESDrugDocument> esDrugDocuments =null;
+		List<ESDrugDocument> esDrugDocuments = null;
 		List<DrugDocument> drugDocuments = null;
 		if (page > 0)
 			return response;
@@ -141,12 +142,13 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		switch (Range.valueOf(range.toUpperCase())) {
 
 		case GLOBAL:
-			esDrugDocuments = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			esDrugDocuments = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category,
+					searchByGenericName);
 			response = addStockToDrug(esDrugDocuments);
 			break;
 		case CUSTOM:
-			esDrugDocuments = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,
-					category, searchByGenericName);
+			esDrugDocuments = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm, category, searchByGenericName);
 			response = addStockToDrug(esDrugDocuments);
 			break;
 		case BOTH:
@@ -160,8 +162,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			response = addStockToDrugWeb(drugDocuments);
 			break;
 		case WEBBOTH:
-			drugDocuments = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-					searchTerm, category, searchByGenericName);
+			drugDocuments = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime,
+					discarded, searchTerm, category, searchByGenericName);
 			response = addStockToDrugWeb(drugDocuments);
 			break;
 		default:
@@ -191,9 +193,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 				}
+
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
 						ESDrugDocument.class);
-				
+
 				if (esDrugDocuments != null) {
 					esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
 				}
@@ -209,6 +212,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drugDocument.setDrugType(drugType);
 					response.add(drugDocument);
 				}
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -240,7 +244,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
 						ESDrugDocument.class);
-				
+
 				response = new ArrayList<DrugDocument>();
 				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
 					String drugTypeStr = esDrugDocument.getDrugType();
@@ -279,7 +283,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			}
 
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
-			
+
 			if (response != null)
 				response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
 		} catch (Exception e) {
@@ -499,16 +503,19 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			response = getCustomGlobalDiagnosticTests(page, size, locationId, hospitalId, updatedTime, discarded,
 					searchTerm);
 			break;
+
 		default:
 			break;
 		}
 		return response;
 	}
+
+
 	
+
 	@Override
-	public Integer getDiagnosticTestCount(String range, int page, int size, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm)
-	{
+	public Integer getDiagnosticTestCount(String range, int page, int size, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm) {
 		Integer count = null;
 		try {
 			count = searchDiagnosticTest(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm)
@@ -576,7 +583,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			String searchTermFieldName, String searchTerm, Collection<String> testIds, Boolean calculateCount,
 			Class classForCount, String sortBy) {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
+						.to(new Date().getTime()))
 				.mustNot(QueryBuilders.existsQuery("locationId")).mustNot(QueryBuilders.existsQuery("hospitalId"));
 
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
@@ -615,7 +623,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			Collection<String> testIds, Boolean calculateCount, Class classForCount, String sortBy) {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
+						.to(new Date().getTime()))
 				.must(QueryBuilders.termQuery("locationId", locationId))
 				.must(QueryBuilders.termQuery("hospitalId", hospitalId));
 
@@ -655,7 +664,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			Collection<String> testIds, Boolean calculateCount, Class classForCount, String sortBy) {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)).to(new Date().getTime()));
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			boolQueryBuilder
@@ -795,10 +804,13 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		}
 		return response;
 	}
+
 	
 	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs)
 	{
 		List<ESDrugDocument> response= new ArrayList<>();
+
+
 		for (ESDrugDocument drug : drugs) {
 
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
@@ -816,10 +828,12 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		}
 		return response;
 	}
+
 	
 	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs)
 	{
 		List<DrugDocument> response= new ArrayList<>();
+
 		for (DrugDocument drug : drugs) {
 
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getDrugCode())) {
