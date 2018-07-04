@@ -134,6 +134,53 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private List<FlowSheet> flowSheets;
 
+	@Field
+	private List<String> diagrams;
+
+	@Field
+	private String timeOfEntryInOt;
+
+	@Field
+	private String timeOfExitFromOt;
+
+	@Field
+	private String bloodLoss;
+
+	@Field
+	private String pediatricianName;
+
+	public String getPediatricianName() {
+		return pediatricianName;
+	}
+
+	public void setPediatricianName(String pediatricianName) {
+		this.pediatricianName = pediatricianName;
+	}
+
+	public String getTimeOfEntryInOt() {
+		return timeOfEntryInOt;
+	}
+
+	public void setTimeOfEntryInOt(String timeOfEntryInOt) {
+		this.timeOfEntryInOt = timeOfEntryInOt;
+	}
+
+	public String getTimeOfExitFromOt() {
+		return timeOfExitFromOt;
+	}
+
+	public void setTimeOfExitFromOt(String timeOfExitFromOt) {
+		this.timeOfExitFromOt = timeOfExitFromOt;
+	}
+
+	public String getBloodLoss() {
+		return bloodLoss;
+	}
+
+	public void setBloodLoss(String bloodLoss) {
+		this.bloodLoss = bloodLoss;
+	}
+
 	public Date getOperationDate() {
 		return operationDate;
 	}

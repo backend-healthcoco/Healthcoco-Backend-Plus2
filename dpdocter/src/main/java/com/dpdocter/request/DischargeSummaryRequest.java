@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.PrescriptionItemAndAdviceAdd;
@@ -64,6 +65,33 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private String cement;
 	private String operationName;
 	private List<FlowSheet> flowSheets;
+	private String timeOfEntryInOt;
+	private String timeOfExitFromOt;
+	private String bloodLoss;
+
+	public String getTimeOfEntryInOt() {
+		return timeOfEntryInOt;
+	}
+
+	public void setTimeOfEntryInOt(String timeOfEntryInOt) {
+		this.timeOfEntryInOt = timeOfEntryInOt;
+	}
+
+	public String getTimeOfExitFromOt() {
+		return timeOfExitFromOt;
+	}
+
+	public void setTimeOfExitFromOt(String timeOfExitFromOt) {
+		this.timeOfExitFromOt = timeOfExitFromOt;
+	}
+
+	public String getBloodLoss() {
+		return bloodLoss;
+	}
+
+	public void setBloodLoss(String bloodLoss) {
+		this.bloodLoss = bloodLoss;
+	}
 
 	public Date getOperationDate() {
 		return operationDate;
