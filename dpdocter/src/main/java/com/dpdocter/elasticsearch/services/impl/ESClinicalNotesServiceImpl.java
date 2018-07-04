@@ -911,7 +911,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				}
 			}
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-					.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
+					.must(QueryBuilders.rangeQuery("updatedTime").from(new Date().getTime()));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				boolQueryBuilder.must(
@@ -994,7 +994,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			}
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
-							.to(Long.parseLong(new Date().toString())))
+							.to(new Date().getTime()))
 					.mustNot(QueryBuilders.existsQuery("doctorId")).mustNot(QueryBuilders.existsQuery("locationId"))
 					.mustNot(QueryBuilders.existsQuery("hospitalId"));
 
@@ -1041,7 +1041,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			else {
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
-								.to(Long.parseLong(new Date().toString())))
+								.to(new Date().getTime()))
 						.must(QueryBuilders.termQuery("doctorId", doctorId));
 
 				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
