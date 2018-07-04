@@ -13,6 +13,7 @@ import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
 import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -81,7 +82,7 @@ public interface DischargeSummaryService {
 	public String downloadFlowSheet(String id, Boolean byFlowsheetId);
 
 
-	String uploadDischargeDiagram(FileDetails fileDetail);
+	String uploadDischargeDiagram(DoctorLabReportUploadRequest request);
 
 	String uploadDischargeSummaryMultipart(FormDataBodyPart file);
 

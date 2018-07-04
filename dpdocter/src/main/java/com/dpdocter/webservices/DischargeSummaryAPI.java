@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
@@ -39,6 +38,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
 import com.dpdocter.services.DischargeSummaryService;
@@ -565,8 +565,9 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
 	@POST
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
-	public Response<String> uploadDiagram(FileDetails request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFileEncoded())) {
+	public Response<String> uploadDiagram(DoctorLabReportUploadRequest request) {
+		if (request == null || request.getFileDetails() == null
+				|| DPDoctorUtils.anyStringEmpty(request.getFileDetails().getFileEncoded())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

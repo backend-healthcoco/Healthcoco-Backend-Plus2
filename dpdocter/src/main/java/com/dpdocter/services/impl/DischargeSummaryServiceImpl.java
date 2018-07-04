@@ -91,6 +91,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
@@ -2761,13 +2762,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	
 	@Override
-	public String uploadDischargeDiagram(FileDetails fileDetail) {
+	public String uploadDischargeDiagram(DoctorLabReportUploadRequest request) {
 
 		String response = null;
 		try {
 			Date createdTime = null;
 
 			createdTime = new Date();
+
+			FileDetails fileDetail = request.getFileDetails();
 
 			String path = "dischargeSummary" + File.separator + "diagram";
 
