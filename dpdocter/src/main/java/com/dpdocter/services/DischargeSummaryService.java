@@ -86,7 +86,7 @@ public interface DischargeSummaryService {
 
 	Diagram addEditDiagram(Diagram diagram);
 
-	String uploadDischargeDiagram(FileDetails fileDetail);
+	String uploadDischargeDiagram(DoctorLabReportUploadRequest request);
 
 	String uploadDischargeSummaryMultipart(FormDataBodyPart file);
 }

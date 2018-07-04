@@ -2807,13 +2807,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public String uploadDischargeDiagram(FileDetails fileDetail) {
+	public String uploadDischargeDiagram(DoctorLabReportUploadRequest request) {
 
 		String response = null;
 		try {
 			Date createdTime = null;
 
 			createdTime = new Date();
+
+			FileDetails fileDetail = request.getFileDetails();
 
 			String path = "dischargeSummary" + File.separator + "diagram";
 

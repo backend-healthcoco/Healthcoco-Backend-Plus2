@@ -42,6 +42,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
@@ -588,8 +589,9 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
 	@POST
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
-	public Response<String> uploadDiagram(FileDetails request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFileEncoded())) {
+	public Response<String> uploadDiagram(DoctorLabReportUploadRequest request) {
+		if (request == null || request.getFileDetails() == null
+				|| DPDoctorUtils.anyStringEmpty(request.getFileDetails().getFileEncoded())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
