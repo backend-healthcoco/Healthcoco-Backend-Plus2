@@ -158,6 +158,40 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private List<String> diagrams;
 
+	@Field
+    private String timeOfEntryInOt;
+	
+	@Field
+    private String timeOfExitFromOt;
+	
+	@Field
+    private String bloodLoss;
+	
+	
+	public String getTimeOfEntryInOt() {
+		return timeOfEntryInOt;
+	}
+
+	public void setTimeOfEntryInOt(String timeOfEntryInOt) {
+		this.timeOfEntryInOt = timeOfEntryInOt;
+	}
+
+	public String getTimeOfExitFromOt() {
+		return timeOfExitFromOt;
+	}
+
+	public void setTimeOfExitFromOt(String timeOfExitFromOt) {
+		this.timeOfExitFromOt = timeOfExitFromOt;
+	}
+
+	public String getBloodLoss() {
+		return bloodLoss;
+	}
+
+	public void setBloodLoss(String bloodLoss) {
+		this.bloodLoss = bloodLoss;
+	}
+
 	public String getOperationName() {
 		return operationName;
 	}
