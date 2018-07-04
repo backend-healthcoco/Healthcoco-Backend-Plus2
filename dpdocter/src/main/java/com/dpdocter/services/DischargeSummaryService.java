@@ -7,14 +7,17 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
 import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface DischargeSummaryService {
 
@@ -83,4 +86,7 @@ public interface DischargeSummaryService {
 
 	Diagram addEditDiagram(Diagram diagram);
 
+	String uploadDischargeDiagram(FileDetails fileDetail);
+
+	String uploadDischargeSummaryMultipart(FormDataBodyPart file);
 }

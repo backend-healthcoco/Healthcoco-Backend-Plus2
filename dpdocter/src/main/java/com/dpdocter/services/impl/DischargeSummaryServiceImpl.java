@@ -35,6 +35,7 @@ import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.FlowSheetJasperBean;
 import com.dpdocter.beans.GenericCode;
@@ -47,6 +48,7 @@ import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
+import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CementCollection;
 import com.dpdocter.collections.DiagramsCollection;
@@ -94,6 +96,8 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.request.DoctorLabReportUploadRequest;
+import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
@@ -111,6 +115,8 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -189,13 +195,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private FlowsheetRepository flowsheetRepository;
-	
+
 	@Autowired
 	private FileManager fileManager;
 
 	@Autowired
 	private DiagramsRepository diagramsRepository;
-	
+
 	@Value(value = "${jasper.print.dischargeSummary.a4.fileName}")
 	private String dischargeSummaryReportA4FileName;
 
@@ -314,9 +320,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	 * @Transactional
 	 * 
 	 * @Override public List<DischargeSummary> getAllDischargeSummary() {
-	 * List<DischargeSummary> response = null; DischargeSummary dischargeSummary
-	 * = null; List<DischargeSummaryCollection> dischargeSummaryCollections =
-	 * null;
+	 * List<DischargeSummary> response = null; DischargeSummary dischargeSummary =
+	 * null; List<DischargeSummaryCollection> dischargeSummaryCollections = null;
 	 * 
 	 * dischargeSummaryCollections = dischargeSummaryRepository.findAll(); for
 	 * (DischargeSummaryCollection dischargeSummaryCollection :
@@ -585,7 +590,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			String temp = dischargeSummaryCollection.getVitalSigns().getTemperature();
 			temp = (temp != null && !temp.isEmpty()
-					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
+					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit()
+					: "");
 			if (!DPDoctorUtils.allStringsEmpty(temp)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + temp;
@@ -595,7 +601,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			String breathing = dischargeSummaryCollection.getVitalSigns().getBreathing();
 			breathing = (breathing != null && !breathing.isEmpty()
-					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit() : "");
+					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit()
+					: "");
 
 			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -606,7 +613,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			String weight = dischargeSummaryCollection.getVitalSigns().getWeight();
 			weight = (weight != null && !weight.isEmpty()
-					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
+					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit()
+					: "");
 			if (!DPDoctorUtils.allStringsEmpty(weight)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + weight;
@@ -715,17 +723,16 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
 							String durationValue = prescriptionItem.getDuration() != null
 									? (prescriptionItem.getDuration().getValue() != null
-											? prescriptionItem.getDuration().getValue() : "")
+											? prescriptionItem.getDuration().getValue()
+											: "")
 									: "";
 							String durationUnit = prescriptionItem.getDuration() != null
-									? (prescriptionItem.getDuration()
-											.getDurationUnit() != null
-													? (!DPDoctorUtils.anyStringEmpty(
-															prescriptionItem.getDuration().getDurationUnit().getUnit())
-																	? prescriptionItem.getDuration().getDurationUnit()
-																			.getUnit()
-																	: "")
-													: "")
+									? (prescriptionItem.getDuration().getDurationUnit() != null
+											? (!DPDoctorUtils.anyStringEmpty(
+													prescriptionItem.getDuration().getDurationUnit().getUnit())
+															? prescriptionItem.getDuration().getDurationUnit().getUnit()
+															: "")
+											: "")
 									: "";
 
 							String directions = "";
@@ -751,12 +758,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 									} else {
 										prescriptionItem.setInstructions(
 												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-														? prescriptionItem.getInstructions() : null);
+														? prescriptionItem.getInstructions()
+														: null);
 									}
 								} else {
 									prescriptionItem.setInstructions(
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : null);
+													? prescriptionItem.getInstructions()
+													: null);
 								}
 
 								showIntructions = true;
@@ -775,27 +784,33 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 									prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-													? prescriptionItem.getDosage() : "--",
+													? prescriptionItem.getDosage()
+													: "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : null,
+													? prescriptionItem.getInstructions()
+													: null,
 											genericName);
 								} else {
 									prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-													? prescriptionItem.getDosage() : "--",
+													? prescriptionItem.getDosage()
+													: "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : "--",
+													? prescriptionItem.getInstructions()
+													: "--",
 											genericName);
 								}
 							} else {
 								prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
 										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-												? prescriptionItem.getDosage() : "--",
+												? prescriptionItem.getDosage()
+												: "--",
 										duration, directions.isEmpty() ? "--" : directions,
 										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-												? prescriptionItem.getInstructions() : "--",
+												? prescriptionItem.getInstructions()
+												: "--",
 										genericName);
 							}
 							if (prescriptionItems == null)
@@ -975,18 +990,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
-						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
-		patientVisitService
-				.generatePatientDetails(
-						(printSettings != null && printSettings.getHeaderSetup() != null
-								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient,
-						"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
-								? dischargeSummaryCollection.getUniqueEmrId() : "--"),
-						patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-						dischargeSummaryCollection.getCreatedTime() != null
-								? dischargeSummaryCollection.getCreatedTime() : new Date(),
-						printSettings.getHospitalUId());
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
+		patientVisitService.generatePatientDetails((printSettings != null
+				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
+						? dischargeSummaryCollection.getUniqueEmrId()
+						: "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				dischargeSummaryCollection.getCreatedTime() != null ? dischargeSummaryCollection.getCreatedTime()
+						: new Date(),
+				printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
 				+ dischargeSummaryCollection.getUniqueEmrId() + new Date().getTime();
@@ -995,18 +1010,23 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 		response = jasperReportService.createPDF(ComponentType.DISCHARGE_SUMMARY, parameters,
 				dischargeSummaryReportA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
@@ -1069,19 +1089,26 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						mailResponse.setMailAttachment(mailAttachment);
 						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
+								? locationCollection.getStreetAddress() + ", "
+								: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
+										? locationCollection.getLandmarkDetails() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
+										? locationCollection.getLocality() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
+										? locationCollection.getCity() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
+										? locationCollection.getState() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
+										? locationCollection.getCountry() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+										? locationCollection.getPostalCode()
+										: "");
 
 						if (address.charAt(address.length() - 2) == ',') {
 							address = address.substring(0, address.length() - 2);
@@ -1110,7 +1137,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Discharge Summary", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Discharge Summary", body,
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Discharge Summary", body,
 					mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
@@ -2356,19 +2384,26 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				mailResponse.setMailAttachment(mailAttachment);
 				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -2390,7 +2425,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Discharge Summary", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Discharge Summary", body,
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Discharge Summary", body,
 					mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
@@ -2422,15 +2458,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			} else if (request.getDischargeSummaryId() != null) {
 				flowsheetCollection = flowsheetRepository
 						.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
-				if(flowsheetCollection == null)
-				{
+				if (flowsheetCollection == null) {
 					flowsheetCollection = new FlowsheetCollection();
-					flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
+					flowsheetCollection
+							.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
 					flowsheetCollection.setCreatedTime(new Date());
 					if (userCollection != null) {
 						flowsheetCollection.setCreatedBy(
-								(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() : "")
-										+ userCollection.getFirstName());
+								(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+										: "") + userCollection.getFirstName());
 					}
 				}
 				dischargeSummaryCollection = dischargeSummaryRepository
@@ -2441,7 +2477,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				flowsheetCollection.setDischargeSummaryUniqueEMRId(dischargeSummaryCollection.getUniqueEmrId());
 			} else {
 				flowsheetCollection = new FlowsheetCollection();
-				flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
+				flowsheetCollection
+						.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
 
 				flowsheetCollection.setCreatedTime(new Date());
 				if (userCollection != null) {
@@ -2450,7 +2487,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 									+ userCollection.getFirstName());
 				}
 			}
-			
+
 			flowsheetCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			flowsheetCollection.setLocationId(new ObjectId(request.getLocationId()));
 			flowsheetCollection.setHospitalId(new ObjectId(request.getHospitalId()));
@@ -2562,14 +2599,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		/*
 		 * if (dischargeSummaryCollection.getAdmissionDate() != null) {
 		 * parameters.put("dOA", "<b>Date of Admission:-</b>" +
-		 * simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()
-		 * )); } if (dischargeSummaryCollection.getDischargeDate() != null) {
+		 * simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate() )); }
+		 * if (dischargeSummaryCollection.getDischargeDate() != null) {
 		 * parameters.put("dOD", "<b>Date of Discharge:-</b>" +
-		 * simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()
-		 * )); } if (dischargeSummaryCollection.getOperationDate() != null) {
+		 * simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate() )); }
+		 * if (dischargeSummaryCollection.getOperationDate() != null) {
 		 * parameters.put("operationDate", "<b>Date of Operation:-</b>" +
-		 * simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()
-		 * )); }
+		 * simpleDateFormat.format(dischargeSummaryCollection.getOperationDate() )); }
 		 * 
 		 * if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.
 		 * getDiagnosis())) { parameters.put("diagnosis",
@@ -2600,11 +2636,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				String field = "";
 
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getPulse())
-						? "Pulse (" + VitalSignsUnit.PULSE.getUnit() + ") : " + flowsheet.getPulse() : "");
+						? "Pulse (" + VitalSignsUnit.PULSE.getUnit() + ") : " + flowsheet.getPulse()
+						: "");
 
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getWeight(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getWeight())
-								? "Weight (" + VitalSignsUnit.WEIGHT.getUnit() + ") : " + flowsheet.getWeight() : "");
+								? "Weight (" + VitalSignsUnit.WEIGHT.getUnit() + ") : " + flowsheet.getWeight()
+								: "");
 
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa()) ? "BSA (" + VitalSignsUnit.BSA.getUnit()
@@ -2617,7 +2655,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getHeight(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getHeight())
-								? "Height (" + VitalSignsUnit.HEIGHT.getUnit() + ") : " + flowsheet.getHeight() : "");
+								? "Height (" + VitalSignsUnit.HEIGHT.getUnit() + ") : " + flowsheet.getHeight()
+								: "");
 
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBreathing(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBreathing())
@@ -2626,7 +2665,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 				field = field
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getDiastolic(), flowsheet.getSystolic(), field)
-								? ", " : "")
+								? ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getDiastolic(), flowsheet.getSystolic())
 								? "B. P. (" + VitalSignsUnit.BLOODPRESSURE.getUnit() + ") : " + flowsheet.getSystolic()
 										+ "/" + flowsheet.getDiastolic() + ""
@@ -2638,7 +2678,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getSpo2(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getSpo2())
-								? "Spo2 (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getSpo2() : "");
+								? "Spo2 (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getSpo2()
+								: "");
 				jasperBean.setExamination(field);
 
 				i++;
@@ -2650,10 +2691,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
-						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
 				patient,
 				"<b>DIS-ID: </b>"
 						+ (flowsheetCollection.getUniqueId() != null ? flowsheetCollection.getUniqueId() : "--"),
@@ -2661,26 +2704,31 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				printSettings.getHospitalUId());
 		patientVisitService.generatePrintSetup(parameters, printSettings, flowsheetCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-FLOWSHEET-"
-				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueId())
-						? flowsheetCollection.getUniqueId() : "")
+				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueId()) ? flowsheetCollection.getUniqueId()
+						: "")
 				+ new Date().getTime();
 
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 		response = jasperReportService.createPDF(ComponentType.FLOW_SHEET, parameters, dischargeSummaryReportA4FileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
@@ -2695,7 +2743,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	@Transactional
 	public Diagram addEditDiagram(Diagram diagram) {
@@ -2756,6 +2804,62 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return diagram;
+	}
+
+	@Override
+	public String uploadDischargeDiagram(FileDetails fileDetail) {
+
+		String response = null;
+		try {
+			Date createdTime = null;
+
+			createdTime = new Date();
+
+			String path = "dischargeSummary" + File.separator + "diagram";
+
+			String fileName = fileDetail.getFileName().replaceFirst("." + fileDetail.getFileExtension(), "");
+			String recordPath = path + File.separator + fileName + createdTime.getTime() + "."
+					+ fileDetail.getFileExtension();
+			fileManager.saveRecordBase64(fileDetail, recordPath);
+			if (!DPDoctorUtils.anyStringEmpty(recordPath))
+				response = getFinalImageURL(recordPath);
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while uploading discharge Diagram");
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public String uploadDischargeSummaryMultipart(FormDataBodyPart file) {
+		String recordPath = null;
+		try {
+			Date createdTime = new Date();
+			Double fileSizeInMB = 0.0;
+
+			if (file != null) {
+				String path = "dischargeSummary" + File.separator + "diagram";
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+				fileManager.saveRecord(file, recordPath, fileSizeInMB, false);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(recordPath))
+				recordPath = getFinalImageURL(recordPath);
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while uploading discharge diagram Multipart");
+
+		}
+		return recordPath;
+
 	}
 
 }

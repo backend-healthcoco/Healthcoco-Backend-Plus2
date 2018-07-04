@@ -24,9 +24,11 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
+import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
 import com.dpdocter.elasticsearch.document.ESCementDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
@@ -40,10 +42,13 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -67,7 +72,7 @@ public class DischargeSummaryAPI {
 
 	@Autowired
 	private ESDischargeSummaryService esDischargeSummaryService;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -570,16 +575,48 @@ public class DischargeSummaryAPI {
 		}
 
 		Diagram diagram = dischargeSummaryService.addEditDiagram(request);
-		
+
 		if (diagram.getDiagramUrl() != null) {
 			diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
 		}
-		
+
 		Response<Diagram> response = new Response<Diagram>();
 		response.setData(diagram);
 		return response;
 	}
-	
+
+	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
+	@POST
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
+	public Response<String> uploadDiagram(FileDetails request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFileEncoded())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		String diagram = dischargeSummaryService.uploadDischargeDiagram(request);
+
+		Response<String> response = new Response<String>();
+		response.setData(diagram);
+		return response;
+	}
+
+	@POST
+	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM)
+	public Response<String> uploadDoctorLabReportMultipart(@FormDataParam("file") FormDataBodyPart file) {
+
+		if (file == null || DPDoctorUtils.anyStringEmpty(file.getContentDisposition().getFileName())) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		String recordsFile = dischargeSummaryService.uploadDischargeSummaryMultipart(file);
+		Response<String> response = new Response<String>();
+		response.setData(recordsFile);
+		return response;
+	}
+
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;

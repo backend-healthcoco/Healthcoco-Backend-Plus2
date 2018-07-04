@@ -1419,6 +1419,8 @@ public interface PathProxy {
 		public static final String GET_FLOWSHEETS = "/getFlowsheets";
 		public static final String GET_FLOWSHEET_BY_ID = "/getFlowsheetById/{id}";
 		public static final String ADD_DIAGRAM = "/addDiagram";
+		public static final String UPLOAD_DIAGRAM = "/diagram/upload";
+		public static final String UPLOAD_MULTIPART_DIAGRAM = "/diagram/multipart/upload";
 	}
 
 	public static final String SOLR_DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/solr/dischargeSummary";
@@ -1826,15 +1828,15 @@ public interface PathProxy {
 		public static final String GET_LAB_DOCUMENT = "/document/{documentId}/view";
 		public static final String DELETE_LAB_DOCUMENT = "/document/{documentId}/delete";
 	}
-	
+
 	public static final String PROCEDURE_BASE_URL = BASE_URL + "/procedure";
 
 	public interface ProcedureUrls {
-		public static final String ADD_PROCEDURE= "/add";
+		public static final String ADD_PROCEDURE = "/add";
 		public static final String GET_PROCEDURE = "/{id}/get";
 		public static final String GET_PROCEDURE_LIST = "/getList";
 		public static final String DISCARD_PROCEDURE = "/{id}/discard";
-		public static final String ADD_PROCEDURE_STRUCTURE= "/addStructure";
+		public static final String ADD_PROCEDURE_STRUCTURE = "/addStructure";
 		public static final String GET_PROCEDURE_STRUCTURE = "/{id}/getStructure";
 		public static final String GET_PROCEDURE_STRUCTURE_LIST = "/getStructureList";
 		public static final String DISCARD_PROCEDURE_STRUCTURE = "/{id}/discardStructure";
