@@ -1964,7 +1964,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			// criteria.and("isReportsUploaded").is(true);
 
 			if (toDate != null) {
-				criteria.and("updatedTime").gte(new Date(fromDate)).lte(DPDoctorUtils.getEndTime(new Date(toDate)));
+				criteria.and("updatedTime").gte(new Date(fromDate)).lte(new Date(toDate));
 			} else {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
