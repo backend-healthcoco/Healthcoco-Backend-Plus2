@@ -666,7 +666,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
 	// Appointment Reminder to Doctor, if appointment > 0
-	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
+	//@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
 	@Override
 	@Transactional
 	public void sendReminderToDoctor() {
@@ -920,7 +920,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				}				
 			}
 //			sendAppointmentScheduleToStaff();
-			sendEventReminderToDoctor();
+//			sendEventReminderToDoctor();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
