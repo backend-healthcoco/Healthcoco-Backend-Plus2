@@ -568,7 +568,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+		SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+		_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+		SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+		String _24HourTime = "";
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
@@ -839,6 +844,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("operationDate", "<b>Date of Operation:-</b>"
 					+ simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
 		}
+		if (dischargeSummaryCollection.getSurgeryDate() != null) {
+			parameters.put("surgeryDate",
+					"<b>Date of Surgery:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getSurgeryDate())
+							+ " " + _12HourSDF.format(dischargeSummaryCollection.getSurgeryDate()));
+
+		}
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
 			parameters.put("babyNotes", dischargeSummaryCollection.getBabyNotes());
 		}
@@ -971,16 +982,78 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationName())) {
 			parameters.put("operationName", dischargeSummaryCollection.getOperationName());
 		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getLmp())) {
+			parameters.put("lmp", dischargeSummaryCollection.getLmp());
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getEdd())) {
+			parameters.put("edd", dischargeSummaryCollection.getEdd());
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getAnesthesia())) {
+			parameters.put("ansthesia", dischargeSummaryCollection.getAnesthesia());
+		}
 
-		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
-			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-			String _24HourTime = String.format("%02d:%02d", dischargeSummaryCollection.getTime().getFromTime() / 60,
-					dischargeSummaryCollection.getTime().getFromTime() % 60);
-			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTreatingConsultant())) {
+			parameters.put("treatingConsultant", dischargeSummaryCollection.getTreatingConsultant());
+		}
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSurgeryNotes())) {
+			parameters.put("surgeryNotes", dischargeSummaryCollection.getSurgeryNotes());
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTreatmentAdviceForBaby())) {
+			parameters.put("adviceForBaby", dischargeSummaryCollection.getTreatmentAdviceForBaby());
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTreatmentAdviceForMother())) {
+			parameters.put("adviceForMother", dischargeSummaryCollection.getTreatmentAdviceForMother());
+		}
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPediatricianName())) {
+			parameters.put("pediatrician", dischargeSummaryCollection.getPediatricianName());
+		}
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBloodLoss())) {
+			parameters.put("bloodLoss", dischargeSummaryCollection.getBloodLoss());
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTimeOfEntryInOt())) {
+
+			_24HourTime = String.format("%02d:%02d",
+					Integer.parseInt(dischargeSummaryCollection.getTimeOfEntryInOt()) / 60,
+					Integer.parseInt(dischargeSummaryCollection.getTimeOfEntryInOt()) % 60);
+			_24HourSDF = new SimpleDateFormat("HH:mm");
+
 			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", "
+					+ sdf.format(dischargeSummaryCollection.getFromDate());
+
+			parameters.put("timeOfEntry", "<b>OT Entry Time :-</b> " + dateTime);
+
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTimeOfExitFromOt())) {
+
+			_24HourTime = String.format("%02d:%02d",
+					Integer.parseInt(dischargeSummaryCollection.getTimeOfExitFromOt()) / 60,
+					Integer.parseInt(dischargeSummaryCollection.getTimeOfExitFromOt()) % 60);
+			_24HourSDF = new SimpleDateFormat("HH:mm");
+
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", "
+					+ sdf.format(dischargeSummaryCollection.getFromDate());
+
+			parameters.put("timeOfEntry", "<b>OT Exit Time </b> " + dateTime);
+
+		}
+
+		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
+			_24HourTime = String.format("%02d:%02d", dischargeSummaryCollection.getTime().getFromTime() / 60,
+					dischargeSummaryCollection.getTime().getFromTime() % 60);
+
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 
 			Date _24HourDt = _24HourSDF.parse(_24HourTime);
 			String dateTime = _12HourSDF.format(_24HourDt) + ", "
