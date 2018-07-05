@@ -659,6 +659,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : dentalImagingReportsCollections) {
 						DentalImagingReports reports = new DentalImagingReports();
 						BeanUtil.map(dentalImagingReportsCollection, reports);
+						if(reports.getReport() != null)
+						{
+							if(reports.getReport().getImageUrl() != null)
+							{
+								reports.getReport().setImageUrl(imagePath + reports.getReport().getImageUrl());
+							}
+							if(reports.getReport().getThumbnailUrl() != null)
+							{
+								reports.getReport().setThumbnailUrl(imagePath + reports.getReport().getThumbnailUrl());
+							}
+						}
+						
 						dentalImagingReports.add(reports);
 					}
 					dentalImagingResponse.setReports(dentalImagingReports);
@@ -984,8 +996,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
 				if (imageURLResponse != null) {
-					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
-					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+					/*imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
+					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());*/
 					pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()),
 							"Report have been uploaded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), null, null);
 				}
@@ -2393,7 +2405,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					"dentalImagingRecordEmailTemplate.vm");
 			// System.out.println(body);
 			response = mailService.sendEmailMultiAttach(emailAddress,
-					mailResponse.getClinicName() + " sent you dental imaging reports.", body,mailResponse.getMailAttachments());
+					mailResponse.getClinicName() + " sent you dental imaging reports for your patient " + mailResponse.getPatientName() + ".", body,mailResponse.getMailAttachments());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2439,15 +2451,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 						BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 						AmazonS3 s3client = new AmazonS3Client(credentials);
-
 						S3Object object = s3client
 								.getObject(new GetObjectRequest(bucketName, dentalImagingReportsCollection.getReport().getImageUrl()));
 						InputStream objectData = object.getObjectContent();
-						URL url = new URL(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setFileSystemResource(null);
 						mailAttachment.setInputStream(objectData);
-						mailAttachment.setAttachmentName(FilenameUtils.getName(url.getFile()));
+						mailAttachment.setAttachmentName(FilenameUtils.getName(dentalImagingReportsCollection.getReport().getImageUrl()));
 						mailAttachment.setUrl(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachments.add(mailAttachment);
 					}
