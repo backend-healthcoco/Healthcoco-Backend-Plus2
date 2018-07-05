@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.Prescription;
@@ -65,7 +64,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String implant;
 	private String cement;
 	private String operationName;
-	private List<FlowSheet> flowSheets;
 	private String lmp;
 	private String edd;
 	private Date surgeryDate;
@@ -76,14 +74,20 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String assistantDoctor;
 	private String treatmentAdviceForMother;
 	private String treatmentAdviceForBaby;
-	
+	private String pediatricianName;
+	private List<FlowSheet> flowSheets;
 	private List<String> diagrams;
 	private String timeOfEntryInOt;
 	private String timeOfExitFromOt;
 	private String bloodLoss;
-	
 
-	private String pediatricianName;
+	public String getOperationName() {
+		return operationName;
+	}
+
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
+	}
 
 	public Date getOperationDate() {
 		return operationDate;
@@ -123,14 +127,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setCement(String cement) {
 		this.cement = cement;
-	}
-
-	public String getOperationName() {
-		return operationName;
-	}
-
-	public void setOperationName(String operationName) {
-		this.operationName = operationName;
 	}
 
 	public VitalSigns getVitalSigns() {
