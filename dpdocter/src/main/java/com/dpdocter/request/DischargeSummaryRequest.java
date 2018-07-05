@@ -68,6 +68,15 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private String timeOfEntryInOt;
 	private String timeOfExitFromOt;
 	private String bloodLoss;
+	public String getPediatricianName() {
+		return pediatricianName;
+	}
+
+	public void setPediatricianName(String pediatricianName) {
+		this.pediatricianName = pediatricianName;
+	}
+
+	private String pediatricianName;
 
 	public String getTimeOfEntryInOt() {
 		return timeOfEntryInOt;
