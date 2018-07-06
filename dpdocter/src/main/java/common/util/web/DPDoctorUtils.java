@@ -237,6 +237,7 @@ public class DPDoctorUtils {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
+					if(!DPDoctorUtils.anyStringEmpty(speciality))
 					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder));
