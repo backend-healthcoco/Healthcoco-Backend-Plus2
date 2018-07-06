@@ -64,7 +64,30 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String implant;
 	private String cement;
 	private String operationName;
+	private String lmp;
+	private String edd;
+	private Date surgeryDate;
+	private String surgeryNotes;
+	private String treatingConsultant;
+	private String anesthesia;
+	private String consultantDoctor;
+	private String assistantDoctor;
+	private String treatmentAdviceForMother;
+	private String treatmentAdviceForBaby;
+	private String pediatricianName;
 	private List<FlowSheet> flowSheets;
+	private List<String> diagrams;
+	private String timeOfEntryInOt;
+	private String timeOfExitFromOt;
+	private String bloodLoss;
+
+	public String getOperationName() {
+		return operationName;
+	}
+
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
+	}
 
 	public Date getOperationDate() {
 		return operationDate;
@@ -104,14 +127,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setCement(String cement) {
 		this.cement = cement;
-	}
-
-	public String getOperationName() {
-		return operationName;
-	}
-
-	public void setOperationName(String operationName) {
-		this.operationName = operationName;
 	}
 
 	public VitalSigns getVitalSigns() {
@@ -490,6 +505,126 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setFlowSheets(List<FlowSheet> flowSheets) {
 		this.flowSheets = flowSheets;
+	}
+
+	public String getLmp() {
+		return lmp;
+	}
+
+	public void setLmp(String lmp) {
+		this.lmp = lmp;
+	}
+
+	public String getEdd() {
+		return edd;
+	}
+
+	public void setEdd(String edd) {
+		this.edd = edd;
+	}
+
+	public Date getSurgeryDate() {
+		return surgeryDate;
+	}
+
+	public void setSurgeryDate(Date surgeryDate) {
+		this.surgeryDate = surgeryDate;
+	}
+
+	public String getSurgeryNotes() {
+		return surgeryNotes;
+	}
+
+	public void setSurgeryNotes(String surgeryNotes) {
+		this.surgeryNotes = surgeryNotes;
+	}
+
+	public String getTreatingConsultant() {
+		return treatingConsultant;
+	}
+
+	public void setTreatingConsultant(String treatingConsultant) {
+		this.treatingConsultant = treatingConsultant;
+	}
+
+	public String getAnesthesia() {
+		return anesthesia;
+	}
+
+	public void setAnesthesia(String anesthesia) {
+		this.anesthesia = anesthesia;
+	}
+
+	public String getConsultantDoctor() {
+		return consultantDoctor;
+	}
+
+	public void setConsultantDoctor(String consultantDoctor) {
+		this.consultantDoctor = consultantDoctor;
+	}
+
+	public String getAssistantDoctor() {
+		return assistantDoctor;
+	}
+
+	public void setAssistantDoctor(String assistantDoctor) {
+		this.assistantDoctor = assistantDoctor;
+	}
+
+	public String getTreatmentAdviceForMother() {
+		return treatmentAdviceForMother;
+	}
+
+	public void setTreatmentAdviceForMother(String treatmentAdviceForMother) {
+		this.treatmentAdviceForMother = treatmentAdviceForMother;
+	}
+
+	public String getTreatmentAdviceForBaby() {
+		return treatmentAdviceForBaby;
+	}
+
+	public void setTreatmentAdviceForBaby(String treatmentAdviceForBaby) {
+		this.treatmentAdviceForBaby = treatmentAdviceForBaby;
+	}
+
+	public String getPediatricianName() {
+		return pediatricianName;
+	}
+
+	public void setPediatricianName(String pediatricianName) {
+		this.pediatricianName = pediatricianName;
+	}
+
+	public List<String> getDiagrams() {
+		return diagrams;
+	}
+
+	public void setDiagrams(List<String> diagrams) {
+		this.diagrams = diagrams;
+	}
+
+	public String getTimeOfEntryInOt() {
+		return timeOfEntryInOt;
+	}
+
+	public void setTimeOfEntryInOt(String timeOfEntryInOt) {
+		this.timeOfEntryInOt = timeOfEntryInOt;
+	}
+
+	public String getTimeOfExitFromOt() {
+		return timeOfExitFromOt;
+	}
+
+	public void setTimeOfExitFromOt(String timeOfExitFromOt) {
+		this.timeOfExitFromOt = timeOfExitFromOt;
+	}
+
+	public String getBloodLoss() {
+		return bloodLoss;
+	}
+
+	public void setBloodLoss(String bloodLoss) {
+		this.bloodLoss = bloodLoss;
 	}
 
 }
