@@ -1600,6 +1600,8 @@ public interface PathProxy {
 
 		public static final String UPLOAD_IMAGES = "/images/{doctorId}/{locationId}/{hospitalId}/";
 
+		public static final String UPDATE_TREATMENT_SERVICES = "/treatment/services/update";
+
 	}
 
 	public static final String DOWNLOAD_DATA_BASE_URL = BASE_URL + "/download";

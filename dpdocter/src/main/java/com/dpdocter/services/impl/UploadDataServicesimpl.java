@@ -30,7 +30,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -40,9 +39,6 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CopyObjectRequest;
-import com.amazonaws.services.s3.model.CopyPartRequest;
-import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -101,6 +97,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
+import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.AppointmentState;
@@ -142,6 +139,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.response.TreatmentServiceUpdateResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
@@ -266,6 +264,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 	
 	@Autowired
 	private PatientVisitService patientVisitService;
+	
+	@Autowired 
+	private ESTreatmentServiceRepository eSTreatmentServiceRepository;
 	
 	@Value(value = "${patient.count}")
 	private String patientCount;
@@ -3058,5 +3059,84 @@ public class UploadDataServicesimpl implements UploadDateService {
 			System.out.println("Error Message: " + e.getMessage());
 		}
 		return thumbnailUrl;
+	}
+
+	@Override
+	public Boolean updateTreatmentServices() {
+		Boolean response = false;
+		try {
+			List<TreatmentServiceUpdateResponse> treatmentServiceUpdateResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$group",  
+							new BasicDBObject("_id", new BasicDBObject("name", "$name")
+									                .append("doctorId", "$doctorId").append("locationId", "$locationId"))
+							.append("count", new BasicDBObject("$sum", 1))
+							.append("doctorId", "$doctorId").append("locationId", "$locationId")
+							.append("treatmentServiceIds", new BasicDBObject("$push", "$_id")))), 
+							Aggregation.match(new Criteria("count").gt(1))), 
+					TreatmentServicesCollection.class, TreatmentServiceUpdateResponse.class).getMappedResults();
+			
+			if(treatmentServiceUpdateResponses != null && !treatmentServiceUpdateResponses.isEmpty()) {
+				for(TreatmentServiceUpdateResponse treatmentServiceUpdateResponse : treatmentServiceUpdateResponses) {
+					if(treatmentServiceUpdateResponse.getTreatmentServiceIds() != null && !treatmentServiceUpdateResponse.getTreatmentServiceIds().isEmpty()) {
+						for(int i = 0; i<treatmentServiceUpdateResponse.getTreatmentServiceIds().size(); i++) {
+							ObjectId treatmentServiceId = null;
+							if(i == 0) {
+								treatmentServiceId = treatmentServiceUpdateResponse.getTreatmentServiceIds().get(i);
+							}else {
+								ObjectId serviceId = treatmentServiceUpdateResponse.getTreatmentServiceIds().get(i);
+								
+								//patient treatment
+								List<PatientTreatmentCollection> patientTreatmentCollections = mongoTemplate.aggregate(
+										Aggregation.newAggregation(Aggregation.match(new Criteria("treatments.treatmentServiceId").is(serviceId))), 
+										PatientTreatmentCollection.class, PatientTreatmentCollection.class).getMappedResults();
+								if(patientTreatmentCollections != null && !patientTreatmentCollections.isEmpty()) {
+									for(PatientTreatmentCollection patientTreatmentCollection: patientTreatmentCollections) {
+										List<Treatment> treatments = patientTreatmentCollection.getTreatments();
+										patientTreatmentCollection.setTreatments(null);
+										for(Treatment treatment : treatments) {
+											treatment.setTreatmentServiceId(treatmentServiceId);
+											
+										}
+										patientTreatmentCollection.setTreatments(treatments);
+										patientTreatmentCollection.setUpdatedTime(new Date());
+										patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
+									}
+								}
+								
+								//invoices
+								List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = mongoTemplate.aggregate(
+										Aggregation.newAggregation(Aggregation.match(new Criteria("invoiceItems.itemId").is(serviceId))), 
+										DoctorPatientInvoiceCollection.class, DoctorPatientInvoiceCollection.class).getMappedResults();
+								if(doctorPatientInvoiceCollections != null && !doctorPatientInvoiceCollections.isEmpty()) {
+									for(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection : doctorPatientInvoiceCollections) {
+										List<InvoiceItem> invoiceItems = doctorPatientInvoiceCollection.getInvoiceItems();
+										doctorPatientInvoiceCollection.setInvoiceItems(null);
+										for(InvoiceItem invoiceItem : invoiceItems) {
+											invoiceItem.setItemId(treatmentServiceId);
+											
+										}
+										doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
+										doctorPatientInvoiceCollection.setUpdatedTime(new Date());
+										doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+									}
+								}
+								
+							 ESTreatmentServiceDocument esTreatmentServiceDocument = 	eSTreatmentServiceRepository.findOne(serviceId.toString());
+							 if(esTreatmentServiceDocument != null)eSTreatmentServiceRepository.delete(esTreatmentServiceDocument);
+							 
+							 TreatmentServicesCollection servicesCollection = treatmentServicesRepository.findOne(serviceId);
+							 if(servicesCollection != null)treatmentServicesRepository.delete(servicesCollection);
+							}
+						
+						
+						}
+					}
+				}
+			}
+		}catch(Exception e) {
+			response = false;
+			e.printStackTrace();
+		}
+		return response;
 	}
 }
