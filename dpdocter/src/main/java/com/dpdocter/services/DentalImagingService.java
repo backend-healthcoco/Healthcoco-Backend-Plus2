@@ -86,14 +86,16 @@ public interface DentalImagingService {
 	List<PatientAnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate, String dentalImagingLocationId,
 			String dentalImagingHospitalId, String searchType);
 
-	List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalytics(Long fromDate, Long toDate,
-			String dentalImagingLocationId, String dentalImagingHospitalId, String searchType);
-
 	public String downloadInvoice(String invoiceId);
 	
 	Boolean emailInvoice(String invoiceId, String emailAddress);
 
 	Boolean emailReports(String id, String emailAddress);
+
+	List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalytics(Long fromDate, Long toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType);
+
+	DentalImaging changeVisitedStatus(String id, boolean isVisited);
 
 
 }
