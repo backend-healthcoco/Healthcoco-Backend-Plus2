@@ -380,15 +380,15 @@ public class DentalImagingAPI {
 
 	public Response<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalytics(
 			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
-			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
+			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,@QueryParam("doctorId") String doctorId,
 			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to , @QueryParam("searchType") String searchType ) {
 		if (DPDoctorUtils.allStringsEmpty(dentalImagingLocationId,
-				dentalImagingHospitalId)) {
+				dentalImagingHospitalId,doctorId)) {
 
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<PatientDentalImagignVisitAnalyticsResponse> response = new Response<PatientDentalImagignVisitAnalyticsResponse>();
-		response.setDataList(dentalImagingService.getDoctorVisitAnalytics(from, to, dentalImagingLocationId, dentalImagingHospitalId, searchType));
+		response.setDataList(dentalImagingService.getDoctorVisitAnalytics(from, to, dentalImagingLocationId, dentalImagingHospitalId,doctorId, searchType));
 		return response;
 	}
 	
@@ -414,6 +414,23 @@ public class DentalImagingAPI {
 		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(dentalImagingService.emailReports(id, emailAddress));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.CHANGE_VISIT_STATUS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.CHANGE_VISIT_STATUS, notes = PathProxy.DentalImagingUrl.CHANGE_VISIT_STATUS)
+	public Response<DentalImaging> changeVisitStatus(@PathParam("id") String id,
+			@QueryParam("isVisited") boolean isVisited) {
+
+		DentalImaging dentalImaging = null;
+		if (id == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		dentalImaging = dentalImagingService.changeVisitedStatus(id, isVisited);
+		Response<DentalImaging> response = new Response<DentalImaging>();
+		response.setData(dentalImaging);
 		return response;
 	}
 

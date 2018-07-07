@@ -64,6 +64,8 @@ public class DentalImagingCollection extends GenericCollection {
 	private Tax totalTax;
 	@Field
 	private Double grandTotal = 0.0;
+	@Field
+	private Boolean isVisited;
 
 	public ObjectId getPatientId() {
 		return patientId;
@@ -263,6 +265,14 @@ public class DentalImagingCollection extends GenericCollection {
 
 	public void setGrandTotal(Double grandTotal) {
 		this.grandTotal = grandTotal;
+	}
+
+	public Boolean getIsVisited() {
+		return isVisited;
+	}
+
+	public void setIsVisited(Boolean isVisited) {
+		this.isVisited = isVisited;
 	}
 
 	@Override

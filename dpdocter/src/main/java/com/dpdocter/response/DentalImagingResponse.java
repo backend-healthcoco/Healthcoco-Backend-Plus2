@@ -48,6 +48,7 @@ public class DentalImagingResponse extends GenericCollection {
 	private List<InvoiceTax> invoiceTaxes;
 	private Double grandTotal = 0.0;
 	private Boolean isReportsUploaded = false;
+	private Boolean isVisited = false;
 
 	public String getId() {
 		return id;
@@ -287,6 +288,14 @@ public class DentalImagingResponse extends GenericCollection {
 
 	public void setIsReportsUploaded(Boolean isReportsUploaded) {
 		this.isReportsUploaded = isReportsUploaded;
+	}
+
+	public Boolean getIsVisited() {
+		return isVisited;
+	}
+
+	public void setIsVisited(Boolean isVisited) {
+		this.isVisited = isVisited;
 	}
 
 }

@@ -29,6 +29,10 @@ public class PatientDentalImagignVisitAnalyticsResponse {
 
 	private List<DentalImagingResponse> visitedResponses;
 
+	private Double totalAmount = 0.0;
+
+	private Double paidAmount = 0.0;
+
 	public String getDoctorName() {
 		return doctorName;
 	}
@@ -99,6 +103,22 @@ public class PatientDentalImagignVisitAnalyticsResponse {
 
 	public void setResponses(List<DentalImagingResponse> responses) {
 		this.responses = responses;
+	}
+
+	public Double getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(Double totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public Double getPaidAmount() {
+		return paidAmount;
+	}
+
+	public void setPaidAmount(Double paidAmount) {
+		this.paidAmount = paidAmount;
 	}
 
 }
