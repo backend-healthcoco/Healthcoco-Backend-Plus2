@@ -947,8 +947,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
 									.is(AppointmentType.EVENT.getType()).and("fromDate").gte(fromTime).and("toDate")
 									.lte(toTime)),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
+							Aggregation.unwind("doctorIds"),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"), Aggregation.unwind("doctor"),
+							Aggregation.lookup("user_device_cl", "doctorIds", "userIds", "userDevices"),
 							Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
 					AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
 							.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);

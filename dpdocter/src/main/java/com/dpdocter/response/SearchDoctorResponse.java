@@ -2,32 +2,32 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 
 public class SearchDoctorResponse {
 
-	List<ESDoctorDocument> doctors;
+	List<ESDoctorWEbSearch> doctors;
 	
-	List<ESDoctorDocument> nearByDoctors;
+	List<ESDoctorWEbSearch> nearByDoctors;
 
 	private String metaData;
 	private String speciality;
 	private Integer count = 0;
 	private String city;
 	
-	public List<ESDoctorDocument> getDoctors() {
+	public List<ESDoctorWEbSearch> getDoctors() {
 		return doctors;
 	}
 
-	public void setDoctors(List<ESDoctorDocument> doctors) {
+	public void setDoctors(List<ESDoctorWEbSearch> doctors) {
 		this.doctors = doctors;
 	}
 
-	public List<ESDoctorDocument> getNearByDoctors() {
+	public List<ESDoctorWEbSearch> getNearByDoctors() {
 		return nearByDoctors;
 	}
 
-	public void setNearByDoctors(List<ESDoctorDocument> nearByDoctors) {
+	public void setNearByDoctors(List<ESDoctorWEbSearch> nearByDoctors) {
 		this.nearByDoctors = nearByDoctors;
 	}
 
