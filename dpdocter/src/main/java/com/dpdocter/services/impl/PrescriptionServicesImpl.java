@@ -562,27 +562,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						response = new Drug();
 						BeanUtil.map(drugCollection, response);
 
-						// DoctorDrugCollection doctorDrugCollection =
-						// doctorDrugRepository
-						// .findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
-						// new ObjectId(doctorId), new ObjectId(locationId), new
-						// ObjectId(hospitalId));
-						// if (doctorDrugCollection != null) {
-						// doctorDrugCollection.setDiscarded(discarded);
-						// doctorDrugCollection.setUpdatedTime(new Date());
-						// doctorDrugCollection =
-						// doctorDrugRepository.save(doctorDrugCollection);
-						// if (doctorDrugCollection != null) {
-						// ESDoctorDrugDocument esDoctorDrugDocument = new
-						// ESDoctorDrugDocument();
-						// BeanUtil.map(drugCollection, esDoctorDrugDocument);
-						// BeanUtil.map(doctorDrugCollection,
-						// esDoctorDrugDocument);
-						// esDoctorDrugDocument.setId(drugCollection.getId().toString());
-						// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
-						// doctorDrugCollection.getId());
-						// }
-						// }
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.NotAuthorized,

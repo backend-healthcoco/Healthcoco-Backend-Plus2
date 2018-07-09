@@ -2000,6 +2000,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 						}
 					}
+					userAllowanceDetailsCollection.setUpdatedTime(new Date());
 					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
 				}
 			} else {
@@ -2013,7 +2014,7 @@ public class RecordsServiceImpl implements RecordsService {
 					}
 				}
 			}
-
+			userRecordsCollection.setUpdatedTime(new Date());
 			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
 			response = new UserRecords();
 			BeanUtil.map(userRecordsCollection, response);

@@ -2731,6 +2731,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			RoleCollection roleCollection = roleRepository.findOne(new ObjectId(roleId));
 			if (roleCollection != null) {
 				roleCollection.setDiscarded(discarded);
+				roleCollection.setUpdatedTime(new Date());
 				roleCollection = roleRepository.save(roleCollection);
 				response = new Role();
 				BeanUtil.map(roleCollection, response);

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,7 +32,6 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
-import com.dpdocter.beans.DentalLabPrintSetting;
 import com.dpdocter.beans.DentalStage;
 import com.dpdocter.beans.DentalStagejasperBean;
 import com.dpdocter.beans.DentalToothNumber;
@@ -49,7 +47,6 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.InseptionReportJasperBean;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
-import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.SMS;
@@ -66,10 +63,8 @@ import com.dpdocter.collections.DentalWorksAmountCollection;
 import com.dpdocter.collections.DentalWorksInvoiceCollection;
 import com.dpdocter.collections.DentalWorksReceiptCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
@@ -78,8 +73,6 @@ import com.dpdocter.collections.TaxCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.FONTSTYLE;
-import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.RoleEnum;
@@ -352,6 +345,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			if (customWorkCollection != null) {
 				customWorkCollection.setDiscarded(discarded);
+				customWorkCollection.setUpdatedTime(new Date());
 				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Record not found");

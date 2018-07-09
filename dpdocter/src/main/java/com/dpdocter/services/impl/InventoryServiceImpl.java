@@ -48,7 +48,6 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
-import io.swagger.models.auth.In;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
@@ -608,6 +607,7 @@ public class InventoryServiceImpl implements InventoryService {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
 			inventoryItemCollection.setDiscarded(discarded);
+			inventoryItemCollection.setUpdatedTime(new Date());
 			inventoryItemCollection = inventoryItemRepository.save(inventoryItemCollection);
 			response = new InventoryItem();
 			BeanUtil.map(inventoryItemCollection, response);
@@ -631,6 +631,7 @@ public class InventoryServiceImpl implements InventoryService {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
 			inventoryBatchCollection.setDiscarded(discarded);
+			inventoryBatchCollection.setUpdatedTime(new Date());
 			inventoryBatchCollection = inventoryBatchRepository.save(inventoryBatchCollection);
 			response = new InventoryBatch();
 			BeanUtil.map(inventoryBatchCollection, response);
@@ -654,6 +655,7 @@ public class InventoryServiceImpl implements InventoryService {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
 			inventoryStockCollection.setDiscarded(discarded);
+			inventoryStockCollection.setUpdatedTime(new Date());
 			inventoryStockCollection = inventoryStockRepository.save(inventoryStockCollection);
 			response = new InventoryStock();
 			BeanUtil.map(inventoryStockCollection, response);

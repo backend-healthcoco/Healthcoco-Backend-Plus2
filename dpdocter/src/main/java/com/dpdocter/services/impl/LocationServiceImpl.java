@@ -294,6 +294,7 @@ public class LocationServiceImpl implements LocationServices {
 					.findAllAssociationByCollectionBoyId(new ObjectId(collectionBoyId));
 			for (CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection : collectionBoyLabAssociationCollections) {
 				collectionBoyLabAssociationCollection.setIsActive(false);
+				collectionBoyLabAssociationCollection.setUpdatedTime(new Date());
 				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 						.save(collectionBoyLabAssociationCollection);
 			}
@@ -304,6 +305,7 @@ public class LocationServiceImpl implements LocationServices {
 					.findAllAssociationByCollectionBoyId(new ObjectId(collectionBoyId));
 			for (CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection : collectionBoyLabAssociationCollections) {
 				collectionBoyLabAssociationCollection.setIsActive(true);
+				collectionBoyLabAssociationCollection.setUpdatedTime(new Date());
 				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 						.save(collectionBoyLabAssociationCollection);
 			}
@@ -312,9 +314,11 @@ public class LocationServiceImpl implements LocationServices {
 		UserCollection userCollection = userRepository.findOne(collectionBoyCollection.getUserId());
 		if (userCollection != null) {
 			userCollection.setIsActive(!discarded);
+			userCollection.setUpdatedTime(new Date());
 			userCollection = userRepository.save(userCollection);
 		}
 
+		collectionBoyCollection.setUpdatedTime(new Date());
 		collectionBoyCollection.setDiscarded(discarded);
 		collectionBoyCollection = collectionBoyRepository.save(collectionBoyCollection);
 		if (collectionBoyCollection != null) {

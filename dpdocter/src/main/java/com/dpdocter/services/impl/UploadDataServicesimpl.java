@@ -3068,9 +3068,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 			List<TreatmentServiceUpdateResponse> treatmentServiceUpdateResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$group",  
 							new BasicDBObject("_id", new BasicDBObject("name", "$name")
-									                .append("doctorId", "$doctorId").append("locationId", "$locationId"))
+									                .append("locationId", "$locationId"))
 							.append("count", new BasicDBObject("$sum", 1))
-							.append("doctorId", "$doctorId").append("locationId", "$locationId")
+							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("treatmentServiceIds", new BasicDBObject("$push", "$_id")))), 
 							Aggregation.match(new Criteria("count").gt(1))), 
 					TreatmentServicesCollection.class, TreatmentServiceUpdateResponse.class).getMappedResults();
@@ -3084,7 +3085,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 								treatmentServiceId = treatmentServiceUpdateResponse.getTreatmentServiceIds().get(i);
 							}else {
 								ObjectId serviceId = treatmentServiceUpdateResponse.getTreatmentServiceIds().get(i);
-								
 								//patient treatment
 								List<PatientTreatmentCollection> patientTreatmentCollections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(Aggregation.match(new Criteria("treatments.treatmentServiceId").is(serviceId))), 

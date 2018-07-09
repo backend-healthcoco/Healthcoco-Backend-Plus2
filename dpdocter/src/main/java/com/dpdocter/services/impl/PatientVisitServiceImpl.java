@@ -3041,6 +3041,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			List<PatientTreatment> patientTreatments = new ArrayList<PatientTreatment>();
 
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			patientVisitCollection.setUpdatedTime(new Date());
 			patientVisitCollection.setDiscarded(discarded);
 			patientVisitRepository.save(patientVisitCollection);
 			// doctorPatientReceiptRepository.findOne(new ObjectId(receiptId));
