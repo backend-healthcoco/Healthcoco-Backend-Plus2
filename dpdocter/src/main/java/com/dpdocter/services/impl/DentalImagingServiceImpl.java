@@ -1873,58 +1873,28 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			Aggregation mostVisitAggregation = null;
 			Aggregation leastVisitAggregation = null;
 			Criteria criteria = new Criteria();
+			Criteria visitCriteria = new Criteria();
 
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
 				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
+				visitCriteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
 				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
+				visitCriteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 			}
-			
-		/*	Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("updatedTime").gt(start).lte(end);
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("updatedTime").gt(start);
-
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("updatedTime").lte(end);
-
-			}*/
 			
 			if (toDate != null) {
 				criteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate))).lte(new Date(Long.parseLong(toDate)));
+				visitCriteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 			} else {
 				criteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate)));
+				visitCriteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate)));
 			}
+			visitCriteria.and("isVisited").is(true);
 
-			mostVisitAggregation = Aggregation.newAggregation(Aggregation.match(criteria.and("isReportsUploaded").is(true)),
+			mostVisitAggregation = Aggregation.newAggregation(Aggregation.match(visitCriteria),
 					Aggregation.unwind("services"), Aggregation.group("services.serviceName").count().as("count"),
 					Aggregation.project("count").and("serviceName").previousOperation(),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "count")), Aggregation.limit(1));
@@ -1933,7 +1903,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			mostVisitedService = mostVisitAggregationResult.getUniqueMappedResult();
 
-			leastVisitAggregation = Aggregation.newAggregation(Aggregation.match(criteria.and("isReportsUploaded").is(true)),
+			leastVisitAggregation = Aggregation.newAggregation(Aggregation.match(visitCriteria),
 					Aggregation.unwind("services"), Aggregation.group("services.serviceName").count().as("count"),
 					Aggregation.project("count").and("serviceName").previousOperation(),
 					Aggregation.sort(new Sort(Sort.Direction.ASC, "count")), Aggregation.limit(1));
