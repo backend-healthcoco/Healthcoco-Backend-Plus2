@@ -1887,7 +1887,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			
 			if (toDate != null) {
 				criteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate))).lte(new Date(Long.parseLong(toDate)));
-				visitCriteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
+				visitCriteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate))).lte(new Date(Long.parseLong(toDate)));
 			} else {
 				criteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate)));
 				visitCriteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate)));
