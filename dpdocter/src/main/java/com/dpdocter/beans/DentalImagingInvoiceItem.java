@@ -14,6 +14,9 @@ public class DentalImagingInvoiceItem {
 	private String CBCTArch;
 	private Integer quantity;
 	private Double cost;
+	private Discount totalDiscount;
+	private Double totalCost = 0.0;
+	private Tax totalTax;
 
 	public String getType() {
 		return type;
@@ -77,6 +80,30 @@ public class DentalImagingInvoiceItem {
 
 	public void setCost(Double cost) {
 		this.cost = cost;
+	}
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public Double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
 	}
 
 }

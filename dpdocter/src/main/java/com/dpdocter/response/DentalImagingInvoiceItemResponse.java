@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.Tax;
+
 public class DentalImagingInvoiceItemResponse {
 
 	private String type;
@@ -14,6 +17,9 @@ public class DentalImagingInvoiceItemResponse {
 	private String CBCTArch;
 	private Integer quantity;
 	private Double cost;
+	private Discount totalDiscount;
+	private Double totalCost = 0.0;
+	private Tax totalTax;
 
 	public String getType() {
 		return type;
@@ -77,6 +83,30 @@ public class DentalImagingInvoiceItemResponse {
 
 	public void setCost(Double cost) {
 		this.cost = cost;
+	}
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public Double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
 	}
 
 }
