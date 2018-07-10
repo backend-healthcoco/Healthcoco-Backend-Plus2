@@ -2126,8 +2126,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Override
 	@Transactional
-	public List<PatientDentalImagignVisitAnalyticsResponse> getDetailedDoctorVisitAnalytics(Long fromDate, Long toDate,
-			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType) {
+	public List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalyticsCount(Long fromDate, Long toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType ) {
 
 		List<PatientDentalImagignVisitAnalyticsResponse> response = null;
 	
@@ -2173,7 +2173,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					Fields.field("dentalImaging.doctor", "$doctor"),
 					Fields.field("dentalImaging.totalCost", "$totalCost"),
 					Fields.field("dentalImaging.isPaid", "$isPaid"),
-					Fields.field("dentalImaging.invoiceId", "$invoiceId")));
+					Fields.field("dentalImaging.invoiceId", "$invoiceId"),
+					Fields.field("dentalImaging.isVisited", "$isVisited")));
 
 			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$dentalImaging.doctorId")
@@ -2187,6 +2188,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.match(criteria), projectList, aggregationOperation,
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
 			AggregationResults<PatientDentalImagignVisitAnalyticsResponse> aggregationResults = mongoTemplate
 					.aggregate(aggregation, "dental_imaging_cl", PatientDentalImagignVisitAnalyticsResponse.class);
 			response = aggregationResults.getMappedResults();
@@ -2205,10 +2207,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					}
 				}
 				
-				patientAnalyticResponse.setVisitedResponses(dentalImagingResponses);
-				patientAnalyticResponse.setPaidResponses(paidDentalImagingResponses);
+				/*patientAnalyticResponse.setVisitedResponses(dentalImagingResponses);
+				patientAnalyticResponse.setPaidResponses(paidDentalImagingResponses);*/
 				patientAnalyticResponse.setVisitedCount(dentalImagingResponses.size());
 				patientAnalyticResponse.setPaidCount(paidDentalImagingResponses.size());
+				patientAnalyticResponse.setResponses(null);
 
 			}
 
@@ -2563,6 +2566,87 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 			response = new DentalImaging();
 			BeanUtil.map(dentalImagingCollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public PatientDentalImagignVisitAnalyticsResponse getDetailedDoctorVisitAnalytics(Long fromDate, Long toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType,
+			int page, int size) {
+
+		PatientDentalImagignVisitAnalyticsResponse response = new PatientDentalImagignVisitAnalyticsResponse();
+		List<DentalImagingResponse> dentalImagingResponses = null;
+
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
+				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
+				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			if (toDate != null) {
+				criteria.and("updatedTime").gte(new Date(fromDate)).lte(new Date(toDate));
+			} else {
+				criteria.and("updatedTime").gte(new Date(fromDate));
+			}
+
+			/*
+			 * aggregationOperation = new CustomAggregationOperation(new
+			 * BasicDBObject("$group", new BasicDBObject("_id", "$dentalImaging.doctorId")
+			 * .append("doctorId", new BasicDBObject("$first", "$dentalImaging.doctorId"))
+			 * .append("doctor", new BasicDBObject("$first", "$dentalImaging.doctor"))
+			 * .append("responses", new BasicDBObject("$push", "$dentalImaging"))
+			 * .append("doctorName", new BasicDBObject("$first",
+			 * "$dentalImaging.doctor.firstName"))));
+			 */
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					"dental_imaging_cl", DentalImagingResponse.class);
+			dentalImagingResponses = aggregationResults.getMappedResults();
+
+			response.setCount(dentalImagingResponses.size());
+			List<DentalImagingResponse> paidDentalImagingResponses = new ArrayList<>();
+			List<DentalImagingResponse> visitedDentalImagingResponses = new ArrayList<>();
+			for (DentalImagingResponse dentalImagingResponse : dentalImagingResponses) {
+
+				if (dentalImagingResponse.getIsVisited().equals(Boolean.TRUE)) {
+					visitedDentalImagingResponses.add(dentalImagingResponse);
+				}
+				if (dentalImagingResponse.getIsPaid().equals(Boolean.TRUE)) {
+					paidDentalImagingResponses.add(dentalImagingResponse);
+				}
+
+			}
+			response.setVisitedResponses(dentalImagingResponses);
+			response.setPaidResponses(paidDentalImagingResponses);
+			response.setVisitedCount(dentalImagingResponses.size());
+			response.setPaidCount(paidDentalImagingResponses.size());
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

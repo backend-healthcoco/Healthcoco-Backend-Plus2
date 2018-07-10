@@ -97,8 +97,12 @@ public interface DentalImagingService {
 
 	DentalImaging changeVisitedStatus(String id, boolean isVisited);
 
-	List<PatientDentalImagignVisitAnalyticsResponse> getDetailedDoctorVisitAnalytics(Long fromDate, Long toDate,
+	List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalyticsCount(Long fromDate, Long toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType);
+
+	PatientDentalImagignVisitAnalyticsResponse getDetailedDoctorVisitAnalytics(Long fromDate, Long toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType,
+			int page, int size);
 
 
 }
