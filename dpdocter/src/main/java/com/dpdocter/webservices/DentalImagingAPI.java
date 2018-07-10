@@ -425,4 +425,22 @@ public class DentalImagingAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.DentalImagingUrl.GET_DETAILED_DOCTOR_VISIT_ANALYTICS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_DETAILED_DOCTOR_VISIT_ANALYTICS, notes = PathProxy.DentalImagingUrl.GET_DETAILED_DOCTOR_VISIT_ANALYTICS)
+
+	public Response<PatientDentalImagignVisitAnalyticsResponse> getDetailedDoctorVisitAnalytics(
+			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
+			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,@QueryParam("doctorId") String doctorId,
+			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to , @QueryParam("searchType") String searchType ) {
+		if (DPDoctorUtils.allStringsEmpty(dentalImagingLocationId,
+				dentalImagingHospitalId,doctorId)) {
+
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<PatientDentalImagignVisitAnalyticsResponse> response = new Response<PatientDentalImagignVisitAnalyticsResponse>();
+		response.setDataList(dentalImagingService.getDetailedDoctorVisitAnalytics(from, to, dentalImagingLocationId, dentalImagingHospitalId, doctorId, searchType));
+		return response;
+	}
+	
 }

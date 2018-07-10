@@ -2126,6 +2126,102 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Override
 	@Transactional
+	public List<PatientDentalImagignVisitAnalyticsResponse> getDetailedDoctorVisitAnalytics(Long fromDate, Long toDate,
+			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType) {
+
+		List<PatientDentalImagignVisitAnalyticsResponse> response = null;
+	
+		try {
+			Aggregation aggregation = null;
+			AggregationOperation aggregationOperation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
+				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
+				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			// criteria.and("isReportsUploaded").is(true);
+
+			if (toDate != null) {
+				criteria.and("updatedTime").gte(new Date(fromDate)).lte(new Date(toDate));
+			} else {
+				criteria.and("updatedTime").gte(new Date(fromDate));
+			}
+
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					// Fields.field("dentalImaging.id", "$id"),
+					Fields.field("dentalImaging.services", "$services"),
+					Fields.field("dentalImaging.patientName", "$patientName"),
+					Fields.field("doctorName", "$doctor.firstName"),
+					Fields.field("dentalImaging.createdTime", "$createdTime"),
+					Fields.field("dentalImaging.doctorId", "$doctorId"),
+					Fields.field("dentalImaging.hospitalId", "$hospitalId"),
+					Fields.field("dentalImaging.locationId", "$locationId"),
+					Fields.field("dentalImaging.dentalImagingDoctorId", "$dentalImagingDoctorId"),
+					Fields.field("dentalImaging.dentalImagingHospitalId", "$dentalImagingHospitalId"),
+					Fields.field("dentalImaging.dentalImagingLocationId", "$dentalImagingLocationId"),
+					Fields.field("dentalImaging.referringDoctor", "$referringDoctor"),
+					Fields.field("dentalImaging.clinicalNotes", "$clinicalNotes"),
+					Fields.field("dentalImaging.reportsRequired", "$reportsRequired"),
+					Fields.field("dentalImaging.specialInstructions", "$specialInstructions"),
+					Fields.field("dentalImaging.doctor", "$doctor"),
+					Fields.field("dentalImaging.totalCost", "$totalCost"),
+					Fields.field("dentalImaging.isPaid", "$isPaid"),
+					Fields.field("dentalImaging.invoiceId", "$invoiceId")));
+
+			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$dentalImaging.doctorId")
+							.append("doctorId", new BasicDBObject("$first", "$dentalImaging.doctorId"))
+							.append("doctor", new BasicDBObject("$first", "$dentalImaging.doctor"))
+							.append("responses", new BasicDBObject("$push", "$dentalImaging"))
+							.append("doctorName", new BasicDBObject("$first", "$dentalImaging.doctor.firstName"))));
+
+			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+					Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+					Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"), Aggregation.match(criteria), projectList, aggregationOperation,
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<PatientDentalImagignVisitAnalyticsResponse> aggregationResults = mongoTemplate
+					.aggregate(aggregation, "dental_imaging_cl", PatientDentalImagignVisitAnalyticsResponse.class);
+			response = aggregationResults.getMappedResults();
+
+			for (PatientDentalImagignVisitAnalyticsResponse patientAnalyticResponse : response) {
+				patientAnalyticResponse.setCount(patientAnalyticResponse.getResponses().size());
+				List<DentalImagingResponse> paidDentalImagingResponses = new ArrayList<>();
+				List<DentalImagingResponse> dentalImagingResponses = new ArrayList<>();
+				for (DentalImagingResponse dentalImagingResponse : patientAnalyticResponse.getResponses()) {
+					
+					if (dentalImagingResponse.getIsVisited().equals(Boolean.TRUE)) {
+						dentalImagingResponses.add(dentalImagingResponse);
+					}
+					if (dentalImagingResponse.getIsPaid().equals(Boolean.TRUE)) {
+						paidDentalImagingResponses.add(dentalImagingResponse);
+					}
+				}
+				
+				patientAnalyticResponse.setVisitedResponses(dentalImagingResponses);
+				patientAnalyticResponse.setPaidResponses(paidDentalImagingResponses);
+				patientAnalyticResponse.setVisitedCount(dentalImagingResponses.size());
+				patientAnalyticResponse.setPaidCount(paidDentalImagingResponses.size());
+
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
+	@Override
+	@Transactional
 	public List<PatientDentalImagignVisitAnalyticsResponse> getDoctorVisitAnalytics(Long fromDate, Long toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType) {
 
@@ -2212,6 +2308,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				
 				/*patientAnalyticResponse.setVisitedResponses(dentalImagingResponses);
 				patientAnalyticResponse.setPaidResponses(paidDentalImagingResponses);*/
+				patientAnalyticResponse.setTotalAmount(totalAmount);
+				patientAnalyticResponse.setPaidAmount(paidAmount);
 				patientAnalyticResponse.setVisitedCount(dentalImagingResponses.size());
 				patientAnalyticResponse.setPaidCount(paidDentalImagingResponses.size());
 				patientAnalyticResponse.setResponses(null);

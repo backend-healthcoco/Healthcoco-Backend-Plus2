@@ -5,6 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Tax;
 
 public class DentalImagingInvoiceItemResponse {
@@ -20,6 +21,7 @@ public class DentalImagingInvoiceItemResponse {
 	private Discount totalDiscount;
 	private Double totalCost = 0.0;
 	private Tax totalTax;
+	private List<InvoiceTax> invoiceTaxes;
 
 	public String getType() {
 		return type;
@@ -109,4 +111,12 @@ public class DentalImagingInvoiceItemResponse {
 		this.totalTax = totalTax;
 	}
 
-}
+	public List<InvoiceTax> getInvoiceTaxes() {
+		return invoiceTaxes;
+	}
+
+	public void setInvoiceTaxes(List<InvoiceTax> invoiceTaxes) {
+		this.invoiceTaxes = invoiceTaxes;
+	}
+
+s}
