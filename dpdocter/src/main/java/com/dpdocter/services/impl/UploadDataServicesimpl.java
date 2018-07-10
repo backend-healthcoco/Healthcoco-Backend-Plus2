@@ -2754,9 +2754,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 		Boolean response = false;
 		try {
 			
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
+			ObjectId locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
@@ -2814,7 +2812,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 						   patientTreatmentCollection.setGrandTotal(grandTotal);
 						   patientTreatmentCollection.setUpdatedTime(new Date());
 						   patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
-						   System.out.println(patientTreatmentCollection.getUniqueEmrId());
 						   response = true;
 						}		
 					}
