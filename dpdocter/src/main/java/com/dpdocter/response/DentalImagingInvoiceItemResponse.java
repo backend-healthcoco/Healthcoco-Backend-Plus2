@@ -119,4 +119,4 @@ public class DentalImagingInvoiceItemResponse {
 		this.invoiceTaxes = invoiceTaxes;
 	}
 
-s}
+}
