@@ -17,6 +17,7 @@ public class DentalImagingInvoiceItem {
 	private Discount totalDiscount;
 	private Double totalCost = 0.0;
 	private Tax totalTax;
+	private List<InvoiceTax> invoiceTaxes;
 
 	public String getType() {
 		return type;
@@ -104,6 +105,14 @@ public class DentalImagingInvoiceItem {
 
 	public void setTotalTax(Tax totalTax) {
 		this.totalTax = totalTax;
+	}
+
+	public List<InvoiceTax> getInvoiceTaxes() {
+		return invoiceTaxes;
+	}
+
+	public void setInvoiceTaxes(List<InvoiceTax> invoiceTaxes) {
+		this.invoiceTaxes = invoiceTaxes;
 	}
 
 }
