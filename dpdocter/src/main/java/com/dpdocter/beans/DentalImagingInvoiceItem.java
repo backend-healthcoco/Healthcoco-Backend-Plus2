@@ -13,7 +13,7 @@ public class DentalImagingInvoiceItem {
 	private String CBCTQuadrant;
 	private String CBCTArch;
 	private Integer quantity;
-	private Double cost;
+	private Double cost = 0.0;
 	private Discount totalDiscount;
 	private Double totalCost = 0.0;
 	private Tax totalTax;
