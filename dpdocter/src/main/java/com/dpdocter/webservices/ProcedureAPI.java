@@ -17,13 +17,18 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditProcedureSheetRequest;
 import com.dpdocter.request.AddEditProcedureSheetStructureRequest;
+import com.dpdocter.request.LabReportsAddRequest;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.ProcedureSheetResponse;
 import com.dpdocter.response.ProcedureSheetStructureResponse;
 import com.dpdocter.services.ProcedureSheetService;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -77,8 +82,8 @@ public class ProcedureAPI {
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("from") Long from,
 			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page ,@QueryParam("discarded") Boolean discarded){
-		List<ProcedureSheetResponse> procedureSheetResponses = procedureSheetService.getProcedureSheetList(doctorId, hospitalId, locationId, patientId, searchTerm, from, to, discarded, page, size);
+			@QueryParam("page") int page ,@QueryParam("discarded") Boolean discarded ,@QueryParam("type") String type){
+		List<ProcedureSheetResponse> procedureSheetResponses = procedureSheetService.getProcedureSheetList(doctorId, hospitalId, locationId, patientId, searchTerm, from, to, discarded, page, size, type);
 		Response<ProcedureSheetResponse> response = new Response<ProcedureSheetResponse>();
 		response.setDataList(procedureSheetResponses);
 		return response;
@@ -134,8 +139,8 @@ public class ProcedureAPI {
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@DefaultValue("0") @QueryParam("from") Long from,
 			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page ,@QueryParam("discarded") Boolean discarded){
-		List<ProcedureSheetStructureResponse> procedureSheetResponses = procedureSheetService.getProcedureSheetStructureList(doctorId, hospitalId, locationId, searchTerm, from, to, discarded, page, size);
+			@QueryParam("page") int page ,@QueryParam("discarded") Boolean discarded , @QueryParam("type") String type){
+		List<ProcedureSheetStructureResponse> procedureSheetResponses = procedureSheetService.getProcedureSheetStructureList(doctorId, hospitalId, locationId, searchTerm, from, to, discarded, page, size, type);
 		Response<ProcedureSheetStructureResponse> response = new Response<ProcedureSheetStructureResponse>();
 		response.setDataList(procedureSheetResponses);
 		return response;
@@ -155,4 +160,20 @@ public class ProcedureAPI {
 		return response;
 	}
 	
+	@POST
+	@Path(value = PathProxy.ProcedureUrls.ADD_DIAGRAM)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.ProcedureUrls.ADD_DIAGRAM, notes = PathProxy.ProcedureUrls.ADD_DIAGRAM)
+	public Response<ImageURLResponse> addDiagramMultipart(@FormDataParam("file") FormDataBodyPart file) {
+		
+		if (file == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		ImageURLResponse imageURLResponse = procedureSheetService.addDiagrams(file);
+
+		Response<ImageURLResponse> response = new Response<ImageURLResponse>();
+		response.setData(imageURLResponse);
+		return response;
+	}
 }

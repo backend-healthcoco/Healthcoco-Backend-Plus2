@@ -1,8 +1,11 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -14,9 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.ProcedureSheet;
 import com.dpdocter.collections.DentalImagingCollection;
+import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
 import com.dpdocter.collections.ProcedureSheetStructureCollection;
@@ -30,11 +35,16 @@ import com.dpdocter.repository.ProcedureSheetStructureRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditProcedureSheetRequest;
 import com.dpdocter.request.AddEditProcedureSheetStructureRequest;
+import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.response.DentalImagingResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.ProcedureSheetResponse;
 import com.dpdocter.response.ProcedureSheetStructureResponse;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.ProcedureSheetService;
 import com.mongodb.BasicDBObject;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -55,6 +65,9 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private FileManager fileManager;
 	
 	@Override
 	@Transactional
@@ -126,7 +139,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 	@Override
 	@Transactional
 	public List<ProcedureSheetResponse> getProcedureSheetList(String doctorId, String hospitalId, String locationId,
-			String patientId, String searchTerm, Long from, Long to, Boolean discarded , int page , int size) {
+			String patientId, String searchTerm, Long from, Long to, Boolean discarded , int page , int size , String type) {
 		List<ProcedureSheetResponse> responses = null;
 		try {
 			Aggregation aggregation = null;
@@ -150,6 +163,9 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			}
 			if(discarded != null) {
 				criteria.and("discarded").is(discarded);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("type").is(new ObjectId(type));
 			}
 			
 			if (size > 0)
@@ -239,6 +255,29 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 	
 	@Override
 	@Transactional
+	public ImageURLResponse addDiagrams(FormDataBodyPart file) {
+		ImageURLResponse imageURLResponse = null;
+		try {
+			if (file != null) {
+				String path = "procedure-sheet";
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
+				imageURLResponse = fileManager.saveImage(file, recordPath, true);
+			}
+			
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return imageURLResponse;
+	}
+
+	
+	@Override
+	@Transactional
 	public ProcedureSheetStructureResponse getProcedureSheetStructure(String id)
 	{
 		ProcedureSheetStructureResponse response = null;
@@ -289,7 +328,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 	@Override
 	@Transactional
 	public List<ProcedureSheetStructureResponse> getProcedureSheetStructureList(String doctorId, String hospitalId, String locationId,
-			 String searchTerm, Long from, Long to, Boolean discarded , int page , int size) {
+			 String searchTerm, Long from, Long to, Boolean discarded , int page , int size ,String type) {
 		List<ProcedureSheetStructureResponse> responses = null;
 		try {
 			Aggregation aggregation = null;
@@ -310,6 +349,9 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			}
 			if(discarded != null) {
 				criteria.and("discarded").is(discarded);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("type").is(new ObjectId(type));
 			}
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(

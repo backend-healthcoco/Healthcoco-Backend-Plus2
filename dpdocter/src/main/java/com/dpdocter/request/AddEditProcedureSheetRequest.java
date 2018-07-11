@@ -19,6 +19,7 @@ public class AddEditProcedureSheetRequest {
 	private List<ImageURLResponse> diagrams;
 	private List<Map<String, String>> procedureSheetFields;
 	private Boolean discarded = false;
+	private String type;
 
 	public String getId() {
 		return id;
@@ -98,6 +99,14 @@ public class AddEditProcedureSheetRequest {
 
 	public void setProcedureName(String procedureName) {
 		this.procedureName = procedureName;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override

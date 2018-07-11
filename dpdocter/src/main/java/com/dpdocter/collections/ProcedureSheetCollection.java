@@ -35,6 +35,8 @@ public class ProcedureSheetCollection extends GenericCollection {
 	private List<Map<String, String>> procedureSheetFields;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private String type;
 
 	public ObjectId getId() {
 		return id;
@@ -114,6 +116,14 @@ public class ProcedureSheetCollection extends GenericCollection {
 
 	public void setProcedureName(String procedureName) {
 		this.procedureName = procedureName;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override

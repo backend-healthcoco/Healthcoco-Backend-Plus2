@@ -16,6 +16,7 @@ public class AddEditProcedureSheetStructureRequest {
 	private List<ImageURLResponse> diagrams;
 	private List<String> procedureSheetFields;
 	private Boolean discarded = false;
+	private String type;
 
 	public String getId() {
 		return id;
@@ -87,6 +88,14 @@ public class AddEditProcedureSheetStructureRequest {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override
