@@ -429,13 +429,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			// total
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT");
+					.and("type").is("APPOINTMENT").and("discarded").is(false);
 
 			data.setTotalNoOfAppointment((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			// cancel by doctor
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT");
+					.and("type").is("APPOINTMENT").and("discarded").is(false);
 
 			data.setCancelBydoctor((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
 					.is(AppointmentCreatedBy.DOCTOR.getType()).and("state").is("CANCEL")),
@@ -443,14 +443,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			// cancel by Patient
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT");
+					.and("type").is("APPOINTMENT").and("discarded").is(false);
 			data.setCancelByPatient((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
 					.is(AppointmentCreatedBy.PATIENT.getType()).and("state").is("CANCEL")),
 					AppointmentCollection.class));
 			if (data.getTotalNoOfAppointment() > 0) {
 
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-						.and("type").is("APPOINTMENT");
+						.and("type").is("APPOINTMENT").and("discarded").is(false);
 				int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CANCEL")),
 						AppointmentCollection.class);
 
@@ -459,7 +459,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				// Booked percent
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-						.and("type").is("APPOINTMENT");
+						.and("type").is("APPOINTMENT").and("discarded").is(false);
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
 						AppointmentCollection.class);
 
@@ -469,7 +469,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				// Scheduled percent
 
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-						.and("type").is("APPOINTMENT");
+						.and("type").is("APPOINTMENT").and("discarded").is(false);
 				appointmentCount = (int) mongoTemplate.count(
 						new Query(criteria.and("status").is("SCHEDULED").and("state").is("NEW")),
 						AppointmentCollection.class);
@@ -479,7 +479,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				// hike
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(last).lte(fromTime)
-						.and("type").is("APPOINTMENT");
+						.and("type").is("APPOINTMENT").and("discarded").is(false);
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 
 				data.setChangeInAppointmentPercent(
@@ -489,7 +489,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				criteria = getCriteria(null, locationId, hospitalId).and("appointment.locationId")
 						.is(new ObjectId(locationId)).and("appointment.hospitalId").is(new ObjectId(hospitalId))
-						.and("appointment.fromDate").gte(fromTime).and("appointment.type").is("APPOINTMENT");
+						.and("appointment.fromDate").gte(fromTime).and("appointment.type").is("APPOINTMENT").and("appointment.discarded").is(false);
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
 				}
@@ -1468,7 +1468,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			}
-
+			criteria.and("discarded").is(false);
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType))
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
@@ -1626,7 +1626,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			}
-
+			criteria.and("discarded").is(false);
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType))
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
@@ -1797,7 +1797,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			}
-
+			criteria.and("discarded").is(false);
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1888,6 +1888,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			}
 
+			criteria.and("discarded").is(false);
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$items"),
@@ -1999,7 +2000,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				criteria.and("toDate").lte(toTime);
 			}
-
+			criteria.and("discarded").is(false);
 			long count = mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 			if (count > 0) {
 				response = new AppointmentAnalyticResponse();
@@ -2261,7 +2262,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				criteria.and("fromDate").lte(end);
 			}
-
+			criteria.and("discarded").is(false);
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType))
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
@@ -2369,6 +2370,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				criteria2.and("appointment.fromDate").gt(start);
 			}
+			criteria2.and("appointment.discarded").is(false);
+			criteria.and("discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				localCalendar.setTime(new Date(Long.parseLong(toDate)));
 				int currentDay = localCalendar.get(Calendar.DATE);
@@ -2444,6 +2447,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("invoiceDate").lte(toTime);
 
 			}
+			criteria.and("discarded").is(false);
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("uniqueInvoiceId", "$uniqueInvoiceId"))
 							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
@@ -2637,7 +2641,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (start != null) {
 				criteria2.and("invoice.invoiceDate").gt(start).lte(end);
 			}
-
+			criteria.and("discarded").is(false);
+			criteria2.and("invoice.discarded").is(false);
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("group_cl", "groupId", "_id", "group"), Aggregation.unwind("group"),
 					Aggregation.match(criteria),
@@ -2693,7 +2698,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByServices(String searchType, int page, int size,
 			Criteria criteria) {
 		List<IncomeAnalyticsDataResponse> response = null;
-
+		criteria.and("discarded").is(false);
 		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", new BasicDBObject("itemId", "$itemId"))
 						.append("serviceName", new BasicDBObject("$first", "$serviceName"))
@@ -2782,7 +2787,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByDoctors(String searchType, int page, int size,
 			Criteria criteria) {
 		List<IncomeAnalyticsDataResponse> response = null;
-
+		criteria.and("discarded").is(false);
 		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", new BasicDBObject("doctorId", "$doctorId"))
 						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
@@ -2875,6 +2880,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByDate(String searchType, int page, int size,
 			Criteria criteria) {
+		criteria.and("discarded").is(false);
 		List<IncomeAnalyticsDataResponse> response = null;
 		AggregationOperation aggregationOperation = null;
 		if (!DPDoctorUtils.anyStringEmpty(searchType))
@@ -3069,6 +3075,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				criteria.and("receivedDate").lte(end);
 			}
+			criteria.and("discarded").is(false);
 
 			if (size > 0) {
 				response = mongoTemplate
@@ -3216,6 +3223,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	private List<PaymentAnalyticsDataResponse> getPaymentDataByDoctors(String searchType, int page, int size,
 			Criteria criteria) {
+		criteria.and("discarded").is(false);
 		List<PaymentAnalyticsDataResponse> response = null;
 		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", new BasicDBObject("doctorId", "$doctorId"))
@@ -3333,6 +3341,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						.append("total", new BasicDBObject("$sum", "$total"))));
 
 		Aggregation aggregation = null;
+		criteria.and("discarded").is(false);
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					new CustomAggregationOperation(new BasicDBObject("$project",
@@ -3427,6 +3436,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		}
 
 		Aggregation aggregation = null;
+		criteria.and("discarded").is(false);
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(
 					new BasicDBObject("$project", new BasicDBObject("cash", new BasicDBObject("$cond",
@@ -3556,6 +3566,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				criteria.and("receivedDate").lte(end);
 			}
+			criteria.and("discarded").is(false);
 			Aggregation aggregation = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
@@ -3707,6 +3718,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
+			criteria.and("discarded").is(false);
 
 			Aggregation aggregation = null;
 			if (size > 0) {
