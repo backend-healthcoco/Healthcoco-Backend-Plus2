@@ -7,8 +7,6 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.Diagram;
-import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
@@ -80,9 +78,7 @@ public interface DischargeSummaryService {
 
 	FlowsheetResponse getFlowSheetsById(String id);
 
-	public String downloadFlowSheet(String id, Boolean byFlowsheetId);
-
-	String downloadFlowSheet(String flowSheetId);
+	public String downloadFlowSheet(String flowSheetId);
 
 	Diagram addEditDiagram(Diagram diagram);
 
