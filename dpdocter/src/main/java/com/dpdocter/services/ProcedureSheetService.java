@@ -2,10 +2,13 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.request.AddEditProcedureSheetRequest;
 import com.dpdocter.request.AddEditProcedureSheetStructureRequest;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.ProcedureSheetResponse;
 import com.dpdocter.response.ProcedureSheetStructureResponse;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface ProcedureSheetService {
 
@@ -21,10 +24,13 @@ public interface ProcedureSheetService {
 
 	ProcedureSheetStructureResponse getProcedureSheetStructure(String id);
 
-	List<ProcedureSheetResponse> getProcedureSheetList(String doctorId, String hospitalId, String locationId,
-			String patientId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size);
-
 	List<ProcedureSheetStructureResponse> getProcedureSheetStructureList(String doctorId, String hospitalId,
-			String locationId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size);
+			String locationId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size,String type);
+
+	List<ProcedureSheetResponse> getProcedureSheetList(String doctorId, String hospitalId, String locationId,
+			String patientId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size,
+			String type);
+
+	ImageURLResponse addDiagrams(FormDataBodyPart file);
 
 }
