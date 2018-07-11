@@ -443,9 +443,9 @@ public class DentalImagingAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DentalImagingUrl.GET_REQUESTS)
+	@Path(value = PathProxy.DentalImagingUrl.GET_DENTAL_IMAGING_DATA)
 	@GET
-	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_REQUESTS, notes = PathProxy.DentalImagingUrl.GET_REQUESTS)
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_DENTAL_IMAGING_DATA, notes = PathProxy.DentalImagingUrl.GET_DENTAL_IMAGING_DATA)
 	public Response<DentalImagingDataResponse> getDentalImagingData()
 	{
 		Response<DentalImagingDataResponse> response = new Response<DentalImagingDataResponse>();
