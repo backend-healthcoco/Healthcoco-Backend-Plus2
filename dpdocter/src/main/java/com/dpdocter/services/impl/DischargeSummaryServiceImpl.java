@@ -189,7 +189,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Autowired
 	private FlowsheetRepository flowsheetRepository;
 
-
 	@Autowired
 	private FileManager fileManager;
 
@@ -219,7 +218,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (dischargeSummary.getId() == null) {
 				if (dischargeSummary.getCreatedTime() == null)
 					dischargeSummary.setCreatedTime(new Date());
-
 				dischargeSummary.setAdminCreatedTime(new Date());
 				dischargeSummary.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setUniqueEmrId(
@@ -1092,7 +1090,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		}
 		parameters.put("timeOfEntryAndExitFromOT", dateTime);
-
+		if (dischargeSummaryCollection.getFlowSheets() != null && !dischargeSummaryCollection.getFlowSheets().isEmpty())
+			getFlowsheetJasper(dischargeSummaryCollection.getFlowSheets(), parameters);
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
 			_24HourTime = String.format("%02d:%02d", dischargeSummaryCollection.getTime().getFromTime() / 60,
 					dischargeSummaryCollection.getTime().getFromTime() % 60);
@@ -1107,18 +1106,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 
-						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
-		patientVisitService
-				.generatePatientDetails(
-						(printSettings != null && printSettings.getHeaderSetup() != null
-								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient,
-						"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
-								? dischargeSummaryCollection.getUniqueEmrId() : "--"),
-						patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-						dischargeSummaryCollection.getCreatedTime() != null
-								? dischargeSummaryCollection.getCreatedTime() : new Date(),
-						printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
+		patientVisitService.generatePatientDetails((printSettings != null
+				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
+						? dischargeSummaryCollection.getUniqueEmrId()
+						: "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				dischargeSummaryCollection.getCreatedTime() != null ? dischargeSummaryCollection.getCreatedTime()
+						: new Date(),
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
@@ -2596,7 +2595,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			} else {
 				flowsheetCollection = new FlowsheetCollection();
 
-				flowsheetCollection.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
+				flowsheetCollection
+						.setUniqueId(UniqueIdInitial.FLOW_SHEET.getInitial() + DPDoctorUtils.generateRandomId());
 
 				flowsheetCollection.setCreatedTime(new Date());
 				if (userCollection != null) {
@@ -2605,7 +2605,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 									+ userCollection.getFirstName());
 				}
 			}
-
 
 			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
@@ -2713,6 +2712,84 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					"Error while getting flow sheets : " + e.getCause().getMessage());
 		}
 		return response;
+	}
+
+	private void getFlowsheetJasper(List<FlowSheet> flowSheets, Map<String, Object> parameters) {
+		List<FlowSheetJasperBean> jasperBeans = null;
+
+		String pattern = "dd/MM/yyyy hh.mm a";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		jasperBeans = new ArrayList<FlowSheetJasperBean>();
+		FlowSheetJasperBean jasperBean = null;
+		int i = 1;
+		for (FlowSheet flowsheet : flowSheets) {
+
+			jasperBean = new FlowSheetJasperBean();
+			jasperBean.setNo(i);
+			if (!DPDoctorUtils.anyStringEmpty(flowsheet.getAdvice())) {
+				jasperBean.setAdvice("<b>Advice :-    </b>" + flowsheet.getAdvice());
+			}
+			if (!DPDoctorUtils.anyStringEmpty(flowsheet.getComplaint())) {
+				jasperBean.setComplaint("<b>Complaint :- </b>" + flowsheet.getComplaint());
+			}
+			if (flowsheet.getDate() != null) {
+				if (flowsheet.getDate() != 0) {
+					jasperBean.setDate(simpleDateFormat.format(new Date(flowsheet.getDate())));
+				}
+			}
+			String field = "";
+
+			field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getPulse())
+					? "Pulse (" + VitalSignsUnit.PULSE.getUnit() + ") : " + flowsheet.getPulse()
+					: "");
+
+			field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getWeight(), field) ? ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getWeight())
+							? "Weight (" + VitalSignsUnit.WEIGHT.getUnit() + ") : " + flowsheet.getWeight()
+							: "");
+
+			field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa(), field) ? ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBsa()) ? "BSA (" + VitalSignsUnit.BSA.getUnit()
+							+ ") : " + String.format("%.3f", Double.parseDouble(flowsheet.getBsa())) : "");
+
+			field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getTemperature(), field) ? ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getTemperature())
+							? "Temp (" + VitalSignsUnit.TEMPERATURE.getUnit() + ") : " + flowsheet.getTemperature()
+							: "");
+
+			field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getHeight(), field) ? ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getHeight())
+							? "Height (" + VitalSignsUnit.HEIGHT.getUnit() + ") : " + flowsheet.getHeight()
+							: "");
+
+			field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBreathing(), field) ? ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBreathing())
+							? "Resp Rate (" + VitalSignsUnit.BREATHING.getUnit() + ") : " + flowsheet.getBreathing()
+							: "");
+
+			field = field
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getDiastolic(), flowsheet.getSystolic(), field) ? ", "
+							: "")
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getDiastolic(), flowsheet.getSystolic())
+							? "B. P. (" + VitalSignsUnit.BLOODPRESSURE.getUnit() + ") : " + flowsheet.getSystolic()
+									+ "/" + flowsheet.getDiastolic() + ""
+							: "");
+
+			field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBmi(), field) ? ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBmi()) ? " BMI (" + VitalSignsUnit.BMI.getUnit()
+							+ ") : " + String.format("%.3f", Double.parseDouble(flowsheet.getBmi())) : "");
+
+			field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getSpo2(), field) ? ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getSpo2())
+							? "Spo2 (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getSpo2()
+							: "");
+			jasperBean.setExamination(field);
+
+			i++;
+			jasperBeans.add(jasperBean);
+		}
+
+		parameters.put("flowsheet", jasperBeans);
 	}
 
 	private JasperReportResponse createJasperForFlowSheet(FlowsheetCollection flowsheetCollection,
@@ -2874,10 +2951,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	}
 
-
-	
-
-	
 	@Override
 	public String uploadDischargeDiagram(DoctorLabReportUploadRequest request) {
 
