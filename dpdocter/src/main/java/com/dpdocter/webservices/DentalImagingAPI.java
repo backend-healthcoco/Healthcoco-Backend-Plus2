@@ -43,6 +43,7 @@ import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalimagingReportsUploadRequest;
 import com.dpdocter.request.RecordUploadRequest;
+import com.dpdocter.response.DentalImagingDataResponse;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
@@ -439,6 +440,16 @@ public class DentalImagingAPI {
 		}
 		Response<PatientDentalImagignVisitAnalyticsResponse> response = new Response<PatientDentalImagignVisitAnalyticsResponse>();
 		response.setData(dentalImagingService.getDetailedDoctorVisitAnalytics(from, to, dentalImagingLocationId, dentalImagingHospitalId, doctorId, searchType , page ,size));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DentalImagingUrl.GET_REQUESTS)
+	@GET
+	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_REQUESTS, notes = PathProxy.DentalImagingUrl.GET_REQUESTS)
+	public Response<DentalImagingDataResponse> getDentalImagingData()
+	{
+		Response<DentalImagingDataResponse> response = new Response<DentalImagingDataResponse>();
+		response.setData(dentalImagingService.getDentalImagingData());
 		return response;
 	}
 	

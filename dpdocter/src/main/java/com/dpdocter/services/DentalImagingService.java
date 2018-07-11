@@ -16,6 +16,7 @@ import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DoctorLabReportsAddRequest;
+import com.dpdocter.response.DentalImagingDataResponse;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
@@ -103,6 +104,8 @@ public interface DentalImagingService {
 	PatientDentalImagignVisitAnalyticsResponse getDetailedDoctorVisitAnalytics(Long fromDate, Long toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId, String doctorId, String searchType,
 			int page, int size);
+
+	DentalImagingDataResponse getDentalImagingData();
 
 
 }

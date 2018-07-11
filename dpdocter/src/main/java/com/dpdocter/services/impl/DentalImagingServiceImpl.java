@@ -31,6 +31,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.CBDTArch;
+import com.dpdocter.beans.CBDTQuadrant;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
@@ -45,6 +47,7 @@ import com.dpdocter.beans.DentalImagingRequest;
 import com.dpdocter.beans.DentalImagingServiceVisitCount;
 import com.dpdocter.beans.DoctorHospitalDentalImagingAssociation;
 import com.dpdocter.beans.DoctorSignUp;
+import com.dpdocter.beans.FOV;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
@@ -55,6 +58,8 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.collections.CBDTArchCollection;
+import com.dpdocter.collections.CBDTQuadrantCollection;
 import com.dpdocter.collections.DentalDiagnosticServiceCollection;
 import com.dpdocter.collections.DentalImagingCollection;
 import com.dpdocter.collections.DentalImagingInvoiceCollection;
@@ -64,6 +69,7 @@ import com.dpdocter.collections.DentalImagingReportsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorHospitalDentalImagingAssociationCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.FOVCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -94,6 +100,7 @@ import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.DentalImagingDataResponse;
 import com.dpdocter.response.DentalImagingInvoiceItemResponse;
 import com.dpdocter.response.DentalImagingInvoiceJasper;
 import com.dpdocter.response.DentalImagingLocationResponse;
@@ -2651,6 +2658,41 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public DentalImagingDataResponse getDentalImagingData() {
+		DentalImagingDataResponse response = new DentalImagingDataResponse();
+		List<CBDTQuadrant> cbdtQuadrants = null;
+		List<CBDTArch> cbdtArchs = null;
+		List<FOV> fovs = null;
+		try {
+			Aggregation aggregation = null;
+			
+			aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<CBDTQuadrant> cbdtQuadrantAggregationResults = mongoTemplate.aggregate(aggregation,
+					CBDTQuadrantCollection.class, CBDTQuadrant.class);
+			cbdtQuadrants = cbdtQuadrantAggregationResults.getMappedResults();
+
+			AggregationResults<CBDTArch> cbdtarchAggregationResults = mongoTemplate.aggregate(aggregation,
+					CBDTArchCollection.class, CBDTArch.class);
+			cbdtArchs = cbdtarchAggregationResults.getMappedResults();
+
+			AggregationResults<FOV> fovAggregationResults = mongoTemplate.aggregate(aggregation, FOVCollection.class,
+					FOV.class);
+			fovs = fovAggregationResults.getMappedResults();
+			
+			response.setCbdtQuadrants(cbdtQuadrants);
+			response.setCbdtArchs(cbdtArchs);
+			response.setFovs(fovs);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return response;
 	}
 
