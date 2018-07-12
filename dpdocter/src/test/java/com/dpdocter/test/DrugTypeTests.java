@@ -1,5 +1,6 @@
 package com.dpdocter.test;
 
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -29,11 +30,12 @@ public class DrugTypeTests {
 			ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 			// suffix in filename will be used as the file format
 			ImageIOUtil.writeImage(bim, "/home/harish/Desktop/DocxToPdf-" + (i) + ".jpg", 500);
-			ImageIOUtil.writeImage(bim,"jpg",outstream); 
-					list.add("/home/harish/Desktop/DocxToPdf-" + (i) + ".jpg");
+			ImageIOUtil.writeImage(bim, "jpg", outstream);
+			list.add("/home/harish/Desktop/DocxToPdf-" + (i) + ".jpg");
 			new File("/home/harish/Desktop/DocxToPdf-" + (i) + ".jpg").delete();
 		}
 		System.out.println(list.size());
 		document.close();
 	}
 }
+
