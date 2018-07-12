@@ -2649,6 +2649,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 
 			}
+			response.setCount((int) mongoTemplate.count(new Query(criteria),DentalImagingCollection.class));
 			response.setVisitedResponses(dentalImagingResponses);
 			response.setPaidResponses(paidDentalImagingResponses);
 			response.setVisitedCount(dentalImagingResponses.size());
