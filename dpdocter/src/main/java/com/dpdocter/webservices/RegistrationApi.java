@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.BloodGroup;
-import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ClinicLabProperties;

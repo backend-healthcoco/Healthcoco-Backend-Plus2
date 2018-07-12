@@ -82,6 +82,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 
@@ -154,6 +155,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	@Autowired
 	private ESTreatmentServiceRepository esTreatmentServiceRepository;
 
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+	
 	@Override
 	@Transactional
 	public TreatmentService addEditService(TreatmentService treatmentService) {
@@ -401,6 +405,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			BeanUtil.map(patientTreatmentCollection, response);
 			response.setTreatments(treatmentResponses);
 
+			pushNotificationServices.notifyUser(patientTreatmentCollection.getDoctorId().toString(),
+					"Treament Added",
+					ComponentType.TREATMENTS_REFRESH.getType(), patientTreatmentCollection.getPatientId().toString(), null);
+			
 		} catch (Exception e) {
 			logger.error("Error occurred while adding or editing treatment for patients", e);
 			e.printStackTrace();

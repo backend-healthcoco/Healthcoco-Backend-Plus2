@@ -963,19 +963,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			response.setItems(itemDetails);
 
-			// if (prescriptionCollection != null) {
-			// OPDReports opdReports = new
-			// OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
-			// String.valueOf(prescriptionCollection.getId()),
-			// String.valueOf(prescriptionCollection.getDoctorId()),
-			// String.valueOf(prescriptionCollection.getLocationId()),
-			// String.valueOf(prescriptionCollection.getHospitalId()),
-			// prescriptionCollection.getCreatedTime());
-			//
-			// opdReports = reportsService.submitOPDReport(opdReports);
-			// }
-
 			final String id = request.getId();
+			final Boolean sendNotificationToDoctor = request.getSendNotificationToDoctor();
 			Executors.newSingleThreadExecutor().execute(new Runnable() {
 				@Override
 				public void run() {
@@ -989,10 +978,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					opdReports = reportsService.submitOPDReport(opdReports);
 
+					if(sendNotificationToDoctor == null || sendNotificationToDoctor)
+						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(),
+							"RX Added",
+							ComponentType.PRESCRIPTION_REFRESH.getType(), prescriptionCollection.getPatientId().toString(), null);
+					
 					pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
-							"Your prescription by " + prescriptionCollection.getCreatedBy()
-									+ " is here - Tap to view it!",
-							ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+								"Your prescription by " + prescriptionCollection.getCreatedBy()
+										+ " is here - Tap to view it!",
+								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+					
 
 					if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
 						sendMessage(prescriptionCollection);

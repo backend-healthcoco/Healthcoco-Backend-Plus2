@@ -125,6 +125,7 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RecordsService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -211,6 +212,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Autowired
 	private AppointmentRepository appointmentRepository;
 
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -598,6 +602,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							patientVisitCollection.getTreatmentId(), patientVisitCollection.getId());
 					response.setPatientTreatment(list);
 				}
+				
+				pushNotificationServices.notifyUser(patientVisitCollection.getDoctorId().toString(),
+						"Patient Visit Added",
+						ComponentType.PATIENT_VISIT_REFRESH.getType(), patientVisitCollection.getPatientId().toString(), null);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -674,6 +682,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		PrescriptionAddEditResponse prescriptionResponse = null;
 		PrescriptionAddEditResponseDetails editResponseDetails = null;
+		request.getPrescription().setSendNotificationToDoctor(false);
 		if (request.getPrescription().getId() == null) {
 			prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription(), false, createdBy,
 					appointment);
