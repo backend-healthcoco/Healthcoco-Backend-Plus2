@@ -116,6 +116,7 @@ import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.PatientVisitLookupResponse;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
+import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
@@ -845,11 +846,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							patientVisitCollection.getTreatmentId(), patientVisitCollection.getId());
 					response.setPatientTreatment(list);
 				}
-
 				pushNotificationServices.notifyUser(patientVisitCollection.getDoctorId().toString(),
-						"Patient Visit Added", ComponentType.PATIENT_VISIT_REFRESH.getType(),
-						patientVisitCollection.getPatientId().toString(), null);
-
+						"Patient Visit Added",
+						ComponentType.PATIENT_VISIT_REFRESH.getType(), patientVisitCollection.getPatientId().toString(), null);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -924,8 +923,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private void addPrescription(AddMultipleDataRequest request, PatientVisitResponse response,
 			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
 
-		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices
-				.addPrescription(request.getPrescription(), false, createdBy, appointment);
+		PrescriptionAddEditResponse prescriptionResponse = null;
+		PrescriptionAddEditResponseDetails editResponseDetails = null;
+		request.getPrescription().setSendNotificationToDoctor(false);
+		if (request.getPrescription().getId() == null) {
+			prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription(), false, createdBy,
+					appointment);
+		} else {
+
+			editResponseDetails = prescriptionServices.editPrescription(request.getPrescription());
+			if (editResponseDetails != null) {
+				prescriptionResponse = new PrescriptionAddEditResponse();
+				BeanUtil.map(editResponseDetails, prescriptionResponse);
+			}
+
+		}
 		Prescription prescription = new Prescription();
 
 		List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getDiagnosticTests();

@@ -1024,6 +1024,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			response.setItems(itemDetails);
 
 			final String id = request.getId();
+			final Boolean sendNotificationToDoctor = request.getSendNotificationToDoctor();
 			Executors.newSingleThreadExecutor().execute(new Runnable() {
 				@Override
 				public void run() {
@@ -1037,10 +1038,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					opdReports = reportsService.submitOPDReport(opdReports);
 
+					if(sendNotificationToDoctor == null || sendNotificationToDoctor)
+						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(),
+							"RX Added",
+							ComponentType.PRESCRIPTION_REFRESH.getType(), prescriptionCollection.getPatientId().toString(), null);
+					
 					pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
-							"Your prescription by " + prescriptionCollection.getCreatedBy()
-									+ " is here - Tap to view it!",
-							ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+								"Your prescription by " + prescriptionCollection.getCreatedBy()
+										+ " is here - Tap to view it!",
+								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+					
 
 					/*if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
 						sendMessage(prescriptionCollection);*/

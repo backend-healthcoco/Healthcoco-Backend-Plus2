@@ -93,6 +93,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 
@@ -177,7 +178,10 @@ public class BillingServiceImpl implements BillingService {
 
 	@Value(value = "${jasper.print.multiple.receipt.fileName}")
 	private String multipleReceiptFileName;
-
+	
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+	
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
 		InvoiceAndReceiptInitials response = null;
@@ -500,6 +504,10 @@ public class BillingServiceImpl implements BillingService {
 						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + dueAmount);
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 			}
+			pushNotificationServices.notifyUser(doctorPatientInvoiceCollection.getDoctorId().toString(),
+					"Invoice Added",
+					ComponentType.INVOICE_REFRESH.getType(), doctorPatientInvoiceCollection.getPatientId().toString(), null);
+			
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -855,6 +863,11 @@ public class BillingServiceImpl implements BillingService {
 					response.setTotalDueAmount(amountResponse.getTotalDueAmount());
 				}
 			}
+			
+			pushNotificationServices.notifyUser(doctorPatientReceiptCollection.getDoctorId().toString(),
+					"Receipt Added",
+					ComponentType.RECEIPT_REFRESH.getType(), doctorPatientReceiptCollection.getPatientId().toString(), null);
+			
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;

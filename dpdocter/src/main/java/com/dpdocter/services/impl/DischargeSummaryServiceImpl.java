@@ -108,6 +108,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.PushNotificationServices;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -201,6 +202,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+	
 	@Transactional
 	@Override
 	public DischargeSummaryResponse addEditDischargeSummary(DischargeSummaryRequest dischargeSummary) {
@@ -312,7 +316,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 
 			}
-
+			pushNotificationServices.notifyUser(response.getDoctorId(),
+					"Discharge Summary Added",
+					ComponentType.DISCHARGE_SUMMARY_REFRESH.getType(), response.getPatientId(), null);
+			
 		} catch (
 
 		Exception e) {

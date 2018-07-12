@@ -237,6 +237,7 @@ public class RecordsServiceImpl implements RecordsService {
 	@Override
 	@Transactional
 	public Records addRecord(RecordsAddRequest request, String createdBy) {
+		Records records = null;
 		try {
 			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
@@ -385,16 +386,19 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getPatientId());
 
 			}
-			Records records = new Records();
+			records = new Records();
 			BeanUtil.map(recordsCollection, records);
 
-			return records;
+			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(),
+					"Records Added",
+					ComponentType.RECORDS_REFRESH.getType(), recordsCollection.getPatientId().toString(), null);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-
+		return records;
 	}
 
 	private void sendRecordSmsToPatient(String patientName, String patientMobileNumber, String recordName,
@@ -477,14 +481,18 @@ public class RecordsServiceImpl implements RecordsService {
 			// recordsCollection.getId());
 
 			BeanUtil.map(recordsCollection, records);
-			return records;
+			
+			pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(),
+					"Records Added",
+					ComponentType.RECORDS_REFRESH.getType(), recordsCollection.getPatientId().toString(), null);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 		}
-
+		return records;
 	}
 
 	@Override
@@ -1541,11 +1549,15 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getUploadedByLocation(), recordsCollection.getDoctorId(),
 						recordsCollection.getLocationId(), recordsCollection.getHospitalId(),
 						recordsCollection.getPatientId());
+				
+				pushNotificationServices.notifyUser(recordsCollection.getDoctorId().toString(),
+						"Records Added",
+						ComponentType.RECORDS_REFRESH.getType(), recordsCollection.getPatientId().toString(), null);
 			}
 
 			Records records = new Records();
 			BeanUtil.map(recordsCollection, records);
-
+			
 			return records;
 		} catch (Exception e) {
 			e.printStackTrace();

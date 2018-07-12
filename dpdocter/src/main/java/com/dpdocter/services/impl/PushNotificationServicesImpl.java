@@ -291,9 +291,31 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
 					notification.setEi(componentTypeId);
 					notification.setNotificationType(componentType);
-				}
-				else
-				{
+				}else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else{
 					notification.setNotificationType(componentType);
 				}
 			}
@@ -462,6 +484,31 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("RI", "SILENT");
 					customValues.put("T", "DW");
 				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RX");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RPV");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RCN");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RT");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RR");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RDS");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RI");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RR");
+//				}
 			}
 			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
 			service.push(pushToken, payload);

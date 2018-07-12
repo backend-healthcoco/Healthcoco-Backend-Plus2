@@ -42,6 +42,9 @@ public class PrescriptionAddEditRequest {
 
 	private Date createdTime;
 
+	//For Phone side
+	private Boolean sendNotificationToDoctor = true;
+	
 	public Date getCreatedTime() {
 		return createdTime;
 	}
@@ -178,6 +181,14 @@ public class PrescriptionAddEditRequest {
 		this.appointmentRequest = appointmentRequest;
 	}
 
+	public Boolean getSendNotificationToDoctor() {
+		return sendNotificationToDoctor;
+	}
+
+	public void setSendNotificationToDoctor(Boolean sendNotificationToDoctor) {
+		this.sendNotificationToDoctor = sendNotificationToDoctor;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionAddEditRequest [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
@@ -185,7 +196,7 @@ public class PrescriptionAddEditRequest {
 				+ ", prescriptionCode=" + prescriptionCode + ", createdBy=" + createdBy + ", visitId=" + visitId
 				+ ", diagnosticTests=" + diagnosticTests + ", advice=" + advice + ", appointmentRequest="
 				+ appointmentRequest + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate
-				+ "]";
+				+ ", createdTime=" + createdTime + ", sendNotificationToDoctor=" + sendNotificationToDoctor + "]";
 	}
 
 }

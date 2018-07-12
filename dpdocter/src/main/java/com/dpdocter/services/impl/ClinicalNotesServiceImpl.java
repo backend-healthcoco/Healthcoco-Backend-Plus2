@@ -175,6 +175,7 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
+import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -332,6 +333,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Autowired
 	private AppointmentRepository appointmentRepository;
 
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -1581,6 +1585,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 														Aggregation.match(new Criteria("id").in(diagramIds))),
 												DiagramsCollection.class, Diagram.class).getMappedResults(),
 										diagramIds));
+			
+			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
+					"Clinical Notes Added",
+					ComponentType.CLINICAL_NOTES_REFRESH.getType(), clinicalNotesCollection.getPatientId().toString(), null);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1748,6 +1757,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 														Aggregation.match(new Criteria("id").in(diagramIds))),
 												DiagramsCollection.class, Diagram.class).getMappedResults(),
 										diagramIds));
+			
+			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
+					"Clinical Notes Added",
+					ComponentType.CLINICAL_NOTES_REFRESH.getType(), clinicalNotesCollection.getPatientId().toString(), null);
 
 		} catch (Exception e) {
 			e.printStackTrace();
