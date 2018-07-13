@@ -2232,6 +2232,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
 
+
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					// Fields.field("dentalImaging.id", "$id"),
 					Fields.field("dentalImaging.services", "$services"),
@@ -2329,10 +2330,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			// criteria.and("isReportsUploaded").is(true);
 
 			if (toDate != null) {
-				criteria.and("updatedTime").gte(new Date(fromDate)).lte(DPDoctorUtils.getEndTime(new Date(toDate)));
+				criteria.and("updatedTime").gte(new Date(fromDate)).lte(new Date(toDate));
 			} else {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
+
 
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					// Fields.field("dentalImaging.id", "$id"),
@@ -2690,15 +2692,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
 
-			/*
-			 * aggregationOperation = new CustomAggregationOperation(new
-			 * BasicDBObject("$group", new BasicDBObject("_id", "$dentalImaging.doctorId")
-			 * .append("doctorId", new BasicDBObject("$first", "$dentalImaging.doctorId"))
-			 * .append("doctor", new BasicDBObject("$first", "$dentalImaging.doctor"))
-			 * .append("responses", new BasicDBObject("$push", "$dentalImaging"))
-			 * .append("doctorName", new BasicDBObject("$first",
-			 * "$dentalImaging.doctor.firstName"))));
-			 */
 			if (size > 0)
 				aggregation = Aggregation.newAggregation( Aggregation.match(criteria),Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
