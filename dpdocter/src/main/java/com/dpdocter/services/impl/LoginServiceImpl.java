@@ -147,8 +147,9 @@ public class LoginServiceImpl implements LoginService {
 				return response;
 			}
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId")
-							.exists(true).and("roleId").exists(true)),
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId")
+									.exists(true).and("roleId").exists(true)),
 							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
 							Aggregation.unwind("roleCollection")),
 					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
@@ -190,9 +191,11 @@ public class LoginServiceImpl implements LoginService {
 									DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
+
 						logger.warn("None of your clinic is active");
 						// user.setUserState(UserState.NOTACTIVATED);
 						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
+
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
@@ -263,6 +266,7 @@ public class LoginServiceImpl implements LoginService {
 									locationAndAccessControl.setRoles(roles);
 								}
 							}
+
 							if (!isStaff) {
 								if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
 									hospitalCollection = doctorClinicProfileLookupResponse.getHospital();
@@ -273,7 +277,10 @@ public class LoginServiceImpl implements LoginService {
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
 									hospitals.add(hospital);
 								} else {
-									Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId());
+
+									Hospital hospital = checkHospitalId
+											.get(locationCollection.getHospitalId().toString());
+
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospitals.add(hospital);
 								}
@@ -545,32 +552,33 @@ public class LoginServiceImpl implements LoginService {
 	@Override
 	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request) {
 		DoctorLoginPin response = null;
-		DoctorLoginPinCollection doctorLoginPinCollection = null;
-		DoctorLoginPinCollection OldoctorLoginPinCollection = null;
+
+		DoctorLoginPinCollection olddoctorLoginPinCollection = null;
 
 		try {
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "invalid DoctorId");
 			}
-			OldoctorLoginPinCollection = doctorLoginPinRepository.findByDoctorId(new ObjectId(request.getDoctorId()));
-			doctorLoginPinCollection = new DoctorLoginPinCollection();
-			if (OldoctorLoginPinCollection == null) {
+			olddoctorLoginPinCollection = doctorLoginPinRepository.findByDoctorId(new ObjectId(request.getDoctorId()));
 
-				BeanUtil.map(request, doctorLoginPinCollection);
-				doctorLoginPinCollection.setCreatedTime(new Date());
-				doctorLoginPinCollection
+			if (olddoctorLoginPinCollection == null) {
+				olddoctorLoginPinCollection = new DoctorLoginPinCollection();
+				BeanUtil.map(request, olddoctorLoginPinCollection);
+				olddoctorLoginPinCollection.setCreatedTime(new Date());
+				olddoctorLoginPinCollection
 						.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? "Dr." : doctor.getTitle())
 								+ doctor.getFirstName());
+
 			} else {
-				BeanUtil.map(OldoctorLoginPinCollection, doctorLoginPinCollection);
-				doctorLoginPinCollection.setPin(request.getPin());
-				doctorLoginPinCollection.setUpdatedTime(new Date());
+
+				olddoctorLoginPinCollection.setPin(request.getPin());
+				olddoctorLoginPinCollection.setUpdatedTime(new Date());
 
 			}
-			doctorLoginPinRepository.save(doctorLoginPinCollection);
+			doctorLoginPinRepository.save(olddoctorLoginPinCollection);
 			response = new DoctorLoginPin();
-			BeanUtil.map(doctorLoginPinCollection, response);
+			BeanUtil.map(olddoctorLoginPinCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while add edit Login Pin");
