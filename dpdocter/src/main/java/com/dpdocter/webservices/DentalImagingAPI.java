@@ -243,7 +243,7 @@ public class DentalImagingAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
-		response.setData(dentalImagingService.addEditInvoice(request));
+		response.setData(dentalImagingService.addEditInvoice(request , false));
 		return response;
 	}
 
