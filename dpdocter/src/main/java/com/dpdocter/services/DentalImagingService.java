@@ -62,7 +62,7 @@ public interface DentalImagingService {
 
 	Boolean dentalLabDoctorRegistration(DentalImagingLabDoctorRegistrationRequest request);
 
-	DentalImagingInvoice addEditInvoice(DentalImagingInvoice request);
+	//DentalImagingInvoice addEditInvoice(DentalImagingInvoice request);
 
 	Double getInvoiceAmount(String doctorId, String locationId, String hospitalId, String fromDate, String toDate,
 			String dentalImagingLocationId, String dentalImagingHospitalId, int page, int size);
@@ -107,6 +107,8 @@ public interface DentalImagingService {
 			int page, int size);
 
 	DentalImagingDataResponse getDentalImagingData();
+
+	DentalImagingInvoice addEditInvoice(DentalImagingInvoice request, Boolean fromRequest);
 
 
 }

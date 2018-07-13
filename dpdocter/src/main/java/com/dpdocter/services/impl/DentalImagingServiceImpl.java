@@ -387,7 +387,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingInvoice.setPatientName(request.getLocalPatientName());
 				dentalImagingInvoice.setIsPaid(true);
 				dentalImagingInvoice.setReferringDoctor(request.getReferringDoctor());
-				addEditInvoice(dentalImagingInvoice);
+				addEditInvoice(dentalImagingInvoice, true);
 			}
 
 			if (request.getType() != null) {
@@ -1367,7 +1367,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Override
 	@Transactional
-	public DentalImagingInvoice addEditInvoice(DentalImagingInvoice request) {
+	public DentalImagingInvoice addEditInvoice(DentalImagingInvoice request, Boolean fromRequest) {
 		DentalImagingInvoice response = null;
 		List<DentalImagingInvoiceItem> invoiceItems = null;
 		// DentalWorksAmountCollection dentalWorksAmountCollection = null;
@@ -1447,16 +1447,27 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			DentalImagingCollection dentalImagingCollection = dentalImagingRepository
 					.findOne(new ObjectId(request.getDentalImagingId()));
-			if (dentalImagingCollection != null) {
+			if (dentalImagingCollection != null && fromRequest == true) {
 				invoiceItems = new ArrayList<DentalImagingInvoiceItem>();
 				for (DentalDiagnosticServiceRequest serviceRequest : dentalImagingCollection.getServices()) {
 					DentalImagingInvoiceItem dentalImagingInvoiceItem = new DentalImagingInvoiceItem();
 					BeanUtil.map(serviceRequest, dentalImagingInvoiceItem);
 					invoiceItems.add(dentalImagingInvoiceItem);
 				}
+				dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
+			}
+			else
+			{
+				invoiceItems = new ArrayList<DentalImagingInvoiceItem>();
+				for (DentalImagingInvoiceItemResponse invoiceItem : request.getInvoiceItems()) {
+					DentalImagingInvoiceItem dentalImagingInvoiceItem = new DentalImagingInvoiceItem();
+					BeanUtil.map(invoiceItem, dentalImagingInvoiceItem);
+					invoiceItems.add(dentalImagingInvoiceItem);
+				}
+				dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
 			}
 
-			dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
+			//dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
 			dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
 			dentalImagingCollection.setInvoiceId(dentalImagingInvoiceCollection.getId());
 			dentalImagingCollection.setUniqueInvoiceId(dentalImagingInvoiceCollection.getUniqueInvoiceId());
@@ -2660,6 +2671,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		try {
 			Aggregation aggregation = null;
+			Aggregation countAggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
 				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
@@ -2688,24 +2700,33 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			 * "$dentalImaging.doctor.firstName"))));
 			 */
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+				aggregation = Aggregation.newAggregation( Aggregation.match(criteria),Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.unwind("doctor"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+				aggregation = Aggregation.newAggregation( Aggregation.match(criteria),Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-
+						Aggregation.unwind("doctor"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			
 			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					"dental_imaging_cl", DentalImagingResponse.class);
+					DentalImagingCollection.class,DentalImagingResponse.class);
+			
 			dentalImagingResponses = aggregationResults.getMappedResults();
+			countAggregation =  Aggregation.newAggregation( Aggregation.match(criteria),Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+					Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+					Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-			response.setCount(dentalImagingResponses.size());
+			AggregationResults<DentalImagingResponse> countAggregationResults = mongoTemplate.aggregate(countAggregation,
+					DentalImagingCollection.class,DentalImagingResponse.class);
+
+		
 			List<DentalImagingResponse> paidDentalImagingResponses = new ArrayList<>();
 			List<DentalImagingResponse> visitedDentalImagingResponses = new ArrayList<>();
 			for (DentalImagingResponse dentalImagingResponse : dentalImagingResponses) {
@@ -2718,7 +2739,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 
 			}
-			response.setCount((int) mongoTemplate.count(new Query(criteria),DentalImagingCollection.class));
+		
+			response.setCount(countAggregationResults.getMappedResults().size());
 			response.setVisitedResponses(dentalImagingResponses);
 			response.setPaidResponses(paidDentalImagingResponses);
 			response.setVisitedCount(dentalImagingResponses.size());

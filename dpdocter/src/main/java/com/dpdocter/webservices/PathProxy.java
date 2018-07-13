@@ -1772,6 +1772,7 @@ public interface PathProxy {
 		public static final String SEND_REPORT_EMAIL = "/sendReportEmail/{id}";
 		public static final String CHANGE_VISIT_STATUS = "/changeVisitStatus/{id}";
 		public static final String GET_DETAILED_DOCTOR_VISIT_ANALYTICS = "/analytics/detailedDoctorVisit";
+		public static final String GET_DENTAL_IMAGING_DATA = "/getDentalImagingData";
 	}
 
 	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
