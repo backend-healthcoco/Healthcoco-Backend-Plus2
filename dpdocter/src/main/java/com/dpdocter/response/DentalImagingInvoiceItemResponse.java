@@ -16,6 +16,8 @@ public class DentalImagingInvoiceItemResponse {
 	private List<String> toothNumber;
 	private String CBCTQuadrant;
 	private String CBCTArch;
+	private String fov;
+	private String instruction;
 	private Integer quantity;
 	private Double cost;
 	private Discount totalDiscount;
@@ -117,6 +119,22 @@ public class DentalImagingInvoiceItemResponse {
 
 	public void setInvoiceTaxes(List<InvoiceTax> invoiceTaxes) {
 		this.invoiceTaxes = invoiceTaxes;
+	}
+
+	public String getFov() {
+		return fov;
+	}
+
+	public void setFov(String fov) {
+		this.fov = fov;
+	}
+
+	public String getInstruction() {
+		return instruction;
+	}
+
+	public void setInstruction(String instruction) {
+		this.instruction = instruction;
 	}
 
 }
