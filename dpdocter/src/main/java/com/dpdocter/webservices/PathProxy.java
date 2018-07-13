@@ -1630,6 +1630,8 @@ public interface PathProxy {
 
 		public static final String DATA = "/data";
 
+		public static final String CLINICAL_ITEMS = "/clinicalItems/{doctorId}/{locationId}/{hospitalId}";
+
 	}
 
 	public static final String DENTAL_LAB_BASE_URL = BASE_URL + "/dentalLab";

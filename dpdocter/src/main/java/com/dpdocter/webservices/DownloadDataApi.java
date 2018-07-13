@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.services.DownloadDataService;
 import com.dpdocter.services.UploadDateService;
 
 import common.util.web.DPDoctorUtils;
@@ -31,6 +32,9 @@ public class DownloadDataApi {
 
 	@Autowired
 	private UploadDateService uploadDataService;
+	
+	@Autowired
+	private DownloadDataService downloadDataService;
 
 	@Path(value = PathProxy.UploadDataUrls.PATIENTS)
 	@GET
@@ -144,4 +148,20 @@ public class DownloadDataApi {
 		response.setData(uploadDataService.updateEMR());
 		return response;
 	}
+
+
+	@Path(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
+	@GET
+	@ApiOperation(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS, notes = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
+	public Response<Boolean> downloadClinicalItems(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(downloadDataService.downloadClinicalItems(doctorId, locationId, hospitalId));
+		return response;
+	}
+
 }

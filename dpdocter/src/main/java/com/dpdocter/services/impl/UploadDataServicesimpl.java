@@ -2781,8 +2781,13 @@ public class UploadDataServicesimpl implements UploadDateService {
 								for(Treatment treatment : treatments) {
 									
 									double cost = treatment.getCost();
-									if(treatment.getQuantity() != null) {
-										if(treatment.getQuantity().getValue() > 0) {
+									if(treatment.getQuantity() == null) {
+										Quantity quantity = new Quantity();
+										quantity.setType(QuantityEnum.QTY);
+										quantity.setValue(1);
+										treatment.setQuantity(quantity);
+									}
+									if(treatment.getQuantity().getValue() > 0) {
 											
 											cost =  cost * treatment.getQuantity().getValue();
 											
@@ -2797,10 +2802,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 											}										
 										}else {
 											treatment.setFinalCost(0.0);
-										}
-									}else {
-										treatment.setFinalCost(0.0);
 									}
+									
 									totalCost = totalCost + treatment.getCost();
 									grandTotal = grandTotal + treatment.getFinalCost();
 								}
