@@ -577,14 +577,26 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return response;
 	}
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
+
 
 	@Override
-	public String downloadFlowSheet(String flowSheetId) {
+	public String downloadFlowSheet(String id, Boolean byFlowsheetId) {
 		String response = null;
 
 		try {
 
-			FlowsheetCollection flowsheetCollection = flowsheetRepository.findOne(new ObjectId(flowSheetId));
+			FlowsheetCollection flowsheetCollection = null;
+			if (byFlowsheetId) {
+				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(id));
+			} else {
+				flowsheetCollection = flowsheetRepository.findByDischargeSummaryId(new ObjectId(id));
+			}
 
 			if (flowsheetCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
@@ -1124,7 +1136,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				dischargeSummaryCollection.getCreatedTime() != null ? dischargeSummaryCollection.getCreatedTime()
 						: new Date(),
-
 				printSettings.getHospitalUId());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
@@ -1159,13 +1170,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		return response;
 
-	}
-
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
 	}
 
 	@Override

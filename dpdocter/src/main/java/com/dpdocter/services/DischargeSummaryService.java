@@ -78,7 +78,7 @@ public interface DischargeSummaryService {
 
 	FlowsheetResponse getFlowSheetsById(String id);
 
-	public String downloadFlowSheet(String flowSheetId);
+	public String downloadFlowSheet(String id, Boolean byFlowsheetId);
 
 	Diagram addEditDiagram(Diagram diagram);
 
