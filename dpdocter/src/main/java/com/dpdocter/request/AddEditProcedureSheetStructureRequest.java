@@ -1,7 +1,9 @@
 package com.dpdocter.request;
 
 import java.util.List;
+import java.util.Map;
 
+import com.dpdocter.beans.ProcedureConsentFormFields;
 import com.dpdocter.beans.ProcedureConsentFormStructure;
 import com.dpdocter.response.ImageURLResponse;
 
@@ -12,9 +14,10 @@ public class AddEditProcedureSheetStructureRequest {
 	private String locationId;
 	private String hospitalId;
 	private String treatmentId;
+	private String procedureName;
 	private ProcedureConsentFormStructure procedureConsentFormStructure;
 	private List<ImageURLResponse> diagrams;
-	private List<String> procedureSheetFields;
+	private Map<String, ProcedureConsentFormFields> procedureSheetFields;
 	private Boolean discarded = false;
 	private String type;
 
@@ -74,11 +77,19 @@ public class AddEditProcedureSheetStructureRequest {
 		this.diagrams = diagrams;
 	}
 
-	public List<String> getProcedureSheetFields() {
+	public String getProcedureName() {
+		return procedureName;
+	}
+
+	public void setProcedureName(String procedureName) {
+		this.procedureName = procedureName;
+	}
+
+	public Map<String, ProcedureConsentFormFields> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<String> procedureSheetFields) {
+	public void setProcedureSheetFields(Map<String, ProcedureConsentFormFields> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
