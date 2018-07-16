@@ -1,7 +1,9 @@
 package com.dpdocter.response;
 
 import java.util.List;
+import java.util.Map;
 
+import com.dpdocter.beans.ProcedureConsentFormFields;
 import com.dpdocter.beans.ProcedureConsentFormStructure;
 
 public class ProcedureSheetStructureResponse {
@@ -13,8 +15,9 @@ public class ProcedureSheetStructureResponse {
 	private String procedureName;
 	private ProcedureConsentFormStructure procedureConsentFormStructure;
 	private List<ImageURLResponse> diagrams;
-	private List<String> procedureSheetFields;
+	private Map<String, ProcedureConsentFormFields> procedureSheetFields;
 	private Boolean discarded = false;
+	private String type;
 
 	public String getId() {
 		return id;
@@ -72,12 +75,20 @@ public class ProcedureSheetStructureResponse {
 		this.diagrams = diagrams;
 	}
 
-	public List<String> getProcedureSheetFields() {
+	public Map<String, ProcedureConsentFormFields> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<String> procedureSheetFields) {
+	public void setProcedureSheetFields(Map<String, ProcedureConsentFormFields> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public Boolean getDiscarded() {

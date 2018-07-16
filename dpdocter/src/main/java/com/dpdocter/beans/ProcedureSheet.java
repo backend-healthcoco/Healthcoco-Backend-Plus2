@@ -16,7 +16,7 @@ public class ProcedureSheet extends GenericCollection {
 	private String procedureName;
 	private ProcedureConsentForm procedureConsentForm;
 	private List<ImageURLResponse> diagrams;
-	private List<Map<String, String>> procedureSheetFields;
+	private Map<String, String> procedureSheetFields;
 	private Boolean discarded = false;
 
 	public String getId() {
@@ -75,11 +75,11 @@ public class ProcedureSheet extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public List<Map<String, String>> getProcedureSheetFields() {
+	public Map<String, String> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
+	public void setProcedureSheetFields(Map<String, String> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 

@@ -1,10 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.ImageURLResponse;
+
+import common.util.web.JacksonUtil;
 
 public class ProcedureSheetStructure extends GenericCollection {
 
@@ -15,8 +19,9 @@ public class ProcedureSheetStructure extends GenericCollection {
 	private String procedureName;
 	private ProcedureConsentFormStructure procedureConsentFormStructure;
 	private List<ImageURLResponse> diagrams;
-	private List<Map<String, ProcedureConsentFormFields>> procedureSheetFields;
+	private Map<String, ProcedureConsentFormFields> procedureSheetFields;
 	private Boolean discarded = false;
+	private String type;
 
 	public ProcedureConsentFormStructure getProcedureConsentFormStructure() {
 		return procedureConsentFormStructure;
@@ -42,11 +47,11 @@ public class ProcedureSheetStructure extends GenericCollection {
 		this.procedureName = procedureName;
 	}
 
-	public List<Map<String, ProcedureConsentFormFields>> getProcedureSheetFields() {
+	public Map<String, ProcedureConsentFormFields> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<Map<String, ProcedureConsentFormFields>> procedureSheetFields) {
+	public void setProcedureSheetFields(Map<String, ProcedureConsentFormFields> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -90,6 +95,14 @@ public class ProcedureSheetStructure extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	@Override
 	public String toString() {
 		return "ProcudureSheetStructure [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -98,4 +111,28 @@ public class ProcedureSheetStructure extends GenericCollection {
 				+ discarded + "]";
 	}
 
+	public static void main(String[] args) {
+
+		ProcedureConsentFormFields procedureConsentFormFields = new ProcedureConsentFormFields();
+		procedureConsentFormFields.setDatatype("text");
+		procedureConsentFormFields.setData("Name");
+
+		Map<String, ProcedureConsentFormFields> map = new HashMap<>();
+		map.put("Name", procedureConsentFormFields);
+		map.put("Surname", procedureConsentFormFields);
+		List<Map<String, ProcedureConsentFormFields>> list = new ArrayList<>();
+		list.add(map);
+		System.out.println(JacksonUtil.obj2Json(list));
+		ProcedureSheetStructure procedureSheetStructure = new ProcedureSheetStructure();
+		procedureSheetStructure.setProcedureName("Test Procedure");
+		procedureSheetStructure.setType("PROCEDURE_SHEET");
+		ProcedureConsentFormStructure procedureConsentFormStructure = new ProcedureConsentFormStructure();
+		procedureConsentFormStructure.setBody("Test Body");
+		procedureConsentFormStructure.setFooterFields(map);
+		procedureConsentFormStructure.setHeaderFields(map);
+		procedureSheetStructure.setProcedureConsentFormStructure(procedureConsentFormStructure);
+		procedureSheetStructure.setProcedureSheetFields(map);
+		// procedureSheetStructure.
+		System.out.println(JacksonUtil.obj2Json(procedureSheetStructure));
+	}
 }

@@ -1,12 +1,14 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.ProcedureConsentFormFields;
 import com.dpdocter.beans.ProcedureConsentFormStructure;
 import com.dpdocter.response.ImageURLResponse;
 
@@ -22,11 +24,13 @@ public class ProcedureSheetStructureCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 	@Field
+	private String procedureName;
+	@Field
 	private ProcedureConsentFormStructure procedureConsentFormStructure;
 	@Field
 	private List<ImageURLResponse> diagrams;
 	@Field
-	private List<String> procedureSheetFields;
+	private Map<String, ProcedureConsentFormFields> procedureSheetFields;
 	@Field
 	private Boolean discarded = false;
 	@Field
@@ -80,12 +84,28 @@ public class ProcedureSheetStructureCollection extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public List<String> getProcedureSheetFields() {
+	public String getProcedureName() {
+		return procedureName;
+	}
+
+	public void setProcedureName(String procedureName) {
+		this.procedureName = procedureName;
+	}
+
+	public Map<String, ProcedureConsentFormFields> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<String> procedureSheetFields) {
+	public void setProcedureSheetFields(Map<String, ProcedureConsentFormFields> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public Boolean getDiscarded() {
