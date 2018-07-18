@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ExportRequest;
-import com.dpdocter.services.DownloadDateServices;
+import com.dpdocter.services.DownloadDataService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -31,7 +31,7 @@ public class DownloadDataApi {
 	private static Logger logger = Logger.getLogger(DownloadDataApi.class.getName());
 
 	@Autowired
-	private DownloadDateServices downloadDataServices;
+	private DownloadDataService downloadDataServices;
 
 	@Path(value = PathProxy.DownloadDataUrls.DATA)
 	@POST

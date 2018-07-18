@@ -1,36 +1,30 @@
 package com.dpdocter.services.impl;
 
-import java.awt.print.Book;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientDownloadData;
+import com.dpdocter.collections.ComplaintCollection;
+import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DownloadDataRequestCollection;
+import com.dpdocter.collections.InvestigationCollection;
+import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
@@ -38,13 +32,14 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DownloadDataRequestRepository;
 import com.dpdocter.request.ExportRequest;
-import com.dpdocter.services.DownloadDateServices;
+import com.dpdocter.services.DownloadDataService;
+import com.dpdocter.services.MailService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class DownloadDataServiceImpl implements DownloadDateServices{
+public class DownloadDataServiceImpl implements DownloadDataService{
 
 	private static Logger logger = Logger.getLogger(DownloadDataServiceImpl.class.getName());
 	
@@ -56,10 +51,13 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 	private static final String NEW_LINE_SEPARATOR = "\n";
 
 //	@Value(value = "${patients.data.file}")
-	private String PATIENTS_DATA_FILE;
+//	private String PATIENTS_DATA_FILE;
 	
 	@Autowired
 	MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private MailService mailService;
 	
 	@Override
 	public Boolean downlaodData(ExportRequest request) {
@@ -193,7 +191,7 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 			fileWriter = new FileWriter("/Users/nehakariya/Patients.csv");
 			
 			
-		    int rowCount = 0;
+//		    int rowCount = 0;
 //		    Row headerRow = sheet.createRow(++rowCount);
 		    writeHeader(PatientDownloadData.class, fileWriter);
 		    
@@ -265,6 +263,140 @@ public class DownloadDataServiceImpl implements DownloadDateServices{
 	    dataString.replaceAll("\\]", "\"");
 	    fileWriter.append(dataString);
 	    fileWriter.append(NEW_LINE_SEPARATOR);
+	}
+
+	@Override
+	public Boolean downloadClinicalItems(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId);
+			
+			
+			List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>();
+			
+			List<ComplaintCollection> complaintCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(criteria)), ComplaintCollection.class, ComplaintCollection.class).getMappedResults();
+			
+			FileWriter fileWriter = null;
+			if(complaintCollections != null && !complaintCollections.isEmpty()) {
+				fileWriter = new FileWriter("/home/ubuntu/Complaints.csv");
+				fileWriter.append("Complaints");
+			    fileWriter.append(NEW_LINE_SEPARATOR);
+			    
+				for(ComplaintCollection complaintCollection : complaintCollections) {
+					fileWriter.append(complaintCollection.getComplaint());
+				    fileWriter.append(NEW_LINE_SEPARATOR);
+				}
+				
+				MailAttachment mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName("Complaints.csv");
+				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Complaints.csv"));
+				mailAttachments.add(mailAttachment);
+				fileWriter.close();
+			}
+		    
+			List<ObservationCollection> observationCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), ObservationCollection.class, ObservationCollection.class).getMappedResults();
+			
+			if(observationCollections != null && !observationCollections.isEmpty()) {
+				System.out.println(observationCollections.size());
+				fileWriter = new FileWriter("/home/ubuntu/Observations.csv");
+				fileWriter.append("Observations");
+			    fileWriter.append(NEW_LINE_SEPARATOR);
+			    
+				for(ObservationCollection observationCollection : observationCollections) {
+					fileWriter.append(observationCollection.getObservation());
+				    fileWriter.append(NEW_LINE_SEPARATOR);
+				}
+				
+				MailAttachment mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName("Observations.csv");
+				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Observations.csv"));
+				mailAttachments.add(mailAttachment);
+				fileWriter.close();
+			}
+			
+			List<InvestigationCollection> investigationCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), InvestigationCollection.class, InvestigationCollection.class).getMappedResults();
+			
+			if(investigationCollections != null && !investigationCollections.isEmpty()) {
+				System.out.println(investigationCollections.size());
+				fileWriter = new FileWriter("/home/ubuntu/Investigation.csv");
+				fileWriter.append("Investigations");
+			    fileWriter.append(NEW_LINE_SEPARATOR);
+			    
+				for(InvestigationCollection investigationCollection : investigationCollections) {
+					fileWriter.append(investigationCollection.getInvestigation());
+				    fileWriter.append(NEW_LINE_SEPARATOR);
+				}
+				
+				MailAttachment mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName("Investigation.csv");
+				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Investigation.csv"));
+				mailAttachments.add(mailAttachment);
+				fileWriter.close();
+			}
+			
+			List<DiagnosisCollection> diagnosisCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), DiagnosisCollection.class, DiagnosisCollection.class).getMappedResults();
+			
+			if(diagnosisCollections != null && !diagnosisCollections.isEmpty()) {
+				fileWriter = new FileWriter("/home/ubuntu/Diagnosis.csv");
+				fileWriter.append("Diagnosis");
+			    fileWriter.append(NEW_LINE_SEPARATOR);
+			    
+				for(DiagnosisCollection diagnosisCollection : diagnosisCollections) {
+					fileWriter.append(diagnosisCollection.getDiagnosis());
+				    fileWriter.append(NEW_LINE_SEPARATOR);
+				}
+				
+				MailAttachment mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName("Diagnosis.csv");
+				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Diagnosis.csv"));
+				mailAttachments.add(mailAttachment);
+				fileWriter.close();
+			}
+			
+			List<NotesCollection> notesCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), NotesCollection.class, NotesCollection.class).getMappedResults();
+			
+			if(notesCollections != null && !notesCollections.isEmpty()) {
+				System.out.println(notesCollections.size());
+				fileWriter = new FileWriter("/home/ubuntu/Notes.csv");
+				fileWriter.append("Notes");
+			    fileWriter.append(NEW_LINE_SEPARATOR);
+			    
+				for(NotesCollection notesCollection : notesCollections) {
+					fileWriter.append(notesCollection.getNote());
+				    fileWriter.append(NEW_LINE_SEPARATOR);
+				}
+				
+				MailAttachment mailAttachment = new MailAttachment();
+				mailAttachment.setAttachmentName("Notes.csv");
+				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Notes.csv"));
+				mailAttachments.add(mailAttachment);
+				fileWriter.close();
+			}
+			
+			
+			response = mailService.sendEmailMultiAttach("neha.pateliya@healthcoco.com",
+					"Dr. Ajit Mahant's clinical notes items data", "Please find attachments",
+					mailAttachments);
+
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error downloading clinical items");
+			throw new BusinessException(ServiceError.Unknown, "Error downloading clinical items");
+		}
+		return response;
 	}
 	
 }
