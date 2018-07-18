@@ -234,7 +234,7 @@ public class SearchServiceImpl implements SearchService {
 				response = new SearchDoctorResponse();
 				
 				
-				if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
 					response.setSpeciality(StringUtils.capitalize(speciality));
 
 					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
@@ -323,7 +323,7 @@ public class SearchServiceImpl implements SearchService {
 	@SuppressWarnings("unchecked")
 	private QueryBuilder createSpecialityFilter(String speciality) {
 		QueryBuilder queryBuilder = null;
-		if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+		if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("DOCTOR")) {
 			if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
 				speciality = "GYNAECOLOGIST";
 			}

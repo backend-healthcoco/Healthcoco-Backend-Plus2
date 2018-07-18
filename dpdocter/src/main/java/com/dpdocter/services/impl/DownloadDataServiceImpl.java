@@ -300,12 +300,14 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				mailAttachment.setAttachmentName("Complaints.csv");
 				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Complaints.csv"));
 				mailAttachments.add(mailAttachment);
+				fileWriter.close();
 			}
 		    
 			List<ObservationCollection> observationCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(criteria)), ObservationCollection.class, ObservationCollection.class).getMappedResults();
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), ObservationCollection.class, ObservationCollection.class).getMappedResults();
 			
 			if(observationCollections != null && !observationCollections.isEmpty()) {
+				System.out.println(observationCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Observations.csv");
 				fileWriter.append("Observations");
 			    fileWriter.append(NEW_LINE_SEPARATOR);
@@ -319,12 +321,14 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				mailAttachment.setAttachmentName("Observations.csv");
 				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Observations.csv"));
 				mailAttachments.add(mailAttachment);
+				fileWriter.close();
 			}
 			
 			List<InvestigationCollection> investigationCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(criteria)), InvestigationCollection.class, InvestigationCollection.class).getMappedResults();
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), InvestigationCollection.class, InvestigationCollection.class).getMappedResults();
 			
 			if(investigationCollections != null && !investigationCollections.isEmpty()) {
+				System.out.println(investigationCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Investigation.csv");
 				fileWriter.append("Investigations");
 			    fileWriter.append(NEW_LINE_SEPARATOR);
@@ -338,10 +342,11 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				mailAttachment.setAttachmentName("Investigation.csv");
 				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Investigation.csv"));
 				mailAttachments.add(mailAttachment);
+				fileWriter.close();
 			}
 			
 			List<DiagnosisCollection> diagnosisCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(criteria)), DiagnosisCollection.class, DiagnosisCollection.class).getMappedResults();
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), DiagnosisCollection.class, DiagnosisCollection.class).getMappedResults();
 			
 			if(diagnosisCollections != null && !diagnosisCollections.isEmpty()) {
 				fileWriter = new FileWriter("/home/ubuntu/Diagnosis.csv");
@@ -357,12 +362,14 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				mailAttachment.setAttachmentName("Diagnosis.csv");
 				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Diagnosis.csv"));
 				mailAttachments.add(mailAttachment);
+				fileWriter.close();
 			}
 			
 			List<NotesCollection> notesCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(criteria)), NotesCollection.class, NotesCollection.class).getMappedResults();
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), NotesCollection.class, NotesCollection.class).getMappedResults();
 			
 			if(notesCollections != null && !notesCollections.isEmpty()) {
+				System.out.println(notesCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Notes.csv");
 				fileWriter.append("Notes");
 			    fileWriter.append(NEW_LINE_SEPARATOR);
@@ -376,6 +383,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				mailAttachment.setAttachmentName("Notes.csv");
 				mailAttachment.setInputStream(new FileInputStream("/home/ubuntu/Notes.csv"));
 				mailAttachments.add(mailAttachment);
+				fileWriter.close();
 			}
 			
 			

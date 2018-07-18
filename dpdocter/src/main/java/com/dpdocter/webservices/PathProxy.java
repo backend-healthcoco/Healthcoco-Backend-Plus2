@@ -1777,7 +1777,7 @@ public interface PathProxy {
 		public static final String GET_DENTAL_IMAGING_DATA = "/getDentalImagingData";
 	}
 
-	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
+	public static final String WEB_SEARCH_BASE_URL = "/websearch";
 
 	public interface SearchUrls {
 
