@@ -70,6 +70,9 @@ public class PrintSettingsCollection extends GenericCollection {
 
 	@Field
 	private String generalNotes;
+	
+	@Field
+	private boolean isLab = false;
 
 	public Boolean getShowPoweredBy() {
 		return showPoweredBy;
@@ -205,6 +208,15 @@ public class PrintSettingsCollection extends GenericCollection {
 
 	public void setGeneralNotes(String generalNotes) {
 		this.generalNotes = generalNotes;
+	}
+
+	
+	public boolean isLab() {
+		return isLab;
+	}
+
+	public void setLab(boolean isLab) {
+		this.isLab = isLab;
 	}
 
 	@Override
