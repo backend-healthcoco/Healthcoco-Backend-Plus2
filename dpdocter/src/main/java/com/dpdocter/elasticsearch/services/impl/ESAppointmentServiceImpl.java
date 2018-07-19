@@ -502,7 +502,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				appointmentSearchResponse.setId(speciality.getId());
 				appointmentSearchResponse.setResponse(speciality.getSuperSpeciality());
 				appointmentSearchResponse.setResponseType(AppointmentResponseType.SPECIALITY);
-				appointmentSearchResponse.setSlugUrl(speciality.getSuperSpeciality().toLowerCase().trim().replaceAll("\\\\", ""));
+				appointmentSearchResponse.setSlugUrl(speciality.getSuperSpeciality().toLowerCase().trim().replaceAll("\\\\", "").replaceAll("\\s", ""));
 				response.add(appointmentSearchResponse);
 			}
 		return response;
