@@ -28,5 +28,4 @@ public class DoctorLabReportResponseWithCount {
 		return "DoctorLabReportResponseWithCount [labReportsResponses=" + labReportsResponses + ", count=" + count
 				+ "]";
 	}
-
 }

@@ -1,12 +1,8 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.ImageURLResponse;
 
 public class LabTestSample extends GenericCollection {
-
 	private String id;
 	private String sampleType;
 	private String daughterLabLocationId;
@@ -143,14 +139,24 @@ public class LabTestSample extends GenericCollection {
 	public void setIsCollectedAtLab(Boolean isCollectedAtLab) {
 		this.isCollectedAtLab = isCollectedAtLab;
 	}
+	
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
 	@Override
 	public String toString() {
 		return "LabTestSample [id=" + id + ", sampleType=" + sampleType + ", daughterLabLocationId="
-				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", rateCardTestAssociation="
-				+ rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected="
-				+ isCollected + ", isCollectedAtLab=" + isCollectedAtLab + ", isHardCopyRequired=" + isHardCopyRequired
-				+ ", isHardCopyGiven=" + isHardCopyGiven + ", status=" + status + ", sampleId=" + sampleId + "]";
+				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", doctorId=" + doctorId
+				+ ", rateCardTestAssociation=" + rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime="
+				+ urgentTime + ", isCollected=" + isCollected + ", isCollectedAtLab=" + isCollectedAtLab
+				+ ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven + ", status="
+				+ status + ", sampleId=" + sampleId + ", serialNumber=" + serialNumber + ", isCompleted=" + isCompleted
+				+ "]";
 	}
 
 }

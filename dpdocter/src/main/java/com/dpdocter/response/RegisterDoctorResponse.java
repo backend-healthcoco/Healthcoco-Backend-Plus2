@@ -239,5 +239,4 @@ public class RegisterDoctorResponse {
 				+ ", registerNumber=" + registerNumber + ", role=" + role + ", userState=" + userState + ", colorCode="
 				+ colorCode + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + "]";
 	}
-
 }

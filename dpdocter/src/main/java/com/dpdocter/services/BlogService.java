@@ -22,6 +22,6 @@ public interface BlogService {
 	public List<Blog> getFevouriteBlogs(int size, int page, String category, String userId, String title);
 
 	public BlogCategoryType[] getBlogCategory();
-	
+
 	public List<BlogResponse> getBlogs(BlogRequest request);
 }

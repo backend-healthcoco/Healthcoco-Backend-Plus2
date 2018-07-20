@@ -17,9 +17,9 @@ public class InventoryBatchCollection extends GenericCollection {
 	@Field
 	private Long noOfItemsLeft = 0l;
 	@Field
-	private Long retailPrice;
+	private Double retailPrice;
 	@Field
-	private Long costPrice;
+	private Double costPrice;
 	@Field
 	private ObjectId itemId;
 	@Field
@@ -63,22 +63,6 @@ public class InventoryBatchCollection extends GenericCollection {
 		this.noOfItemsLeft = noOfItemsLeft;
 	}
 
-	public Long getRetailPrice() {
-		return retailPrice;
-	}
-
-	public void setRetailPrice(Long retailPrice) {
-		this.retailPrice = retailPrice;
-	}
-
-	public Long getCostPrice() {
-		return costPrice;
-	}
-
-	public void setCostPrice(Long costPrice) {
-		this.costPrice = costPrice;
-	}
-
 	public ObjectId getLocationId() {
 		return locationId;
 	}
@@ -117,6 +101,22 @@ public class InventoryBatchCollection extends GenericCollection {
 
 	public void setExpiryDate(Long expiryDate) {
 		this.expiryDate = expiryDate;
+	}
+
+	public Double getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Double retailPrice) {
+		this.retailPrice = retailPrice;
+	}
+
+	public Double getCostPrice() {
+		return costPrice;
+	}
+
+	public void setCostPrice(Double costPrice) {
+		this.costPrice = costPrice;
 	}
 
 	@Override

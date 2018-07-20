@@ -29,7 +29,6 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
-import com.dpdocter.beans.User;
 import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.elasticsearch.services.impl.ESDentalLabServiceImpl;
 import com.dpdocter.enums.LabType;
@@ -465,6 +464,18 @@ public class DentalLabAPI {
 		}
 		Response<String> response = new Response<String>();
 		response.setData(dentalLabService.downloadDentalLabReportPrint(requestId, false));
+		return response;
+	}
+
+	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT, notes = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_INSPECTION_REPORT)
+	public Response<String> downloadInspectionReport(@PathParam("requestId") String requestId) {
+		if (requestId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(dentalLabService.downloadDentalLabReportPrint(requestId, true));
 		return response;
 	}
 

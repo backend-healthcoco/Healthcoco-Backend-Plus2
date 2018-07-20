@@ -238,6 +238,7 @@ public class DPDoctorUtils {
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				orQueryBuilder.add(QueryBuilders.boolQuery().must(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
+					if(!DPDoctorUtils.anyStringEmpty(speciality))
 					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder));
@@ -392,11 +393,14 @@ public class DPDoctorUtils {
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				orQueryBuilder.add(QueryBuilders.boolQuery().must(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
-					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+						orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+					}
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder)).minimumNumberShouldMatch(1);
 			}
 		}
+
 		if (!DPDoctorUtils.anyStringEmpty(category)) {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}

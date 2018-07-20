@@ -249,6 +249,7 @@ public class ClinicalNotesAddRequest {
 
 	private String familyHistory;
 
+
 	private String personalHistoryTobacco;
 	private String personalHistoryAlcohol;
 	private String personalHistorySmoking;
@@ -258,6 +259,7 @@ public class ClinicalNotesAddRequest {
 	private String generalHistoryMedicine;
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
+
 	private String painScale;
 	private Date createdTime;
 

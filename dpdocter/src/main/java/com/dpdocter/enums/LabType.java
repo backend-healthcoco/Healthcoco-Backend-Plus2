@@ -13,5 +13,4 @@ public enum LabType {
 	private LabType(String type) {
 		this.type = type;
 	}
-
 }

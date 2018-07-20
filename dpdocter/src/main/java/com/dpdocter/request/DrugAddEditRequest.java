@@ -44,15 +44,6 @@ public class DrugAddEditRequest {
 
 	private Integer drugQuantity;
 	
-
-	public Integer getDrugQuantity() {
-		return drugQuantity;
-	}
-
-	public void setDrugQuantity(Integer drugQuantity) {
-		this.drugQuantity = drugQuantity;
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -189,12 +180,22 @@ public class DrugAddEditRequest {
 		this.genericNames = genericNames;
 	}
 
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
 				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
 				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
-				+ direction + ", categories=" + categories + ", genericNames=" + genericNames + "]";
+				+ direction + ", categories=" + categories + ", genericNames=" + genericNames + ", drugQuantity="
+				+ drugQuantity + "]";
 	}
+
 }

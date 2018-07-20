@@ -50,7 +50,7 @@ public class IPDReportsCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-
+	
 	public ObjectId getId() {
 		return id;
 	}

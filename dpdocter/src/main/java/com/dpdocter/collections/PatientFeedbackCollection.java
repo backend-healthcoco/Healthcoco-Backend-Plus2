@@ -60,7 +60,6 @@ public class PatientFeedbackCollection extends GenericCollection {
 	private ObjectId prescriptionId;
 	@Field
 	private List<QuestionAnswers> questionAnswers;
-	
 
 	public ObjectId getId() {
 		return id;

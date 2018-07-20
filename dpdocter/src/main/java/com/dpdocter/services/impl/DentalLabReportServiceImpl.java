@@ -1,32 +1,8 @@
 package com.dpdocter.services.impl;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.DentalLabReports;
-import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.LabReports;
-import com.dpdocter.beans.SMS;
-import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.collections.LabReportsCollection;
-import com.dpdocter.collections.LabTestPickupCollection;
-import com.dpdocter.collections.LabTestSampleCollection;
-import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.SMSTrackDetail;
-import com.dpdocter.enums.SMSStatus;
-import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.request.LabReportsAddRequest;
-import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.DentalLabReportService;
-
-import common.util.web.DPDoctorUtils;
 
 @Service
 public class DentalLabReportServiceImpl implements DentalLabReportService{

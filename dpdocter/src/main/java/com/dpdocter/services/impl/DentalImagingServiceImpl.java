@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,7 +19,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -31,6 +31,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.CBDTArch;
 import com.dpdocter.beans.CBDTQuadrant;
 import com.dpdocter.beans.ClinicImage;
@@ -73,7 +78,6 @@ import com.dpdocter.collections.FOVCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
@@ -213,6 +217,21 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	@Value(value = "${pdf.footer.text}")
 	private String footerText;
 
+	@Value(value = "${jasper.templates.resource}")
+	private String JASPER_TEMPLATES_RESOURCE;
+
+	@Value(value = "${bucket.name}")
+	private String bucketName;
+
+	@Value(value = "${mail.aws.key.id}")
+	private String AWS_KEY;
+
+	@Value(value = "${mail.aws.secret.key}")
+	private String AWS_SECRET_KEY;
+	
+	@Value(value = "${doctor.app.bit.link}")
+	private String DOCTOR_APP_LINK;
+
 	@Override
 	@Transactional
 	public DentalImagingResponse addEditDentalImagingRequest(DentalImagingRequest request) {
@@ -275,9 +294,79 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						"New dental imaging request has been created.", ComponentType.DENTAL_IMAGING_REQUEST.getType(),
 						String.valueOf(dentalImagingCollection.getId()), null);
 
-				if (request.getType().equalsIgnoreCase("DOCTOR")) {
-					if (locationCollection != null) {
-						String message = "Hi, {doctorName} has suggested {patientName} for you.";
+				if (request.getType() != null) {
+
+					if (request.getType().equalsIgnoreCase("DOCTOR")) {
+						if (locationCollection != null) {
+							String message = "Hi, {doctorName} has suggested {patientName} for you.";
+							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+							smsTrackDetail.setDoctorId(doctorId);
+							smsTrackDetail.setLocationId(locationId);
+							smsTrackDetail.setHospitalId(hospitalId);
+							smsTrackDetail.setType("DENTAL_IMAGING_REQUEST");
+							SMSDetail smsDetail = new SMSDetail();
+							smsDetail.setUserId(userCollection.getId());
+							SMS sms = new SMS();
+							smsDetail.setUserName(userCollection.getFirstName());
+							message = message.replace("{doctorName}",
+									userCollection.getTitle() + userCollection.getFirstName());
+							message = message.replace("{patientName}", request.getLocalPatientName());
+							sms.setSmsText(message);
+							SMSAddress smsAddress = new SMSAddress();
+							smsAddress.setRecipient(locationCollection.getClinicNumber());
+							sms.setSmsAddress(smsAddress);
+
+							smsDetail.setSms(sms);
+							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+							smsDetails.add(smsDetail);
+							smsTrackDetail.setSmsDetails(smsDetails);
+							smsServices.sendSMS(smsTrackDetail, true);
+						}
+
+						StringBuilder builder = new StringBuilder();
+						builder.append(
+								"Healthcoco user {patientName} ! {doctorName} has suggested you below scan(s).\n");
+						builder.append("\n");
+						for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
+							if (serviceRequest.getToothNumber() != null) {
+								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
+										+ ") tooth no." + serviceRequest.getToothNumber() + "\n");
+							} 
+							else if(serviceRequest.getCBCTQuadrant() != null)
+							{
+								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
+								+ ") CBDT Quadrant : " + serviceRequest.getCBCTQuadrant() + "\n");
+							}
+							
+							else if(serviceRequest.getCBCTArch() != null)
+							{
+								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
+								+ ") CBDT Arch : " + serviceRequest.getCBCTArch()+ "\n");
+							}
+							
+							else if(serviceRequest.getFov() != null)
+							{
+								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
+								+ ") FOV : " + serviceRequest.getFov()+ "\n");
+							}
+							
+							else if(serviceRequest.getInstruction() != null)
+							{
+								builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType()
+								+ ") Instruction : " + serviceRequest.getInstruction()+ "\n");
+							}
+							
+							else {
+								builder.append(
+										serviceRequest.getServiceName() + "(" + serviceRequest.getType() + ")" + "\n");
+							}
+
+						}
+						builder.append("\n");
+						builder.append(
+								"Imaging centre : {locationName} ({clinicNumber}). {locationMapLink}");
+						String text = builder.toString();
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(doctorId);
 						smsTrackDetail.setLocationId(locationId);
@@ -286,11 +375,23 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						SMSDetail smsDetail = new SMSDetail();
 						smsDetail.setUserId(userCollection.getId());
 						SMS sms = new SMS();
-						smsDetail.setUserName(userCollection.getFirstName());
-						sms.setSmsText(message.replace("{doctorName}", userCollection.getFirstName()));
-						sms.setSmsText(message.replace("{patientName}", request.getLocalPatientName()));
+						smsDetail.setUserName(request.getLocalPatientName());
+						text = text.replace("{patientName}", request.getLocalPatientName());
+						text = text.replace("{doctorName}", userCollection.getTitle() + userCollection.getFirstName());
+						text = text.replace("{locationName}", locationCollection.getLocationName());
+						if (locationCollection.getClinicNumber() != null) {
+							text = text.replace("{clinicNumber}", locationCollection.getClinicNumber());
+						} else {
+							text = text.replace("{clinicNumber}", "");
+						}
+						if (locationCollection.getGoogleMapShortUrl() != null) {
+							text = text.replace("{locationMapLink}","Location - " + locationCollection.getGoogleMapShortUrl());
+						} else {
+							text = text.replace("{locationMapLink}", "");
+						}
+						sms.setSmsText(text);
 						SMSAddress smsAddress = new SMSAddress();
-						smsAddress.setRecipient(locationCollection.getClinicNumber());
+						smsAddress.setRecipient(request.getMobileNumber());
 						sms.setSmsAddress(smsAddress);
 
 						smsDetail.setSms(sms);
@@ -300,40 +401,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						smsTrackDetail.setSmsDetails(smsDetails);
 						smsServices.sendSMS(smsTrackDetail, true);
 					}
-
-					StringBuilder builder = new StringBuilder();
-					builder.append("Healthcoco user {patientName}! {doctorName} has suggested you below scan(s).\n\n");
-					for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
-						builder.append(serviceRequest.getServiceName() + "(" + serviceRequest.getType() + ") tooth no."
-								+ serviceRequest.getToothNumber() + "\n");
-					}
-					builder.append("\n");
-					builder.append("{locationName} {clinicNumber} {locationMapLink}");
-					String text = builder.toString();
-					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					smsTrackDetail.setDoctorId(doctorId);
-					smsTrackDetail.setLocationId(locationId);
-					smsTrackDetail.setHospitalId(hospitalId);
-					smsTrackDetail.setType("DENTAL_IMAGING_REQUEST");
-					SMSDetail smsDetail = new SMSDetail();
-					smsDetail.setUserId(userCollection.getId());
-					SMS sms = new SMS();
-					smsDetail.setUserName(request.getLocalPatientName());
-					sms.setSmsText(text.replace("{patientName}", request.getLocalPatientName()));
-					sms.setSmsText(text.replace("{doctorName}", userCollection.getFirstName()));
-					sms.setSmsText(text.replace("{locationName}", locationCollection.getLocationName()));
-					sms.setSmsText(text.replace("{clinicNumber}", locationCollection.getClinicNumber()));
-					sms.setSmsText(text.replace("{locationMapLink}", locationCollection.getGoogleMapShortUrl()));
-					SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(request.getMobileNumber());
-					sms.setSmsAddress(smsAddress);
-
-					smsDetail.setSms(sms);
-					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					smsDetails.add(smsDetail);
-					smsTrackDetail.setSmsDetails(smsDetails);
-					smsServices.sendSMS(smsTrackDetail, true);
 				}
 			}
 			response = new DentalImagingResponse();
@@ -348,7 +415,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingInvoice.setPatientName(request.getLocalPatientName());
 				dentalImagingInvoice.setIsPaid(true);
 				dentalImagingInvoice.setReferringDoctor(request.getReferringDoctor());
-				addEditInvoice(dentalImagingInvoice);
+				addEditInvoice(dentalImagingInvoice, true);
 			}
 
 			if (request.getType() != null) {
@@ -364,10 +431,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				if (request.getType().equalsIgnoreCase("DOCTOR")) {
 					if (!DPDoctorUtils.anyStringEmpty(response.getPatientId(), response.getDoctorId(),
 							response.getHospitalId(), response.getLocationId())) {
-						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(new ObjectId(response.getPatientId()),
-										new ObjectId(response.getDoctorId()), new ObjectId(response.getLocationId()),
-										new ObjectId(response.getHospitalId()));
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
+								new ObjectId(response.getHospitalId()));
 						if (patientCollection != null) {
 							PatientShortCard patientShortCard = new PatientShortCard();
 							BeanUtil.map(patientCollection, patientShortCard);
@@ -623,6 +689,18 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : dentalImagingReportsCollections) {
 						DentalImagingReports reports = new DentalImagingReports();
 						BeanUtil.map(dentalImagingReportsCollection, reports);
+						if(reports.getReport() != null)
+						{
+							if(reports.getReport().getImageUrl() != null)
+							{
+								reports.getReport().setImageUrl(imagePath + reports.getReport().getImageUrl());
+							}
+							if(reports.getReport().getThumbnailUrl() != null)
+							{
+								reports.getReport().setThumbnailUrl(imagePath + reports.getReport().getThumbnailUrl());
+							}
+						}
+						
 						dentalImagingReports.add(reports);
 					}
 					dentalImagingResponse.setReports(dentalImagingReports);
@@ -948,8 +1026,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
 				if (imageURLResponse != null) {
-					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
-					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
 					pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()),
 							"Report have been uploaded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), null, null);
 				}
@@ -969,7 +1045,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 					LocationCollection locationCollection = locationRepository
 							.findOne(new ObjectId(request.getUploadedByLocationId()));
-					String message = "Hi, {clinicName} has uploaded a report for {patientName} who was referred by you. Now your reports are also available on Healthcoco App ${doctor.app.bit.link}";
+					String message = "Hi, {clinicName} has uploaded a report for {patientName} who was referred by you. Now your reports are also available on Healthcoco App. "+ DOCTOR_APP_LINK ;
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(dentalImagingCollection.getDoctorId());
 					smsTrackDetail.setLocationId(dentalImagingCollection.getLocationId());
@@ -1313,7 +1389,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Override
 	@Transactional
-	public DentalImagingInvoice addEditInvoice(DentalImagingInvoice request) {
+	public DentalImagingInvoice addEditInvoice(DentalImagingInvoice request, Boolean fromRequest) {
 		DentalImagingInvoice response = null;
 		List<DentalImagingInvoiceItem> invoiceItems = null;
 		// DentalWorksAmountCollection dentalWorksAmountCollection = null;
@@ -1393,16 +1469,26 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			DentalImagingCollection dentalImagingCollection = dentalImagingRepository
 					.findOne(new ObjectId(request.getDentalImagingId()));
-			if (dentalImagingCollection != null) {
+			if (dentalImagingCollection != null && fromRequest == true) {
 				invoiceItems = new ArrayList<DentalImagingInvoiceItem>();
 				for (DentalDiagnosticServiceRequest serviceRequest : dentalImagingCollection.getServices()) {
 					DentalImagingInvoiceItem dentalImagingInvoiceItem = new DentalImagingInvoiceItem();
 					BeanUtil.map(serviceRequest, dentalImagingInvoiceItem);
 					invoiceItems.add(dentalImagingInvoiceItem);
 				}
+				dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
+			}
+			else
+			{
+				invoiceItems = new ArrayList<DentalImagingInvoiceItem>();
+				for (DentalImagingInvoiceItemResponse invoiceItem : request.getInvoiceItems()) {
+					DentalImagingInvoiceItem dentalImagingInvoiceItem = new DentalImagingInvoiceItem();
+					BeanUtil.map(invoiceItem, dentalImagingInvoiceItem);
+					invoiceItems.add(dentalImagingInvoiceItem);
+				}
+				dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
 			}
 
-			dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
 			dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
 			dentalImagingCollection.setInvoiceId(dentalImagingInvoiceCollection.getId());
 			dentalImagingCollection.setUniqueInvoiceId(dentalImagingInvoiceCollection.getUniqueInvoiceId());
@@ -1597,14 +1683,19 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 
 			if (dentalImagingInvoiceCollection != null) {
-				// UserCollection userCollection =
-				// userRepository.findOne(dentalImagingInvoiceCollection.getDoctorId());
 				dentalImagingInvoiceCollection.setDiscarded(discarded);
 				dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
-				// pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()),
-				// "Request has been discarded.",
-				// ComponentType.DENTAL_IMAGING_REQUEST.getType(),
-				// String.valueOf(dentalImagingCollection.getId()), null);
+				if(dentalImagingInvoiceCollection.getDentalImagingId() != null)
+				{
+					DentalImagingCollection dentalImagingCollection = dentalImagingRepository.findOne(dentalImagingInvoiceCollection.getDentalImagingId());
+					if(dentalImagingCollection != null)
+					{
+						dentalImagingCollection.setInvoiceId(null);
+						dentalImagingCollection.setUniqueInvoiceId(null);
+						dentalImagingCollection.setIsPaid(false);
+						dentalImagingCollection = dentalImagingRepository.save(dentalImagingCollection);
+					}
+				}
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Record not found");
 			}
@@ -1757,6 +1848,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getCBCTArch() + "(Arch)");
 			} else if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getCBCTQuadrant())) {
 				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getCBCTQuadrant());
+			} else if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getFov())) {
+				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getFov() + "(FOV)");
 			} else {
 				dentalImagingInvoiceJasper.setQuadrant("--");
 			}
@@ -1764,49 +1857,29 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		}
 		parameters.put("items", dentalImagingInvoiceJaspers);
 
-		UserCollection doctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
+		UserCollection dentalImagingDoctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
+		UserCollection doctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDoctorId()));
 		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
 				new ObjectId(imagingInvoiceResponse.getPatientId()),
 				new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId()),
 				new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId()));
-		/*
-		 * Location location = imagingInvoiceResponse.getDentalImagingLab();
-		 */
 
-		/*
-		 * leftDetail = "<b>" + location.getLocationName() + "</b>" +
-		 * (!DPDoctorUtils.anyStringEmpty(location.getStreetAddress()) ? ",<br>" +
-		 * location.getStreetAddress() : "") +
-		 * (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? ",<br>" +
-		 * location.getCity() : "") +
-		 * (!DPDoctorUtils.anyStringEmpty(location.getState()) ? "," +
-		 * location.getState() : "") +
-		 * (!DPDoctorUtils.anyStringEmpty(location.getLocationEmailAddress()) ?
-		 * "<br><b>Email : </b>" + location.getLocationEmailAddress() : "") +
-		 * (!DPDoctorUtils.anyStringEmpty(location.getClinicNumber()) ?
-		 * "<br><b>Ph : </b>" + location.getClinicNumber() : ""); rightDetail =
-		 * "<b>InvoiceId : </b>" + imagingInvoiceResponse.getUniqueInvoiceId() + "<br>"
-		 * + "<b>Date : </b>" +
-		 * simpleDateFormat.format(imagingInvoiceResponse.getInvoiceDate());
-		 */
-
-		/*
-		 * parameters.put("patient", "<b> Patient Name : </b>" +
-		 * imagingInvoiceResponse.getPatientName()); parameters.put("doctor",
-		 * "<b>Referring Doctor : </b>" +
-		 * (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " :
-		 * "") + doctor.getFirstName());
-		 */
-		parameters.put("referredby", "<b>Referring Doctor : </b> Dr. " + doctor.getFirstName());
+		if (imagingInvoiceResponse.getReferringDoctor() != null) {
+			parameters.put("referredby", "Dr. " + imagingInvoiceResponse.getReferringDoctor());
+		} else {
+			parameters.put("referredby", "Dr. " + doctor.getFirstName());
+		}
 		parameters.put("title", "INVOICE");
-		grantTotal = imagingInvoiceResponse.getTotalCost();
+		grantTotal = imagingInvoiceResponse.getGrandTotal();
 		parameters.put("total", "Grand Total : " + grantTotal + " INR"
 				+ (imagingInvoiceResponse.getIsPaid() ? " (PAID)" : " (UNPAID)"));
 		parameters.put("leftDetail", leftDetail);
 		parameters.put("rightDetail", rightDetail);
-		parameters.put("signature", (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() + " " : "")
-				+ doctor.getFirstName());
+		parameters.put("signature", (!DPDoctorUtils.anyStringEmpty(dentalImagingDoctor.getTitle()) ? dentalImagingDoctor.getTitle() + " " : "")
+				+ dentalImagingDoctor.getFirstName());
+
 		parameters.put("followUpAppointment", null);
+
 		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
 
 		printSettings = printSettingsRepository.getSettings(
@@ -1834,7 +1907,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				patientCollection, "<b>INVOICE-ID: </b>" + imagingInvoiceResponse.getUniqueInvoiceId(),
 				imagingInvoiceResponse.getPatientName(), imagingInvoiceResponse.getMobileNumber(), parameters,
 				imagingInvoiceResponse.getCreatedTime() != null ? imagingInvoiceResponse.getCreatedTime() : new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), true);
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
 		String layout = printSettings != null
@@ -1891,7 +1964,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 				visitCriteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 			}
-			
 			if (toDate != null) {
 				criteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate))).lte(new Date(Long.parseLong(toDate)));
 				visitCriteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate))).lte(new Date(Long.parseLong(toDate)));
@@ -1900,6 +1972,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				visitCriteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate)));
 			}
 			visitCriteria.and("isVisited").is(true);
+			criteria.and("discarded").is(false);
+			visitCriteria.and("discarded").is(false);
 
 			mostVisitAggregation = Aggregation.newAggregation(Aggregation.match(visitCriteria),
 					Aggregation.unwind("services"), Aggregation.group("services.serviceName").count().as("count"),
@@ -1923,12 +1997,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					DentalImagingCollection.class, DentalImagingResponse.class);
 			dentalImagingResponses = aggregationResult.getMappedResults();
 			for (DentalImagingResponse dentalImagingResponse : dentalImagingResponses) {
-
-			/*	List<DentalImagingReportsCollection> dentalImagingReportsCollections = dentalImagingReportsRepository
-						.getReportsByRequestId(new ObjectId(dentalImagingResponse.getId()), false);
-				if (dentalImagingReportsCollections != null && !dentalImagingReportsCollections.isEmpty()) {
-					patientCount++;
-				}*/
 				
 				if(dentalImagingResponse.getIsVisited() == true)
 				{
@@ -1977,6 +2045,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			} else {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
+			criteria.and("discarded").is(false);
 
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					Fields.field("patient.id", "$patient.userId"),
@@ -2161,6 +2230,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
 
+			criteria.and("discarded").is(false);
+
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					// Fields.field("dentalImaging.id", "$id"),
 					Fields.field("dentalImaging.services", "$services"),
@@ -2190,9 +2261,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("responses", new BasicDBObject("$push", "$dentalImaging"))
 							.append("doctorName", new BasicDBObject("$first", "$dentalImaging.doctor.firstName"))));
 
-			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-					Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-					Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.match(criteria), projectList, aggregationOperation,
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
@@ -2237,11 +2306,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		List<PatientDentalImagignVisitAnalyticsResponse> response = null;
 		Integer count = 0;
-		Double totalAmount = 0.0;
-		Double paidAmount = 0.0;
 		try {
 			Aggregation aggregation = null;
-			Aggregation aggregation2 = null;
 			AggregationOperation aggregationOperation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
@@ -2255,14 +2321,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 
-			// criteria.and("isReportsUploaded").is(true);
-
 			if (toDate != null) {
 				criteria.and("updatedTime").gte(new Date(fromDate)).lte(new Date(toDate));
 			} else {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
 
+			criteria.and("discarded").is(false);
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					// Fields.field("dentalImaging.id", "$id"),
 					Fields.field("dentalImaging.services", "$services"),
@@ -2281,8 +2346,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					Fields.field("dentalImaging.specialInstructions", "$specialInstructions"),
 					Fields.field("dentalImaging.doctor", "$doctor"),
 					Fields.field("dentalImaging.totalCost", "$totalCost"),
+					Fields.field("dentalImaging.grandTotal", "$grandTotal"),
 					Fields.field("dentalImaging.isPaid", "$isPaid"),
-					Fields.field("dentalImaging.invoiceId", "$invoiceId")));
+					Fields.field("dentalImaging.invoiceId", "$invoiceId"),
+					Fields.field("dentalImaging.isVisited", "$isVisited")));
 
 			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$dentalImaging.doctorId")
@@ -2291,10 +2358,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.append("responses", new BasicDBObject("$push", "$dentalImaging"))
 							.append("doctorName", new BasicDBObject("$first", "$dentalImaging.doctor.firstName"))));
 
-			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-					Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-					Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-					Aggregation.unwind("doctor"), Aggregation.match(criteria), projectList, aggregationOperation,
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),  Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"), projectList, aggregationOperation,
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<PatientDentalImagignVisitAnalyticsResponse> aggregationResults = mongoTemplate
 					.aggregate(aggregation, "dental_imaging_cl", PatientDentalImagignVisitAnalyticsResponse.class);
@@ -2304,20 +2369,22 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				patientAnalyticResponse.setCount(patientAnalyticResponse.getResponses().size());
 				List<DentalImagingResponse> paidDentalImagingResponses = new ArrayList<>();
 				List<DentalImagingResponse> dentalImagingResponses = new ArrayList<>();
+				Double totalAmount = 0.0;
+				Double paidAmount = 0.0;
 				for (DentalImagingResponse dentalImagingResponse : patientAnalyticResponse.getResponses()) {
 					
-					totalAmount = totalAmount + dentalImagingResponse.getTotalCost();
-					if (dentalImagingResponse.getIsReportsUploaded().equals(Boolean.TRUE)) {
+					totalAmount = totalAmount + dentalImagingResponse.getGrandTotal();
+					if (dentalImagingResponse.getIsVisited().equals(Boolean.TRUE)) {
 						dentalImagingResponses.add(dentalImagingResponse);
 					}
 					if (dentalImagingResponse.getIsPaid().equals(Boolean.TRUE)) {
-						paidAmount = paidAmount + dentalImagingResponse.getTotalCost();
+						paidAmount = paidAmount + dentalImagingResponse.getGrandTotal();
 						paidDentalImagingResponses.add(dentalImagingResponse);
 					}
 				}
 				
-				/*patientAnalyticResponse.setVisitedResponses(dentalImagingResponses);
-				patientAnalyticResponse.setPaidResponses(paidDentalImagingResponses);*/
+				patientAnalyticResponse.setVisitedResponses(dentalImagingResponses);
+				patientAnalyticResponse.setPaidResponses(paidDentalImagingResponses);
 				patientAnalyticResponse.setTotalAmount(totalAmount);
 				patientAnalyticResponse.setPaidAmount(paidAmount);
 				patientAnalyticResponse.setVisitedCount(dentalImagingResponses.size());
@@ -2341,7 +2408,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		try {
 			mailResponse = createMailData(invoiceId);
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(),
-					mailResponse.getClinicName(), mailResponse.getPatientName(),
+					mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(),
 					"dentalImagingInvoiceEmailTemplate.vm");
 			response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice", body,
 					mailResponse.getMailAttachment());
@@ -2448,15 +2515,16 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		Boolean response = false;
 		try {
 			mailResponse = createReportMailData(id);
+			// System.out.println(mailResponse);
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(),
-					mailResponse.getClinicName(), mailResponse.getPatientName(), "dentalImagingRecordEmailTemplate.vm");
+					mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(),
+					"dentalImagingRecordEmailTemplate.vm");
+			// System.out.println(body);
 			response = mailService.sendEmailMultiAttach(emailAddress,
-					mailResponse.getDoctorName() + " sent you reports.", body, mailResponse.getMailAttachments());
-			if (response != null && mailResponse.getMailAttachment() != null
-					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
-				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
-					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+					mailResponse.getClinicName() + " sent you dental imaging reports for your patient " + mailResponse.getPatientName() + ".", body,mailResponse.getMailAttachments());
+
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
@@ -2493,13 +2561,20 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				List<DentalImagingReportsCollection> reports = dentalImagingReportsRepository
 						.getReportsByRequestId(new ObjectId(id), false);
 
-				if (reports == null || reports.isEmpty()) {
+				if (reports != null && !reports.isEmpty()) {
 					mailAttachments = new ArrayList<>();
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : reports) {
-						File file = new File(dentalImagingReportsCollection.getReport().getImageUrl());
+
+						BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+						AmazonS3 s3client = new AmazonS3Client(credentials);
+						S3Object object = s3client
+								.getObject(new GetObjectRequest(bucketName, dentalImagingReportsCollection.getReport().getImageUrl()));
+						InputStream objectData = object.getObjectContent();
 						mailAttachment = new MailAttachment();
-						mailAttachment.setAttachmentName(FilenameUtils.getName(file.getPath()));
-						mailAttachment.setFileSystemResource(new FileSystemResource(file));
+						mailAttachment.setFileSystemResource(null);
+						mailAttachment.setInputStream(objectData);
+						mailAttachment.setAttachmentName(FilenameUtils.getName(dentalImagingReportsCollection.getReport().getImageUrl()));
+						mailAttachment.setUrl(dentalImagingReportsCollection.getReport().getImageUrl());
 						mailAttachments.add(mailAttachment);
 					}
 
@@ -2609,34 +2684,25 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
 
-			/*
-			 * aggregationOperation = new CustomAggregationOperation(new
-			 * BasicDBObject("$group", new BasicDBObject("_id", "$dentalImaging.doctorId")
-			 * .append("doctorId", new BasicDBObject("$first", "$dentalImaging.doctorId"))
-			 * .append("doctor", new BasicDBObject("$first", "$dentalImaging.doctor"))
-			 * .append("responses", new BasicDBObject("$push", "$dentalImaging"))
-			 * .append("doctorName", new BasicDBObject("$first",
-			 * "$dentalImaging.doctor.firstName"))));
-			 */
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+				aggregation = Aggregation.newAggregation( Aggregation.match(criteria),Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-
+				aggregation = Aggregation.newAggregation( Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			System.out.println(aggregation);
 			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					"dental_imaging_cl", DentalImagingResponse.class);
+					DentalImagingCollection.class,DentalImagingResponse.class);
+			
 			dentalImagingResponses = aggregationResults.getMappedResults();
+			Aggregation countAggregation =  Aggregation.newAggregation( Aggregation.match(criteria));
 
-			response.setCount(dentalImagingResponses.size());
+			AggregationResults<DentalImagingResponse> countAggregationResults = mongoTemplate.aggregate(countAggregation,
+					DentalImagingCollection.class,DentalImagingResponse.class);
+
 			List<DentalImagingResponse> paidDentalImagingResponses = new ArrayList<>();
 			List<DentalImagingResponse> visitedDentalImagingResponses = new ArrayList<>();
 			for (DentalImagingResponse dentalImagingResponse : dentalImagingResponses) {
@@ -2649,8 +2715,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 
 			}
-			response.setCount((int) mongoTemplate.count(new Query(criteria),DentalImagingCollection.class));
-			response.setVisitedResponses(dentalImagingResponses);
+			response.setCount(countAggregationResults.getMappedResults().size());
+			response.setVisitedResponses(visitedDentalImagingResponses);
 			response.setPaidResponses(paidDentalImagingResponses);
 			response.setVisitedCount(dentalImagingResponses.size());
 			response.setPaidCount(paidDentalImagingResponses.size());

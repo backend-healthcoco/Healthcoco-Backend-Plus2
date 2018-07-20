@@ -30,11 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
@@ -345,8 +345,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				}
 				patientTreatmentCollection.setCreatedBy(createdBy);
 			} else {
-				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository
-						.findOne(new ObjectId(request.getId()));
+				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findOne(
+						new ObjectId(request.getId()), new ObjectId(request.getDoctorId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+
 				if (oldPatientTreatmentCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
 				} else {
@@ -571,7 +573,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
 							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))
-									.and("isPatientDiscarded").is(false)),
+									.and("isPatientDiscarded").ne(true)),
 							Aggregation.lookup(
 									"treatment_services_cl", "treatments.treatmentServiceId", "_id",
 									"treatmentService"),
@@ -721,7 +723,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
-					.is(patientObjectId).and("isPatientDiscarded").is(false);
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))
 					criteria.and("doctorId").is(doctorObjectId);
@@ -758,6 +760,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							.append("treatments.finalCost", "$treatments.finalCost")
 							.append("treatments.quantity", "$treatments.quantity")
 							.append("treatments.treatmentFields", "$treatments.treatmentFields")));
+
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -768,7 +771,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
-
 						Aggregation.unwind("treatmentService"),
 						Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 
@@ -877,7 +879,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
-					.is(patientObjectId).and("isPatientDiscarded").is(false);
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -1452,7 +1454,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
 						.findOne(treatment.getTreatmentServiceId());
 				patientTreatments.setNo(++no);
-				if (treatment.getStatus() != null) {
+				if (!DPDoctorUtils.anyStringEmpty(treatment.getStatus())) {
 					String status = treatment.getStatus().replaceAll("_", " ");
 					status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
 					patientTreatments.setStatus(status);
@@ -1569,7 +1571,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 					patientTreatmentCollection.getCreatedTime() != null ? patientTreatmentCollection.getCreatedTime()
 							: new Date(),
-					printSettings.getHospitalUId());
+					printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 			patientVisitService.generatePrintSetup(parameters, printSettings, patientTreatmentCollection.getDoctorId());
 			String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PATIENTTREARMENT-"
 					+ patientTreatmentCollection.getUniqueEmrId() + new Date().getTime();

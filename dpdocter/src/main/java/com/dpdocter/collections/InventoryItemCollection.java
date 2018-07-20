@@ -31,7 +31,7 @@ public class InventoryItemCollection extends GenericCollection {
 	@Field
 	private Boolean discarded;
 	@Field
-	private Long retailPrice;
+	private Double retailPrice;
 	@Field
 	private String itemType;
 
@@ -123,11 +123,11 @@ public class InventoryItemCollection extends GenericCollection {
 		this.reOrderLevel = reOrderLevel;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 

@@ -14,6 +14,10 @@ public class DoctorRegisterRequest {
 
 	private String mobileNumber;
 
+	private Boolean hasLoginAccess = true;
+	
+	private Boolean hasBillingAccess = true;
+	
 	private String locationId;
 
 	private String hospitalId;
@@ -28,10 +32,6 @@ public class DoctorRegisterRequest {
 
 	private List<String> speciality;
 
-	private Boolean hasLoginAccess = true;
-	
-	private Boolean hasBillingAccess = true;
-	
 	public List<String> getSpeciality() {
 		return speciality;
 	}
@@ -99,7 +99,7 @@ public class DoctorRegisterRequest {
 	public String getRegisterNumber() {
 		return registerNumber;
 	}
-
+	
 	public void setRegisterNumber(String registerNumber) {
 		this.registerNumber = registerNumber;
 	}
@@ -147,10 +147,11 @@ public class DoctorRegisterRequest {
 	@Override
 	public String toString() {
 		return "DoctorRegisterRequest [title=" + title + ", userId=" + userId + ", firstName=" + firstName
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", locationId=" + locationId
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", hasLoginAccess="
+				+ hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", roleId=" + roleId
-				+ ", isActivate=" + isActivate + ", colorCode=" + colorCode + ", speciality=" + speciality
-				+ ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + "]";
+				+ ", isActivate=" + isActivate + ", colorCode=" + colorCode + ", speciality=" + speciality + "]";
 	}
-
+	
+	
 }

@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.BlogCategoryType;
+import com.dpdocter.enums.BlogSuperCategoryType;
 
 public class Blog extends GenericCollection {
 	private String id;
@@ -10,6 +11,8 @@ public class Blog extends GenericCollection {
 
 	private String titleImage;
 
+	private BlogSuperCategoryType superCategory;
+	
 	private BlogCategoryType category;
 
 	private String articleId;
@@ -182,6 +185,24 @@ public class Blog extends GenericCollection {
 
 	public void setMetaDesc(String metaDesc) {
 		this.metaDesc = metaDesc;
+	}
+
+	public BlogSuperCategoryType getSuperCategory() {
+		return superCategory;
+	}
+
+	public void setSuperCategory(BlogSuperCategoryType superCategory) {
+		this.superCategory = superCategory;
+	}
+
+	@Override
+	public String toString() {
+		return "Blog [id=" + id + ", title=" + title + ", titleImage=" + titleImage + ", superCategory=" + superCategory
+				+ ", category=" + category + ", articleId=" + articleId + ", isActive=" + isActive + ", article="
+				+ article + ", noOfLikes=" + noOfLikes + ", isliked=" + isliked + ", views=" + views + ", userId="
+				+ userId + ", postBy=" + postBy + ", discarded=" + discarded + ", isFavourite=" + isFavourite
+				+ ", shortDesc=" + shortDesc + ", metaKeyword=" + metaKeyword + ", metaDesc=" + metaDesc + ", slugURL="
+				+ slugURL + "]";
 	}
 
 }

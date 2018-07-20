@@ -2,15 +2,17 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import javax.ws.rs.HEAD;
+
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.CollectionBoy;
+import com.dpdocter.beans.CollectionBoyLabAssociation;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
-import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.PatientLabTestSample;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
@@ -19,15 +21,11 @@ import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
 import com.dpdocter.response.CollectionBoyResponse;
-import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.DynamicCollectionBoyAllocationResponse;
 import com.dpdocter.response.LabTestGroupResponse;
-import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.PatientLabTestSampleReportResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
-import com.dpdocter.beans.CollectionBoyLabAssociation;
-import com.dpdocter.beans.DentalWork;
 
 public interface LocationServices {
 	public List<GeocodedLocation> geocodeLocation(String address);
@@ -41,11 +39,6 @@ public interface LocationServices {
 	LabTestPickup addEditLabTestPickupRequest(AddEditLabTestPickupRequest request);
 
 	Boolean verifyCRN(String locationId, String crn, String requestId);
-
-	// List<CollectionBoyResponse> getCollectionBoyList(int size, int page,
-	// String locationId, String searchTerm);
-
-	// List<Location> getAssociatedLabs(String locationId, Boolean isParent);
 
 	RateCardTestAssociation addEditRateCardTestAssociation(RateCardTestAssociation request);
 
@@ -145,10 +138,11 @@ public interface LocationServices {
 	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
 			Boolean isDentalWorksLab, Boolean isDentalImagingLab, String searchTerm);
 
-	DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request);
+
+	public Boolean makeFavouriteRateCardTest(String locationId, String hospitalId, String diagnosticTestId);
 
 	List<LabTestPickupLookupResponse> getLabTestPickupByIds(List<ObjectId> ids);
 
-	public Boolean makeFavouriteRateCardTest(String locationId, String hospitalId, String diagnosticTestId);
+	DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request);
 
 }

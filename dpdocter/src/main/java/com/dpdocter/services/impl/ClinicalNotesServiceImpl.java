@@ -1828,7 +1828,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-					.is(patientObjectId).and("isPatientDiscarded").is(false);
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
@@ -2818,8 +2818,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer clinicalNotesCount = 0;
 		try {
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
-					.and("isPatientDiscarded").is(false);
+
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -4136,7 +4136,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("discarded").in(discards).and("updatedTime").gt(createdTimestamp)
-					.and("inHistory").in(inHistorys).and("isPatientDiscarded").is(false);
+					.and("inHistory").in(inHistorys).and("isPatientDiscarded").ne(true);
 			ObjectId patientObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				patientObjectId = new ObjectId(patientId);
@@ -4242,7 +4242,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
+
 		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
+
 		parameters.put("complaints", clinicalNotesCollection.getComplaint());
 		parameters.put("presentComplaint", clinicalNotesCollection.getPresentComplaint());
 		parameters.put("presentComplaintHistory", clinicalNotesCollection.getPresentComplaintHistory());
@@ -4472,7 +4474,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						patient.getLocalPatientName(), user.getMobileNumber(),
 						parameters, clinicalNotesCollection.getCreatedTime() != null
 								? clinicalNotesCollection.getCreatedTime() : new Date(),
-						printSettings.getHospitalUId());
+						printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
@@ -8623,7 +8625,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		patientVisitService.generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				new Date(), printSettings.getHospitalUId());
+				new Date(), printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		
 		patientVisitService.generatePrintSetup(parameters, printSettings, printSettings.getDoctorId());
 		

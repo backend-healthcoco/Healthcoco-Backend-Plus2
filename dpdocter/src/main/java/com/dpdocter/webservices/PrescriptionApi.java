@@ -1232,12 +1232,10 @@ public class PrescriptionApi {
 		response.setDataList(drugs);
 		return response;
 	}
-
-
+	
 	@Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_INSTRUCTIONS)
 	@POST
 	public Response<Instructions> addEditInstruction( Instructions request) {
-
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
 			logger.warn("Invalid Input");
@@ -1311,6 +1309,21 @@ public class PrescriptionApi {
 		response.setDataList(drugs);
 		return response;
 	}
+		
+	@Path(value = PathProxy.PrescriptionUrls.ADD_NUTRITION_REFERRAL)
+	@POST
+	public Response<NutritionReferral> addNutritionReferral( NutritionReferralRequest request) {
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId() , request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} 
+		NutritionReferral nutritionReferral = prescriptionServices.addNutritionReferral(request);
+		Response<NutritionReferral> response = new Response<NutritionReferral>();
+		response.setData(nutritionReferral);
+		return response;
+	}
 	
 	@Path(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB)
 	@DELETE
@@ -1360,21 +1373,6 @@ public class PrescriptionApi {
 		Boolean removeDuplicateDrugs = prescriptionServices.updateDrugInteraction();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(removeDuplicateDrugs);
-		return response;
-	}
-	
-	@Path(value = PathProxy.PrescriptionUrls.ADD_NUTRITION_REFERRAL)
-	@POST
-	public Response<NutritionReferral> addNutritionReferral( NutritionReferralRequest request) {
-
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId() , request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId())) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		} 
-		NutritionReferral nutritionReferral = prescriptionServices.addNutritionReferral(request);
-		Response<NutritionReferral> response = new Response<NutritionReferral>();
-		response.setData(nutritionReferral);
 		return response;
 	}
 }

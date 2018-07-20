@@ -314,20 +314,20 @@ public class ESPatientDocument {
 		this.consultantDoctorIds = consultantDoctorIds;
 	}
 
-	public Boolean getIsPatientDiscarded() {
-		return isPatientDiscarded;
-	}
-
-	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
-		this.isPatientDiscarded = isPatientDiscarded;
-	}
-	
 	public String getLocalPatientNameFormatted() {
 		return localPatientNameFormatted;
 	}
 
 	public void setLocalPatientNameFormatted(String localPatientNameFormatted) {
 		this.localPatientNameFormatted = localPatientNameFormatted;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
 	public Boolean getDiscarded() {

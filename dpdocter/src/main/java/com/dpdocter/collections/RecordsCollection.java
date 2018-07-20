@@ -88,7 +88,6 @@ public class RecordsCollection extends GenericCollection {
 	@Field
 	private Boolean isPatientDiscarded = false;
 
-	
 	public Boolean getShareWithPatient() {
 		return shareWithPatient;
 	}
@@ -293,5 +292,6 @@ public class RecordsCollection extends GenericCollection {
 				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", recordsState=" + recordsState
 				+ ", messages=" + messages + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
 
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -65,6 +64,12 @@ public class DrugCollection extends GenericCollection {
 	private String packForm;
 
 	@Field
+	private List<ObjectId> gcStrengthIds;
+
+	@Field
+	private Integer drugQuantity;
+
+	@Field
 	private String prizePerPack;
 
 	@Field
@@ -89,34 +94,20 @@ public class DrugCollection extends GenericCollection {
 	private long rankingCount = 0;
 
 	@Field
-	private List<ObjectId> gcStrengthIds;
-
-	@Field
-	private List<String> specialities;
-
-	@Field
-	private String rxRequired;
-
-	@Field
-	private String unsafeWith;
-
-	@Field
 	private Long inventoryQuantity;
 
 	@Field
-	private Long totalStock;
-
+	private List<String> specialities;
+	 
 	@Field
-	private Integer drugQuantity;
-
-	public Integer getDrugQuantity() {
-		return drugQuantity;
-	}
-
-	public void setDrugQuantity(Integer drugQuantity) {
-		this.drugQuantity = drugQuantity;
-	}
-
+	private String rxRequired;
+	
+	@Field
+	private String unsafeWith;
+	
+	@Field
+	private Long totalStock;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -171,7 +162,7 @@ public class DrugCollection extends GenericCollection {
 	public ObjectId getDoctorId() {
 		return doctorId;
 	}
-
+	
 	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
@@ -216,36 +207,12 @@ public class DrugCollection extends GenericCollection {
 		this.companyName = companyName;
 	}
 
-	public long getCompanyRankingCount() {
-		return companyRankingCount;
-	}
-
-	public void setCompanyRankingCount(long companyRankingCount) {
-		this.companyRankingCount = companyRankingCount;
-	}
-
 	public String getPackSize() {
 		return packSize;
 	}
 
 	public void setPackSize(String packSize) {
 		this.packSize = packSize;
-	}
-
-	public String getPackForm() {
-		return packForm;
-	}
-
-	public void setPackForm(String packForm) {
-		this.packForm = packForm;
-	}
-
-	public String getPrizePerPack() {
-		return prizePerPack;
-	}
-
-	public void setPrizePerPack(String prizePerPack) {
-		this.prizePerPack = prizePerPack;
 	}
 
 	public String getMRP() {
@@ -311,6 +278,22 @@ public class DrugCollection extends GenericCollection {
 	public void setGcStrengthIds(List<ObjectId> gcStrengthIds) {
 		this.gcStrengthIds = gcStrengthIds;
 	}
+	
+	public String getPackForm() {
+		return packForm;
+	}
+
+	public void setPackForm(String packForm) {
+		this.packForm = packForm;
+	}
+
+	public String getPrizePerPack() {
+		return prizePerPack;
+	}
+
+	public void setPrizePerPack(String prizePerPack) {
+		this.prizePerPack = prizePerPack;
+	}
 
 	public List<String> getSpecialities() {
 		return specialities;
@@ -352,18 +335,33 @@ public class DrugCollection extends GenericCollection {
 		this.totalStock = totalStock;
 	}
 
+	public long getCompanyRankingCount() {
+		return companyRankingCount;
+	}
+
+	public void setCompanyRankingCount(long companyRankingCount) {
+		this.companyRankingCount = companyRankingCount;
+	}
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId
 				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
 				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", companyRankingCount="
-				+ companyRankingCount + ", packSize=" + packSize + ", packForm=" + packForm + ", prizePerPack="
-				+ prizePerPack + ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", categories=" + categories + ", rankingCount="
-				+ rankingCount + ", gcStrengthIds=" + gcStrengthIds + ", specialities=" + specialities + ", rxRequired="
-				+ rxRequired + ", unsafeWith=" + unsafeWith + ", inventoryQuantity=" + inventoryQuantity
-				+ ", totalStock=" + totalStock + "]";
+				+ companyRankingCount + ", packSize=" + packSize + ", packForm=" + packForm + ", gcStrengthIds="
+				+ gcStrengthIds + ", drugQuantity=" + drugQuantity + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP
+				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
+				+ direction + ", categories=" + categories + ", rankingCount=" + rankingCount + ", inventoryQuantity="
+				+ inventoryQuantity + ", specialities=" + specialities + ", rxRequired=" + rxRequired + ", unsafeWith="
+				+ unsafeWith + ", totalStock=" + totalStock + "]";
 	}
-
 }

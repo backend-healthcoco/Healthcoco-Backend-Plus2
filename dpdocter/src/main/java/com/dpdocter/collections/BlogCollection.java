@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.BlogCategoryType;
+import com.dpdocter.enums.BlogSuperCategoryType;
 
 @Document(collection = "blog_cl")
 public class BlogCollection extends GenericCollection {
@@ -23,6 +24,9 @@ public class BlogCollection extends GenericCollection {
 	@Field
 	private Boolean isActive = true;
 
+	@Field
+	private BlogSuperCategoryType superCategory;
+	
 	@Field
 	private BlogCategoryType category;
 
@@ -142,6 +146,14 @@ public class BlogCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public BlogSuperCategoryType getSuperCategory() {
+		return superCategory;
+	}
+
+	public void setSuperCategory(BlogSuperCategoryType superCategory) {
+		this.superCategory = superCategory;
+	}
+
 	public Integer getViews() {
 		return views;
 	}
@@ -152,8 +164,11 @@ public class BlogCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "BlogCollection [id=" + id + ", title=" + title + "isActive=" + isActive + ", category=" + category
-				+ ", articleiId=" + articleId + "]";
+		return "BlogCollection [id=" + id + ", title=" + title + ", titleImage=" + titleImage + ", isActive=" + isActive
+				+ ", superCategory=" + superCategory + ", category=" + category + ", articleId=" + articleId
+				+ ", userId=" + userId + ", noOfLikes=" + noOfLikes + ", views=" + views + ", discarded=" + discarded
+				+ ", postBy=" + postBy + ", shortDesc=" + shortDesc + ", metaKeyword=" + metaKeyword + ", metaDesc="
+				+ metaDesc + ", slugURL=" + slugURL + "]";
 	}
 
 	public Integer getNoOfLikes() {

@@ -2,8 +2,6 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.DiagnosticTest;
-
 public class LabTestGroupResponse {
 
 	private String specimen;

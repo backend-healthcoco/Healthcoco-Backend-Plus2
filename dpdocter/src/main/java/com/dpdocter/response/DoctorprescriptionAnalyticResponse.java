@@ -21,8 +21,4 @@ public class DoctorprescriptionAnalyticResponse {
 	public void setTotalPrescriptionCreated(Integer totalPrescriptionCreated) {
 		this.totalPrescriptionCreated = totalPrescriptionCreated;
 	}
-
-	
-	
-
 }

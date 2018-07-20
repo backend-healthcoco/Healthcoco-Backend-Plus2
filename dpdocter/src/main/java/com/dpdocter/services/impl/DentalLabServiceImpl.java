@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,7 +32,6 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
-import com.dpdocter.beans.DentalLabPrintSetting;
 import com.dpdocter.beans.DentalStage;
 import com.dpdocter.beans.DentalStagejasperBean;
 import com.dpdocter.beans.DentalToothNumber;
@@ -49,7 +47,6 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.InseptionReportJasperBean;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.LocationAndAccessControl;
-import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
 import com.dpdocter.beans.SMS;
@@ -67,10 +64,8 @@ import com.dpdocter.collections.DentalWorksAmountCollection;
 import com.dpdocter.collections.DentalWorksInvoiceCollection;
 import com.dpdocter.collections.DentalWorksReceiptCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RateCardDentalWorkAssociationCollection;
 import com.dpdocter.collections.RateCardDoctorAssociationCollection;
@@ -79,8 +74,6 @@ import com.dpdocter.collections.TaxCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.FONTSTYLE;
-import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.RoleEnum;
@@ -102,7 +95,6 @@ import com.dpdocter.repository.DentalWorksReceiptRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
 import com.dpdocter.repository.RateCardDoctorAssociationRepository;
 import com.dpdocter.repository.TaxRepository;
@@ -130,7 +122,6 @@ import com.dpdocter.response.TaxResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
-import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
@@ -185,13 +176,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	private PushNotificationServices pushNotificationServices;
 
 	@Autowired
-	private LocationServices locationServices;
-
-	@Autowired
 	private UserDeviceRepository userDeviceRepository;
-
-	@Autowired
-	private PrintSettingsRepository printSettingsRepository;
 
 	@Autowired
 	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
@@ -357,6 +342,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			if (customWorkCollection != null) {
 				customWorkCollection.setDiscarded(discarded);
+				customWorkCollection.setUpdatedTime(new Date());
 				customWorkCollection = dentalWorkRepository.save(customWorkCollection);
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Record not found");
@@ -364,7 +350,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			response = new DentalWork();
 			BeanUtil.map(customWorkCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -453,7 +438,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId,
 			String doctorId, int page, int size, String searchTerm) {
 		List<DentalLabDoctorAssociationLookupResponse> responses = null;
-		List<User> users = new ArrayList<>();
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -994,7 +978,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Transactional
 	public List<CBDoctorAssociationLookupResponse> getCBAssociatedDoctors(String doctorId, String dentalLabId,
 			String collectionBoyId, int size, int page) {
-		List<User> users = null;
 		List<CBDoctorAssociationLookupResponse> lookupResponses = null;
 		try {
 			Aggregation aggregation = null;
@@ -1032,7 +1015,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			 */
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			logger.warn(e);
 		}
@@ -1198,7 +1180,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
@@ -1266,7 +1247,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -1285,7 +1265,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			currentDate = DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 					+ DPDoctorUtils.getPrefixedNumber(currentYear % 100);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1458,7 +1437,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -1479,7 +1457,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return imageURLResponse;
@@ -1507,7 +1484,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return imageURLResponse;
@@ -2849,6 +2825,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		parameters.put("doctor", doctorName);
 		parameters.put("invoiceId", "<b>InvoiceId : </b>" + dentalWorksInvoiceCollection.getUniqueInvoiceId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
+
 		DentalLabPrintSettingCollection dentalLabPrintSettingCollection = dentalLabPrintSettingRepository.getSettings(
 				dentalWorksInvoiceCollection.getDentalLabLocationId(),
 				dentalWorksInvoiceCollection.getDentalLabHospitalId());
@@ -2993,7 +2970,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalLabPickupCollection.setInvoiceId(dentalWorksInvoiceCollection.getId());
 			dentalLabPickupCollection.setUniqueInvoiceId(dentalWorksInvoiceCollection.getUniqueInvoiceId());
 			dentalLabPickupCollection = dentalLabTestPickupRepository.save(dentalLabPickupCollection);
-
 			response = new DentalWorksInvoice();
 			BeanUtil.map(dentalWorksInvoiceCollection, response);
 		} catch (BusinessException be) {

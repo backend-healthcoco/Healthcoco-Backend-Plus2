@@ -24,14 +24,11 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.Diagram;
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
-import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
 import com.dpdocter.elasticsearch.document.ESCementDocument;
-import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESImplantDocument;
 import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
@@ -43,7 +40,6 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AddEditFlowSheetRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.request.DoctorLabReportUploadRequest;
-import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
 import com.dpdocter.services.DischargeSummaryService;
@@ -76,6 +72,7 @@ public class DischargeSummaryAPI {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
+
 
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@POST
@@ -554,14 +551,14 @@ public class DischargeSummaryAPI {
 		FlowsheetResponse flowsheetResponses = null;
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Id is null");
+		throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 		}
+			
 		flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
 		response = new Response<FlowsheetResponse>();
 		response.setData(flowsheetResponses);
 
 		return response;
-
 	}
 
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
@@ -585,7 +582,7 @@ public class DischargeSummaryAPI {
 		response.setData(diagram);
 		return response;
 	}
-
+	
 	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
 	@POST
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)

@@ -13,7 +13,7 @@ import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Tax;
 
-@Document(collection = "dental_work_invoice_cl")
+@Document(collection = "dental_work_Invoice_cl")
 public class DentalWorksInvoiceCollection extends GenericCollection {
 	@Id
 	private ObjectId id;

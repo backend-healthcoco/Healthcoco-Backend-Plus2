@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.dpdocter.collections.OrderDrugCollection;
-import com.dpdocter.collections.SearchRequestToPharmacyCollection;
 
 @Repository
 public interface OrderDrugRepository extends MongoRepository<OrderDrugCollection, ObjectId> {
@@ -16,5 +15,4 @@ public interface OrderDrugRepository extends MongoRepository<OrderDrugCollection
 
 	@Query("{'id' : ?0 , 'userId' : ?1}")
 	public OrderDrugCollection findByIdAndUserId(ObjectId id, ObjectId userId);
-
 }

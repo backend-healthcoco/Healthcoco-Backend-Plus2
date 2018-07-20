@@ -234,4 +234,14 @@ public class UploadDataApi {
 		response.setData(uploadDataService.uploadImages(doctorId, locationId, hospitalId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.UploadDataUrls.UPDATE_TREATMENT_SERVICES)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_TREATMENT_SERVICES, notes = PathProxy.UploadDataUrls.UPDATE_TREATMENT_SERVICES)
+	public Response<Boolean> updateTreatmentServices() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(uploadDataService.updateTreatmentServices());
+		return response;
+	}
 }

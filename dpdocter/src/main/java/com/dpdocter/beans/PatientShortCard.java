@@ -28,6 +28,8 @@ public class PatientShortCard {
 
 	private String userId;
 	
+	private String PNUM;
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -132,13 +134,20 @@ public class PatientShortCard {
 		this.userId = userId;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientShortCard [firstName=" + firstName + ", localPatientName=" + localPatientName + ", userName="
 				+ userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl="
 				+ thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender
 				+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", userId="
-				+ userId + "]";
+				+ userId + ", PNUM=" + PNUM + "]";
 	}
-
 }

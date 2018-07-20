@@ -37,6 +37,9 @@ public class OrderDiagnosticTestCollection extends GenericCollection {
 	private List<ObjectId> testsPackageIds;
 
 	@Field
+	private ObjectId testsPackageId;
+
+	@Field
 	private List<DiagnosticTest> diagnosticTests;
 	
 	@Field
@@ -103,6 +106,14 @@ public class OrderDiagnosticTestCollection extends GenericCollection {
 
 	public void setPickUpDate(Long pickUpDate) {
 		this.pickUpDate = pickUpDate;
+	}
+
+	public ObjectId getTestsPackageId() {
+		return testsPackageId;
+	}
+
+	public void setTestsPackageId(ObjectId testsPackageId) {
+		this.testsPackageId = testsPackageId;
 	}
 
 	public List<DiagnosticTest> getDiagnosticTests() {
@@ -173,10 +184,10 @@ public class OrderDiagnosticTestCollection extends GenericCollection {
 	public String toString() {
 		return "OrderDiagnosticTestCollection [id=" + id + ", locationId=" + locationId + ", userId=" + userId
 				+ ", uniqueOrderId=" + uniqueOrderId + ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate
-				+ ", testsPackageIds=" + testsPackageIds + ", diagnosticTests=" + diagnosticTests + ", pickUpAddress="
-				+ pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost=" + totalCost + ", totalCostForPatient="
-				+ totalCostForPatient + ", totalSavingInPercentage=" + totalSavingInPercentage + ", isCancelled="
-				+ isCancelled + "]";
+				+ ", testsPackageIds=" + testsPackageIds + ", testsPackageId=" + testsPackageId + ", diagnosticTests="
+				+ diagnosticTests + ", pickUpAddress=" + pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost="
+				+ totalCost + ", totalCostForPatient=" + totalCostForPatient + ", totalSavingInPercentage="
+				+ totalSavingInPercentage + ", isCancelled=" + isCancelled + "]";
 	}
 
 }

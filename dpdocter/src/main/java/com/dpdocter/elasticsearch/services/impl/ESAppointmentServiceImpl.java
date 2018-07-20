@@ -502,6 +502,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				appointmentSearchResponse.setId(speciality.getId());
 				appointmentSearchResponse.setResponse(speciality.getSuperSpeciality());
 				appointmentSearchResponse.setResponseType(AppointmentResponseType.SPECIALITY);
+				appointmentSearchResponse.setSlugUrl(speciality.getSuperSpeciality().toLowerCase().trim().replaceAll("\\\\", "").replaceAll("\\s", ""));
 				response.add(appointmentSearchResponse);
 			}
 		return response;
@@ -525,8 +526,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (esCityDocument != null) {
 					latitude = esCityDocument.getLatitude() + "";
 					longitude = esCityDocument.getLongitude() + "";
+				} else {
+					return esDoctorDocuments;
 				}
 			}
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude))
+				return esDoctorDocuments;
 
 			Set<String> specialityIdSet = new HashSet<String>();
 			Set<String> locationIds = null, doctorIds = null;
@@ -587,6 +592,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						.must(QueryBuilders.matchQuery("isClinic", true));
 				if (specialityIdSet != null && !specialityIdSet.isEmpty()) {
 					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
+					
 				}
 
 				if ((locationIds != null && !locationIds.isEmpty()) && (doctorIds != null && !doctorIds.isEmpty())) {
@@ -595,24 +601,19 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				}
 
 				/*
-				 * if (!DPDoctorUtils.anyStringEmpty(symptom)) {
-				 * List<ESComplaintsDocument> esComplaintsDocuments =
-				 * esComplaintsRepository.findByComplaint(symptom); if
-				 * (esComplaintsDocuments == null ||
-				 * esComplaintsDocuments.isEmpty()) { return null; } Set<String>
-				 * locationIds = new
+				 * if (!DPDoctorUtils.anyStringEmpty(symptom)) { List<ESComplaintsDocument>
+				 * esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom); if
+				 * (esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()) { return
+				 * null; } Set<String> locationIds = new
 				 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
-				 * BeanToPropertyValueTransformer("locationId"))); Set<String>
-				 * doctorIds = new HashSet<>(
-				 * CollectionUtils.collect(esComplaintsDocuments, new
+				 * BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds = new
+				 * HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new
 				 * BeanToPropertyValueTransformer("doctorId")));
 				 * 
-				 * locationIds.remove(null); doctorIds.remove(null); if
-				 * ((locationIds == null || locationIds.isEmpty()) && (doctorIds
-				 * == null || doctorIds.isEmpty())) { return null; }
-				 * boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
-				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId",
-				 * locationIds)); }
+				 * locationIds.remove(null); doctorIds.remove(null); if ((locationIds == null ||
+				 * locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
+				 * return null; } boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
+				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId", locationIds)); }
 				 */
 
 				if (specialityQueryBuilder != null)
@@ -632,7 +633,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
 
-				if (latitude.equals("21.1458004") && longitude.equals("79.0881546")) {
+				if (!DPDoctorUtils.allStringsEmpty(city)) {
 					citylatitude = latitude;
 					citylongitude = longitude;
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
@@ -665,6 +666,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							break;
 					}
 				} 
+
 			} while (citylatitude == null && citylongitude == null && distance <= 30 && esDoctorDocuments.size() < size);
 
 			if (esDoctorDocuments != null) {
@@ -707,22 +709,30 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					}
 					doctorDocument.getDob();
 					String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
-							? doctorDocument.getStreetAddress() + ", " : "")
+							? doctorDocument.getStreetAddress() + ", "
+							: "")
 							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
-									? doctorDocument.getLandmarkDetails() + ", " : "")
+									? doctorDocument.getLandmarkDetails() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
-									? doctorDocument.getLocality() + ", " : "")
+									? doctorDocument.getLocality() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity()) ? doctorDocument.getCity() + ", "
 									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
-									? doctorDocument.getState() + ", " : "")
+									? doctorDocument.getState() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
-									? doctorDocument.getCountry() + ", " : "")
+									? doctorDocument.getCountry() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
-									? doctorDocument.getPostalCode() : "");
+									? doctorDocument.getPostalCode()
+									: "");
 
-					if (address.charAt(address.length() - 2) == ',') {
-						address = address.substring(0, address.length() - 2);
+					if (!DPDoctorUtils.anyStringEmpty(address)) {
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
 					}
 					doctorDocument.setClinicAddress(address);
 
@@ -751,6 +761,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (esCityDocument != null) {
 					latitude = esCityDocument.getLatitude() + "";
 					longitude = esCityDocument.getLongitude() + "";
+				} else {
+					return 0;
 				}
 			}
 
@@ -820,6 +832,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				}
 
 				/*
+<<<<<<< HEAD
 				 * if (!DPDoctorUtils.anyStringEmpty(symptom)) {
 				 * List<ESComplaintsDocument> esComplaintsDocuments =
 				 * esComplaintsRepository.findByComplaint(symptom); if
@@ -838,6 +851,21 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				 * boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
 				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId",
 				 * locationIds)); }
+=======
+				 * if (!DPDoctorUtils.anyStringEmpty(symptom)) { List<ESComplaintsDocument>
+				 * esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom); if
+				 * (esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()) { return
+				 * null; } Set<String> locationIds = new
+				 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
+				 * BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds = new
+				 * HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new
+				 * BeanToPropertyValueTransformer("doctorId")));
+				 * 
+				 * locationIds.remove(null); doctorIds.remove(null); if ((locationIds == null ||
+				 * locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
+				 * return null; } boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
+				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId", locationIds)); }
+>>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
 				 */
 
 				if (specialityQueryBuilder != null)
@@ -857,7 +885,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
 
-				if (latitude.equals("21.1458004") && longitude.equals("79.0881546")) {
+				if (!DPDoctorUtils.allStringsEmpty(city)) {
 					citylatitude = latitude;
 					citylongitude = longitude;
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
@@ -896,22 +924,22 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (maxTime == 0) {
 				maxTime = 1439;
 			}
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
-					.must(QueryBuilders.andQuery(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
+			boolQueryBuilder
+					.must(QueryBuilders.nestedQuery("workingSchedules",
+							boolQuery().must(QueryBuilders.andQuery(
+									nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
 
-							QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime).lt(maxTime),
+											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
+													.lt(maxTime),
 
-							QueryBuilders
-									.rangeQuery("workingSchedules.workingHours.fromTime").gt(
-											minTime)
-									.lt(maxTime),
-							QueryBuilders.andQuery(
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
-											.lt(1439),
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
-											.lt(minTime)))),
-							QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
-
+											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+													.gt(minTime).lt(maxTime),
+											QueryBuilders.andQuery(
+													QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
+															.gt(maxTime).lt(1439),
+													QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+															.gt(0).lt(minTime)))),
+									QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
 		} else {
 
 			if (maxTime == 0) {
@@ -922,10 +950,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 							QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime).lt(maxTime),
 
-							QueryBuilders
-									.rangeQuery("workingSchedules.workingHours.fromTime").gt(
-											minTime)
-									.lt(maxTime),
+							QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime).lt(maxTime),
 							QueryBuilders.andQuery(
 									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
 											.lt(1439),
@@ -1079,15 +1104,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								ESLabTestDocument.class);
 				}
 			}
-			/*
-			 * if (esLabTestDocuments == null || esLabTestDocuments.isEmpty()) {
-			 * return null; }
-			 */
 			List<ESLocationDocument> esLocationDocuments = null;
 			Collection<String> locationIds = null;
 
-			if (esLabTestDocuments == null || esLabTestDocuments.isEmpty()) {
-
+			if (esLabTestDocuments != null && !esLabTestDocuments.isEmpty()) {
 				locationIds = CollectionUtils.collect(esLabTestDocuments,
 						new BeanToPropertyValueTransformer("locationId"));
 			}
@@ -1118,26 +1138,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (maxTime == 0) {
 						maxTime = 1439;
 					}
-					boolQueryBuilder
-							.must(QueryBuilders.nestedQuery("clinicWorkingSchedules", boolQuery().must(QueryBuilders
-									.andQuery(nestedQuery("clinicWorkingSchedules.workingHours", QueryBuilders.orQuery(
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+							boolQuery().must(QueryBuilders.andQuery(
+									nestedQuery("clinicWorkingSchedules.workingHours", QueryBuilders.orQuery(
 
 											QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
 													.gt(minTime).lt(maxTime),
 
 											QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
 													.gt(minTime).lt(maxTime),
-											QueryBuilders
-													.andQuery(
-															QueryBuilders
-																	.rangeQuery(
-																			"clinicWorkingSchedules.workingHours.toTime")
-																	.gt(maxTime).lt(1439),
-															QueryBuilders
-																	.rangeQuery(
-																			"clinicWorkingSchedules.workingHours.fromTime")
-																	.gt(0).lt(minTime)))),
-											QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days)))));
+											QueryBuilders.andQuery(
+													QueryBuilders
+															.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
+															.gt(maxTime).lt(1439),
+													QueryBuilders
+															.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
+															.gt(0).lt(minTime)))),
+									QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days)))));
 				} else {
 					boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
 							boolQuery().must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
@@ -1197,9 +1214,11 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								Double.parseDouble(longitude), document.getLatitude(), document.getLongitude(), "K"));
 					}
 					String address = (!DPDoctorUtils.anyStringEmpty(document.getStreetAddress())
-							? document.getStreetAddress() + ", " : "")
+							? document.getStreetAddress() + ", "
+							: "")
 							+ (!DPDoctorUtils.anyStringEmpty(document.getLandmarkDetails())
-									? document.getLandmarkDetails() + ", " : "")
+									? document.getLandmarkDetails() + ", "
+									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(document.getLocality()) ? document.getLocality() + ", "
 									: "")
 							+ (!DPDoctorUtils.anyStringEmpty(document.getCity()) ? document.getCity() + ", " : "")
@@ -1290,26 +1309,40 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			if (maxTime == 0) {
 				maxTime = 86399999;
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("localeWorkingSchedules",
-						boolQuery().must(nestedQuery("localeWorkingSchedules.workingHours",
-								boolQuery().must(QueryBuilders.orQuery(
+				boolQueryBuilder
+						.must(QueryBuilders.orQuery(
+								QueryBuilders.nestedQuery("localeWorkingSchedules",
+										boolQuery().must(nestedQuery("localeWorkingSchedules.workingHours",
+												boolQuery().must(QueryBuilders.orQuery(
 
-										QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime")
-												.gt(minTime).lt(maxTime),
+														QueryBuilders
+																.rangeQuery(
+																		"localeWorkingSchedules.workingHours.toTime")
+																.gt(minTime).lt(maxTime),
 
-										QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime")
-												.gt(minTime).lt(maxTime)))))),
-						QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("localeWorkingSchedules"))));
+														QueryBuilders
+																.rangeQuery(
+																		"localeWorkingSchedules.workingHours.fromTime")
+																.gt(minTime).lt(maxTime)))))),
+								QueryBuilders.boolQuery()
+										.mustNot(QueryBuilders.existsQuery("localeWorkingSchedules"))));
 
 			} else {
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery()
-						.must(nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+				boolQueryBuilder
+						.must(QueryBuilders
+								.nestedQuery("localeWorkingSchedules",
+										boolQuery().must(nestedQuery("localeWorkingSchedules.workingHours",
+												boolQuery().must(QueryBuilders.orQuery(
 
-								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime)
-										.lt(maxTime),
+														QueryBuilders
+																.rangeQuery(
+																		"localeWorkingSchedules.workingHours.toTime")
+																.gt(minTime).lt(maxTime),
 
-								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
-										.lt(maxTime)))))));
+														QueryBuilders
+																.rangeQuery(
+																		"localeWorkingSchedules.workingHours.fromTime")
+																.gt(minTime).lt(maxTime)))))));
 			}
 			if (latitude != null && longitude != null) {
 				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
@@ -1359,17 +1392,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (esUserLocaleDocument.getAddress() != null) {
 						String address = (!DPDoctorUtils
 								.anyStringEmpty(esUserLocaleDocument.getAddress().getStreetAddress())
-										? esUserLocaleDocument.getAddress().getStreetAddress() + ", " : "")
+										? esUserLocaleDocument.getAddress().getStreetAddress() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getLocality())
-										? esUserLocaleDocument.getAddress().getLocality() + ", " : "")
+										? esUserLocaleDocument.getAddress().getLocality() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getCity())
-										? esUserLocaleDocument.getAddress().getCity() + ", " : "")
+										? esUserLocaleDocument.getAddress().getCity() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getState())
-										? esUserLocaleDocument.getAddress().getState() + ", " : "")
+										? esUserLocaleDocument.getAddress().getState() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getCountry())
-										? esUserLocaleDocument.getAddress().getCountry() + ", " : "")
+										? esUserLocaleDocument.getAddress().getCountry() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getPostalCode())
-										? esUserLocaleDocument.getAddress().getPostalCode() : "");
+										? esUserLocaleDocument.getAddress().getPostalCode()
+										: "");
 
 						if (address.charAt(address.length() - 2) == ',') {
 							address = address.substring(0, address.length() - 2);
@@ -1468,19 +1507,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				for (ESDoctorDocument doctor : doctors) {
 					doctorWEbSearch = new ESDoctorWEbSearch();
 					BeanUtil.map(doctor, doctorWEbSearch);
-					if (latitude != null && longitude != null && doctorWEbSearch.getLatitude() != null
-							&& doctorWEbSearch.getLongitude() != null) {
-						doctorWEbSearch.setDistance(
-								DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
-										doctorWEbSearch.getLatitude(), doctorWEbSearch.getLongitude(), "K"));
-					}
 					doctorList.add(doctorWEbSearch);
 				}
 				doctorResponse.setDoctors(doctorList);
 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-				doctorResponse.setSpeciality(StringUtils.capitalize(speciality));
+				doctorResponse.setSpeciality(speciality.replace(" ", "-"));
 
 				doctorResponse.setMetaData(StringUtils.capitalize(speciality) + "s in ");
 			} else {
@@ -1496,10 +1529,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (DPDoctorUtils.anyStringEmpty(city)) {
 				city = "Nagpur";
 			}
-			
-			
 			doctorResponse.setMetaData(doctorResponse.getMetaData() + StringUtils.capitalize(city));
-
+			doctorResponse.setCity(city);
 			doctorResponse.setCount(getDoctorCount(city, location, latitude, longitude, speciality, symptom, booking,
 					calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience, maxExperience, service));
 
@@ -1540,6 +1571,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (pharmacies != null && !pharmacies.isEmpty()) {
 				response.setPharmacies(pharmacies);
 			}
+			response.setCity(city);
 			response.setMetaData("pharmacy in " + city);
 			if (!pharmacyType.isEmpty() && pharmacyType != null) {
 				for (String type : pharmacyType) {
@@ -1583,7 +1615,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				response.setLabs(labs);
 			}
 			response.setMetaData("lab in " + city);
-
+			response.setCity(city);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
@@ -1705,5 +1737,4 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 		return esDoctorCardResponses;
 	}
-
 }

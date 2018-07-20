@@ -22,8 +22,8 @@ public class UserDeviceCollection extends GenericCollection {
 	@Field
 	private DeviceType deviceType;
 
-    @Field
-    private ObjectId localeId;
+	@Field
+	private ObjectId localeId;
 
 	@Field
 	private String deviceId;

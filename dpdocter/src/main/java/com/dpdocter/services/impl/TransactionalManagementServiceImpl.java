@@ -947,8 +947,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
 									.is(AppointmentType.EVENT.getType()).and("fromDate").gte(fromTime).and("toDate")
 									.lte(toTime)),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
+							Aggregation.unwind("doctorIds"),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"), Aggregation.unwind("doctor"),
+							Aggregation.lookup("user_device_cl", "doctorIds", "userIds", "userDevices"),
 							Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
 					AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
 							.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
@@ -1015,12 +1016,14 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						}
 					}
 				}
-				sendAppointmentScheduleToClinicAdmin();
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e);
 			}
-		}
+	}
+	
+	
+	
 	@Override
 	@Transactional
 	public void sendAppointmentScheduleToStaff() {
@@ -1091,8 +1094,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
 							.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class).getMappedResults();
 					
+					System.out.println(aggregationResults.size());
 					Map<String, LocationAdminAppointmentLookupResponse> locationDetailsMap = new HashMap<String, LocationAdminAppointmentLookupResponse>();
 					if(aggregationResults != null && !aggregationResults.isEmpty()) {
+						System.out.println("get response");
 						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 						
@@ -1138,6 +1143,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									+ " appointments scheduled today.\n" + response.getMessage()
 									+ ".\nHave a Healthy and Happy day!!";
 							
+							System.out.println(response.getUserId().toString() + response.getLocationAdminName() + ".."+response.getLocationAdminEmailAddress()+ ".."+response.getLocationAdminMobileNumber());
+							System.out.println(response.getUserDevices() != null);
+							System.out.println(message);
 //							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 //							smsTrackDetail.setDoctorId(response.getUserId());
 //							smsTrackDetail.setType("APPOINTMENT");
@@ -1165,6 +1173,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						
 				}
 					else {
+						System.out.println("null response");
 					}	
 				}				
 //			}

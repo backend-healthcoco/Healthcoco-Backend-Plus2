@@ -7,7 +7,7 @@ public class Fields {
 	private String value;
 
 	private String type;
-
+	
 	public String getKey() {
 		return key;
 	}

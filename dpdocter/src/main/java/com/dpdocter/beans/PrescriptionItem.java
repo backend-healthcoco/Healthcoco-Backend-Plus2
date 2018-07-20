@@ -28,13 +28,8 @@ public class PrescriptionItem {
 
 	private Long inventoryQuantity;
 
-	public Integer getDrugQuantity() {
-		return drugQuantity;
-	}
-
-	public void setDrugQuantity(Integer drugQuantity) {
-		this.drugQuantity = drugQuantity;
-	}
+	@Transient
+	private Long arrayIndex1;
 
 	public PrescriptionItem() {
 		super();
@@ -54,8 +49,6 @@ public class PrescriptionItem {
 		this.instructions = instructions;
 	}
 
-	@Transient
-	private Long arrayIndex1;
 
 	public DrugType getDrugType() {
 		return drugType;
@@ -145,11 +138,20 @@ public class PrescriptionItem {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
 	@Override
 	public String toString() {
-		return "PrescriptionItem [drugId=" + drugId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + ", arrayIndex1="
-				+ arrayIndex1 + "]";
+		return "PrescriptionItem [drugId=" + drugId + ", duration=" + duration + ", dosage=" + dosage + ", drugType="
+				+ drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", dosageTime=" + dosageTime
+				+ ", direction=" + direction + ", instructions=" + instructions + ", drugQuantity=" + drugQuantity
+				+ ", inventoryQuantity=" + inventoryQuantity + ", arrayIndex1=" + arrayIndex1 + "]";
 	}
 
 }

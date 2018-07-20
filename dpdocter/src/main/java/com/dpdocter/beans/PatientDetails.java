@@ -33,7 +33,7 @@ public class PatientDetails {
     
     private String PIDKey = "PID";
     
-    public Boolean getShowCity() {
+   public Boolean getShowCity() {
 		return showCity;
 	}
 
@@ -153,4 +153,5 @@ public class PatientDetails {
 				+ showResourceId + ", showHospitalId=" + showHospitalId + ", showCity=" + showCity + ", style=" + style
 				+ ", showPatientDetailsInCertificate=" + showPatientDetailsInCertificate + ", PIDKey=" + PIDKey + "]";
 	}
+
 }

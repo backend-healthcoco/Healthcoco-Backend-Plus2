@@ -17,8 +17,8 @@ public class InventoryItem extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
-	private Long retailPrice;
 	private String itemType;
+	private Double retailPrice;
 
 	public String getId() {
 		return id;
@@ -116,11 +116,11 @@ public class InventoryItem extends GenericCollection {
 		this.reOrderLevel = reOrderLevel;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 

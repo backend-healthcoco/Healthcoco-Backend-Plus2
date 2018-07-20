@@ -17,6 +17,12 @@ public class PrescriptionItemDetail {
 	private DrugType drugType;
 
 	private String drugName;
+	
+	private Integer drugQuantity;
+
+	private Long totalStock;
+
+	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
 	private String explanation;
 
@@ -27,12 +33,6 @@ public class PrescriptionItemDetail {
 	private String instructions;
 
 	private Long inventoryQuantity;
-
-	private Long totalStock;
-	
-	private Integer drugQuantity;
-
-	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
 	public DrugType getDrugType() {
 		return drugType;
@@ -130,12 +130,6 @@ public class PrescriptionItemDetail {
 		this.inventoryBatchs = inventoryBatchs;
 	}
 
-	@Override
-	public String toString() {
-		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage
-				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
-	}
-
 	public Integer getDrugQuantity() {
 		return drugQuantity;
 	}
@@ -143,4 +137,14 @@ public class PrescriptionItemDetail {
 	public void setDrugQuantity(Integer drugQuantity) {
 		this.drugQuantity = drugQuantity;
 	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", drugType="
+				+ drugType + ", drugName=" + drugName + ", drugQuantity=" + drugQuantity + ", totalStock=" + totalStock
+				+ ", inventoryBatchs=" + inventoryBatchs + ", explanation=" + explanation + ", dosageTime=" + dosageTime
+				+ ", direction=" + direction + ", instructions=" + instructions + ", inventoryQuantity="
+				+ inventoryQuantity + "]";
+	}
+	
 }

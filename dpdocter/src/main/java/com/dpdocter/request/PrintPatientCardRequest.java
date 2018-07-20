@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.beans.DOB;
 
 import common.util.web.JacksonUtil;
@@ -142,5 +140,4 @@ public class PrintPatientCardRequest {
 		System.out.println(JacksonUtil.obj2Json(new PrintPatientCardRequest()));
 		System.out.println(new Date());
 	}
-
 }

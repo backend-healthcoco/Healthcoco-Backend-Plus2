@@ -56,7 +56,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 	private static Logger logger = Logger.getLogger(RankingAlgorithmsServiceImpl.class.getName());
 	
 	//For Doctors
-	private double doctorExperienceWeightageInPercentage = 0.2;
+//	private double doctorExperienceWeightageInPercentage = 0.2;
 	
 	private double noOfPatientsOfDoctorWeightageInPercentage = 0.2;
 	
@@ -64,16 +64,16 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 	
 	private double noOfLikesToDoctorWeightageInPercentage = 0.1;
 	
-	private double feedbackForDoctorWeightageInPercentage = 0.1;
-	
-	private double doctorAppointmentsWeightageInPercentage = 0.1;
-	
-	private double doctorRecomdationsWeightageInPercentage = 0.1;
-	
-	
-	//For Pharmacies
-	private double genericMedicineAvailabilityInPharmacy = 0.1;
-	
+//	private double feedbackForDoctorWeightageInPercentage = 0.1;
+//	
+//	private double doctorAppointmentsWeightageInPercentage = 0.1;
+//	
+//	private double doctorRecomdationsWeightageInPercentage = 0.1;
+//	
+//	
+//	//For Pharmacies
+//	private double genericMedicineAvailabilityInPharmacy = 0.1;
+//	
 	private double noOfResponseFromPharmacyWeightageInPercentage = 0.1;
 	
 	private double noOfRequestToPharmacyWeightageInPercentage = 0.1;
@@ -99,7 +99,6 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 	private ESUserLocaleRepository esUserLocaleRepository;
 	
 	@Scheduled(cron = "0 0/30 2 * * SAT", zone = "IST")
-//	@Scheduled(fixedDelay = 1800000)
 	@Transactional
 	@Override
 	public void calculateRankingOfResources() {
@@ -285,6 +284,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						        .append("else", "$doctor.experience.experience")))
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
+						    .append("isActive", "$user.isActive")
 						    .append("resourceName", "$user.firstName")
 						    .append("rxCount", new BasicDBObject(
 							        "$cond", new BasicDBObject(
@@ -298,6 +298,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("isActive", new BasicDBObject("$first","$isActive"))
 						    .append("rxCount", new BasicDBObject("$sum","$rxCount")))),
 					
 					Aggregation.lookup("patient_cl", "doctorId", "doctorId", "patient"),
@@ -321,6 +322,11 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
+						    .append("pointIfActive", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$eq", Arrays.asList("$isActive", true)))
+									        .append("then", 10)
+									        .append("else", 0)))
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", new BasicDBObject(
 							        "$cond", new BasicDBObject(
@@ -334,6 +340,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$sum","$patientCount")))),
 					
@@ -345,6 +352,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
+						    .append("pointIfActive", "$pointIfActive")
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", "$patientCount")
 						    .append("patientCountAdditionalIncrement", new BasicDBObject(
@@ -364,6 +372,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
 						    .append("patientCountAdditionalIncrement", new BasicDBObject("$first","$patientCountAdditionalIncrement"))
@@ -374,6 +383,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    	.append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
+						    .append("pointIfActive", "$pointIfActive")
 						    .append("rxCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$rxCount", rxCount)), noOfRxByDoctorWeightageInPercentage)))
 						    .append("patientCount", new BasicDBObject("$add", Arrays.asList("$patientCountAdditionalIncrement", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$patientCount", patientCount)), noOfPatientsOfDoctorWeightageInPercentage)))))
 						    .append("noOfLikes", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$noOfLikes", likesCount)), noOfLikesToDoctorWeightageInPercentage))))),
@@ -384,6 +394,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
 						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes")))),
@@ -393,10 +404,11 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
+						    .append("pointIfActive", "$pointIfActive")
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", "$patientCount")
 						    .append("noOfLikes", "$noOfLikes")
-						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInYear", "$rxCount", "$patientCount", "$noOfLikes"))))),
+						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInYear", "$rxCount", "$patientCount", "$noOfLikes", "$pointIfActive"))))),
 					
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))

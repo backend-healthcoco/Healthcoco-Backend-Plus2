@@ -25,6 +25,8 @@ public class Diagram extends GenericCollection {
 
     private String speciality;
 
+    private String clinicalNotesId;
+    
     public String getId() {
 	return id;
     }
@@ -105,9 +107,20 @@ public class Diagram extends GenericCollection {
 	this.speciality = speciality;
     }
 
-    @Override
-    public String toString() {
-	return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", diagram=" + diagram + ", fileExtension=" + fileExtension + ", discarded=" + discarded + ", speciality=" + speciality + "]";
-    }
+	public String getClinicalNotesId() {
+		return clinicalNotesId;
+	}
+
+	public void setClinicalNotesId(String clinicalNotesId) {
+		this.clinicalNotesId = clinicalNotesId;
+	}
+
+	@Override
+	public String toString() {
+		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", diagram=" + diagram
+				+ ", fileExtension=" + fileExtension + ", discarded=" + discarded + ", speciality=" + speciality
+				+ ", clinicalNotesId=" + clinicalNotesId + "]";
+	}
+
 }

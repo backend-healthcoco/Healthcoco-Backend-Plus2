@@ -156,6 +156,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -217,9 +218,9 @@ public class LabReportsServiceImpl implements LabReportsService {
 				labTestSampleCollection.setStatus("REPORTS UPLOADED");
 				labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 				LocationCollection daughterlocationCollection = locationRepository
-						.findOne(labReportsCollection.getLocationId());
+						.findOne(labTestSampleCollection.getDaughterLabLocationId());
 				LocationCollection parentLocationCollection = locationRepository
-						.findOne(labReportsCollection.getUploadedByLocationId());
+						.findOne(labTestSampleCollection.getParentLabLocationId());
 				String message = labReportUploadMessage;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setType("LAB REPORT UPLOAD");
@@ -245,6 +246,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -485,8 +487,10 @@ public class LabReportsServiceImpl implements LabReportsService {
 				if (labTestPickupCollection != null) {
 					labTestPickupCollection.setStatus("REPORTS PENDING");
 					labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
+
 				}
 			}
+			labReportsCollection.setLabReports(new ArrayList<ImageURLResponse>());
 			labReportsCollection.setLabReports(request.getLabReports());
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
 			labReports = new LabReports();
@@ -494,6 +498,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
 		return labReports;
@@ -577,6 +582,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 				hospitalId = labTestPickupLookupResponse.getParentLab().getHospitalId();
 				labName = " for " + labTestPickupLookupResponse.getParentLab().getLocationName();
 			}
+
 			if (labTestPickupLookupResponse.getDaughterLab() != null) {
 
 				if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDaughterLab().getLocationName())) {
@@ -688,7 +694,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 		parameters.put("items", labreports);
 		parameters.put("title", "REQUISITION FORM" + labName.toUpperCase());
 		parameters.put("date", "<b>Date :- </b>" + simpleDateFormat.format(new Date()));
-
 		String pdfName = locationId + "REQUISATION-FORM" + new Date().getTime();
 
 		String layout = "PORTRAIT";
@@ -697,7 +702,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 		Integer bottonMargin = 20;
 		Integer leftMargin = 20;
 		Integer rightMargin = 20;
-
 		parameters.put("footerSignature", "");
 		parameters.put("bottomSignText", "");
 		parameters.put("contentFontSize", 11);
@@ -709,7 +713,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 		parameters.put("showTableOne", false);
 
 		parameters.put("poweredBy", footerText);
-
 		parameters.put("contentLineSpace", LineSpace.SMALL.name());
 		response = jasperReportService.createPDF(ComponentType.LAB_REQUISATION_FORM, parameters,
 				labRequisationFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
@@ -725,5 +728,4 @@ public class LabReportsServiceImpl implements LabReportsService {
 		} else
 			return null;
 	}
-
 }

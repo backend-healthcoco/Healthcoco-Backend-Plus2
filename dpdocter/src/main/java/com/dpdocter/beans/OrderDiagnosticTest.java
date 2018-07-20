@@ -2,11 +2,9 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.OrderStatus;
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+
 public class OrderDiagnosticTest extends GenericCollection{
 
 	private String id;
@@ -22,6 +20,8 @@ public class OrderDiagnosticTest extends GenericCollection{
 	private Long pickUpDate;
 	
 	private List<String> testsPackageIds;
+
+	private String testsPackageId;
 
 	private List<DiagnosticTest> diagnosticTests;
 	
@@ -91,6 +91,14 @@ public class OrderDiagnosticTest extends GenericCollection{
 
 	public void setPickUpDate(Long pickUpDate) {
 		this.pickUpDate = pickUpDate;
+	}
+
+	public String getTestsPackageId() {
+		return testsPackageId;
+	}
+
+	public void setTestsPackageId(String testsPackageId) {
+		this.testsPackageId = testsPackageId;
 	}
 
 	public List<DiagnosticTest> getDiagnosticTests() {
@@ -193,10 +201,12 @@ public class OrderDiagnosticTest extends GenericCollection{
 	public String toString() {
 		return "OrderDiagnosticTest [id=" + id + ", locationId=" + locationId + ", userId=" + userId
 				+ ", uniqueOrderId=" + uniqueOrderId + ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate
-				+ ", testsPackageIds=" + testsPackageIds + ", diagnosticTests=" + diagnosticTests + ", pickUpAddress="
-				+ pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost=" + totalCost + ", totalCostForPatient="
-				+ totalCostForPatient + ", totalSavingInPercentage=" + totalSavingInPercentage + ", isCancelled="
-				+ isCancelled + ", locationName=" + locationName + ", patientName=" + patientName
-				+ ", isNABLAccredited=" + isNABLAccredited + ", testsPackages=" + testsPackages + "]";
+				+ ", testsPackageIds=" + testsPackageIds + ", testsPackageId=" + testsPackageId + ", diagnosticTests="
+				+ diagnosticTests + ", pickUpAddress=" + pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost="
+				+ totalCost + ", totalCostForPatient=" + totalCostForPatient + ", totalSavingInPercentage="
+				+ totalSavingInPercentage + ", isCancelled=" + isCancelled + ", locationName=" + locationName
+				+ ", patientName=" + patientName + ", isNABLAccredited=" + isNABLAccredited + ", testsPackages="
+				+ testsPackages + "]";
 	}
+
 }

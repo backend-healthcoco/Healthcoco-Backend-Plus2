@@ -9,7 +9,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.RANKING_BASE_URL, description = "Endpoint for ranking")
 public class RankingApi {
 
-private static Logger logger = Logger.getLogger(RankingApi.class.getName());
+//private static Logger logger = Logger.getLogger(RankingApi.class.getName());
 	
 	@Autowired
 	RankingAlgorithmsServices rankingAlgorithmsServices;
@@ -40,6 +39,17 @@ private static Logger logger = Logger.getLogger(RankingApi.class.getName());
 		List<RankingCount> rankingCounts = rankingAlgorithmsServices.getDoctorsRankingCount(page, size);
 		Response<RankingCount> response = new Response<RankingCount>();
 		response.setDataList(rankingCounts);
+		return response;
+	}
+	
+	@Path(value = PathProxy.RankingUrls.CALCULATE_RANKING)
+	@GET
+	@ApiOperation(value = PathProxy.RankingUrls.CALCULATE_RANKING, notes = PathProxy.RankingUrls.CALCULATE_RANKING)
+	public Response<Boolean> calculateRankingOfResources(){
+		
+		rankingAlgorithmsServices.calculateRankingOfResources();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
 		return response;
 	}
 }

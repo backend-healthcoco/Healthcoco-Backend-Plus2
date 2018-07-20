@@ -3,9 +3,6 @@ package com.dpdocter.elasticsearch.beans;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
@@ -57,7 +54,7 @@ public class DrugDocument {
 
 	private Long totalStock;
 
-	private Long retailPrice;
+	private Double retailPrice;
 
 	private String stockingUnit;
 
@@ -237,11 +234,11 @@ public class DrugDocument {
 		this.totalStock = totalStock;
 	}
 
-	public Long getRetailPrice() {
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 

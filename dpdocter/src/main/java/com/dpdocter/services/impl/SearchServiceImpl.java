@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
@@ -43,6 +44,7 @@ import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
 import com.dpdocter.services.SearchService;
@@ -254,29 +256,28 @@ public class SearchServiceImpl implements SearchService {
 				response.setCount(count);
 				
 				if(esDoctorDocuments != null) {
-					esDoctorDocuments = formatDoctorData(esDoctorDocuments, latitude, longitude);
-					response.setDoctors(esDoctorDocuments);
+					response.setDoctors(formatDoctorData(esDoctorDocuments, latitude, longitude));
 				}
 				if(nearByDoctors != null) {
-					nearByDoctors = formatDoctorData(nearByDoctors, latitude, longitude);
-					response.setNearByDoctors(nearByDoctors);
+					response.setNearByDoctors(formatDoctorData(nearByDoctors, latitude, longitude));
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
-					"Error While Getting Doctor Details From ES : " + e.getMessage());
+					"Error While searching Doctor From ES : " + e.getMessage());
 		}
 		return response;
 	}
 
-	private List<ESDoctorDocument> formatDoctorData(List<ESDoctorDocument> esDoctorDocuments, String latitude, String longitude) {
-		
+	private List<ESDoctorWEbSearch> formatDoctorData(List<ESDoctorDocument> esDoctorDocuments, String latitude, String longitude) {
+		List<ESDoctorWEbSearch> response = new ArrayList<ESDoctorWEbSearch>();
 		if (esDoctorDocuments != null) {
 
 			List<String> specialities = null;
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
-System.out.println(doctorDocument.getSpecialities());
+				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
+				BeanUtil.map(doctorDocument, doctorWEbSearch);
 				if (doctorDocument.getSpecialities() != null) {
 					specialities = new ArrayList<String>();
 					for (String specialityId : doctorDocument.getSpecialities()) {
@@ -286,54 +287,16 @@ System.out.println(doctorDocument.getSpecialities());
 
 						}
 					}
-					doctorDocument.setSpecialities(specialities);
+					doctorWEbSearch.setSpecialities(specialities);
 				}
 
-				if (doctorDocument.getImageUrl() != null)
-					doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
-				if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
-					List<String> images = new ArrayList<String>();
-					for (String clinicImage : doctorDocument.getImages()) {
-						images.add(getFinalImageURL(clinicImage));
-					}
-					doctorDocument.setImages(images);
-				}
-				if (doctorDocument.getLogoUrl() != null)
-					doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));
-
-				if (doctorDocument.getCoverImageUrl() != null)
-					doctorDocument.setCoverImageUrl(getFinalImageURL(doctorDocument.getCoverImageUrl()));
-
-				if (latitude != null && longitude != null && doctorDocument.getLatitude() != null
-						&& doctorDocument.getLongitude() != null) {
-					doctorDocument.setDistance(
-							DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
-									doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
-				}
-				doctorDocument.getDob();
-				String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
-						? doctorDocument.getStreetAddress() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
-								? doctorDocument.getLandmarkDetails() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
-								? doctorDocument.getLocality() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity()) ? doctorDocument.getCity() + ", "
-								: "")
-						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
-								? doctorDocument.getState() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
-								? doctorDocument.getCountry() + ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
-								? doctorDocument.getPostalCode() : "");
-
-				if (address.length()>1 && address.charAt(address.length() - 2) == ',') {
-					address = address.substring(0, address.length() - 2);
-				}
-				doctorDocument.setClinicAddress(address);
-
+				if (doctorWEbSearch.getThumbnailUrl()!= null)
+					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
+				
+      				response.add(doctorWEbSearch);	
 			}
 		}
-		return esDoctorDocuments;
+		return response;
 	}
 	
 	@SuppressWarnings("unchecked")

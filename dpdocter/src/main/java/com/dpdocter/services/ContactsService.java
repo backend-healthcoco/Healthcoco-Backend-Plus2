@@ -33,9 +33,6 @@ public interface ContactsService {
 	DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime,
 			boolean discarded, int page, int size, String role);
 
-	// List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId,
-	// String locationId, String hospitalId, String updatedTime, boolean
-	// discarded, String role);
 
 	PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 

@@ -2,8 +2,6 @@ package com.dpdocter.elasticsearch.beans;
 
 import java.util.List;
 
-import org.springframework.data.elasticsearch.core.geo.GeoPoint;
-
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorExperience;
 
@@ -19,7 +17,7 @@ public class ESDoctorWEbSearch {
 
 	private String gender;
 
-	private String imageUrl;
+	private String thumbnailUrl;
 
 	private ConsultationFee consultationFee;
 
@@ -101,12 +99,12 @@ public class ESDoctorWEbSearch {
 		this.gender = gender;
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
+		public String getThumbnailUrl() {
+		return thumbnailUrl;
 	}
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
 	}
 
 	public ConsultationFee getConsultationFee() {
@@ -312,7 +310,7 @@ public class ESDoctorWEbSearch {
 	@Override
 	public String toString() {
 		return "ESDoctorWEbSearch [colorCode=" + colorCode + ", userId=" + userId + ", title=" + title + ", firstName="
-				+ firstName + ", gender=" + gender + ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee
+				+ firstName + ", gender=" + gender + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
 				+ ", revisitConsultationFee=" + revisitConsultationFee + ", specialities=" + specialities
 				+ ", experience=" + experience + ", streetAddress=" + streetAddress + ", country=" + country
 				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", latitude=" + latitude

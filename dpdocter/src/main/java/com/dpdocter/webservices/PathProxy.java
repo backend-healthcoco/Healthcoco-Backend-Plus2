@@ -626,6 +626,7 @@ public interface PathProxy {
 		public static final String UPDATE_DRUG_INTERACTION = "drugInteraction/update";
 
 		public static final String ADD_NUTRITION_REFERRAL = "/addNutritionReferral";
+
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
@@ -1191,6 +1192,10 @@ public interface PathProxy {
 
 		public static final String DISCARD_DUPLICATE_CLINICAL_ITEMS = "clinicalItems/duplicate/discard/{doctorId}";
 
+		public static final String COPY_CLINICAL_ITEMS = "clinicalItems/copy/{doctorId}/{locationId}";
+
+		public static final String UPDATE_LOCATION_IN_ROLE = "updateLocationInRole";
+
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";
@@ -1233,6 +1238,7 @@ public interface PathProxy {
 		public static final String SUBMIT_DELIVERY_REPORTS = "/submitDeliveryReports";
 
 		public static final String ADD_PRESCRIPTION_IN_OPD_REPORTS = "/addOPDReports";
+
 		public static final String ADD_CLINICAL_INDICATOR = "/addClinicalIndicator";
 		public static final String GET_CLINICAL_INDICATOR = "/getClinicalIndicator/{id}";
 		public static final String GET_CLINICAL_INDICATORS = "/getClinicalIndicator/get";
@@ -1278,7 +1284,7 @@ public interface PathProxy {
 
 		public static final String GET_BLOGS = "/getBlogs";
 
-		public static final String GET_BLOG_List = "/get";
+		public static final String GET_BLOG_LIST = "/get";
 
 		public static final String GET__MOST_LIKES_OR_VIEWED_BLOGS = "/getMostLIkesOrViewedBlogs";
 
@@ -1291,6 +1297,8 @@ public interface PathProxy {
 		public static final String GET_FEVOURITE_BLOGS = "/getFovourite";
 
 		public static final String LIKE_THE_BLOG = "/likeTheBlog/{blogId}/{userId}";
+
+		public static final String GET_BLOGS_BY_CATEGORY = "/";
 
 	}
 
@@ -1340,9 +1348,9 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_MULTIPLE_RECEIPT = "receipt/download";
 
-		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
+		public static final String EMAIL_MULTIPLE_RECEIPT = "receipt/email";
 
-		public static final String EMAIL_MULTIPLE_RECEIPT = "receipt/email";;
+		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
@@ -1492,12 +1500,14 @@ public interface PathProxy {
 		public static final String GET_LAB_REPORTS_FOR_LAB = "/getLabReportsForLab";
 		public static final String UPLOAD_REPORTS_TO_DOCTOR = "/uploadReportsToDoctor";
 		public static final String CHANGE_PATIENT_SHARE_STATUS = "/changePatientShareStatus";
+		public static final String ADD_TO_FAVOURITE_RATE_CARD_TEST = "/rateCardTest/{locationId}/{hospitalId}/{diagnosticTestId}/makeFavourite";
+		public static final String DOWNLOAD_REQUISATION_FORM = "/requisationForm/download";
 		public static final String ADD_EDIT_DENTAL_WORKS = "/addEditDentalWorks";
 		public static final String GET_DENTAL_WORKS = "/getDentalWorks";
 		public static final String DELETE_DENTAL_WORKS = "/deleteDentalWorks";
-		public static final String DOWNLOAD_REQUISATION_FORM = "/requisationForm/download";
+		public static final String DOWNLOAD_PARENT_LAB_REQUISATION_FORM = "/parentlab/download/requisationForm";
+		public static final String DOWNLOAD_DOUGHTER_LAB_REQUISATION_FORM = "/doughterlab/download/requisationForm";
 		public static final String ALLOCATE_COLLECTION_BOY_DYNAMICALLY = "/allocateDynamicCB";
-		public static final String ADD_TO_FAVOURITE_RATE_CARD_TEST = "/rateCardTest/{locationId}/{hospitalId}/{diagnosticTestId}/makeFavourite";
 
 	}
 
@@ -1543,7 +1553,6 @@ public interface PathProxy {
 		public static final String GET_PRESCRIPTION_ANALYTIC = "/doctor/prescription";
 		public static final String GET_PRESCRIPTION_ITEM_ANALYTIC = "/doctor/prescription/{type}";
 		public static final String GET_PATIENT_VISIT_ANALYTIC = "/doctor/visit";
-
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
@@ -1565,6 +1574,7 @@ public interface PathProxy {
 	public interface RankingUrls {
 
 		public static final String GET_DOCTORS_RANKING = "/doctors";
+		public static final String CALCULATE_RANKING = "/calculate";
 	}
 
 	public static final String USER_FAVOURITES_BASE_URL = BASE_URL + "/favourite";
@@ -1639,6 +1649,8 @@ public interface PathProxy {
 
 		public static final String UPLOAD_IMAGES = "/images/{doctorId}/{locationId}/{hospitalId}/";
 
+		public static final String UPDATE_TREATMENT_SERVICES = "/treatment/services/update";
+
 	}
 
 	public static final String DOWNLOAD_DATA_BASE_URL = BASE_URL + "/download";
@@ -1666,6 +1678,8 @@ public interface PathProxy {
 		public static final String PAYMENTS = "/payments/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String DATA = "/data";
+
+		public static final String CLINICAL_ITEMS = "/clinicalItems/{doctorId}/{locationId}/{hospitalId}";
 
 	}
 

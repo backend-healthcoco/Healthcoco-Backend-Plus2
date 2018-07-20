@@ -383,7 +383,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ isSendRegularCheckupSMS + ", regularCheckUpMonths=" + regularCheckUpMonths + ", checkUpTypeEnum="
 				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
 				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
-				+ ", saveToInventory=" + saveToInventory + ", labType=" + labType + ", hasLoginAccess=" + hasLoginAccess
-				+ ", hasBillingAccess=" + hasBillingAccess + "]";
+				+ ", saveToInventory=" + saveToInventory + ", iskiosk=" + iskiosk + ", labType=" + labType
+				+ ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + "]";
 	}
 }

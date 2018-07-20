@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -33,12 +31,10 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -53,7 +49,6 @@ import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ColorCode;
-import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
@@ -737,6 +732,7 @@ public class SignUpServiceImpl implements SignUpService {
 		CollectionBoyResponse response = null;
 		ESCollectionBoyDocument esCollectionBoyDocument = null;
 		try {
+
 			UserCollection userCollection = new UserCollection();
 			userCollection.setUserName(UniqueIdInitial.PHARMACY.getInitial() + collectionBoy.getMobileNumber());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());

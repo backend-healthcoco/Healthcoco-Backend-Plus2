@@ -376,21 +376,6 @@ public class BillingApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS)
-	@POST
-	@ApiOperation(value = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS, notes = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS)
-	public Response<Boolean> changeInvoiceItemTreatmentStatus(InvoiceItemChangeStatusRequest request) {
-		
-		if (request == null || request.getInvoiceId() == null || request.getItemId().isEmpty()) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(billingService.changeInvoiceTreatmentStatus(request));
-		return response;
-	}
-
 	@Path(value = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT)
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT, notes = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT)
@@ -406,4 +391,18 @@ public class BillingApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS, notes = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS)
+	public Response<Boolean> changeInvoiceItemTreatmentStatus(InvoiceItemChangeStatusRequest request) {
+		
+		if (request == null || request.getInvoiceId() == null || request.getItemId().isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(billingService.changeInvoiceTreatmentStatus(request));
+		return response;
+	}
 }

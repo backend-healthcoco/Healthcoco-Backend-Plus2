@@ -39,6 +39,8 @@ public class AppointmentDoctorReminderResponse {
 
 	private String subject;
 	
+	private List<ObjectId> doctorIds;
+	
 	public String getId() {
 		return id;
 	}
@@ -151,13 +153,21 @@ public class AppointmentDoctorReminderResponse {
 		this.subject = subject;
 	}
 
+	public List<ObjectId> getDoctorIds() {
+		return doctorIds;
+	}
+
+	public void setDoctorIds(List<ObjectId> doctorIds) {
+		this.doctorIds = doctorIds;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentDoctorReminderResponse [id=" + id + ", doctorId=" + doctorId + ", total=" + total
 				+ ", patientId=" + patientId + ", time=" + time + ", doctor=" + doctor + ", appointmentId="
 				+ appointmentId + ", fromDate=" + fromDate + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", userDevices=" + userDevices + ", localPatientName=" + localPatientName + ", doctorName="
-				+ doctorName + ", subject=" + subject + "]";
+				+ doctorName + ", subject=" + subject + ", doctorIds=" + doctorIds + "]";
 	}
 
 }

@@ -40,10 +40,10 @@ public interface AppointmentService {
 
 	Clinic getClinic(String slugUrl);
 
-	/*List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
+	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime);
-*/
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb);
+
 	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
 
@@ -81,12 +81,7 @@ public interface AppointmentService {
 
 	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
 			String from, String to);
-	/*
-	 * Object changeStatusInAppointment(String doctorId, String locationId,
-	 * String hospitalId, String patientId, String appointmentId, String
-	 * status);
-	 */
-
+	
 	public void updateQueue();
 
 	public CustomAppointment addCustomAppointment(CustomAppointment request);
@@ -121,9 +116,4 @@ public interface AppointmentService {
 
 	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime);
-
-	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime, Boolean isRegisteredPatientRequired);
-
 }

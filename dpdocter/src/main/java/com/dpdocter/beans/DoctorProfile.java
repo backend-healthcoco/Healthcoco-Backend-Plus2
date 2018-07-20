@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+
+
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;

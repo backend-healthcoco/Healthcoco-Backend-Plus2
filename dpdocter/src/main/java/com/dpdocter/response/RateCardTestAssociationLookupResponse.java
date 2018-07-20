@@ -1,9 +1,6 @@
 package com.dpdocter.response;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.Specimen;
 import com.dpdocter.collections.GenericCollection;
 
 /**

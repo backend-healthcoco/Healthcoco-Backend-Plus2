@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.PrintSettings;
-import com.dpdocter.collections.DentalLabPrintSettingCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -69,7 +68,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 			PrintSettingsCollection collection = null;
 			if (request.getId() == null) {
-				if (request.getIsLab()) {
+				if (request.isLab()) {
 					collection = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
 							hospitalObjectId);
 				} else {
@@ -114,6 +113,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			if (locationCollection != null) {
 				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
+				printSettingsCollection.setIsPidHasDate(locationCollection.getIsPidHasDate());
 			}
 
 			printSettingsCollection = printSettingsRepository.save(printSettingsCollection);

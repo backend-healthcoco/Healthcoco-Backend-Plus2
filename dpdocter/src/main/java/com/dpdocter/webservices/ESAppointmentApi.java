@@ -240,13 +240,4 @@ public class ESAppointmentApi {
 		response.setData(labs);
 		return response;
 	}
-
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
-
-	}
-
 }

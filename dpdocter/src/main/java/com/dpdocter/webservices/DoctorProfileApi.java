@@ -31,6 +31,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -331,6 +332,9 @@ public class DoctorProfileApi {
 					}
 					if (clinicProfile.getLogoUrl() != null) {
 						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
+					}
+					if (clinicProfile.getPackageType() == null) {
+						clinicProfile.setPackageType(PackageType.ADVANCE.getType());
 					}
 
 					if (clinicProfile.getLogoThumbnailUrl() != null) {

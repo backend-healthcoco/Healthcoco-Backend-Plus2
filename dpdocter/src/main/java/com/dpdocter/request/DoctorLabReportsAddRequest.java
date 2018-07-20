@@ -130,5 +130,4 @@ public class DoctorLabReportsAddRequest {
 				+ uploadedByLocationId + ", uploadedByHospitalId=" + uploadedByHospitalId + ", isSharedToPatient="
 				+ isSharedToPatient + "]";
 	}
-
 }

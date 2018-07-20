@@ -23,45 +23,46 @@ import common.util.web.Response;
 @Path(PathProxy.GENERAL_TESTS_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class GeneralTestsAPI {
-    @Autowired
-    private LocationServices locationServices;
+class GeneralTestsAPI {
+	@Autowired
+	private LocationServices locationServices;
 
-//    @Autowired
-//    private SolrTemplate solrTemplate;
+	// @Autowired
+	// private SolrTemplate solrTemplate;
 
-//    @Autowired
-//    private SolrLabTestRepository solrLabTestRepository;
+	// @Autowired
+	// private SolrLabTestRepository solrLabTestRepository;
 
-    @Autowired
-    private PushNotificationServices pushNotificationServices;
+	@Autowired
+	private PushNotificationServices pushNotificationServices;
 
-    @Path(value = "/geocodeLocation/{address}")
-    @GET
-    public Response<GeocodedLocation> getAccessControls(@PathParam(value = "address") String address) {
-	List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(address);
+	@Path(value = "/geocodeLocation/{address}")
+	@GET
+	public Response<GeocodedLocation> getAccessControls(@PathParam(value = "address") String address) {
+		List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(address);
 
-	Response<GeocodedLocation> response = new Response<GeocodedLocation>();
-	response.setDataList(geocodedLocations);
-	return response;
-    }
+		Response<GeocodedLocation> response = new Response<GeocodedLocation>();
+		response.setDataList(geocodedLocations);
+		return response;
+	}
 
-    @Path(value = "push")
-    @GET
-    public Response<Boolean> reminder() {
-    	pushNotificationServices.notifyUser("570ca16fe4b07c04418b3568", "Hello", "Healthcoco", "1", null);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
-	return response;
-    }
+	@Path(value = "push")
+	@GET
+	public Response<Boolean> reminder() {
+		pushNotificationServices.notifyUser("570ca16fe4b07c04418b3568", "Hello", "Healthcoco", "1", null);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
 
-//    @Path(value = "pushIOS")
-//    @GET
-//    public Response<Boolean> pushIOS() {
-//    	    
-//    	pushNotificationServices.pushNotificationOnIosDevices("bb", "Hello", "h", "a");
-//	Response<Boolean> response = new Response<Boolean>();
-//	response.setData(true);
-//	return response;
-//    }
+	// @Path(value = "pushIOS")
+	// @GET
+	// public Response<Boolean> pushIOS() {
+	//
+	// pushNotificationServices.pushNotificationOnIosDevices("bb", "Hello", "h",
+	// "a");
+	// Response<Boolean> response = new Response<Boolean>();
+	// response.setData(true);
+	// return response;
+	// }
 }

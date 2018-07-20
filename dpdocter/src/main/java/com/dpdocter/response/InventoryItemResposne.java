@@ -15,7 +15,7 @@ public class InventoryItemResposne extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
-	private Long totalStock = 0l;
+	private Double totalStock = 0.0;
 
 	public String getId() {
 		return id;
@@ -105,13 +105,12 @@ public class InventoryItemResposne extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public Long getTotalStock() {
+	public Double getTotalStock() {
 		return totalStock;
 	}
 
-	public void setTotalStock(Long totalStock) {
+	public void setTotalStock(Double totalStock) {
 		this.totalStock = totalStock;
 	}
-	
 
 }

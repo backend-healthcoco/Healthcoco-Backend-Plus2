@@ -1550,7 +1550,8 @@ public class HistoryServicesImpl implements HistoryServices {
 				matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
-							Aggregation.match(Criteria.where("patientId").is(patientObjectId).and("isPatientDiscarded").is(false).andOperator(
+
+							Aggregation.match(Criteria.where("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true).andOperator(
 									Criteria.where("doctorId").is(doctorObjectId),
 									Criteria.where("locationId").is(locationObjectId),
 									Criteria.where("hospitalId").is(hospitalObjectId),
@@ -1559,7 +1560,7 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
 					aggregation = Aggregation.newAggregation(
-							Aggregation.match(Criteria.where("patientId").is(patientObjectId).and("isPatientDiscarded").is(false).andOperator(
+							Aggregation.match(Criteria.where("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true).andOperator(
 									Criteria.where("doctorId").is(doctorObjectId),
 									Criteria.where("locationId").is(locationObjectId),
 									Criteria.where("hospitalId").is(hospitalObjectId),
@@ -1570,7 +1571,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			} else {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
-							Aggregation.match(Criteria.where("patientId").is(patientObjectId).and("isPatientDiscarded").is(false).andOperator(
+							Aggregation.match(Criteria.where("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true).andOperator(
 									Criteria.where("doctorId").is(doctorObjectId),
 									Criteria.where("locationId").is(locationObjectId),
 									Criteria.where("hospitalId").is(hospitalObjectId),
@@ -1579,7 +1580,7 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
 					aggregation = Aggregation.newAggregation(
-							Aggregation.match(Criteria.where("patientId").is(patientObjectId).and("isPatientDiscarded").is(false).andOperator(
+							Aggregation.match(Criteria.where("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true).andOperator(
 									Criteria.where("doctorId").is(doctorObjectId),
 									Criteria.where("locationId").is(locationObjectId),
 									Criteria.where("hospitalId").is(hospitalObjectId),
@@ -1662,7 +1663,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
-							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").is(false)
+							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
 									.andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
@@ -1706,7 +1707,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
-							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").is(false)
+							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
 									.andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
@@ -1751,7 +1752,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
-							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").is(false)
+							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
 									.andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
@@ -1795,7 +1796,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
-							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").is(false)
+							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
 									.andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
@@ -1942,7 +1943,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		Integer historyCount = 0;
 		try {
 
-			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -2341,7 +2342,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
-							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").is(false)
+							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
 									.andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
@@ -2385,7 +2386,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
-							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").is(false)
+							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
 									.andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
@@ -2429,7 +2430,7 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").is(false)
+							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
 									.andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
@@ -2472,7 +2473,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
-							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").is(false)
+							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
 									.andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
@@ -2729,7 +2730,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			List<String> type) {
 		HistoryDetailsResponse response = null;
 		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-		Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+		Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 		if (!DPDoctorUtils.anyStringEmpty(patientId))
 			patientObjectId = new ObjectId(patientId);
 		criteria = criteria.and("patientId").is(patientObjectId);

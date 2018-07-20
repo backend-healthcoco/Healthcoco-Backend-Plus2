@@ -74,26 +74,26 @@ public class Appointment extends GenericCollection {
 
 	private QueueStatus status = QueueStatus.SCHEDULED;
 
-	private long waitedFor = 0;
-
-	private long engagedFor = 0;
-
-	private long engagedAt = 0;
-
-	private long checkedInAt = 0;
-
-	private long checkedOutAt = 0;
-
-	private Integer count;
-
-	private String category;
-
-	private String cancelledByProfile;
-
-	private String localPatientName;
-
 	private RegisteredPatientDetails registeredPatientDetails;
 
+    private long waitedFor = 0;
+    
+    private long engagedFor = 0;
+    
+    private long engagedAt = 0;
+    
+    private long checkedInAt = 0;
+    
+    private long checkedOutAt = 0;
+
+    private Integer count; 
+    
+    private String category;
+    
+	private String cancelledByProfile;
+    
+	private String localPatientName;
+	
 	public String getId() {
 		return id;
 	}
@@ -434,9 +434,11 @@ public class Appointment extends GenericCollection {
 				+ clinicNumber + ", latitude=" + latitude + ", longitude=" + longitude + ", cancelledBy=" + cancelledBy
 				+ ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail
 				+ ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail
-				+ ", visitId=" + visitId + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor="
-				+ engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt="
-				+ checkedOutAt + ", count=" + count + ", category=" + category + ", cancelledByProfile="
-				+ cancelledByProfile + ", localPatientName=" + localPatientName + "]";
+				+ ", visitId=" + visitId + ", status=" + status + ", registeredPatientDetails="
+				+ registeredPatientDetails + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
+				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count
+				+ ", category=" + category + ", cancelledByProfile=" + cancelledByProfile + ", localPatientName="
+				+ localPatientName + "]";
 	}
+
 }

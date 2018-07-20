@@ -584,5 +584,4 @@ public class ESUserLocaleDocument {
 				+ ", isGenericMedicineAvailable=" + isGenericMedicineAvailable + ", minimumAmountForDelivery="
 				+ minimumAmountForDelivery + "]";
 	}
-
 }

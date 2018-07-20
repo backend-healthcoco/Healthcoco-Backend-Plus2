@@ -1,5 +1,6 @@
 package com.dpdocter.scheduler;
 
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -14,20 +15,15 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.integration.config.EnableMessageHistory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.BirthdaySMSDetailsForPatients;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;

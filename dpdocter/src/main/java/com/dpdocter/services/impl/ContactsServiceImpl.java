@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -116,9 +115,6 @@ public class ContactsServiceImpl implements ContactsService {
 	@Autowired
 	private SMSServices smsServices;
 
-	@Autowired
-	private MongoOperations mongoOperations;
-
 	@Value(value = "${Contacts.checkIfGroupIsExistWithSameName}")
 	private String checkIfGroupIsExistWithSameName;
 
@@ -210,7 +206,7 @@ public class ContactsServiceImpl implements ContactsService {
 		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 			hospitalObjectId = new ObjectId(hospitalId);
 
-		Criteria criteria = new Criteria("discarded").in(discards);
+		Criteria criteria = new Criteria("discarded").in(discards).and("isPatientDiscarded").ne(true);
 
 		if (createdTimestamp > 0)
 			criteria.and("updatedTime").gt(new Date(createdTimestamp));
@@ -234,7 +230,8 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
 							.append("userName", "$userName").append("emailAddress", "$emailAddress")
 							.append("imageUrl", "$imageUrl").append("thumbnailUrl", "$thumbnailUrl")
-							.append("bloodGroup", "$bloodGroup").append("PID", "$PID").append("gender", "$gender")
+							.append("bloodGroup", "$bloodGroup").append("PID", "$PID")
+							.append("PNUM", "$PNUM").append("gender", "$gender")
 							.append("countryCode", "$countryCode").append("mobileNumber", "$mobileNumber")
 							.append("secPhoneNumber", "$secPhoneNumber").append("dob", "$dob")
 							.append("dateOfVisit", "$dateOfVisit").append("doctorId", "$doctorId")
@@ -258,6 +255,7 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("thumbnailUrl", new BasicDBObject("$first", "$thumbnailUrl"))
 							.append("bloodGroup", new BasicDBObject("$first", "$bloodGroup"))
 							.append("PID", new BasicDBObject("$first", "$PID"))
+							.append("PNUM", new BasicDBObject("$first", "$PNUM"))
 							.append("gender", new BasicDBObject("$first", "$gender"))
 							.append("countryCode", new BasicDBObject("$first", "$countryCode"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
@@ -498,7 +496,6 @@ public class ContactsServiceImpl implements ContactsService {
 	public List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
 		List<Group> groups = null;
-		List<GroupCollection> groupCollections = null;
 
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
@@ -773,8 +770,8 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false).and("discarded").in(discards);
-			
+	Criteria criteria = new Criteria("discarded").in(discards);
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
@@ -791,6 +788,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
 					Aggregation.unwind("user"), Aggregation.match(criteria),
+					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 					Aggregation.sort(Direction.DESC, "createdTime"));
 
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -922,11 +920,6 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			if (mobileNumbers.size() > 500) {
-				throw new BusinessException(ServiceError.NotAcceptable,
-						"Cannot send more messages to more than 500 patients. Please select other group or create new one.");
-			}
-
 			if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
 				status = true;
 			}

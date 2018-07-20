@@ -616,5 +616,4 @@ public class DoctorClinicProfile {
 				+ hasBillingAccess + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
 				+ ", isPidHasDate=" + isPidHasDate + "]";
 	}
-
 }

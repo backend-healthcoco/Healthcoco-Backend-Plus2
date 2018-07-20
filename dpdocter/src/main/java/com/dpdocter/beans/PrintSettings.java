@@ -1,12 +1,10 @@
 package com.dpdocter.beans;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrintSettings extends GenericCollection {
@@ -42,13 +40,11 @@ public class PrintSettings extends GenericCollection {
 	private boolean showDrugGenericNames = false;
 
 	private String generalNotes;
-
-	private Boolean isPidHasDate = true;
-
-	private boolean isLab = false;
-
 	
-
+	private Boolean isPidHasDate = true;
+	
+	private boolean isLab=false;
+	
 	public String getId() {
 		return id;
 	}
@@ -177,6 +173,22 @@ public class PrintSettings extends GenericCollection {
 		this.generalNotes = generalNotes;
 	}
 
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
+
+	public boolean isLab() {
+		return isLab;
+	}
+
+	public void setLab(boolean isLab) {
+		this.isLab = isLab;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintSettings [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -184,15 +196,7 @@ public class PrintSettings extends GenericCollection {
 				+ headerSetup + ", footerSetup=" + footerSetup + ", contentSetup=" + contentSetup + ", discarded="
 				+ discarded + ", clinicLogoUrl=" + clinicLogoUrl + ", hospitalUId=" + hospitalUId
 				+ ", contentLineSpace=" + contentLineSpace + ", contentLineStyle=" + contentLineStyle
-				+ ", showDrugGenericNames=" + showDrugGenericNames + "]";
+				+ ", showDrugGenericNames=" + showDrugGenericNames + ", generalNotes=" + generalNotes
+				+ ", isPidHasDate=" + isPidHasDate + ", isLab=" + isLab + "]";
 	}
-
-	public boolean getIsLab() {
-		return isLab;
-	}
-
-	public void setIsLab(boolean isLab) {
-		this.isLab = isLab;
-	}
-
 }

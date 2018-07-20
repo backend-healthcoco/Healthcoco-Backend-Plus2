@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import com.dpdocter.beans.DentalStage;
-
 public class UpdateDentalStagingRequest {
 
 	private String requestId;
@@ -76,5 +74,4 @@ public class UpdateDentalStagingRequest {
 				+ ", dentalStages=" + dentalStages + ", status=" + status + ", processStatus=" + processStatus
 				+ ", isCompleted=" + isCompleted + ", isTrialChanged=" + isTrialChanged + "]";
 	}
-	
 }

@@ -45,6 +45,9 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.String)
 	private String imageUrl;
 
+	@Field(type = FieldType.String)
+	private String thumbnailUrl;
+
 	@Field(type = FieldType.Nested)
 	private ConsultationFee consultationFee;
 
@@ -384,18 +387,28 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.education = education;
 	}
 
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
 	@Override
 	public String toString() {
-		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
-				+ ", consultationFee=" + consultationFee + ", revisitConsultationFee=" + revisitConsultationFee
-				+ ", workingSchedules=" + workingSchedules + ", specialities=" + specialities + ", experience="
-				+ experience + ", facility=" + facility + ", appointmentBookingNumber=" + appointmentBookingNumber
-				+ ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive + ", isVerified=" + isVerified
-				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
-				+ ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber
-				+ ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId + ", isDoctorListed="
-				+ isDoctorListed + ", timeZone=" + timeZone + ", rankingCount=" + rankingCount + "]";
+		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
+				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
+				+ ", revisitConsultationFee=" + revisitConsultationFee + ", workingSchedules=" + workingSchedules
+				+ ", specialities=" + specialities + ", experience=" + experience + ", facility=" + facility
+				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot
+				+ ", isActive=" + isActive + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
+				+ userState + ", registerNumber=" + registerNumber + ", education=" + education + ", dob=" + dob
+				+ ", distance=" + distance + ", userUId=" + userUId + ", isDoctorListed=" + isDoctorListed
+				+ ", timeZone=" + timeZone + ", rankingCount=" + rankingCount + ", noOfRecommenations="
+				+ noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL + "]";
 	}
 
 	@Override

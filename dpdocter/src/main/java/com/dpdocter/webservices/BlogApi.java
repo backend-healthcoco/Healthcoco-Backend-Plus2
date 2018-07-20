@@ -4,19 +4,20 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Blog;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.BlogRequest;
 import com.dpdocter.response.BlogResponse;
 import com.dpdocter.services.BlogService;
 
@@ -32,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.BLOGS_BASE_URL, description = "Endpoint for blog")
 
 public class BlogApi {
-	private static Logger logger = Logger.getLogger(BlogApi.class.getName());
+//	private static Logger logger = Logger.getLogger(BlogApi.class.getName());
 
 	@Autowired
 	BlogService blogService;
@@ -49,9 +50,9 @@ public class BlogApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.BlogsUrls.GET_BLOG_List)
+	@Path(value = PathProxy.BlogsUrls.GET_BLOG_LIST)
 	@GET
-	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_List, notes = PathProxy.BlogsUrls.GET_BLOG_List)
+	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_LIST, notes = PathProxy.BlogsUrls.GET_BLOG_LIST)
 	public Response<Object> getBlogList(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
 			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
 			@QueryParam(value = "title") String title) {
@@ -141,4 +142,13 @@ public class BlogApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.BlogsUrls.GET_BLOGS_BY_CATEGORY)
+	@POST
+	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOGS_BY_CATEGORY, notes = PathProxy.BlogsUrls.GET_BLOGS_BY_CATEGORY)
+	public Response<BlogResponse> getBlogs(BlogRequest request) {
+		List<BlogResponse> blogresponses = blogService.getBlogs(request);
+		Response<BlogResponse> response = new Response<BlogResponse>();
+		response.setDataList(blogresponses);
+		return response;
+	}
 }

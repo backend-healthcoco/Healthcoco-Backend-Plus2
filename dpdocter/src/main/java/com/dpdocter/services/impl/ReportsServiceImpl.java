@@ -354,13 +354,12 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
-			}
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -665,8 +664,7 @@ public class ReportsServiceImpl implements ReportsService {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return opdReportsResponse;
-	}
+		return opdReportsResponse;}
 
 	@Override
 	@Transactional
@@ -682,7 +680,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -786,7 +784,6 @@ public class ReportsServiceImpl implements ReportsService {
 			}
 
 			count = (int) mongoTemplate.count(new Query(criteria2), OTReportsCollection.class);
-
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
 			otReportsResponse.setCount(count);
@@ -811,7 +808,7 @@ public class ReportsServiceImpl implements ReportsService {
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
 			// Criteria criteria = new Criteria("updatedTime").gte(new
 			// Date(updatedTimeStamp));
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -1512,7 +1509,7 @@ public class ReportsServiceImpl implements ReportsService {
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				otReportsLookupResponse.getUpdatedTime() != null ? otReportsLookupResponse.getUpdatedTime()
 						: new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(otReportsLookupResponse.getDoctorId()));
@@ -1639,7 +1636,6 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("deliveryType", deliveryReportsLookupResponse.getDeliveryType());
 		parameters.put("formNo", deliveryReportsLookupResponse.getFormNo());
 		parameters.put("remarks", deliveryReportsLookupResponse.getRemarks());
-
 		patientVisitService.generatePatientDetails((printSettings != null
 				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,
@@ -1649,7 +1645,7 @@ public class ReportsServiceImpl implements ReportsService {
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				deliveryReportsLookupResponse.getUpdatedTime() != null ? deliveryReportsLookupResponse.getUpdatedTime()
 						: new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings,
 				new ObjectId(deliveryReportsLookupResponse.getDoctorId()));
@@ -1741,5 +1737,4 @@ public class ReportsServiceImpl implements ReportsService {
 		}
 		return response;
 	}
-
 }

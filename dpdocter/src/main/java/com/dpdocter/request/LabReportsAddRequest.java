@@ -1,10 +1,6 @@
 package com.dpdocter.request;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.collections.GenericCollection;
-
-import common.util.web.JacksonUtil;
 
 public class LabReportsAddRequest extends GenericCollection {
 
@@ -125,5 +121,4 @@ public class LabReportsAddRequest extends GenericCollection {
 				+ ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId=" + uploadedByHospitalId
 				+ ", labTestSampleId=" + labTestSampleId + ", recordsState=" + recordsState + "]";
 	}
-
 }

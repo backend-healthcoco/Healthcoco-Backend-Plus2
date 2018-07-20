@@ -250,8 +250,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				}
-				if (dischargeSummary.getCreatedTime() == null)
+
+				if (dischargeSummaryCollection.getCreatedTime() == null) {
 					dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
+				}
 				dischargeSummaryCollection.setCreatedBy(oldDischargeSummaryCollection.getCreatedBy());
 				dischargeSummaryCollection.setAdminCreatedTime(oldDischargeSummaryCollection.getAdminCreatedTime());
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
@@ -371,7 +373,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(Long.parseLong(updatedTime))).and("patientId")
-					.is(patientObjectId).and("isPatientDiscarded").is(false);
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(locationObjectId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
@@ -1136,7 +1138,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				dischargeSummaryCollection.getCreatedTime() != null ? dischargeSummaryCollection.getCreatedTime()
 						: new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
@@ -2618,7 +2620,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 			}
 
-
 			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(request.getDischargeSummaryId()));
@@ -2647,7 +2648,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-
 		}
 		return response;
 	}
@@ -2925,7 +2925,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				"<b>DIS-ID: </b>"
 						+ (flowsheetCollection.getUniqueId() != null ? flowsheetCollection.getUniqueId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters, flowsheetCollection.getUpdatedTime(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, flowsheetCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-FLOWSHEET-"
 				+ (!DPDoctorUtils.anyStringEmpty(flowsheetCollection.getUniqueId()) ? flowsheetCollection.getUniqueId()
@@ -2961,8 +2961,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 
 	}
-
-
 
 	@Override
 	@Transactional
@@ -3025,7 +3023,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return diagram;
 	}
-
 
 	@Override
 	public String uploadDischargeDiagram(DoctorLabReportUploadRequest request) {

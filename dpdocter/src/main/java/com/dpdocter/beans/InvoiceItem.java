@@ -40,7 +40,7 @@ public class InvoiceItem {
 	private String note;
 	
 	private List<Fields> treatmentFields;
-
+	
 	public ObjectId getItemId() {
 		return itemId;
 	}
@@ -137,7 +137,7 @@ public class InvoiceItem {
 		this.inventoryBatch = inventoryBatch;
 	}
 
-		public Long getInventoryQuantity() {
+	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
 
@@ -177,4 +177,5 @@ public class InvoiceItem {
 				+ discount + ", tax=" + tax + ", finalCost=" + finalCost + ", inventoryBatch=" + inventoryBatch
 				+ ", note=" + note + ", treatmentFields=" + treatmentFields + "]";
 	}
+
 }

@@ -15,5 +15,4 @@ public interface LabReportsRepository extends MongoRepository<LabReportsCollecti
 
 	@Query(value = "{'parentLabLocationId':?0, 'isCompleted':?1, 'updatedTime' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
 	Integer findTodaysCompletedReport(ObjectId locationId, Boolean isCompleted, Date start, Date end);
-
 }

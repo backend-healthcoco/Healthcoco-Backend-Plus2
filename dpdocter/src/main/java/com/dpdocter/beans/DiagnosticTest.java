@@ -156,5 +156,4 @@ public class DiagnosticTest extends GenericCollection {
 				+ diagnosticTestCostForPatient + ", rankingCount=" + rankingCount + ", turnaroundTime=" + turnaroundTime
 				+ "]";
 	}
-
 }

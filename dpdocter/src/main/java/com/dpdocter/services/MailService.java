@@ -20,4 +20,6 @@ public interface MailService {
 	Boolean sendMailToIOSteam(String subject, String body) throws MessagingException;
 
 	public Boolean subscribeMail(MailSubsciptionRequest request);
+
+	Boolean sendEmailWithoutAttachment(String to, String subject, String body) throws MessagingException;
 }

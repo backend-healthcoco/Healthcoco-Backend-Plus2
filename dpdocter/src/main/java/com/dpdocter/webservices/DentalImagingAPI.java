@@ -15,10 +15,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DentalDiagnosticService;
 import com.dpdocter.beans.DentalImaging;
@@ -26,23 +24,11 @@ import com.dpdocter.beans.DentalImagingInvoice;
 import com.dpdocter.beans.DentalImagingLocationServiceAssociation;
 import com.dpdocter.beans.DentalImagingReports;
 import com.dpdocter.beans.DentalImagingRequest;
-import com.dpdocter.beans.DentalImagingServiceVisitCount;
-import com.dpdocter.beans.DentalWork;
-import com.dpdocter.beans.DentalWorksInvoice;
 import com.dpdocter.beans.Hospital;
-import com.dpdocter.beans.LabReports;
-import com.dpdocter.beans.Location;
-import com.dpdocter.collections.DentalImagingCollection;
-import com.dpdocter.collections.DentalWorkCollection;
-import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DoctorHospitalDentalImagingAssociationRepository;
 import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
-import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalimagingReportsUploadRequest;
-import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.response.DentalImagingDataResponse;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
@@ -51,7 +37,6 @@ import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.PatientDentalImagignVisitAnalyticsResponse;
-import com.dpdocter.response.ServiceLocationResponse;
 import com.dpdocter.services.DentalImagingService;
 
 import common.util.web.DPDoctorUtils;
@@ -242,7 +227,8 @@ public class DentalImagingAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<DentalImagingInvoice> response = new Response<DentalImagingInvoice>();
-		response.setData(dentalImagingService.addEditInvoice(request));
+
+		response.setData(dentalImagingService.addEditInvoice(request , false));
 		return response;
 	}
 
@@ -305,10 +291,8 @@ public class DentalImagingAPI {
 	@Path(value = PathProxy.DentalImagingUrl.DOWNLOAD_INVOICES)
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.DOWNLOAD_INVOICES, notes = PathProxy.DentalImagingUrl.DOWNLOAD_INVOICES)
-
 	public Response<String> downloadInvoices(@PathParam("id") String id) {
 		if (DPDoctorUtils.allStringsEmpty(id)) {
-
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
@@ -399,11 +383,13 @@ public class DentalImagingAPI {
 	}
 	
 	@Path(value = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL)
-	@POST
+	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL, notes = PathProxy.DentalImagingUrl.SEND_REPORT_EMAIL)
-	public Response<Boolean> sendReportEmail(@PathParam("id") String id,
-			@QueryParam("emailAddress") String emailAddress) {
-
+	public Response<Boolean> sendReportEmail(@PathParam("id") String id, @QueryParam("emailAddress") String emailAddress) {
+		if (DPDoctorUtils.allStringsEmpty(id)) {
+			
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(dentalImagingService.emailReports(id, emailAddress));
 		return response;

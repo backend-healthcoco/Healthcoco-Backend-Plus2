@@ -14,19 +14,15 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.AppointmentGeneralFeedback;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.beans.Duration;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.PharmacyFeedback;
-import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionFeedback;
-import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
 import com.dpdocter.collections.DailyImprovementFeedbackCollection;
 import com.dpdocter.collections.HospitalCollection;
@@ -35,7 +31,6 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFeedbackCollection;
 import com.dpdocter.collections.PharmacyFeedbackCollection;
-import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrescriptionFeedbackCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DurationUnitEnum;
@@ -494,7 +489,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 	
 	
 	
-	
 	@Override
 	@Transactional
 	public List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request , String type) {
@@ -536,16 +530,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 				locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			}
 			
-			if (!DPDoctorUtils.anyStringEmpty(request.getAppointmentId()))
-			{
-				criteria.and("appointmentId").is(new ObjectId(request.getAppointmentId()));
-			}
-			
-			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId()))
-			{
-				criteria.and("prescriptionId").is(new ObjectId(request.getPrescriptionId()));
-			}
-
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 			{
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
@@ -619,6 +603,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 		}
 		return feedbackResponses;
 	}
+	
 	
 	
 	@Override

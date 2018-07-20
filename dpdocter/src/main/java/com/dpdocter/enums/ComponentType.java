@@ -16,7 +16,6 @@ public enum ComponentType {
 																							"DELIVERY_REPORTS"), DOCTOR_LAB_REPORTS(
 																									"DOCTOR_LAB_REPORTS"), CERTIFICATE(
 																											"CERTIFICATE"), DOCTOR_REFERNCE(
-
 																													"DOCTOR_REFERNCE"), DENTAL_WORKS(
 																															"DENTAL_WORKS"), DENTAL_LAB_REQUEST(
 																																	"DENTAL_LAB_REQUEST"), LAB_REQUISATION_FORM(
@@ -33,14 +32,13 @@ public enum ComponentType {
 																																																							"PATIENT_REFRESH"), APPOINTMENT_STATUS_CHANGE(
 																																																									"APPOINTMENT_STATUS_CHANGE"), MULTIPLE_INSPECTION_REPORT(
 																																																											"MULTIPLE_INSPECTION_REPORT"), APPOINTMENT_REFRESH(
-
 																																																													"APPOINTMENT_REFRESH"), DENTAL_IMAGING_REQUEST(
 																																																															"DENTAL_IMAGING_REQUEST"), REFRESH_DENTAL_IMAGING(
 																																																																	"REFRESH_DENTAL_IMAGING"), DENTAL_WORK_INVOICE(
 																																																																			"DENTAL_WORK_INVOICE"), EVENT(
 																																																																					"EVENT"), DENTAL_WORK_RECEIPT(
-																																																																							"DENTAL_WORK_RECEIPT"), DENTAL_IMAGE_INVOICE(
-																																																																									"DENTAL_IMAGE_INVOICE"),
+																																																																							"DENTAL_WORK_RECEIPT"), 
+	DENTAL_IMAGE_INVOICE("DENTAL_IMAGE_INVOICE"),
 	PRESCRIPTION_REFRESH("PRESCRIPTION_REFRESH"), PATIENT_VISIT_REFRESH("PATIENT_VISIT_REFRESH"), CLINICAL_NOTES_REFRESH("CLINICAL_NOTES_REFRESH"), DISCHARGE_SUMMARY_REFRESH("DISCHARGE_SUMMARY_REFRESH"), 
 	RECEIPT_REFRESH("RECEIPT_REFRESH"), INVOICE_REFRESH("INVOICE_REFRESH"), RECORDS_REFRESH("RECORDS_REFRESH"), TREATMENTS_REFRESH("TREATMENTS_REFRESH");
 

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -176,6 +177,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 	@Override
 	@Transactional
+	@Async
 	public void notifyUser(String userId, String message, String componentType, String componentTypeId,
 			List<UserDeviceCollection> userDevices) {
 		List<UserDeviceCollection> userDeviceCollections = null;
@@ -266,10 +268,19 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 					notification.setRi(componentTypeId);
 					notification.setNotificationType(componentType);
+				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
+				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
+					notification.setRi(componentTypeId);
+					notification.setNotificationType(componentType);
 				} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
 					notification.setCi(componentTypeId);
 					notification.setNotificationType(componentType);
 				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
+				} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS_CANCELLATION.getType())) {
 					notification.setCi(componentTypeId);
 					notification.setNotificationType(componentType);
 				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
@@ -309,7 +320,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				}else{
 					notification.setNotificationType(componentType);
 				}
-
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
@@ -452,9 +462,28 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "SI");
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+				} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+
 					customValues.put("RI", componentTypeId);
+					customValues.put("T", "DW");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+					customValues.put("RI", componentTypeId);
+					customValues.put("T", "DI");
+				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+					customValues.put("EI", componentTypeId);
+					customValues.put("T", "E");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "PR");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "DI");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+					customValues.put("RI", "SILENT");
 					customValues.put("T", "DW");
 				}
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
@@ -801,13 +830,15 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	}
 
 	@Override
+	@Async
 	public void notifyPharmacy(String id, String requestId, String responseId, RoleEnum role, String message) {
 		List<UserDeviceCollection> userDeviceCollections = null;
 
 		try {
 
 			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY)
-					|| role.equals(RoleEnum.DENTAL_COLLECTION_BOY)) {
+					|| role.equals(RoleEnum.DENTAL_COLLECTION_BOY) || role.equals(RoleEnum.REFRESH)
+					|| role.equals(RoleEnum.DENTAL_WORK_REFRESH) || role.equals(RoleEnum.DENTAL_WORKS_CANCELLATION)) {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
 			if (role.equals(RoleEnum.PATIENT)) {
@@ -818,11 +849,14 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					if (userDeviceCollection.getDeviceType() != null) {
 						if (userDeviceCollection.getDeviceType().getType()
 								.equalsIgnoreCase(DeviceType.ANDROID.getType())) {
-
 							if (role.equals(RoleEnum.COLLECTION_BOY)) {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
 										ComponentType.LAB_REQUEST.getType(), null, null, role.getRole());
+							} else if (role.equals(RoleEnum.REFRESH)) {
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message, ComponentType.REFRESH.getType(),
+										null, null, role.getRole());
 							} else if (role.equals(RoleEnum.DENTAL_COLLECTION_BOY)) {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
@@ -831,6 +865,14 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message, ComponentType.REFRESH.getType(),
 										null, null, role.getRole());
+							} else if (role.equals(RoleEnum.DENTAL_WORK_REFRESH)) {
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message,
+										ComponentType.DENTAL_WORK_REFRESH.getType(), null, null, role.getRole());
+							} else if (role.equals(RoleEnum.DENTAL_WORKS_CANCELLATION)) {
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message,
+										ComponentType.DENTAL_WORKS_CANCELLATION.getType(), null, null, role.getRole());
 							} else {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
 										userDeviceCollection.getPushToken(), message,
@@ -854,8 +896,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			Sender sender = null;
 
 			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString())
-					|| role.equals(RoleEnum.COLLECTION_BOY.getRole())
-					|| role.equals(RoleEnum.DENTAL_COLLECTION_BOY.getRole())) {
+					|| role.equals(RoleEnum.COLLECTION_BOY.getRole()) || role.equals(RoleEnum.REFRESH.getRole())
+					|| role.equals(RoleEnum.DENTAL_COLLECTION_BOY.getRole())
+					|| role.equals(RoleEnum.DENTAL_WORK_REFRESH.getRole())
+					|| role.equals(RoleEnum.DENTAL_WORKS_CANCELLATION.getRole())) {
 				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
 			} else {

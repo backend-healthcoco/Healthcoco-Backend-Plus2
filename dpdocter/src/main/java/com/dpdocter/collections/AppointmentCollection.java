@@ -119,6 +119,7 @@ public class AppointmentCollection extends GenericCollection {
 	@Field
 	private String localPatientName;
 	
+
 	@Field
 	private List<ObjectId> doctorIds;
 	
@@ -409,5 +410,4 @@ public class AppointmentCollection extends GenericCollection {
 				+ category + ", isPatientDiscarded=" + isPatientDiscarded + ", cancelledByProfile=" + cancelledByProfile
 				+ ", localPatientName=" + localPatientName + ", doctorIds=" + doctorIds + "]";
 	}
-
 }

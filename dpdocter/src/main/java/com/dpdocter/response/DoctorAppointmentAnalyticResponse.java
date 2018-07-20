@@ -84,4 +84,15 @@ public class DoctorAppointmentAnalyticResponse {
 		this.cancelBydoctor = cancelBydoctor;
 	}
 
+	@Override
+	public String toString() {
+		return "DoctorAppointmentAnalyticResponse [totalNoOfAppointment=" + totalNoOfAppointment
+				+ ", bookedAppointmentInPercent=" + bookedAppointmentInPercent + ", scheduledAppointmentInPercent="
+				+ scheduledAppointmentInPercent + ", cancelledAppointmentInPercent=" + cancelledAppointmentInPercent
+				+ ", newPatientAppointmentInPercent=" + newPatientAppointmentInPercent
+				+ ", oldPatientAppointmentInPercent=" + oldPatientAppointmentInPercent + ", changeInAppointmentPercent="
+				+ changeInAppointmentPercent + ", cancelByPatient=" + cancelByPatient + ", cancelBydoctor="
+				+ cancelBydoctor + "]";
+	}
+
 }

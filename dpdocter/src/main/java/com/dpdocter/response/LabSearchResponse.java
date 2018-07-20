@@ -93,5 +93,4 @@ public class LabSearchResponse {
 				+ totalCost + ", totalCostForPatient=" + totalCostForPatient + ", totalSavingInPercentage="
 				+ totalSavingInPercentage + "]";
 	}
-
 }

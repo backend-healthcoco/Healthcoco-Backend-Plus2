@@ -211,7 +211,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drugDocument.setDrugType(drugType);
 					response.add(drugDocument);
 				}
-				// System.out.println("Modify Data:"+new DateTime().getMillisOfSecond());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -836,7 +835,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs) {
+	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs)
+	{
+
 		for (ESDrugDocument drug : drugs) {
 
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
@@ -855,6 +856,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs) {
+		List<DrugDocument> response= new ArrayList<>();
+
 		for (DrugDocument drug : drugs) {
 
 			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getDrugCode())) {
@@ -868,7 +871,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
 				}
 			}
+			response.add(drug);
 		}
-		return drugs;
+		return response;
 	}
 }

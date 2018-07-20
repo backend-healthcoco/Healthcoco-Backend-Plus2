@@ -141,14 +141,6 @@ public class InvoiceItemResponse {
 		this.treatmentFields = treatmentFields;
 	}
 
-	public InventoryBatch getInventoryBatch() {
-		return inventoryBatch;
-	}
-
-	public void setInventoryBatch(InventoryBatch inventoryBatch) {
-		this.inventoryBatch = inventoryBatch;
-	}
-
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -165,6 +157,14 @@ public class InvoiceItemResponse {
 		this.saveToInventory = saveToInventory;
 	}
 
+	public InventoryBatch getInventoryBatch() {
+		return inventoryBatch;
+	}
+
+	public void setInventoryBatch(InventoryBatch inventoryBatch) {
+		this.inventoryBatch = inventoryBatch;
+	}
+	
 	public Date getItemDate() {
 		return itemDate;
 	}

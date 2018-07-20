@@ -200,7 +200,7 @@ public interface PrescriptionServices {
 			String mobileNumber, String type);
 
 	List<Drug> getAllCustomDrug();
-
+	
 	Instructions addEditInstructions(Instructions instruction);
 
 	List<Instructions> getInstructions(int page, int size, String doctorId, String locationId, String hospitalId,
@@ -208,6 +208,7 @@ public interface PrescriptionServices {
 
 	Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
+
 
 	Boolean updateGenericCodes();
 

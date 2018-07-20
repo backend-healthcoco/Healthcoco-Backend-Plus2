@@ -7,17 +7,17 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.dpdocter.enums.Day;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class WorkingSchedule {
-    private Day workingDay;
+	private Day workingDay;
 
-    @Field(type = FieldType.Nested)
-    private List<WorkingHours> workingHours;
-    
-    private Boolean isByAppointment=false;
-    
+	@Field(type = FieldType.Nested)
+	private List<WorkingHours> workingHours;
 
-    public Boolean getIsByAppointment() {
+	private Boolean isByAppointment = false;
+
+	public Boolean getIsByAppointment() {
 		return isByAppointment;
 	}
 
@@ -26,23 +26,23 @@ public class WorkingSchedule {
 	}
 
 	public Day getWorkingDay() {
-	return workingDay;
-    }
+		return workingDay;
+	}
 
-    public void setWorkingDay(Day workingDay) {
-	this.workingDay = workingDay;
-    }
+	public void setWorkingDay(Day workingDay) {
+		this.workingDay = workingDay;
+	}
 
-    public List<WorkingHours> getWorkingHours() {
-	return workingHours;
-    }
+	public List<WorkingHours> getWorkingHours() {
+		return workingHours;
+	}
 
-    public void setWorkingHours(List<WorkingHours> workingHours) {
-	this.workingHours = workingHours;
-    }
+	public void setWorkingHours(List<WorkingHours> workingHours) {
+		this.workingHours = workingHours;
+	}
 
-    @Override
-    public String toString() {
-	return "WorkingSchedule [workingDay=" + workingDay + ", workingHours=" + workingHours + "]";
-    }
+	@Override
+	public String toString() {
+		return "WorkingSchedule [workingDay=" + workingDay + ", workingHours=" + workingHours + "]";
+	}
 }

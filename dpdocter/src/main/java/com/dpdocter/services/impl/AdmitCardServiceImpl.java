@@ -201,7 +201,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			String patientId, int page, int size, long updatedTime, Boolean discarded) {
 		List<AdmitCardResponse> response = null;
 		try {
-			Criteria criteria = new Criteria("isPatientDiscarded").is(false);
+			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
@@ -481,7 +481,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						+ (admitCardCollection.getUniqueEmrId() != null ? admitCardCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				admitCardCollection.getCreatedTime() != null ? admitCardCollection.getCreatedTime() : new Date(),
-				printSettings.getHospitalUId());
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, admitCardCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "ADMIT-CARD-"
 				+ admitCardCollection.getUniqueEmrId() + new Date().getTime();

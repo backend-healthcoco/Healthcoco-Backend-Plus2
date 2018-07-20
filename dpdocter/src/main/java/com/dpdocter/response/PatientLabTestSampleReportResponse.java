@@ -2,8 +2,6 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.LabTestSample;
-
 public class PatientLabTestSampleReportResponse {
 
 	private String id;
@@ -75,5 +73,4 @@ public class PatientLabTestSampleReportResponse {
 	public void setId(String id) {
 		this.id = id;
 	}
-
 }

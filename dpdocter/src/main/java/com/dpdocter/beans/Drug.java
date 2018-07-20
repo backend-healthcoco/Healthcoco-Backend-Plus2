@@ -39,8 +39,6 @@ public class Drug extends GenericCollection {
 
 	private List<GenericCode> genericNames;
 
-	private List<String> gcStrengthIds;
-
 	private String drugCode;
 
 	private long count;
@@ -49,9 +47,9 @@ public class Drug extends GenericCollection {
 
 	private Long totalStock;
 
-	private Long retailPrice;
-	
 	private Integer drugQuantity;
+
+	private Double retailPrice;
 
 	public String getId() {
 		return id;
@@ -189,14 +187,6 @@ public class Drug extends GenericCollection {
 		this.count = count;
 	}
 
-	public List<String> getGcStrengthIds() {
-		return gcStrengthIds;
-	}
-
-	public void setGcStrengthIds(List<String> gcStrengthIds) {
-		this.gcStrengthIds = gcStrengthIds;
-	}
-
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -213,11 +203,19 @@ public class Drug extends GenericCollection {
 		this.totalStock = totalStock;
 	}
 
-	public Long getRetailPrice() {
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
+	public Double getRetailPrice() {
 		return retailPrice;
 	}
 
-	public void setRetailPrice(Long retailPrice) {
+	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
 	}
 
@@ -227,16 +225,8 @@ public class Drug extends GenericCollection {
 				+ ", discarded=" + discarded + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId="
 				+ locationId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime
 				+ ", direction=" + direction + ", categories=" + categories + ", rankingCount=" + rankingCount
-				+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + ", count=" + count + "]";
+				+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + ", count=" + count
+				+ ", inventoryQuantity=" + inventoryQuantity + ", totalStock=" + totalStock + ", drugQuantity="
+				+ drugQuantity + ", retailPrice=" + retailPrice + "]";
 	}
-
-	public Integer getDrugQuantity() {
-		return drugQuantity;
-	}
-
-	public void setDrugQuantity(Integer drugQuantity) {
-		this.drugQuantity = drugQuantity;
-	}
-
 }
-

@@ -47,7 +47,6 @@ import com.dpdocter.collections.DoctorLabReportCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
-import com.dpdocter.collections.SharedReportCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
@@ -65,7 +64,6 @@ import com.dpdocter.repository.DoctorLabFevouriteDoctorRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
-import com.dpdocter.repository.SharedReportRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorLabDoctorReferenceRequest;
 import com.dpdocter.request.DoctorLabFavouriteDoctorRequest;
@@ -137,9 +135,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private LocationRepository locationRepository;
-
-	@Autowired
-	private SharedReportRepository sharedReportRepository;
 
 	@Value(value = "${sms.add.doctor.Lab.report.to.patient}")
 	private String patientSMSText;
@@ -451,7 +446,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 												true))),
 								Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 								Aggregation.match(criteria), projectList,
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
 
@@ -468,7 +463,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 												true))),
 								Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 								Aggregation.match(criteria), projectList,
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}
 			AggregationResults<DoctorLabReportResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -989,7 +984,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				throw new BusinessException(ServiceError.NoRecord, "No report found with reportId");
 			}
 			doctorLabReportCollection.setDiscarded(!doctorLabReportCollection.getDiscarded());
-
 			doctorLabReportCollection.setUpdatedTime(new Date());
 			doctorLabReportRepository.save(doctorLabReportCollection);
 			response = true;

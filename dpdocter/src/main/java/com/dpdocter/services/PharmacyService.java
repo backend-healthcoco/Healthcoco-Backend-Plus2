@@ -13,14 +13,17 @@ public interface PharmacyService {
 
 	UserSearchRequest addSearchRequest(UserSearchRequest request);
 
-	/*Boolean addResponseInQueue(PharmacyResponse request);*/
+	/* Boolean addResponseInQueue(PharmacyResponse request); */
 
-	OrderDrugsRequest  orderDrugs(OrderDrugsRequest request);
+	OrderDrugsRequest orderDrugs(OrderDrugsRequest request);
 
 	List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, int page, int size);
 
-	/*List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId, String replyType, int page,
-			int size);*/
+	/*
+	 * List<SearchRequestToPharmacyResponse>
+	 * getPharmacyListbyOrderHistory(String userId, String uniqueRequestId,
+	 * String replyType, int page, int size);
+	 */
 
 	Integer getPharmacyListCountbyOrderHistory(String uniqueRequestId, String replyType);
 
@@ -34,5 +37,4 @@ public interface PharmacyService {
 	List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size, String updatedTime);
 
 	OrderDrugsRequest cancelOrderDrug(String orderId, String userId);
-
 }

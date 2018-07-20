@@ -19,13 +19,8 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 	@Field
 	private String uniqueRequestId;
 
-	public Boolean getIsAlreadyRequested() {
-		return isAlreadyRequested;
-	}
-
-	public void setIsAlreadyRequested(Boolean isAlreadyRequested) {
-		this.isAlreadyRequested = isAlreadyRequested;
-	}
+	@Field
+	private Boolean isAlreadyRequested = false;
 
 	@Field
 	private String replyType;
@@ -37,19 +32,16 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 	private Discount discount;
 	
 	@Field
-    private double discountedPrice;
-	
-	@Field
-	private double realPrice;
-	
-	@Field
-	private String note;
-
-	@Field
 	private String uniqueResponseId;
 	
 	@Field
-	private Boolean isAlreadyRequested=false;
+	private double discountedPrice;
+
+	@Field
+	private double realPrice;
+
+	@Field
+	private String note;
 
 	public ObjectId getId() {
 		return id;
@@ -131,12 +123,20 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 		this.uniqueResponseId = uniqueResponseId;
 	}
 
+	public Boolean getIsAlreadyRequested() {
+		return isAlreadyRequested;
+	}
+
+	public void setIsAlreadyRequested(Boolean isAlreadyRequested) {
+		this.isAlreadyRequested = isAlreadyRequested;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchRequestToPharmacyCollection [id=" + id + ", userId=" + userId + ", uniqueRequestId="
-				+ uniqueRequestId + ", replyType=" + replyType + ", localeId=" + localeId + ", discount=" + discount
-				+ ", discountedPrice=" + discountedPrice + ", realPrice=" + realPrice + ", note=" + note
-				+ ", uniqueResponseId=" + uniqueResponseId + "]";
+				+ uniqueRequestId + ", isAlreadyRequested=" + isAlreadyRequested + ", replyType=" + replyType
+				+ ", localeId=" + localeId + ", discount=" + discount + ", uniqueResponseId=" + uniqueResponseId
+				+ ", discountedPrice=" + discountedPrice + ", realPrice=" + realPrice + ", note=" + note + "]";
 	}
-	
+
 }

@@ -179,6 +179,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 					.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-dental-inspection-reports-a4.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORK_INVOICE.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-dental-work-invoice-A4.jrxml");
+
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORK_RECEIPT.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-receipt.jrxml");
 
@@ -923,7 +924,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			dsr.addParameter(param);
 
 			DesignCell columnHeader = new DesignCell();
-
 			columnHeader.setHeight(40);
 
 			jrDesignTextField = new JRDesignTextField();
@@ -1015,11 +1015,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 		Boolean showTitle = (Boolean) parameters.get("showPCTitle");
 
-		int fieldWidth = 118;
+		int fieldWidth = 108;
 		if (contentFontSize > 13)
-			fieldWidth = 145;
+			fieldWidth = 135;
 		else if (contentFontSize > 11)
-			fieldWidth = 128;
+			fieldWidth = 118;
 
 		band = new JRDesignBand();
 		band.setHeight(1);
@@ -3990,6 +3990,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		show = (Boolean) parameters.get("showName");
+
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
@@ -4953,6 +4954,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		band = new JRDesignBand();
+		band.setHeight(15);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
@@ -7542,7 +7554,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		band.setHeight(25);
-
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{sNo}"));
 		jrDesignTextField.setX(0);

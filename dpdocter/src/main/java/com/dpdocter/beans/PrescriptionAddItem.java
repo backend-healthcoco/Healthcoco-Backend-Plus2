@@ -28,11 +28,6 @@ public class PrescriptionAddItem {
 
 	private Long inventoryQuantity;
 	
-	
-
-	public DrugType getDrugType() {
-		return drugType;
-	}
 
 	public void setDrugType(DrugType drugType) {
 		this.drugType = drugType;
@@ -110,17 +105,23 @@ public class PrescriptionAddItem {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
-	@Override
-	public String toString() {
-		return "PrescriptionItem [drugId=" + drugId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
-	}
-
 	public Integer getDrugQuantity() {
 		return drugQuantity;
 	}
 
 	public void setDrugQuantity(Integer drugQuantity) {
 		this.drugQuantity = drugQuantity;
+	}
+
+	public DrugType getDrugType() {
+		return drugType;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionAddItem [drugId=" + drugId + ", drugType=" + drugType + ", drugName=" + drugName
+				+ ", explanation=" + explanation + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
+				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + ", drugQuantity="
+				+ drugQuantity + ", inventoryQuantity=" + inventoryQuantity + "]";
 	}
 }

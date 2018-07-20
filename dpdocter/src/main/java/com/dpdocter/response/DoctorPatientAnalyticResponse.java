@@ -38,5 +38,4 @@ public class DoctorPatientAnalyticResponse {
 	public void setTotalVisitedPatient(Integer totalVisitedPatient) {
 		this.totalVisitedPatient = totalVisitedPatient;
 	}
-
 }

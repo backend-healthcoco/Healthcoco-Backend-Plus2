@@ -66,7 +66,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private String packageType;
 
-	private Boolean hasLoginAccess = true;
+    private Boolean hasLoginAccess = true;
 	
 	private Boolean hasBillingAccess = true;
 	

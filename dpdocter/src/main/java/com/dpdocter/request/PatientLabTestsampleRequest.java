@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.beans.LabTestSample;
 
 public class PatientLabTestsampleRequest {
@@ -77,5 +75,4 @@ public class PatientLabTestsampleRequest {
 		return "PatientLabTestsampleRequest [patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
 				+ age + ", gender=" + gender + ", labTestSamples=" + labTestSamples + "]";
 	}
-
 }

@@ -1,9 +1,5 @@
 package com.dpdocter.elasticsearch.services.impl;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,8 +127,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
-
-					.must(QueryBuilders.termQuery("isPatientDiscarded", false))
+					.mustNot(QueryBuilders.termQuery("isPatientDiscarded", true))
 
 					.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + patientName + "*").boost(4))
 					.should(QueryBuilders
@@ -144,7 +139,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchTerm)
 							.boost(1.0f))
 					.minimumNumberShouldMatch(1);
-
 			if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 				boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", doctorId));
 			}
@@ -238,7 +232,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.termQuery("locationId", locationId))
 				.must(QueryBuilders.termQuery("hospitalId", hospitalId))
-				.must(QueryBuilders.termQuery("isPatientDiscarded", false));
+				.mustNot(QueryBuilders.termQuery("isPatientDiscarded", true));
 
 		if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", request.getDoctorId()));
@@ -252,9 +246,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					if (searchType.equalsIgnoreCase(AdvancedSearchType.DOB.getSearchType())) {
 
 						String[] dob = searchValue.split("/");
-						builder = nestedQuery(AdvancedSearchType.DOB.getSearchType(),
-								boolQuery().must(termQuery("dob.years", dob[2])).must(termQuery("dob.months", dob[0]))
-										.must(termQuery("dob.days", dob[1])));
+						builder = QueryBuilders.nestedQuery(AdvancedSearchType.DOB.getSearchType(),
+								QueryBuilders.boolQuery().must(QueryBuilders.termQuery("dob.years", dob[2])).must(QueryBuilders.termQuery("dob.months", dob[0]))
+										.must(QueryBuilders.termQuery("dob.days", dob[1])));
 
 					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.REGISTRATION_DATE.getSearchType())) {
 

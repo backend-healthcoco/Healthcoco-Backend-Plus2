@@ -931,6 +931,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
+					if(!DPDoctorUtils.anyStringEmpty(speciality))
 					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder)).minimumNumberShouldMatch(1);
@@ -1002,6 +1003,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
+					if(!DPDoctorUtils.anyStringEmpty(speciality))
 					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
 				}
 				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder));

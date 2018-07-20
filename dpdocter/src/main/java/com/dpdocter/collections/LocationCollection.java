@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LocationType;
 
 @Document(collection = "location_cl")

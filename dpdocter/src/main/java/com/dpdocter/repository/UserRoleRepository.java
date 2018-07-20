@@ -33,7 +33,7 @@ public interface UserRoleRepository extends MongoRepository<UserRoleCollection, 
 	@Query("{'roleId': ?0}")
 	public List<UserRoleCollection> findByRoleId(ObjectId roleId);
 
-	@Query("{'userId': ?0, 'locationId': ?1}")
+    @Query("{'userId': ?0, 'locationId': ?1}")
 	public UserRoleCollection findByUserIdLocationId(ObjectId doctorObjectId, ObjectId locationObjectId);
 
 }

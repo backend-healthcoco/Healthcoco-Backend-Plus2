@@ -260,7 +260,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 				BeanUtil.map(request, orderDrugCollection);
 				orderDrugCollection.setCreatedTime(new Date());
 				orderDrugRepository.save(orderDrugCollection);
-
 				pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
 						request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
 				response = new OrderDrugsRequest();
@@ -590,7 +589,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getPostalCode())
 										? pickUpAddress.getPostalCode() : "");
 
-						if (DPDoctorUtils.anyStringEmpty(pickUpFormattedAddress)) {
+						if (!DPDoctorUtils.anyStringEmpty(pickUpFormattedAddress)) {
 							if (pickUpFormattedAddress.charAt(pickUpFormattedAddress.length() - 2) == ',') {
 								pickUpFormattedAddress = pickUpFormattedAddress.substring(0,
 										pickUpFormattedAddress.length() - 2);

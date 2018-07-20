@@ -3,8 +3,6 @@ package com.dpdocter.beans;
 import java.util.List;
 
 public class InseptionReportJasperBean {
-
-	
 	private String dentalLab;
 	private String doctor;
 	private String patientName;
@@ -138,5 +136,4 @@ public class InseptionReportJasperBean {
 				+ ", status=" + status + ", requestId=" + requestId + ", bisqueStage=" + bisqueStage + ", finalStage="
 				+ finalStage + ", copingStage=" + copingStage + ", date=" + date + ", items=" + items + "]";
 	}
-
 }

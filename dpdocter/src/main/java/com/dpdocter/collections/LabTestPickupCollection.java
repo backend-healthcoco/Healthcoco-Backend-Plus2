@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.PatientLabTestItem;
-import com.dpdocter.beans.PatientLabTestSample;
 
 @Document(collection = "lab_test_pickup_cl")
 public class LabTestPickupCollection extends GenericCollection {

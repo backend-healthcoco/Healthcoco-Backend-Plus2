@@ -35,12 +35,6 @@ public class AppointmentSearchResponse {
 		this.responseType = responseType;
 	}
 
-	@Override
-	public String toString() {
-		return "AppointmentSearchResponse [id=" + id + ", response=" + response + ", responseType=" + responseType
-				+ "]";
-	}
-
 	public String getSlugUrl() {
 		return slugUrl;
 	}
@@ -49,4 +43,9 @@ public class AppointmentSearchResponse {
 		this.slugUrl = slugUrl;
 	}
 
+	@Override
+	public String toString() {
+		return "AppointmentSearchResponse [id=" + id + ", response=" + response + ", responseType=" + responseType
+				+ ", slugUrl=" + slugUrl + "]";
+	}
 }

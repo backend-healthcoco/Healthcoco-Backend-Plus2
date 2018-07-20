@@ -56,6 +56,8 @@ public class ESPatientResponse {
 
     private String colorCode;
 
+    private String PNUM;
+    
     public String getId() {
 	return id;
     }
@@ -256,6 +258,14 @@ public class ESPatientResponse {
 		this.localPatientName = localPatientName;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "ESPatientResponse [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
@@ -265,6 +275,7 @@ public class ESPatientResponse {
 				+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + "]";
+				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", PNUM=" + PNUM + "]";
 	}
+
 }

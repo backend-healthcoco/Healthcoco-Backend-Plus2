@@ -29,5 +29,4 @@ public class DoctorRecordUploadRequest {
 		return "DoctorRecordUploadRequest [fileDetails=" + fileDetails + ", labReportsAddRequest="
 				+ labReportsAddRequest + "]";
 	}
-
 }

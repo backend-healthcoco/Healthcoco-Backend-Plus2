@@ -46,6 +46,14 @@ public class TretmentAnalyticMongoResponse {
 	public void setTreatmentServiceName(String treatmentServiceName) {
 		this.treatmentServiceName = treatmentServiceName;
 	}
-	
 
+	@Override
+	public String toString() {
+		return "TretmentAnalyticMongoResponse [totalTreatmentService=" + totalTreatmentService
+				+ ", totalTreatmentServiceCompleted=" + totalTreatmentServiceCompleted
+				+ ", totalTreatmentServiceProgress=" + totalTreatmentServiceProgress
+				+ ", totalTreatmentServiceNotStarted=" + totalTreatmentServiceNotStarted + ", treatmentServiceName="
+				+ treatmentServiceName + "]";
+	}
+	
 }

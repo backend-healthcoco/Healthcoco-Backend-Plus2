@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.dpdocter.beans.DoctorContactUs;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.services.MailBodyGenerator;
 
@@ -359,13 +360,22 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	}
 	
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName, String templatePath) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("doctorName", doctorName);
-		model.put("dentalImagingLab", dentalImagingLab);
-		model.put("patientName", patientName);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName, List<MailAttachment> reports , String templatePath) {
+		String text = "";
+		try {
+			Map<String, Object> model = new HashMap<String, Object>();
+			model.put("doctorName", doctorName);
+			model.put("dentalImagingLab", dentalImagingLab);
+			model.put("patientName", patientName);
+			model.put("reports", reports);
+			text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+			return text;
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
 		return text;
 
 	}

@@ -95,7 +95,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = false;
-
+	
 	@Field
 	private Boolean isPatientDiscarded = false;
 
@@ -424,7 +424,8 @@ public class PatientCollection extends GenericCollection {
 				+ ", isPatientDiscarded=" + isPatientDiscarded + ", dateOfVisit=" + dateOfVisit + ", referredBy="
 				+ referredBy + ", address=" + address + ", consultantDoctorIds=" + consultantDoctorIds
 				+ ", personalInformation=" + personalInformation + ", medicalQuestionAnswers=" + medicalQuestionAnswers
-				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", PNUM=" + PNUM + "]";
+				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", PNUM=" + PNUM + ", isNutritionActive="
+				+ isNutritionActive + "]";
 	}
 
 }
