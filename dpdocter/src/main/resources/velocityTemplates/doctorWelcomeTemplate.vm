@@ -24,9 +24,6 @@
         <div style="padding: 5px 15px;">
          <p style="color:#2c3335;font-size:15px;">Thank you ${fName} for showing interest in Healthcoco. 
          Everyday doctors like you are using Healthcoco+ to connect with patients and providing better healthcare experince.<br><br>
-         We will contact you shortly to complete your further verification process and get you started with Healthcoco+.
-         <br><br>If you have any questions or need help you can contact us anytime at 
-         <a style="color: #0077b5;text-decoration:none;"href="" target="_blank">${contactUsEmail}</a>
          <br><br>Thank you for joining Healthcoco.<br><br>Stay Healthy and Happy,<br>Team Healthcoco
 
            </div>
