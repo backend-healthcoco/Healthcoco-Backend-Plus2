@@ -62,40 +62,41 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-			PrintSettingsCollection collection = null;
+			PrintSettingsCollection oldPrintSettingsCollection = null;
 			if (request.getId() == null) {
+
 				if (!request.getIsLab()) {
-					collection = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
+					oldPrintSettingsCollection = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
 							hospitalObjectId);
 				} else {
-					collection = printSettingsRepository.getSettings(locationObjectId, hospitalObjectId);
+					oldPrintSettingsCollection = printSettingsRepository.getSettings(locationObjectId,
+							hospitalObjectId);
 				}
-				if (collection != null && !collection.getDiscarded()
-						&& request.getComponentType().equals(collection.getComponentType()))
-					request.setId(collection.getId().toString());
+				if (oldPrintSettingsCollection != null && !oldPrintSettingsCollection.getDiscarded()
+						&& request.getComponentType().equals(oldPrintSettingsCollection.getComponentType()))
+					request.setId(oldPrintSettingsCollection.getId().toString());
 			}
 			BeanUtil.map(request, printSettingsCollection);
 			if (request.getId() == null) {
 				printSettingsCollection.setCreatedTime(new Date());
-			} else {
-				PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository
-						.findOne(new ObjectId(request.getId()));
-				if (oldPrintSettingsCollection != null) {
-					printSettingsCollection.setCreatedTime(oldPrintSettingsCollection.getCreatedTime());
-					printSettingsCollection.setCreatedBy(oldPrintSettingsCollection.getCreatedBy());
-					printSettingsCollection.setDiscarded(oldPrintSettingsCollection.getDiscarded());
-					printSettingsCollection.setHospitalUId(oldPrintSettingsCollection.getHospitalUId());
+			} else if (oldPrintSettingsCollection == null) {
+				oldPrintSettingsCollection = printSettingsRepository.findOne(new ObjectId(request.getId()));
+			}
 
-					if (request.getPageSetup() == null)
-						printSettingsCollection.setPageSetup(oldPrintSettingsCollection.getPageSetup());
+			if (oldPrintSettingsCollection != null) {
+				printSettingsCollection.setCreatedTime(oldPrintSettingsCollection.getCreatedTime());
+				printSettingsCollection.setCreatedBy(oldPrintSettingsCollection.getCreatedBy());
+				printSettingsCollection.setDiscarded(oldPrintSettingsCollection.getDiscarded());
+				printSettingsCollection.setHospitalUId(oldPrintSettingsCollection.getHospitalUId());
 
-					if (request.getHeaderSetup() == null)
-						printSettingsCollection.setHeaderSetup(oldPrintSettingsCollection.getHeaderSetup());
+				if (request.getPageSetup() == null)
+					printSettingsCollection.setPageSetup(oldPrintSettingsCollection.getPageSetup());
 
-					if (request.getFooterSetup() == null)
-						printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
-				}
+				if (request.getHeaderSetup() == null)
+					printSettingsCollection.setHeaderSetup(oldPrintSettingsCollection.getHeaderSetup());
 
+				if (request.getFooterSetup() == null)
+					printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
 			}
 
 			if (DPDoctorUtils.allStringsEmpty(printSettingsCollection.getHospitalUId())) {
