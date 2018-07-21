@@ -24,10 +24,6 @@
          <a style="color: #0077b5;text-decoration:none;"href="${setPasswordLink}" target="_blank" >Set Password</a><br><br>
          Everyday doctors like you are using Healthcoco+ to connect with patients and providing better healthcare experience. 
          Get started <a style="color: #0077b5;text-decoration:none;"href="${loginLink}" target="_blank" >here</a>.
-         <br><br>For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at 
-         <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a> 
-
-
 
             <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
          </p>
