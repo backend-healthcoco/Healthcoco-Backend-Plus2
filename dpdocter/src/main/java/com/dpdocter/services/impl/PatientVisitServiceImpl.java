@@ -217,7 +217,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -850,10 +850,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							patientVisitCollection.getTreatmentId(), patientVisitCollection.getId());
 					response.setPatientTreatment(list);
 				}
-				
+
 				pushNotificationServices.notifyUser(patientVisitCollection.getDoctorId().toString(),
-						"Patient Visit Added",
-						ComponentType.PATIENT_VISIT_REFRESH.getType(), patientVisitCollection.getPatientId().toString(), null);
+						"Patient Visit Added", ComponentType.PATIENT_VISIT_REFRESH.getType(),
+						patientVisitCollection.getPatientId().toString(), null);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1184,7 +1184,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("visitedFor").in(visitedFors).and("isPatientDiscarded").ne(true);
 
 			if (!isOTPVerified) {
@@ -2110,7 +2110,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						? printSettings.getHeaderSetup().getPatientDetails()
 						: null),
 				patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				patientVisitLookupResponse.getCreatedTime(), printSettings.getHospitalUId(), patientVisitLookupResponse.getLocation().getIsPidHasDate());
+				patientVisitLookupResponse.getCreatedTime(), printSettings.getHospitalUId(),
+				patientVisitLookupResponse.getLocation().getIsPidHasDate());
 		generatePrintSetup(parameters, printSettings, patientVisitLookupResponse.getDoctorId());
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
@@ -2445,7 +2446,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				parameters.put("poweredBy", "");
 			}
 		}
-		
+
 		parameters.put("footerSignature", footerSignature);
 		parameters.put("poweredBy", poweredBy);
 		parameters.put("bottomSignText", bottomSignText);
@@ -2463,7 +2464,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patientCard, String uniqueEMRId,
-			String firstName, String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId, Boolean isPidHasDate) {
+			String firstName, String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId,
+			Boolean isPidHasDate) {
 		String age = null,
 				gender = (patientCard != null && patientCard.getGender() != null ? patientCard.getGender() : null),
 				patientLeftText = "", patientRightText = "";
@@ -2479,88 +2481,93 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			List<String> patientDetailList = new ArrayList<String>();
 			patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
 
-		if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
-			if (patientDetails.getPIDKey().equalsIgnoreCase("false")) {
-				
-				if(isPidHasDate != null && !isPidHasDate) patientDetails.setPIDKey("PNUM");
-				else patientDetails.setPIDKey("UHID");
-			}
-			if(isPidHasDate != null && !isPidHasDate && !DPDoctorUtils.anyStringEmpty(patientCard.getPNUM())) patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
-					+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
-			
-			else if(patientCard != null) patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
-					+ (patientCard.getPID() != null ? patientCard.getPID() : "--"));
-		} else {
-			if(isPidHasDate != null && !isPidHasDate && !DPDoctorUtils.anyStringEmpty(patientCard.getPNUM())) patientDetailList.add("<b>Patient ID: </b>"
-					+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
-			else patientDetailList.add("<b>Patient ID: </b>"
-					+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
-		}
+			if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
+				if (patientDetails.getPIDKey().equalsIgnoreCase("false")) {
 
-		if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
-			Age ageObj = patientCard.getDob().getAge();
-			if (ageObj.getYears() > 14)
-				age = ageObj.getYears() + "yrs";
-			else {
-				if (ageObj.getYears() > 0)
+					if (isPidHasDate != null && !isPidHasDate)
+						patientDetails.setPIDKey("PNUM");
+					else
+						patientDetails.setPIDKey("UHID");
+				}
+				if (isPidHasDate != null && !isPidHasDate && !DPDoctorUtils.anyStringEmpty(patientCard.getPNUM()))
+					patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
+							+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
+
+				else if (patientCard != null)
+					patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
+							+ (patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			} else {
+				if (isPidHasDate != null && !isPidHasDate && !DPDoctorUtils.anyStringEmpty(patientCard.getPNUM()))
+					patientDetailList.add("<b>Patient ID: </b>"
+							+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
+				else
+					patientDetailList.add("<b>Patient ID: </b>"
+							+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			}
+
+			if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
+				Age ageObj = patientCard.getDob().getAge();
+				if (ageObj.getYears() > 14)
 					age = ageObj.getYears() + "yrs";
 				else {
 					if (ageObj.getYears() > 0)
 						age = ageObj.getYears() + "yrs";
-					if (ageObj.getMonths() > 0) {
-						if (DPDoctorUtils.anyStringEmpty(age))
-							age = ageObj.getMonths() + "months";
-						else
-							age = age + " " + ageObj.getMonths() + " months";
-					}
-					if (ageObj.getDays() > 0) {
-						if (DPDoctorUtils.anyStringEmpty(age))
-							age = ageObj.getDays() + "days";
-						else
-							age = age + " " + ageObj.getDays() + "days";
+					else {
+						if (ageObj.getYears() > 0)
+							age = ageObj.getYears() + "yrs";
+						if (ageObj.getMonths() > 0) {
+							if (DPDoctorUtils.anyStringEmpty(age))
+								age = ageObj.getMonths() + "months";
+							else
+								age = age + " " + ageObj.getMonths() + " months";
+						}
+						if (ageObj.getDays() > 0) {
+							if (DPDoctorUtils.anyStringEmpty(age))
+								age = ageObj.getDays() + "days";
+							else
+								age = age + " " + ageObj.getDays() + "days";
+						}
 					}
 				}
-			}
 
+				if (patientDetails.getShowDOB()) {
+					if (!DPDoctorUtils.anyStringEmpty(age, gender))
+						patientDetailList.add("<b>Age | Gender: </b>" + age + " | " + gender);
+					else if (!DPDoctorUtils.anyStringEmpty(age))
+						patientDetailList.add("<b>Age | Gender: </b>" + age + " | --");
+					else if (!DPDoctorUtils.anyStringEmpty(gender))
+						patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
+				}
+			}
+			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
+				patientDetailList.add(uniqueEMRId);
 			if (patientDetails.getShowDOB()) {
-				if (!DPDoctorUtils.anyStringEmpty(age, gender))
-					patientDetailList.add("<b>Age | Gender: </b>" + age + " | " + gender);
-				else if (!DPDoctorUtils.anyStringEmpty(age))
-					patientDetailList.add("<b>Age | Gender: </b>" + age + " | --");
-				else if (!DPDoctorUtils.anyStringEmpty(gender))
-					patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
+				if (patientDetails.getShowDate())
+					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+				patientDetailList
+						.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+			} else {
+				patientDetailList
+						.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+				if (patientDetails.getShowDate())
+					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 			}
-		}
-		if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
-			patientDetailList.add(uniqueEMRId);
-		if (patientDetails.getShowDOB()) {
-			if (patientDetails.getShowDate())
-				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
-			patientDetailList
-					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-		} else {
-			patientDetailList
-					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-			if (patientDetails.getShowDate())
-				patientDetailList.add("<b>Date: </b>" + sdf.format(date));
-		}
 
+			if (patientDetails.getShowBloodGroup() && patientCard != null
+					&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
+				patientDetailList.add("<b>Blood Group: </b>" + patientCard.getBloodGroup());
+			}
+			if (patientDetails.getShowCity() && patientCard != null && !DPDoctorUtils
+					.anyStringEmpty(patientCard.getAddress() != null ? patientCard.getAddress().getCity() : null)) {
+				patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
+			}
+			if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
+				ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
+				if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
+					patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
 
-		if (patientDetails.getShowBloodGroup() && patientCard != null
-				&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
-			patientDetailList.add("<b>Blood Group: </b>" + patientCard.getBloodGroup());
-		}
-		if (patientDetails.getShowCity() && patientCard != null && !DPDoctorUtils
-				.anyStringEmpty(patientCard.getAddress() != null ? patientCard.getAddress().getCity() : null)) {
-			patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
-		}
-		if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
-			ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
-			if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
-				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
-			
-		}else if (parameters.get("referredby") != null)
-			patientDetailList.add("<b>Referred By: </b>" + parameters.get("referredby").toString());
+			} else if (parameters.get("referredby") != null)
+				patientDetailList.add("<b>Referred By: </b>" + parameters.get("referredby").toString());
 
 			if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId()
 					&& !DPDoctorUtils.anyStringEmpty(hospitalUId)) {
@@ -3306,7 +3313,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("visitedFor")
-				.in(visitedFors).and("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true);
+					.in(visitedFors).and("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
 					criteria.and("doctorId").is(doctorObjectId);

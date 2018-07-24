@@ -95,6 +95,7 @@ import com.dpdocter.repository.DentalWorksReceiptRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.RateCardDentalWorkAssociationRepository;
 import com.dpdocter.repository.RateCardDoctorAssociationRepository;
 import com.dpdocter.repository.TaxRepository;
@@ -204,6 +205,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private DentalWorksAmountRepository dentalWorksAmountRepository;
+	
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
 
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
@@ -2826,22 +2830,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 		parameters.put("invoiceId", "<b>InvoiceId : </b>" + dentalWorksInvoiceCollection.getUniqueInvoiceId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
 
-		DentalLabPrintSettingCollection dentalLabPrintSettingCollection = dentalLabPrintSettingRepository.getSettings(
-				dentalWorksInvoiceCollection.getDentalLabLocationId(),
-				dentalWorksInvoiceCollection.getDentalLabHospitalId());
-		printSettings = new PrintSettingsCollection();
-
-		if (dentalLabPrintSettingCollection == null) {
-
+	 printSettings = printSettingsRepository.getSettings(
+				dentalWorksInvoiceCollection.getLocationId(),
+				dentalWorksInvoiceCollection.getHospitalId());
+		
+		if (printSettings == null) {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 
-		} else {
-			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
-			BeanUtil.map(dentalLabPrintSettingCollection, defaultPrintSettings);
-			BeanUtil.map(defaultPrintSettings, printSettings);
-
-		}
+		} 
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
 

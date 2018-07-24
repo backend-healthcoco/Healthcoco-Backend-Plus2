@@ -1882,17 +1882,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
 
-		printSettings = printSettingsRepository.getSettings(
-				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingDoctorId())
-						? new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId())
-						: null),
+		printSettings = printSettingsRepository.getSettings(				
 				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingLocationId())
 						? new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId())
 						: null),
 				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingDoctorId())
 						? new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId())
-						: null),
-				ComponentType.ALL.getType());
+						: null));
 
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
