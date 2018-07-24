@@ -29,7 +29,7 @@ public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCo
 	List<PrintSettingsCollection> getSettings(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
 			boolean[] discards, Pageable pageable);
 
-	@Query("{ 'locationId': ?0, 'hospitalId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},'isLab': true}}")
+	@Query("{ 'locationId': ?0, 'hospitalId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3},'isLab': true}")
 	List<PrintSettingsCollection> getSettings(ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards,
 			Sort sort);
 
