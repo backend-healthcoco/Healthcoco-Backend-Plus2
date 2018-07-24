@@ -86,7 +86,6 @@ import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyDoctorAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.DentalLabDoctorAssociationRepository;
-import com.dpdocter.repository.DentalLabPrintSettingRepository;
 import com.dpdocter.repository.DentalLabTestPickupRepository;
 import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DentalWorksAmountRepository;
@@ -205,7 +204,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private DentalWorksAmountRepository dentalWorksAmountRepository;
-	
+
 	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
 
@@ -262,9 +261,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private PatientVisitService patientVisitService;
-
-	@Autowired
-	private DentalLabPrintSettingRepository dentalLabPrintSettingRepository;
 
 	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
 
@@ -2830,15 +2826,16 @@ public class DentalLabServiceImpl implements DentalLabService {
 		parameters.put("invoiceId", "<b>InvoiceId : </b>" + dentalWorksInvoiceCollection.getUniqueInvoiceId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
 
-	 printSettings = printSettingsRepository.getSettings(
-				dentalWorksInvoiceCollection.getLocationId(),
+		printSettings = printSettingsRepository.getSettings(dentalWorksInvoiceCollection.getLocationId(),
 				dentalWorksInvoiceCollection.getHospitalId());
-		
+
 		if (printSettings == null) {
+
+			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 
-		} 
+		}
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
 
@@ -2986,7 +2983,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		DentalWorksReceipt response = null;
 		DentalWorksAmountCollection dentalWorksAmountCollection = null;
 		Double oldCost = 0.0;
-		
+
 		try {
 			DentalWorksReceiptCollection dentalWorksReceiptCollection = new DentalWorksReceiptCollection();
 
@@ -3023,13 +3020,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 							new ObjectId(request.getDentalLabHospitalId()));
 
 			if (dentalWorksAmountCollection != null) {
-				dentalWorksAmountCollection
-						.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() - request.getAmountPaid() + oldCost);
+				dentalWorksAmountCollection.setRemainingAmount(
+						dentalWorksAmountCollection.getRemainingAmount() - request.getAmountPaid() + oldCost);
 				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 				dentalWorksReceiptCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount());
 				dentalWorksReceiptCollection = dentalWorksReceiptRepository.save(dentalWorksReceiptCollection);
 			}
-		
+
 			response = new DentalWorksReceipt();
 			BeanUtil.map(dentalWorksReceiptCollection, response);
 		} catch (BusinessException be) {
@@ -3232,7 +3229,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-					Aggregation.unwind("dentalLab"),Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
+					Aggregation.unwind("dentalLab"), Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
 					Aggregation.unwind("clinic"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.match(criteria));
 			AggregationResults<DentalWorksInvoiceResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -3472,23 +3469,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 				+ user.getFirstName() + "</b><br>" + location.getLocationName() + ",<br>" + location.getCity()
 				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? ",<br>" + location.getState() : "");
 		parameters.put("doctor", doctorName);
-		DentalLabPrintSettingCollection dentalLabPrintSettingCollection = dentalLabPrintSettingRepository.getSettings(
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				new ObjectId(dentalWorksReceiptResponse.getDentalLabLocationId()),
 				new ObjectId(dentalWorksReceiptResponse.getDentalLabHospitalId()));
-		PrintSettingsCollection printSettings = new PrintSettingsCollection();
 
-		if (dentalLabPrintSettingCollection == null) {
-
+		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
-
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
-
-		} else {
-			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
-			BeanUtil.map(dentalLabPrintSettingCollection, defaultPrintSettings);
-			BeanUtil.map(defaultPrintSettings, printSettings);
-
 		}
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
