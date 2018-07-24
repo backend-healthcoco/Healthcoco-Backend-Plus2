@@ -39,10 +39,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Component
-@Path(PathProxy.WEB_SEARCH_BASE_URL)
+//@Path()
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = PathProxy.SOLR_APPOINTMENT_BASE_URL, description = "Endpoint for search")
+@Api(value = PathProxy.WEB_SEARCH_BASE_URL, description = "Endpoint for search")
 public class SearchApi {
 
 	private static Logger logger = Logger.getLogger(SearchApi.class.getName());
@@ -62,7 +62,7 @@ public class SearchApi {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.SearchUrls.SEARCH_DOCTORS)
+	@Path(value = PathProxy.BASE_URL +"/search" + PathProxy.SearchUrls.SEARCH_DOCTORS)
 	@GET
 	@ApiOperation(value = PathProxy.SearchUrls.SEARCH_DOCTORS, notes = PathProxy.SearchUrls.SEARCH_DOCTORS)
 	public Response<SearchDoctorResponse> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
@@ -86,7 +86,31 @@ public class SearchApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY)
+	@Path(value = PathProxy.WEB_SEARCH_BASE_URL+PathProxy.SearchUrls.SEARCH_DOCTORS)
+	@GET
+	@ApiOperation(value = PathProxy.SearchUrls.SEARCH_DOCTORS, notes = PathProxy.SearchUrls.SEARCH_DOCTORS)
+	public Response<SearchDoctorResponse> getDoctorsForWebSearch(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("city") String city, @QueryParam("location") String location,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom,
+			@DefaultValue("false") @QueryParam("booking") Boolean booking,
+			@DefaultValue("false") @QueryParam("calling") Boolean calling, @QueryParam("minFee") int minFee,
+			@QueryParam("maxFee") int maxFee, @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
+			@MatrixParam("days") List<String> days, @QueryParam("gender") String gender,
+			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
+			@QueryParam("service") String service, @QueryParam("locality") String locality,
+			@DefaultValue(value = "false") @QueryParam("otherArea") Boolean otherArea) {
+
+		SearchDoctorResponse doctors = searchService.searchDoctors(page, size, city, location, latitude, longitude,
+				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender,
+				minExperience, maxExperience, service, locality, otherArea);
+
+		Response<SearchDoctorResponse> response = new Response<SearchDoctorResponse>();
+		response.setData(doctors);
+		return response;
+	}
+	
+	@Path(value = PathProxy.WEB_SEARCH_BASE_URL+PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY)
 	@GET
 	@ApiOperation(value = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY, notes = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY)
 	public Response<ResourcesCountResponse> getResourcesCountByCity(@PathParam("city") String city, @MatrixParam("type") List<String> type) {
@@ -102,7 +126,7 @@ public class SearchApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
+	@Path(value = PathProxy.WEB_SEARCH_BASE_URL+PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB, notes = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
 	public Response<ESWEBResponse> getDoctorForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
@@ -123,20 +147,16 @@ public class SearchApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
+	@Path(value = PathProxy.WEB_SEARCH_BASE_URL+PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
 	@GET
-	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
-	public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
-			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
+	public Response<DoctorProfile> getDoctorProfile(@PathParam("slugURL") String slugURL,
+			@PathParam("userUId") String userUId) {
+		if (DPDoctorUtils.anyStringEmpty(userUId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
-		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, patientId,
-				isMobileApp, isSearched);
+		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(userUId);
 		if (doctorProfile != null) {
 			if (doctorProfile.getImageUrl() != null) {
 				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
@@ -163,9 +183,6 @@ public class SearchApi {
 					if (clinicProfile.getLogoUrl() != null) {
 						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
 					}
-					if (clinicProfile.getPackageType() == null) {
-						clinicProfile.setPackageType(PackageType.ADVANCE.getType());
-					}
 
 					if (clinicProfile.getLogoThumbnailUrl() != null) {
 						clinicProfile.setLogoThumbnailUrl(getFinalImageURL(clinicProfile.getLogoThumbnailUrl()));
@@ -173,14 +190,15 @@ public class SearchApi {
 				}
 			}
 
-			if (patientId != null || isSearched == true) {
-				doctorProfileService.updateDoctorProfileViews(doctorId);
-			}
+			doctorProfile.setDoctorSlugURL(slugURL);
+			doctorProfileService.updateDoctorProfileViews(doctorProfile.getDoctorId());
+
 		}
 		Response<DoctorProfile> response = new Response<DoctorProfile>();
 		response.setData(doctorProfile);
 		return response;
 	}
+
 	
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
@@ -189,7 +207,7 @@ public class SearchApi {
 			return null;
 	}
 
-	@Path(value = PathProxy.BlogsUrls.GET_BLOGS)
+	@Path(value = PathProxy.WEB_SEARCH_BASE_URL+PathProxy.BlogsUrls.GET_BLOGS)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOGS, notes = PathProxy.BlogsUrls.GET_BLOGS)
 	public Response<BlogResponse> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
@@ -201,7 +219,7 @@ public class SearchApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
+	@Path(value = PathProxy.WEB_SEARCH_BASE_URL+PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL, notes = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
 	public Response<Blog> getBlogBySlugURL(@PathParam("slugURL") String slugURL, @QueryParam("userId") String userId) {
