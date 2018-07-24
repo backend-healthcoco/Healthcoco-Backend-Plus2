@@ -2846,6 +2846,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
+
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
 
@@ -2993,7 +2994,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		DentalWorksReceipt response = null;
 		DentalWorksAmountCollection dentalWorksAmountCollection = null;
 		Double oldCost = 0.0;
-		
+
 		try {
 			DentalWorksReceiptCollection dentalWorksReceiptCollection = new DentalWorksReceiptCollection();
 
@@ -3030,13 +3031,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 							new ObjectId(request.getDentalLabHospitalId()));
 
 			if (dentalWorksAmountCollection != null) {
-				dentalWorksAmountCollection
-						.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount() - request.getAmountPaid() + oldCost);
+				dentalWorksAmountCollection.setRemainingAmount(
+						dentalWorksAmountCollection.getRemainingAmount() - request.getAmountPaid() + oldCost);
 				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 				dentalWorksReceiptCollection.setRemainingAmount(dentalWorksAmountCollection.getRemainingAmount());
 				dentalWorksReceiptCollection = dentalWorksReceiptRepository.save(dentalWorksReceiptCollection);
 			}
-		
+
 			response = new DentalWorksReceipt();
 			BeanUtil.map(dentalWorksReceiptCollection, response);
 		} catch (BusinessException be) {
@@ -3229,7 +3230,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-					Aggregation.unwind("dentalLab"),Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
+					Aggregation.unwind("dentalLab"), Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
 					Aggregation.unwind("clinic"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.match(criteria));
 			AggregationResults<DentalWorksInvoiceResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -3475,7 +3476,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				new ObjectId(dentalWorksReceiptResponse.getDentalLabHospitalId()));
 
 		if (printSettings == null) {
-			printSettings=new PrintSettingsCollection();
+			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
