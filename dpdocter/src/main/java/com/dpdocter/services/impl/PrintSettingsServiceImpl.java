@@ -68,7 +68,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 			PrintSettingsCollection oldPrintSettingsCollection = null;
 			if (request.getId() == null) {
-				if (!request.isLab()) {
+				if (!request.getIsLab()) {
 					oldPrintSettingsCollection = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
 							hospitalObjectId);
 				} else {

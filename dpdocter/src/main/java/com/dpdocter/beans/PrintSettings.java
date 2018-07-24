@@ -181,11 +181,11 @@ public class PrintSettings extends GenericCollection {
 		this.isPidHasDate = isPidHasDate;
 	}
 
-	public boolean isLab() {
+	public boolean getIsLab() {
 		return isLab;
 	}
 
-	public void setLab(boolean isLab) {
+	public void setIsLab(boolean isLab) {
 		this.isLab = isLab;
 	}
 
