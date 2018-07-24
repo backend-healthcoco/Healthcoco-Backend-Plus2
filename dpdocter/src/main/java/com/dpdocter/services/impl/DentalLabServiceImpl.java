@@ -2842,6 +2842,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorksInvoiceCollection.getDentalLabHospitalId());
 
 		if (printSettings == null) {
+
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
@@ -3471,6 +3472,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				+ user.getFirstName() + "</b><br>" + location.getLocationName() + ",<br>" + location.getCity()
 				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? ",<br>" + location.getState() : "");
 		parameters.put("doctor", doctorName);
+
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				new ObjectId(dentalWorksReceiptResponse.getDentalLabLocationId()),
 				new ObjectId(dentalWorksReceiptResponse.getDentalLabHospitalId()));
