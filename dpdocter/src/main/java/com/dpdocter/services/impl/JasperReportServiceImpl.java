@@ -4389,6 +4389,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		 band = new JRDesignBand();
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
+		band.setPrintWhenExpression(
+				new JRDesignExpression("!$P{flowsheet}.equals( null ) && !$P{flowsheet}.isEmpty()"));
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{FlowSheetTitle}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
