@@ -149,4 +149,63 @@ public class SearchApi {
 		response.setData(blogresponse);
 		return response;
 	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
+	public Response<DoctorProfile> getDoctorProfile(@PathParam("slugURL") String slugURL,
+			@PathParam("userUId") String userUId) {
+		if (DPDoctorUtils.anyStringEmpty(userUId)) {
+			logger.warn("Doctor Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+		}
+		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(userUId);
+		if (doctorProfile != null) {
+			if (doctorProfile.getImageUrl() != null) {
+				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
+			}
+			if (doctorProfile.getThumbnailUrl() != null) {
+				doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
+			}
+			if (doctorProfile.getCoverImageUrl() != null) {
+				doctorProfile.setCoverImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
+			}
+			if (doctorProfile.getCoverThumbnailImageUrl() != null) {
+				doctorProfile.setCoverThumbnailImageUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
+			}
+			if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
+				for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
+					if (clinicProfile.getImages() != null) {
+						for (ClinicImage clinicImage : clinicProfile.getImages()) {
+							if (clinicImage.getImageUrl() != null)
+								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+							if (clinicImage.getThumbnailUrl() != null)
+								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+						}
+					}
+					if (clinicProfile.getLogoUrl() != null) {
+						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
+					}
+
+					if (clinicProfile.getLogoThumbnailUrl() != null) {
+						clinicProfile.setLogoThumbnailUrl(getFinalImageURL(clinicProfile.getLogoThumbnailUrl()));
+					}
+				}
+			}
+
+			doctorProfile.setDoctorSlugURL(slugURL);
+			doctorProfileService.updateDoctorProfileViews(doctorProfile.getDoctorId());
+
+		}
+		Response<DoctorProfile> response = new Response<DoctorProfile>();
+		response.setData(doctorProfile);
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
 }
