@@ -735,6 +735,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 
+			
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			
 			// save Patient Info
 			if (DPDoctorUtils.anyStringEmpty(doctorObjectId, hospitalObjectId, locationObjectId)) {
 				UserCollection userCollection = userRepository.findOne(userObjectId);
@@ -1046,6 +1049,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 					ComponentType.PATIENT_REFRESH.getType(), null, null);
+			
+			
+			if(locationCollection.getIsPatientWelcomeMessageOn() != null)
+			{
+				if(locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE))
+				{
+					sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
