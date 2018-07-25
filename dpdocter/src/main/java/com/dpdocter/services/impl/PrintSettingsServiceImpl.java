@@ -75,8 +75,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 					oldPrintSettingsCollection = printSettingsRepository.getSettings(locationObjectId,
 							hospitalObjectId);
 				}
-				if (oldPrintSettingsCollection != null && !oldPrintSettingsCollection.getDiscarded()
-						&& request.getComponentType().equals(oldPrintSettingsCollection.getComponentType()))
+				if (oldPrintSettingsCollection != null)
 					request.setId(oldPrintSettingsCollection.getId().toString());
 			}
 			BeanUtil.map(request, printSettingsCollection);
