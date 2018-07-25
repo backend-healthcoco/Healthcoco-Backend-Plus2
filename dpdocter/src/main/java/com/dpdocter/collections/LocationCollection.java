@@ -156,6 +156,9 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private String googleMapShortUrl;
 
+	@Field
+	private Boolean isPatientWelcomeMessageOn = false;
+
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
 	}
@@ -530,6 +533,14 @@ public class LocationCollection extends GenericCollection {
 
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
+	public Boolean getIsPatientWelcomeMessageOn() {
+		return isPatientWelcomeMessageOn;
+	}
+
+	public void setIsPatientWelcomeMessageOn(Boolean isPatientWelcomeMessageOn) {
+		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
 	}
 
 	@Override
