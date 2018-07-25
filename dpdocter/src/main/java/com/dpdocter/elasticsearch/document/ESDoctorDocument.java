@@ -112,7 +112,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	private String timeZone = "IST";
 
 	@Field(type = FieldType.Long)
-	private long rankingCount = 0;
+	private long rankingCount = 1000;
 
 	@Field(type = FieldType.Integer)
 	private Integer noOfRecommenations = 0;

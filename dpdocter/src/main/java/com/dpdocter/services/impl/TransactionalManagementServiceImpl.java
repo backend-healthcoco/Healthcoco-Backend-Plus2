@@ -927,6 +927,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 	
+	@Override
 	@Transactional
 	public void sendEventReminderToDoctor() {
 			try {
@@ -945,8 +946,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 					Aggregation aggregation = Aggregation.newAggregation(
 							Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-									.is(AppointmentType.EVENT.getType()).and("fromDate").gte(fromTime).and("toDate")
-									.lte(toTime)),
+									.is(AppointmentType.EVENT.getType())
+									.and("fromDate").gte(fromTime).and("toDate")
+									.lte(toTime)
+									),
 							Aggregation.unwind("doctorIds"),
 							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"), Aggregation.unwind("doctor"),
 							Aggregation.lookup("user_device_cl", "doctorIds", "userIds", "userDevices"),
@@ -970,20 +973,20 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 							Date _24HourDt = _24HourSDF.parse(_24HourTime);
 
-							if (doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
+							if (appointmentDoctorReminderResponse.getDoctor() != null && doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctor().getId().toString()) != null) {
 								DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
-										.get(appointmentDoctorReminderResponse.getDoctorId().toString());
+										.get(appointmentDoctorReminderResponse.getDoctor().getId().toString());
 								response.setMessage(response.getMessage() + ", " + appointmentDoctorReminderResponse.getSubject()
 										+ "(" + _12HourSDF.format(_24HourDt) + ")");
 								doctorAppointmentSMSResponseMap
-										.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+										.put(appointmentDoctorReminderResponse.getDoctor().getId().toString(), response);
 							} else {
 								DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
 								response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
 								response.setMessage(appointmentDoctorReminderResponse.getSubject() + "(" + _12HourSDF.format(_24HourDt) + ")");
 								response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
 								doctorAppointmentSMSResponseMap
-										.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+										.put(appointmentDoctorReminderResponse.getDoctor().getId().toString(), response);
 							}
 						}
 

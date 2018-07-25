@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -62,7 +61,7 @@ public class LocaleCollection extends GenericCollection {
 	@Field
 	private Boolean isLocaleListed = true;
 	@Field
-	private long localeRankingCount = 0;
+	private long localeRankingCount = 1000;
 	@Field
 	private long noOfLocaleRecommendation = 0;
 	@Field
