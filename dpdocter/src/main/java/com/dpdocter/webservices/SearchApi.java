@@ -46,19 +46,19 @@ import io.swagger.annotations.ApiOperation;
 public class SearchApi {
 
 	private static Logger logger = Logger.getLogger(SearchApi.class.getName());
-	
+
 	@Autowired
 	private SearchService searchService;
 
 	@Autowired
 	private ESAppointmentService solrAppointmentService;
-	
+
 	@Autowired
 	private DoctorProfileService doctorProfileService;
 
 	@Autowired
 	private BlogService blogService;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -78,22 +78,23 @@ public class SearchApi {
 			@DefaultValue(value = "false") @QueryParam("otherArea") Boolean otherArea) {
 
 		SearchDoctorResponse doctors = searchService.searchDoctors(page, size, city, location, latitude, longitude,
-				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender,
-				minExperience, maxExperience, service, locality, otherArea);
+				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
+				maxExperience, service, locality, otherArea);
 
 		Response<SearchDoctorResponse> response = new Response<SearchDoctorResponse>();
 		response.setData(doctors);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY)
 	@GET
 	@ApiOperation(value = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY, notes = PathProxy.SearchUrls.GET_RESOURCES_COUNT_BY_CITY)
-	public Response<ResourcesCountResponse> getResourcesCountByCity(@PathParam("city") String city, @MatrixParam("type") List<String> type) {
+	public Response<ResourcesCountResponse> getResourcesCountByCity(@PathParam("city") String city,
+			@MatrixParam("type") List<String> type) {
 
-		if(city == null) {
+		if (city == null) {
 			logger.warn("Invalid Input");
-		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		List<ResourcesCountResponse> resourcesCountResponses = searchService.getResourcesCountByCity(city, type);
 
@@ -101,7 +102,7 @@ public class SearchApi {
 		response.setDataList(resourcesCountResponses);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB, notes = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
@@ -122,72 +123,6 @@ public class SearchApi {
 				maxExperience, service, locality));
 		return response;
 	}
-	
-	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
-	@GET
-	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
-	public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
-			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-			logger.warn("Doctor Id Cannot Be Empty");
-			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
-		}
-		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, patientId,
-				isMobileApp, isSearched);
-		if (doctorProfile != null) {
-			if (doctorProfile.getImageUrl() != null) {
-				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
-			}
-			if (doctorProfile.getThumbnailUrl() != null) {
-				doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
-			}
-			if (doctorProfile.getCoverImageUrl() != null) {
-				doctorProfile.setCoverImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
-			}
-			if (doctorProfile.getCoverThumbnailImageUrl() != null) {
-				doctorProfile.setCoverThumbnailImageUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
-			}
-			if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
-				for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
-					if (clinicProfile.getImages() != null) {
-						for (ClinicImage clinicImage : clinicProfile.getImages()) {
-							if (clinicImage.getImageUrl() != null)
-								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
-							if (clinicImage.getThumbnailUrl() != null)
-								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-						}
-					}
-					if (clinicProfile.getLogoUrl() != null) {
-						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
-					}
-					if (clinicProfile.getPackageType() == null) {
-						clinicProfile.setPackageType(PackageType.ADVANCE.getType());
-					}
-
-					if (clinicProfile.getLogoThumbnailUrl() != null) {
-						clinicProfile.setLogoThumbnailUrl(getFinalImageURL(clinicProfile.getLogoThumbnailUrl()));
-					}
-				}
-			}
-
-			if (patientId != null || isSearched == true) {
-				doctorProfileService.updateDoctorProfileViews(doctorId);
-			}
-		}
-		Response<DoctorProfile> response = new Response<DoctorProfile>();
-		response.setData(doctorProfile);
-		return response;
-	}
-	
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
-	}
 
 	@Path(value = PathProxy.BlogsUrls.GET_BLOGS)
 	@GET
@@ -200,7 +135,7 @@ public class SearchApi {
 		response.setData(blogresponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL, notes = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
