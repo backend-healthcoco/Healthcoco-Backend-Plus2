@@ -18,6 +18,7 @@ import java.util.TimeZone;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -69,6 +70,9 @@ import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
@@ -108,6 +112,7 @@ import com.dpdocter.collections.ProfessionCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserAddressCollection;
@@ -131,6 +136,7 @@ import com.dpdocter.enums.Range;
 import com.dpdocter.enums.ReminderType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.Type;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.UserState;
@@ -192,6 +198,7 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
+import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
@@ -371,9 +378,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${user.reminder.not.found}")
 	private String reminderNotFoundException;
+	
+	@Value(value = "${patient.welcome.message}")
+	private String patientWelcomeMessage;
 
 	@Autowired
 	private DoctorLabReportRepository doctorLabReportRepository;
+	
+	@Autowired
+	private SMSServices smsServices;
 
 	@Override
 	@Transactional
@@ -634,7 +647,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 					ComponentType.PATIENT_REFRESH.getType(), null, null);
-
+			
+			if(locationCollection.getIsPatientWelcomeMessageOn() != null)
+			{
+				if(locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE))
+				{
+					sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4373,5 +4393,42 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number");
 		}
 		return response;
+	}
+	
+	private void sendWelcomeMessageToPatient(PatientCollection patientCollection, LocationCollection locationCollection , String mobileNumber) {
+		try {
+			
+			if (patientCollection != null) {
+				String message = patientWelcomeMessage;
+				message = StringEscapeUtils.unescapeJava(message);
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());
+				smsTrackDetail.setLocationId(patientCollection.getLocationId());
+				smsTrackDetail.setHospitalId(patientCollection.getHospitalId());
+				smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(patientCollection.getUserId());
+				SMS sms = new SMS();
+				smsDetail.setUserName(patientCollection.getLocalPatientName());
+				message = message.replace("{patientName}", patientCollection.getLocalPatientName());
+				message = message.replace("{clinicName}", locationCollection.getLocationName());
+				message = message.replace("{clinicNumber}", locationCollection.getClinicNumber());
+				sms.setSmsText(message);
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 }

@@ -113,6 +113,8 @@ public class Location {
 
 	private Boolean isMobileNumberOptional = false;
 
+	private Boolean isPatientWelcomeMessageOn = false;
+
 	public Boolean getIsMobileNumberOptional() {
 		return isMobileNumberOptional;
 	}
@@ -511,6 +513,14 @@ public class Location {
 
 	public void setIsDentalImagingLab(Boolean isDentalImagingLab) {
 		this.isDentalImagingLab = isDentalImagingLab;
+	}
+
+	public Boolean getIsPatientWelcomeMessageOn() {
+		return isPatientWelcomeMessageOn;
+	}
+
+	public void setIsPatientWelcomeMessageOn(Boolean isPatientWelcomeMessageOn) {
+		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
 	}
 
 	@Override
