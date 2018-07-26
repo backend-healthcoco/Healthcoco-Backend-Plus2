@@ -27,11 +27,18 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Fields;
+import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.collections.CertificateTemplateCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FONTSTYLE;
+import com.dpdocter.enums.FieldAlign;
+import com.dpdocter.enums.PageSize;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -426,6 +433,17 @@ public class CertificateServicesImpl implements CertificatesServices {
 				PatientCollection patient = consentFormCollection.getPatientCollection();
 //				UserCollection user = consentFormCollection.getPatientUser();
 
+				PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+						new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
+								new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType());
+
+				if (printSettings == null) {
+					printSettings = new PrintSettingsCollection();
+					DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+					BeanUtil.map(defaultPrintSettings, printSettings);
+				}
+				
+				String header = createCertificateHeader(printSettings);
 				String htmlText = consentFormCollection.getTemplateHtmlText();
 				if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
 					for(Fields field : consentFormCollection.getInputElements()) {
@@ -442,7 +460,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 				
 				if(!htmlText.startsWith("<html>"))htmlText = "<html>"+htmlText+"</html>";
 				if(!htmlText.endsWith("</html>"))htmlText = htmlText+"</html>";
-				htmlText = "<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Strict//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\'>" + htmlText;
+				htmlText = "<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Strict//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\'><html>" + header + htmlText+"</html>";
+				
 				
 				String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CERTIFICATE-"+ new Date().getTime();
 				pdfName = pdfName.replaceAll("\\s+", "");
@@ -487,6 +506,74 @@ public class CertificateServicesImpl implements CertificatesServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Certificate PDF");
 		}
 		return response;
+	}
+
+     private String createCertificateHeader(PrintSettingsCollection printSettings) {
+		String header = "";
+		
+		
+		if (printSettings != null) {
+			String headerLeftText = "", headerRightText = "", logoURL = "";
+			
+			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()) {
+				if(printSettings.getHeaderSetup().getHeaderHtml() != null) {
+					header = printSettings.getHeaderSetup().getHeaderHtml();
+				}else {
+					if (printSettings.getHeaderSetup().getTopLeftText() != null)
+						for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
+							boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+							boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+							if (!DPDoctorUtils.anyStringEmpty(str.getText())) {
+								String text = str.getText();
+								if (isItalic)
+									text = "<i>" + text + "</i>";
+								if (isBold)
+									text = "<b>" + text + "</b>";
+
+								if (headerLeftText.isEmpty())
+									headerLeftText = "<span style='font-size:" + str.getFontSize() + "'>" + text
+											+ "</span>";
+								else
+									headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:"
+											+ str.getFontSize() + "'>" + text + "</span>";
+							}
+						}
+					if (printSettings.getHeaderSetup().getTopRightText() != null)
+						for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
+
+							boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+							boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+
+							if (!DPDoctorUtils.anyStringEmpty(str.getText())) {
+								String text = str.getText();
+								if (isItalic)
+									text = "<i>" + text + "</i>";
+								if (isBold)
+									text = "<b>" + text + "</b>";
+
+								if (headerRightText.isEmpty())
+									headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text
+											+ "</span>";
+								else
+									headerRightText = headerRightText + "<br/>" + "<span style='font-size:"
+											+ str.getFontSize() + "'>" + text + "</span>";
+							}
+						}
+					
+					
+				}
+
+				if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()
+						&& printSettings.getHeaderSetup().getCustomLogo() && printSettings.getClinicLogoUrl() != null) {
+					logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
+				}
+				
+				header = "<div style = 'width:100%;'> <div style='width:38%; display:inline-block;'>"+headerLeftText+"</div>"
+						+ "<div style='width:24%;display:inline-block;vertical-align: top;'><img style='width:50px;height:40px;' src='"+logoURL+"'/></div>"
+						+ "<div style='width:38%; display:inline-block;'>"+headerRightText+"</div></div>";
+			}
+		}
+		return header;
 	}
 
 //	private JasperReportResponse createJasper(ConsentFormCollectionLookupResponse consentFormCollection, PatientCollection patient,
@@ -579,5 +666,14 @@ public class CertificateServicesImpl implements CertificatesServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return recordPath;
+	}
+	
+	public boolean containsIgnoreCase(String str, List<String> list) {
+		if (list != null && !list.isEmpty())
+			for (String i : list) {
+				if (i.equalsIgnoreCase(str))
+					return true;
+			}
+		return false;
 	}
 }
