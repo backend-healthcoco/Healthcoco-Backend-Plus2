@@ -839,6 +839,8 @@ public interface PathProxy {
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
 
+		public static final String GET_LAB_PRINT_SETTING = "/{printFilter}/{locationId}/{hospitalId}";
+
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
 	}

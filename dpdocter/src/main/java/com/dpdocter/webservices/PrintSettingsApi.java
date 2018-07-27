@@ -72,13 +72,42 @@ public class PrintSettingsApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-		if (DPDoctorUtils.anyStringEmpty(printFilter,locationId, hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
 			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 		}
+
 		List<PrintSettings> printSettings = printSettingsService.getSettings(printFilter, doctorId, locationId,
 				hospitalId, page, size, updatedTime, discarded);
+		if (printSettings != null) {
+			for (Object pSettings : printSettings) {
+				((PrintSettings) pSettings)
+						.setClinicLogoUrl(getFinalImageURL(((PrintSettings) pSettings).getClinicLogoUrl()));
+			}
+		}
+		Response<PrintSettings> response = new Response<PrintSettings>();
+		response.setDataList(printSettings);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrintSettingsUrls.GET_LAB_PRINT_SETTING)
+	@GET
+	@ApiOperation(value = "GET_LAB_PRINT_SETTING", notes = "GET_LAB_PRINT_SETTING")
+	public Response<PrintSettings> getSettings(@PathParam(value = "printFilter") String printFilter,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+
+		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
+			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
+		}
+
+		List<PrintSettings> printSettings = printSettingsService.getSettings(printFilter, null, locationId, hospitalId,
+				page, size, updatedTime, discarded);
 		if (printSettings != null) {
 			for (Object pSettings : printSettings) {
 				((PrintSettings) pSettings)
@@ -135,7 +164,5 @@ public class PrintSettingsApi {
 		response.setData(generalNote);
 		return response;
 	}
-
-
 
 }
