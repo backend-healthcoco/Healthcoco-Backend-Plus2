@@ -2053,7 +2053,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 			}
 
-			// criteria.and("isReportsUploaded").is(true);
+			criteria.and("isVisited").is(true);
 
 			if (toDate != null) {
 				criteria.and("updatedTime").gte(new Date(fromDate)).lte(new Date(toDate));
