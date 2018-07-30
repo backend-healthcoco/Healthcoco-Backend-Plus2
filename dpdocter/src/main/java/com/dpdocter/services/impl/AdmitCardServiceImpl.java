@@ -145,6 +145,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						UniqueIdInitial.ADMIT_CARD.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				DischargeSummaryRequest dischargeSummaryRequest = new DischargeSummaryRequest();
 				BeanUtil.map(request, dischargeSummaryRequest);
+				dischargeSummaryRequest.setTreatmentsGiven(request.getTreatmentsPlan());
+				dischargeSummaryRequest.setGeneralExam(request.getExamination());
 				dischargeSummaryService.addEditDischargeSummary(dischargeSummaryRequest);
 			} else {
 				AdmitCardCollection oldAdmitCardCollection = admitCardRepository.findOne(admitCardCollection.getId());
