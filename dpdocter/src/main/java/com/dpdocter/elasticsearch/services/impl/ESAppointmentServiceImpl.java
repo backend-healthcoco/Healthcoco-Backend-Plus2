@@ -502,7 +502,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				appointmentSearchResponse.setId(speciality.getId());
 				appointmentSearchResponse.setResponse(speciality.getSuperSpeciality());
 				appointmentSearchResponse.setResponseType(AppointmentResponseType.SPECIALITY);
-				appointmentSearchResponse.setSlugUrl(speciality.getSuperSpeciality().toLowerCase().trim().replaceAll("\\\\", "").replaceAll("\\s", ""));
+				appointmentSearchResponse.setSlugUrl(speciality.getSuperSpeciality().toLowerCase().trim()
+						.replaceAll("\\\\", "").replaceAll("\\s", ""));
 				response.add(appointmentSearchResponse);
 			}
 		return response;
@@ -517,7 +518,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		List<ESDoctorDocument> esDoctorDocuments = null;
 		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		List<ESDoctorDocument> response = null;
-		if(size == 0) size = 10;
+		if (size == 0)
+			size = 10;
 		try {
 
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
@@ -586,13 +588,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			Integer distance = 4;
 			String citylongitude = null, citylatitude = null;
 			do {
-				
+
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.must(QueryBuilders.matchQuery("isDoctorListed", true))
 						.must(QueryBuilders.matchQuery("isClinic", true));
 				if (specialityIdSet != null && !specialityIdSet.isEmpty()) {
 					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
-					
+
 				}
 
 				if ((locationIds != null && !locationIds.isEmpty()) && (doctorIds != null && !doctorIds.isEmpty())) {
@@ -654,7 +656,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
 
-				
 				response = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 				if (response != null && esDoctorDocuments == null)
 					esDoctorDocuments = new ArrayList<ESDoctorDocument>();
@@ -665,9 +666,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						if (size == 0)
 							break;
 					}
-				} 
+				}
 
-			} while (citylatitude == null && citylongitude == null && distance <= 30 && esDoctorDocuments.size() < size);
+			} while (citylatitude == null && citylongitude == null && distance <= 30
+					&& esDoctorDocuments.size() < size);
 
 			if (esDoctorDocuments != null) {
 
@@ -832,40 +834,33 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				}
 
 				/*
-<<<<<<< HEAD
-				 * if (!DPDoctorUtils.anyStringEmpty(symptom)) {
+				 * <<<<<<< HEAD if (!DPDoctorUtils.anyStringEmpty(symptom)) {
 				 * List<ESComplaintsDocument> esComplaintsDocuments =
-				 * esComplaintsRepository.findByComplaint(symptom); if
-				 * (esComplaintsDocuments == null ||
-				 * esComplaintsDocuments.isEmpty()) { return null; } Set<String>
-				 * locationIds = new
-				 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
-				 * BeanToPropertyValueTransformer("locationId"))); Set<String>
-				 * doctorIds = new HashSet<>(
-				 * CollectionUtils.collect(esComplaintsDocuments, new
-				 * BeanToPropertyValueTransformer("doctorId")));
-				 * 
-				 * locationIds.remove(null); doctorIds.remove(null); if
-				 * ((locationIds == null || locationIds.isEmpty()) && (doctorIds
-				 * == null || doctorIds.isEmpty())) { return null; }
-				 * boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
-				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId",
-				 * locationIds)); }
-=======
-				 * if (!DPDoctorUtils.anyStringEmpty(symptom)) { List<ESComplaintsDocument>
-				 * esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom); if
-				 * (esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()) { return
-				 * null; } Set<String> locationIds = new
-				 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
-				 * BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds = new
-				 * HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new
+				 * esComplaintsRepository.findByComplaint(symptom); if (esComplaintsDocuments ==
+				 * null || esComplaintsDocuments.isEmpty()) { return null; } Set<String>
+				 * locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments,
+				 * new BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds =
+				 * new HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new
 				 * BeanToPropertyValueTransformer("doctorId")));
 				 * 
 				 * locationIds.remove(null); doctorIds.remove(null); if ((locationIds == null ||
 				 * locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
 				 * return null; } boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
 				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId", locationIds)); }
->>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
+				 * ======= if (!DPDoctorUtils.anyStringEmpty(symptom)) {
+				 * List<ESComplaintsDocument> esComplaintsDocuments =
+				 * esComplaintsRepository.findByComplaint(symptom); if (esComplaintsDocuments ==
+				 * null || esComplaintsDocuments.isEmpty()) { return null; } Set<String>
+				 * locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments,
+				 * new BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds =
+				 * new HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new
+				 * BeanToPropertyValueTransformer("doctorId")));
+				 * 
+				 * locationIds.remove(null); doctorIds.remove(null); if ((locationIds == null ||
+				 * locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
+				 * return null; } boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
+				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId", locationIds)); }
+				 * >>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
 				 */
 
 				if (specialityQueryBuilder != null)
@@ -1518,13 +1513,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				doctorResponse.setMetaData(StringUtils.capitalize(speciality) + "s in ");
 			} else {
 				doctorResponse.setMetaData("Doctors in ");
-
 				doctorResponse.setSpeciality("ALL Specialities");
 
 			}
 			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
 
 				doctorResponse.setMetaData(doctorResponse.getMetaData() + StringUtils.capitalize(locality) + ", ");
+				doctorResponse.setLocality(StringUtils.capitalize(locality));
 			}
 			if (DPDoctorUtils.anyStringEmpty(city)) {
 				city = "Nagpur";
