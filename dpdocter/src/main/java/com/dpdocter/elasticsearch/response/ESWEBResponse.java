@@ -13,7 +13,16 @@ public class ESWEBResponse {
 	private String Speciality;
 	private Integer count = 0;
 	private String city;
-	
+	private String locality;
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
 	public Integer getCount() {
 		return count;
 	}
