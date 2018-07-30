@@ -247,6 +247,7 @@ public class SearchServiceImpl implements SearchService {
 				if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
 
 					response.setMetaData(response.getMetaData() + StringUtils.capitalize(locality) + ", ");
+					response.setLocality(StringUtils.capitalize(locality) );
 				}
 				if (DPDoctorUtils.anyStringEmpty(city)) {
 					city = "Nagpur";

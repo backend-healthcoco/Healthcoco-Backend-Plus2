@@ -7,14 +7,23 @@ import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 public class SearchDoctorResponse {
 
 	List<ESDoctorWEbSearch> doctors;
-	
+
 	List<ESDoctorWEbSearch> nearByDoctors;
 
 	private String metaData;
 	private String speciality;
 	private Integer count = 0;
 	private String city;
-	
+	private String locality;
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
 	public List<ESDoctorWEbSearch> getDoctors() {
 		return doctors;
 	}
