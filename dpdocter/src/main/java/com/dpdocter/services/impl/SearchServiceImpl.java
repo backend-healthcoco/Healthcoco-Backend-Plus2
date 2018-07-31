@@ -257,6 +257,8 @@ public class SearchServiceImpl implements SearchService {
 				response = new SearchDoctorResponse();
 
 				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
+					speciality = speciality.replace("-", " ");
+
 					response.setSpeciality(StringUtils.capitalize(speciality));
 
 					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
