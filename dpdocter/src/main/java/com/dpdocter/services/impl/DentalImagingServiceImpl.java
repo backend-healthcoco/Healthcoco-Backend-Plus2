@@ -2044,9 +2044,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
 				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
+				criteria.and("patient.locationId").is(new ObjectId(dentalImagingLocationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingHospitalId)) {
 				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
+				criteria.and("patient.hospitalId").is(new ObjectId(dentalImagingHospitalId));
 			}
 
 			criteria.and("isVisited").is(true);
@@ -2062,7 +2064,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					Fields.field("patient.id", "$patient.userId"),
 					Fields.field("patient.localPatientName", "$patient.localPatientName"),
-					Fields.field("patient.PID", "$patient.PID"), Fields.field("patient.firstName", "$user.firstName"),
+					Fields.field("patient.PID", "$patient.PID"), 
 					Fields.field("patient.registrationDate", "$patient.registrationDate"),
 					Fields.field("patient.createdTime", "$createdTime"), Fields.field("createdTime", "$createdTime")));
 
@@ -2125,17 +2127,16 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			default:
 				break;
 			}
-			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-					Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+			aggregation = Aggregation.newAggregation(Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 					Aggregation.unwind("patient"), Aggregation.match(criteria),
 					projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 							.as("month").and("createdTime").extractYear().as("year").and("createdTime").extractWeek()
 							.as("week"),
 					aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					"dental_imaging_cl", PatientAnalyticResponse.class);
+					DentalImagingCollection.class, PatientAnalyticResponse.class);
 			response = aggregationResults.getMappedResults();
-
+			
 			for (PatientAnalyticResponse patientAnalyticResponse : response) {
 				patientAnalyticResponse.setCount(patientAnalyticResponse.getPatients().size());
 				patientAnalyticResponse.setPatients(null);
