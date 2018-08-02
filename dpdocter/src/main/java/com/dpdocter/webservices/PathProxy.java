@@ -1792,7 +1792,16 @@ public interface PathProxy {
 		public static final String ADD_EDIT_NUTRITION_REFERENCE = "/addEditNutritionReference";
 		public static final String GET_NUTRITION_REFERENCES = "/getNutritionReferences";
 		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
-
+		public static final String GET_ALL_PLAN_CATEGORY = "/getAllCategory";
+		public static final String GET_NUTRITION_PLAN = "/getPlan";
+		public static final String GET_NUTRITION_PLAN_BY_ID = "/getPlanById/{id}";
+		public static final String GET_SUBSCRIPTION_PLANS = "/getSubscriptionPlan";
+		public static final String GET_SUBSCRIPTION_PLAN_BY_ID = "/getSubscriptionPlanById/{id}";
+		public static final String GENERATE_ID = "/generateId";
+		public static final String ADD_USER_PLAN_SUBSCRIPTION = "/addUserPlanSubscription";
+		public static final String GET_USER_PLAN_SUBSCRIPTION = "/getUserPlanSubscription/{id}";
+		public static final String GET_USER_PLAN_SUBSCRIPTIONS = "/getUserPlanSubscriptions";
+		public static final String DELETE_USER_PLAN_SUBSCRIPTION = "/UserPlanSubscription/{id}/delete";
 	}
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
