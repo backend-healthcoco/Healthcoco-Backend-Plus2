@@ -30,7 +30,17 @@ public class UserNutritionSubscriptionResponse {
 
 	private Date toDate;
 
+	private Boolean isExpired = false;
+
 	private Boolean discarded = false;
+
+	public Boolean getIsExpired() {
+		return isExpired;
+	}
+
+	public void setIsexpired(Boolean isExpired) {
+		this.isExpired = isExpired;
+	}
 
 	public String getId() {
 		return id;
