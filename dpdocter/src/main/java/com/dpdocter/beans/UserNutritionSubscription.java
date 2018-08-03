@@ -29,6 +29,18 @@ public class UserNutritionSubscription extends GenericCollection {
 	private Date toDate;
 
 	private Boolean discarded = false;
+	
+	private Boolean isExpired = false;
+	
+	
+
+	public Boolean getIsExpired() {
+		return isExpired;
+	}
+
+	public void setIsExpired(Boolean isExpired) {
+		this.isExpired = isExpired;
+	}
 
 	public String getId() {
 		return id;

@@ -682,21 +682,20 @@ public class NutritionServiceImpl implements NutritionService {
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-
 						Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
-								"subscriptionNutritionPlan"),
-						Aggregation.unwind("subscriptionNutritionPlan"),
-						Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "subscriptionPlan"),
-						Aggregation.unwind("subscriptionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"),
+								"subscriptionPlan"),
+						Aggregation.unwind("subscriptionPlan"),
+						Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
+						Aggregation.unwind("NutritionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"),
 
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
-								"subscriptionNutritionPlan"),
-						Aggregation.unwind("subscriptionNutritionPlan"),
-						Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "subscriptionPlan"),
-						Aggregation.unwind("subscriptionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+								"subscriptionPlan"),
+						Aggregation.unwind("subscriptionPlan"),
+						Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
+						Aggregation.unwind("NutritionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			}
 
 			AggregationResults<UserNutritionSubscriptionResponse> results = mongoTemplate.aggregate(aggregation,
@@ -749,10 +748,10 @@ public class NutritionServiceImpl implements NutritionService {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
 					Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
-							"subscriptionNutritionPlan"),
-					Aggregation.unwind("subscriptionNutritionPlan"),
-					Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "subscriptionPlan"),
-					Aggregation.unwind("subscriptionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+							"subscriptionPlan"),
+					Aggregation.unwind("subscriptionPlan"),
+					Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
+					Aggregation.unwind("NutritionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
 			AggregationResults<UserNutritionSubscriptionResponse> results = mongoTemplate.aggregate(aggregation,
 					UserNutritionSubscriptionCollection.class, UserNutritionSubscriptionResponse.class);
