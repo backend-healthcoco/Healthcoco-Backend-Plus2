@@ -23,7 +23,9 @@ import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditNutritionReferenceRequest;
+import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.NutritionPlanResponse;
+import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.services.NutritionService;
@@ -210,7 +212,7 @@ public class NutritionAPI {
 	}
 
 	@Path(PathProxy.NutritionUrl.GET_NUTRITION_PLAN)
-	@POST
+	@GET
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_PLAN, notes = PathProxy.NutritionUrl.GET_NUTRITION_PLAN)
 	public Response<NutritionPlan> getPlan(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("type") String type, @QueryParam("updatedTime") long updatedTime,
@@ -218,6 +220,18 @@ public class NutritionAPI {
 
 		Response<NutritionPlan> response = new Response<NutritionPlan>();
 		response.setDataList(nutritionService.getNutritionPlans(page, size, type, updatedTime, discarded));
+
+		return response;
+	}
+	
+	@Path(PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY, notes = PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY)
+	public Response<NutritionPlanWithCategoryResponse> getPlanByCategory(NutritionPlanRequest request) {
+		
+ 
+		Response<NutritionPlanWithCategoryResponse> response = new Response<NutritionPlanWithCategoryResponse>();
+		response.setDataList(nutritionService.getNutritionPlanByCategory(request));
 
 		return response;
 	}

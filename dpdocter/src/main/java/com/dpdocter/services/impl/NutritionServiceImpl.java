@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.PatientShortCard;
@@ -48,18 +49,20 @@ import com.dpdocter.repository.NutritionGoalStatusStampingRepository;
 import com.dpdocter.repository.NutritionPlanRepository;
 import com.dpdocter.repository.NutritionReferenceRepository;
 import com.dpdocter.repository.PatientRepository;
-import com.dpdocter.repository.SubscriptionDetailRepository;
 import com.dpdocter.repository.SubscritptionNutritionPlanRepository;
 import com.dpdocter.repository.UserNutritionSubscriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditNutritionReferenceRequest;
+import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.NutritionPlanResponse;
+import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.services.NutritionService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -813,7 +816,7 @@ public class NutritionServiceImpl implements NutritionService {
 			}
 			if (subscriptionNutritionPlanCollection.getDuration() != null) {
 				Calendar cal = Calendar.getInstance();
-				Date today = cal.getTime();
+				
 				if (subscriptionNutritionPlanCollection.getDuration().getDurationUnit().toString()
 						.equalsIgnoreCase("YEAR"))
 					cal.add(Calendar.YEAR, subscriptionNutritionPlanCollection.getDuration().getValue().intValue()); // to
@@ -892,6 +895,74 @@ public class NutritionServiceImpl implements NutritionService {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
 					"Error while delete User Nutrition Subscrition " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<NutritionPlanWithCategoryResponse> getNutritionPlanByCategory(NutritionPlanRequest request) {
+		List<NutritionPlanWithCategoryResponse> response = null;
+		try {
+			Aggregation aggregation = null;
+
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+					new BasicDBObject("nutritionPlan.title", "$title")
+							.append("nutritionPlan.planImage", new BasicDBObject("$cond",
+									new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$planImage", null)))
+											.append("then",
+													new BasicDBObject("$concat",
+															Arrays.asList(imagePath, "$planImage")))
+											.append("else", null)))
+							.append("nutritionPlan.bannerImage",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("eq", Arrays.asList("$bannerImage", null)))
+															.append("then",
+																	new BasicDBObject("$concat",
+																			Arrays.asList(imagePath, "$bannerImage")))
+															.append("else", null)))
+							.append("category", "$type").append("nutritionPlan.type", "$type")
+							.append("nutritionPlan.id", "$_id")
+							.append("nutritionPlan.backgroundColor", "$backgroundColor")
+							.append("nutritionPlan.planDescription", "$planDescription")
+							.append("nutritionPlan.planDescription", "$planDescription")
+							.append("nutritionPlan.nutrientDescriptions", "$nutrientDescriptions")
+							.append("nutritionPlan.recommendedFoods", "$recommendedFoods")
+							.append("nutritionPlan.amount", "$amount").append("nutritionPlan.discarded", "$discarded")
+							.append("nutritionPlan.adminCreatedTime", "$adminCreatedTime")
+							.append("nutritionPlan.createdTime", "$createdTime")
+							.append("nutritionPlan.updatedTime", "$updatedTime")
+							.append("nutritionPlan.createdBy", "$createdBy")));
+
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("id", "$category").append("category", new BasicDBObject("$first", "$category"))
+							.append("nutritionPlan", new BasicDBObject("$first", "$nutritionPlan"))));
+			Criteria criteria = new Criteria();
+			if (request != null) {
+				if (request.getTypes() != null && !request.getTypes().isEmpty()) {
+					criteria = criteria.and("type").in(request.getTypes());
+				}
+				if (request.getUpdatedTime() > 0) {
+					criteria = criteria.and("createdTime").gte(new Date(request.getUpdatedTime()));
+				}
+
+				criteria.and("discareded").is(request.getDiscarded());
+			}
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), projectOperation, groupOperation,
+
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<NutritionPlanWithCategoryResponse> results = mongoTemplate.aggregate(aggregation,
+					NutritionPlanCollection.class, NutritionPlanWithCategoryResponse.class);
+			response = results.getMappedResults();
+
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting nutrition Plan " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting nutrition Plan " + e.getMessage());
 
 		}
 		return response;

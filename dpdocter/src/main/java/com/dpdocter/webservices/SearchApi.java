@@ -76,7 +76,6 @@ public class SearchApi {
 			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
 			@QueryParam("service") String service, @QueryParam("locality") String locality,
 			@DefaultValue(value = "false") @QueryParam("otherArea") Boolean otherArea) {
-
 		SearchDoctorResponse doctors = searchService.searchDoctors(page, size, city, location, latitude, longitude,
 				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
 				maxExperience, service, locality, otherArea);
