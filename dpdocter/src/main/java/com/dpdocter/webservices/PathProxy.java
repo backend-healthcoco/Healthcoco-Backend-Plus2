@@ -1746,6 +1746,7 @@ public interface PathProxy {
 		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
 		public static final String GET_ALL_PLAN_CATEGORY = "/getAllCategory";
 		public static final String GET_NUTRITION_PLAN = "/getPlan";
+		public static final String GET_NUTRITION_PLAN_CATEGORY = "/getPlanByCategory";
 		public static final String GET_NUTRITION_PLAN_BY_ID = "/getPlanById/{id}";
 		public static final String GET_SUBSCRIPTION_PLANS = "/getSubscriptionPlan";
 		public static final String GET_SUBSCRIPTION_PLAN_BY_ID = "/getSubscriptionPlanById/{id}";

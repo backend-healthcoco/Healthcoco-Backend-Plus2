@@ -8,7 +8,9 @@ import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.UserNutritionSubscription;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.request.AddEditNutritionReferenceRequest;
+import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.NutritionPlanResponse;
+import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 
@@ -32,12 +34,15 @@ public interface NutritionService {
 
 	public List<SubscriptionNutritionPlan> getSubscritionPlans(int page, int size, String nutritionplanId,
 			Boolean discarded);
-	
-	public List<UserNutritionSubscriptionResponse> getUserSubscritionPlans(int page, int size, long updatedTime, boolean discarded);
+
+	public List<UserNutritionSubscriptionResponse> getUserSubscritionPlans(int page, int size, long updatedTime,
+			boolean discarded);
 
 	public UserNutritionSubscriptionResponse getUserSubscritionPlan(String id);
-	
+
 	public UserNutritionSubscriptionResponse AddEditUserSubscritionPlan(UserNutritionSubscription request);
-	
+
 	public UserNutritionSubscription deleteUserSubscritionPlan(String id);
+
+	public List<NutritionPlanWithCategoryResponse> getNutritionPlanByCategory(NutritionPlanRequest request);
 }
