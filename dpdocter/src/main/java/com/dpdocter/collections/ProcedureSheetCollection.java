@@ -32,7 +32,7 @@ public class ProcedureSheetCollection extends GenericCollection {
 	@Field
 	private List<ImageURLResponse> diagrams;
 	@Field
-	private Map<String, String> procedureSheetFields;
+	private List<Map<String, String>> procedureSheetFields;
 	@Field
 	private Boolean discarded = false;
 	@Field
@@ -94,11 +94,11 @@ public class ProcedureSheetCollection extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public Map<String, String> getProcedureSheetFields() {
+	public List<Map<String, String>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(Map<String, String> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 

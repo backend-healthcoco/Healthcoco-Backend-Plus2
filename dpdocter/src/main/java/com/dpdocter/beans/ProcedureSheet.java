@@ -1,10 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.ImageURLResponse;
+
+import common.util.web.JacksonUtil;
 
 public class ProcedureSheet extends GenericCollection {
 
@@ -16,7 +20,7 @@ public class ProcedureSheet extends GenericCollection {
 	private String procedureName;
 	private ProcedureConsentForm procedureConsentForm;
 	private List<ImageURLResponse> diagrams;
-	private Map<String, String> procedureSheetFields;
+	private List<Map<String, String>> procedureSheetFields;
 	private Boolean discarded = false;
 
 	public String getId() {
@@ -75,11 +79,11 @@ public class ProcedureSheet extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public Map<String, String> getProcedureSheetFields() {
+	public List<Map<String, String>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(Map<String, String> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -98,5 +102,25 @@ public class ProcedureSheet extends GenericCollection {
 	public void setProcedureName(String procedureName) {
 		this.procedureName = procedureName;
 	}
+
+/*	public static void main(String[] args) {
+		ProcedureSheet procedureSheet = new ProcedureSheet();
+		ProcedureConsentForm procedureConsentForm = new ProcedureConsentForm();
+		Map<String, String> hco = new HashMap<String, String>();
+
+		// enter name/url pair
+		hco.put("HCO2", "healthcoco.com");
+		hco.put("Plus", "plus.healthcoco.com");
+		procedureConsentForm.setHeaderFields(hco);
+		procedureConsentForm.setFooterFields(hco);
+		procedureConsentForm.setBody("Testing procedure sheet add");
+		procedureSheet.setProcedureConsentForm(procedureConsentForm);
+		procedureSheet.setProcedureName("Test Procedure");
+		ArrayList<Map<String, String>> arrayList = new ArrayList<>();
+		arrayList.add(hco);
+		arrayList.add(hco);
+		procedureSheet.setProcedureSheetFields(arrayList);
+		System.out.println(JacksonUtil.obj2Json(procedureSheet));
+	}*/
 
 }

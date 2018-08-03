@@ -1823,5 +1823,6 @@ public interface PathProxy {
 		public static final String GET_PROCEDURE_STRUCTURE_LIST = "/getStructureList";
 		public static final String DISCARD_PROCEDURE_STRUCTURE = "/{id}/discardStructure";
 		public static final String ADD_DIAGRAM = "/addDiagram";
+		public static final String DOWNLOAD_PROCEDURE_SHEET = "/download/{id}";
 	}
 }

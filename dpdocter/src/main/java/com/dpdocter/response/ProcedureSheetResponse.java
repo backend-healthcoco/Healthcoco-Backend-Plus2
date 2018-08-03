@@ -13,6 +13,7 @@ import com.dpdocter.collections.GenericCollection;
 
 public class ProcedureSheetResponse extends GenericCollection {
 
+	private String id;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
@@ -20,9 +21,17 @@ public class ProcedureSheetResponse extends GenericCollection {
 	private String procedureName;
 	private ProcedureConsentForm procedureConsentForm;
 	private List<ImageURLResponse> diagrams;
-	private Map<String, String> procedureSheetFields;
+	private List<Map<String, String>> procedureSheetFields;
 	private Boolean discarded = false;
 	private PatientShortCard patient;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getDoctorId() {
 		return doctorId;
@@ -72,11 +81,11 @@ public class ProcedureSheetResponse extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public Map<String, String> getProcedureSheetFields() {
+	public List<Map<String, String>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(Map<String, String> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
