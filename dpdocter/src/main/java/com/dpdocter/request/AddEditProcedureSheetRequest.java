@@ -17,7 +17,7 @@ public class AddEditProcedureSheetRequest {
 	private String procedureName;
 	private ProcedureConsentForm procedureConsentForm;
 	private List<ImageURLResponse> diagrams;
-	private Map<String, String> procedureSheetFields;
+	private List<Map<String, String>> procedureSheetFields;
 	private Boolean discarded = false;
 	private String type;
 
@@ -77,11 +77,11 @@ public class AddEditProcedureSheetRequest {
 		this.diagrams = diagrams;
 	}
 
-	public Map<String, String> getProcedureSheetFields() {
+	public List<Map<String, String>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(Map<String, String> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 

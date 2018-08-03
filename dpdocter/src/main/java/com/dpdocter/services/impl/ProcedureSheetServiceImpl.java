@@ -1,9 +1,14 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
 import org.bson.types.ObjectId;
@@ -17,15 +22,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.ProcedureSheet;
 import com.dpdocter.collections.DentalImagingCollection;
+import com.dpdocter.collections.DentalImagingInvoiceResponse;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
 import com.dpdocter.collections.ProcedureSheetStructureCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -36,8 +45,11 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditProcedureSheetRequest;
 import com.dpdocter.request.AddEditProcedureSheetStructureRequest;
 import com.dpdocter.request.LabReportsAddRequest;
+import com.dpdocter.response.DentalImagingInvoiceItemResponse;
+import com.dpdocter.response.DentalImagingInvoiceJasper;
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.ProcedureSheetResponse;
 import com.dpdocter.response.ProcedureSheetStructureResponse;
 import com.dpdocter.services.FileManager;
@@ -75,6 +87,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 	{
 		ProcedureSheetResponse response = null;
 		ProcedureSheetCollection procedureSheetCollection = null;
+		List<Map<String, String>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(request.getId()));
@@ -84,11 +97,19 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				procedureSheetCollection.setCreatedBy(userCollection.getFirstName());
 			}
+			
+			procedureSheetFields = request.getProcedureSheetFields();
+			request.setProcedureSheetFields(null);
 			BeanUtil.map(request, procedureSheetCollection);
+			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
+			System.out.println(procedureSheetCollection);
 			procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
 			if (procedureSheetCollection != null) {
 				response = new ProcedureSheetResponse();
+				procedureSheetFields = procedureSheetCollection.getProcedureSheetFields();
+				procedureSheetCollection.setProcedureSheetFields(null);
 				BeanUtil.map(procedureSheetCollection, response);
+				response.setProcedureSheetFields(procedureSheetFields);
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 						procedureSheetCollection.getPatientId(), procedureSheetCollection.getDoctorId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
@@ -375,5 +396,143 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		return responses;
 		
 	}
+	
+	/*private JasperReportResponse createProcedureSheetJasper(ProcedureSheetResponse  procedureSheetResponse)
+			throws NumberFormatException, IOException {
+		JasperReportResponse response = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		PrintSettingsCollection printSettings = null;
+		Double grantTotal = 0.0;
+		String leftDetail = "";
+		String rightDetail = "";
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+		String toothNumbers = "";
+		List<DentalImagingInvoiceJasper> dentalImagingInvoiceJaspers = new ArrayList<DentalImagingInvoiceJasper>();
+		DentalImagingInvoiceJasper dentalImagingInvoiceJasper = null;
+		int i = 1;
+		for (DentalImagingInvoiceItemResponse imagingItemResponse : imagingInvoiceResponse.getInvoiceItems()) {
+			toothNumbers = "";
+			dentalImagingInvoiceJasper = new DentalImagingInvoiceJasper();
+			if (imagingItemResponse.getToothNumber() != null && !imagingItemResponse.getToothNumber().isEmpty()) {
+				for (String dentalToothNumber : imagingItemResponse.getToothNumber()) {
+					if (toothNumbers == "")
+						toothNumbers = dentalToothNumber;
+					else
+						toothNumbers = toothNumbers + "," + dentalToothNumber;
+
+				}
+				dentalImagingInvoiceJasper.setToothNumber(toothNumbers);
+
+			} else {
+				dentalImagingInvoiceJasper.setToothNumber("--");
+			}
+
+			dentalImagingInvoiceJasper.setsNo(i++);
+			if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getServiceName()))
+				dentalImagingInvoiceJasper.setServiceName(imagingItemResponse.getServiceName());
+			else
+				dentalImagingInvoiceJasper.setServiceName("--");
+			if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getCBCTArch(),
+					imagingItemResponse.getCBCTQuadrant())) {
+				dentalImagingInvoiceJasper.setQuadrant(
+						imagingItemResponse.getCBCTQuadrant() + "," + imagingItemResponse.getCBCTArch() + "(Arch)");
+			} else if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getCBCTArch())) {
+				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getCBCTArch() + "(Arch)");
+			} else if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getCBCTQuadrant())) {
+				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getCBCTQuadrant());
+			} else if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getFov())) {
+				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getFov() + "(FOV)");
+			} else {
+				dentalImagingInvoiceJasper.setQuadrant("--");
+			}
+			dentalImagingInvoiceJaspers.add(dentalImagingInvoiceJasper);
+		}
+		
+		for (Map.Entry<String,String> entry : procedureSheetResponse.getProcedureSheetFields().entrySet()) 
+            System.out.println("Key = " + entry.getKey() +
+                             ", Value = " + entry.getValue());
+		
+		parameters.put("items", dentalImagingInvoiceJaspers);
+
+		UserCollection dentalImagingDoctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
+		UserCollection doctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDoctorId()));
+		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				new ObjectId(imagingInvoiceResponse.getPatientId()),
+				new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId()),
+				new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId()));
+
+		if (imagingInvoiceResponse.getReferringDoctor() != null) {
+			parameters.put("referredby", "Dr. " + imagingInvoiceResponse.getReferringDoctor());
+		} else {
+			parameters.put("referredby", "Dr. " + doctor.getFirstName());
+		}
+		parameters.put("title", "INVOICE");
+		grantTotal = imagingInvoiceResponse.getGrandTotal();
+		parameters.put("total", "Grand Total : " + grantTotal + " INR"
+				+ (imagingInvoiceResponse.getIsPaid() ? " (PAID)" : " (UNPAID)"));
+		parameters.put("leftDetail", leftDetail);
+		parameters.put("rightDetail", rightDetail);
+		parameters.put("signature", (!DPDoctorUtils.anyStringEmpty(dentalImagingDoctor.getTitle()) ? dentalImagingDoctor.getTitle() + " " : "")
+				+ dentalImagingDoctor.getFirstName());
+
+		parameters.put("followUpAppointment", null);
+
+		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
+
+		printSettings = printSettingsRepository.getSettings(				
+				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingLocationId())
+						? new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId())
+						: null),
+				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingDoctorId())
+						? new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId())
+						: null));
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+
+		}
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
+				patientCollection, "<b>INVOICE-ID: </b>" + imagingInvoiceResponse.getUniqueInvoiceId(),
+				imagingInvoiceResponse.getPatientName(), imagingInvoiceResponse.getMobileNumber(), parameters,
+				imagingInvoiceResponse.getCreatedTime() != null ? imagingInvoiceResponse.getCreatedTime() : new Date(),
+				printSettings.getHospitalUId(), true);
+		patientVisitService.generatePrintSetup(parameters, printSettings,
+				new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.DENTAL_IMAGE_INVOICE, parameters,
+				dentalInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+	}
+	*/
 	
 }
