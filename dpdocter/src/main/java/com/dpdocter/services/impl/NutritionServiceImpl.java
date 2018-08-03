@@ -524,7 +524,11 @@ public class NutritionServiceImpl implements NutritionService {
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("subscription_nutrition_plan_cl", "_id", "nutritionPlanId",
 							"subscriptionNutritionPlan"),
-					Aggregation.unwind("subscriptionNutritionPlan"), Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$subscriptionNutritionPlan")
+									.append("preserveNullAndEmptyArrays", true)
+									.append("includeArrayIndex", "arrayIndex3"))),
+					Aggregation.match(criteria),
 
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
@@ -563,7 +567,7 @@ public class NutritionServiceImpl implements NutritionService {
 				criteria = criteria.and("createdTime").gte(new Date(updatedTime));
 			}
 
-			criteria.and("discareded").is(discareded);
+			criteria.and("discarded").is(discareded);
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -816,7 +820,7 @@ public class NutritionServiceImpl implements NutritionService {
 			}
 			if (subscriptionNutritionPlanCollection.getDuration() != null) {
 				Calendar cal = Calendar.getInstance();
-				
+
 				if (subscriptionNutritionPlanCollection.getDuration().getDurationUnit().toString()
 						.equalsIgnoreCase("YEAR"))
 					cal.add(Calendar.YEAR, subscriptionNutritionPlanCollection.getDuration().getValue().intValue()); // to
