@@ -210,7 +210,7 @@ public class NutritionAPI {
 	}
 
 	@Path(PathProxy.NutritionUrl.GET_NUTRITION_PLAN)
-	@GET
+	@POST
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_PLAN, notes = PathProxy.NutritionUrl.GET_NUTRITION_PLAN)
 	public Response<NutritionPlan> getPlan(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("type") String type, @QueryParam("updatedTime") long updatedTime,
