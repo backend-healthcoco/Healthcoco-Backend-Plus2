@@ -937,7 +937,7 @@ public class NutritionServiceImpl implements NutritionService {
 
 			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("id", "$category").append("category", new BasicDBObject("$first", "$category"))
-							.append("nutritionPlan", new BasicDBObject("$first", "$nutritionPlan"))));
+							.append("nutritionPlan", new BasicDBObject("$push", "$nutritionPlan"))));
 			Criteria criteria = new Criteria();
 			if (request != null) {
 				if (request.getTypes() != null && !request.getTypes().isEmpty()) {
@@ -947,7 +947,7 @@ public class NutritionServiceImpl implements NutritionService {
 					criteria = criteria.and("createdTime").gte(new Date(request.getUpdatedTime()));
 				}
 
-				criteria.and("discareded").is(request.getDiscarded());
+				criteria.and("discarded").is(request.getDiscarded());
 			}
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), projectOperation, groupOperation,
