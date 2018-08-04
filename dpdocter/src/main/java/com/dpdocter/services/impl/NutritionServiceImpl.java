@@ -525,10 +525,6 @@ public class NutritionServiceImpl implements NutritionService {
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("subscription_nutrition_plan_cl", "_id", "nutritionPlanId",
 							"subscriptionNutritionPlan"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$subscriptionNutritionPlan")
-									.append("preserveNullAndEmptyArrays", true)
-									.append("includeArrayIndex", "arrayIndex3"))),
 					Aggregation.match(criteria),
 
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
@@ -637,7 +633,7 @@ public class NutritionServiceImpl implements NutritionService {
 
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(nutritionplanId)) {
-				criteria = criteria.and("nutritionplanId").is(new ObjectId(nutritionplanId));
+				criteria = criteria.and("nutritionPlanId").is(new ObjectId(nutritionplanId));
 			}
 
 			criteria.and("discarded").is(discarded);
