@@ -1,12 +1,14 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
 import com.dpdocter.beans.NutritionPlan;
 
 public class NutritionPlanWithCategoryResponse {
 
 	private String category;
 
-	private NutritionPlan nutritionPlan;
+	private List<NutritionPlan> nutritionPlan;
 
 	public String getCategory() {
 		return category;
@@ -16,12 +18,14 @@ public class NutritionPlanWithCategoryResponse {
 		this.category = category;
 	}
 
-	public NutritionPlan getNutritionPlan() {
+	public List<NutritionPlan> getNutritionPlan() {
 		return nutritionPlan;
 	}
 
-	public void setNutritionPlan(NutritionPlan nutritionPlan) {
+	public void setNutritionPlan(List<NutritionPlan> nutritionPlan) {
 		this.nutritionPlan = nutritionPlan;
 	}
+
+	
 
 }
