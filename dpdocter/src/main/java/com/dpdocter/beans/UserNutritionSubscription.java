@@ -10,7 +10,7 @@ public class UserNutritionSubscription extends GenericCollection {
 
 	private String userId;
 
-	private String nutritioinPlanId;
+	private String nutritionPlanId;
 
 	private String subscriptionPlanId;
 
@@ -60,12 +60,12 @@ public class UserNutritionSubscription extends GenericCollection {
 
 	
 
-	public String getNutritioinPlanId() {
-		return nutritioinPlanId;
+	public String getNutritionPlanId() {
+		return nutritionPlanId;
 	}
 
-	public void setNutritioinPlanId(String nutritioinPlanId) {
-		this.nutritioinPlanId = nutritioinPlanId;
+	public void setNutritioinPlanId(String nutritionPlanId) {
+		this.nutritionPlanId = nutritionPlanId;
 	}
 
 	public String getSubscriptionPlanId() {
@@ -142,7 +142,7 @@ public class UserNutritionSubscription extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "UserNutritionSubscription [id=" + id + ", userId=" + userId + ", nutritioinPlanId=" + nutritioinPlanId
+		return "UserNutritionSubscription [id=" + id + ", userId=" + userId + ", nutritioinPlanId=" + nutritionPlanId
 				+ ", subscriptionPlanId=" + subscriptionPlanId + ", orderId=" + orderId + ", transactionStatus="
 				+ transactionStatus + ", discount=" + discount + ", amount=" + amount + ", discountAmount="
 				+ discountAmount + ", fromDate=" + fromDate + ", toDate=" + toDate + ", discarded=" + discarded + "]";
