@@ -40,7 +40,7 @@ public interface NutritionService {
 
 	public UserNutritionSubscriptionResponse getUserSubscritionPlan(String id);
 
-	public UserNutritionSubscriptionResponse AddEditUserSubscritionPlan(UserNutritionSubscription request);
+	public UserNutritionSubscriptionResponse addEditUserSubscritionPlan(UserNutritionSubscription request);
 
 	public UserNutritionSubscription deleteUserSubscritionPlan(String id);
 

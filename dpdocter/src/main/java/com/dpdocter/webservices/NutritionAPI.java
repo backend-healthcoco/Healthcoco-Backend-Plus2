@@ -171,7 +171,7 @@ public class NutritionAPI {
 		}
 
 		Response<UserNutritionSubscriptionResponse> response = new Response<UserNutritionSubscriptionResponse>();
-		response.setData(nutritionService.AddEditUserSubscritionPlan(request));
+		response.setData(nutritionService.addEditUserSubscritionPlan(request));
 		return response;
 	}
 
