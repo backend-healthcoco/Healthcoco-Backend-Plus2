@@ -692,8 +692,7 @@ public class NutritionServiceImpl implements NutritionService {
 								"subscriptionPlan"),
 						Aggregation.unwind("subscriptionPlan"),
 						Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
-						Aggregation.unwind("NutritionPlan"),
-						Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						Aggregation.unwind("NutritionPlan"), Aggregation.lookup("user_cl", "userId", "_id", "user"),
 						Aggregation.unwind("user"), Aggregation.sort(Sort.Direction.DESC, "createdTime"),
 
 						Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -703,7 +702,7 @@ public class NutritionServiceImpl implements NutritionService {
 								"subscriptionPlan"),
 						Aggregation.unwind("subscriptionPlan"),
 						Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
-						Aggregation.unwind("NutritionPlan"),Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						Aggregation.unwind("NutritionPlan"), Aggregation.lookup("user_cl", "userId", "_id", "user"),
 						Aggregation.unwind("user"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			}
 
@@ -761,7 +760,7 @@ public class NutritionServiceImpl implements NutritionService {
 					Aggregation.unwind("subscriptionPlan"),
 					Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
 					Aggregation.unwind("NutritionPlan"), Aggregation.lookup("user_cl", "userId", "_id", "user"),
-					Aggregation.unwind("user"),Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+					Aggregation.unwind("user"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
 			AggregationResults<UserNutritionSubscriptionResponse> results = mongoTemplate.aggregate(aggregation,
 					UserNutritionSubscriptionCollection.class, UserNutritionSubscriptionResponse.class);
@@ -799,7 +798,7 @@ public class NutritionServiceImpl implements NutritionService {
 	}
 
 	@Override
-	public UserNutritionSubscriptionResponse AddEditUserSubscritionPlan(UserNutritionSubscription request) {
+	public UserNutritionSubscriptionResponse addEditUserSubscritionPlan(UserNutritionSubscription request) {
 
 		UserNutritionSubscriptionResponse response = null;
 		try {
@@ -861,6 +860,7 @@ public class NutritionServiceImpl implements NutritionService {
 			nutritionSubscriptionCollection.setAmount(subscriptionNutritionPlanCollection.getAmount());
 			nutritionSubscriptionCollection
 					.setDiscountAmount(subscriptionNutritionPlanCollection.getDiscountedAmount());
+			nutritionSubscriptionCollection = userNutritionSubscriptionRepository.save(nutritionSubscriptionCollection);
 			response = new UserNutritionSubscriptionResponse();
 			NutritionPlan nutritionPlan = new NutritionPlan();
 			SubscriptionNutritionPlan subscriptionNutritionPlan = new SubscriptionNutritionPlan();
