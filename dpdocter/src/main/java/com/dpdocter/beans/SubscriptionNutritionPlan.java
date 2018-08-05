@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import org.bson.types.ObjectId;
-
 public class SubscriptionNutritionPlan {
 
 	private String id;
@@ -21,9 +19,9 @@ public class SubscriptionNutritionPlan {
 	private Double discountedAmount = 0.0;
 
 	private Boolean discarded = false;
-	
-	private ObjectId nutritionPlanId;
-	
+
+	private String nutritionPlanId;
+
 	private PlanDuration duration;
 
 	public PlanDuration getDuration() {
@@ -33,13 +31,12 @@ public class SubscriptionNutritionPlan {
 	public void setDuration(PlanDuration duration) {
 		this.duration = duration;
 	}
-	
 
-	public ObjectId getNutritionPlanId() {
+	public String getNutritionPlanId() {
 		return nutritionPlanId;
 	}
 
-	public void setNutritionPlanId(ObjectId nutritionPlanId) {
+	public void setNutritionPlanId(String nutritionPlanId) {
 		this.nutritionPlanId = nutritionPlanId;
 	}
 

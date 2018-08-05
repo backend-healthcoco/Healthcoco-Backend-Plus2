@@ -162,7 +162,7 @@ public class NutritionAPI {
 	@Path(PathProxy.NutritionUrl.ADD_USER_PLAN_SUBSCRIPTION)
 	@POST
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_USER_PLAN_SUBSCRIPTION, notes = PathProxy.NutritionUrl.ADD_USER_PLAN_SUBSCRIPTION)
-	public Response<UserNutritionSubscriptionResponse> getGenerateId(UserNutritionSubscription request) {
+	public Response<UserNutritionSubscriptionResponse> addEditUserPlanSubscription(UserNutritionSubscription request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}

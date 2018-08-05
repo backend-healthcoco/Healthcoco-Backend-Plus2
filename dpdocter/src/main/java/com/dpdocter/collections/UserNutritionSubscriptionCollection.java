@@ -13,7 +13,6 @@ public class UserNutritionSubscriptionCollection extends GenericCollection {
 	private ObjectId id;
 	@Field
 	private ObjectId userId;
-
 	@Field
 	private ObjectId nutritionPlanId;
 	@Field
