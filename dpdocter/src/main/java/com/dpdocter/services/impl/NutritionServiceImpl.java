@@ -28,6 +28,7 @@ import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
+import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserNutritionSubscription;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NutritionGoalStatusStampingCollection;
@@ -692,7 +693,9 @@ public class NutritionServiceImpl implements NutritionService {
 								"subscriptionPlan"),
 						Aggregation.unwind("subscriptionPlan"),
 						Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
-						Aggregation.unwind("NutritionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"),
+						Aggregation.unwind("NutritionPlan"),
+						Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.sort(Sort.Direction.DESC, "createdTime"),
 
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			} else {
@@ -701,7 +704,8 @@ public class NutritionServiceImpl implements NutritionService {
 								"subscriptionPlan"),
 						Aggregation.unwind("subscriptionPlan"),
 						Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
-						Aggregation.unwind("NutritionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+						Aggregation.unwind("NutritionPlan"),Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			}
 
 			AggregationResults<UserNutritionSubscriptionResponse> results = mongoTemplate.aggregate(aggregation,
@@ -757,7 +761,8 @@ public class NutritionServiceImpl implements NutritionService {
 							"subscriptionPlan"),
 					Aggregation.unwind("subscriptionPlan"),
 					Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
-					Aggregation.unwind("NutritionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+					Aggregation.unwind("NutritionPlan"), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+					Aggregation.unwind("user"),Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
 			AggregationResults<UserNutritionSubscriptionResponse> results = mongoTemplate.aggregate(aggregation,
 					UserNutritionSubscriptionCollection.class, UserNutritionSubscriptionResponse.class);
@@ -860,11 +865,14 @@ public class NutritionServiceImpl implements NutritionService {
 			response = new UserNutritionSubscriptionResponse();
 			NutritionPlan nutritionPlan = new NutritionPlan();
 			SubscriptionNutritionPlan subscriptionNutritionPlan = new SubscriptionNutritionPlan();
+			User user = new User();
 			BeanUtil.map(subscriptionNutritionPlanCollection, subscriptionNutritionPlan);
 			BeanUtil.map(nutritionPlanCollection, nutritionPlan);
 			BeanUtil.map(nutritionSubscriptionCollection, response);
+			BeanUtil.map(userCollection, user);
 			response.setNutritionPlan(nutritionPlan);
 			response.setSubscriptionPlan(subscriptionNutritionPlan);
+			response.setUser(user);
 
 		} catch (BusinessException e) {
 
