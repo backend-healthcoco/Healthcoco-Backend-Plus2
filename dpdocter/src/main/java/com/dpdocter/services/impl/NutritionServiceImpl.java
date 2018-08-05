@@ -531,11 +531,13 @@ public class NutritionServiceImpl implements NutritionService {
 			AggregationResults<NutritionPlanResponse> results = mongoTemplate.aggregate(aggregation,
 					NutritionPlanCollection.class, NutritionPlanResponse.class);
 			response = results.getUniqueMappedResult();
-			if (!DPDoctorUtils.anyStringEmpty(response.getPlanImage())) {
-				response.setPlanImage(getFinalImageURL(response.getPlanImage()));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(response.getBannerImage())) {
-				response.setBannerImage(getFinalImageURL(response.getBannerImage()));
+			if (response != null) {
+				if (!DPDoctorUtils.anyStringEmpty(response.getPlanImage())) {
+					response.setPlanImage(getFinalImageURL(response.getPlanImage()));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(response.getBannerImage())) {
+					response.setBannerImage(getFinalImageURL(response.getBannerImage()));
+				}
 			}
 
 		} catch (BusinessException e) {
