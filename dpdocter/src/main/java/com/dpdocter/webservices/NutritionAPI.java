@@ -166,7 +166,8 @@ public class NutritionAPI {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getNutritionPlanId(), request.getSubscriptionPlanId(),request.getUserId())) {
+		if (DPDoctorUtils.anyStringEmpty(request.getNutritionPlanId(), request.getSubscriptionPlanId(),
+				request.getUserId())) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
 
@@ -203,11 +204,14 @@ public class NutritionAPI {
 	@Path(PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTIONS)
 	@GET
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTIONS, notes = PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTIONS)
-	public Response<UserNutritionSubscriptionResponse> getUserPlanSubscriptions(@QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") long updatedTime,
+	public Response<UserNutritionSubscriptionResponse> getUserPlanSubscriptions(@PathParam("userId") String userId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("updatedTime") long updatedTime,
 			@QueryParam("discarded") @DefaultValue("false") boolean discarded) {
 		Response<UserNutritionSubscriptionResponse> response = new Response<UserNutritionSubscriptionResponse>();
-		response.setDataList(nutritionService.getUserSubscritionPlans(page, size, updatedTime, discarded));
+		if (DPDoctorUtils.allStringsEmpty(userId)) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+		response.setDataList(nutritionService.getUserSubscritionPlans(page, size, updatedTime, discarded, userId));
 		return response;
 	}
 
@@ -223,13 +227,12 @@ public class NutritionAPI {
 
 		return response;
 	}
-	
+
 	@Path(PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY)
 	@POST
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY, notes = PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY)
 	public Response<NutritionPlanWithCategoryResponse> getPlanByCategory(NutritionPlanRequest request) {
-		
- 
+
 		Response<NutritionPlanWithCategoryResponse> response = new Response<NutritionPlanWithCategoryResponse>();
 		response.setDataList(nutritionService.getNutritionPlanByCategory(request));
 

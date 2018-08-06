@@ -675,7 +675,7 @@ public class NutritionServiceImpl implements NutritionService {
 
 	@Override
 	public List<UserNutritionSubscriptionResponse> getUserSubscritionPlans(int page, int size, long updatedTime,
-			boolean discarded) {
+			boolean discarded, String userId) {
 		List<UserNutritionSubscriptionResponse> response = null;
 		try {
 
@@ -685,7 +685,9 @@ public class NutritionServiceImpl implements NutritionService {
 			if (updatedTime > 0) {
 				criteria = criteria.and("updatedTime").gte(updatedTime);
 			}
-
+			if (DPDoctorUtils.anyStringEmpty(userId)) {
+				criteria = criteria.and("userId").is(new ObjectId(userId));
+			}
 			criteria.and("discarded").is(discarded);
 
 			if (size > 0) {
@@ -917,9 +919,8 @@ public class NutritionServiceImpl implements NutritionService {
 			Aggregation aggregation = null;
 
 			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("nutritionPlan.title", "$title")
-					.append("nutritionPlan._id", "$_id")
-					.append("nutritionPlan.id", "$_id")
+					new BasicDBObject("nutritionPlan.title", "$title").append("nutritionPlan._id", "$_id")
+							.append("nutritionPlan.id", "$_id")
 							.append("nutritionPlan.planImage", new BasicDBObject("$cond",
 									new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$planImage", null)))
 											.append("then",
