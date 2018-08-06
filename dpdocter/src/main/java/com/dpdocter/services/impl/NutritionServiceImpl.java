@@ -18,6 +18,8 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -976,6 +978,33 @@ public class NutritionServiceImpl implements NutritionService {
 
 		}
 		return response;
+	}
+
+	@Scheduled(cron = "00 00 2 * * *", zone = "IST")
+//	@Scheduled(fixedDelay = 1800000)
+	@Override
+	@Transactional
+	public void updateUserSubscritionPlan() {
+		try {
+
+			Criteria criteria = new Criteria();
+
+			criteria.and("id").lt(new Date());
+			criteria.and("isExpired").is(false);
+			Update update = new Update();
+			update.set("isExpired", true);
+
+			mongoTemplate.updateMulti(new Query(criteria), update, UserNutritionSubscriptionCollection.class);
+
+		} catch (BusinessException e) {
+
+			logger.error("Error while update User Nutrition Subscrition " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while update User Nutrition Subscrition  " + e.getMessage());
+
+		}
+
 	}
 
 }

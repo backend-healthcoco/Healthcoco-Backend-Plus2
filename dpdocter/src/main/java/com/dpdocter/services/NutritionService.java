@@ -45,4 +45,6 @@ public interface NutritionService {
 	public UserNutritionSubscription deleteUserSubscritionPlan(String id);
 
 	public List<NutritionPlanWithCategoryResponse> getNutritionPlanByCategory(NutritionPlanRequest request);
+
+	public void updateUserSubscritionPlan();
 }
