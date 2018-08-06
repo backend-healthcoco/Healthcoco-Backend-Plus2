@@ -903,12 +903,10 @@ public class NutritionServiceImpl implements NutritionService {
 			BeanUtil.map(nutritionSubscriptionCollection, response);
 
 		} catch (BusinessException e) {
-
 			logger.error("Error while delete User Nutrition Subscrition  " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
 					"Error while delete User Nutrition Subscrition " + e.getMessage());
-
 		}
 		return response;
 	}
@@ -936,7 +934,7 @@ public class NutritionServiceImpl implements NutritionService {
 																			Arrays.asList(imagePath, "$bannerImage")))
 															.append("else", null)))
 							.append("category", "$type").append("nutritionPlan.type", "$type")
-							.append("nutritionPlan.id", "$_id")
+							.append("nutritionPlan.id", "$id")
 							.append("nutritionPlan.backgroundColor", "$backgroundColor")
 							.append("nutritionPlan.planDescription", "$planDescription")
 							.append("nutritionPlan.planDescription", "$planDescription")
