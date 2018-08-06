@@ -919,6 +919,8 @@ public class NutritionServiceImpl implements NutritionService {
 
 			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
 					new BasicDBObject("nutritionPlan.title", "$title")
+					.append("nutritionPlan._id", "$_id")
+					.append("nutritionPlan.id", "$_id")
 							.append("nutritionPlan.planImage", new BasicDBObject("$cond",
 									new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$planImage", null)))
 											.append("then",
@@ -934,9 +936,7 @@ public class NutritionServiceImpl implements NutritionService {
 																			Arrays.asList(imagePath, "$bannerImage")))
 															.append("else", null)))
 							.append("category", "$type").append("nutritionPlan.type", "$type")
-							.append("nutritionPlan.id", "$id")
 							.append("nutritionPlan.backgroundColor", "$backgroundColor")
-							.append("nutritionPlan.planDescription", "$planDescription")
 							.append("nutritionPlan.planDescription", "$planDescription")
 							.append("nutritionPlan.nutrientDescriptions", "$nutrientDescriptions")
 							.append("nutritionPlan.recommendedFoods", "$recommendedFoods")
@@ -962,7 +962,6 @@ public class NutritionServiceImpl implements NutritionService {
 			}
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), projectOperation, groupOperation,
-
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
 			AggregationResults<NutritionPlanWithCategoryResponse> results = mongoTemplate.aggregate(aggregation,
