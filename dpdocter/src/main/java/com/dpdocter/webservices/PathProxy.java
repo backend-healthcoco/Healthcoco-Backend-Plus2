@@ -1753,7 +1753,7 @@ public interface PathProxy {
 		public static final String GENERATE_ID = "/generateId";
 		public static final String ADD_USER_PLAN_SUBSCRIPTION = "/addUserPlanSubscription";
 		public static final String GET_USER_PLAN_SUBSCRIPTION = "/getUserPlanSubscription/{id}";
-		public static final String GET_USER_PLAN_SUBSCRIPTIONS = "/getUserPlanSubscriptions";
+		public static final String GET_USER_PLAN_SUBSCRIPTIONS = "/getUserPlanSubscriptions/{userId}";
 		public static final String DELETE_USER_PLAN_SUBSCRIPTION = "/UserPlanSubscription/{id}/delete";
 	}
 

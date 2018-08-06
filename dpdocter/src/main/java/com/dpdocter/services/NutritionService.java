@@ -36,7 +36,7 @@ public interface NutritionService {
 			Boolean discarded);
 
 	public List<UserNutritionSubscriptionResponse> getUserSubscritionPlans(int page, int size, long updatedTime,
-			boolean discarded);
+			boolean discarded, String userId);
 
 	public UserNutritionSubscriptionResponse getUserSubscritionPlan(String id);
 
