@@ -210,7 +210,13 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			
 			AggregationResults<ProcedureSheetResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					ProcedureSheetCollection.class, ProcedureSheetResponse.class);
+			
 			responses = aggregationResults.getMappedResults();
+			
+			for(ProcedureSheetResponse procedureSheetResponse : responses)
+			{
+				procedureSheetResponse = getProcedureSheet(procedureSheetResponse.getId());
+			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
