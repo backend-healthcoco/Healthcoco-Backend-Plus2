@@ -195,7 +195,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 				criteria.and("discarded").is(discarded);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(type)) {
-				criteria.and("type").is(new ObjectId(type));
+				criteria.and("type").is(type);
 			}
 			
 			if (size > 0)
