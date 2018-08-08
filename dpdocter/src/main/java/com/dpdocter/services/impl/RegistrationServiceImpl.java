@@ -1166,7 +1166,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 						Criteria criteria = new Criteria();
 
-						criteria.and("id").is(userCollection.getId());
+						criteria.and("userId").is(userCollection.getId());
 
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
