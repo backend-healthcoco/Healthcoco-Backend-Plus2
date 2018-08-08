@@ -17,7 +17,6 @@ public class UserNutritionSubscriptionCollection extends GenericCollection {
 	private ObjectId nutritionPlanId;
 	@Field
 	private ObjectId subscriptionPlanId;
-
 	@Field
 	private String orderId;
 	@Field
