@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import org.apache.commons.io.FilenameUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -21,14 +22,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
-import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.PatientShortCard;
-import com.dpdocter.beans.ProcedureSheet;
-import com.dpdocter.collections.DentalImagingCollection;
-import com.dpdocter.collections.DentalImagingInvoiceResponse;
-import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
@@ -39,22 +34,20 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ProcedureSheetRepository;
 import com.dpdocter.repository.ProcedureSheetStructureRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditProcedureSheetRequest;
 import com.dpdocter.request.AddEditProcedureSheetStructureRequest;
-import com.dpdocter.request.LabReportsAddRequest;
-import com.dpdocter.response.DentalImagingInvoiceItemResponse;
-import com.dpdocter.response.DentalImagingInvoiceJasper;
-import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.ProcedureSheetResponse;
 import com.dpdocter.response.ProcedureSheetStructureResponse;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.ProcedureSheetService;
-import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -81,6 +74,18 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 	@Autowired
 	private FileManager fileManager;
 	
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+	
+	@Autowired
+	private PatientVisitService patientVisitService;
+	
+	@Autowired
+	private JasperReportService jasperReportService;
+	
+	@Value(value = "${jasper.print.imaging.works.invoice.fileName}")
+	private String dentalInvoiceA4FileName;
+	
 	@Override
 	@Transactional
 	public ProcedureSheetResponse addEditProcedureSheet(AddEditProcedureSheetRequest request)
@@ -102,7 +107,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			request.setProcedureSheetFields(null);
 			BeanUtil.map(request, procedureSheetCollection);
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
-			System.out.println(procedureSheetCollection);
 			procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
 			if (procedureSheetCollection != null) {
 				response = new ProcedureSheetResponse();
@@ -132,6 +136,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 	{
 		ProcedureSheetResponse response = null;
 		ProcedureSheetCollection procedureSheetCollection = null;
+		List<Map<String, String>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
@@ -139,8 +144,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 				throw new BusinessException(ServiceError.NoRecord , "Record not found");
 			}
 			if (procedureSheetCollection != null) {
+				
 				response = new ProcedureSheetResponse();
+				procedureSheetFields = procedureSheetCollection.getProcedureSheetFields();
+				procedureSheetCollection.setProcedureSheetFields(null);
 				BeanUtil.map(procedureSheetCollection, response);
+				response.setProcedureSheetFields(procedureSheetFields);
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 						procedureSheetCollection.getPatientId(), procedureSheetCollection.getDoctorId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
@@ -397,7 +406,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		
 	}
 	
-	/*private JasperReportResponse createProcedureSheetJasper(ProcedureSheetResponse  procedureSheetResponse)
+	private JasperReportResponse createProcedureSheetJasper(ProcedureSheetCollection  procedureSheetCollection)
 			throws NumberFormatException, IOException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -408,7 +417,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-		String toothNumbers = "";
+		/*String toothNumbers = "";
 		List<DentalImagingInvoiceJasper> dentalImagingInvoiceJaspers = new ArrayList<DentalImagingInvoiceJasper>();
 		DentalImagingInvoiceJasper dentalImagingInvoiceJasper = null;
 		int i = 1;
@@ -448,45 +457,42 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 				dentalImagingInvoiceJasper.setQuadrant("--");
 			}
 			dentalImagingInvoiceJaspers.add(dentalImagingInvoiceJasper);
-		}
+		}*/
 		
-		for (Map.Entry<String,String> entry : procedureSheetResponse.getProcedureSheetFields().entrySet()) 
+		/*for (Map.Entry<String,String> entry : procedureSheetResponse.getProcedureSheetFields().entrySet()) 
             System.out.println("Key = " + entry.getKey() +
-                             ", Value = " + entry.getValue());
+                             ", Value = " + entry.getValue());*/
 		
-		parameters.put("items", dentalImagingInvoiceJaspers);
-
-		UserCollection dentalImagingDoctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
-		UserCollection doctor = userRepository.findOne(new ObjectId(imagingInvoiceResponse.getDoctorId()));
-		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-				new ObjectId(imagingInvoiceResponse.getPatientId()),
-				new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId()),
-				new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId()));
-
-		if (imagingInvoiceResponse.getReferringDoctor() != null) {
-			parameters.put("referredby", "Dr. " + imagingInvoiceResponse.getReferringDoctor());
-		} else {
-			parameters.put("referredby", "Dr. " + doctor.getFirstName());
+		List<String> keys = new ArrayList<String>();
+		List<List<String>> values = new ArrayList<>();
+		for (Map<String,String> fields : procedureSheetCollection.getProcedureSheetFields()) {
+			
+			keys = new ArrayList<String>(fields.keySet());
+			List<String> value = new ArrayList<>(fields.values());
+			values.add(value);
 		}
-		parameters.put("title", "INVOICE");
-		grantTotal = imagingInvoiceResponse.getGrandTotal();
-		parameters.put("total", "Grand Total : " + grantTotal + " INR"
-				+ (imagingInvoiceResponse.getIsPaid() ? " (PAID)" : " (UNPAID)"));
-		parameters.put("leftDetail", leftDetail);
-		parameters.put("rightDetail", rightDetail);
-		parameters.put("signature", (!DPDoctorUtils.anyStringEmpty(dentalImagingDoctor.getTitle()) ? dentalImagingDoctor.getTitle() + " " : "")
-				+ dentalImagingDoctor.getFirstName());
+		parameters.put("fields", values);
+		parameters.put("keys", keys);
+		parameters.put("name", procedureSheetCollection.getProcedureName());
+		parameters.put("diagrams" , procedureSheetCollection.getDiagrams());
+		if (procedureSheetCollection.getProcedureConsentForm() != null) {
+			parameters.put("headerFields", procedureSheetCollection.getProcedureConsentForm().getHeaderFields());
+			parameters.put("footerFields", procedureSheetCollection.getProcedureConsentForm().getFooterFields());
+			parameters.put("body", procedureSheetCollection.getProcedureConsentForm().getBody());
+		}
+		UserCollection doctor = userRepository.findOne(procedureSheetCollection.getDoctorId());
+		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				procedureSheetCollection.getPatientId(),procedureSheetCollection.getLocationId(),procedureSheetCollection.getHospitalId());
 
-		parameters.put("followUpAppointment", null);
-
-		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
+		
+		String pdfName = "PROCEDURE-SHEET-" + procedureSheetCollection.getId().toString() + new Date().getTime();
 
 		printSettings = printSettingsRepository.getSettings(				
-				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingLocationId())
-						? new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId())
+				(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getLocationId())
+						? procedureSheetCollection.getLocationId()
 						: null),
-				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingDoctorId())
-						? new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId())
+				(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getHospitalId())
+						? procedureSheetCollection.getHospitalId()
 						: null));
 
 		if (printSettings == null) {
@@ -495,16 +501,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			BeanUtil.map(defaultPrintSettings, printSettings);
 
 		}
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails()
-						: null),
-				patientCollection, "<b>INVOICE-ID: </b>" + imagingInvoiceResponse.getUniqueInvoiceId(),
-				imagingInvoiceResponse.getPatientName(), imagingInvoiceResponse.getMobileNumber(), parameters,
-				imagingInvoiceResponse.getCreatedTime() != null ? imagingInvoiceResponse.getCreatedTime() : new Date(),
-				printSettings.getHospitalUId(), true);
-		patientVisitService.generatePrintSetup(parameters, printSettings,
-				new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId()));
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
@@ -527,12 +523,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 						? printSettings.getPageSetup().getRightMargin()
 						: 20)
 				: 20;
-		response = jasperReportService.createPDF(ComponentType.DENTAL_IMAGE_INVOICE, parameters,
+		response = jasperReportService.createPDF(ComponentType.PROCEDURE_SHEET, parameters,
 				dentalInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
 	}
-	*/
+	
 	
 }
