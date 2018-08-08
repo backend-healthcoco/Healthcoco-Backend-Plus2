@@ -62,6 +62,7 @@ import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
@@ -73,6 +74,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
@@ -118,6 +120,7 @@ import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserAddressCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.collections.UserNutritionSubscriptionCollection;
 import com.dpdocter.collections.UserRemindersCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
@@ -184,6 +187,7 @@ import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.response.UserLookupResponse;
+import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.DynamicUIService;
@@ -378,13 +382,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${user.reminder.not.found}")
 	private String reminderNotFoundException;
-	
+
 	@Value(value = "${patient.welcome.message}")
 	private String patientWelcomeMessage;
 
 	@Autowired
 	private DoctorLabReportRepository doctorLabReportRepository;
-	
+
 	@Autowired
 	private SMSServices smsServices;
 
@@ -496,7 +500,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRegistrationDate(new Date().getTime());
 
 			patientCollection.setCreatedTime(createdTime);
-			Map<String, String> generatedId = patientIdGenerator(request.getLocationId(), request.getHospitalId(), patientCollection.getRegistrationDate());
+			Map<String, String> generatedId = patientIdGenerator(request.getLocationId(), request.getHospitalId(),
+					patientCollection.getRegistrationDate());
 			if (DPDoctorUtils.anyStringEmpty(request.getPID())) {
 				patientCollection.setPID(generatedId.get("PID"));
 			}
@@ -504,7 +509,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (DPDoctorUtils.anyStringEmpty(request.getPNUM())) {
 				patientCollection.setPNUM(generatedId.get("PNUM"));
 			}
-			
+
 			// if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
 			List<ObjectId> consultantDoctorIds = new ArrayList<ObjectId>();
 			consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
@@ -647,11 +652,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 					ComponentType.PATIENT_REFRESH.getType(), null, null);
-			
-			if(locationCollection.getIsPatientWelcomeMessageOn() != null)
-			{
-				if(locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE))
-				{
+
+			if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
+				if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
 					sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 				}
 			}
@@ -831,8 +834,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					ObjectId patientId = patientCollection.getId();
 					ObjectId patientDoctorId = patientCollection.getDoctorId();
 					PID = patientCollection.getPID();
-				    PNUM = patientCollection.getPNUM();
-				    
+					PNUM = patientCollection.getPNUM();
+
 					request.setRegistrationDate(patientCollection.getRegistrationDate());
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
@@ -851,7 +854,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRelations(request.getRelations());
 				patientCollection.setNotes(request.getNotes());
 
-				Map<String, String> generatedId = patientIdGenerator(request.getLocationId(), request.getHospitalId(), patientCollection.getRegistrationDate());
+				Map<String, String> generatedId = patientIdGenerator(request.getLocationId(), request.getHospitalId(),
+						patientCollection.getRegistrationDate());
 
 				if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 					patientCollection.setPID(request.getPID());
@@ -860,7 +864,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				} else {
 					patientCollection.setPID(generatedId.get("PID"));
 				}
-				
+
 				if (!DPDoctorUtils.anyStringEmpty(request.getPNUM())) {
 					patientCollection.setPNUM(request.getPNUM());
 				} else if (!DPDoctorUtils.anyStringEmpty(PNUM)) {
@@ -868,7 +872,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				} else {
 					patientCollection.setPNUM(generatedId.get("PNUM"));
 				}
-				
+
 				if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
 					patientCollection.setProfession(request.getProfession());
 				}
@@ -1156,6 +1160,50 @@ public class RegistrationServiceImpl implements RegistrationService {
 						Patient patient = new Patient();
 						PatientCollection patientCollection = patientRepository
 								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+						// added User NUtrition Plan subscription Detail
+
+						Aggregation aggregation = null;
+
+						Criteria criteria = new Criteria();
+
+						criteria.and("id").is(userCollection.getId());
+
+						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+
+								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
+										"subscriptionPlan"),
+								Aggregation.unwind("subscriptionPlan"),
+								Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
+								Aggregation.unwind("NutritionPlan"),
+								Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+						AggregationResults<UserNutritionSubscriptionResponse> results = mongoTemplate.aggregate(
+								aggregation, UserNutritionSubscriptionCollection.class,
+								UserNutritionSubscriptionResponse.class);
+						UserNutritionSubscriptionResponse response = results.getUniqueMappedResult();
+						if (response != null) {
+							NutritionPlan nutritionPlan = response.getNutritionPlan();
+							if (nutritionPlan != null) {
+								if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getBannerImage())) {
+									response.getNutritionPlan()
+											.setBannerImage(getFinalImageURL(nutritionPlan.getBannerImage()));
+								}
+								if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getPlanImage())) {
+									response.getNutritionPlan()
+											.setPlanImage(getFinalImageURL(nutritionPlan.getPlanImage()));
+								}
+							}
+							SubscriptionNutritionPlan subscriptionNutritionPlan = response.getSubscriptionPlan();
+							if (subscriptionNutritionPlan != null) {
+
+								if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlan.getBackgroundImage())) {
+									response.getSubscriptionPlan().setBackgroundImage(
+											getFinalImageURL(subscriptionNutritionPlan.getBackgroundImage()));
+								}
+							}
+							user.setUserNutritionSubscription(response);
+						}
+
 						if (patientCollection != null) {
 							BeanUtil.map(patientCollection, patient);
 							BeanUtil.map(patientCollection, user);
@@ -1435,19 +1483,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private Map<String, String> patientIdGenerator(String locationId, String hospitalId, Long registrationDate) {
 		Map<String, String> generatedId = new HashMap<String, String>();
 		try {
-			
+
 			ObjectId locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
-			
+
 			LocationCollection location = locationRepository.findOne(locationObjectId);
 			if (location == null) {
 				logger.warn("Invalid Location Id");
 				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
 			}
-			
+
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			localCalendar.setTime(new Date(registrationDate));
 			int currentDay = localCalendar.get(Calendar.DATE);
@@ -1465,29 +1513,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (patientSize == null)
 				patientSize = 0;
-			
+
 			String patientInitial = location.getPatientInitial();
-			
+
 			String PID = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
 					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
 					+ DPDoctorUtils.getPrefixedNumber(patientSize + 1);
-			
+
 			int patientCounter = location.getPatientCounter();
-			PatientCollection patientCollection = patientRepository.findLastRegisteredPatientWithPNUM(locationObjectId, hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
-			if(patientCollection != null) {
-				String lastRegisterdPatientPNUM = patientCollection.getPNUM().replaceAll("[a-zA-Z]","");
+			PatientCollection patientCollection = patientRepository.findLastRegisteredPatientWithPNUM(locationObjectId,
+					hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
+			if (patientCollection != null) {
+				String lastRegisterdPatientPNUM = patientCollection.getPNUM().replaceAll("[a-zA-Z]", "");
 				Integer lastRegisterdPatientPNUMCount = 0;
-				if(lastRegisterdPatientPNUM != null)lastRegisterdPatientPNUMCount = Integer.parseInt(lastRegisterdPatientPNUM);
-				
-				if(lastRegisterdPatientPNUMCount < patientCounter) {
+				if (lastRegisterdPatientPNUM != null)
+					lastRegisterdPatientPNUMCount = Integer.parseInt(lastRegisterdPatientPNUM);
+
+				if (lastRegisterdPatientPNUMCount < patientCounter) {
 					patientSize = patientCounter;
-				}else{
+				} else {
 					patientSize = lastRegisterdPatientPNUMCount + 1;
 				}
 			}
-			
+
 			String PNUM = patientInitial + patientSize;
-	
+
 			generatedId.put("PID", PID);
 			generatedId.put("PNUM", PNUM);
 		} catch (BusinessException e) {
@@ -1527,19 +1577,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Override
 	@Transactional
-	public Boolean updatePatientInitialAndCounter(String locationId, String patientInitial, int patientCounter, Boolean isPidHasDate) {
+	public Boolean updatePatientInitialAndCounter(String locationId, String patientInitial, int patientCounter,
+			Boolean isPidHasDate) {
 		Boolean response = false;
 		try {
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
 			if (locationCollection != null) {
-				response = checkIfPatientInitialAndCounterExist(locationId, patientInitial, patientCounter, isPidHasDate);
+				response = checkIfPatientInitialAndCounterExist(locationId, patientInitial, patientCounter,
+						isPidHasDate);
 				if (response) {
 					locationCollection.setPatientInitial(patientInitial);
 					locationCollection.setPatientCounter(patientCounter);
 					locationCollection.setUpdatedTime(new Date());
-					if(isPidHasDate != null) {
+					if (isPidHasDate != null) {
 						locationCollection.setIsPidHasDate(isPidHasDate);
-						
+
 						List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 								.findByLocationId(new ObjectId(locationId));
 						if (printSettingsCollections != null) {
@@ -1567,7 +1619,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	private Boolean checkIfPatientInitialAndCounterExist(String locationId, String patientInitial, int patientCounter, Boolean isPidHasDate) {
+	private Boolean checkIfPatientInitialAndCounterExist(String locationId, String patientInitial, int patientCounter,
+			Boolean isPidHasDate) {
 		Boolean response = false;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -3632,8 +3685,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Consent Form", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Consent Form", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Consent Form", body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -4394,10 +4447,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return response;
 	}
-	
-	private void sendWelcomeMessageToPatient(PatientCollection patientCollection, LocationCollection locationCollection , String mobileNumber) {
+
+	private void sendWelcomeMessageToPatient(PatientCollection patientCollection, LocationCollection locationCollection,
+			String mobileNumber) {
 		try {
-			
+
 			if (patientCollection != null) {
 				String message = patientWelcomeMessage;
 				message = StringEscapeUtils.unescapeJava(message);

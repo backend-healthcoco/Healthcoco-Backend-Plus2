@@ -775,17 +775,17 @@ public class NutritionServiceImpl implements NutritionService {
 				nutritionPlan = response.getNutritionPlan();
 				if (nutritionPlan != null) {
 					if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getBannerImage())) {
-						nutritionPlan.setBannerImage(getFinalImageURL(nutritionPlan.getBannerImage()));
+						response.getNutritionPlan().setBannerImage(getFinalImageURL(nutritionPlan.getBannerImage()));
 					}
 					if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getPlanImage())) {
-						nutritionPlan.setPlanImage(getFinalImageURL(nutritionPlan.getPlanImage()));
+						response.getNutritionPlan().setPlanImage(getFinalImageURL(nutritionPlan.getPlanImage()));
 					}
 				}
 				subscriptionNutritionPlan = response.getSubscriptionPlan();
 				if (subscriptionNutritionPlan != null) {
 
 					if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlan.getBackgroundImage())) {
-						subscriptionNutritionPlan
+						response.getSubscriptionPlan()
 								.setBackgroundImage(getFinalImageURL(subscriptionNutritionPlan.getBackgroundImage()));
 					}
 				}
@@ -873,6 +873,27 @@ public class NutritionServiceImpl implements NutritionService {
 			BeanUtil.map(nutritionPlanCollection, nutritionPlan);
 			BeanUtil.map(nutritionSubscriptionCollection, response);
 			BeanUtil.map(userCollection, user);
+
+			if (response != null) {
+
+				if (nutritionPlan != null) {
+					if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getBannerImage())) {
+						nutritionPlan.setBannerImage(getFinalImageURL(nutritionPlan.getBannerImage()));
+					}
+					if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getPlanImage())) {
+						nutritionPlan.setPlanImage(getFinalImageURL(nutritionPlan.getPlanImage()));
+					}
+
+				}
+
+				if (subscriptionNutritionPlan != null) {
+
+					if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlan.getBackgroundImage())) {
+						subscriptionNutritionPlan
+								.setBackgroundImage(getFinalImageURL(subscriptionNutritionPlan.getBackgroundImage()));
+					}
+				}
+			}
 			response.setNutritionPlan(nutritionPlan);
 			response.setSubscriptionPlan(subscriptionNutritionPlan);
 			response.setUser(user);
