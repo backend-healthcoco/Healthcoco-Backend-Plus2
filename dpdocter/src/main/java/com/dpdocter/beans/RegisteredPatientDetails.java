@@ -5,215 +5,228 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.response.UserNutritionSubscriptionResponse;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class RegisteredPatientDetails extends GenericCollection {
 
-    private String firstName;
-    
-    private String localPatientName;
+	private String firstName;
 
-    private String lastName;
+	private String localPatientName;
 
-    private String middleName;
+	private String lastName;
 
-    private String imageUrl;
+	private String middleName;
 
-    private String thumbnailUrl;
+	private String imageUrl;
 
-    private DOB dob;
+	private String thumbnailUrl;
 
-    private String userId;
+	private DOB dob;
 
-    private String userName;
-    
+	private String userId;
+
+	private String userName;
+
 	private String countryCode;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private String gender;
+	private String gender;
 
-    private Patient patient;
+	private Patient patient;
 
-    private Address address;
+	private Address address;
 
-    private List<Group> groups;
+	private List<Group> groups;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String PID;
+	private String PID;
 
-    private String colorCode;
+	private String colorCode;
 
-    private Reference referredBy;
+	private Reference referredBy;
 
-    private Boolean isPartOfClinic;
-    
-    private Boolean isPartOfConsultantDoctor = true;
-    
-    private String backendPatientId;
+	private Boolean isPartOfClinic;
 
-    private List<String> consultantDoctorIds;
-    
-    private Boolean isPatientDiscarded = false;
-    
-    private String PNUM;
-    
-    public String getUserId() {
-	return userId;
-    }
+	private Boolean isPartOfConsultantDoctor = true;
 
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
+	private String backendPatientId;
 
-    public String getUserName() {
-	return userName;
-    }
+	private List<String> consultantDoctorIds;
 
-    public void setUserName(String userName) {
-	this.userName = userName;
-    }
+	private Boolean isPatientDiscarded = false;
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	private String PNUM;
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	private UserNutritionSubscriptionResponse userNutritionSubscription;
 
-    public String getGender() {
-	return gender;
-    }
+	public UserNutritionSubscriptionResponse getUserNutritionSubscription() {
+		return userNutritionSubscription;
+	}
 
-    public void setGender(String gender) {
-	this.gender = gender;
-    }
+	public void setUserNutritionSubscription(UserNutritionSubscriptionResponse userNutritionSubscription) {
+		this.userNutritionSubscription = userNutritionSubscription;
+	}
 
-    public Patient getPatient() {
-	return patient;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public void setPatient(Patient patient) {
-	this.patient = patient;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public Address getAddress() {
-	return address;
-    }
+	public String getUserName() {
+		return userName;
+	}
 
-    public void setAddress(Address address) {
-	this.address = address;
-    }
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    public List<Group> getGroups() {
-	return groups;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public void setGroups(List<Group> groups) {
-	this.groups = groups;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public String getGender() {
+		return gender;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public String getLastName() {
-	return lastName;
-    }
+	public Patient getPatient() {
+		return patient;
+	}
 
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
 
-    public String getMiddleName() {
-	return middleName;
-    }
+	public Address getAddress() {
+		return address;
+	}
 
-    public void setMiddleName(String middleName) {
-	this.middleName = middleName;
-    }
+	public void setAddress(Address address) {
+		this.address = address;
+	}
 
-    public String getImageUrl() {
-	return imageUrl;
-    }
+	public List<Group> getGroups() {
+		return groups;
+	}
 
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
-    }
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
+	}
 
-    public DOB getDob() {
-	return dob;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setDob(DOB dob) {
-    	if(dob != null)dob.getAge();
-    	this.dob = dob;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getMiddleName() {
+		return middleName;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
-    public String getPID() {
-	return PID;
-    }
+	public DOB getDob() {
+		return dob;
+	}
 
-    public void setPID(String pID) {
-	PID = pID;
-    }
+	public void setDob(DOB dob) {
+		if (dob != null)
+			dob.getAge();
+		this.dob = dob;
+	}
 
-    public String getColorCode() {
-	return colorCode;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setColorCode(String colorCode) {
-	this.colorCode = colorCode;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getThumbnailUrl() {
-	return thumbnailUrl;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setThumbnailUrl(String thumbnailUrl) {
-	this.thumbnailUrl = thumbnailUrl;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public Reference getReferredBy() {
-	return referredBy;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setReferredBy(Reference referredBy) {
-	this.referredBy = referredBy;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getPID() {
+		return PID;
+	}
+
+	public void setPID(String pID) {
+		PID = pID;
+	}
+
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	public Reference getReferredBy() {
+		return referredBy;
+	}
+
+	public void setReferredBy(Reference referredBy) {
+		this.referredBy = referredBy;
+	}
 
 	public Boolean getIsPartOfClinic() {
 		return isPartOfClinic;

@@ -14,6 +14,30 @@ public class UserNutritionSubscription extends GenericCollection {
 
 	private String subscriptionPlanId;
 
+	private String title;
+
+	private PlanDuration duration;
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public PlanDuration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(PlanDuration duration) {
+		this.duration = duration;
+	}
+
+	public void setNutritionPlanId(String nutritionPlanId) {
+		this.nutritionPlanId = nutritionPlanId;
+	}
+
 	private String orderId;
 
 	private String transactionStatus;
@@ -29,10 +53,8 @@ public class UserNutritionSubscription extends GenericCollection {
 	private Date toDate;
 
 	private Boolean discarded = false;
-	
+
 	private Boolean isExpired = false;
-	
-	
 
 	public Boolean getIsExpired() {
 		return isExpired;
@@ -57,8 +79,6 @@ public class UserNutritionSubscription extends GenericCollection {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-
-	
 
 	public String getNutritionPlanId() {
 		return nutritionPlanId;
