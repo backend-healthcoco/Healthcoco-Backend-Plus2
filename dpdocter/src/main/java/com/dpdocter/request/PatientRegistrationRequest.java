@@ -5,6 +5,8 @@ import java.util.List;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.MedicalHistoryHandler;
+import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.PersonalInformation;
 import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.beans.Reference;
@@ -75,21 +77,26 @@ public class PatientRegistrationRequest {
 	private String role;
 
 	private Long registrationDate;
-	
+
 	private List<QuestionAnswers> medicalQuestionAnswers;
-	
+
 	private List<QuestionAnswers> lifestyleQuestionAnswers;
 
 	private PersonalInformation personalInformation;
 
 	private String PNUM;
-	
+
 	private String PID;
-	
+
 	private ComponentType recordType;
-	
+
 	private String recordId;
-	
+
+	private PersonalHistoryAddRequest personalHistoryAddRequest;
+
+	private MedicalHistoryHandler pastMedicalHistoryHandler;
+
+	private MedicalHistoryHandler familyMedicalHistoryHandler;
 
 	public String getRecordId() {
 		return recordId;
@@ -401,6 +408,30 @@ public class PatientRegistrationRequest {
 
 	public void setRecordType(ComponentType recordType) {
 		this.recordType = recordType;
+	}
+
+	public PersonalHistoryAddRequest getPersonalHistoryAddRequest() {
+		return personalHistoryAddRequest;
+	}
+
+	public void setPersonalHistoryAddRequest(PersonalHistoryAddRequest personalHistoryAddRequest) {
+		this.personalHistoryAddRequest = personalHistoryAddRequest;
+	}
+
+	public MedicalHistoryHandler getPastMedicalHistoryHandler() {
+		return pastMedicalHistoryHandler;
+	}
+
+	public void setPastMedicalHistoryHandler(MedicalHistoryHandler pastMedicalHistoryHandler) {
+		this.pastMedicalHistoryHandler = pastMedicalHistoryHandler;
+	}
+
+	public MedicalHistoryHandler getFamilyMedicalHistoryHandler() {
+		return familyMedicalHistoryHandler;
+	}
+
+	public void setFamilyMedicalHistoryHandler(MedicalHistoryHandler familyMedicalHistoryHandler) {
+		this.familyMedicalHistoryHandler = familyMedicalHistoryHandler;
 	}
 
 	@Override

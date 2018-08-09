@@ -60,6 +60,7 @@ import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.response.UserAddressResponse;
+import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SuggestionService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -94,6 +95,9 @@ public class RegistrationApi {
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
+	
+	@Autowired
+	private HistoryServices historyServices;
 
 	@Context
 	private UriInfo uriInfo;
@@ -140,6 +144,25 @@ public class RegistrationApi {
 					false);
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 		}
+		
+		if(request.getFamilyMedicalHistoryHandler() != null)
+		{
+			request.getFamilyMedicalHistoryHandler().setPatientId(registeredPatientDetails.getUserId());
+			historyServices.handleFamilyHistory(request.getFamilyMedicalHistoryHandler());
+		}
+		
+		if(request.getPastMedicalHistoryHandler() != null)
+		{
+			request.getPastMedicalHistoryHandler().setPatientId(registeredPatientDetails.getUserId());
+			historyServices.handleMedicalHistory(request.getPastMedicalHistoryHandler());
+		}
+		
+		if(request.getPersonalHistoryAddRequest() != null)
+		{
+			request.getPersonalHistoryAddRequest().setPatientId(registeredPatientDetails.getUserId());
+			historyServices.assignPersonalHistory(request.getPersonalHistoryAddRequest());
+		}
+		
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 		response.setData(registeredPatientDetails);
