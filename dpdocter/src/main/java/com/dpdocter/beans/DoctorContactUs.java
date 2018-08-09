@@ -33,6 +33,7 @@ public class DoctorContactUs extends GenericCollection {
 	private String mobileNumber;
 	private String city;
 	private List<String> specialities;
+	private List<String> services;
 	private DoctorContactStateType contactState = DoctorContactStateType.APPROACH;
 	private Boolean isVerified;
 	private Boolean toList;
@@ -134,15 +135,6 @@ public class DoctorContactUs extends GenericCollection {
 		this.city = city;
 	}
 
-	@Override
-	public String toString() {
-		return "DoctorContactUs [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
-				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
-				+ ", mobileNumber=" + mobileNumber + ", city=" + city + ", specialities=" + specialities
-				+ ", contactState=" + contactState + ", isVerified=" + isVerified + ", toList=" + toList
-				+ ", deviceType=" + deviceType + "]";
-	}
-
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -151,12 +143,29 @@ public class DoctorContactUs extends GenericCollection {
 		this.countryCode = countryCode;
 	}
 
+	public List<String> getServices() {
+		return services;
+	}
+
+	public void setServices(List<String> services) {
+		this.services = services;
+	}
+
 	public String getDeviceType() {
 		return deviceType;
 	}
 
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorContactUs [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
+				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
+				+ ", mobileNumber=" + mobileNumber + ", city=" + city + ", specialities=" + specialities + ", services="
+				+ services + ", contactState=" + contactState + ", isVerified=" + isVerified + ", toList=" + toList
+				+ ", deviceType=" + deviceType + "]";
 	}
 
 }

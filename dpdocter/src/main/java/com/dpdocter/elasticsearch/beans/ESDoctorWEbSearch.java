@@ -11,8 +11,6 @@ public class ESDoctorWEbSearch {
 
 	private String userId;
 
-	private String title;
-
 	private String firstName;
 
 	private String gender;
@@ -21,31 +19,21 @@ public class ESDoctorWEbSearch {
 
 	private ConsultationFee consultationFee;
 
-	private ConsultationFee revisitConsultationFee;
-
 	private List<String> specialities;
 
+	private List<String> services;
+	
 	private DoctorExperience experience;
-
-	private String streetAddress;
-
-	private String country;
 
 	private String state;
 
 	private String city;
 
-	private String postalCode;
-
 	private Double latitude;
 
 	private Double longitude;
 
-	private String landmarkDetails;
-
 	private String locality;
-
-	private String clinicNumber;
 
 	private String locationName;
 
@@ -73,14 +61,6 @@ public class ESDoctorWEbSearch {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 
 	public String getFirstName() {
@@ -113,14 +93,6 @@ public class ESDoctorWEbSearch {
 
 	public void setConsultationFee(ConsultationFee consultationFee) {
 		this.consultationFee = consultationFee;
-	}
-
-	public ConsultationFee getRevisitConsultationFee() {
-		return revisitConsultationFee;
-	}
-
-	public void setRevisitConsultationFee(ConsultationFee revisitConsultationFee) {
-		this.revisitConsultationFee = revisitConsultationFee;
 	}
 
 	public List<String> getSpecialities() {
@@ -179,22 +151,6 @@ public class ESDoctorWEbSearch {
 		this.rankingCount = rankingCount;
 	}
 
-	public String getStreetAddress() {
-		return streetAddress;
-	}
-
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
-	}
-
 	public String getState() {
 		return state;
 	}
@@ -209,14 +165,6 @@ public class ESDoctorWEbSearch {
 
 	public void setCity(String city) {
 		this.city = city;
-	}
-
-	public String getPostalCode() {
-		return postalCode;
-	}
-
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
 	}
 
 	public Double getLatitude() {
@@ -235,28 +183,12 @@ public class ESDoctorWEbSearch {
 		this.longitude = longitude;
 	}
 
-	public String getLandmarkDetails() {
-		return landmarkDetails;
-	}
-
-	public void setLandmarkDetails(String landmarkDetails) {
-		this.landmarkDetails = landmarkDetails;
-	}
-
 	public String getLocality() {
 		return locality;
 	}
 
 	public void setLocality(String locality) {
 		this.locality = locality;
-	}
-
-	public String getClinicNumber() {
-		return clinicNumber;
-	}
-
-	public void setClinicNumber(String clinicNumber) {
-		this.clinicNumber = clinicNumber;
 	}
 
 	public String getLocationName() {
@@ -307,19 +239,23 @@ public class ESDoctorWEbSearch {
 		this.hospitalId = hospitalId;
 	}
 
-	@Override
-	public String toString() {
-		return "ESDoctorWEbSearch [colorCode=" + colorCode + ", userId=" + userId + ", title=" + title + ", firstName="
-				+ firstName + ", gender=" + gender + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
-				+ ", revisitConsultationFee=" + revisitConsultationFee + ", specialities=" + specialities
-				+ ", experience=" + experience + ", streetAddress=" + streetAddress + ", country=" + country
-				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", landmarkDetails=" + landmarkDetails + ", locality=" + locality
-				+ ", clinicNumber=" + clinicNumber + ", locationName=" + locationName + ", facility=" + facility
-				+ ", userUId=" + userUId + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL="
-				+ doctorSlugURL + ", rankingCount=" + rankingCount + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+	public List<String> getServices() {
+		return services;
 	}
 
+	public void setServices(List<String> services) {
+		this.services = services;
+	}
 
+	@Override
+	public String toString() {
+		return "ESDoctorWEbSearch [colorCode=" + colorCode + ", userId=" + userId + ", firstName=" + firstName
+				+ ", gender=" + gender + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
+				+ ", specialities=" + specialities + ", services=" + services + ", experience=" + experience
+				+ ", state=" + state + ", city=" + city + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", locality=" + locality + ", locationName=" + locationName + ", facility=" + facility + ", userUId="
+				+ userUId + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL
+				+ ", rankingCount=" + rankingCount + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+	}
 }

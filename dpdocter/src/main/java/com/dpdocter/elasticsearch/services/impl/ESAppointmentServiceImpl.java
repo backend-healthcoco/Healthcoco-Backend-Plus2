@@ -438,6 +438,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 					appointmentSearchResponse.setResponse(serviceName);
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
+					String slugUrl = serviceName.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
+					slugUrl = slugUrl.replaceAll("--", "-");
+					appointmentSearchResponse.setSlugUrl(slugUrl);
 					response.add(appointmentSearchResponse);
 				}
 			}
@@ -539,52 +542,53 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			Set<String> specialityIdSet = new HashSet<String>();
 			Set<String> locationIds = null, doctorIds = null;
 
-			if (!DPDoctorUtils.anyStringEmpty(service)) {
-				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
-						.findByName(service);
-				if (esTreatmentServiceDocuments != null) {
-					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
-							new BeanToPropertyValueTransformer("id"));
-					Collection<String> specialities = CollectionUtils.collect(esTreatmentServiceDocuments,
-							new BeanToPropertyValueTransformer("speciality"));
-
-					for (String specialitySTR : specialities) {
-						List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
-								.findByQueryAnnotation(specialitySTR);
-						if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
-							Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
-									new BeanToPropertyValueTransformer("id"));
-							if (specialityIds != null) {
-								specialityIdSet.addAll(specialityIds);
-							}
-						}
-
-					}
-
-					int count = (int) elasticsearchTemplate.count(
-							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
-							ESTreatmentServiceCostDocument.class);
-					if (count > 0)
-						esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(
-								new NativeSearchQueryBuilder()
-										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
-										.withPageable(new PageRequest(0, count)).build(),
-								ESTreatmentServiceCostDocument.class);
-
-				}
-				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
-					return null;
-				}
-				locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-						new BeanToPropertyValueTransformer("locationId")));
-				doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-						new BeanToPropertyValueTransformer("doctorId")));
-
-				locationIds.remove(null);
-				doctorIds.remove(null);
-			}
+//			if (!DPDoctorUtils.anyStringEmpty(service)) {
+//				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
+//						.findByName(service);
+//				if (esTreatmentServiceDocuments != null) {
+//					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
+//							new BeanToPropertyValueTransformer("id"));
+//					Collection<String> specialities = CollectionUtils.collect(esTreatmentServiceDocuments,
+//							new BeanToPropertyValueTransformer("speciality"));
+//
+//					for (String specialitySTR : specialities) {
+//						List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
+//								.findByQueryAnnotation(specialitySTR);
+//						if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
+//							Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
+//									new BeanToPropertyValueTransformer("id"));
+//							if (specialityIds != null) {
+//								specialityIdSet.addAll(specialityIds);
+//							}
+//						}
+//
+//					}
+//
+//					int count = (int) elasticsearchTemplate.count(
+//							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
+//							ESTreatmentServiceCostDocument.class);
+//					if (count > 0)
+//						esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(
+//								new NativeSearchQueryBuilder()
+//										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
+//										.withPageable(new PageRequest(0, count)).build(),
+//								ESTreatmentServiceCostDocument.class);
+//
+//				}
+//				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
+//					return null;
+//				}
+//				locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
+//						new BeanToPropertyValueTransformer("locationId")));
+//				doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
+//						new BeanToPropertyValueTransformer("doctorId")));
+//
+//				locationIds.remove(null);
+//				doctorIds.remove(null);
+//			}
 
 			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
+			QueryBuilder serviceQueryBuilder = createServiceFilter(service);
 			QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
 			Integer distance = 4;
 			String citylongitude = null, citylatitude = null;
@@ -747,6 +751,24 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					"Error While Getting Doctor Details From ES : " + e.getMessage());
 		}
 		return esDoctorDocuments;
+	}
+
+	@SuppressWarnings("unchecked")
+	private QueryBuilder createServiceFilter(String service) {
+		QueryBuilder queryBuilder = null;
+		if (!DPDoctorUtils.anyStringEmpty(service)) {
+			
+			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository.findByName(service);
+			
+			if (esTreatmentServiceDocuments != null) {
+				Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
+						new BeanToPropertyValueTransformer("id"));
+				if (serviceIds == null)
+					serviceIds = CollectionUtils.EMPTY_COLLECTION;
+				queryBuilder = QueryBuilders.termsQuery("services", serviceIds);
+			}
+		}
+		return queryBuilder;
 	}
 
 	@SuppressWarnings({ "unchecked" })

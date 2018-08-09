@@ -38,6 +38,9 @@ public class DoctorCollection extends GenericCollection {
 	@Indexed
 	private List<ObjectId> specialities;
 
+	@Indexed
+	private List<ObjectId> services;
+	
 	@Field
 	private List<Achievement> achievements;
 
@@ -261,15 +264,25 @@ public class DoctorCollection extends GenericCollection {
 		this.slugUrl = slugUrl;
 	}
 
+	public List<ObjectId> getServices() {
+		return services;
+	}
+
+	public void setServices(List<ObjectId> services) {
+		this.services = services;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
 				+ otherEmailAddresses + ", userId=" + userId + ", experience=" + experience + ", education=" + education
-				+ ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement="
-				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-				+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber="
-				+ registerNumber + ", gender=" + gender + ", dob=" + dob + ", isGetDiscardedEMR=" + isGetDiscardedEMR
-				+ ", isVerified=" + isVerified + ", metaTitle=" + metaTitle + ", metaDesccription=" + metaDesccription
-				+ ", metaKeyword=" + metaKeyword + ", slugUrl=" + slugUrl + "]";
+				+ ", specialities=" + specialities + ", services=" + services + ", achievements=" + achievements
+				+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails
+				+ ", experienceDetails=" + experienceDetails + ", professionalMemberships=" + professionalMemberships
+				+ ", registerNumber=" + registerNumber + ", gender=" + gender + ", dob=" + dob + ", isGetDiscardedEMR="
+				+ isGetDiscardedEMR + ", isVerified=" + isVerified + ", metaTitle=" + metaTitle + ", metaDesccription="
+				+ metaDesccription + ", metaKeyword=" + metaKeyword + ", slugUrl=" + slugUrl + ", isPrescriptionSMS="
+				+ isPrescriptionSMS + "]";
 	}
+
 }

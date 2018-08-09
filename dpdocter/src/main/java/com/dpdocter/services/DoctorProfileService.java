@@ -29,6 +29,7 @@ import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
+import com.dpdocter.request.DoctorServicesAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.request.RegularCheckUpAddEditRequest;
@@ -114,5 +115,7 @@ public interface DoctorProfileService {
 	Boolean updateShowInventory(String doctorId, String locationId, Boolean showInventory);
 
 	Boolean updateSavetoInventory(String doctorId, String locationId, Boolean saveToInventory);
+
+	DoctorServicesAddEditRequest addEditServices(DoctorServicesAddEditRequest request);
 
 }
