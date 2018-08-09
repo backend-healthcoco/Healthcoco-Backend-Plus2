@@ -50,6 +50,8 @@ public class DoctorProfile extends GenericCollection {
 
 	private List<String> specialities;
 
+	private List<String> services;
+	
 	private List<String> parentSpecialities;
 
 	private List<Achievement> achievements;
@@ -352,21 +354,12 @@ public class DoctorProfile extends GenericCollection {
 		this.packageType = packageType;
 	}
 
-	@Override
-	public String toString() {
-		return "DoctorProfile [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", title=" + title
-				+ ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
-				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-				+ thumbnailUrl + ", dob=" + dob + ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl
-				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers
-				+ ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
-				+ education + ", specialities=" + specialities + ", parentSpecialities=" + parentSpecialities
-				+ ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
-				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
-				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile
-				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", isGetDiscardedEMR=" + isGetDiscardedEMR
-				+ ", metaTitle=" + metaTitle + ", metaDesccription=" + metaDesccription + ", metaKeyword=" + metaKeyword
-				+ ", doctorSlugURL=" + doctorSlugURL + ", packageType=" + packageType + "]";
+	public List<String> getServices() {
+		return services;
+	}
+
+	public void setServices(List<String> services) {
+		this.services = services;
 	}
 
 	public boolean isPrescriptionSMS() {
@@ -376,4 +369,23 @@ public class DoctorProfile extends GenericCollection {
 	public void setPrescriptionSMS(boolean isPrescriptionSMS) {
 		this.isPrescriptionSMS = isPrescriptionSMS;
 	}
+
+	@Override
+	public String toString() {
+		return "DoctorProfile [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", title=" + title
+				+ ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", dob=" + dob + ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers
+				+ ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
+				+ education + ", specialities=" + specialities + ", services=" + services + ", parentSpecialities="
+				+ parentSpecialities + ", achievements=" + achievements + ", professionalStatement="
+				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
+				+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", clinicProfile="
+				+ clinicProfile + ", regularCheckUpMonths=" + regularCheckUpMonths + ", isGetDiscardedEMR="
+				+ isGetDiscardedEMR + ", metaTitle=" + metaTitle + ", metaDesccription=" + metaDesccription
+				+ ", metaKeyword=" + metaKeyword + ", doctorSlugURL=" + doctorSlugURL + ", packageType=" + packageType
+				+ ", isPrescriptionSMS=" + isPrescriptionSMS + "]";
+	}
+
 }

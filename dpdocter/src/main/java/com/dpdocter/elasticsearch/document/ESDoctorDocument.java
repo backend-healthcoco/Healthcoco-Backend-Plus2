@@ -60,6 +60,9 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> specialities;
 
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> services;
+	
 	@Field(type = FieldType.Nested)
 	private DoctorExperience experience;
 
@@ -394,20 +397,28 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.thumbnailUrl = thumbnailUrl;
 	}
 
+	public List<String> getServices() {
+		return services;
+	}
+
+	public void setServices(List<String> services) {
+		this.services = services;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
 				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
 				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
 				+ ", revisitConsultationFee=" + revisitConsultationFee + ", workingSchedules=" + workingSchedules
-				+ ", specialities=" + specialities + ", experience=" + experience + ", facility=" + facility
-				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot
-				+ ", isActive=" + isActive + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl
-				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
-				+ userState + ", registerNumber=" + registerNumber + ", education=" + education + ", dob=" + dob
-				+ ", distance=" + distance + ", userUId=" + userUId + ", isDoctorListed=" + isDoctorListed
-				+ ", timeZone=" + timeZone + ", rankingCount=" + rankingCount + ", noOfRecommenations="
-				+ noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL + "]";
+				+ ", specialities=" + specialities + ", services=" + services + ", experience=" + experience
+				+ ", facility=" + facility + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive + ", isVerified=" + isVerified
+				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+				+ ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber
+				+ ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId
+				+ ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount=" + rankingCount
+				+ ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL + "]";
 	}
 
 	@Override

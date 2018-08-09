@@ -52,6 +52,7 @@ import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
+import com.dpdocter.request.DoctorServicesAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
@@ -181,6 +182,24 @@ public class DoctorProfileApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
+	@POST
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
+	public Response<DoctorServicesAddEditRequest> addEditServices(DoctorServicesAddEditRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		DoctorServicesAddEditRequest specialityResponse = doctorProfileService.addEditServices(request);
+
+		if (specialityResponse != null)
+			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
+		Response<DoctorServicesAddEditRequest> response = new Response<DoctorServicesAddEditRequest>();
+		response.setData(specialityResponse);
+		return response;
+	}
+
+	
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)

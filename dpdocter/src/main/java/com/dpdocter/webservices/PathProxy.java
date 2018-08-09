@@ -776,6 +776,8 @@ public interface PathProxy {
 
 		public static final String UPDATE_SHOW_INVENTORY_COUNT = "/{doctorId}/showInventoryCount";
 
+		public static final String ADD_EDIT_SERVICES = "/addEditServices";
+
 	}
 
 	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";

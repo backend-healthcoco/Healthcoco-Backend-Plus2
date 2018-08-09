@@ -51,6 +51,7 @@ import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SpecialityCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -71,6 +72,7 @@ import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SpecialityRepository;
+import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
@@ -90,6 +92,7 @@ import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
+import com.dpdocter.request.DoctorServicesAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.request.RegularCheckUpAddEditRequest;
@@ -125,6 +128,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Autowired
 	private SpecialityRepository specialityRepository;
 
+	@Autowired
+	private TreatmentServicesRepository treatmentServicesRepository;
+	
 	@Autowired
 	private FileManager fileManager;
 
@@ -530,6 +536,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
 		List<String> specialities = null;
+		List<String> services = null;
 		List<DoctorRegistrationDetail> registrationDetails = null;
 		List<String> professionalMemberships = null;
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
@@ -584,29 +591,35 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 								new BeanToPropertyValueTransformer("speciality"));
 						doctorProfile.setParentSpecialities(parentSpecialities);
 					}
-
-					doctorProfile.setClinicProfile(clinicProfile);
 					doctorProfile.setSpecialities(specialities);
-					// set medical councils using medical councils ids
-					registrationDetails = new ArrayList<DoctorRegistrationDetail>();
-					if (doctorProfile.getRegistrationDetails() != null
-							&& !doctorProfile.getRegistrationDetails().isEmpty()) {
-						for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
-							DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
-							BeanUtil.map(registrationDetail, doctorRegistrationDetail);
-							registrationDetails.add(doctorRegistrationDetail);
-						}
+				}
+				
+				if (doctorCollection.getServices() != null && !doctorCollection.getServices().isEmpty()) {
+					services = (List<String>) CollectionUtils.collect(
+							(Collection<?>) treatmentServicesRepository.findAll(doctorCollection.getServices()),
+							new BeanToPropertyValueTransformer("name"));
+				}
+				doctorProfile.setServices(services);
+								
+				// set medical councils using medical councils ids
+				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+				if (doctorProfile.getRegistrationDetails() != null
+						&& !doctorProfile.getRegistrationDetails().isEmpty()) {
+					for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+						DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+						BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+						registrationDetails.add(doctorRegistrationDetail);
 					}
-					doctorProfile.setRegistrationDetails(registrationDetails);
-					// set professional memberships using professional membership
-					// ids
-					if (doctorCollection.getProfessionalMemberships() != null
-							&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
-						professionalMemberships = (List<String>) CollectionUtils.collect(
-								(Collection<?>) professionalMembershipRepository
-										.findAll(doctorCollection.getProfessionalMemberships()),
-								new BeanToPropertyValueTransformer("membership"));
-					}
+				}
+				doctorProfile.setRegistrationDetails(registrationDetails);
+				// set professional memberships using professional membership
+				// ids
+				if (doctorCollection.getProfessionalMemberships() != null
+						&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
+					professionalMemberships = (List<String>) CollectionUtils.collect(
+							(Collection<?>) professionalMembershipRepository
+									.findAll(doctorCollection.getProfessionalMemberships()),
+							new BeanToPropertyValueTransformer("membership"));
 				}
 				doctorProfile.setProfessionalMemberships(professionalMemberships);
 
@@ -1440,6 +1453,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
 		List<String> specialities = null;
+		List<String> services = null;
 		List<String> parentSpecialities = null;
 		List<DoctorRegistrationDetail> registrationDetails = null;
 		List<String> professionalMemberships = null;
@@ -1486,30 +1500,39 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("speciality"));
 
-					doctorProfile.setClinicProfile(clinicProfile);
+					
 					doctorProfile.setSpecialities(specialities);
 					doctorProfile.setParentSpecialities(parentSpecialities);
-					// set medical councils using medical councils ids
-					registrationDetails = new ArrayList<DoctorRegistrationDetail>();
-					if (doctorProfile.getRegistrationDetails() != null
-							&& !doctorProfile.getRegistrationDetails().isEmpty()) {
-						for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
-							DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
-							BeanUtil.map(registrationDetail, doctorRegistrationDetail);
-							registrationDetails.add(doctorRegistrationDetail);
-						}
-					}
-					doctorProfile.setRegistrationDetails(registrationDetails);
-					// set professional memberships using professional membership
-					// ids
-					if (doctorCollection.getProfessionalMemberships() != null
-							&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
-						professionalMemberships = (List<String>) CollectionUtils.collect(
-								(Collection<?>) professionalMembershipRepository
-										.findAll(doctorCollection.getProfessionalMemberships()),
-								new BeanToPropertyValueTransformer("membership"));
+				}
+				
+				if (doctorCollection.getServices() != null && !doctorCollection.getServices().isEmpty()) {
+					services = (List<String>) CollectionUtils.collect(
+							(Collection<?>) treatmentServicesRepository.findAll(doctorCollection.getServices()),
+							new BeanToPropertyValueTransformer("name"));
+				}
+				doctorProfile.setServices(services);
+				
+				// set medical councils using medical councils ids
+				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+				if (doctorProfile.getRegistrationDetails() != null
+						&& !doctorProfile.getRegistrationDetails().isEmpty()) {
+					for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+						DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+						BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+						registrationDetails.add(doctorRegistrationDetail);
 					}
 				}
+				doctorProfile.setRegistrationDetails(registrationDetails);
+				// set professional memberships using professional membership
+				// ids
+				if (doctorCollection.getProfessionalMemberships() != null
+						&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
+					professionalMemberships = (List<String>) CollectionUtils.collect(
+							(Collection<?>) professionalMembershipRepository
+									.findAll(doctorCollection.getProfessionalMemberships()),
+							new BeanToPropertyValueTransformer("membership"));
+				}
+				
 				doctorProfile.setProfessionalMemberships(professionalMemberships);
 
 				// set clinic profile details
@@ -1624,4 +1647,41 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
+
+	@Override
+	public DoctorServicesAddEditRequest addEditServices(DoctorServicesAddEditRequest request) {
+		DoctorServicesAddEditRequest response = null;
+			DoctorCollection doctorCollection = null;
+			try {
+				doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+				if (doctorCollection != null) {
+					response = new DoctorServicesAddEditRequest();
+					if (request.getServices() != null && !request.getServices().isEmpty()) {
+						List<TreatmentServicesCollection> servicesCollections = treatmentServicesRepository
+								.findbyServicesName(request.getServices());
+						@SuppressWarnings("unchecked")
+						Collection<ObjectId> serviceIds = CollectionUtils.collect(servicesCollections,
+								new BeanToPropertyValueTransformer("id"));
+						if (serviceIds != null && !serviceIds.isEmpty()) {
+							doctorCollection.setServices(new ArrayList<>(serviceIds));
+						} else {
+							doctorCollection.setServices(null);
+						}
+					} else {
+						doctorCollection.setServices(null);
+					}
+					doctorRepository.save(doctorCollection);
+					BeanUtil.map(doctorCollection, response);
+					response.setDoctorId(doctorCollection.getUserId().toString());
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e + " Error Editing Doctor Profile");
+				throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+			}
+			return response;
+	}
+
+
 }
