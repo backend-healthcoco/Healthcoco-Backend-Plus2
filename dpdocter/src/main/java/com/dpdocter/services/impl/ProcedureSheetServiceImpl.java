@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -22,8 +24,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.ClinicalnoteLookupBean;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.PatientShortCard;
+import com.dpdocter.beans.ProcedureConsentForm;
+import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
@@ -48,48 +54,52 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.ProcedureSheetService;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class ProcedureSheetServiceImpl implements ProcedureSheetService{
+public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 	@Autowired
 	private ProcedureSheetRepository procedureSheetRepository;
-	
+
 	@Autowired
 	private ProcedureSheetStructureRepository procedureSheetStructureRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private PatientRepository patientRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	private FileManager fileManager;
-	
+
 	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
-	
+
 	@Autowired
 	private PatientVisitService patientVisitService;
-	
+
 	@Autowired
 	private JasperReportService jasperReportService;
-	
-	@Value(value = "${jasper.print.imaging.works.invoice.fileName}")
-	private String dentalInvoiceA4FileName;
-	
+
+	@Value(value = "${image.path}")
+	private String imagePath;
+
+	@Value(value = "${jasper.print.procedure.sheet.fileName}")
+	private String procedureSheetJasper;
+
 	@Override
 	@Transactional
-	public ProcedureSheetResponse addEditProcedureSheet(AddEditProcedureSheetRequest request)
-	{
+	public ProcedureSheetResponse addEditProcedureSheet(AddEditProcedureSheetRequest request) {
 		ProcedureSheetResponse response = null;
 		ProcedureSheetCollection procedureSheetCollection = null;
 		List<Map<String, String>> procedureSheetFields = null;
@@ -102,7 +112,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				procedureSheetCollection.setCreatedBy(userCollection.getFirstName());
 			}
-			
+
 			procedureSheetFields = request.getProcedureSheetFields();
 			request.setProcedureSheetFields(null);
 			BeanUtil.map(request, procedureSheetCollection);
@@ -129,11 +139,10 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public ProcedureSheetResponse getProcedureSheet(String id)
-	{
+	public ProcedureSheetResponse getProcedureSheet(String id) {
 		ProcedureSheetResponse response = null;
 		ProcedureSheetCollection procedureSheetCollection = null;
 		List<Map<String, String>> procedureSheetFields = null;
@@ -141,10 +150,10 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
 			} else {
-				throw new BusinessException(ServiceError.NoRecord , "Record not found");
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			if (procedureSheetCollection != null) {
-				
+
 				response = new ProcedureSheetResponse();
 				procedureSheetFields = procedureSheetCollection.getProcedureSheetFields();
 				procedureSheetCollection.setProcedureSheetFields(null);
@@ -165,11 +174,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<ProcedureSheetResponse> getProcedureSheetList(String doctorId, String hospitalId, String locationId,
-			String patientId, String searchTerm, Long from, Long to, Boolean discarded , int page , int size , String type) {
+			String patientId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size,
+			String type) {
 		List<ProcedureSheetResponse> responses = null;
 		try {
 			Aggregation aggregation = null;
@@ -191,30 +201,27 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			} else {
 				criteria.and("updatedTime").gte(new Date(from));
 			}
-			if(discarded != null) {
+			if (discarded != null) {
 				criteria.and("discarded").is(discarded);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(type)) {
 				criteria.and("type").is(type);
 			}
-			
+
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(
-						Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(
-						Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			
+
 			AggregationResults<ProcedureSheetResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					ProcedureSheetCollection.class, ProcedureSheetResponse.class);
-			
+
 			responses = aggregationResults.getMappedResults();
-			
-			for(ProcedureSheetResponse procedureSheetResponse : responses)
-			{
+
+			for (ProcedureSheetResponse procedureSheetResponse : responses) {
 				procedureSheetResponse = getProcedureSheet(procedureSheetResponse.getId());
 			}
 
@@ -224,13 +231,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		}
 
 		return responses;
-		
+
 	}
-	
+
 	@Override
 	@Transactional
-	public ProcedureSheetResponse discardProcedureSheet(String id , Boolean discarded)
-	{
+	public ProcedureSheetResponse discardProcedureSheet(String id, Boolean discarded) {
 		ProcedureSheetResponse response = null;
 		ProcedureSheetCollection procedureSheetCollection = null;
 		try {
@@ -239,7 +245,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 				procedureSheetCollection.setDiscarded(discarded);
 				procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
 			} else {
-				throw new BusinessException(ServiceError.NoRecord , "Record not found");
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			if (procedureSheetCollection != null) {
 				response = new ProcedureSheetResponse();
@@ -259,17 +265,17 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		}
 		return response;
 	}
-	
 
 	@Override
 	@Transactional
-	public ProcedureSheetStructureResponse addEditProcedureSheetStructure(AddEditProcedureSheetStructureRequest request)
-	{
+	public ProcedureSheetStructureResponse addEditProcedureSheetStructure(
+			AddEditProcedureSheetStructureRequest request) {
 		ProcedureSheetStructureResponse response = null;
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(request.getId()));
+				procedureSheetStructureCollection = procedureSheetStructureRepository
+						.findOne(new ObjectId(request.getId()));
 			} else {
 				procedureSheetStructureCollection = new ProcedureSheetStructureCollection();
 				procedureSheetStructureCollection.setCreatedTime(new Date());
@@ -277,7 +283,8 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 				procedureSheetStructureCollection.setCreatedBy(userCollection.getFirstName());
 			}
 			BeanUtil.map(request, procedureSheetStructureCollection);
-			procedureSheetStructureCollection = procedureSheetStructureRepository.save(procedureSheetStructureCollection);
+			procedureSheetStructureCollection = procedureSheetStructureRepository
+					.save(procedureSheetStructureCollection);
 			if (procedureSheetStructureCollection != null) {
 				response = new ProcedureSheetStructureResponse();
 				BeanUtil.map(procedureSheetStructureCollection, response);
@@ -288,7 +295,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public ImageURLResponse addDiagrams(FormDataBodyPart file) {
@@ -302,7 +309,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 			}
-			
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -311,18 +317,16 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		return imageURLResponse;
 	}
 
-	
 	@Override
 	@Transactional
-	public ProcedureSheetStructureResponse getProcedureSheetStructure(String id)
-	{
+	public ProcedureSheetStructureResponse getProcedureSheetStructure(String id) {
 		ProcedureSheetStructureResponse response = null;
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(id));
 			} else {
-				throw new BusinessException(ServiceError.NoRecord , "Record not found");
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			if (procedureSheetStructureCollection != null) {
 				response = new ProcedureSheetStructureResponse();
@@ -334,21 +338,20 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public ProcedureSheetStructureResponse discardProcedureSheetStructure(String id , Boolean discarded)
-	{
+	public ProcedureSheetStructureResponse discardProcedureSheetStructure(String id, Boolean discarded) {
 		ProcedureSheetStructureResponse response = null;
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(id));
 				procedureSheetStructureCollection.setDiscarded(discarded);
-				procedureSheetStructureCollection = procedureSheetStructureRepository.save(procedureSheetStructureCollection);
+				procedureSheetStructureCollection = procedureSheetStructureRepository
+						.save(procedureSheetStructureCollection);
 			} else {
-				throw new BusinessException(ServiceError.NoRecord , "Record not found");
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			if (procedureSheetStructureCollection != null) {
 				response = new ProcedureSheetStructureResponse();
@@ -360,11 +363,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<ProcedureSheetStructureResponse> getProcedureSheetStructureList(String doctorId, String hospitalId, String locationId,
-			 String searchTerm, Long from, Long to, Boolean discarded , int page , int size ,String type) {
+	public List<ProcedureSheetStructureResponse> getProcedureSheetStructureList(String doctorId, String hospitalId,
+			String locationId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size,
+			String type) {
 		List<ProcedureSheetStructureResponse> responses = null;
 		try {
 			Aggregation aggregation = null;
@@ -383,24 +387,22 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			} else {
 				criteria.and("updatedTime").gte(new Date(from));
 			}
-			if(discarded != null) {
+			if (discarded != null) {
 				criteria.and("discarded").is(discarded);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(type)) {
 				criteria.and("type").is(new ObjectId(type));
 			}
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(
-						Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(
-						Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			
-			AggregationResults<ProcedureSheetStructureResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					ProcedureSheetStructureCollection.class, ProcedureSheetStructureResponse.class);
+
+			AggregationResults<ProcedureSheetStructureResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, ProcedureSheetStructureCollection.class, ProcedureSheetStructureResponse.class);
 			responses = aggregationResults.getMappedResults();
 
 		} catch (Exception e) {
@@ -409,91 +411,138 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 		}
 
 		return responses;
-		
+
 	}
-	
-	private JasperReportResponse createProcedureSheetJasper(ProcedureSheetCollection  procedureSheetCollection)
+
+	public String downloadProcedureSheet(String id) {
+		String response = null;
+		try {
+			ProcedureSheetCollection procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
+
+			if (procedureSheetCollection != null) {
+				JasperReportResponse jasperReportResponse = createProcedureSheetJasper(procedureSheetCollection);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+
+				throw new BusinessException(ServiceError.NotFound, "Error while getting procedure Sheet PDF");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			throw new BusinessException(ServiceError.Unknown, "Error while getting procedure Sheet PDF");
+		}
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
+
+	private JasperReportResponse createProcedureSheetJasper(ProcedureSheetCollection procedureSheetCollection)
 			throws NumberFormatException, IOException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		PrintSettingsCollection printSettings = null;
-		Double grantTotal = 0.0;
-		String leftDetail = "";
-		String rightDetail = "";
+
 		String pattern = "dd/MM/yyyy";
+		String key = null;
+		String value = null;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-		/*String toothNumbers = "";
-		List<DentalImagingInvoiceJasper> dentalImagingInvoiceJaspers = new ArrayList<DentalImagingInvoiceJasper>();
-		DentalImagingInvoiceJasper dentalImagingInvoiceJasper = null;
-		int i = 1;
-		for (DentalImagingInvoiceItemResponse imagingItemResponse : imagingInvoiceResponse.getInvoiceItems()) {
-			toothNumbers = "";
-			dentalImagingInvoiceJasper = new DentalImagingInvoiceJasper();
-			if (imagingItemResponse.getToothNumber() != null && !imagingItemResponse.getToothNumber().isEmpty()) {
-				for (String dentalToothNumber : imagingItemResponse.getToothNumber()) {
-					if (toothNumbers == "")
-						toothNumbers = dentalToothNumber;
-					else
-						toothNumbers = toothNumbers + "," + dentalToothNumber;
+		String field = "";
+		ProcedureConsentForm procedureConsentForm = procedureSheetCollection.getProcedureConsentForm();
+		if (procedureConsentForm != null) {
+			field = "";
+			if (procedureConsentForm.getHeaderFields() != null && !procedureConsentForm.getHeaderFields().isEmpty()) {
+				for (Map.Entry<String, String> entry : procedureConsentForm.getHeaderFields().entrySet()) {
+					if (entry != null) {
+						key = entry.getKey();
+						value = entry.getValue();
+						if (!DPDoctorUtils.anyStringEmpty(key, value))
+							field = field + "<b>" + key + " : </b>" + value + "<br>";
 
+					}
 				}
-				dentalImagingInvoiceJasper.setToothNumber(toothNumbers);
 
-			} else {
-				dentalImagingInvoiceJasper.setToothNumber("--");
+				field = field + "<br><br>";
+				parameters.put("headerField", field);
 			}
 
-			dentalImagingInvoiceJasper.setsNo(i++);
-			if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getServiceName()))
-				dentalImagingInvoiceJasper.setServiceName(imagingItemResponse.getServiceName());
-			else
-				dentalImagingInvoiceJasper.setServiceName("--");
-			if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getCBCTArch(),
-					imagingItemResponse.getCBCTQuadrant())) {
-				dentalImagingInvoiceJasper.setQuadrant(
-						imagingItemResponse.getCBCTQuadrant() + "," + imagingItemResponse.getCBCTArch() + "(Arch)");
-			} else if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getCBCTArch())) {
-				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getCBCTArch() + "(Arch)");
-			} else if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getCBCTQuadrant())) {
-				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getCBCTQuadrant());
-			} else if (!DPDoctorUtils.anyStringEmpty(imagingItemResponse.getFov())) {
-				dentalImagingInvoiceJasper.setQuadrant(imagingItemResponse.getFov() + "(FOV)");
-			} else {
-				dentalImagingInvoiceJasper.setQuadrant("--");
+			if (!DPDoctorUtils.anyStringEmpty(procedureConsentForm.getBody())) {
+				parameters.put("body", procedureConsentForm.getBody() + "<br><br>");
 			}
-			dentalImagingInvoiceJaspers.add(dentalImagingInvoiceJasper);
-		}*/
-		
-		/*for (Map.Entry<String,String> entry : procedureSheetResponse.getProcedureSheetFields().entrySet()) 
-            System.out.println("Key = " + entry.getKey() +
-                             ", Value = " + entry.getValue());*/
-		
-		List<String> keys = new ArrayList<String>();
-		List<List<String>> values = new ArrayList<>();
-		for (Map<String,String> fields : procedureSheetCollection.getProcedureSheetFields()) {
-			
-			keys = new ArrayList<String>(fields.keySet());
-			List<String> value = new ArrayList<>(fields.values());
-			values.add(value);
-		}
-		parameters.put("fields", values);
-		parameters.put("keys", keys);
-		parameters.put("name", procedureSheetCollection.getProcedureName());
-		parameters.put("diagrams" , procedureSheetCollection.getDiagrams());
-		if (procedureSheetCollection.getProcedureConsentForm() != null) {
-			parameters.put("headerFields", procedureSheetCollection.getProcedureConsentForm().getHeaderFields());
-			parameters.put("footerFields", procedureSheetCollection.getProcedureConsentForm().getFooterFields());
-			parameters.put("body", procedureSheetCollection.getProcedureConsentForm().getBody());
-		}
-		UserCollection doctor = userRepository.findOne(procedureSheetCollection.getDoctorId());
-		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-				procedureSheetCollection.getPatientId(),procedureSheetCollection.getLocationId(),procedureSheetCollection.getHospitalId());
 
-		
+			if (procedureConsentForm.getFooterFields() != null && !procedureConsentForm.getFooterFields().isEmpty()) {
+				int i = 0;
+				field = "";
+				for (Map.Entry<String, String> entry : procedureConsentForm.getFooterFields().entrySet()) {
+					if (entry != null) {
+						key = entry.getKey();
+						value = entry.getValue();
+						if (!DPDoctorUtils.anyStringEmpty(key, value))
+							field = field + "<b>" + key + " : </b>" + value;
+
+					}
+					i++;
+					if (i % 2 == 1) {
+						field = field + "&nbsp;&nbsp;";
+
+					} else {
+						field = field + "<br>";
+					}
+				}
+				field = field + "<br>";
+				parameters.put("footerField", field);
+			}
+
+		}
+		if (procedureSheetCollection.getDiagrams() != null && !procedureSheetCollection.getDiagrams().isEmpty()) {
+			parameters.put("diagram", procedureSheetCollection.getDiagrams());
+		}
+		List<String> keys = null;
+		List<DBObject> items = null;
+		DBObject item = null;
+		if (procedureSheetCollection.getProcedureSheetFields() != null
+				&& !procedureSheetCollection.getProcedureSheetFields().isEmpty()) {
+			items = new ArrayList<DBObject>();
+			for (Map<String, String> fields : procedureSheetCollection.getProcedureSheetFields()) {
+
+				item = new BasicDBObject();
+				keys = new ArrayList<String>(fields.keySet());
+				field = "";
+				if (keys != null && !keys.isEmpty()) {
+					int j = 0;
+					for (String i : keys) {
+						value = fields.get(i);
+						if (!DPDoctorUtils.anyStringEmpty(i, value))
+							field = field + "<b>" + key + " : </b>" + value;
+
+						j++;
+						if (j % 2 == 1) {
+							field = field + "     ";
+
+						} else {
+							field = field + "<br>";
+						}
+					}
+				}
+				item.put("sheet", field);
+				items.add(item);
+			}
+
+			parameters.put("item", items);
+		}
+
 		String pdfName = "PROCEDURE-SHEET-" + procedureSheetCollection.getId().toString() + new Date().getTime();
 
-		printSettings = printSettingsRepository.getSettings(				
+		printSettings = printSettingsRepository.getSettings(procedureSheetCollection.getDoctorId(),
 				(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getLocationId())
 						? procedureSheetCollection.getLocationId()
 						: null),
@@ -507,6 +556,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 			BeanUtil.map(defaultPrintSettings, printSettings);
 
 		}
+		patientVisitService.generatePrintSetup(parameters, printSettings, printSettings.getDoctorId());
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
@@ -529,12 +579,11 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService{
 						? printSettings.getPageSetup().getRightMargin()
 						: 20)
 				: 20;
-		response = jasperReportService.createPDF(ComponentType.PROCEDURE_SHEET, parameters,
-				dentalInvoiceA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+		response = jasperReportService.createPDF(ComponentType.PROCEDURE_SHEET, parameters, procedureSheetJasper,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
 	}
-	
-	
+
 }

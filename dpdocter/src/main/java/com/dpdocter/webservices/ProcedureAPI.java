@@ -43,38 +43,39 @@ import io.swagger.annotations.ApiOperation;
 public class ProcedureAPI {
 
 	private static Logger logger = Logger.getLogger(ProcedureAPI.class.getName());
-	
+
 	@Autowired
 	private ProcedureSheetService procedureSheetService;
-	
+
 	@Path(value = PathProxy.ProcedureUrls.ADD_PROCEDURE)
 	@POST
 	@ApiOperation(value = PathProxy.ProcedureUrls.ADD_PROCEDURE, notes = PathProxy.ProcedureUrls.ADD_PROCEDURE)
-	public Response<ProcedureSheetResponse> addProcedure(AddEditProcedureSheetRequest request){
-		if(request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId() , request.getLocationId() ,request.getHospitalId())){
-			    logger.warn("Invalid Input");
-			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	public Response<ProcedureSheetResponse> addProcedure(AddEditProcedureSheetRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		ProcedureSheetResponse procedureSheetResponse = procedureSheetService.addEditProcedureSheet(request);
 		Response<ProcedureSheetResponse> response = new Response<ProcedureSheetResponse>();
 		response.setData(procedureSheetResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ProcedureUrls.GET_PROCEDURE)
 	@GET
 	@ApiOperation(value = PathProxy.ProcedureUrls.GET_PROCEDURE, notes = PathProxy.ProcedureUrls.GET_PROCEDURE)
-	public Response<ProcedureSheetResponse> getProcedure(@PathParam("id") String id){
-		if(DPDoctorUtils.anyStringEmpty(id)){
-			    logger.warn("Invalid Input");
-			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	public Response<ProcedureSheetResponse> getProcedure(@PathParam("id") String id) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		ProcedureSheetResponse procedureSheetResponse = procedureSheetService.getProcedureSheet(id);
 		Response<ProcedureSheetResponse> response = new Response<ProcedureSheetResponse>();
 		response.setData(procedureSheetResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ProcedureUrls.GET_PROCEDURE_LIST)
 	@GET
 	@ApiOperation(value = PathProxy.ProcedureUrls.GET_PROCEDURE_LIST, notes = PathProxy.ProcedureUrls.GET_PROCEDURE_LIST)
@@ -82,90 +83,98 @@ public class ProcedureAPI {
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("from") Long from,
 			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page ,@QueryParam("discarded") Boolean discarded ,@QueryParam("type") String type){
-		List<ProcedureSheetResponse> procedureSheetResponses = procedureSheetService.getProcedureSheetList(doctorId, hospitalId, locationId, patientId, searchTerm, from, to, discarded, page, size, type);
+			@QueryParam("page") int page, @QueryParam("discarded") Boolean discarded, @QueryParam("type") String type) {
+		List<ProcedureSheetResponse> procedureSheetResponses = procedureSheetService.getProcedureSheetList(doctorId,
+				hospitalId, locationId, patientId, searchTerm, from, to, discarded, page, size, type);
 		Response<ProcedureSheetResponse> response = new Response<ProcedureSheetResponse>();
 		response.setDataList(procedureSheetResponses);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ProcedureUrls.DISCARD_PROCEDURE)
 	@DELETE
 	@ApiOperation(value = PathProxy.ProcedureUrls.DISCARD_PROCEDURE, notes = PathProxy.ProcedureUrls.DISCARD_PROCEDURE)
-	public Response<ProcedureSheetResponse> deleteProcedure(@PathParam("id") String id ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded){
-		if(DPDoctorUtils.anyStringEmpty(id)){
-			    logger.warn("Invalid Input");
-			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	public Response<ProcedureSheetResponse> deleteProcedure(@PathParam("id") String id,
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		ProcedureSheetResponse procedureSheetResponse = procedureSheetService.discardProcedureSheet(id, discarded);
 		Response<ProcedureSheetResponse> response = new Response<ProcedureSheetResponse>();
 		response.setData(procedureSheetResponse);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.ProcedureUrls.ADD_PROCEDURE_STRUCTURE)
 	@POST
 	@ApiOperation(value = PathProxy.ProcedureUrls.ADD_PROCEDURE_STRUCTURE, notes = PathProxy.ProcedureUrls.ADD_PROCEDURE_STRUCTURE)
-	public Response<ProcedureSheetStructureResponse> addProcedureStructure(AddEditProcedureSheetStructureRequest request){
-		if(request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId() , request.getLocationId() ,request.getHospitalId())){
-			    logger.warn("Invalid Input");
-			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	public Response<ProcedureSheetStructureResponse> addProcedureStructure(
+			AddEditProcedureSheetStructureRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		ProcedureSheetStructureResponse procedureSheetResponse = procedureSheetService.addEditProcedureSheetStructure(request);
+		ProcedureSheetStructureResponse procedureSheetResponse = procedureSheetService
+				.addEditProcedureSheetStructure(request);
 		Response<ProcedureSheetStructureResponse> response = new Response<ProcedureSheetStructureResponse>();
 		response.setData(procedureSheetResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ProcedureUrls.GET_PROCEDURE_STRUCTURE)
 	@GET
 	@ApiOperation(value = PathProxy.ProcedureUrls.GET_PROCEDURE_STRUCTURE, notes = PathProxy.ProcedureUrls.GET_PROCEDURE_STRUCTURE)
-	public Response<ProcedureSheetStructureResponse> getProcedureStructure(@PathParam("id") String id){
-		if(DPDoctorUtils.anyStringEmpty(id)){
-			    logger.warn("Invalid Input");
-			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	public Response<ProcedureSheetStructureResponse> getProcedureStructure(@PathParam("id") String id) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		ProcedureSheetStructureResponse procedureSheetResponse = procedureSheetService.getProcedureSheetStructure(id);
 		Response<ProcedureSheetStructureResponse> response = new Response<ProcedureSheetStructureResponse>();
 		response.setData(procedureSheetResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ProcedureUrls.GET_PROCEDURE_STRUCTURE_LIST)
 	@GET
 	@ApiOperation(value = PathProxy.ProcedureUrls.GET_PROCEDURE_STRUCTURE_LIST, notes = PathProxy.ProcedureUrls.GET_PROCEDURE_STRUCTURE_LIST)
 	public Response<ProcedureSheetStructureResponse> getProcedureList(@QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
-			@DefaultValue("0") @QueryParam("from") Long from,
-			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page ,@QueryParam("discarded") Boolean discarded , @QueryParam("type") String type){
-		List<ProcedureSheetStructureResponse> procedureSheetResponses = procedureSheetService.getProcedureSheetStructureList(doctorId, hospitalId, locationId, searchTerm, from, to, discarded, page, size, type);
+			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("discarded") Boolean discarded, @QueryParam("type") String type) {
+		List<ProcedureSheetStructureResponse> procedureSheetResponses = procedureSheetService
+				.getProcedureSheetStructureList(doctorId, hospitalId, locationId, searchTerm, from, to, discarded, page,
+						size, type);
 		Response<ProcedureSheetStructureResponse> response = new Response<ProcedureSheetStructureResponse>();
 		response.setDataList(procedureSheetResponses);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ProcedureUrls.DISCARD_PROCEDURE_STRUCTURE)
 	@DELETE
 	@ApiOperation(value = PathProxy.ProcedureUrls.DISCARD_PROCEDURE_STRUCTURE, notes = PathProxy.ProcedureUrls.DISCARD_PROCEDURE_STRUCTURE)
-	public Response<ProcedureSheetStructureResponse> getProcedure(@PathParam("id") String id ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded){
-		if(DPDoctorUtils.anyStringEmpty(id)){
-			    logger.warn("Invalid Input");
-			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	public Response<ProcedureSheetStructureResponse> getProcedure(@PathParam("id") String id,
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		ProcedureSheetStructureResponse procedureSheetResponse = procedureSheetService.discardProcedureSheetStructure(id, discarded);
+		ProcedureSheetStructureResponse procedureSheetResponse = procedureSheetService
+				.discardProcedureSheetStructure(id, discarded);
 		Response<ProcedureSheetStructureResponse> response = new Response<ProcedureSheetStructureResponse>();
 		response.setData(procedureSheetResponse);
 		return response;
 	}
-	
+
 	@POST
 	@Path(value = PathProxy.ProcedureUrls.ADD_DIAGRAM)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.ProcedureUrls.ADD_DIAGRAM, notes = PathProxy.ProcedureUrls.ADD_DIAGRAM)
 	public Response<ImageURLResponse> addDiagramMultipart(@FormDataParam("file") FormDataBodyPart file) {
-		
+
 		if (file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -176,4 +185,14 @@ public class ProcedureAPI {
 		response.setData(imageURLResponse);
 		return response;
 	}
+
+	@Path(value = PathProxy.ProcedureUrls.DOWNLOAD_PROCEDURE_SHEET)
+	@GET
+	@ApiOperation(value = PathProxy.ProcedureUrls.DOWNLOAD_PROCEDURE_SHEET, notes = PathProxy.ProcedureUrls.DOWNLOAD_PROCEDURE_SHEET)
+	public Response<String> downloadProcedureSheet(@PathParam("id") String id) {
+		Response<String> response = new Response<String>();
+		response.setData(procedureSheetService.downloadProcedureSheet(id));
+		return response;
+	}
+
 }
