@@ -5,8 +5,9 @@ import java.util.Date;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.User;
+import com.dpdocter.collections.GenericCollection;
 
-public class UserNutritionSubscriptionResponse {
+public class UserNutritionSubscriptionResponse extends GenericCollection {
 
 	private String id;
 
