@@ -25,12 +25,15 @@ public interface ProcedureSheetService {
 	ProcedureSheetStructureResponse getProcedureSheetStructure(String id);
 
 	List<ProcedureSheetStructureResponse> getProcedureSheetStructureList(String doctorId, String hospitalId,
-			String locationId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size,String type);
+			String locationId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size,
+			String type);
 
 	List<ProcedureSheetResponse> getProcedureSheetList(String doctorId, String hospitalId, String locationId,
 			String patientId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size,
 			String type);
 
 	ImageURLResponse addDiagrams(FormDataBodyPart file);
+
+	public String downloadProcedureSheet(String id);
 
 }

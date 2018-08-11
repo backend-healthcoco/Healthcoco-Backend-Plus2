@@ -188,6 +188,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader
 					.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-dental-imaging-invoice-A4.jrxml");
 
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())) {
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-procedure-sheet-A4.jrxml");
+
 		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
@@ -227,7 +230,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CALENDER_APPOINTMENT.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())) {
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())) {
 			dsr.setDatasetName("mongo-print-settings-dataset_1");
 
 			expression = new JRDesignExpression();
@@ -349,6 +353,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_IMAGE_INVOICE.getType()))
 			createDentalImagingInvoiceSubreport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth,
 					pageHeight, normalStyle);
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType()))
+			createprocedureSheet(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
+					normalStyle);
 
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
@@ -356,7 +363,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CALENDER_APPOINTMENT.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())) {
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())) {
 			band = new JRDesignBand();
 			band.setHeight(21);
 			jrDesignTextField = new JRDesignTextField();
@@ -378,7 +386,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.PATIENT_CARD.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CALENDER_APPOINTMENT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_IMAGE_INVOICE.getType()))
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_IMAGE_INVOICE.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType()))
 
 			jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 		// dsr.setDataSourceExpression(new JRDesignExpression("new
@@ -4386,7 +4395,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(20);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		 band = new JRDesignBand();
+		band = new JRDesignBand();
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{FlowSheetTitle}"));
@@ -4401,7 +4410,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		band = new JRDesignBand();
 		band.setHeight(3);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -7640,4 +7649,295 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		return band;
 	}
+
+	private void createprocedureSheet(JasperDesign jasperDesign, Map<String, Object> parameters,
+			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle)
+			throws JRException {
+
+		band = new JRDesignBand();
+		band.setHeight(21);
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{title}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		band = new JRDesignBand();
+		band.setPrintWhenExpression(
+				new JRDesignExpression("!$P{headerField}.equals(null) && !$P{headerField}.isEmpty()"));
+		band.setHeight(21);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{headerField}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setMarkup("html");
+		band.addElement(jrDesignTextField);
+
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		band = new JRDesignBand();
+		band.setPrintWhenExpression(new JRDesignExpression("!$P{body}.equals(null) && !$P{body}.isEmpty()"));
+		band.setHeight(21);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{body}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setMarkup("html");
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		band = new JRDesignBand();
+		band.setPrintWhenExpression(
+				new JRDesignExpression("!$P{footerField}.equals(null) && !$P{footerField}.isEmpty()"));
+		band.setHeight(21);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{footerField}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setMarkup("html");
+		band.addElement(jrDesignTextField);
+
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		/*
+		 * band = new JRDesignBand(); band.setPrintWhenExpression(new
+		 * JRDesignExpression("!$P{diagram}.isEmpty()")); band.setHeight(800);
+		 * band.setSplitType(SplitTypeEnum.STRETCH);
+		 * 
+		 * 
+		 * JRDesignDatasetRun dsr = new JRDesignDatasetRun();
+		 * dsr.setDatasetName("dataset1"); dsr.setDataSourceExpression( new
+		 * JRDesignExpression("new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{diagram})"
+		 * ));
+		 * 
+		 * StandardListComponent listComponent = new StandardListComponent();
+		 * listComponent.setPrintOrderValue(PrintOrderEnum.VERTICAL);
+		 * 
+		 * DesignListContents contents = new DesignListContents();
+		 * contents.setHeight(790); contents.setWidth(columnWidth);
+		 * 
+		 * jrDesignTextField = new JRDesignTextField();
+		 * jrDesignTextField.setExpression(new JRDesignExpression("$F{name}"));
+		 * jrDesignTextField.setX(0); jrDesignTextField.setY(0);
+		 * jrDesignTextField.setHeight(20); jrDesignTextField.setWidth(columnWidth);
+		 * jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		 * jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		 * jrDesignTextField.setBold(true);
+		 * jrDesignTextField.setStretchWithOverflow(true);
+		 * 
+		 * contents.addElement(jrDesignTextField);
+		 * 
+		 * JRDesignImage jrDesignImage = new JRDesignImage(null);
+		 * jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		 * jrDesignImage.setExpression(new JRDesignExpression("$F{imageUrl}"));
+		 * jrDesignImage.setX(0); jrDesignImage.setY(0); jrDesignImage.setHeight(770);
+		 * jrDesignImage.setWidth(columnWidth);
+		 * jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+		 * contents.addElement(jrDesignImage);
+		 * 
+		 * listComponent.setContents(contents); listComponent.setDatasetRun(dsr);
+		 * JRDesignComponentElement reportElement = new JRDesignComponentElement();
+		 * reportElement.setComponentKey( new
+		 * ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components",
+		 * "jr", "list")); reportElement.setHeight(800);
+		 * reportElement.setWidth(columnWidth); reportElement.setX(0);
+		 * reportElement.setY(0); reportElement.setComponent(listComponent);
+		 * 
+		 * band.addElement(reportElement);
+		 * 
+		 * 
+		 * ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		 */
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addProcedureSheetDiagram(parameters,
+				contentFontSize, columnWidth, pageWidth, pageHeight, "$P{diagram}", normalStyle));
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addProcedureSheetItem(parameters, contentFontSize,
+				columnWidth, pageWidth, pageHeight, "$P{item}", normalStyle));
+
+	}
+
+	private JRBand addProcedureSheetItem(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
+			int pageWidth, int pageHeight, String servicesValue, JRDesignStyle normalStyle) throws JRException {
+		JasperDesign jasperDesign = JRXmlLoader
+				.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-procedure-sheet-subreport.jrxml");
+		jasperDesign.setName("INVOICE Items");
+		jasperDesign.setPageWidth(pageWidth);
+		jasperDesign.setPageHeight(pageHeight);
+		jasperDesign.setColumnWidth(columnWidth);
+		jasperDesign.setColumnSpacing(0);
+		jasperDesign.setBottomMargin(0);
+		jasperDesign.setLeftMargin(0);
+		jasperDesign.setRightMargin(0);
+		jasperDesign.setTopMargin(0);
+
+		band = new JRDesignBand();
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{sheet}.equals(null) && !$F{sheet}.isEmpty()"));
+		band.setHeight(30);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{ProcedureTitle}"));
+		jrDesignTextField.setX(0);
+		jrDesignTextField.setY(10);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		band = new JRDesignBand();
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{sheet}.equals(null) && !$F{sheet}.isEmpty()"));
+		band.setHeight(30);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{sheet}"));
+		jrDesignTextField.setX(0);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(30);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setStretchWithOverflow(true);
+
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		JasperCompileManager.compileReportToFile(jasperDesign,
+				JASPER_TEMPLATES_RESOURCE + "new/mongo-procedure-sheet-subreport.jasper");
+
+		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
+		jSubreport.setUsingCache(false);
+		jSubreport.setRemoveLineWhenBlank(true);
+		jSubreport.setPrintRepeatedValues(false);
+		jSubreport.setWidth(columnWidth);
+		jSubreport.setHeight(0);
+		jSubreport.setX(0);
+		jSubreport.setY(0);
+		jSubreport.setDataSourceExpression(new JRDesignExpression(
+				"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + servicesValue + ")"));
+
+		jSubreport.setExpression(new JRDesignExpression(
+				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-procedure-sheet-subreport.jasper\""));
+
+		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
+		designSubreportParameter.setName("REPORT_CONNECTION");
+		designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+
+		band = new JRDesignBand();
+		band.setHeight(0);
+		band.addElement(jSubreport);
+
+		return band;
+	}
+
+	private JRBand addProcedureSheetDiagram(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
+			int pageWidth, int pageHeight, String servicesValue, JRDesignStyle normalStyle) throws JRException {
+		JasperDesign jasperDesign = JRXmlLoader
+				.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-procedure-diagram-subreport.jrxml");
+		jasperDesign.setName("INVOICE Items");
+		jasperDesign.setPageWidth(pageWidth);
+		jasperDesign.setPageHeight(pageHeight);
+		jasperDesign.setColumnWidth(columnWidth);
+		jasperDesign.setColumnSpacing(0);
+		jasperDesign.setBottomMargin(0);
+		jasperDesign.setLeftMargin(0);
+		jasperDesign.setRightMargin(0);
+		jasperDesign.setTopMargin(0);
+
+		band = new JRDesignBand();
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{name}.equals(null) && !$F{name}.isEmpty()"));
+		band.setHeight(730);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{name}"));
+		jrDesignTextField.setX(0);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+
+		band.addElement(jrDesignTextField);
+
+		JRDesignImage jrDesignImage = new JRDesignImage(null);
+
+		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		jrDesignImage.setExpression(new JRDesignExpression("$F{imageUrl}"));
+		jrDesignImage.setX(0);
+		jrDesignImage.setY(20);
+		jrDesignImage.setHeight(710);
+		jrDesignImage.setWidth(columnWidth);
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+		band.addElement(jrDesignImage);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		JasperCompileManager.compileReportToFile(jasperDesign,
+				JASPER_TEMPLATES_RESOURCE + "new/mongo-procedure-diagram-subreport.jasper");
+
+		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
+		jSubreport.setUsingCache(false);
+		jSubreport.setRemoveLineWhenBlank(true);
+		jSubreport.setPrintRepeatedValues(false);
+		jSubreport.setWidth(columnWidth);
+		jSubreport.setHeight(0);
+		jSubreport.setX(0);
+		jSubreport.setY(0);
+
+		jSubreport.setDataSourceExpression(new JRDesignExpression(
+				"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + servicesValue + ")"));
+
+		jSubreport.setExpression(new JRDesignExpression(
+				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-procedure-diagram-subreport.jasper\""));
+
+		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
+		designSubreportParameter.setName("REPORT_CONNECTION");
+		designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+
+		band = new JRDesignBand();
+		band.setHeight(0);
+		band.addElement(jSubreport);
+
+		return band;
+	}
+
 }
