@@ -1310,8 +1310,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							SMSDetail smsDetail = new SMSDetail();
 							SMS sms = new SMS();
-							sms.setSmsText("You have an upcoming appointment "
-									+ appointmentPatientReminderResponse.getAppointmentId() + " @ " + dateTime
+							sms.setSmsText("You have an appointment "
+									+ " @ " + dateTime
 									+ " with " + appointmentPatientReminderResponse.getDoctorTitle() + " "
 									+ appointmentPatientReminderResponse.getDoctorName()
 									+ (!DPDoctorUtils

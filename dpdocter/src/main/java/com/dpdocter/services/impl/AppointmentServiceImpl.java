@@ -1475,7 +1475,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
-			text = "You have an upcoming appointment @ " + dateTime + " with " + doctorName
+			text = "You have an appointment @ " + dateTime + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
@@ -1684,7 +1684,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
-			text = "You have an upcoming appointment @ " + dateTime + " with " + doctorName
+			text = "You have an appointment @ " + dateTime + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Download Healthcoco App- "
 					+ patientAppBitLink;
