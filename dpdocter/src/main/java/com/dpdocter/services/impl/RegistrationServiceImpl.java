@@ -1117,6 +1117,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 										BeanUtil.map(patientCard, patient);
 										BeanUtil.map(patientCard, user);
 										BeanUtil.map(userLookupResponse, user);
+										if(patientCard.getLocationId() != null)
+										{
+											user.setLocationId(patientCard.getLocationId());
+										}
+										if(patientCard.getHospitalId() != null)
+										{
+											user.setHospitalId(patientCard.getHospitalId());
+										}
 										user.setImageUrl(patientCard.getImageUrl());
 										user.setThumbnailUrl(patientCard.getThumbnailUrl());
 										patient.setPatientId(patientCard.getUserId().toString());
@@ -1208,6 +1216,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 							BeanUtil.map(patientCollection, patient);
 							BeanUtil.map(patientCollection, user);
 							BeanUtil.map(userCollection, user);
+							if(patientCollection.getLocationId() != null)
+							{
+								user.setLocationId(patientCollection.getLocationId().toString());
+							}
+							if(patientCollection.getHospitalId() != null)
+							{
+								user.setHospitalId(patientCollection.getHospitalId().toString());
+							}
 							user.setImageUrl(patientCollection.getImageUrl());
 							user.setThumbnailUrl(patientCollection.getThumbnailUrl());
 						} else {
