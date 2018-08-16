@@ -1117,12 +1117,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 										BeanUtil.map(patientCard, patient);
 										BeanUtil.map(patientCard, user);
 										BeanUtil.map(userLookupResponse, user);
-										if(patientCard.getLocationId() != null)
-										{
+										if (patientCard.getLocationId() != null) {
 											user.setLocationId(patientCard.getLocationId());
 										}
-										if(patientCard.getHospitalId() != null)
-										{
+										if (patientCard.getHospitalId() != null) {
 											user.setHospitalId(patientCard.getHospitalId());
 										}
 										user.setImageUrl(patientCard.getImageUrl());
@@ -1174,8 +1172,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 						Criteria criteria = new Criteria();
 
-						criteria.and("userId").is(userCollection.getId());
-
+						criteria.and("userId").is(userCollection.getId()).and("discarded").is(false);
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
 								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
@@ -1188,40 +1185,42 @@ public class RegistrationServiceImpl implements RegistrationService {
 						AggregationResults<UserNutritionSubscriptionResponse> results = mongoTemplate.aggregate(
 								aggregation, UserNutritionSubscriptionCollection.class,
 								UserNutritionSubscriptionResponse.class);
-						UserNutritionSubscriptionResponse response = results.getUniqueMappedResult();
+						List<UserNutritionSubscriptionResponse> response = results.getMappedResults();
 						if (response != null) {
-							NutritionPlan nutritionPlan = response.getNutritionPlan();
-							if (nutritionPlan != null) {
-								if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getBannerImage())) {
-									response.getNutritionPlan()
-											.setBannerImage(getFinalImageURL(nutritionPlan.getBannerImage()));
+							for (UserNutritionSubscriptionResponse nutritionSubscriptionResponse : response) {
+								NutritionPlan nutritionPlan = nutritionSubscriptionResponse.getNutritionPlan();
+								if (nutritionPlan != null) {
+									if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getBannerImage())) {
+										nutritionPlan.setBannerImage(getFinalImageURL(nutritionPlan.getBannerImage()));
+									}
+									if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getPlanImage())) {
+										nutritionPlan.setPlanImage(getFinalImageURL(nutritionPlan.getPlanImage()));
+									}
+									nutritionSubscriptionResponse.setNutritionPlan(nutritionPlan);
 								}
-								if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getPlanImage())) {
-									response.getNutritionPlan()
-											.setPlanImage(getFinalImageURL(nutritionPlan.getPlanImage()));
-								}
-							}
-							SubscriptionNutritionPlan subscriptionNutritionPlan = response.getSubscriptionPlan();
-							if (subscriptionNutritionPlan != null) {
+								SubscriptionNutritionPlan subscriptionNutritionPlan = nutritionSubscriptionResponse
+										.getSubscriptionPlan();
+								if (subscriptionNutritionPlan != null) {
 
-								if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlan.getBackgroundImage())) {
-									response.getSubscriptionPlan().setBackgroundImage(
-											getFinalImageURL(subscriptionNutritionPlan.getBackgroundImage()));
+									if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlan.getBackgroundImage())) {
+										subscriptionNutritionPlan.setBackgroundImage(
+												getFinalImageURL(subscriptionNutritionPlan.getBackgroundImage()));
+									}
+									nutritionSubscriptionResponse.setSubscriptionPlan(subscriptionNutritionPlan);
 								}
+
 							}
-							user.setUserNutritionSubscription(response);
+							user.setUserNutritionSubscriptions(response);
 						}
 
 						if (patientCollection != null) {
 							BeanUtil.map(patientCollection, patient);
 							BeanUtil.map(patientCollection, user);
 							BeanUtil.map(userCollection, user);
-							if(patientCollection.getLocationId() != null)
-							{
+							if (patientCollection.getLocationId() != null) {
 								user.setLocationId(patientCollection.getLocationId().toString());
 							}
-							if(patientCollection.getHospitalId() != null)
-							{
+							if (patientCollection.getHospitalId() != null) {
 								user.setHospitalId(patientCollection.getHospitalId().toString());
 							}
 							user.setImageUrl(patientCollection.getImageUrl());

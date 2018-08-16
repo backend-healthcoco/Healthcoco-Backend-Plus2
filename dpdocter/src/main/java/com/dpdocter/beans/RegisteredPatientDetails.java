@@ -64,14 +64,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	private String PNUM;
 
-	private UserNutritionSubscriptionResponse userNutritionSubscription;
+	private List<UserNutritionSubscriptionResponse> userNutritionSubscriptions;
 
-	public UserNutritionSubscriptionResponse getUserNutritionSubscription() {
-		return userNutritionSubscription;
+	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
+		return userNutritionSubscriptions;
 	}
 
-	public void setUserNutritionSubscription(UserNutritionSubscriptionResponse userNutritionSubscription) {
-		this.userNutritionSubscription = userNutritionSubscription;
+	public void setUserNutritionSubscriptions(List<UserNutritionSubscriptionResponse> userNutritionSubscriptions) {
+		this.userNutritionSubscriptions = userNutritionSubscriptions;
 	}
 
 	public String getUserId() {
