@@ -82,6 +82,21 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				labPrintSettingCollection = labPrintSettingRepository.findBylocationIdAndhospitalId(locationObjectId,
 						hospitalObjectId);
 			}
+
+			if (request.getFooterSetup() != null) {
+				request.getFooterSetup()
+						.setImageurl(!DPDoctorUtils.anyStringEmpty(request.getFooterSetup().getImageurl())
+								? request.getFooterSetup().getImageurl().replace(imagePath, "")
+								: "");
+
+			}
+			if (request.getHeaderSetup() != null) {
+				request.getHeaderSetup()
+						.setImageurl(!DPDoctorUtils.anyStringEmpty(request.getHeaderSetup().getImageurl())
+								? request.getHeaderSetup().getImageurl().replace(imagePath, "")
+								: "");
+
+			}
 			BeanUtil.map(request, labPrintSettingCollection);
 
 			if (labPrintSettingCollection == null) {
@@ -96,6 +111,21 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			labPrintSettingCollection = labPrintSettingRepository.save(labPrintSettingCollection);
 			response = new LabPrintSetting();
 			BeanUtil.map(labPrintSettingCollection, response);
+
+			if (response.getFooterSetup() != null) {
+				response.getFooterSetup()
+						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getFooterSetup().getImageurl())
+								? getFinalImageURL(response.getFooterSetup().getImageurl())
+								: "");
+
+			}
+			if (response.getHeaderSetup() != null) {
+				response.getHeaderSetup()
+						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getHeaderSetup().getImageurl())
+								? getFinalImageURL(response.getHeaderSetup().getImageurl())
+								: "");
+
+			}
 
 		} catch (BusinessException e) {
 			e.printStackTrace();
@@ -116,6 +146,20 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			if (labPrintSettingCollection != null) {
 				response = new LabPrintSetting();
 				BeanUtil.map(labPrintSettingCollection, response);
+			}
+			if (response.getFooterSetup() != null) {
+				response.getFooterSetup()
+						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getFooterSetup().getImageurl())
+								? getFinalImageURL(response.getFooterSetup().getImageurl())
+								: "");
+
+			}
+			if (response.getHeaderSetup() != null) {
+				response.getHeaderSetup()
+						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getHeaderSetup().getImageurl())
+								? getFinalImageURL(response.getHeaderSetup().getImageurl())
+								: "");
+
 			}
 
 		} catch (BusinessException e) {
@@ -168,7 +212,10 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			if (contentSetup == null) {
 				contentSetup = new LabPrintContentSetup();
 			}
-			contentSetup.setImageurl(imageURLResponse != null ? imageURLResponse.getImageUrl() : "");
+			if (request.getFileDetails() != null) {
+			contentSetup
+					.setImageurl(imageURLResponse != null ? imageURLResponse.getImageUrl().replace(imagePath, "") : "");
+			}
 			if (request.getHeight() > 0)
 				contentSetup.setHeight(request.getHeight());
 

@@ -1778,6 +1778,7 @@ public interface PathProxy {
 		public static final String UPDATE_IS_SHARE_WITH_DOCTOR = "/updateIsShareWithDoctor/{reportId}";
 		public static final String DELETE_FAVOURITE_DOCTOR = "fevouriteDoctor/{id}/delete";
 		public static final String DELETE_DOCTOR_LAB_REPORTS = "/{reportId}/delete";
+		public static final String DOWNLOAD_REPORT = "/download";
 
 	}
 
