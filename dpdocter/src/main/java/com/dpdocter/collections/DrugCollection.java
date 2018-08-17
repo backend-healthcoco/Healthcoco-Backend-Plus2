@@ -14,6 +14,7 @@ import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.Strength;
+import com.dpdocter.enums.DrugTypePlacement;
 
 @Document(collection = "drug_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'drugCode' : 1, 'doctorId': 1}", unique = true) })
@@ -63,7 +64,6 @@ public class DrugCollection extends GenericCollection {
 	@Field
 	private String packForm;
 
-
 	@Field
 	private String prizePerPack;
 
@@ -93,16 +93,19 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private List<String> specialities;
-	 
+
 	@Field
 	private String rxRequired;
-	
+
 	@Field
 	private String unsafeWith;
-	
+
 	@Field
 	private Long totalStock;
-	
+
+	@Field
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -286,7 +289,6 @@ public class DrugCollection extends GenericCollection {
 		return specialities;
 	}
 
-
 	public void setSpecialities(List<String> specialities) {
 		this.specialities = specialities;
 	}
@@ -314,7 +316,7 @@ public class DrugCollection extends GenericCollection {
 	public void setTotalStock(Long totalStock) {
 		this.totalStock = totalStock;
 	}
-	
+
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -330,7 +332,15 @@ public class DrugCollection extends GenericCollection {
 	public void setCompanyRankingCount(long companyRankingCount) {
 		this.companyRankingCount = companyRankingCount;
 	}
-	
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="

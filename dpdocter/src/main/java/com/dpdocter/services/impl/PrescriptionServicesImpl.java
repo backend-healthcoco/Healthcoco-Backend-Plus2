@@ -3748,6 +3748,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
+		
+		//DoctorCollection doctorCollection = doctorRepository.findOne(prescriptionCollection.getDoctorId());
 
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
@@ -3777,7 +3779,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 								genericName = "<br><font size='1'><i>" + genericName + "</i></font>";
 							}
-							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
+							if (drug.getDrugTypePlacement() != null) {
+								if (drug.getDrugTypePlacement().equalsIgnoreCase("PREFIX")) {
+									drugName = (drugType + drugName) == "" ? "--"
+											: drugType + " " + drugName + genericName;
+								} else if (drug.getDrugTypePlacement().equalsIgnoreCase("SUFFIX")) {
+									drugName = (drugType + drugName) == "" ? "--"
+											: drugName + " " + drugType + genericName;
+								}
+							} else {
+								drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
+							}
+							//drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
 							String durationValue = prescriptionItem.getDuration() != null
 									? (prescriptionItem.getDuration().getValue() != null
 											? prescriptionItem.getDuration().getValue() : "")

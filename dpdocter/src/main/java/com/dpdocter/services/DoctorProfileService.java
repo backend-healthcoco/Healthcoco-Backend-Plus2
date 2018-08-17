@@ -119,4 +119,6 @@ public interface DoctorProfileService {
 
 	DoctorServicesAddEditRequest addEditServices(DoctorServicesAddEditRequest request);
 
+	Boolean addEditDrugTypePlacement(String doctorId, String drugTypePlacement);
+
 }

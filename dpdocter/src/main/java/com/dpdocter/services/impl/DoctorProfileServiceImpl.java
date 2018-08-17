@@ -1682,5 +1682,26 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public Boolean addEditDrugTypePlacement(String doctorId , String drugTypePlacement) {
+			Boolean response = false;
+			DoctorCollection doctorCollection = null;
+			try {
+				doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection != null) {
+					doctorCollection.setDrugTypePlacement(drugTypePlacement);
+					doctorRepository.save(doctorCollection);
+					response = true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e + " Error Editing Drug type placement");
+				throw new BusinessException(ServiceError.Unknown, "Error Editing Drug type placement");
+			}
+			return response;
+	}
+
 
 }

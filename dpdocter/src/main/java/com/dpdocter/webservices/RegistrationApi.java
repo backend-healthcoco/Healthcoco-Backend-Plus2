@@ -147,19 +147,19 @@ public class RegistrationApi {
 		
 		if(request.getFamilyMedicalHistoryHandler() != null)
 		{
-			request.getFamilyMedicalHistoryHandler().setPatientId(registeredPatientDetails.getUserId());
+			request.getFamilyMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
 			historyServices.handleFamilyHistory(request.getFamilyMedicalHistoryHandler());
 		}
 		
 		if(request.getPastMedicalHistoryHandler() != null)
 		{
-			request.getPastMedicalHistoryHandler().setPatientId(registeredPatientDetails.getUserId());
+			request.getPastMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
 			historyServices.handleMedicalHistory(request.getPastMedicalHistoryHandler());
 		}
 		
 		if(request.getPersonalHistoryAddRequest() != null)
 		{
-			request.getPersonalHistoryAddRequest().setPatientId(registeredPatientDetails.getUserId());
+			request.getPersonalHistoryAddRequest().setPatientId(registeredPatientDetails.getPatient().getPatientId());
 			historyServices.assignPersonalHistory(request.getPersonalHistoryAddRequest());
 		}
 		

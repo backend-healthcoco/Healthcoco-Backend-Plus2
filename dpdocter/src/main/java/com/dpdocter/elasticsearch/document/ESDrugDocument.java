@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.annotations.MultiField;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
+import com.dpdocter.enums.DrugTypePlacement;
 
 @Document(indexName = "drugs_in", type = "drugs")
 public class ESDrugDocument {
@@ -109,6 +110,9 @@ public class ESDrugDocument {
 	@Field(type = FieldType.String)
 	private String stockingUnit;
 
+	@Field(type = FieldType.String)
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
+	
 	@Override
 	public int hashCode() {
 		return this.drugCode.hashCode();
@@ -323,19 +327,6 @@ public class ESDrugDocument {
 		this.totalStock = totalStock;
 	}
 
-	@Override
-	public String toString() {
-		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
-				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize
-				+ ", packForm=" + packForm + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP + ", duration="
-				+ duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction
-				+ ", categories=" + categories + ", genericNames=" + genericNames + ", rankingCount=" + rankingCount
-				+ ", inventoryQuantity=" + inventoryQuantity + ", totalStock=" + totalStock + ", specialities="
-				+ specialities + ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + "]";
-	}
-
 	public List<String> getSpecialities() {
 		return specialities;
 	}
@@ -380,6 +371,26 @@ public class ESDrugDocument {
 		this.stockingUnit = stockingUnit;
 	}
 
-	
 
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
+	}
+
+	@Override
+	public String toString() {
+		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
+				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", updatedTime=" + updatedTime + ", packForm=" + packForm + ", prizePerPack=" + prizePerPack
+				+ ", companyRankingCount=" + companyRankingCount + ", specialities=" + specialities + ", rxRequired="
+				+ rxRequired + ", unsafeWith=" + unsafeWith + ", companyName=" + companyName + ", packSize=" + packSize
+				+ ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime
+				+ ", direction=" + direction + ", categories=" + categories + ", genericNames=" + genericNames
+				+ ", rankingCount=" + rankingCount + ", inventoryQuantity=" + inventoryQuantity + ", totalStock="
+				+ totalStock + ", retailPrice=" + retailPrice + ", stockingUnit=" + stockingUnit + "]";
+	}
 }

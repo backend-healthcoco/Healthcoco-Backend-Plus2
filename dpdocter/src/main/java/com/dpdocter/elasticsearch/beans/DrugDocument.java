@@ -10,6 +10,7 @@ import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
+import com.dpdocter.enums.DrugTypePlacement;
 
 public class DrugDocument {
 
@@ -60,6 +61,8 @@ public class DrugDocument {
 	private Double retailPrice;
 
 	private String stockingUnit;
+
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
 	public String getId() {
 		return id;
@@ -251,6 +254,14 @@ public class DrugDocument {
 
 	public void setStockingUnit(String stockingUnit) {
 		this.stockingUnit = stockingUnit;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override
