@@ -5,6 +5,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.DrugTypePlacement;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Drug extends GenericCollection {
@@ -50,6 +51,8 @@ public class Drug extends GenericCollection {
 	private Integer drugQuantity;
 
 	private Double retailPrice;
+
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
 	public String getId() {
 		return id;
@@ -217,6 +220,14 @@ public class Drug extends GenericCollection {
 
 	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override

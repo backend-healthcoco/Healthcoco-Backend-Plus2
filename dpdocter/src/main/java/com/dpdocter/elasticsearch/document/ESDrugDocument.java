@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.annotations.MultiField;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
+import com.dpdocter.enums.DrugTypePlacement;
 
 @Document(indexName = "drugs_in", type = "drugs")
 public class ESDrugDocument {
@@ -109,6 +110,9 @@ public class ESDrugDocument {
 	@Field(type = FieldType.String)
 	private String stockingUnit;
 
+	@Field(type = FieldType.String)
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
+	
 	@Override
 	public int hashCode() {
 		return this.drugCode.hashCode();
@@ -365,6 +369,14 @@ public class ESDrugDocument {
 
 	public void setStockingUnit(String stockingUnit) {
 		this.stockingUnit = stockingUnit;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override

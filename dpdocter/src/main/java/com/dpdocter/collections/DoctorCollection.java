@@ -40,7 +40,7 @@ public class DoctorCollection extends GenericCollection {
 
 	@Indexed
 	private List<ObjectId> services;
-	
+
 	@Field
 	private List<Achievement> achievements;
 
@@ -85,6 +85,9 @@ public class DoctorCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPrescriptionSMS = true;
+
+	@Field
+	private String drugTypePlacement = "PREFIX";
 
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
@@ -270,6 +273,14 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setServices(List<ObjectId> services) {
 		this.services = services;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override

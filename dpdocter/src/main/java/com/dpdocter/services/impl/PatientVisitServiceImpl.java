@@ -2941,8 +2941,17 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										genericName = "<br><font size='1'><i>" + genericName + "</i></font>";
 									}
 									String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
-									drugName = (drugType + drugName) == "" ? "--"
-											: drugType + " " + drugName + genericName;
+									if (drug.getDrugTypePlacement() != null) {
+										if (drug.getDrugTypePlacement().equalsIgnoreCase("PREFIX")) {
+											drugName = (drugType + drugName) == "" ? "--"
+													: drugType + " " + drugName + genericName;
+										} else if (drug.getDrugTypePlacement().equalsIgnoreCase("SUFFIX")) {
+											drugName = (drugType + drugName) == "" ? "--"
+													: drugName + " " + drugType + genericName;
+										}
+									} else {
+										drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
+									}
 									String durationValue = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getValue() != null
 													? prescriptionItem.getDuration().getValue()

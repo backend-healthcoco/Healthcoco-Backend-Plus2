@@ -6,6 +6,7 @@ import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
+import com.dpdocter.enums.DrugTypePlacement;
 
 public class DrugAddEditRequest {
 	private String id;
@@ -43,7 +44,9 @@ public class DrugAddEditRequest {
 	private List<GenericCode> genericNames;
 
 	private Integer drugQuantity;
-	
+
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
+
 	public String getId() {
 		return id;
 	}
@@ -186,6 +189,14 @@ public class DrugAddEditRequest {
 
 	public void setDrugQuantity(Integer drugQuantity) {
 		this.drugQuantity = drugQuantity;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override

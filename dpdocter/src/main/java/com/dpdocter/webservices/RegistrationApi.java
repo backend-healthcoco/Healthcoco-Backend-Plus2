@@ -147,7 +147,7 @@ public class RegistrationApi {
 		
 		if(request.getFamilyMedicalHistoryHandler() != null)
 		{
-			request.getFamilyMedicalHistoryHandler().setPatientId(registeredPatientDetails.getUserId());
+			request.getFamilyMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
 			historyServices.handleFamilyHistory(request.getFamilyMedicalHistoryHandler());
 		}
 		

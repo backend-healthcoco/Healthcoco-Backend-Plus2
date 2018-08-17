@@ -14,6 +14,7 @@ import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.Strength;
+import com.dpdocter.enums.DrugTypePlacement;
 
 @Document(collection = "drug_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'drugCode' : 1, 'doctorId': 1}", unique = true) })
@@ -98,16 +99,19 @@ public class DrugCollection extends GenericCollection {
 
 	@Field
 	private List<String> specialities;
-	 
+
 	@Field
 	private String rxRequired;
-	
+
 	@Field
 	private String unsafeWith;
-	
+
 	@Field
 	private Long totalStock;
-	
+
+	@Field
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -162,7 +166,7 @@ public class DrugCollection extends GenericCollection {
 	public ObjectId getDoctorId() {
 		return doctorId;
 	}
-	
+
 	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
@@ -278,7 +282,7 @@ public class DrugCollection extends GenericCollection {
 	public void setGcStrengthIds(List<ObjectId> gcStrengthIds) {
 		this.gcStrengthIds = gcStrengthIds;
 	}
-	
+
 	public String getPackForm() {
 		return packForm;
 	}
@@ -349,6 +353,14 @@ public class DrugCollection extends GenericCollection {
 
 	public void setDrugQuantity(Integer drugQuantity) {
 		this.drugQuantity = drugQuantity;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override
