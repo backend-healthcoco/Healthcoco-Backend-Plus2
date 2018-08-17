@@ -7895,7 +7895,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{name}.equals(null) && !$F{name}.isEmpty()"));
-		band.setHeight(730);
+		band.setHeight(750);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
 		jrDesignTextField = new JRDesignTextField();

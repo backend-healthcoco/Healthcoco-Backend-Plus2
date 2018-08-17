@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -24,12 +22,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.ClinicalnoteLookupBean;
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.ProcedureConsentForm;
-import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
@@ -476,7 +471,8 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(procedureConsentForm.getBody())) {
-				parameters.put("body", procedureConsentForm.getBody() + "<br><br>");
+				parameters.put("body",
+						procedureConsentForm.getBody().replace("\n", "<br>").replace("\t", "&nbsp") + "<br><br>");
 			}
 
 			if (procedureConsentForm.getFooterFields() != null && !procedureConsentForm.getFooterFields().isEmpty()) {
@@ -492,7 +488,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 					}
 					i++;
 					if (i % 2 == 1) {
-						field = field + "&nbsp;&nbsp;";
+						field = field + "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 					} else {
 						field = field + "<br>";
@@ -504,6 +500,13 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 		}
 		if (procedureSheetCollection.getDiagrams() != null && !procedureSheetCollection.getDiagrams().isEmpty()) {
+
+
+			for (ImageURLResponse urlResponse : procedureSheetCollection.getDiagrams()) {
+				urlResponse.setImageUrl(urlResponse.getImageUrl().replace(" ", "%20"));
+				urlResponse.setThumbnailUrl(urlResponse.getThumbnailUrl().replace(" ", "%20"));
+			}
+
 			parameters.put("diagram", procedureSheetCollection.getDiagrams());
 		}
 		List<String> keys = null;
@@ -522,11 +525,10 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 					for (String i : keys) {
 						value = fields.get(i);
 						if (!DPDoctorUtils.anyStringEmpty(i, value))
-							field = field + "<b>" + key + " : </b>" + value;
-
+							field = field + "<b>" + i + " : </b>" + value;
 						j++;
 						if (j % 2 == 1) {
-							field = field + "     ";
+							field = field + "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 						} else {
 							field = field + "<br>";
