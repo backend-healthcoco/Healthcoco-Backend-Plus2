@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -504,6 +505,13 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 		}
 		if (procedureSheetCollection.getDiagrams() != null && !procedureSheetCollection.getDiagrams().isEmpty()) {
+			
+			for(ImageURLResponse urlResponse : procedureSheetCollection.getDiagrams())
+			{
+				urlResponse.setImageUrl(urlResponse.getImageUrl().replace(" ", "%20"));
+				urlResponse.setThumbnailUrl(urlResponse.getThumbnailUrl().replace(" ", "%20"));
+			}
+			
 			parameters.put("diagram", procedureSheetCollection.getDiagrams());
 		}
 		List<String> keys = null;
