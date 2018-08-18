@@ -1,11 +1,13 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class RecordsFile {
 
 	private String fileId;
 
 	private String recordsUrl;
-	
+
 	private String thumbnailUrl;
 
 	private String recordsPath;
@@ -14,9 +16,17 @@ public class RecordsFile {
 
 	private String recordsType;
 
-	private Double fileSizeInMB=0.0;
-	
-	
+	private List<String> pdfInImgs;
+
+	private Double fileSizeInMB = 0.0;
+
+	public List<String> getPdfInImgs() {
+		return pdfInImgs;
+	}
+
+	public void setPdfInImgs(List<String> pdfInImgs) {
+		this.pdfInImgs = pdfInImgs;
+	}
 
 	public String getThumbnailUrl() {
 		return thumbnailUrl;

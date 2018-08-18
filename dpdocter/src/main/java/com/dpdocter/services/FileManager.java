@@ -26,6 +26,6 @@ public interface FileManager {
 	public ImageURLResponse saveImageAndReturnImageUrl(ByteArrayOutputStream outstream, String fileName, String path,
 			Boolean createThumbnail) throws Exception;
 
-	public List<ImageURLResponse> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail) throws Exception;
+	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail) throws Exception;
 
 }

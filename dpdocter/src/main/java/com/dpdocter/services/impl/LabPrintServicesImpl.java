@@ -105,6 +105,9 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			}
 
 			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			if (userCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor not found with Id ");
+			}
 			labPrintSettingCollection.setCreatedBy(
 					(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() + " " : "")
 							+ userCollection.getFirstName());
@@ -193,7 +196,6 @@ public class LabPrintServicesImpl implements LabPrintServices {
 
 			labPrintSettingCollection = labPrintSettingRepository.findBylocationIdAndhospitalId(locationObjectId,
 					hospitalObjectId);
-
 			if (labPrintSettingCollection == null) {
 				labPrintSettingCollection = new LabPrintSettingCollection();
 				labPrintSettingCollection.setDoctorId(doctorObjectId);
@@ -213,19 +215,22 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				contentSetup = new LabPrintContentSetup();
 			}
 			if (request.getFileDetails() != null) {
-			contentSetup
-					.setImageurl(imageURLResponse != null ? imageURLResponse.getImageUrl().replace(imagePath, "") : "");
+				contentSetup.setImageurl(
+						imageURLResponse != null ? imageURLResponse.getImageUrl().replace(imagePath, "") : "");
 			}
 			if (request.getHeight() > 0)
 				contentSetup.setHeight(request.getHeight());
 
 			if (type.equals("FOOTER")) {
 				labPrintSettingCollection.setFooterSetup(contentSetup);
-			} else {
+			} else if (type.equals("HEADER")){
 				labPrintSettingCollection.setHeaderSetup(contentSetup);
 			}
 
 			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			if (userCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor not found with Id ");
+			}
 			labPrintSettingCollection.setCreatedBy(
 					(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() + " " : "")
 							+ userCollection.getFirstName());
@@ -237,14 +242,12 @@ public class LabPrintServicesImpl implements LabPrintServices {
 						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getFooterSetup().getImageurl())
 								? getFinalImageURL(response.getFooterSetup().getImageurl())
 								: "");
-
 			}
 			if (response.getHeaderSetup() != null) {
 				response.getHeaderSetup()
 						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getHeaderSetup().getImageurl())
 								? getFinalImageURL(response.getHeaderSetup().getImageurl())
 								: "");
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -268,69 +271,61 @@ public class LabPrintServicesImpl implements LabPrintServices {
 		UserCollection doctor = null;
 
 		try {
-			LabPrintDocumentsCollection documentsCollection = new LabPrintDocumentsCollection();
-			LabPrintDocumentsCollection olddocumentsCollection = null;
-			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				olddocumentsCollection = labPrintDocumentsRepository.findOne(new ObjectId(request.getId()));
-				if (olddocumentsCollection == null) {
-					throw new BusinessException(ServiceError.NoRecord, " No Lab Print Document Present for Id");
-				}
-
-			}
-			doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
-			if (doctor == null) {
-				throw new BusinessException(ServiceError.NoRecord, " No Doctor for DoctorId");
-			}
-			BeanUtil.map(request, documentsCollection);
-			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				documentsCollection.setCreatedBy(olddocumentsCollection.getCreatedBy());
-				documentsCollection.setCreatedTime(olddocumentsCollection.getCreatedTime());
-			} else {
-				documentsCollection.setCreatedBy(
-						(doctor.getTitle() != null ? doctor.getTitle() + " " : "") + doctor.getFirstName());
-				documentsCollection.setCreatedTime(new Date());
-			}
-			if (request.getFileDetails() != null && !request.getFileDetails().isEmpty()) {
-				imResponses = new ArrayList<ImageURLResponse>();
-				for (FileDetails fileDetails : request.getFileDetails()) {
-					fileDetails.setFileName(fileDetails.getFileName() + new Date().getTime());
-					String path = "records" + File.separator + request.getLocationId();
-					imResponses.addAll(fileManager.convertPdfToImage(fileDetails, path, true));
-				}
-			}
-			if (request.getDocuments() != null && !request.getDocuments().isEmpty()) {
-				List<ImageURLResponse> imageURLResponses = new ArrayList<ImageURLResponse>();
-				for (ImageURLResponse imageURLResponse : request.getDocuments()) {
-					imageURLResponse.setImageUrl(imageURLResponse.getImageUrl().replaceAll(imagePath, ""));
-					imageURLResponse.setThumbnailUrl(imageURLResponse.getThumbnailUrl().replaceAll(imagePath, ""));
-				}
-				imageURLResponses.addAll(request.getDocuments());
-
-				if (imResponses != null && !imResponses.isEmpty()) {
-					imageURLResponses.addAll(imResponses);
-				}
-
-				documentsCollection.setDocuments(new ArrayList<ImageURLResponse>());
-				documentsCollection.setDocuments(imageURLResponses);
-
-			} else {
-				if (imResponses != null && !imResponses.isEmpty()) {
-
-					documentsCollection.setDocuments(new ArrayList<ImageURLResponse>());
-					documentsCollection.setDocuments(imResponses);
-				}
-
-			}
-			documentsCollection = labPrintDocumentsRepository.save(documentsCollection);
-			response = new LabPrintDocument();
-			BeanUtil.map(documentsCollection, response);
-
-			if (response.getDocuments() != null && !response.getDocuments().isEmpty()) {
-				for (ImageURLResponse imageURLResponse : response.getDocuments()) {
-					imageURLResponse.setImageUrl(getFinalImageURL(imageURLResponse.getImageUrl()));
-					imageURLResponse.setThumbnailUrl(getFinalImageURL(imageURLResponse.getThumbnailUrl()));
-				}
-			}
+			/*
+			 * LabPrintDocumentsCollection documentsCollection = new
+			 * LabPrintDocumentsCollection(); LabPrintDocumentsCollection
+			 * olddocumentsCollection = null; if
+			 * (!DPDoctorUtils.anyStringEmpty(request.getId())) { olddocumentsCollection =
+			 * labPrintDocumentsRepository.findOne(new ObjectId(request.getId())); if
+			 * (olddocumentsCollection == null) { throw new
+			 * BusinessException(ServiceError.NoRecord,
+			 * " No Lab Print Document Present for Id"); }
+			 * 
+			 * } doctor = userRepository.findOne(new ObjectId(request.getDoctorId())); if
+			 * (doctor == null) { throw new BusinessException(ServiceError.NoRecord,
+			 * " No Doctor for DoctorId"); } BeanUtil.map(request, documentsCollection); if
+			 * (DPDoctorUtils.anyStringEmpty(request.getId())) {
+			 * documentsCollection.setCreatedBy(olddocumentsCollection.getCreatedBy());
+			 * documentsCollection.setCreatedTime(olddocumentsCollection.getCreatedTime());
+			 * } else { documentsCollection.setCreatedBy( (doctor.getTitle() != null ?
+			 * doctor.getTitle() + " " : "") + doctor.getFirstName());
+			 * documentsCollection.setCreatedTime(new Date()); } if
+			 * (request.getFileDetails() != null && !request.getFileDetails().isEmpty()) {
+			 * imResponses = new ArrayList<ImageURLResponse>(); for (FileDetails fileDetails
+			 * : request.getFileDetails()) {
+			 * fileDetails.setFileName(fileDetails.getFileName() + new Date().getTime());
+			 * String path = "records" + File.separator + request.getLocationId();
+			 * imResponses.addAll(fileManager.convertPdfToImage(fileDetails, path, true)); }
+			 * } if (request.getDocuments() != null && !request.getDocuments().isEmpty()) {
+			 * List<ImageURLResponse> imageURLResponses = new ArrayList<ImageURLResponse>();
+			 * for (ImageURLResponse imageURLResponse : request.getDocuments()) {
+			 * imageURLResponse.setImageUrl(imageURLResponse.getImageUrl().replaceAll(
+			 * imagePath, ""));
+			 * imageURLResponse.setThumbnailUrl(imageURLResponse.getThumbnailUrl().
+			 * replaceAll(imagePath, "")); }
+			 * imageURLResponses.addAll(request.getDocuments());
+			 * 
+			 * if (imResponses != null && !imResponses.isEmpty()) {
+			 * imageURLResponses.addAll(imResponses); }
+			 * 
+			 * documentsCollection.setDocuments(new ArrayList<ImageURLResponse>());
+			 * documentsCollection.setDocuments(imageURLResponses);
+			 * 
+			 * } else { if (imResponses != null && !imResponses.isEmpty()) {
+			 * 
+			 * documentsCollection.setDocuments(new ArrayList<ImageURLResponse>());
+			 * documentsCollection.setDocuments(imResponses); }
+			 * 
+			 * } documentsCollection =
+			 * labPrintDocumentsRepository.save(documentsCollection); response = new
+			 * LabPrintDocument(); BeanUtil.map(documentsCollection, response);
+			 * 
+			 * if (response.getDocuments() != null && !response.getDocuments().isEmpty()) {
+			 * for (ImageURLResponse imageURLResponse : response.getDocuments()) {
+			 * imageURLResponse.setImageUrl(getFinalImageURL(imageURLResponse.getImageUrl())
+			 * ); imageURLResponse.setThumbnailUrl(getFinalImageURL(imageURLResponse.
+			 * getThumbnailUrl())); } }
+			 */
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -285,6 +286,16 @@ public class DoctorLabApi {
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(doctorLabService.addDoctorReference(request));
 		return response;
+	}
+
+	@Path(value = PathProxy.DoctorLabUrls.DOWNLOAD_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorLabUrls.DOWNLOAD_REPORT, notes = PathProxy.DoctorLabUrls.DOWNLOAD_REPORT)
+	public Response<String> downloadReport() throws IOException {
+		Response<String> response = new Response<String>();
+		response.setData(doctorLabService.downloadReport());
+		return response;
+
 	}
 
 }

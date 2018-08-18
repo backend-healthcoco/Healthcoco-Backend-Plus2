@@ -110,6 +110,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 			parameters.put("REPORT_CONNECTION", mongoConnection);
 			parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
+
 			JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin + 45, bottonMargin,
 					leftMargin + 28, rightMargin + 28, componentType, fileName);
 			JasperReport jasperReport = JasperCompileManager.compileReport(design);
@@ -190,6 +191,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-procedure-sheet-A4.jrxml");
 
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-doctor-lab-A4.jrxml");
 		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
@@ -200,6 +203,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 			topMargin = topMargin - 25;
 			pageWidth = 420;
 			pageHeight = 595;
+		}
+
+		if (ComponentType.DOCTOR_LAB_REPORTS.getType().equals("DOCTOR_LAB_REPORTS")) {
+			leftMargin = 0;
+			rightMargin = 0;
+			topMargin = 0;
 		}
 		int columnWidth = pageWidth - leftMargin - rightMargin;
 		jasperDesign.setPageWidth(pageWidth);
@@ -230,7 +239,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CALENDER_APPOINTMENT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())) {
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 			dsr.setDatasetName("mongo-print-settings-dataset_1");
 
 			expression = new JRDesignExpression();
@@ -354,6 +364,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType()))
 			createprocedureSheet(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
 					normalStyle);
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType()))
+			createDoctorLabReport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
+					normalStyle);
 
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
@@ -362,7 +375,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CALENDER_APPOINTMENT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())) {
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 			band = new JRDesignBand();
 			band.setHeight(21);
 			jrDesignTextField = new JRDesignTextField();
@@ -385,7 +399,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CALENDER_APPOINTMENT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_IMAGE_INVOICE.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType()))
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType()))
 
 			jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 		// dsr.setDataSourceExpression(new JRDesignExpression("new
@@ -7925,6 +7940,110 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jSubreport.setExpression(new JRDesignExpression(
 				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-procedure-diagram-subreport.jasper\""));
+
+		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
+		designSubreportParameter.setName("REPORT_CONNECTION");
+		designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+
+		band = new JRDesignBand();
+		band.setHeight(0);
+		band.addElement(jSubreport);
+
+		return band;
+	}
+
+	private void createDoctorLabReport(JasperDesign jasperDesign, Map<String, Object> parameters,
+			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle)
+			throws JRException {
+		int headerHeight = parameters.get("headerHeight") != null
+				? Integer.parseInt(parameters.get("headerHeight").toString())
+				: 0;
+		int footerHeight = parameters.get("footerHeight") != null
+				? Integer.parseInt(parameters.get("footerHeight").toString())
+				: 0;
+		band = new JRDesignBand();
+		band.setHeight(50);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		band.setPrintWhenExpression(new JRDesignExpression("!$P{headerImg}.equals(null) && !$P{headerImg}.isEmpty()"));
+		JRDesignImage jrDesignImage = new JRDesignImage(null);
+		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		jrDesignImage.setExpression(new JRDesignExpression("$P{headerImg}"));
+		jrDesignImage.setX(0);
+		jrDesignImage.setY(0);
+		jrDesignImage.setHeight(headerHeight);
+		jrDesignImage.setWidth(columnWidth);
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+		band.addElement(jrDesignImage);
+		jasperDesign.setPageHeader(band);
+
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(adddoctorLabDiagram(parameters, contentFontSize,
+				columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle, headerHeight, footerHeight));
+
+		band = new JRDesignBand();
+		band.setHeight(50);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		jrDesignImage = new JRDesignImage(null);
+		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		jrDesignImage.setExpression(new JRDesignExpression("$P{headerImg}"));
+		jrDesignImage.setX(0);
+		jrDesignImage.setY(0);
+		jrDesignImage.setHeight(footerHeight);
+		jrDesignImage.setWidth(columnWidth);
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+		band.addElement(jrDesignImage);
+		jasperDesign.setPageFooter(band);
+
+	}
+
+	private JRBand adddoctorLabDiagram(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
+			int pageWidth, int pageHeight, String servicesValue, JRDesignStyle normalStyleinth, int headerHeight,
+			int footerHeight) throws JRException {
+		JasperDesign jasperDesign = JRXmlLoader
+				.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-doctor-lab-subreport.jrxml");
+		jasperDesign.setName("INVOICE Items");
+		jasperDesign.setPageWidth(pageWidth);
+		jasperDesign.setPageHeight(pageHeight);
+		jasperDesign.setColumnWidth(columnWidth);
+		jasperDesign.setColumnSpacing(0);
+		jasperDesign.setBottomMargin(0);
+		jasperDesign.setLeftMargin(0);
+		jasperDesign.setRightMargin(0);
+		jasperDesign.setTopMargin(0);
+
+		band = new JRDesignBand();
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{item}.equals(null) && !$F{item}.isEmpty()"));
+		band.setHeight(800 - footerHeight);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+
+		JRDesignImage jrDesignImage = new JRDesignImage(null);
+
+		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		jrDesignImage.setExpression(new JRDesignExpression("$F{item}"));
+		jrDesignImage.setX(-headerHeight);
+		jrDesignImage.setY(20);
+		jrDesignImage.setHeight(800 - footerHeight);
+		jrDesignImage.setWidth(columnWidth);
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+		band.addElement(jrDesignImage);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		JasperCompileManager.compileReportToFile(jasperDesign,
+				JASPER_TEMPLATES_RESOURCE + "new/mongo-doctor-lab-subreport.jasper");
+
+		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
+		jSubreport.setUsingCache(false);
+		jSubreport.setRemoveLineWhenBlank(true);
+		jSubreport.setPrintRepeatedValues(false);
+		jSubreport.setWidth(columnWidth);
+		jSubreport.setHeight(0);
+		jSubreport.setX(0);
+		jSubreport.setY(0);
+
+		jSubreport.setDataSourceExpression(new JRDesignExpression(
+				"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + servicesValue + ")"));
+
+		jSubreport.setExpression(
+				new JRDesignExpression("\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-doctor-lab-subreport.jasper\""));
 
 		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
 		designSubreportParameter.setName("REPORT_CONNECTION");

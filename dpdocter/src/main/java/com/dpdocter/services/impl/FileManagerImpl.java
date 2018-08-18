@@ -363,22 +363,26 @@ public class FileManagerImpl implements FileManager {
 
 	@Override
 	@Transactional
-	public List<ImageURLResponse> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail)
+	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail)
 			throws Exception {
 		byte[] base64 = Base64.decodeBase64(fileDetails.getFileEncoded());
 		PDDocument document = PDDocument.load(base64);
 		PDFRenderer pdfRenderer = new PDFRenderer(document);
 		document.getPages().getCount();
-		List<ImageURLResponse> imagelist = new ArrayList<ImageURLResponse>();
+		List<String> imagelist = new ArrayList<String>();
 		ByteArrayOutputStream outstream = null;
+		ImageURLResponse imageURLResponse = null;
 		for (int i = 0; i < document.getPages().getCount(); i++) {
+			imageURLResponse = new ImageURLResponse();
+
 			// note that the page number parameter is zero based
 			BufferedImage bim = pdfRenderer.renderImageWithDPI(i, 500, ImageType.RGB);
 			outstream = new ByteArrayOutputStream();
 			ImageIOUtil.writeImage(bim, "jpg", outstream);
 			// suffix in filename will be used as the file format
-			imagelist.add(saveImageAndReturnImageUrl(outstream, fileDetails.getFileName() + "-" + (i), path, true));
-
+			imageURLResponse = saveImageAndReturnImageUrl(outstream, fileDetails.getFileName() + "-" + (i), path, true);
+			if (imageURLResponse != null)
+				imagelist.add(imageURLResponse.getImageUrl());
 		}
 		System.out.println(imagelist.size());
 		document.close();

@@ -43,7 +43,6 @@ public class DoctorLabReport extends GenericCollection {
 	private String uploadedByHospitalId;
 
 	private Boolean discarded = false;
-	
 
 	public String getDoctorName() {
 		return doctorName;
