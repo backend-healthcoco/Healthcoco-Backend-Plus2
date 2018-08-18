@@ -478,7 +478,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 			if (!DPDoctorUtils.anyStringEmpty(procedureConsentForm.getBody())) {
 				parameters.put("body",
-						procedureConsentForm.getBody().replace("\n", "<br>").replace("\t", "&nbsp") + "<br><br>");
+						procedureConsentForm.getBody().replace("\n", "<br>").replace("\t", " ") + "<br><br>");
 			}
 
 			if (procedureConsentForm.getFooterFields() != null && !procedureConsentForm.getFooterFields().isEmpty()) {
@@ -489,8 +489,14 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 						key = entry.getKey();
 						value = entry.getValue();
 						if (!DPDoctorUtils.anyStringEmpty(key, value))
-							field = field + "<b>" + key + " : </b>" + value;
-
+							if(key.toUpperCase().contains("SIGN") || key.toUpperCase().contains("SIGNATURE"))
+							{
+								field = field + "<b>" + key + " : </b>" + "<img src=" +value.replace(" ", "%20") + " width=150 height=75> </br>";
+							}
+							else
+							{
+								field = field + "<b>" + key + " : </b>" +value + "</br>";
+							}
 					}
 					i++;
 					if (i % 2 == 1) {
