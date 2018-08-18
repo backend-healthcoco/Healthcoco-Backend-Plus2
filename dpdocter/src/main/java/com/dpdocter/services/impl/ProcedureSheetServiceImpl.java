@@ -530,18 +530,20 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 					for (String i : keys) {
 						value = fields.get(i);
 						if (!DPDoctorUtils.anyStringEmpty(i, value))
-							field = field + "<b>" + i + " : </b>" + value;
+							field = "<b>" + i + " : </b>" + value;
 						j++;
 						if (j % 2 == 1) {
-							field = field + "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+							item.put("fieldOne", field);
 
 						} else {
-							field = field + "<br>";
+							item.put("fieldTwo", field);
 						}
+						items.add(item);
+
 					}
 				}
-				item.put("sheet", field);
-				items.add(item);
+
 			}
 
 			parameters.put("item", items);

@@ -7822,16 +7822,27 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		band = new JRDesignBand();
-		band.setPrintWhenExpression(new JRDesignExpression("!$F{sheet}.equals(null) && !$F{sheet}.isEmpty()"));
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{fieldOne}.equals(null) && !$F{fieldOne}.isEmpty()"));
 		band.setHeight(30);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{sheet}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{fieldOne}"));
 		jrDesignTextField.setX(0);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(30);
-		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setWidth(145);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setStretchWithOverflow(true);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{fieldTwo}"));
+		jrDesignTextField.setX(145);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(30);
+		jrDesignTextField.setWidth(145);
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setMarkup("html");
