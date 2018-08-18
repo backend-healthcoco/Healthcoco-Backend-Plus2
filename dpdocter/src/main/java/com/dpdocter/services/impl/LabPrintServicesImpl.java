@@ -209,8 +209,12 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path, false);
 
 			}
+			if (type.equals("FOOTER")) {
+				contentSetup = labPrintSettingCollection.getFooterSetup();
+			} else if (type.equals("HEADER")) {
+				labPrintSettingCollection.getHeaderSetup();
+			}
 
-			contentSetup = labPrintSettingCollection.getHeaderSetup();
 			if (contentSetup == null) {
 				contentSetup = new LabPrintContentSetup();
 			}
@@ -223,7 +227,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 
 			if (type.equals("FOOTER")) {
 				labPrintSettingCollection.setFooterSetup(contentSetup);
-			} else if (type.equals("HEADER")){
+			} else if (type.equals("HEADER")) {
 				labPrintSettingCollection.setHeaderSetup(contentSetup);
 			}
 

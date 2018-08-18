@@ -7962,7 +7962,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				? Integer.parseInt(parameters.get("footerHeight").toString())
 				: 0;
 		band = new JRDesignBand();
-		band.setHeight(50);
+		band.setHeight(headerHeight);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		band.setPrintWhenExpression(new JRDesignExpression("!$P{headerImg}.equals(null) && !$P{headerImg}.isEmpty()"));
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
@@ -7980,7 +7980,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle, headerHeight, footerHeight));
 
 		band = new JRDesignBand();
-		band.setHeight(50);
+		band.setHeight(footerHeight);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		jrDesignImage = new JRDesignImage(null);
 		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
@@ -8019,8 +8019,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
 		jrDesignImage.setExpression(new JRDesignExpression("$F{item}"));
-		jrDesignImage.setX(-headerHeight);
-		jrDesignImage.setY(20);
+		jrDesignImage.setX(0);
+		jrDesignImage.setY(-headerHeight);
 		jrDesignImage.setHeight(800 - footerHeight);
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
