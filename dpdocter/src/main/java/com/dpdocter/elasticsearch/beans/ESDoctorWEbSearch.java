@@ -21,6 +21,8 @@ public class ESDoctorWEbSearch {
 
 	private List<String> specialities;
 
+	private List<String> parentSpecialities;
+
 	private List<String> services;
 	
 	private DoctorExperience experience;
@@ -237,15 +239,24 @@ public class ESDoctorWEbSearch {
 		this.services = services;
 	}
 
+	public List<String> getParentSpecialities() {
+		return parentSpecialities;
+	}
+
+	public void setParentSpecialities(List<String> parentSpecialities) {
+		this.parentSpecialities = parentSpecialities;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDoctorWEbSearch [colorCode=" + colorCode + ", userId=" + userId + ", firstName=" + firstName
 				+ ", gender=" + gender + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
-				+ ", specialities=" + specialities + ", services=" + services + ", experience=" + experience
-				+ ", state=" + state + ", city=" + city + ", latitude=" + latitude + ", longitude=" + longitude
-				+ ", locality=" + locality + ", locationName=" + locationName + ", facility=" + facility + ", userUId="
-				+ userUId + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL
-				+ ", rankingCount=" + rankingCount + ", appointmentBookingNumber=" + appointmentBookingNumber
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+				+ ", specialities=" + specialities + ", parentSpecialities=" + parentSpecialities + ", services="
+				+ services + ", experience=" + experience + ", state=" + state + ", city=" + city + ", latitude="
+				+ latitude + ", longitude=" + longitude + ", locality=" + locality + ", locationName=" + locationName
+				+ ", facility=" + facility + ", userUId=" + userUId + ", noOfRecommenations=" + noOfRecommenations
+				+ ", doctorSlugURL=" + doctorSlugURL + ", rankingCount=" + rankingCount + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
+
 }

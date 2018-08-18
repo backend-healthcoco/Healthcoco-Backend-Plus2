@@ -624,6 +624,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				if (specialityQueryBuilder != null)
 					boolQueryBuilder.must(specialityQueryBuilder);
+				
+				if (serviceQueryBuilder != null)
+					boolQueryBuilder.must(serviceQueryBuilder);
+				
 				if (facilityQueryBuilder != null)
 					boolQueryBuilder.must(facilityQueryBuilder);
 
@@ -1529,6 +1533,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			} else {
 				speciality = speciality.replace("-", " ");
 			}
+			
+			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
+				service = null;
+			} else {
+				service = service.replace("-", " ");
+			}
+			
 			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,
 					symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
 					maxExperience, service);
@@ -1546,9 +1557,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 				doctorResponse.setSpeciality(speciality.replace(" ", "-"));
-
 				doctorResponse.setMetaData(StringUtils.capitalize(speciality) + "s in ");
-			} else {
+			}else {
 				doctorResponse.setMetaData("Doctors in ");
 				doctorResponse.setSpeciality("ALL Specialities");
 
