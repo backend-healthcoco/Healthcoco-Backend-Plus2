@@ -365,6 +365,7 @@ public class FileManagerImpl implements FileManager {
 	@Transactional
 	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail)
 			throws Exception {
+		FileDetails fileDetail = null;
 		byte[] base64 = Base64.decodeBase64(fileDetails.getFileEncoded());
 		PDDocument document = PDDocument.load(base64);
 		PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -374,18 +375,26 @@ public class FileManagerImpl implements FileManager {
 		ImageURLResponse imageURLResponse = null;
 		for (int i = 0; i < document.getPages().getCount(); i++) {
 			imageURLResponse = new ImageURLResponse();
-
+			fileDetail = new FileDetails();
 			// note that the page number parameter is zero based
 			BufferedImage bim = pdfRenderer.renderImageWithDPI(i, 500, ImageType.RGB);
 			outstream = new ByteArrayOutputStream();
 			ImageIOUtil.writeImage(bim, "jpg", outstream);
 			// suffix in filename will be used as the file format
-			imageURLResponse = saveImageAndReturnImageUrl(outstream, fileDetails.getFileName() + "-" + (i), path, true);
-			if (imageURLResponse != null)
-				imagelist.add(imageURLResponse.getImageUrl());
+
+			// imageURLResponse = saveImageAndReturnImageUrl(outstream,
+			// fileDetails.getFileName().replace(" ", "") + "-" + (i) , path, false);
+			fileDetail.setFileEncoded(Base64.encodeBase64String(outstream.toByteArray()));
+
+			fileDetail.setFileName(fileDetails.getFileName().replace(" ", "") + "-" + (i));
+			fileDetail.setFileExtension("jpg");
+			imageURLResponse = saveImageAndReturnImageUrl(fileDetail, path, false);
+			if (imageURLResponse != null && !DPDoctorUtils.anyStringEmpty(imageURLResponse.getImageUrl()))
+				imagelist.add(imagePath+imageURLResponse.getImageUrl());
 		}
 		System.out.println(imagelist.size());
 		document.close();
+
 		return imagelist;
 	}
 
@@ -403,16 +412,17 @@ public class FileManagerImpl implements FileManager {
 
 			InputStream fis = new ByteArrayInputStream(outstream.toByteArray());
 			String contentType = URLConnection.guessContentTypeFromStream(fis);
+
 			if (!DPDoctorUtils.anyStringEmpty(contentType) && contentType.equalsIgnoreCase("exe")) {
 				throw new BusinessException(ServiceError.NotAcceptable, "Invalid File");
 			}
 			ObjectMetadata metadata = new ObjectMetadata();
 			byte[] contentBytes = IOUtils.toByteArray(fis);
 			metadata.setContentLength(contentBytes.length);
-			metadata.setContentEncoding("jpg");
+			System.out.println(new BigDecimal(contentBytes.length).divide(new BigDecimal(1000 * 1000)).doubleValue());
+			metadata.setContentEncoding("png");
 			metadata.setContentType(contentType);
 			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-
 			s3client.putObject(new PutObjectRequest(bucketName, imageUrl, fis, metadata));
 			response.setImageUrl(imageUrl);
 			if (createThumbnail) {

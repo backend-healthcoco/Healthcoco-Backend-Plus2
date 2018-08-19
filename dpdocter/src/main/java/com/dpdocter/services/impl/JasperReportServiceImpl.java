@@ -7981,12 +7981,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(footerHeight);
+		band.setPrintWhenExpression(new JRDesignExpression("!$P{footerImg}.equals(null) && !$P{footerImg}.isEmpty()"));
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		jrDesignImage = new JRDesignImage(null);
 		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
-		jrDesignImage.setExpression(new JRDesignExpression("$P{headerImg}"));
+		jrDesignImage.setExpression(new JRDesignExpression("$P{footerImg}"));
 		jrDesignImage.setX(0);
-		jrDesignImage.setY(0);
+		jrDesignImage.setY((0));
 		jrDesignImage.setHeight(footerHeight);
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
@@ -8012,7 +8013,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{item}.equals(null) && !$F{item}.isEmpty()"));
-		band.setHeight(800 - footerHeight);
+		band.setHeight(820 - headerHeight-footerHeight);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
@@ -8020,8 +8021,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
 		jrDesignImage.setExpression(new JRDesignExpression("$F{item}"));
 		jrDesignImage.setX(0);
-		jrDesignImage.setY(-headerHeight);
-		jrDesignImage.setHeight(800 - footerHeight);
+		jrDesignImage.setY(0);
+		jrDesignImage.setHeight(820 - headerHeight-footerHeight);
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		band.addElement(jrDesignImage);
