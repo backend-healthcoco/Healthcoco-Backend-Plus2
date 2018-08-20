@@ -2,10 +2,8 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +15,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -25,12 +22,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.ClinicalnoteLookupBean;
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.ProcedureConsentForm;
-import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
@@ -451,10 +445,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		PrintSettingsCollection printSettings = null;
-
+		List<String> keys = null;
 		String pattern = "dd/MM/yyyy";
 		String key = null;
 		String value = null;
+		List<DBObject> items = null;
+		DBObject item = null;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		String field = "";
@@ -471,7 +467,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 					}
 				}
-
 				field = field + "<br><br>";
 				parameters.put("headerField", field);
 			}
@@ -483,35 +478,39 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 			if (procedureConsentForm.getFooterFields() != null && !procedureConsentForm.getFooterFields().isEmpty()) {
 				int i = 0;
-				field = "";
+				items = new ArrayList<DBObject>();
+
+				Boolean isImage = false;
 				for (Map.Entry<String, String> entry : procedureConsentForm.getFooterFields().entrySet()) {
+					item = new BasicDBObject();
 					if (entry != null) {
 						key = entry.getKey();
 						value = entry.getValue();
+
+						isImage = false;
 						if (!DPDoctorUtils.anyStringEmpty(key, value))
-							if(key.toUpperCase().contains("SIGN") || key.toUpperCase().contains("SIGNATURE"))
-							{
-								field = field + "<b>" + key + " : </b>" + "<img src=" +value.replace(" ", "%20") + " width=150 height=75> </br>";
-							}
-							else
-							{
-								field = field + "<b>" + key + " : </b>" +value + "</br>";
-							}
-					}
-					i++;
-					if (i % 2 == 1) {
-						field = field + "&nbsp;&nbsp;&nbsp;&nbsp;";
+							if (value.toUpperCase().contains(imagePath.toUpperCase())) {
 
-					} else {
-						field = field + "<br>";
+								value = value.replace(" ", "%20");
+								isImage = true;
+							} else {
+								value = value.replace(" ", "%20");
+								isImage = false;
+							}
 					}
+
+					item.put("key", key);
+					item.put("value", value);
+					item.put("isImage", isImage);
+					items.add(item);
 				}
-				field = field + "<br>";
-				parameters.put("footerField", field);
+				parameters.put("footerFields", items);
 			}
-
 		}
-		if (procedureSheetCollection.getDiagrams() != null && !procedureSheetCollection.getDiagrams().isEmpty()) {
+
+		if (procedureSheetCollection.getDiagrams() != null && !procedureSheetCollection.getDiagrams().isEmpty())
+
+		{
 
 			for (ImageURLResponse urlResponse : procedureSheetCollection.getDiagrams()) {
 				urlResponse.setImageUrl(urlResponse.getImageUrl().replace(" ", "%20"));
@@ -520,38 +519,59 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 			parameters.put("diagram", procedureSheetCollection.getDiagrams());
 		}
-		List<String> keys = null;
-		List<DBObject> items = null;
-		DBObject item = null;
+
 		if (procedureSheetCollection.getProcedureSheetFields() != null
 				&& !procedureSheetCollection.getProcedureSheetFields().isEmpty()) {
 			items = new ArrayList<DBObject>();
 			for (Map<String, String> fields : procedureSheetCollection.getProcedureSheetFields()) {
 
-				item = new BasicDBObject();
 				keys = new ArrayList<String>(fields.keySet());
 				field = "";
+				String i = "";
 				if (keys != null && !keys.isEmpty()) {
-					int j = 0;
-					for (String i : keys) {
+					for (int j = 0; j < fields.keySet().size(); j++) {
+
+						item = new BasicDBObject();
+						i = keys.get(j);
 						value = fields.get(i);
-						if (!DPDoctorUtils.anyStringEmpty(i, value))
+						if (!DPDoctorUtils.anyStringEmpty(i, value)) {
 							field = "<b>" + i + " : </b>" + value;
-						j++;
-						if (j % 2 == 1) {
-
 							item.put("fieldOne", field);
+						}
+						j++;
+						if (j < keys.size()) {
+							i = keys.get(j);
+							value = fields.get(i);
+							if (!DPDoctorUtils.anyStringEmpty(i, value))
+								field = "<b>" + i + " : </b>" + value;
 
-						} else {
 							item.put("fieldTwo", field);
 						}
+						j++;
+						if (j < keys.size()) {
+							i = keys.get(j);
+							value = fields.get(i);
+							if (!DPDoctorUtils.anyStringEmpty(i, value))
+								field = "<b>" + i + " : </b>" + value;
+
+							item.put("fieldThree", field);
+						}
+						j++;
+						if (j < keys.size()) {
+							i = keys.get(j);
+							value = fields.get(i);
+							if (!DPDoctorUtils.anyStringEmpty(i, value))
+								field = "<b>" + i + " : </b>" + value;
+
+							item.put("fieldFour", field);
+						}
+
 						items.add(item);
 
 					}
 				}
 
 			}
-
 			parameters.put("item", items);
 		}
 
