@@ -70,6 +70,17 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	
 	private Boolean hasBillingAccess = true;
 	
+	private Boolean iskoisk=false;
+	
+	
+	public Boolean getIskoisk() {
+		return iskoisk;
+	}
+
+	public void setIskoisk(Boolean iskoisk) {
+		this.iskoisk = iskoisk;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}
