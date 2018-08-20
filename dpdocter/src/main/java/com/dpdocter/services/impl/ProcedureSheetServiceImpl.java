@@ -445,10 +445,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		PrintSettingsCollection printSettings = null;
-
+		List<String> keys = null;
 		String pattern = "dd/MM/yyyy";
 		String key = null;
 		String value = null;
+		List<DBObject> items = null;
+		DBObject item = null;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		String field = "";
@@ -465,7 +467,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 					}
 				}
-
 				field = field + "<br><br>";
 				parameters.put("headerField", field);
 			}
@@ -477,29 +478,41 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 			if (procedureConsentForm.getFooterFields() != null && !procedureConsentForm.getFooterFields().isEmpty()) {
 				int i = 0;
-				field = "";
+				items = new ArrayList<DBObject>();
+
+				Boolean isImage = false;
 				for (Map.Entry<String, String> entry : procedureConsentForm.getFooterFields().entrySet()) {
+					item = new BasicDBObject();
 					if (entry != null) {
 						key = entry.getKey();
 						value = entry.getValue();
+
+						isImage = false;
 						if (!DPDoctorUtils.anyStringEmpty(key, value))
-							field = field + "<b>" + key + " : </b>" + value;
+
+							if (value.toUpperCase().contains(imagePath.toUpperCase())) {
+
+								value = value.replace(" ", "%20");
+								isImage = true;
+							} else {
+								value = value.replace(" ", "%20");
+								isImage = false;
+							}
 
 					}
-					i++;
-					if (i % 2 == 1) {
-						field = field + "&nbsp;&nbsp;&nbsp;&nbsp;";
 
-					} else {
-						field = field + "<br>";
-					}
+					item.put("key", key);
+					item.put("value", value);
+					item.put("isImage", isImage);
+					items.add(item);
 				}
-				field = field + "<br>";
-				parameters.put("footerField", field);
+				parameters.put("footerFields", items);
 			}
-
 		}
-		if (procedureSheetCollection.getDiagrams() != null && !procedureSheetCollection.getDiagrams().isEmpty()) {
+
+		if (procedureSheetCollection.getDiagrams() != null && !procedureSheetCollection.getDiagrams().isEmpty())
+
+		{
 
 
 			for (ImageURLResponse urlResponse : procedureSheetCollection.getDiagrams()) {
@@ -509,38 +522,59 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 			parameters.put("diagram", procedureSheetCollection.getDiagrams());
 		}
-		List<String> keys = null;
-		List<DBObject> items = null;
-		DBObject item = null;
+
 		if (procedureSheetCollection.getProcedureSheetFields() != null
 				&& !procedureSheetCollection.getProcedureSheetFields().isEmpty()) {
 			items = new ArrayList<DBObject>();
 			for (Map<String, String> fields : procedureSheetCollection.getProcedureSheetFields()) {
 
-				item = new BasicDBObject();
 				keys = new ArrayList<String>(fields.keySet());
 				field = "";
+				String i = "";
 				if (keys != null && !keys.isEmpty()) {
-					int j = 0;
-					for (String i : keys) {
+					for (int j = 0; j < fields.keySet().size(); j++) {
+
+						item = new BasicDBObject();
+						i = keys.get(j);
 						value = fields.get(i);
-						if (!DPDoctorUtils.anyStringEmpty(i, value))
+						if (!DPDoctorUtils.anyStringEmpty(i, value)) {
 							field = "<b>" + i + " : </b>" + value;
-						j++;
-						if (j % 2 == 1) {
-
 							item.put("fieldOne", field);
+						}
+						j++;
+						if (j < keys.size()) {
+							i = keys.get(j);
+							value = fields.get(i);
+							if (!DPDoctorUtils.anyStringEmpty(i, value))
+								field = "<b>" + i + " : </b>" + value;
 
-						} else {
 							item.put("fieldTwo", field);
 						}
+						j++;
+						if (j < keys.size()) {
+							i = keys.get(j);
+							value = fields.get(i);
+							if (!DPDoctorUtils.anyStringEmpty(i, value))
+								field = "<b>" + i + " : </b>" + value;
+
+							item.put("fieldThree", field);
+						}
+						j++;
+						if (j < keys.size()) {
+							i = keys.get(j);
+							value = fields.get(i);
+							if (!DPDoctorUtils.anyStringEmpty(i, value))
+								field = "<b>" + i + " : </b>" + value;
+
+							item.put("fieldFour", field);
+						}
+
 						items.add(item);
 
 					}
 				}
 
 			}
-
 			parameters.put("item", items);
 		}
 
