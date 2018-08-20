@@ -304,7 +304,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		return doctorSlugURL;
 	}
 
-	public boolean isIskiosk() {
+	public boolean getIskiosk() {
 		return iskiosk;
 	}
 
