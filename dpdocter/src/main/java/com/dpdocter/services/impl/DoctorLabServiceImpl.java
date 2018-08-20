@@ -124,6 +124,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
 
+	@Autowired
 	private LabPrintSettingRepository labPrintSettingRepository;
 
 	@Autowired
