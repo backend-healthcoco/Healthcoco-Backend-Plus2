@@ -283,6 +283,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			}
 			response = new DoctorLabReport();
 			BeanUtil.map(doctorLabReportCollection, response);
+			for (RecordsFile file : response.getRecordsFiles()) {
+				file.setRecordsUrl(file.getRecordsUrl() + imagePath);
+				file.setThumbnailUrl(file.getThumbnailUrl() + imagePath);
+				file.setPdfInImgs(null);
+			}
+
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
