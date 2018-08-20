@@ -78,61 +78,25 @@ public class SearchServiceImpl implements SearchService {
 			int maxExperience, String service, String locality, Boolean otherArea) {
 		List<ESDoctorDocument> esDoctorDocuments = null;
 		List<ESDoctorDocument> nearByDoctors = null;
-		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		SearchDoctorResponse response = null;
 		try {
 			Set<String> specialityIdSet = new HashSet<String>();
-			Set<String> locationIds = null, doctorIds = null;
 
 			if (city.equalsIgnoreCase("undefined")) {
 				return null;
 			}
-			if (!DPDoctorUtils.anyStringEmpty(service)) {
-				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
-						.findByName(service);
-				if (esTreatmentServiceDocuments != null) {
-					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
-							new BeanToPropertyValueTransformer("id"));
-					Collection<String> specialities = CollectionUtils.collect(esTreatmentServiceDocuments,
-							new BeanToPropertyValueTransformer("speciality"));
-
-					for (String specialitySTR : specialities) {
-						List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
-								.findByQueryAnnotation(specialitySTR);
-						if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
-							Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
-									new BeanToPropertyValueTransformer("id"));
-							if (specialityIds != null) {
-								specialityIdSet.addAll(specialityIds);
-							}
-						}
-
-					}
-
-					int count = (int) elasticsearchTemplate.count(
-							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
-							ESTreatmentServiceCostDocument.class);
-					if (count > 0)
-						esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(
-								new NativeSearchQueryBuilder()
-										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
-										.withPageable(new PageRequest(0, count)).build(),
-								ESTreatmentServiceCostDocument.class);
-
-				}
-				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
-					return null;
-				}
-				locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-						new BeanToPropertyValueTransformer("locationId")));
-				doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-						new BeanToPropertyValueTransformer("doctorId")));
-
-				locationIds.remove(null);
-				doctorIds.remove(null);
+			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
+				speciality = null;
 			}
-
+			
+			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
+				service = null;
+			} else {
+				service = service.replace("-", " ");
+			}
+			
 			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
+			QueryBuilder serviceQueryBuilder = createServiceFilter(service);
 			QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
 
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -152,18 +116,17 @@ public class SearchServiceImpl implements SearchService {
 				boolQueryBuilderForNearByDoctors.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
 			}
 
-			if ((locationIds != null && !locationIds.isEmpty()) && (doctorIds != null && !doctorIds.isEmpty())) {
-				boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds))
-						.must(QueryBuilders.termsQuery("locationId", locationIds));
-				boolQueryBuilderForNearByDoctors.must(QueryBuilders.termsQuery("userId", doctorIds))
-						.must(QueryBuilders.termsQuery("locationId", locationIds));
-			}
-
 			if (specialityQueryBuilder != null) {
 				boolQueryBuilder.must(specialityQueryBuilder);
 				boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
 			}
 
+			if (serviceQueryBuilder != null) {
+				boolQueryBuilder.must(serviceQueryBuilder);
+				boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
+			}
+				
+			
 			if (facilityQueryBuilder != null) {
 				boolQueryBuilder.must(facilityQueryBuilder);
 				boolQueryBuilderForNearByDoctors.must(facilityQueryBuilder);
@@ -256,18 +219,6 @@ public class SearchServiceImpl implements SearchService {
 			if (!(esDoctorDocuments == null && nearByDoctors == null)) {
 				response = new SearchDoctorResponse();
 
-				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
-					speciality = speciality.replace("-", " ");
-
-					response.setSpeciality(StringUtils.capitalize(speciality));
-
-					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
-				} else {
-					response.setMetaData("Doctors in ");
-
-					response.setSpeciality("ALL Specialities");
-
-				}
 				if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
 
 					response.setMetaData(response.getMetaData() + StringUtils.capitalize(locality) + ", ");
@@ -286,6 +237,32 @@ public class SearchServiceImpl implements SearchService {
 				if (nearByDoctors != null) {
 					response.setNearByDoctors(formatDoctorData(nearByDoctors, latitude, longitude));
 				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
+					for(String matchSpeciality : response.getDoctors().get(0).getSpecialities()) {
+						if((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))
+								.equalsIgnoreCase((matchSpeciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))))
+								response.setUnformattedSpeciality(matchSpeciality);
+					}
+					speciality = speciality.replace("-", " ");
+					response.setSpeciality(StringUtils.capitalize(speciality));
+					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
+				}else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")) {
+					
+					for(String matchService : response.getDoctors().get(0).getServices()) {
+						if((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))
+								.equalsIgnoreCase((matchService.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))))
+								response.setUnformattedService(matchService);
+					}
+					service = service.replace("-", " ");
+					response.setService(StringUtils.capitalize(service));
+					response.setMetaData(StringUtils.capitalize(service) + " services in ");
+				} else {
+					response.setMetaData("Doctors in ");
+
+					response.setSpeciality("ALL Specialities");
+
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -302,18 +279,23 @@ public class SearchServiceImpl implements SearchService {
 		if (esDoctorDocuments != null) {
 
 			List<String> specialities = null;
+			List<String> parentSpecialities = null;
+
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
 				if (doctorDocument.getSpecialities() != null) {
 					specialities = new ArrayList<String>();
+					parentSpecialities = new ArrayList<String>();
+
 					for (String specialityId : doctorDocument.getSpecialities()) {
 						ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
 						if (specialityCollection != null) {
 							specialities.add(specialityCollection.getSuperSpeciality());
-
+							parentSpecialities.add(specialityCollection.getSpeciality());
 						}
 					}
+					doctorWEbSearch.setParentSpecialities(parentSpecialities);
 					doctorWEbSearch.setSpecialities(specialities);
 				}
 
@@ -345,6 +327,24 @@ public class SearchServiceImpl implements SearchService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
+	private QueryBuilder createServiceFilter(String service) {
+		QueryBuilder queryBuilder = null;
+		if (!DPDoctorUtils.anyStringEmpty(service)  && !service.equalsIgnoreCase("DOCTOR")) {
+			
+			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository.findByName(service);
+			
+			if (esTreatmentServiceDocuments != null) {
+				Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
+						new BeanToPropertyValueTransformer("id"));
+				if (serviceIds == null)
+					serviceIds = CollectionUtils.EMPTY_COLLECTION;
+				queryBuilder = QueryBuilders.termsQuery("services", serviceIds);
+			}
+		}
+		return queryBuilder;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private QueryBuilder createSpecialityFilter(String speciality) {
 		QueryBuilder queryBuilder = null;
