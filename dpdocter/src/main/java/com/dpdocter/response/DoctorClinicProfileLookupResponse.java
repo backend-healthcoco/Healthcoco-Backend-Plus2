@@ -66,6 +66,24 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private String packageType;
 
+<<<<<<< HEAD
+=======
+    private Boolean hasLoginAccess = true;
+	
+	private Boolean hasBillingAccess = true;
+	
+	private Boolean iskoisk=false;
+	
+	
+	public Boolean getIskoisk() {
+		return iskoisk;
+	}
+
+	public void setIskoisk(Boolean iskoisk) {
+		this.iskoisk = iskoisk;
+	}
+
+>>>>>>> 90234822... resolved issue in kiosk API
 	public ObjectId getId() {
 		return id;
 	}
