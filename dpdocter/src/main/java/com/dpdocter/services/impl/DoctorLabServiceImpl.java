@@ -1162,7 +1162,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		if (labPrintSetting.getHeaderSetup() != null) {
 			parameters.put("headerImg",
 					!DPDoctorUtils.anyStringEmpty(labPrintSetting.getHeaderSetup().getImageurl())
-							? getFinalImageURL(labPrintSetting.getHeaderSetup().getImageurl())
+							? labPrintSetting.getHeaderSetup().getImageurl()
 							: null);
 			height = labPrintSetting.getHeaderSetup().getHeight();
 		}
@@ -1171,7 +1171,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		if (labPrintSetting.getFooterSetup() != null) {
 			parameters.put("footerImg",
 					!DPDoctorUtils.anyStringEmpty(labPrintSetting.getFooterSetup().getImageurl())
-							? getFinalImageURL(labPrintSetting.getFooterSetup().getImageurl())
+							? labPrintSetting.getFooterSetup().getImageurl()
 							: null);
 			height = labPrintSetting.getFooterSetup().getHeight();
 		}
