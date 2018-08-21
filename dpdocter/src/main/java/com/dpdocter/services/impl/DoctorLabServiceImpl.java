@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.LabPrintSetting;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -66,7 +67,6 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorLabDoctorReferenceRepository;
 import com.dpdocter.repository.DoctorLabFevouriteDoctorRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
-import com.dpdocter.repository.LabPrintSettingRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
@@ -81,6 +81,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.DoctorLabService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.LabPrintServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
@@ -99,6 +100,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private DoctorLabReportRepository doctorLabReportRepository;
+
+	@Autowired
+	private LabPrintServices labPrintServices;
 
 	@Autowired
 	private FileManager fileManager;
@@ -123,9 +127,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
-
-	@Autowired
-	private LabPrintSettingRepository labPrintSettingRepository;
 
 	@Autowired
 	private ESSpecialityRepository esSpecialityRepository;
@@ -180,13 +181,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		try {
 			UserCollection doctor = null;
 			DoctorLabReportCollection doctorLabReportCollection = new DoctorLabReportCollection();
-			LabPrintSettingCollection labPrintSettingCollection = labPrintSettingRepository
-					.findBylocationIdAndhospitalId(doctorLabReportCollection.getUploadedByLocationId(),
-							doctorLabReportCollection.getUploadedByHospitalId());
-
+			LabPrintSetting labPrintSetting = labPrintServices.getLabPrintSetting(request.getUploadedByLocationId(),
+					request.getUploadedByHospitalId());
 			for (RecordsFile file : request.getRecordsFiles()) {
-				if (file.getPdfInImgs() != null && labPrintSettingCollection != null) {
-					file.setRecordsUrl(createJasperReport(labPrintSettingCollection, file.getPdfInImgs()));
+				if (file.getPdfInImgs() != null && labPrintSetting != null) {
+					System.out.println("enter in record file for header  footer print");
+					file.setRecordsUrl(createJasperReport(labPrintSetting, file.getPdfInImgs()));
 				}
 				file.setRecordsUrl(file.getRecordsUrl().replace(imagePath, ""));
 				file.setThumbnailUrl(file.getThumbnailUrl().replace(imagePath, ""));
@@ -1153,27 +1153,27 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		return response;
 	}
 
-	public String createJasperReport(LabPrintSettingCollection labPrintSettingCollection, List<String> imageList) {
+	public String createJasperReport(LabPrintSetting labPrintSetting, List<String> imageList) {
 		String response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse reportResponse = null;
 		int height = 0;
 
-		if (labPrintSettingCollection.getHeaderSetup() != null) {
+		if (labPrintSetting.getHeaderSetup() != null) {
 			parameters.put("headerImg",
-					DPDoctorUtils.anyStringEmpty(labPrintSettingCollection.getHeaderSetup().getImageurl())
-							? getFinalImageURL(labPrintSettingCollection.getHeaderSetup().getImageurl())
+					DPDoctorUtils.anyStringEmpty(labPrintSetting.getHeaderSetup().getImageurl())
+							? getFinalImageURL(labPrintSetting.getHeaderSetup().getImageurl())
 							: null);
-			height = labPrintSettingCollection.getHeaderSetup().getHeight();
+			height = labPrintSetting.getHeaderSetup().getHeight();
 		}
 		parameters.put("headerHeight", height);
 		height = 0;
-		if (labPrintSettingCollection.getFooterSetup() != null) {
+		if (labPrintSetting.getFooterSetup() != null) {
 			parameters.put("footerImg",
-					DPDoctorUtils.anyStringEmpty(labPrintSettingCollection.getFooterSetup().getImageurl())
-							? getFinalImageURL(labPrintSettingCollection.getFooterSetup().getImageurl())
+					DPDoctorUtils.anyStringEmpty(labPrintSetting.getFooterSetup().getImageurl())
+							? getFinalImageURL(labPrintSetting.getFooterSetup().getImageurl())
 							: null);
-			height = labPrintSettingCollection.getFooterSetup().getHeight();
+			height = labPrintSetting.getFooterSetup().getHeight();
 		}
 
 		parameters.put("footerHeight", height);
