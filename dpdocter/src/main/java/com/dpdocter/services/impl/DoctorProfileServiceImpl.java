@@ -130,7 +130,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	private TreatmentServicesRepository treatmentServicesRepository;
-	
+
 	@Autowired
 	private FileManager fileManager;
 
@@ -550,14 +550,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				criteria.and("isActivate").is(true);
 			}
 
-			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"),
-							Aggregation.lookup("hospital_cl", "location.hospitalId", "_id", "hospital"),
-							Aggregation.unwind("hospital"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
-							Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-							Aggregation.unwind("doctor")),
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("hospital_cl", "location.hospitalId", "_id", "hospital"),
+					Aggregation.unwind("hospital"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+					Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+					Aggregation.unwind("doctor"))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(aggregation,
+
 					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 			if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 				for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
@@ -593,14 +594,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					}
 					doctorProfile.setSpecialities(specialities);
 				}
-				
+
 				if (doctorCollection.getServices() != null && !doctorCollection.getServices().isEmpty()) {
 					services = (List<String>) CollectionUtils.collect(
 							(Collection<?>) treatmentServicesRepository.findAll(doctorCollection.getServices()),
 							new BeanToPropertyValueTransformer("name"));
 				}
 				doctorProfile.setServices(services);
-								
+
 				// set medical councils using medical councils ids
 				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
 				if (doctorProfile.getRegistrationDetails() != null
@@ -1500,18 +1501,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("speciality"));
 
-					
 					doctorProfile.setSpecialities(specialities);
 					doctorProfile.setParentSpecialities(parentSpecialities);
 				}
-				
+
 				if (doctorCollection.getServices() != null && !doctorCollection.getServices().isEmpty()) {
 					services = (List<String>) CollectionUtils.collect(
 							(Collection<?>) treatmentServicesRepository.findAll(doctorCollection.getServices()),
 							new BeanToPropertyValueTransformer("name"));
 				}
 				doctorProfile.setServices(services);
-				
+
 				// set medical councils using medical councils ids
 				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
 				if (doctorProfile.getRegistrationDetails() != null
@@ -1532,7 +1532,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 									.findAll(doctorCollection.getProfessionalMemberships()),
 							new BeanToPropertyValueTransformer("membership"));
 				}
-				
+
 				doctorProfile.setProfessionalMemberships(professionalMemberships);
 
 				// set clinic profile details
@@ -1651,37 +1651,36 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Override
 	public DoctorServicesAddEditRequest addEditServices(DoctorServicesAddEditRequest request) {
 		DoctorServicesAddEditRequest response = null;
-			DoctorCollection doctorCollection = null;
-			try {
-				doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
-				if (doctorCollection != null) {
-					response = new DoctorServicesAddEditRequest();
-					if (request.getServices() != null && !request.getServices().isEmpty()) {
-						List<TreatmentServicesCollection> servicesCollections = treatmentServicesRepository
-								.findbyServicesName(request.getServices());
-						@SuppressWarnings("unchecked")
-						Collection<ObjectId> serviceIds = CollectionUtils.collect(servicesCollections,
-								new BeanToPropertyValueTransformer("id"));
-						if (serviceIds != null && !serviceIds.isEmpty()) {
-							doctorCollection.setServices(new ArrayList<>(serviceIds));
-						} else {
-							doctorCollection.setServices(null);
-						}
+		DoctorCollection doctorCollection = null;
+		try {
+			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+			if (doctorCollection != null) {
+				response = new DoctorServicesAddEditRequest();
+				if (request.getServices() != null && !request.getServices().isEmpty()) {
+					List<TreatmentServicesCollection> servicesCollections = treatmentServicesRepository
+							.findbyServicesName(request.getServices());
+					@SuppressWarnings("unchecked")
+					Collection<ObjectId> serviceIds = CollectionUtils.collect(servicesCollections,
+							new BeanToPropertyValueTransformer("id"));
+					if (serviceIds != null && !serviceIds.isEmpty()) {
+						doctorCollection.setServices(new ArrayList<>(serviceIds));
 					} else {
 						doctorCollection.setServices(null);
 					}
-					doctorRepository.save(doctorCollection);
-					BeanUtil.map(doctorCollection, response);
-					response.setDoctorId(doctorCollection.getUserId().toString());
+				} else {
+					doctorCollection.setServices(null);
 				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e + " Error Editing Doctor Profile");
-				throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+				doctorRepository.save(doctorCollection);
+				BeanUtil.map(doctorCollection, response);
+				response.setDoctorId(doctorCollection.getUserId().toString());
 			}
-			return response;
-	}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Doctor Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+		}
+		return response;
+	}
 
 }
