@@ -284,8 +284,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			response = new DoctorLabReport();
 			BeanUtil.map(doctorLabReportCollection, response);
 			for (RecordsFile file : response.getRecordsFiles()) {
-				file.setRecordsUrl(file.getRecordsUrl() + imagePath);
-				file.setThumbnailUrl(file.getThumbnailUrl() + imagePath);
+				getFinalImageURL(file.getRecordsUrl());
+				getFinalImageURL(file.getThumbnailUrl());
 				file.setPdfInImgs(null);
 			}
 
@@ -1161,7 +1161,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 		if (labPrintSetting.getHeaderSetup() != null) {
 			parameters.put("headerImg",
-					DPDoctorUtils.anyStringEmpty(labPrintSetting.getHeaderSetup().getImageurl())
+					!DPDoctorUtils.anyStringEmpty(labPrintSetting.getHeaderSetup().getImageurl())
 							? getFinalImageURL(labPrintSetting.getHeaderSetup().getImageurl())
 							: null);
 			height = labPrintSetting.getHeaderSetup().getHeight();
@@ -1170,7 +1170,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		height = 0;
 		if (labPrintSetting.getFooterSetup() != null) {
 			parameters.put("footerImg",
-					DPDoctorUtils.anyStringEmpty(labPrintSetting.getFooterSetup().getImageurl())
+					!DPDoctorUtils.anyStringEmpty(labPrintSetting.getFooterSetup().getImageurl())
 							? getFinalImageURL(labPrintSetting.getFooterSetup().getImageurl())
 							: null);
 			height = labPrintSetting.getFooterSetup().getHeight();

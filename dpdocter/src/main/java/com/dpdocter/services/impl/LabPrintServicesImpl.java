@@ -149,7 +149,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			if (labPrintSettingCollection != null) {
 				response = new LabPrintSetting();
 				BeanUtil.map(labPrintSettingCollection, response);
-			}
+			
 			if (response.getFooterSetup() != null) {
 				response.getFooterSetup()
 						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getFooterSetup().getImageurl())
@@ -163,6 +163,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 								? getFinalImageURL(response.getHeaderSetup().getImageurl())
 								: "");
 
+			}
 			}
 
 		} catch (BusinessException e) {
