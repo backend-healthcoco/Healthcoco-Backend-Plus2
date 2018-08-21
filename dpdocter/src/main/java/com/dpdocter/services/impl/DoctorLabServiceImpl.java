@@ -284,8 +284,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			response = new DoctorLabReport();
 			BeanUtil.map(doctorLabReportCollection, response);
 			for (RecordsFile file : response.getRecordsFiles()) {
-				getFinalImageURL(file.getRecordsUrl());
-				getFinalImageURL(file.getThumbnailUrl());
+				file.setRecordsUrl(getFinalImageURL(file.getRecordsUrl()));
+				file.setThumbnailUrl(getFinalImageURL(file.getThumbnailUrl()));
 				file.setPdfInImgs(null);
 			}
 
@@ -1205,8 +1205,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			e.printStackTrace();
 		}
 
-		if (reportResponse != null)
-			response = getFinalImageURL(reportResponse.getPath());
 		if (reportResponse != null && reportResponse.getFileSystemResource() != null) {
 			if (reportResponse.getFileSystemResource().getFile().exists())
 				reportResponse.getFileSystemResource().getFile().delete();
