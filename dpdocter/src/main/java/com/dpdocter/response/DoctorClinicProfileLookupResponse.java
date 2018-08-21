@@ -66,19 +66,18 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private String packageType;
 
-    private Boolean hasLoginAccess = true;
-	
+	private Boolean hasLoginAccess = true;
+
 	private Boolean hasBillingAccess = true;
-	
-	private Boolean iskoisk=false;
-	
-	
-	public Boolean getIskoisk() {
-		return iskoisk;
+
+	private Boolean iskiosk = false;
+
+	public Boolean getIskiosk() {
+		return iskiosk;
 	}
 
-	public void setIskoisk(Boolean iskoisk) {
-		this.iskoisk = iskoisk;
+	public void setIskiosk(Boolean iskiosk) {
+		this.iskiosk = iskiosk;
 	}
 
 	public ObjectId getId() {
@@ -309,7 +308,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
 				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user
 				+ ", packageType=" + packageType + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess="
-				+ hasBillingAccess + "]";
+				+ hasBillingAccess + ", iskiosk=" + iskiosk + "]";
 	}
 
 }
