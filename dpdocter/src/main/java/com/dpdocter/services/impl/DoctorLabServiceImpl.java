@@ -500,8 +500,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.unwind(
-								"uploadedByeclipse-javadoc:%E2%98%82=dpdocter/%5C/home%5C/harish%5C/.m2%5C/repository%5C/org%5C/mongodb%5C/mongo-java-driver%5C/2.13.0%5C/mongo-java-driver-2.13.0.jar%3Ccom.mongodb(BasicDBObject.class%E2%98%83BasicDBObjectDoctor"),
+						Aggregation.unwind("uploadedByDoctor"),
 						Aggregation.unwind("uploadedByLocation"), Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
