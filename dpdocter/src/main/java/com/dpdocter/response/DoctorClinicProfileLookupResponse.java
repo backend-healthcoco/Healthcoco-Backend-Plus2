@@ -66,8 +66,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private String packageType;
 
-<<<<<<< HEAD
-=======
     private Boolean hasLoginAccess = true;
 	
 	private Boolean hasBillingAccess = true;
@@ -75,6 +73,22 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private Boolean iskoisk=false;
 	
 	
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
+	}
+
 	public Boolean getIskoisk() {
 		return iskoisk;
 	}
@@ -83,7 +97,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.iskoisk = iskoisk;
 	}
 
->>>>>>> 90234822... resolved issue in kiosk API
 	public ObjectId getId() {
 		return id;
 	}
