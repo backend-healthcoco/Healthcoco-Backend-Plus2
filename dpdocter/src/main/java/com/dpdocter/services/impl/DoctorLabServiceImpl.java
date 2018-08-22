@@ -1,11 +1,14 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -37,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.LabPrintSetting;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -72,13 +76,18 @@ import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
 import com.dpdocter.response.DoctorLabReportResponse;
 import com.dpdocter.response.DoctorLabSearchDoctorResponse;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.DoctorLabService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.LabPrintServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -90,6 +99,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 	@Autowired
 	private DoctorLabReportRepository doctorLabReportRepository;
+
+	@Autowired
+	private LabPrintServices labPrintServices;
 
 	@Autowired
 	private FileManager fileManager;
@@ -122,7 +134,13 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	private DoctorLabDoctorReferenceRepository doctorLabDoctorReferenceRepository;
 
 	@Autowired
+	private PatientVisitService patientVisitService;
+
+	@Autowired
 	private SMSServices smsServices;
+
+	@Autowired
+	private JasperReportService jasperReportService;
 
 	@Value(value = "${mail.signup.request.to}")
 	private String mailTo;
@@ -151,6 +169,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Value(value = "${mail.signup..doctor.refenrence.subject}")
 	private String referenceRequestSubject;
 
+	@Value(value = "${jasper.print.doctor.lab.fileName}")
+	private String doctorLabA4FileName;
+
 	private static Logger logger = Logger.getLogger(DoctorLabServiceImpl.class.getName());
 
 	@Override
@@ -159,12 +180,20 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		try {
 			UserCollection doctor = null;
 			DoctorLabReportCollection doctorLabReportCollection = new DoctorLabReportCollection();
+			LabPrintSetting labPrintSetting = labPrintServices.getLabPrintSetting(request.getUploadedByLocationId(),
+					request.getUploadedByHospitalId());
 			for (RecordsFile file : request.getRecordsFiles()) {
+				if (file.getPdfInImgs() != null && labPrintSetting != null) {
+					System.out.println("enter in record file for header  footer print");
+					file.setRecordsUrl(createJasperReport(labPrintSetting, file.getPdfInImgs()));
+				}
 				file.setRecordsUrl(file.getRecordsUrl().replace(imagePath, ""));
 				file.setThumbnailUrl(file.getThumbnailUrl().replace(imagePath, ""));
-
+				file.setPdfInImgs(null);
 			}
+
 			BeanUtil.map(request, doctorLabReportCollection);
+
 			LocationCollection locationCollection = locationRepository
 					.findOne(doctorLabReportCollection.getUploadedByLocationId());
 			if (locationCollection == null) {
@@ -176,6 +205,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					throw new BusinessException(ServiceError.NoRecord, " Doctor not found with doctorId");
 				}
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				DoctorLabReportCollection oldDoctorLabReportCollection = doctorLabReportRepository
 						.findOne(doctorLabReportCollection.getId());
@@ -202,8 +232,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						throw new BusinessException(ServiceError.NoRecord, "No Doctor found by uploadedBydoctorId");
 					}
 
-					doctorLabReportCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
-							? userCollection.getTitle() : "DR.") + " " + userCollection.getFirstName());
+					doctorLabReportCollection.setCreatedBy(
+							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
+									: "DR.") + " " + userCollection.getFirstName());
 				}
 				if (request.getCreatedTime() == null) {
 					doctorLabReportCollection.setCreatedTime(new Date());
@@ -251,6 +282,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			}
 			response = new DoctorLabReport();
 			BeanUtil.map(doctorLabReportCollection, response);
+			for (RecordsFile file : response.getRecordsFiles()) {
+				file.setRecordsUrl(getFinalImageURL(file.getRecordsUrl()));
+				file.setThumbnailUrl(getFinalImageURL(file.getThumbnailUrl()));
+				file.setPdfInImgs(null);
+			}
+
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -275,7 +312,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			FileDetails fileDetails = request.getFileDetails();
 			recordsFile = new RecordsFile();
 			createdTime = new Date();
-
 			String path = "doctorLabReports" + File.separator
 					+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
 
@@ -294,6 +330,15 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			recordsFile.setRecordsFileLabel(recordfileLabel);
 			recordsFile.setRecordsPath(path);
 			recordsFile.setRecordsType(request.getRecordsType());
+			if (recordsFile.getRecordsUrl().toLowerCase().contains(".pdf")) {
+				List<String> imResponses = new ArrayList<String>();
+				fileDetails.setFileName(fileDetails.getFileName() + new Date().getTime());
+				path = "doctorLabReports" + File.separator
+						+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
+				imResponses.addAll(fileManager.convertPdfToImage(fileDetails, path, true));
+				if (imResponses != null && !imResponses.isEmpty())
+					recordsFile.setPdfInImgs(imResponses);
+			}
 
 		} catch (
 
@@ -433,37 +478,32 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Fields.field("uploadedByHospitalId", "$uploadedByHospitalId")));
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation = Aggregation
-						.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
-								Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
-												true))),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays",
-												true))),
-								Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
-								Aggregation.match(criteria), projectList,
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-								Aggregation.skip((page) * size), Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
+						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
+						Aggregation.match(criteria), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 			} else {
 
-				aggregation = Aggregation
-						.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
-								Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
-												true))),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays",
-												true))),
-								Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
-								Aggregation.match(criteria), projectList,
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
+						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.unwind(
+								"uploadedByeclipse-javadoc:%E2%98%82=dpdocter/%5C/home%5C/harish%5C/.m2%5C/repository%5C/org%5C/mongodb%5C/mongo-java-driver%5C/2.13.0%5C/mongo-java-driver-2.13.0.jar%3Ccom.mongodb(BasicDBObject.class%E2%98%83BasicDBObjectDoctor"),
+						Aggregation.unwind("uploadedByLocation"), Aggregation.match(criteria), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}
 			AggregationResults<DoctorLabReportResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1060,4 +1100,119 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		} else
 			return null;
 	}
+
+	public String downloadReport() {
+		String response = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse reportResponse = null;
+
+		parameters.put("headerImg", "/home/harish/keys/NRPL&NABLLETTEHEAD-18.png");
+
+		parameters.put("footerImg", "/home/harish/keys/NRPL&NABLLETTERFOOTER18.png");
+		parameters.put("headerHeight", 60);
+
+		parameters.put("footerHeight", 60);
+
+		List<DBObject> items = new ArrayList<DBObject>();
+		DBObject item = new BasicDBObject();
+		item.put("item", "/home/harish/keys/1803136_1-1.jpg");
+		items.add(item);
+		parameters.put("items", items);
+
+		patientVisitService.generatePrintSetup(parameters, null, null);
+
+		String pdfName = "doctorLab-" + new Date().getTime();
+		String layout = "PORTRAIT";
+		String pageSize = "A4";
+		Integer topMargin = 0;
+		Integer bottonMargin = 0;
+		Integer leftMargin = 0;
+		Integer rightMargin = 0;
+		try {
+			reportResponse = jasperReportService.createPDF(ComponentType.DOCTOR_LAB_REPORTS, parameters,
+					doctorLabA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+		} catch (NumberFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (reportResponse != null)
+			response =
+
+					getFinalImageURL(reportResponse.getPath());
+		if (reportResponse != null && reportResponse.getFileSystemResource() != null) {
+			if (reportResponse.getFileSystemResource().getFile().exists())
+				reportResponse.getFileSystemResource().getFile().delete();
+		} else {
+			logger.warn("Invoice Id does not exist");
+			throw new BusinessException(ServiceError.NotFound, "Id does not exist");
+		}
+
+		return response;
+	}
+
+	public String createJasperReport(LabPrintSetting labPrintSetting, List<String> imageList) {
+		String response = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse reportResponse = null;
+		int height = 0;
+
+		if (labPrintSetting.getHeaderSetup() != null) {
+			parameters.put("headerImg",
+					!DPDoctorUtils.anyStringEmpty(labPrintSetting.getHeaderSetup().getImageurl())
+							? labPrintSetting.getHeaderSetup().getImageurl()
+							: null);
+			height = labPrintSetting.getHeaderSetup().getHeight();
+		}
+		parameters.put("headerHeight", height);
+		height = 0;
+		if (labPrintSetting.getFooterSetup() != null) {
+			parameters.put("footerImg",
+					!DPDoctorUtils.anyStringEmpty(labPrintSetting.getFooterSetup().getImageurl())
+							? labPrintSetting.getFooterSetup().getImageurl()
+							: null);
+			height = labPrintSetting.getFooterSetup().getHeight();
+		}
+
+		parameters.put("footerHeight", height);
+		if (imageList != null && !imageList.isEmpty()) {
+			List<DBObject> items = new ArrayList<DBObject>();
+			DBObject item = null;
+			for (String image : imageList) {
+				item = new BasicDBObject();
+				item.put("item", image);
+				items.add(item);
+			}
+			parameters.put("items", items);
+
+		}
+		patientVisitService.generatePrintSetup(parameters, null, null);
+		String pdfName = "doctorLab-" + new Date().getTime();
+		String layout = "PORTRAIT";
+		String pageSize = "A4";
+		Integer topMargin = 0;
+		Integer bottonMargin = 0;
+		Integer leftMargin = 0;
+		Integer rightMargin = 0;
+		try {
+			reportResponse = jasperReportService.createPDF(ComponentType.DOCTOR_LAB_REPORTS, parameters,
+					doctorLabA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+		} catch (NumberFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (reportResponse != null && reportResponse.getFileSystemResource() != null) {
+			if (reportResponse.getFileSystemResource().getFile().exists())
+				reportResponse.getFileSystemResource().getFile().delete();
+		} else {
+			logger.warn("Invoice Id does not exist");
+			throw new BusinessException(ServiceError.NotFound, "Id does not exist");
+		}
+
+		return response;
+	}
+
 }

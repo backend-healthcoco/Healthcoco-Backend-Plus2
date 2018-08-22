@@ -1,5 +1,7 @@
 package com.dpdocter.services;
 
+import java.util.List;
+
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.response.ImageURLResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -17,5 +19,7 @@ public interface FileManager {
 	public String saveThumbnailUrl(FormDataBodyPart file, String path);
 
 	public Double saveRecordBase64(FileDetails fileDetail, String recordPath);
+	
+	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail) throws Exception;
 
 }

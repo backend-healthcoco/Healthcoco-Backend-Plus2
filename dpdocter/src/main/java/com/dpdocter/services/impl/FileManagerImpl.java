@@ -8,12 +8,18 @@ import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -252,9 +258,9 @@ public class FileManagerImpl implements FileManager {
 			byte[] contentBytes = IOUtils.toByteArray(fis);
 
 			/*
-			 * fileSizeInMB = new BigDecimal(contentBytes.length).divide(new
-			 * BigDecimal(1000 * 1000)).doubleValue(); if (fileSizeInMB > 10) {
-			 * throw new BusinessException(ServiceError.Unknown,
+			 * fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000
+			 * * 1000)).doubleValue(); if (fileSizeInMB > 10) { throw new
+			 * BusinessException(ServiceError.Unknown,
 			 * " You cannot upload file more than 1O mb"); }
 			 */
 
@@ -353,6 +359,43 @@ public class FileManagerImpl implements FileManager {
 			System.out.println("Error Message: " + e.getMessage());
 		}
 		return thumbnailUrl;
+	}
+
+	@Override
+	@Transactional
+	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail)
+			throws Exception {
+		FileDetails fileDetail = null;
+		byte[] base64 = Base64.decodeBase64(fileDetails.getFileEncoded());
+		PDDocument document = PDDocument.load(base64);
+		PDFRenderer pdfRenderer = new PDFRenderer(document);
+		document.getPages().getCount();
+		List<String> imagelist = new ArrayList<String>();
+		ByteArrayOutputStream outstream = null;
+		ImageURLResponse imageURLResponse = null;
+		for (int i = 0; i < document.getPages().getCount(); i++) {
+			imageURLResponse = new ImageURLResponse();
+			fileDetail = new FileDetails();
+			// note that the page number parameter is zero based
+			BufferedImage bim = pdfRenderer.renderImageWithDPI(i, 500, ImageType.RGB);
+			outstream = new ByteArrayOutputStream();
+			ImageIOUtil.writeImage(bim, "jpg", outstream);
+			// suffix in filename will be used as the file format
+
+			// imageURLResponse = saveImageAndReturnImageUrl(outstream,
+			// fileDetails.getFileName().replace(" ", "") + "-" + (i) , path, false);
+			fileDetail.setFileEncoded(Base64.encodeBase64String(outstream.toByteArray()));
+
+			fileDetail.setFileName(fileDetails.getFileName().replace(" ", "") + "-" + (i));
+			fileDetail.setFileExtension("jpg");
+			imageURLResponse = saveImageAndReturnImageUrl(fileDetail, path, false);
+			if (imageURLResponse != null && !DPDoctorUtils.anyStringEmpty(imageURLResponse.getImageUrl()))
+				imagelist.add(imagePath + imageURLResponse.getImageUrl());
+		}
+		System.out.println(imagelist.size());
+		document.close();
+
+		return imagelist;
 	}
 
 }
