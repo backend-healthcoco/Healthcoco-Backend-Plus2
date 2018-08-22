@@ -42,6 +42,7 @@ public class PatientCard {
 	private User user;
 
 	private String doctorSepecificPatientId;
+	private Boolean isPatientOTPVerified = false;
 
 	public User getUser() {
 		return user;
@@ -153,6 +154,14 @@ public class PatientCard {
 
 	public void setPNUM(String pNUM) {
 		PNUM = pNUM;
+	}
+
+	public Boolean getIsPatientOTPVerified() {
+		return isPatientOTPVerified;
+	}
+
+	public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
+		this.isPatientOTPVerified = isPatientOTPVerified;
 	}
 
 	@Override
