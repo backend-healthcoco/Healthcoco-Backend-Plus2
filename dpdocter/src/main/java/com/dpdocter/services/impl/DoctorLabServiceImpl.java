@@ -1213,7 +1213,11 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			throw new BusinessException(ServiceError.NotFound, "Id does not exist");
 		}
 
-		return response;
+		if (reportResponse == null)
+			return response;
+		else {
+			return reportResponse.getPath();
+		}
 	}
 
 }
