@@ -204,7 +204,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			pageWidth = 420;
 			pageHeight = 595;
 		}
-		if (ComponentType.DOCTOR_LAB_REPORTS.getType().equals("DOCTOR_LAB_REPORTS")) {
+		if (ComponentType.DOCTOR_LAB_REPORTS.getType().equals(componentType.getType())) {
 			leftMargin = 0;
 			rightMargin = 0;
 			topMargin = 0;
@@ -8002,6 +8002,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		return band;
 	}
+
 	private void createDoctorLabReport(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle)
 			throws JRException {
@@ -8063,7 +8064,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{item}.equals(null) && !$F{item}.isEmpty()"));
-		band.setHeight(820 - headerHeight-footerHeight);
+		band.setHeight(820 - headerHeight - footerHeight);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
@@ -8072,7 +8073,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setExpression(new JRDesignExpression("$F{item}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(0);
-		jrDesignImage.setHeight(820 - headerHeight-footerHeight);
+		jrDesignImage.setHeight(820 - headerHeight - footerHeight);
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		band.addElement(jrDesignImage);
