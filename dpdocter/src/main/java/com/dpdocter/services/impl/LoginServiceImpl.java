@@ -13,8 +13,10 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -26,9 +28,11 @@ import com.dpdocter.beans.DoctorLoginPin;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.LoginResponse;
+import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
+import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -39,6 +43,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserNutritionSubscriptionCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
@@ -54,6 +59,7 @@ import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorLoginPinRequest;
+import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
@@ -382,6 +388,7 @@ public class LoginServiceImpl implements LoginService {
 						}
 						BeanUtil.map(userCollection, user);
 						user.setUserId(userCollection.getId().toString());
+						user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
 						if (response == null)
 							response = new ArrayList<RegisteredPatientDetails>();
 						response.add(user);
@@ -415,11 +422,15 @@ public class LoginServiceImpl implements LoginService {
 						user.setPatient(patient);
 					}
 					BeanUtil.map(userCollection, user);
+					user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
 					user.setUserId(userCollection.getId().toString());
+
 					if (response == null)
 						response = new ArrayList<RegisteredPatientDetails>();
 					response.add(user);
+
 				}
+
 			}
 			if (response == null) {
 				logger.warn(loginPatient);
@@ -622,5 +633,50 @@ public class LoginServiceImpl implements LoginService {
 
 		}
 		return response;
+	}
+
+	private List<UserNutritionSubscriptionResponse> addUserNutritionSubscriptionResponse(
+			UserCollection userCollection) {
+
+		Criteria criteria = new Criteria();
+
+		criteria.and("userId").is(userCollection.getId()).and("discarded").is(false).and("isExpired").is(false);
+		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+
+				Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id", "subscriptionPlan"),
+				Aggregation.unwind("subscriptionPlan"),
+				Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "NutritionPlan"),
+				Aggregation.unwind("NutritionPlan"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+		AggregationResults<UserNutritionSubscriptionResponse> results = mongoTemplate.aggregate(aggregation,
+				UserNutritionSubscriptionCollection.class, UserNutritionSubscriptionResponse.class);
+		List<UserNutritionSubscriptionResponse> userNutritionSubscriptionResponse = results.getMappedResults();
+		if (userNutritionSubscriptionResponse != null) {
+			for (UserNutritionSubscriptionResponse nutritionSubscriptionResponse : userNutritionSubscriptionResponse) {
+				NutritionPlan nutritionPlan = nutritionSubscriptionResponse.getNutritionPlan();
+				if (nutritionPlan != null) {
+					if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getBannerImage())) {
+						nutritionPlan.setBannerImage(getFinalImageURL(nutritionPlan.getBannerImage()));
+					}
+					if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getPlanImage())) {
+						nutritionPlan.setPlanImage(getFinalImageURL(nutritionPlan.getPlanImage()));
+					}
+					nutritionSubscriptionResponse.setNutritionPlan(nutritionPlan);
+				}
+				SubscriptionNutritionPlan subscriptionNutritionPlan = nutritionSubscriptionResponse
+						.getSubscriptionPlan();
+				if (subscriptionNutritionPlan != null) {
+
+					if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlan.getBackgroundImage())) {
+						subscriptionNutritionPlan
+								.setBackgroundImage(getFinalImageURL(subscriptionNutritionPlan.getBackgroundImage()));
+					}
+					nutritionSubscriptionResponse.setSubscriptionPlan(subscriptionNutritionPlan);
+				}
+
+			}
+
+		}
+		return userNutritionSubscriptionResponse;
 	}
 }

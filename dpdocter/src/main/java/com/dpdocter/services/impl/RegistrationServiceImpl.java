@@ -1183,7 +1183,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						Criteria criteria = new Criteria();
 
 						criteria.and("userId").is(userCollection.getId()).and("discarded").is(false).and("isExpired")
-								.is(true);
+								.is(false);
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
 								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
