@@ -497,7 +497,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 								value = value.replace(" ", "%20");
 								isImage = true;
 							} else {
-								value = value.replace(" ", "%20");
 								isImage = false;
 							}
 
@@ -515,7 +514,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		if (procedureSheetCollection.getDiagrams() != null && !procedureSheetCollection.getDiagrams().isEmpty())
 
 		{
-
 
 			for (ImageURLResponse urlResponse : procedureSheetCollection.getDiagrams()) {
 				urlResponse.setImageUrl(urlResponse.getImageUrl().replace(" ", "%20"));

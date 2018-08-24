@@ -205,7 +205,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			pageHeight = 595;
 		}
 
-		if (ComponentType.DOCTOR_LAB_REPORTS.getType().equals("DOCTOR_LAB_REPORTS")) {
+		if (ComponentType.DOCTOR_LAB_REPORTS.getType().equals(componentType.getType())) {
 			leftMargin = 0;
 			rightMargin = 0;
 			topMargin = 0;
