@@ -7946,7 +7946,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{name}.equals(null) && !$F{name}.isEmpty()"));
-		band.setHeight(750);
+		band.setHeight(pageHeight);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
 		jrDesignTextField = new JRDesignTextField();
@@ -7968,7 +7968,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setExpression(new JRDesignExpression("$F{imageUrl}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(20);
-		jrDesignImage.setHeight(710);
+		jrDesignImage.setHeight(pageHeight-20);
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		band.addElement(jrDesignImage);
