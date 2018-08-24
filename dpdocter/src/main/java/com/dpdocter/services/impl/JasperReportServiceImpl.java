@@ -217,10 +217,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.setColumnSpacing(0);
 		jasperDesign.setLeftMargin(leftMargin);
 		jasperDesign.setRightMargin(rightMargin);
-		if (topMargin != null)
+		if (topMargin != null) {
 			jasperDesign.setTopMargin(topMargin);
-		if (bottonMargin != null)
+			pageHeight = pageHeight - topMargin;
+		}
+		if (bottonMargin != null) {
 			jasperDesign.setBottomMargin(bottonMargin);
+			pageHeight = pageHeight - bottonMargin;
+		}
 
 		JRDesignStyle normalStyle = new JRDesignStyle();
 		normalStyle.setName("Noto Sans");
@@ -7968,7 +7972,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setExpression(new JRDesignExpression("$F{imageUrl}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(20);
-		jrDesignImage.setHeight(pageHeight-20);
+		jrDesignImage.setHeight(pageHeight - 20);
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		band.addElement(jrDesignImage);
@@ -8064,7 +8068,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{item}.equals(null) && !$F{item}.isEmpty()"));
-		band.setHeight(820 - headerHeight-footerHeight);
+		band.setHeight(820 - headerHeight - footerHeight);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
@@ -8073,7 +8077,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setExpression(new JRDesignExpression("$F{item}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(0);
-		jrDesignImage.setHeight(820 - headerHeight-footerHeight);
+		jrDesignImage.setHeight(820 - headerHeight - footerHeight);
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		band.addElement(jrDesignImage);
