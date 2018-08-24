@@ -6,7 +6,7 @@ import java.util.List;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.TreatmentResponse;
+import com.dpdocter.response.v2.TreatmentResponse;
 
 public class PatientTreatment  extends GenericCollection {
 	private List<TreatmentResponse> treatments;

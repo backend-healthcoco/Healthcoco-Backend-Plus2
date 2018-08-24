@@ -157,5 +157,26 @@ public interface PathProxy {
 	public interface PrescriptionUrls {
 		
 	}
+	
+	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
+
+	public interface ClinicalNotesUrls {
+		
+	}
+	
+	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
+
+	public interface PatientTreatmentURLs {
+		
+	}
+	
+	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
+	
+	public interface PatientVisitUrls {
+
+		public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
+
+		public static final String GET_VISITS_FOR_WEB = "/get";
+	}
 
 }

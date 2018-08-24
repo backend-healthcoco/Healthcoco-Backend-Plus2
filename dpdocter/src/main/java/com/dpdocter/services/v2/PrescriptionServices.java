@@ -2,6 +2,9 @@ package com.dpdocter.services.v2;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
+import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.v2.Prescription;
 
 public interface PrescriptionServices {
@@ -32,6 +35,10 @@ public interface PrescriptionServices {
 
 	List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId,
 			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
+
+	List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId);
+
+	EyePrescription getEyePrescription(String id);
 
 	/*List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId);
 

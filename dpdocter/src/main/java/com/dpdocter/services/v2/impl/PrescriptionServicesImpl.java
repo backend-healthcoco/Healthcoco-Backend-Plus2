@@ -20,16 +20,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.beans.v2.PrescriptionItemDetail;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.DiagnosticTestCollection;
+import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DiagnosticTestRepository;
+import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.PrescriptionInventoryBatchResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
@@ -56,6 +59,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private InventoryService inventoryService;
+	
+	@Autowired
+	private EyePrescriptionRepository eyePrescriptionRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -325,5 +331,114 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
 		}
 		return prescriptions;
+	}
+	
+	@Override
+	@Transactional
+	public List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId) {
+		List<Prescription> prescriptions = null;
+		try {
+			Criteria criteria = new Criteria("_id").in(prescriptionIds).and("isPatientDiscarded").ne(true);
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
+					Fields.field("advice", "$advice"), Fields.field("time", "$time"),
+					Fields.field("fromDate", "$fromDate"), Fields.field("patientId", "$patientId"),
+					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
+					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("items.dosageTime", "$items.dosageTime"),
+					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.drugQuantity", "$items.drugQuantity"),
+					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
+					Fields.field("tests", "$diagnosticTests")));
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
+									.append("includeArrayIndex", "arrayIndex1"))),
+					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
+									.append("includeArrayIndex", "arrayIndex3"))),
+					new CustomAggregationOperation(
+							new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true)
+											.append("includeArrayIndex",
+													"arrayIndex5"))),
+					projectList,
+					new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id", "$_id")
+											.append("name", new BasicDBObject("$first", "$name"))
+											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("items", new BasicDBObject("$push", "$items"))
+											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+											.append("advice", new BasicDBObject("$first", "$advice"))
+											.append("tests", new BasicDBObject("$first", "$tests"))
+											.append("time", new BasicDBObject("$first", "$time"))
+											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("isFeedbackAvailable",
+													new BasicDBObject("$first", "$isFeedbackAvailable"))
+											.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+											.append("visitId", new BasicDBObject("$first", "$visitId"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
+			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
+					"prescription_cl", Prescription.class);
+			prescriptions = aggregationResults.getMappedResults();
+			if (prescriptions != null && !prescriptions.isEmpty()) {
+				for (Prescription prescription : prescriptions) {
+					if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
+						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
+						for (TestAndRecordData data : prescription.getTests()) {
+							if (data.getTestId() != null) {
+								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
+										.findOne(data.getTestId());
+								DiagnosticTest diagnosticTest = new DiagnosticTest();
+								if (diagnosticTestCollection != null) {
+									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+								}
+								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+										(!DPDoctorUtils.anyStringEmpty(data.getRecordId())
+												? data.getRecordId().toString() : null)));
+							}
+						}
+						prescription.setTests(null);
+						prescription.setDiagnosticTests(diagnosticTests);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Prescription");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Prescription");
+		}
+		return prescriptions;
+	}
+	
+
+	@Override
+	@Transactional
+	public EyePrescription getEyePrescription(String id) {
+		EyePrescription response = null;
+		EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository.findOne(new ObjectId(id));
+		if (eyePrescriptionCollection == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Record not found");
+		}
+		response = new EyePrescription();
+		BeanUtil.map(eyePrescriptionCollection, response);
+		return response;
 	}
 }
