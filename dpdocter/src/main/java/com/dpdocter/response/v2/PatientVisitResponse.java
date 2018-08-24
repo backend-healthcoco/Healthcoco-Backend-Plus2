@@ -3,14 +3,14 @@ package com.dpdocter.response.v2;
 import java.util.Date;
 import java.util.List;
 
-import com.dpdocter.beans.Appointment;
-import com.dpdocter.beans.ClinicalNotes;
-import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.v2.ClinicalNotes;
+import com.dpdocter.beans.v2.Diagram;
 import com.dpdocter.beans.EyePrescription;
-import com.dpdocter.beans.PatientTreatment;
-import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.v2.PatientTreatment;
+import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.beans.v2.AppointmentDetails;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.enums.VisitedFor;
@@ -38,14 +38,14 @@ public class PatientVisitResponse extends GenericCollection {
 	private List<ClinicalNotes> clinicalNotes;
 
 	private List<Diagram> clinicalNotesDiagrams;
-	
+
 	private List<PatientTreatment> patientTreatment;
 
 	private List<Records> records;
 
 	private String appointmentId;
 
-	private Appointment appointmentRequest;
+	private AppointmentDetails appointmentRequest;
 
 	private WorkingHours time;
 
@@ -56,7 +56,7 @@ public class PatientVisitResponse extends GenericCollection {
 	private Boolean discarded = false;
 
 	private PatientCollection patient;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -193,11 +193,11 @@ public class PatientVisitResponse extends GenericCollection {
 		this.clinicalNotesDiagrams = clinicalNotesDiagrams;
 	}
 
-	public Appointment getAppointmentRequest() {
+	public AppointmentDetails getAppointmentRequest() {
 		return appointmentRequest;
 	}
 
-	public void setAppointmentRequest(Appointment appointmentRequest) {
+	public void setAppointmentRequest(AppointmentDetails appointmentRequest) {
 		this.appointmentRequest = appointmentRequest;
 	}
 

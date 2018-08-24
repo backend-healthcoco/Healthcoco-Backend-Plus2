@@ -17,29 +17,29 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.request.AddMultipleDataRequest;
-import com.dpdocter.response.PatientVisitResponse;
+import com.dpdocter.response.v2.PatientVisitResponse;
 
 public interface PatientVisitService {
 	// boolean addRecord(PatientVisit request);
-
+/*
 	String addRecord(Object details, VisitedFor visitedFor, String visitId);
 
 	boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
-
+*/
 	DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size,
 			String role);
 
 	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size,
 			String role);
-
+/*
 	PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
 
 	PatientVisitResponse getVisit(String visitId);
-
+*/
 	List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor);
 
-	Boolean email(String visitId, String emailAddress);
+	/*Boolean email(String visitId, String emailAddress);
 
 	PatientVisitResponse deleteVisit(String visitId, Boolean discarded);
 
@@ -71,5 +71,5 @@ public interface PatientVisitService {
 	
 	ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
 			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
-			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection);
+			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection);*/
 }

@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Patient {
 
@@ -21,6 +22,10 @@ public class Patient {
 	private String emailAddress;
 
 	private String doctorId;
+
+	private String locationId;
+
+	private String hospitalId;
 
 	private String addressId;
 
@@ -53,17 +58,17 @@ public class Patient {
 	private List<String> consultantDoctorIds;
 
 	private List<QuestionAnswers> medicalQuestionAnswers;
-	
+
 	private List<QuestionAnswers> lifestyleQuestionAnswers;
 
 	private PersonalInformation personalInformation;
 
 	private Long registrationDate;
-	
+
 	private Boolean isPatientDiscarded = false;
-	
+
 	private String PNUM;
-	
+
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -272,7 +277,30 @@ public class Patient {
 		this.lifestyleQuestionAnswers = lifestyleQuestionAnswers;
 	}
 
-	
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
