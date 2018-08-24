@@ -298,7 +298,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 					if (request.getType().equalsIgnoreCase("DOCTOR")) {
 						if (locationCollection != null) {
-							String message = "Hi, {doctorName} has suggested {patientName} for you.";
+							String message = "Healthcoco! Hi, {doctorName} has suggested {patientName} ({patientnumber}) for {locationName}.";
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							smsTrackDetail.setDoctorId(doctorId);
 							smsTrackDetail.setLocationId(locationId);
@@ -311,6 +311,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							message = message.replace("{doctorName}",
 									userCollection.getTitle() + userCollection.getFirstName());
 							message = message.replace("{patientName}", request.getLocalPatientName());
+							message = message.replace("{patientnumber}", request.getMobileNumber());
+							message = message.replace("{locationName}", locationCollection.getLocationName());
 							sms.setSmsText(message);
 							SMSAddress smsAddress = new SMSAddress();
 							smsAddress.setRecipient(locationCollection.getClinicNumber());
@@ -326,7 +328,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 						StringBuilder builder = new StringBuilder();
 						builder.append(
-								"Healthcoco user {patientName} ! {doctorName} has suggested you below scan(s).\n");
+								"Healthcoco - {patientName} ! {doctorName} has suggested you dental scan(s).\n");
 						builder.append("\n");
 						for (DentalDiagnosticServiceRequest serviceRequest : request.getServices()) {
 							if (serviceRequest.getToothNumber() != null) {
@@ -363,9 +365,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							}
 
 						}
+						if (request.getSpecialInstructions() != null) {
+							builder.append(request.getSpecialInstructions() + "\n");
+						}
 						builder.append("\n");
 						builder.append(
-								"Imaging centre : {locationName} ({clinicNumber}). {locationMapLink}");
+								"Imaging centre : {locationName} ({clinicNumber} {locationAddress}). {locationMapLink}");
 						String text = builder.toString();
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(doctorId);
@@ -379,6 +384,37 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						text = text.replace("{patientName}", request.getLocalPatientName());
 						text = text.replace("{doctorName}", userCollection.getTitle() + userCollection.getFirstName());
 						text = text.replace("{locationName}", locationCollection.getLocationName());
+						
+						String address = (!DPDoctorUtils
+								.anyStringEmpty(locationCollection.getStreetAddress())
+										? locationCollection.getStreetAddress() + ", "
+										: "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										?locationCollection.getLocality() + ", "
+										: "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", "
+										: "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", "
+										: "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", "
+										: "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode()
+										: "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						
+						if (address != null) {
+							text = text.replace("{locationAddress}", address);
+						} else {
+							text = text.replace("{locationAddress}", "");
+						}
+						
 						if (locationCollection.getClinicNumber() != null) {
 							text = text.replace("{clinicNumber}", locationCollection.getClinicNumber());
 						} else {
