@@ -498,7 +498,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 								value = value.replace(" ", "%20");
 								isImage = true;
 							} else {
-								value = value.replace(" ", "%20");
 								isImage = false;
 							}
 					}
