@@ -279,10 +279,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 			BeanUtil.map(request, procedureSheetStructureCollection);
 			procedureSheetStructureCollection.setProcedureSheetFields(request.getProcedureSheetFields());
+			procedureSheetStructureCollection.setDiagrams(request.getDiagrams());
 			procedureSheetStructureCollection = procedureSheetStructureRepository
 					.save(procedureSheetStructureCollection);
 			if (procedureSheetStructureCollection != null) {
 				response = new ProcedureSheetStructureResponse();
+				response.setDiagrams(procedureSheetStructureCollection.getDiagrams());
 				response.setProcedureSheetFields(procedureSheetStructureCollection.getProcedureSheetFields());
 				BeanUtil.map(procedureSheetStructureCollection, response);
 			}
