@@ -45,6 +45,17 @@ public class NutritionPlanCollection extends GenericCollection {
 	@Field
 	private Boolean discarded = false;
 
+	@Field
+	private Integer rank = 0;
+
+	public Integer getRank() {
+		return rank;
+	}
+
+	public void setRank(Integer rank) {
+		this.rank = rank;
+	}
+
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -133,7 +144,6 @@ public class NutritionPlanCollection extends GenericCollection {
 		this.backgroundColor = backgroundColor;
 	}
 
-	
 	public String toString() {
 		return "NutritionPlanCollection [id=" + id + ", title=" + title + ", type=" + type + ", planDescription="
 				+ planDescription + ", nutrientDescriptions=" + nutrientDescriptions + ", recommendedFoods="
