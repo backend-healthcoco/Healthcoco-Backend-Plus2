@@ -39,4 +39,6 @@ public interface SMSServices {
 
 	Boolean sendAndSaveOTPSMS(String message, String mobileNumber, String otp);
 
+	Boolean sendPatientOTP(String mobileNumber, String otp);
+
 }

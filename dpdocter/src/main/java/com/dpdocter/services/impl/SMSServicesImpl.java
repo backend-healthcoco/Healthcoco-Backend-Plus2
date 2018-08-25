@@ -118,6 +118,9 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Value(value = "${mobile.numbers.resource}")
 	private String MOBILE_NUMBERS_RESOURCE;
+	
+	@Value("${sms.tfactor.auth.key}")
+	private String tfactorAuthKey;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -793,6 +796,41 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while sendind Sms");
 		}
 		return response;
+	}
+	
+	@Override
+	public Boolean sendPatientOTP(String mobileNumber , String otp)
+	{
+		Boolean boolResponse = false;
+		//http://dndsms.resellergrow.com/api/otp.php?authkey=93114AV2rXJuxL56001692&mobile=9766914900&message=0808&sender=HTCOCO&otp=0808
+		StringBuffer response = new StringBuffer();
+		try {
+			String url = "https://2factor.in/API/V1/"+tfactorAuthKey+"/SMS/"+mobileNumber+"/"+otp+"/OTP";
+			//System.out.println(url);
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			// optional default is POST
+			con.setRequestMethod("GET");
+			// add request header
+			// con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+
+				response.append(inputLine);
+
+			}
+			in.close();			
+			if(responseCode == 200)boolResponse = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return boolResponse;
 	}
 	
 	public static void main(String[] args) throws Exception {

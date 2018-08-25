@@ -436,7 +436,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 
 			request.setFirstName(request.getLocalPatientName());
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			
 			Date createdTime = new Date();
 
 			CheckPatientSignUpResponse checkPatientSignUpResponse = null;
@@ -634,12 +634,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			registeredPatientDetails.setGroups(groups);
 
-			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
-					ComponentType.PATIENT_REFRESH.getType(), null, null);
-			pushNotificationServices.notifyUser(patientCollection.getUserId().toString(),
-					"Welcome to " + locationCollection.getLocationName()
-							+ ", let us know about your visit. We will be happy to serve you again.",
-					ComponentType.PATIENT.getType(), patientCollection.getUserId().toString(), null);
+			if (request.getLocationId() != null) {
+				LocationCollection locationCollection = locationRepository
+						.findOne(new ObjectId(request.getLocationId()));
+
+				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
+					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
+						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
+					}
+				}
+				
+				pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
+						ComponentType.PATIENT_REFRESH.getType(), null, null);
+				pushNotificationServices.notifyUser(patientCollection.getUserId().toString(),
+						"Welcome to " + locationCollection.getLocationName()
+								+ ", let us know about your visit. We will be happy to serve you again.",
+						ComponentType.PATIENT.getType(), patientCollection.getUserId().toString(), null);
+			}
+			
 
 			if (request.getRecordType() != null && !DPDoctorUtils.anyStringEmpty(request.getRecordId())) {
 				if (request.getRecordType().equals(ComponentType.DOCTOR_LAB_REPORTS)) {
@@ -653,11 +665,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 					ComponentType.PATIENT_REFRESH.getType(), null, null);
 
-			if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
-				if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
-					sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
-				}
-			}
+		
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -736,8 +744,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 
 			// save Patient Info
 			if (DPDoctorUtils.anyStringEmpty(doctorObjectId, hospitalObjectId, locationObjectId)) {
@@ -1052,11 +1058,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 					ComponentType.PATIENT_REFRESH.getType(), null, null);
 
-			if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
-				if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
-					sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
+			if(request.getLocationId() != null)
+			{
+				LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
+					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
+						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
+					}
 				}
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
