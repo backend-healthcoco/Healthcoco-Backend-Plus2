@@ -153,8 +153,9 @@ public class LoginServiceImpl implements LoginService {
 				return response;
 			}
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId")
-							.exists(true).and("roleId").exists(true)),
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId")
+									.exists(true).and("roleId").exists(true)),
 							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
 							Aggregation.unwind("roleCollection")),
 					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
@@ -278,11 +279,13 @@ public class LoginServiceImpl implements LoginService {
 									hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
+									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									hospitals.add(hospital);
 								} else {
 									Hospital hospital = checkHospitalId
 											.get(locationCollection.getHospitalId().toString());
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
+									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									hospitals.add(hospital);
 								}
 							}

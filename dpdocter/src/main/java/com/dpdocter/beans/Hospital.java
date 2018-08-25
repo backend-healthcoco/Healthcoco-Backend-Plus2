@@ -10,7 +10,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Hospital {
-	private String id; 
+	private String id;
 
 	private String hospitalName;
 
