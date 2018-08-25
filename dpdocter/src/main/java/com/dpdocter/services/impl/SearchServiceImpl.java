@@ -88,13 +88,13 @@ public class SearchServiceImpl implements SearchService {
 			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
 				speciality = null;
 			}
-			
+
 			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
 				service = null;
 			} else {
 				service = service.replace("-", " ");
 			}
-			
+
 			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
 			QueryBuilder serviceQueryBuilder = createServiceFilter(service);
 			QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
@@ -125,8 +125,7 @@ public class SearchServiceImpl implements SearchService {
 				boolQueryBuilder.must(serviceQueryBuilder);
 				boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
 			}
-				
-			
+
 			if (facilityQueryBuilder != null) {
 				boolQueryBuilder.must(facilityQueryBuilder);
 				boolQueryBuilderForNearByDoctors.must(facilityQueryBuilder);
@@ -237,22 +236,26 @@ public class SearchServiceImpl implements SearchService {
 				if (nearByDoctors != null) {
 					response.setNearByDoctors(formatDoctorData(nearByDoctors, latitude, longitude));
 				}
-				
-				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
-					for(String matchSpeciality : response.getDoctors().get(0).getSpecialities()) {
-						if((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))
-								.equalsIgnoreCase((matchSpeciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))))
-								response.setUnformattedSpeciality(matchSpeciality);
+
+				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")
+						&& response.getDoctors() != null && !response.getDoctors().isEmpty()) {
+					for (String matchSpeciality : response.getDoctors().get(0).getSpecialities()) {
+						if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))
+								.equalsIgnoreCase((matchSpeciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+										.replaceAll("--", "-"))))
+							response.setUnformattedSpeciality(matchSpeciality);
 					}
 					speciality = speciality.replace("-", " ");
 					response.setSpeciality(StringUtils.capitalize(speciality));
 					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
-				}else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")) {
-					
-					for(String matchService : response.getDoctors().get(0).getServices()) {
-						if((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))
-								.equalsIgnoreCase((matchService.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))))
-								response.setUnformattedService(matchService);
+				} else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")
+						&& response.getDoctors() != null && !response.getDoctors().isEmpty()) {
+
+					for (String matchService : response.getDoctors().get(0).getServices()) {
+						if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))
+								.equalsIgnoreCase((matchService.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+										.replaceAll("--", "-"))))
+							response.setUnformattedService(matchService);
 					}
 					service = service.replace("-", " ");
 					response.setService(StringUtils.capitalize(service));
@@ -330,10 +333,11 @@ public class SearchServiceImpl implements SearchService {
 	@SuppressWarnings("unchecked")
 	private QueryBuilder createServiceFilter(String service) {
 		QueryBuilder queryBuilder = null;
-		if (!DPDoctorUtils.anyStringEmpty(service)  && !service.equalsIgnoreCase("DOCTOR")) {
-			
-			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository.findByName(service);
-			
+		if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("DOCTOR")) {
+
+			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
+					.findByName(service);
+
 			if (esTreatmentServiceDocuments != null) {
 				Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
 						new BeanToPropertyValueTransformer("id"));
@@ -344,7 +348,7 @@ public class SearchServiceImpl implements SearchService {
 		}
 		return queryBuilder;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private QueryBuilder createSpecialityFilter(String speciality) {
 		QueryBuilder queryBuilder = null;
