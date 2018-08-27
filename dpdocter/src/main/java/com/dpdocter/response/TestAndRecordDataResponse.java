@@ -8,6 +8,9 @@ public class TestAndRecordDataResponse{
 
     private String recordId;
     
+	public TestAndRecordDataResponse() {
+	}
+
 	public TestAndRecordDataResponse(DiagnosticTest test, String recordId) {
 		this.test = test;
 		this.recordId = recordId;
