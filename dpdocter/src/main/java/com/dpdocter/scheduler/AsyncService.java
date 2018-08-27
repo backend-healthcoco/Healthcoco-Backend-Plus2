@@ -1,9 +1,13 @@
 package com.dpdocter.scheduler;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,29 +15,46 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientNumberAndUserIds;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.BlockUserCollection;
+import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.ReplyType;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.BlockUserRepository;
 import com.dpdocter.repository.SearchRequestToPharmacyRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
+import com.dpdocter.response.UserNutritionSubscriptionResponse;
+import com.dpdocter.services.EmailTackService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class AsyncService {
@@ -53,11 +74,29 @@ public class AsyncService {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
+	@Value(value = "${nutrition.suscription.plan.transaction.success.message}")
+	private String successmassage;
+
+	@Value(value = "${nutrition.suscription.plan.transaction.decline.message}")
+	private String declinemassage;
+
 	@Autowired
 	private SearchRequestToPharmacyRepository searchRequestToPharmacyRepository;
 
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private SMSServices sMSServices;
+
+	@Autowired
+	private EmailTackService emailTackService;
+
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
+	private MailService mailService;
 
 	@Async
 	public void checkFakeRequestCount(String userId, BlockUserCollection blockUserCollection)
@@ -109,8 +148,8 @@ public class AsyncService {
 							.and("userState").is("USERSTATECOMPLETE")),
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", "$mobileNumber")
-									.append("userIds", new BasicDBObject("$push", "$_id")).append("mobileNumber",
-											new BasicDBObject("$first", "$mobileNumber")))));
+									.append("userIds", new BasicDBObject("$push", "$_id"))
+									.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber")))));
 
 			PatientNumberAndUserIds user = mongoTemplate
 					.aggregate(aggregation, UserCollection.class, PatientNumberAndUserIds.class)
@@ -121,17 +160,15 @@ public class AsyncService {
 			criteria.and("createdTime").gt(date);
 			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(user.getUserIds());
 
-			aggregation = Aggregation
-					.newAggregation(
-							Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
-									"response"),
-							Aggregation.unwind("response"),
-							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-							Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
-											.append("uniqueRequestId",
-													new BasicDBObject("$first", "$uniqueRequestId")))));
+			aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
+							"response"),
+					Aggregation.unwind("response"),
+					Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+					Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
+									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId")))));
 
 			countfor24Hour = mongoTemplate
 					.aggregate(aggregation, SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class)
@@ -144,17 +181,15 @@ public class AsyncService {
 
 			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(user.getUserIds());
 
-			aggregation = Aggregation
-					.newAggregation(
-							Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
-									"response"),
-							Aggregation.unwind("response"),
-							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-							Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
-											.append("uniqueRequestId",
-													new BasicDBObject("$first", "$uniqueRequestId")))));
+			aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
+							"response"),
+					Aggregation.unwind("response"),
+					Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+					Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
+									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId")))));
 
 			countforHour = mongoTemplate
 					.aggregate(aggregation, SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class)
@@ -211,6 +246,80 @@ public class AsyncService {
 			pushNotificationServices.notifyRefresh(userId.toString(), "", "", RoleEnum.PATIENT, "refresh",
 					ComponentType.REFRESH_RESPONSE);
 
+		}
+
+	}
+
+	@Async
+	public void sendMessage(UserNutritionSubscriptionResponse userNutritionSubscriptionResponse,
+			UserCollection userCollection) {
+		try {
+
+			if (userCollection != null) {
+				String message = "";
+				if (userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase().equalsIgnoreCase("Success"))
+					message = successmassage;
+				else if (userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase()
+						.equalsIgnoreCase("Aborted")
+						|| userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase()
+								.equalsIgnoreCase("Decline"))
+					message = declinemassage;
+
+				message = StringEscapeUtils.unescapeJava(message);
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+
+				smsTrackDetail.setType("SUBSCRIPTION_NUTRITION_PLAN_STATUS");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(userCollection.getId());
+				SMS sms = new SMS();
+				smsDetail.setUserName(userCollection.getFirstName());
+				sms.setSmsText(message.replace("{status}", userNutritionSubscriptionResponse.getTransactionStatus())
+						.replace("{discountAmount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
+						.replace("{patientName}", userNutritionSubscriptionResponse.getTransactionStatus())
+						.replace("{planName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(userCollection.getMobileNumber());
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				sMSServices.sendSMS(smsTrackDetail, true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Async
+	private void createMailNutritionTransactionStatus(
+			UserNutritionSubscriptionResponse userNutritionSubscriptionResponse, UserCollection userCollection) {
+
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+
+			emailTrackCollection.setType(ComponentType.SUBSCRIPTION_NUTRITION_PLAN.getType());
+			emailTrackCollection.setSubject("Nutrition plan transaction status");
+
+			emailTrackCollection.setPatientName(userCollection.getFirstName());
+			emailTrackCollection.setPatientId(userCollection.getId());
+
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			emailTackService.saveEmailTrack(emailTrackCollection);
+
+			String body = mailBodyGenerator.generateEMREmailBody(userCollection.getFirstName(), " ", " ", " ",
+					sdf.format(new Date()), "Nutrition plan Transaction status", "emrMailTemplate.vm");
+			Boolean response = mailService.sendEmail(userCollection.getEmailAddress(),
+					 "Healthcoco sent you Transaction Status", body, null);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
 	}

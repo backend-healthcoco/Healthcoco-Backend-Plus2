@@ -641,6 +641,7 @@ public class LoginServiceImpl implements LoginService {
 		Criteria criteria = new Criteria();
 
 		criteria.and("userId").is(userCollection.getId()).and("discarded").is(false).and("isExpired").is(false);
+		criteria.and("transactionStatus").is("Success");
 		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
 				Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id", "subscriptionPlan"),
