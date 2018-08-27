@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
+import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserNutritionSubscription;
@@ -36,14 +42,17 @@ import com.dpdocter.collections.NutritionGoalStatusStampingCollection;
 import com.dpdocter.collections.NutritionPlanCollection;
 import com.dpdocter.collections.NutritionReferenceCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SubscriptionNutritionPlanCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserNutritionSubscriptionCollection;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.GoalStatus;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -62,8 +71,10 @@ import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
+import com.dpdocter.scheduler.AsyncService;
 import com.dpdocter.services.NutritionService;
 import com.dpdocter.services.RegistrationService;
+import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 
@@ -115,6 +126,9 @@ public class NutritionServiceImpl implements NutritionService {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
+
+	@Autowired
+	private AsyncService asyncService;
 
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null)
@@ -689,6 +703,7 @@ public class NutritionServiceImpl implements NutritionService {
 				criteria = criteria.and("userId").is(new ObjectId(userId));
 			}
 			criteria.and("discarded").is(discarded);
+			criteria.and("transactionStatus").is("Success");
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -865,6 +880,7 @@ public class NutritionServiceImpl implements NutritionService {
 			nutritionSubscriptionCollection
 					.setDiscountAmount(subscriptionNutritionPlanCollection.getDiscountedAmount());
 			nutritionSubscriptionCollection = userNutritionSubscriptionRepository.save(nutritionSubscriptionCollection);
+
 			response = new UserNutritionSubscriptionResponse();
 			NutritionPlan nutritionPlan = new NutritionPlan();
 			SubscriptionNutritionPlan subscriptionNutritionPlan = new SubscriptionNutritionPlan();
@@ -875,7 +891,7 @@ public class NutritionServiceImpl implements NutritionService {
 			BeanUtil.map(userCollection, user);
 
 			if (response != null) {
-
+				asyncService.sendMessage(response, userCollection);
 				if (nutritionPlan != null) {
 					if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getBannerImage())) {
 						nutritionPlan.setBannerImage(getFinalImageURL(nutritionPlan.getBannerImage()));
