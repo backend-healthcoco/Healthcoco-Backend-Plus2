@@ -112,6 +112,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			request.setProcedureSheetFields(null);
 			BeanUtil.map(request, procedureSheetCollection);
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
+			procedureSheetCollection.setDiagrams(request.getDiagrams());
 			procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
 			if (procedureSheetCollection != null) {
 				response = new ProcedureSheetResponse();
