@@ -32,6 +32,9 @@ public interface MailBodyGenerator {
 	public String generateEMREmailBody(String patientName, String doctorName, String clinicName, String clinicAddress,
 			String mailRecordCreatedDate, String medicalRecordType, String templatePath);
 
+	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
+			String templatePath);
+
 	public String generateFeedbackEmailBody(String patientName, String doctorName, String locationName,
 			String uniqueFeedbackId, String templatePath);
 

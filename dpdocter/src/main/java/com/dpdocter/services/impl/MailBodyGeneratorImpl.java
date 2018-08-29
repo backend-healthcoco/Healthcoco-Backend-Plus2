@@ -129,7 +129,8 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
-	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,String labName) {
+	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,
+			String labName) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("fName", "Dr." + " " + fName);
 		model.put("locationName", locationName);
@@ -291,6 +292,23 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 	}
 
+	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
+			String templatePath) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("orderId", orderId);
+		model.put("planName", planName);
+		model.put("amount", amount);
+		model.put("patientName", patientName);
+		model.put("imageURL", imagePath + "templatesImage");
+		model.put("contactUsEmail", contactUsEmail);
+		model.put("fbLink", fbLink);
+		model.put("twitterLink", twitterLink);
+		model.put("linkedInLink", linkedInLink);
+		model.put("googlePlusLink", googlePlusLink);
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		return text;
+	}
+
 	@Override
 	public String generateFeedbackEmailBody(String patientName, String doctorName, String clinicName,
 			String uniqueFeedbackId, String templatePath) {
@@ -358,11 +376,11 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "exceptionMail.vm", "UTF-8", model);
 		return text;
 	}
-	
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName, List<MailAttachment> reports , String templatePath) {
+	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName,
+			List<MailAttachment> reports, String templatePath) {
 		String text = "";
 		try {
 			Map<String, Object> model = new HashMap<String, Object>();
