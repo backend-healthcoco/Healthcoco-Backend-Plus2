@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -19,16 +18,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientNumberAndUserIds;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.BlockUserCollection;
 import com.dpdocter.collections.EmailTrackCollection;
-import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
@@ -42,8 +37,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.BlockUserRepository;
 import com.dpdocter.repository.SearchRequestToPharmacyRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.response.JasperReportResponse;
-import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
@@ -53,8 +46,6 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
-
-import common.util.web.DPDoctorUtils;
 
 @Service
 public class AsyncService {
@@ -273,10 +264,10 @@ public class AsyncService {
 				smsDetail.setUserId(userCollection.getId());
 				SMS sms = new SMS();
 				smsDetail.setUserName(userCollection.getFirstName());
-				sms.setSmsText(message.replace("{status}", userNutritionSubscriptionResponse.getTransactionStatus())
-						.replace("{discountAmount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
+				sms.setSmsText(message
+						.replace("{mmount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
 						.replace("{patientName}", userNutritionSubscriptionResponse.getTransactionStatus())
-						.replace("{planName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
+						.replace("{PlanName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -296,14 +287,14 @@ public class AsyncService {
 	}
 
 	@Async
-	private void createMailNutritionTransactionStatus(
+	public void createMailNutritionTransactionStatus(
 			UserNutritionSubscriptionResponse userNutritionSubscriptionResponse, UserCollection userCollection) {
 
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
 
 			emailTrackCollection.setType(ComponentType.SUBSCRIPTION_NUTRITION_PLAN.getType());
-			emailTrackCollection.setSubject("Nutrition plan transaction status");
+			emailTrackCollection.setSubject("Your payment of {planName} for Rs {amount} is received.");
 
 			emailTrackCollection.setPatientName(userCollection.getFirstName());
 			emailTrackCollection.setPatientId(userCollection.getId());
@@ -311,11 +302,20 @@ public class AsyncService {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 			emailTackService.saveEmailTrack(emailTrackCollection);
+			String subject = "";
+			if (userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase().equalsIgnoreCase("Success"))
+				subject = "Healthcoco Payment Received.";
+			else if (userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase().equalsIgnoreCase("Aborted")
+					|| userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase()
+							.equalsIgnoreCase("Decline"))
+				subject = "Healthcoco Payment Failed.";
 
-			String body = mailBodyGenerator.generateEMREmailBody(userCollection.getFirstName(), " ", " ", " ",
-					sdf.format(new Date()), "Nutrition plan Transaction status", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(userCollection.getEmailAddress(),
-					 "Healthcoco sent you Transaction Status", body, null);
+			String body = mailBodyGenerator.generatePaymentEmailBody(userNutritionSubscriptionResponse.getOrderId(),
+					userNutritionSubscriptionResponse.getNutritionPlan().getTitle(),
+					userNutritionSubscriptionResponse.getAmount().toString(), userCollection.getFirstName(),
+					"nutritionPaymentTemplate.vm");
+			mailService.sendEmail(userCollection.getEmailAddress(), "Healthcoco sent you Transaction Status", body,
+					null);
 
 		} catch (Exception e) {
 			e.printStackTrace();
