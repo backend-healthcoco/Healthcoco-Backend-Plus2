@@ -500,8 +500,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.unwind("uploadedByDoctor"),
-						Aggregation.unwind("uploadedByLocation"), Aggregation.match(criteria), projectList,
+
+						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
+						Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}

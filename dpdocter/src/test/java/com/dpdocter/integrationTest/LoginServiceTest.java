@@ -65,7 +65,7 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 		String password = "admin";
 		request.setPassword(DPDoctorUtils.getSHA3SecurePassword(password.toCharArray()));
 
-		LoginResponse loginResponse = loginService.login(request, false);
+		LoginResponse loginResponse = loginService.login(request, false,false);
 
 		System.out.println();
 		AssertJUnit.assertEquals(loginResponse.getUser().getUserName(), request.getUsername());

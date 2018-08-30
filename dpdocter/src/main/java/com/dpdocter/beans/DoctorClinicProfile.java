@@ -114,8 +114,12 @@ public class DoctorClinicProfile {
 	private boolean saveToInventory = false;
 
 	private Boolean isMobileNumberOptional = false;
-	
-	private Boolean iskiosk=false;
+
+	private Boolean iskiosk = false;
+
+	private Boolean hasLoginAccess = true;
+
+	private Boolean hasBillingAccess = true;
 
 	private String patientInitial = "P";
 
@@ -535,7 +539,6 @@ public class DoctorClinicProfile {
 		this.doctorSlugURL = doctorSlugURL;
 	}
 
-
 	public Boolean getIsParent() {
 		return isParent;
 	}
@@ -630,6 +633,22 @@ public class DoctorClinicProfile {
 
 	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
+
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
 	}
 
 	@Override

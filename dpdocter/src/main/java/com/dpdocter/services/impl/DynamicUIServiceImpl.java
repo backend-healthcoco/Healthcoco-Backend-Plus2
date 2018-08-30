@@ -20,6 +20,8 @@ import com.dpdocter.beans.DentalLabDynamicUi;
 import com.dpdocter.beans.DischargeSummaryDynamicFields;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.KioskDynamicUi;
+import com.dpdocter.beans.NutritionUI;
+import com.dpdocter.beans.NutritionUIPermission;
 import com.dpdocter.beans.PrescriptionDynamicField;
 import com.dpdocter.beans.TreatmentDynamicFields;
 import com.dpdocter.beans.UIPermissions;
@@ -29,8 +31,10 @@ import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.KioskDynamicUiCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.NutritionUICollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.AccessPermissionType;
 import com.dpdocter.enums.AdmitCardPermissionEnum;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.ClinicalNotesPermissionEnum;
@@ -41,6 +45,7 @@ import com.dpdocter.enums.DischargeSummaryPermissions;
 import com.dpdocter.enums.ENTPermissionType;
 import com.dpdocter.enums.GynacPermissionsEnum;
 import com.dpdocter.enums.KioskDynamicUiEnum;
+import com.dpdocter.enums.NutritionUIPermissionEnum;
 import com.dpdocter.enums.OpthoPermissionEnums;
 import com.dpdocter.enums.OrthoPermissionType;
 import com.dpdocter.enums.PatientCertificatePermissions;
@@ -60,10 +65,12 @@ import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.KioskDynamicUiRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.NutritionUIRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DynamicUIRequest;
 import com.dpdocter.request.KioskDynamicUiResquest;
+import com.dpdocter.request.nutrirtionUIRequest;
 import com.dpdocter.response.DynamicUIResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.DynamicUIService;
@@ -103,6 +110,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private NutritionUIRepository nutritionUIRepository;
 
 	@Override
 	@Transactional
@@ -659,10 +669,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dataDynamicUI = new DataDynamicUI();
 			BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
 		}
-		
+
 		pushNotificationServices.notifyUser(dynamicUIRequest.getDoctorId(), "",
 				ComponentType.REFRESH_DATA_SETTING.getType(), null, null);
-		
+
 		return dataDynamicUI;
 	}
 
@@ -787,6 +797,81 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error occuring while getting Kiosk UI Permission ");
+		}
+		return response;
+	}
+
+	public NutritionUI getAllNutritionUIPermission() {
+		NutritionUI response = null;
+		try {
+			List<String> uiList = new ArrayList<String>(Arrays
+					.asList(Arrays.toString(NutritionUIPermissionEnum.values()).replaceAll("^.|.$", "").split(", ")));
+			response = new NutritionUI();
+			List<NutritionUIPermission> uiPermissions = new ArrayList<NutritionUIPermission>();
+			NutritionUIPermission uiPermission = null;
+			for (String ui : uiList) {
+				uiPermission = new NutritionUIPermission();
+				uiPermission.setUi(ui);
+				uiPermission.setAccessTypes(new ArrayList<String>(Arrays
+						.asList(Arrays.toString(AccessPermissionType.values()).replaceAll("^.|.$", "").split(", "))));
+				uiPermissions.add(uiPermission);
+			}
+			response.setUiPermission(uiPermissions);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error occuring while getting ALL Nutrition UI Permission ");
+		}
+		return response;
+	}
+
+	public NutritionUI addEditNutritionUIPermission(nutrirtionUIRequest request) {
+		NutritionUI response = null;
+		try {
+			NutritionUICollection nutritionUICollection = null;
+			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getAdminId()));
+			if (userCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "admin not found By Id");
+			}
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				nutritionUICollection = nutritionUIRepository.findOne(new ObjectId(request.getId()));
+				if (nutritionUICollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "nutrition not found By Id");
+				}
+				nutritionUICollection.setUiPermission(new ArrayList<NutritionUIPermission>());
+				nutritionUICollection.setUiPermission(request.getUiPermission());
+				nutritionUICollection.setUserId(new ObjectId(request.getUserId()));
+				nutritionUICollection.setCreatedBy(userCollection.getFirstName());
+			} else {
+				nutritionUICollection = new NutritionUICollection();
+				BeanUtil.map(request, nutritionUICollection);
+				nutritionUICollection.setCreatedTime(new Date());
+				nutritionUICollection.setCreatedBy(userCollection.getFirstName());
+			}
+			nutritionUICollection = nutritionUIRepository.save(nutritionUICollection);
+			response = new NutritionUI();
+			BeanUtil.map(nutritionUICollection, response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error occuring while add edit Nutrition UI Permission ");
+		}
+		return response;
+	}
+
+	public NutritionUI getNutritionUIPermission(String doctorId) {
+		NutritionUI response = null;
+		try {
+			NutritionUICollection nutritionUICollection = nutritionUIRepository.findOne(new ObjectId(doctorId));
+			response = new NutritionUI();
+			BeanUtil.map(nutritionUICollection, response);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error occuring while getting Nutrition UI Permission ");
 		}
 		return response;
 	}

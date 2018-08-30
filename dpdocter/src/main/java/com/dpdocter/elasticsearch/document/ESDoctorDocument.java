@@ -121,6 +121,9 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	private Integer noOfRecommenations = 0;
 
 	private String doctorSlugURL;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isNutritionist = false;
 
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
@@ -426,5 +429,13 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		if(this.rankingCount < o.rankingCount)return 0;
 		else if(this.rankingCount < o.rankingCount)return -1;
 		else return 1;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
 	}
 }

@@ -33,7 +33,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private int patientCounter = 1;
 
 	private String doctorSlugURL;
-	
+
 	private List<String> appointmentBookingNumber;
 
 	private ConsultationFee consultationFee;
@@ -304,6 +304,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.hasBillingAccess = hasBillingAccess;
 	}
 
+	public Boolean getIsVaccinationModuleOn() {
+		return isVaccinationModuleOn;
+	}
+
+	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
+		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
+
 	public Boolean getIskiosk() {
 		return iskiosk;
 	}
@@ -326,14 +334,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	public void setIsSuperAdmin(Boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
-	}
-
-	public Boolean getIsVaccinationModuleOn() {
-		return isVaccinationModuleOn;
-	}
-
-	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
-		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
 	@Override
