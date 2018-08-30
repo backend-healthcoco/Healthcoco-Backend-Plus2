@@ -33,6 +33,8 @@ import net.sf.jasperreports.components.table.StandardTable;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRExpressionChunk;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -4413,6 +4415,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		band = new JRDesignBand();
+		band.setPrintWhenExpression(new JRDesignExpression("!$P{flowsheet}.equals(null) && !$P{flowsheet}.isEmpty()"));
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{FlowSheetTitle}"));
