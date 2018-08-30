@@ -72,6 +72,26 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private Boolean iskiosk = false;
 
+	private Boolean isNutritionist = false;
+
+	private Boolean isSuperAdmin = false;
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
 	public Boolean getIskiosk() {
 		return iskiosk;
 	}

@@ -110,9 +110,31 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean hasLoginAccess = true;
-	
+
 	@Field
 	private Boolean hasBillingAccess = true;
+
+	@Field
+	private Boolean isNutritionist = false;
+
+	@Field
+	private Boolean isSuperAdmin = false;
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
+	}
 
 	public ObjectId getId() {
 		return id;

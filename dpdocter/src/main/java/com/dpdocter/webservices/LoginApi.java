@@ -58,13 +58,14 @@ public class LoginApi {
 	@POST
 	@ApiOperation(value = PathProxy.LoginUrls.LOGIN_USER, notes = PathProxy.LoginUrls.LOGIN_USER)
 	public Response<LoginResponse> login(LoginRequest request,
-			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp) {
+			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
+			@DefaultValue(value = "false") @QueryParam(value = "isNutritionist") Boolean isNutritionist) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null
 				|| request.getPassword().length == 0) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		LoginResponse loginResponse = loginService.login(request, isMobileApp);
+		LoginResponse loginResponse = loginService.login(request, isMobileApp, isNutritionist);
 		if (loginResponse != null) {
 			if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getImageUrl())) {
 				loginResponse.getUser().setImageUrl(getFinalImageURL(loginResponse.getUser().getImageUrl()));
@@ -136,7 +137,7 @@ public class LoginApi {
 	@Path(value = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN)
 	@GET
 	@ApiOperation(value = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN)
-	public Response<DoctorLoginPin> getLoginPin(@PathParam("doctorId")String doctorId) {
+	public Response<DoctorLoginPin> getLoginPin(@PathParam("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -151,7 +152,7 @@ public class LoginApi {
 	@POST
 	@ApiOperation(value = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN)
 	public Response<Boolean> checkLoginPin(DoctorLoginPinRequest request) {
-		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(),request.getPin())) {
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getPin())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -161,26 +162,27 @@ public class LoginApi {
 		return response;
 	}
 
-    private String getFinalImageURL(String imageURL) {
-	if (imageURL != null) {
-	    return imagePath + imageURL;
-	} else
-	    return null;
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
 
-    }
+	}
 
-    @Path(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
-    @POST
-    @ApiOperation(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN, notes = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
-    public Response<Boolean> isLocationAdmin(LoginRequest request) {
-		if (request == null|| DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null || request.getPassword().length == 0) {
-		    logger.warn("Invalid Input");
-		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	@Path(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
+	@POST
+	@ApiOperation(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN, notes = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
+	public Response<Boolean> isLocationAdmin(LoginRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null
+				|| request.getPassword().length == 0) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Boolean isLocationAdmin = loginService.isLocationAdmin(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(isLocationAdmin);
 		return response;
-    }
+	}
 
 }

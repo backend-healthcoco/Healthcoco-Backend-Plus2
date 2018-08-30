@@ -113,11 +113,11 @@ public class DoctorClinicProfile {
 	private boolean saveToInventory = false;
 
 	private Boolean isMobileNumberOptional = false;
-	
-	private Boolean iskiosk=false;
+
+	private Boolean iskiosk = false;
 
 	private Boolean hasLoginAccess = true;
-	
+
 	private Boolean hasBillingAccess = true;
 
 	private String patientInitial = "P";
@@ -125,7 +125,27 @@ public class DoctorClinicProfile {
 	private int patientCounter = 0;
 
 	private Boolean isPidHasDate = true;
-	
+
+	private Boolean isNutritionist = false;
+
+	private Boolean isSuperAdmin = false;
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
 	public String getId() {
 		return id;
 	}

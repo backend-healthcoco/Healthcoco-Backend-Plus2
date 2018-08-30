@@ -122,6 +122,9 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@Field(type = FieldType.String)
 	private String doctorSlugURL;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isNutritionist = false;
 
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;

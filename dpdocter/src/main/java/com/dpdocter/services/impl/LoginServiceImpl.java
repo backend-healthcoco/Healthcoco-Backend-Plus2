@@ -114,7 +114,7 @@ public class LoginServiceImpl implements LoginService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
+	public LoginResponse login(LoginRequest request, Boolean isMobileApp, Boolean isNutritionist) {
 		LoginResponse response = null;
 		try {
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
@@ -183,12 +183,14 @@ public class LoginServiceImpl implements LoginService {
 
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
+					criteria = new Criteria("doctorId").is(userCollection.getId()).and("isActivate").is(true)
+							.and("hasLoginAccess").ne(false);
 
+					criteria.orOperator(new Criteria("isNutritionist").is(isNutritionist),
+							new Criteria("isNutritionist").exists(isNutritionist));
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
 							.aggregate(
-									Aggregation.newAggregation(
-											Aggregation.match(new Criteria("doctorId").is(userCollection.getId())
-													.and("isActivate").is(true).and("hasLoginAccess").ne(false)),
+									Aggregation.newAggregation(Aggregation.match(criteria),
 											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 											Aggregation.unwind("location"),
 											Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id",
