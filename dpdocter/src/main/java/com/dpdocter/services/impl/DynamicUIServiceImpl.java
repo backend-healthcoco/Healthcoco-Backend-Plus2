@@ -70,7 +70,7 @@ import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DynamicUIRequest;
 import com.dpdocter.request.KioskDynamicUiResquest;
-import com.dpdocter.request.nutrirtionUIRequest;
+import com.dpdocter.request.NutrirtionUIRequest;
 import com.dpdocter.response.DynamicUIResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.DynamicUIService;
@@ -741,6 +741,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return dentalLabDynamicUi;
 	}
 
+	@Override
+	@Transactional
 	public KioskDynamicUi addEditKioskUiPermission(KioskDynamicUiResquest request) {
 		KioskDynamicUi response = null;
 		try {
@@ -781,6 +783,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return response;
 	}
 
+	@Override
+	@Transactional
 	public KioskDynamicUi getKioskUiPermission(String doctorId) {
 		KioskDynamicUi response = null;
 		try {
@@ -801,6 +805,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return response;
 	}
 
+	@Override
+	@Transactional
 	public NutritionUI getAllNutritionUIPermission() {
 		NutritionUI response = null;
 		try {
@@ -827,7 +833,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return response;
 	}
 
-	public NutritionUI addEditNutritionUIPermission(nutrirtionUIRequest request) {
+	@Override
+	@Transactional
+	public NutritionUI addEditNutritionUIPermission(NutrirtionUIRequest request) {
 		NutritionUI response = null;
 		try {
 			NutritionUICollection nutritionUICollection = null;
@@ -861,6 +869,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return response;
 	}
 
+	@Override
+	@Transactional
 	public NutritionUI getNutritionUIPermission(String doctorId) {
 		NutritionUI response = null;
 		try {

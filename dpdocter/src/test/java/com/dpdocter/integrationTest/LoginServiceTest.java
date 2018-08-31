@@ -65,6 +65,7 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 		String password = "admin";
 		request.setPassword(DPDoctorUtils.getSHA3SecurePassword(password.toCharArray()));
 
+
 		LoginResponse loginResponse = loginService.login(request, false,false);
 
 		System.out.println();
@@ -72,7 +73,7 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 
 	}
 
-	//@Test
+	// @Test
 	public void testuser() {
 		UserCollection userCollection = userRepository.findOne(new ObjectId("5794af08e4b01f1d73f9b7c0"));
 		System.out.println(userCollection.getFirstName());

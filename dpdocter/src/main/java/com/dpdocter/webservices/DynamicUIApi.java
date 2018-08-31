@@ -16,11 +16,13 @@ import com.dpdocter.beans.DentalLabDynamicField;
 import com.dpdocter.beans.DentalLabDynamicUi;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.KioskDynamicUi;
+import com.dpdocter.beans.NutritionUI;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DynamicUIRequest;
 import com.dpdocter.request.KioskDynamicUiResquest;
+import com.dpdocter.request.NutrirtionUIRequest;
 import com.dpdocter.response.DynamicUIResponse;
 import com.dpdocter.services.DynamicUIService;
 
@@ -209,6 +211,52 @@ public class DynamicUIApi {
 		KioskDynamicUi koiskDynamicUi = dynamicUIService.getKioskUiPermission(doctorId);
 		Response<KioskDynamicUi> response = new Response<KioskDynamicUi>();
 		response.setData(koiskDynamicUi);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DynamicUIUrls.GET_ALL_NUTRITION_PERMISSION)
+	@GET
+	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_ALL_NUTRITION_PERMISSION, notes = "GET_ALL_NUTRITION_PERMISSION")
+	public Response<NutritionUI> getAllNutritionPermissions() {
+
+		NutritionUI nutritionUI = dynamicUIService.getAllNutritionUIPermission();
+		Response<NutritionUI> response = new Response<NutritionUI>();
+		response.setData(nutritionUI);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DynamicUIUrls.GET_NUTRITION_PERMISSION)
+	@GET
+	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_NUTRITION_PERMISSION, notes = "GET_NUTRITION_PERMISSION")
+	public Response<NutritionUI> GET_NUTRITION_PERMISSION(@PathParam("doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null or Empty");
+		}
+		NutritionUI nutritionUI = dynamicUIService.getNutritionUIPermission(doctorId);
+		Response<NutritionUI> response = new Response<NutritionUI>();
+		response.setData(nutritionUI);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DynamicUIUrls.ADD_EDIT_NUTRITION_PERMISSION)
+	@POST
+	@ApiOperation(value = PathProxy.DynamicUIUrls.ADD_EDIT_NUTRITION_PERMISSION, notes = "ADD_EDIT_NUTRITION_PERMISSION")
+	public Response<NutritionUI> addEditNutritionPermissions(NutrirtionUIRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
+		} else if (request.getUiPermission() == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Nutrition UI permissions are null");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getUserId(), request.getAdminId())) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id  and Admin Id,is null or Empty");
+		}
+
+		NutritionUI nutritionUI = dynamicUIService.addEditNutritionUIPermission(request);
+		Response<NutritionUI> response = new Response<NutritionUI>();
+		response.setData(nutritionUI);
 		return response;
 
 	}

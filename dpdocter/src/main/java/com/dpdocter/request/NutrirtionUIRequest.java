@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.NutritionUIPermission;
 
-public class nutrirtionUIRequest {
+public class NutrirtionUIRequest {
 
 	private String id;
 
