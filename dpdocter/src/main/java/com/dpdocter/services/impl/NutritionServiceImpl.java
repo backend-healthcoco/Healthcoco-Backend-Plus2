@@ -526,7 +526,7 @@ public class NutritionServiceImpl implements NutritionService {
 
 			Aggregation aggregation = null;
 
-			Criteria criteria = new Criteria("id").is(new ObjectId(id));
+			Criteria criteria = new Criteria("id").is(new ObjectId(id)).and("subscriptionNutritionPlan.discarded").is(false);
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("subscription_nutrition_plan_cl", "_id", "nutritionPlanId",
