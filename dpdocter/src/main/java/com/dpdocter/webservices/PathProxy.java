@@ -1279,6 +1279,9 @@ public interface PathProxy {
 		public static final String GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB = "/getAllDataPermissionForLab";
 		public static final String ADD_EDIT_KIOSK_PERMISSION = "/kioskPermission/add";
 		public static final String GET_KIOSK_PERMISSION = "/kioskPermission/{doctorId}/get";
+		public static final String GET_ALL_NUTRITION_PERMISSION = "nutrition/getAllPermission";
+		public static final String ADD_EDIT_NUTRITION_PERMISSION = "nutrition/Permission/add";
+		public static final String GET_NUTRITION_PERMISSION = "/nutrition/{doctorId}/get";
 	}
 
 	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
