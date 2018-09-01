@@ -7780,7 +7780,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
 		jrDesignImage.setPrintWhenExpression(new JRDesignExpression("$F{isImage}"));
 		jrDesignImage.setExpression(new JRDesignExpression("$F{value}"));
-		jrDesignImage.setX(0);
+		jrDesignImage.setX(50);
 		jrDesignImage.setY(20);
 		jrDesignImage.setHeight(20);
 		jrDesignImage.setWidth(100);
