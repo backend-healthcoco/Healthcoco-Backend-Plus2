@@ -279,15 +279,17 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				procedureSheetStructureCollection.setCreatedBy(userCollection.getFirstName());
 			}
 			BeanUtil.map(request, procedureSheetStructureCollection);
+			procedureSheetStructureCollection.setProcedureConsentFormStructure(request.getProcedureConsentFormStructure());
 			procedureSheetStructureCollection.setProcedureSheetFields(request.getProcedureSheetFields());
 			procedureSheetStructureCollection.setDiagrams(request.getDiagrams());
 			procedureSheetStructureCollection = procedureSheetStructureRepository
 					.save(procedureSheetStructureCollection);
 			if (procedureSheetStructureCollection != null) {
 				response = new ProcedureSheetStructureResponse();
+				BeanUtil.map(procedureSheetStructureCollection, response);
+				response.setProcedureConsentFormStructure(procedureSheetStructureCollection.getProcedureConsentFormStructure());
 				response.setDiagrams(procedureSheetStructureCollection.getDiagrams());
 				response.setProcedureSheetFields(procedureSheetStructureCollection.getProcedureSheetFields());
-				BeanUtil.map(procedureSheetStructureCollection, response);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
