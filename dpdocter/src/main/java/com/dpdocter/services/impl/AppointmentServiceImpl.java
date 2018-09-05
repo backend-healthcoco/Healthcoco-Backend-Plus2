@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 
@@ -624,6 +625,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment updateAppointment(final AppointmentRequest request, Boolean updateVisit,
 			Boolean isStatusChange) {
 		Appointment response = null;
+		
+		Integer timeDiff = 0;
+		Long addMillis = 0l;
+		
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),
@@ -750,14 +755,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 					final String appointmentId = appointmentCollection.getAppointmentId();
 					final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 							+ sdf.format(appointmentCollection.getFromDate());
+					
+					if(appointmentCollection.getTime() != null)
+					{
+						timeDiff = appointmentCollection.getTime().getToTime() - appointmentCollection.getTime().getFromTime();
+						addMillis = TimeUnit.MINUTES.toMillis(timeDiff);
+					}
+					
 					final String toDateTime = _12HourSDF.format(_24HourDt) + ", "
-							+ sdf.format(appointmentCollection.getToDate());
+							+ sdf.format(new Date(appointmentCollection.getFromDate().getTime() + addMillis));
 
 					final String clinicName = appointmentLookupResponse.getLocation().getLocationName();
 					final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
 							? appointmentLookupResponse.getLocation().getClinicNumber()
 							: "";
 
+				
+							
 					// sendSMS after appointment is saved
 					final String id = appointmentCollection.getId().toString(),
 							patientEmailAddress = patientCard != null ? patientCard.getEmailAddress() : null,
@@ -880,6 +894,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Appointment addAppointment(final AppointmentRequest request, Boolean isFormattedResponseRequired) {
 		Appointment response = null;
+		Integer timeDiff = 0;
+		Long addMillis = 0l;
+		
 		DoctorClinicProfileCollection clinicProfileCollection = null;
 		try {
 
@@ -971,6 +988,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60,
 						appointmentCollection.getTime().getFromTime() % 60);
+				String _24HourToTime = String.format("%02d:%02d", appointmentCollection.getTime().getToTime() / 60,
+						appointmentCollection.getTime().getToTime() % 60);;
 				SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 				SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 				if (clinicProfileCollection != null) {
@@ -984,6 +1003,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 
 				Date _24HourDt = _24HourSDF.parse(_24HourTime);
+				Date _24HourToDt = _24HourSDF.parse(_24HourToTime);
 
 				final String patientName = (patientCard != null && patientCard.getLocalPatientName() != null)
 						? patientCard.getLocalPatientName().split(" ")[0]
@@ -991,8 +1011,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				final String appointmentId = appointmentCollection.getAppointmentId();
 				final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 						+ sdf.format(appointmentCollection.getFromDate());
-				final String toDateTime = _12HourSDF.format(_24HourDt) + ", "
-						+ sdf.format(appointmentCollection.getToDate());
+				
+				final String toDateTime = _12HourSDF.format(_24HourToDt) + ", "
+						+ sdf.format(appointmentCollection.getFromDate());
+				
 				final String doctorName = userCollection.getTitle() + " " + userCollection.getFirstName();
 				final String clinicName = locationCollection.getLocationName(),
 						clinicContactNum = locationCollection.getClinicNumber() != null
@@ -2762,6 +2784,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Boolean sendReminderToPatient(String appointmentId) {
 		Boolean response = false;
+		Integer timeDiff = 0;
+		Long addMillis = 0l;
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(appointmentId)),
@@ -2790,6 +2814,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						String _24HourTime = String.format("%02d:%02d",
 								appointmentLookupResponse.getTime().getFromTime() / 60,
 								appointmentLookupResponse.getTime().getFromTime() % 60);
+
+						String _24HourToTime = String.format("%02d:%02d",
+								appointmentLookupResponse.getTime().getToTime() / 60,
+								appointmentLookupResponse.getTime().getToTime() % 60);
 						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 						if (clinicProfileCollection != null) {
@@ -2801,18 +2829,30 @@ public class AppointmentServiceImpl implements AppointmentService {
 							_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 							_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 						}
+						
 
 						Date _24HourDt = _24HourSDF.parse(_24HourTime);
+						Date _24HourToDt = _24HourSDF.parse(_24HourToTime);
 						String patientName = patientCollection.getLocalPatientName(),
 								dateTime = _12HourSDF.format(_24HourDt) + ", "
 										+ sdf.format(appointmentLookupResponse.getFromDate()),
-										toDateTime = _12HourSDF.format(_24HourDt) + ", "
-												+ sdf.format(appointmentLookupResponse.getToDate()),
 								doctorName = doctor.getTitle() + " " + doctor.getFirstName(),
 								clinicName = locationCollection.getLocationName(),
 								clinicContactNum = locationCollection.getClinicNumber() != null
 										? locationCollection.getClinicNumber()
 										: "";
+										
+						if(appointmentLookupResponse.getTime() != null)
+						{
+							timeDiff = appointmentLookupResponse.getTime().getToTime()
+									- appointmentLookupResponse.getTime().getFromTime();
+							System.out.println("Time diff :: " + timeDiff);
+							addMillis = TimeUnit.MINUTES.toMillis(timeDiff);
+							System.out.println("Add millis :: " + addMillis);
+						}
+
+						String toDateTime = _12HourSDF.format(_24HourToDt) + ", "
+								+ sdf.format(new Date(appointmentLookupResponse.getFromDate().getTime() + addMillis));				
 						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT",
 								appointmentLookupResponse.getDoctorId().toString(),
 								appointmentLookupResponse.getLocationId().toString(),
