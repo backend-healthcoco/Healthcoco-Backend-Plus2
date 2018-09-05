@@ -1585,7 +1585,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String userId, String mobileNumber, String patientName, String appointmentId, String dateTime, String toDateTime,
 			String doctorName, String clinicName, String clinicContactNum) {
 		SMSFormatCollection smsFormatCollection = null;
-		String time = "";
+		String time = "@ " + dateTime;
 		if (formatType != null) {
 			smsFormatCollection = sMSFormatRepository.find(new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId), formatType);
@@ -1642,7 +1642,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed" + time
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed " + time
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
