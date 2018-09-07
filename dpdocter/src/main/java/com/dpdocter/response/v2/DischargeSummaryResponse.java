@@ -1,4 +1,4 @@
-package com.dpdocter.response;
+package com.dpdocter.response.v2;
 
 import java.util.Date;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.FlowSheet;
-import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;

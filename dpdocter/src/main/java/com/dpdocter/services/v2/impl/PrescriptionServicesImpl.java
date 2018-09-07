@@ -441,4 +441,107 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		BeanUtil.map(eyePrescriptionCollection, response);
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public Prescription getPrescriptionById(String prescriptionId) {
+		Prescription prescription = null;
+		try {
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
+					Fields.field("appointmentRequest", "$appointmentRequest"), Fields.field("advice", "$advice"),
+					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
+					Fields.field("patientId", "$patientId"),
+					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
+					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("items.dosageTime", "$items.dosageTime"),
+					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("items.drugQuantity", "$items.drugQuantity"),
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
+					Fields.field("tests", "$diagnosticTests")));
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("_id").is(new ObjectId(prescriptionId))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
+									.append("includeArrayIndex", "arrayIndex1"))),
+					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(
+							new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
+									.append("preserveNullAndEmptyArrays", true))),
+
+					new CustomAggregationOperation(
+							new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$visit")
+											.append("preserveNullAndEmptyArrays",
+													true))),
+					projectList,
+					new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id", "$_id")
+											.append("name", new BasicDBObject("$first", "$name"))
+											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("appointmentRequest",
+													new BasicDBObject("$first", "$appointmentRequest"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("items", new BasicDBObject("$push", "$items"))
+											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+											.append("advice", new BasicDBObject("$first", "$advice"))
+											.append("tests", new BasicDBObject("$first", "$tests"))
+											.append("time", new BasicDBObject("$first", "$time"))
+											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("isFeedbackAvailable",
+													new BasicDBObject("$first", "$isFeedbackAvailable"))
+											.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+											.append("visitId", new BasicDBObject("$first", "$visitId"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
+			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
+					"prescription_cl", Prescription.class);
+			List<Prescription> prescriptions = aggregationResults.getMappedResults();
+
+			if (prescriptions != null && !prescriptions.isEmpty()) {
+				prescription = prescriptions.get(0);
+				if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
+					List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
+					for (TestAndRecordData data : prescription.getTests()) {
+						if (data.getTestId() != null) {
+							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
+									.findOne(data.getTestId());
+							DiagnosticTest diagnosticTest = new DiagnosticTest();
+							if (diagnosticTestCollection != null) {
+								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
+							}
+							diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+									(!DPDoctorUtils.anyStringEmpty(data.getRecordId()) ? data.getRecordId().toString()
+											: null)));
+						}
+					}
+					prescription.setTests(null);
+					prescription.setDiagnosticTests(diagnosticTests);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting prescription : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting prescription : " + e.getCause().getMessage());
+		}
+		return prescription;
+	}
 }

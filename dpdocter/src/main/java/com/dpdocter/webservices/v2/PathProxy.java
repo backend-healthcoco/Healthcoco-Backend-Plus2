@@ -178,5 +178,11 @@ public interface PathProxy {
 
 		public static final String GET_VISITS_FOR_WEB = "/get";
 	}
+	
+	public static final String DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/dischargeSummary";
+
+	public interface DischargeSummaryUrls {
+		public static final String GET_DISCHARGE_SUMMARY = "/getDischargeSummery";
+	}
 
 }
