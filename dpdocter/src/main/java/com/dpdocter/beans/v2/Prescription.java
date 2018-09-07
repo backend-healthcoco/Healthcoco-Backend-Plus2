@@ -10,7 +10,7 @@ import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.TestAndRecordDataResponse;
+import com.dpdocter.response.v2.TestAndRecordDataResponse;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Prescription extends GenericCollection {

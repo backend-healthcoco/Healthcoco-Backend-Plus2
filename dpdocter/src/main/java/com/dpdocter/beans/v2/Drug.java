@@ -9,7 +9,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DrugTypePlacement;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class Drug extends GenericCollection {
+public class Drug {
 
 	private String id;
 

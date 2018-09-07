@@ -5,7 +5,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import com.dpdocter.collections.GenericCollection;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class DiagnosticTest extends GenericCollection {
+public class DiagnosticTest{
 
 	private String id;
 
