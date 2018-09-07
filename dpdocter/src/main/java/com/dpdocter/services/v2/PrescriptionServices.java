@@ -40,6 +40,8 @@ public interface PrescriptionServices {
 
 	EyePrescription getEyePrescription(String id);
 
+	Prescription getPrescriptionById(String prescriptionId);
+
 	/*List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId);
 
 	Prescription getPrescriptionById(String prescriptionId);
