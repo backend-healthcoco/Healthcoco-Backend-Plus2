@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.v2.DiagnosticTest;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
@@ -35,7 +35,7 @@ import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.PrescriptionInventoryBatchResponse;
-import com.dpdocter.response.TestAndRecordDataResponse;
+import com.dpdocter.response.v2.TestAndRecordDataResponse;
 import com.dpdocter.services.InventoryService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.v2.PrescriptionServices;
