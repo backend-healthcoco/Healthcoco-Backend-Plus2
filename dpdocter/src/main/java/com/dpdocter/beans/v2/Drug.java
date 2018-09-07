@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.dpdocter.beans.GenericCode;
-import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DrugTypePlacement;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
