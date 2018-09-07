@@ -1061,16 +1061,24 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				String path = "dental-imaging-reports" + File.separator + request.getPatientId();
 
 				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
-				if (imageURLResponse != null) {
-					pushNotificationServices.notifyUser(String.valueOf(userCollection.getId()),
-							"Report have been uploaded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), null, null);
-				}
+				
 			}
 			
 			if (request.getRequestId() != null) {
 
 				DentalImagingCollection dentalImagingCollection = dentalImagingRepository
 						.findOne(new ObjectId(request.getRequestId()));
+				
+				if (imageURLResponse != null) {
+					pushNotificationServices.notifyUser(String.valueOf(dentalImagingCollection.getDentalImagingDoctorId()),
+							"Report have been uploaded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), null, null);
+					
+					pushNotificationServices.notifyUser(String.valueOf(dentalImagingCollection.getDoctorId()),
+							"Report have been uploaded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), null, null);
+					
+					pushNotificationServices.notifyUser(String.valueOf(dentalImagingCollection.getPatientId()),
+					"Report have been uploaded.", ComponentType.DENTAL_IMAGING_REQUEST.getType(), null, null);
+				}
 				dentalImagingCollection.setIsReportsUploaded(true);
 				dentalImagingCollection.setIsVisited(true);
 				dentalImagingRepository.save(dentalImagingCollection);
