@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.ProcedureConsentForm;
-import com.dpdocter.beans.ProcedureConsentFormFields;
 import com.dpdocter.response.ImageURLResponse;
 
 @Document(collection = "procedure_sheet_cl")

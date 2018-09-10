@@ -5,15 +5,15 @@ import java.util.Map;
 
 public class ProcedureConsentFormStructure {
 
-	private Map<String, ProcedureConsentFormFields> headerFields;
+	private List<Map<String, ProcedureConsentFormFields>> headerFields;
 	private String body;
-	private Map<String, ProcedureConsentFormFields> footerFields;
+	private List<Map<String, ProcedureConsentFormFields>> footerFields;
 
-	public Map<String, ProcedureConsentFormFields> getHeaderFields() {
+	public List<Map<String, ProcedureConsentFormFields>> getHeaderFields() {
 		return headerFields;
 	}
 
-	public void setHeaderFields(Map<String, ProcedureConsentFormFields> headerFields) {
+	public void setHeaderFields(List<Map<String, ProcedureConsentFormFields>> headerFields) {
 		this.headerFields = headerFields;
 	}
 
@@ -25,11 +25,11 @@ public class ProcedureConsentFormStructure {
 		this.body = body;
 	}
 
-	public Map<String, ProcedureConsentFormFields> getFooterFields() {
+	public List<Map<String, ProcedureConsentFormFields>> getFooterFields() {
 		return footerFields;
 	}
 
-	public void setFooterFields(Map<String, ProcedureConsentFormFields> footerFields) {
+	public void setFooterFields(List<Map<String, ProcedureConsentFormFields>> footerFields) {
 		this.footerFields = footerFields;
 	}
 

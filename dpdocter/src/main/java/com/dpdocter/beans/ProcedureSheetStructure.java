@@ -19,7 +19,7 @@ public class ProcedureSheetStructure extends GenericCollection {
 	private String procedureName;
 	private ProcedureConsentFormStructure procedureConsentFormStructure;
 	private List<ImageURLResponse> diagrams;
-	private Map<String, ProcedureConsentFormFields> procedureSheetFields;
+	private List<Map<String, ProcedureConsentFormFields>> procedureSheetFields;
 	private Boolean discarded = false;
 	private String type;
 
@@ -47,11 +47,11 @@ public class ProcedureSheetStructure extends GenericCollection {
 		this.procedureName = procedureName;
 	}
 
-	public Map<String, ProcedureConsentFormFields> getProcedureSheetFields() {
+	public List<Map<String, ProcedureConsentFormFields>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(Map<String, ProcedureConsentFormFields> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, ProcedureConsentFormFields>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -111,7 +111,7 @@ public class ProcedureSheetStructure extends GenericCollection {
 				+ discarded + "]";
 	}
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 
 		ProcedureConsentFormFields procedureConsentFormFields = new ProcedureConsentFormFields();
 		procedureConsentFormFields.setDatatype("text");
@@ -134,5 +134,5 @@ public class ProcedureSheetStructure extends GenericCollection {
 		procedureSheetStructure.setProcedureSheetFields(map);
 		// procedureSheetStructure.
 		System.out.println(JacksonUtil.obj2Json(procedureSheetStructure));
-	}
+	}*/
 }

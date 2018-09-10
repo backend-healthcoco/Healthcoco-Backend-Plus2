@@ -30,7 +30,7 @@ public class ProcedureSheetStructureCollection extends GenericCollection {
 	@Field
 	private List<ImageURLResponse> diagrams;
 	@Field
-	private Map<String, ProcedureConsentFormFields> procedureSheetFields;
+	private List<Map<String, ProcedureConsentFormFields>> procedureSheetFields;
 	@Field
 	private Boolean discarded = false;
 	@Field
@@ -92,11 +92,11 @@ public class ProcedureSheetStructureCollection extends GenericCollection {
 		this.procedureName = procedureName;
 	}
 
-	public Map<String, ProcedureConsentFormFields> getProcedureSheetFields() {
+	public List<Map<String, ProcedureConsentFormFields>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(Map<String, ProcedureConsentFormFields> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, ProcedureConsentFormFields>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -114,6 +114,14 @@ public class ProcedureSheetStructureCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "ProcedureSheetStructureCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", procedureName=" + procedureName + ", procedureConsentFormStructure="
+				+ procedureConsentFormStructure + ", diagrams=" + diagrams + ", procedureSheetFields="
+				+ procedureSheetFields + ", discarded=" + discarded + ", type=" + type + "]";
 	}
 
 }
