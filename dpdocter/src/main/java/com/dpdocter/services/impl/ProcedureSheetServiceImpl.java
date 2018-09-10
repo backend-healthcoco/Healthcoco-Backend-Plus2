@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.ProcedureConsentForm;
+import com.dpdocter.beans.ProcedureConsentFormFields;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
@@ -267,6 +268,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			AddEditProcedureSheetStructureRequest request) {
 		ProcedureSheetStructureResponse response = null;
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
+		List<Map<String, ProcedureConsentFormFields>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				procedureSheetStructureCollection = procedureSheetStructureRepository
@@ -277,8 +279,10 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				procedureSheetStructureCollection.setCreatedBy(userCollection.getFirstName());
 			}
+			procedureSheetFields = request.getProcedureSheetFields();
+			request.setProcedureSheetFields(null);
 			BeanUtil.map(request, procedureSheetStructureCollection);
-			procedureSheetStructureCollection.setProcedureSheetFields(request.getProcedureSheetFields());
+			procedureSheetStructureCollection.setProcedureSheetFields(procedureSheetFields);
 			procedureSheetStructureCollection.setDiagrams(request.getDiagrams());
 			procedureSheetStructureCollection = procedureSheetStructureRepository
 					.save(procedureSheetStructureCollection);
@@ -321,6 +325,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 	public ProcedureSheetStructureResponse getProcedureSheetStructure(String id) {
 		ProcedureSheetStructureResponse response = null;
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
+		List<Map<String, ProcedureConsentFormFields>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(id));
@@ -329,7 +334,11 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 			if (procedureSheetStructureCollection != null) {
 				response = new ProcedureSheetStructureResponse();
-				BeanUtil.map(procedureSheetStructureCollection, response);
+				procedureSheetFields = procedureSheetStructureCollection.getProcedureSheetFields();
+				procedureSheetStructureCollection.setProcedureSheetFields(null);
+				BeanUtil.map(procedureSheetStructureCollection,response);
+				response.setProcedureSheetFields(procedureSheetFields);
+				
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -403,6 +412,10 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			AggregationResults<ProcedureSheetStructureResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, ProcedureSheetStructureCollection.class, ProcedureSheetStructureResponse.class);
 			responses = aggregationResults.getMappedResults();
+			
+			for (ProcedureSheetStructureResponse procedureSheetStructureResponse : responses) {
+				procedureSheetStructureResponse = getProcedureSheetStructure(procedureSheetStructureResponse.getId());
+			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
