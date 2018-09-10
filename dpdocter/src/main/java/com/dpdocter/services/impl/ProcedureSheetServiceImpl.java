@@ -26,6 +26,7 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.ProcedureConsentForm;
 import com.dpdocter.beans.ProcedureConsentFormFields;
+import com.dpdocter.beans.ProcedureConsentFormStructure;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
@@ -269,6 +270,9 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureSheetStructureResponse response = null;
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
 		List<Map<String, ProcedureConsentFormFields>> procedureSheetFields = null;
+		//List<Map<String, ProcedureConsentFormFields>> procedureSheetHeaderFields = null;
+		//List<Map<String, ProcedureConsentFormFields>> procedureSheetFooterFields = null;
+		ProcedureConsentFormStructure procedureConsentFormStructure = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				procedureSheetStructureCollection = procedureSheetStructureRepository
@@ -279,11 +283,23 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				procedureSheetStructureCollection.setCreatedBy(userCollection.getFirstName());
 			}
+			
+			if(request.getProcedureConsentFormStructure() != null)
+			{
+				procedureConsentFormStructure = new ProcedureConsentFormStructure();
+				procedureConsentFormStructure.setHeaderFields(request.getProcedureConsentFormStructure().getHeaderFields());
+				procedureConsentFormStructure.setFooterFields(request.getProcedureConsentFormStructure().getFooterFields());
+				procedureConsentFormStructure.setBody(request.getProcedureConsentFormStructure().getBody());
+			}
+			
 			procedureSheetFields = request.getProcedureSheetFields();
 			request.setProcedureSheetFields(null);
+			request.setProcedureConsentFormStructure(null);
 			BeanUtil.map(request, procedureSheetStructureCollection);
 			procedureSheetStructureCollection.setProcedureSheetFields(procedureSheetFields);
 			procedureSheetStructureCollection.setDiagrams(request.getDiagrams());
+			procedureSheetStructureCollection.setProcedureConsentFormStructure(procedureConsentFormStructure);
+			
 			procedureSheetStructureCollection = procedureSheetStructureRepository
 					.save(procedureSheetStructureCollection);
 			if (procedureSheetStructureCollection != null) {
