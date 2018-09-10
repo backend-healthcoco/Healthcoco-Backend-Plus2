@@ -1,18 +1,19 @@
 package com.dpdocter.beans;
 
+import java.util.List;
 import java.util.Map;
 
 public class ProcedureConsentForm {
 
-	private Map<String, String> headerFields;
+	private List<Map<String, String>> headerFields;
 	private String body;
-	private Map<String, String> footerFields;
+	private List<Map<String, String>> footerFields;
 
-	public Map<String, String> getHeaderFields() {
+	public List<Map<String, String>> getHeaderFields() {
 		return headerFields;
 	}
 
-	public void setHeaderFields(Map<String, String> headerFields) {
+	public void setHeaderFields(List<Map<String, String>> headerFields) {
 		this.headerFields = headerFields;
 	}
 
@@ -24,11 +25,11 @@ public class ProcedureConsentForm {
 		this.body = body;
 	}
 
-	public Map<String, String> getFooterFields() {
+	public List<Map<String, String>> getFooterFields() {
 		return footerFields;
 	}
 
-	public void setFooterFields(Map<String, String> footerFields) {
+	public void setFooterFields(List<Map<String, String>> footerFields) {
 		this.footerFields = footerFields;
 	}
 

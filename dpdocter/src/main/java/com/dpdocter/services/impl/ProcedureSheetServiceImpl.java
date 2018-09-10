@@ -461,16 +461,22 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureConsentForm procedureConsentForm = procedureSheetCollection.getProcedureConsentForm();
 		if (procedureConsentForm != null) {
 			field = "";
+			
+			
 			if (procedureConsentForm.getHeaderFields() != null && !procedureConsentForm.getHeaderFields().isEmpty()) {
-				for (Map.Entry<String, String> entry : procedureConsentForm.getHeaderFields().entrySet()) {
-					if (entry != null) {
-						key = entry.getKey();
-						value = entry.getValue();
-						if (!DPDoctorUtils.anyStringEmpty(key, value))
-							field = field + "<b>" + key + " : </b>" + value + "<br>";
+				for (Map<String, String> map : procedureConsentForm.getHeaderFields()) {
+					for (Map.Entry<String, String> entry : map.entrySet()) {
+						if (entry != null) {
+							key = entry.getKey();
+							value = entry.getValue();
+							if (!DPDoctorUtils.anyStringEmpty(key, value))
+								field = field + "<b>" + key + " : </b>" + value + "<br>";
 
+						}
 					}
 				}
+				
+				
 				field = field + "<br><br>";
 				parameters.put("headerField", field);
 			}
@@ -485,31 +491,34 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				items = new ArrayList<DBObject>();
 
 				Boolean isImage = false;
-				for (Map.Entry<String, String> entry : procedureConsentForm.getFooterFields().entrySet()) {
-					item = new BasicDBObject();
-					if (entry != null) {
-						key = entry.getKey();
-						value = entry.getValue();
+				for (Map<String, String> map : procedureConsentForm.getFooterFields()) {
 
-						isImage = false;
-						if (!DPDoctorUtils.anyStringEmpty(key, value))
+					for (Map.Entry<String, String> entry : map.entrySet()) {
+						item = new BasicDBObject();
+						if (entry != null) {
+							key = entry.getKey();
+							value = entry.getValue();
 
-							if (value.toUpperCase().contains(imagePath.toUpperCase())) {
+							isImage = false;
+							if (!DPDoctorUtils.anyStringEmpty(key, value))
 
-								value = value.replace(" ", "%20");
-								isImage = true;
-							} else {
-								isImage = false;
-							}
+								if (value.toUpperCase().contains(imagePath.toUpperCase())) {
 
+									value = value.replace(" ", "%20");
+									isImage = true;
+								} else {
+									isImage = false;
+								}
+
+						}
+
+						item.put("key", key);
+						item.put("value", value);
+						item.put("isImage", isImage);
+						items.add(item);
 					}
-
-					item.put("key", key);
-					item.put("value", value);
-					item.put("isImage", isImage);
-					items.add(item);
+					parameters.put("footerFields", items);
 				}
-				parameters.put("footerFields", items);
 			}
 		}
 

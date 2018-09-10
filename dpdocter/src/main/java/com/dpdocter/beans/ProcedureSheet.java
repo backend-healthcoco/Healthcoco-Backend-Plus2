@@ -1,14 +1,10 @@
 package com.dpdocter.beans;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.ImageURLResponse;
-
-import common.util.web.JacksonUtil;
 
 public class ProcedureSheet extends GenericCollection {
 
