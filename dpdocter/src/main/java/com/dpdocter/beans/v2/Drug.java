@@ -13,6 +13,8 @@ public class Drug {
 
 	private DrugType drugType;
 
+	private String drTy;
+
 	private String drugName;
 
 	private String explanation;
@@ -26,6 +28,10 @@ public class Drug {
 	private String locationId;
 
 	private Duration duration;
+
+	private String durationValue;
+
+	private String durationUnit;
 
 	private String dosage;
 
@@ -227,6 +233,30 @@ public class Drug {
 
 	public void setDrugTypePlacement(String drugTypePlacement) {
 		this.drugTypePlacement = drugTypePlacement;
+	}
+
+	public String getDrTy() {
+		return drTy;
+	}
+
+	public void setDrTy(String drTy) {
+		this.drTy = drTy;
+	}
+
+	public String getDurationValue() {
+		return durationValue;
+	}
+
+	public void setDurationValue(String durationValue) {
+		this.durationValue = durationValue;
+	}
+
+	public String getDurationUnit() {
+		return durationUnit;
+	}
+
+	public void setDurationUnit(String durationUnit) {
+		this.durationUnit = durationUnit;
 	}
 
 	@Override
