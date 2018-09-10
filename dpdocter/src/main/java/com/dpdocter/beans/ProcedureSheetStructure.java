@@ -111,7 +111,7 @@ public class ProcedureSheetStructure extends GenericCollection {
 				+ discarded + "]";
 	}
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 
 		ProcedureConsentFormFields procedureConsentFormFields = new ProcedureConsentFormFields();
 		procedureConsentFormFields.setDatatype("text");
@@ -128,11 +128,11 @@ public class ProcedureSheetStructure extends GenericCollection {
 		procedureSheetStructure.setType("PROCEDURE_SHEET");
 		ProcedureConsentFormStructure procedureConsentFormStructure = new ProcedureConsentFormStructure();
 		procedureConsentFormStructure.setBody("Test Body");
-		procedureConsentFormStructure.setFooterFields(map);
-		procedureConsentFormStructure.setHeaderFields(map);
+		procedureConsentFormStructure.setFooterFields(list);
+		procedureConsentFormStructure.setHeaderFields(list);
 		procedureSheetStructure.setProcedureConsentFormStructure(procedureConsentFormStructure);
-		procedureSheetStructure.setProcedureSheetFields(map);
+		procedureSheetStructure.setProcedureSheetFields(list);
 		// procedureSheetStructure.
 		System.out.println(JacksonUtil.obj2Json(procedureSheetStructure));
-	}*/
+	}
 }
