@@ -292,7 +292,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				procedureConsentFormStructure.setFooterFields(request.getProcedureConsentFormStructure().getFooterFields());
 				procedureConsentFormStructure.setBody(request.getProcedureConsentFormStructure().getBody());
 			}
-			
 			procedureSheetFields = request.getProcedureSheetFields();
 			request.setProcedureSheetFields(null);
 			request.setProcedureConsentFormStructure(null);
@@ -304,11 +303,23 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			procedureSheetStructureCollection = procedureSheetStructureRepository
 					.save(procedureSheetStructureCollection);
 			if (procedureSheetStructureCollection != null) {
+				if(procedureSheetStructureCollection.getProcedureConsentFormStructure() != null)
+				{
+					procedureConsentFormStructure = new ProcedureConsentFormStructure();
+					procedureConsentFormStructure.setHeaderFields(procedureSheetStructureCollection.getProcedureConsentFormStructure().getHeaderFields());
+					procedureConsentFormStructure.setFooterFields(procedureSheetStructureCollection.getProcedureConsentFormStructure().getFooterFields());
+					procedureConsentFormStructure.setBody(procedureSheetStructureCollection.getProcedureConsentFormStructure().getBody());
+				}
 				response = new ProcedureSheetStructureResponse();
+
+				procedureSheetFields = procedureSheetStructureCollection.getProcedureSheetFields();
+				procedureSheetStructureCollection.setProcedureSheetFields(null);
+				procedureSheetStructureCollection.setProcedureConsentFormStructure(null);
 				BeanUtil.map(procedureSheetStructureCollection, response);
-				response.setProcedureConsentFormStructure(procedureSheetStructureCollection.getProcedureConsentFormStructure());
 				response.setDiagrams(procedureSheetStructureCollection.getDiagrams());
-				response.setProcedureSheetFields(procedureSheetStructureCollection.getProcedureSheetFields());
+				response.setProcedureSheetFields(procedureSheetFields);
+				response.setProcedureConsentFormStructure(procedureConsentFormStructure);
+				
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
