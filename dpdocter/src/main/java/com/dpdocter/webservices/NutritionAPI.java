@@ -15,8 +15,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.AssessmentPersonalDetail;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
+import com.dpdocter.beans.PatientAssesentmentFormHistory;
+import com.dpdocter.beans.PatientFoodAndExcercise;
+import com.dpdocter.beans.PatientLifeStyle;
+import com.dpdocter.beans.PatientMeasurementInfo;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.UserNutritionSubscription;
 import com.dpdocter.enums.NutritionPlanType;
@@ -28,6 +33,7 @@ import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
+import com.dpdocter.services.AssessmentFormService;
 import com.dpdocter.services.NutritionService;
 
 import common.util.web.DPDoctorUtils;
@@ -45,7 +51,10 @@ public class NutritionAPI {
 	private static Logger logger = Logger.getLogger(NutritionAPI.class.getName());
 
 	@Autowired
-	NutritionService nutritionService;
+	private NutritionService nutritionService;
+
+	@Autowired
+	private AssessmentFormService AssessmentFormService;
 
 	@POST
 	@Path(PathProxy.NutritionUrl.ADD_EDIT_NUTRITION_REFERENCE)
@@ -236,6 +245,170 @@ public class NutritionAPI {
 		Response<NutritionPlanWithCategoryResponse> response = new Response<NutritionPlanWithCategoryResponse>();
 		response.setDataList(nutritionService.getNutritionPlanByCategory(request));
 
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_DETAIL)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_DETAIL, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_DETAIL)
+	public Response<AssessmentPersonalDetail> addEditAssessmentPatientDetail(AssessmentPersonalDetail request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+		if (DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					" doctorId , hospitalId ,locationId should not null");
+		}
+
+		Response<AssessmentPersonalDetail> response = new Response<AssessmentPersonalDetail>();
+		response.setData(AssessmentFormService.addEditAssessmentPersonalDetail(request));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_LIFE_STYLE)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_LIFE_STYLE, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_LIFE_STYLE)
+	public Response<PatientLifeStyle> addEditAssessmentLifeStyle(PatientLifeStyle request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+		if (DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					" doctorId , hospitalId ,locationId should not null");
+		}
+		Response<PatientLifeStyle> response = new Response<PatientLifeStyle>();
+		response.setData(AssessmentFormService.addEditAssessmentLifeStyle(request));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE)
+	public Response<PatientFoodAndExcercise> addEditAssessmentFoodAndExcercise(PatientFoodAndExcercise request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+		if (DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					" doctorId , hospitalId ,locationId should not null");
+		}
+		Response<PatientFoodAndExcercise> response = new Response<PatientFoodAndExcercise>();
+		response.setData(AssessmentFormService.addEditFoodAndExcercise(request));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY)
+	public Response<PatientAssesentmentFormHistory> addEditAssessmentPatientHistory(
+			PatientAssesentmentFormHistory request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+		if (DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					" doctorId , hospitalId ,locationId should not null");
+		}
+		Response<PatientAssesentmentFormHistory> response = new Response<PatientAssesentmentFormHistory>();
+		response.setData(AssessmentFormService.addEditAssessmentHistory(request));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT)
+	public Response<PatientMeasurementInfo> addEditAssessmentPatientMeasurement(PatientMeasurementInfo request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+		if (DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					" doctorId , hospitalId ,locationId should not null");
+		}
+		Response<PatientMeasurementInfo> response = new Response<PatientMeasurementInfo>();
+		response.setData(AssessmentFormService.addEditPatientMeasurementInfo(request));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_DETAIL)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_DETAIL, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_DETAIL)
+	public Response<AssessmentPersonalDetail> getAssessmentPatientDetail(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("updateTime") long updateTime,
+			@QueryParam("discarded") boolean discarded, @QueryParam("doctorId") String doctorId,
+			@QueryParam("patientId") String patientId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId) {
+
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, " hospitalId ,locationId should not null");
+		}
+		Response<AssessmentPersonalDetail> response = new Response<AssessmentPersonalDetail>();
+		response.setDataList(AssessmentFormService.getAssessmentPatientDetail(page, size, discarded, updateTime,
+				patientId, doctorId, locationId, hospitalId));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_LIFE_STYLE)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_LIFE_STYLE, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_LIFE_STYLE)
+	public Response<PatientLifeStyle> getPatientLifeStyle(@PathParam("assessmentId") String assessmentId) {
+
+		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
+		}
+		Response<PatientLifeStyle> response = new Response<PatientLifeStyle>();
+		response.setData(AssessmentFormService.getAssessmentLifeStyle(assessmentId));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE)
+	public Response<PatientFoodAndExcercise> getAssessmentFoodAndExcercise(
+			@PathParam("assessmentId") String assessmentId) {
+
+		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
+		}
+		Response<PatientFoodAndExcercise> response = new Response<PatientFoodAndExcercise>();
+		response.setData(AssessmentFormService.getPatientFoodAndExcercise(assessmentId));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_HISTORY)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_HISTORY, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE)
+	public Response<PatientAssesentmentFormHistory> getAssessmentHistory(
+			@PathParam("assessmentId") String assessmentId) {
+
+		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
+		}
+		Response<PatientAssesentmentFormHistory> response = new Response<PatientAssesentmentFormHistory>();
+		response.setData(AssessmentFormService.getAssessmentHistory(assessmentId));
+
+		return response;
+	}
+
+	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_MEASUREMENT)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_MEASUREMENT, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_MEASUREMENT)
+	public Response<PatientMeasurementInfo> getAssessmentMeasureInfo(@PathParam("assessmentId") String assessmentId) {
+
+		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
+		}
+		Response<PatientMeasurementInfo> response = new Response<PatientMeasurementInfo>();
+
+		response.setData(AssessmentFormService.getPatientMeasurementInfo(assessmentId));
 		return response;
 	}
 

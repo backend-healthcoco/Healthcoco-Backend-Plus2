@@ -265,7 +265,9 @@ public class AsyncService {
 				SMS sms = new SMS();
 				smsDetail.setUserName(userCollection.getFirstName());
 				sms.setSmsText(message
-						.replace("{amount}", "Rs. " + userNutritionSubscriptionResponse.getAmount().toString())
+
+						.replace("{amount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
+						.replace("{patientName}", userNutritionSubscriptionResponse.getTransactionStatus())
 						.replace("{PlanName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
 
 				SMSAddress smsAddress = new SMSAddress();
@@ -315,9 +317,8 @@ public class AsyncService {
 					"nutritionPaymentTemplate.vm");
 			mailService.sendEmail(userCollection.getEmailAddress(), "Healthcoco sent you Transaction Status", body,
 					null);
-
-			System.out.println("mail sent");
-
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
