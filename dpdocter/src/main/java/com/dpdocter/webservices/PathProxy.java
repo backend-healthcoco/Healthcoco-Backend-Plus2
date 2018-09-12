@@ -1779,6 +1779,16 @@ public interface PathProxy {
 		public static final String GET_USER_PLAN_SUBSCRIPTION = "/getUserPlanSubscription/{id}";
 		public static final String GET_USER_PLAN_SUBSCRIPTIONS = "/getUserPlanSubscriptions/{userId}";
 		public static final String DELETE_USER_PLAN_SUBSCRIPTION = "/UserPlanSubscription/{id}/delete";
+		public static final String ADD_EDIT_ASSESSMENT_PATIENT_DETAIL = "assessment/patientDetail/addEdit";
+		public static final String GET_ASSESSMENT_PATIENT_DETAIL = "assessment/patientDetail/get";
+		public static final String ADD_EDIT_ASSESSMENT_PATIENT_HISTORY = "assessment/patientHistory/addEdit";
+		public static final String GET_ASSESSMENT_PATIENT_HISTORY = "assessment/patientHistory/{assessmentId}/get";
+		public static final String ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT = "assessment/measurementInfo/addEdit";
+		public static final String GET_ASSESSMENT_PATIENT_MEASUREMENT = "assessment/measurementInfo/{assessmentId}/get";
+		public static final String ADD_EDIT_ASSESSMENT_LIFE_STYLE = "assessment/lifeStyle/addEdit";
+		public static final String GET_ASSESSMENT_LIFE_STYLE = "assessment/lifeStyle/{assessmentId}/get";
+		public static final String ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE = "assessment/food/exercise/addEdit";
+		public static final String GET_ASSESSMENT_FOOD_AND_EXCERCISE = "assessment/food/exercise/{assessmentId}/get";
 	}
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
@@ -1859,6 +1869,7 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PROCEDURE_SHEET = "/download/{id}";
 	}
 
+
 	public static final String SOLR_RECIPE_BASE_URL = BASE_URL + "/solr/recipe";
 
 	public interface SolrRecipeUrls {
@@ -1869,6 +1880,7 @@ public interface PathProxy {
 		public static final String SEARCH_EXERCISE = "exercise/search";
 		public static final String SEARCH_RECIPES_FOR_USER_APP = "user/app/search";
 	}
+
 
 	public static final String RECIPE_BASE_URL = BASE_URL + "/recipe";
 

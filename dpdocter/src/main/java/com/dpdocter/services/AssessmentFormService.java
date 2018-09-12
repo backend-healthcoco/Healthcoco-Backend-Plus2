@@ -1,0 +1,33 @@
+package com.dpdocter.services;
+
+import java.util.List;
+
+import com.dpdocter.beans.AssessmentPersonalDetail;
+import com.dpdocter.beans.PatientAssesentmentFormHistory;
+import com.dpdocter.beans.PatientFoodAndExcercise;
+import com.dpdocter.beans.PatientLifeStyle;
+import com.dpdocter.beans.PatientMeasurementInfo;
+
+public interface AssessmentFormService {
+	public PatientMeasurementInfo addEditPatientMeasurementInfo(PatientMeasurementInfo request);
+
+	public PatientLifeStyle addEditAssessmentLifeStyle(PatientLifeStyle request);
+
+	public PatientAssesentmentFormHistory addEditAssessmentHistory(PatientAssesentmentFormHistory request);
+
+	public PatientFoodAndExcercise addEditFoodAndExcercise(PatientFoodAndExcercise request);
+
+	public AssessmentPersonalDetail addEditAssessmentPersonalDetail(AssessmentPersonalDetail request);
+
+	public List<AssessmentPersonalDetail> getAssessmentPatientDetail(int page, int size, boolean discarded,
+			long updateTime, String patientId, String doctorId, String locationId, String hospitalId);
+
+	public PatientLifeStyle getAssessmentLifeStyle(String assessmentId);
+
+	public PatientAssesentmentFormHistory getAssessmentHistory(String assessmentId);
+
+	public PatientMeasurementInfo getPatientMeasurementInfo(String assessmentId);
+
+	public PatientFoodAndExcercise getPatientFoodAndExcercise(String assessmentId);
+
+}
