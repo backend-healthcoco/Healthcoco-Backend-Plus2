@@ -881,7 +881,7 @@ public class NutritionServiceImpl implements NutritionService {
 			BeanUtil.map(userCollection, user);
 
 			if (response != null) {
-				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 					asyncService.sendMessage(response, userCollection);
 					if (DPDoctorUtils.anyStringEmpty(userCollection.getEmailAddress()))
 						asyncService.createMailNutritionTransactionStatus(response, userCollection);
