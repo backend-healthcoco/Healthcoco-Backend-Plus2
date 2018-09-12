@@ -125,6 +125,9 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean isNutritionActive = false;
+	
+	
+	
 
 	@Field
 	private String fatherName;

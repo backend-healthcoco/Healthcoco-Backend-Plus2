@@ -27,16 +27,6 @@ public class PatientFoodAndExcercise {
 
 	private Excercise exercise;
 
-	private List<PrescriptionAddItem> drugs;
-
-	public List<PrescriptionAddItem> getDrugs() {
-		return drugs;
-	}
-
-	public void setDrugs(List<PrescriptionAddItem> drugs) {
-		this.drugs = drugs;
-	}
-
 	public List<FoodPreferenceEnum> getFoodPrefer() {
 		return foodPrefer;
 	}
