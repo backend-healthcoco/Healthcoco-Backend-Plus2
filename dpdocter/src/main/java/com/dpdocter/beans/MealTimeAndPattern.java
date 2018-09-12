@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.enums.MealTimeEnum;
+import com.dpdocter.enums.MealType;
 
 public class MealTimeAndPattern {
 
@@ -11,6 +12,8 @@ public class MealTimeAndPattern {
 	private int fromTime;
 
 	private int toTime;
+
+	private MealType type;
 
 	public Meal getFood() {
 		return food;
@@ -42,6 +45,14 @@ public class MealTimeAndPattern {
 
 	public void setToTime(int toTime) {
 		this.toTime = toTime;
+	}
+
+	public MealType getType() {
+		return type;
+	}
+
+	public void setType(MealType type) {
+		this.type = type;
 	}
 
 }
