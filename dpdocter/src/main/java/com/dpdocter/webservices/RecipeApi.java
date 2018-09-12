@@ -1,0 +1,255 @@
+package com.dpdocter.webservices;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.dpdocter.beans.Ingredient;
+import com.dpdocter.beans.Nutrient;
+import com.dpdocter.beans.Recipe;
+import com.dpdocter.elasticsearch.document.ESIngredientDocument;
+import com.dpdocter.elasticsearch.document.ESNutrientDocument;
+import com.dpdocter.elasticsearch.document.ESRecipeDocument;
+import com.dpdocter.elasticsearch.services.ESRecipeService;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.request.IngredientSearchRequest;
+import com.dpdocter.request.RecipeGetRequest;
+import com.dpdocter.services.RecipeService;
+
+import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+@Component
+@Path(PathProxy.RECIPE_BASE_URL)
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Api(value = PathProxy.RECIPE_BASE_URL, description = "Endpoint for recipe")
+public class RecipeApi {
+	private static Logger logger = Logger.getLogger(RecipeApi.class.getName());
+
+	@Autowired
+	private RecipeService recipeService;
+
+	@Autowired
+	private ESRecipeService esRecipeService;
+
+	@Value(value = "${image.path}")
+	private String imagePath;
+
+	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_NUTRIENT)
+	@POST
+	@ApiOperation(value = PathProxy.RecipeUrls.ADD_EDIT_NUTRIENT, notes = PathProxy.RecipeUrls.ADD_EDIT_NUTRIENT)
+	public Response<Nutrient> addEditNutrient(Nutrient request) {
+
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+
+		Nutrient nutrient = recipeService.addEditNutrient(request);
+		if (nutrient != null) {
+			ESNutrientDocument document = new ESNutrientDocument();
+			BeanUtil.map(nutrient, document);
+			esRecipeService.addNutrient(document);
+		}
+		Response<Nutrient> response = new Response<Nutrient>();
+		response.setData(nutrient);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_INGREDIENT)
+	@POST
+	@ApiOperation(value = PathProxy.RecipeUrls.ADD_EDIT_INGREDIENT, notes = PathProxy.RecipeUrls.ADD_EDIT_INGREDIENT)
+	public Response<Ingredient> addEditIngredient(Ingredient request) {
+
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Ingredient ingredient = recipeService.addEditIngredient(request);
+		if (ingredient != null) {
+			ESIngredientDocument document = new ESIngredientDocument();
+			BeanUtil.map(ingredient, document);
+			esRecipeService.addIngredient(document);
+		}
+
+		Response<Ingredient> response = new Response<Ingredient>();
+		response.setData(ingredient);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_INGREDIENT)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_INGREDIENT, notes = PathProxy.RecipeUrls.GET_INGREDIENT)
+	public Response<Ingredient> getIngredient(@PathParam("ingredientId") String ingredientId) {
+
+		if (DPDoctorUtils.anyStringEmpty(ingredientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Ingredient ingredient = recipeService.getIngredient(ingredientId);
+		Response<Ingredient> response = new Response<Ingredient>();
+		response.setData(ingredient);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENT)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENT, notes = PathProxy.RecipeUrls.GET_NUTRIENT)
+	public Response<Nutrient> getNutrient(@PathParam("nutrientId") String nutrientId) {
+
+		if (DPDoctorUtils.anyStringEmpty(nutrientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Nutrient nutrient = recipeService.getNutrient(nutrientId);
+		Response<Nutrient> response = new Response<Nutrient>();
+		response.setData(nutrient);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENTS)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENTS, notes = PathProxy.RecipeUrls.GET_NUTRIENTS)
+	public Response<Nutrient> getNutrients(@QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+
+		Response<Nutrient> response = new Response<Nutrient>();
+		response.setDataList(recipeService.getNutrients(size, page, discarded, searchTerm));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_INGREDIENTS)
+	@POST
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_INGREDIENTS, notes = PathProxy.RecipeUrls.GET_INGREDIENTS)
+	public Response<Ingredient> getIngredient(IngredientSearchRequest request) {
+
+		Response<Ingredient> response = new Response<Ingredient>();
+		response.setDataList(recipeService.getIngredients(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.DELETE_INGREDIENT)
+	@DELETE
+	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_INGREDIENT, notes = PathProxy.RecipeUrls.DELETE_INGREDIENT)
+	public Response<Ingredient> deleteIngredient(@PathParam("ingredientId") String ingredientId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(ingredientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<Ingredient> response = new Response<Ingredient>();
+		response.setData(recipeService.discardIngredient(ingredientId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.DELETE_NUTRIENT)
+	@DELETE
+	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_NUTRIENT, notes = PathProxy.RecipeUrls.DELETE_NUTRIENT)
+	public Response<Nutrient> deleteNutrient(@PathParam("nutrientId") String nutrientId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(nutrientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<Nutrient> response = new Response<Nutrient>();
+		response.setData(recipeService.discardNutrient(nutrientId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.DELETE_RECIPE)
+	@DELETE
+	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_RECIPE, notes = PathProxy.RecipeUrls.DELETE_RECIPE)
+	public Response<Recipe> deleteRecipe(@PathParam("recipeId") String recipeId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+
+		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<Recipe> response = new Response<Recipe>();
+		response.setData(recipeService.discardRecipe(recipeId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_RECIPE)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE, notes = PathProxy.RecipeUrls.GET_RECIPE)
+	public Response<Recipe> getRecipe(@PathParam("recipeId") String recipeId) {
+		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<Recipe> response = new Response<Recipe>();
+		response.setData(recipeService.getRecipe(recipeId));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_RECIPES)
+	@POST
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES, notes = PathProxy.RecipeUrls.GET_RECIPES)
+	public Response<Recipe> getRecipes(RecipeGetRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<Recipe> response = new Response<Recipe>();
+		response.setDataList(recipeService.getRecipes(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE)
+	@POST
+	@ApiOperation(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE, notes = PathProxy.RecipeUrls.ADD_EDIT_RECIPE)
+	public Response<Recipe> addEditRecipes(Recipe request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Recipe recipe = recipeService.addEditRecipe(request);
+		Response<Recipe> response = new Response<Recipe>();
+		response.setData(recipe);
+
+		if (recipe != null) {
+			ESRecipeDocument document = new ESRecipeDocument();
+			BeanUtil.map(recipe, document);
+			esRecipeService.addRecipe(document);
+		}
+
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null)
+			return imagePath + imageURL;
+		else
+			return null;
+	}
+
+}
