@@ -104,6 +104,7 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.InstructionsCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.NutritionReferralCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
