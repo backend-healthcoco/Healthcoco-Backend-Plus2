@@ -1,0 +1,257 @@
+package com.dpdocter.collections;
+
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.dpdocter.beans.IngredientItem;
+import com.dpdocter.beans.RecipeItem;
+
+@Document(collection = "recipe_cl")
+public class RecipeCollection extends GenericCollection {
+	@Id
+	private ObjectId id;
+
+	@Field
+	private String name;
+
+	@Field
+	private int amountInGram;
+
+	@Field
+	private String videoUrl;
+
+	@Field
+	private List<String> recipeImages;
+
+	@Field
+	private List<RecipeItem> includeIngredients;
+
+	@Field
+	private List<RecipeItem> excludeIngredients;
+
+	@Field
+	private List<RecipeItem> ingredients;
+
+	@Field
+	private List<IngredientItem> nutrients;
+
+	@Field
+	private String dishType;
+
+	@Field
+	private String technique;
+
+	@Field
+	private Boolean isPopular = false;
+
+	@Field
+	private Boolean isHoliday = false;
+
+	@Field
+	private Boolean discarded = false;
+
+	@Field
+	private String direction;
+
+	@Field
+	private String dietaryConcerns;
+
+	@Field
+	private Integer forMember = 0;
+
+	@Field
+	private Double cost = 0.0;
+
+	@Field
+	private String meal;
+
+	@Field
+	private String cuisine;
+
+	@Field
+	private String course;
+
+	@Field
+	private Integer preparationTime = 0;
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getVideoUrl() {
+		return videoUrl;
+	}
+
+	public void setVideoUrl(String videoUrl) {
+		this.videoUrl = videoUrl;
+	}
+
+	public List<String> getRecipeImages() {
+		return recipeImages;
+	}
+
+	public void setRecipeImages(List<String> recipeImages) {
+		this.recipeImages = recipeImages;
+	}
+
+	public List<RecipeItem> getIncludeIngredients() {
+		return includeIngredients;
+	}
+
+	public void setIncludeIngredients(List<RecipeItem> includeIngredients) {
+		this.includeIngredients = includeIngredients;
+	}
+
+	public List<RecipeItem> getExcludeIngredients() {
+		return excludeIngredients;
+	}
+
+	public void setExcludeIngredients(List<RecipeItem> excludeIngredients) {
+		this.excludeIngredients = excludeIngredients;
+	}
+
+	public List<RecipeItem> getIngredients() {
+		return ingredients;
+	}
+
+	public void setIngredients(List<RecipeItem> ingredients) {
+		this.ingredients = ingredients;
+	}
+
+	public List<IngredientItem> getNutrients() {
+		return nutrients;
+	}
+
+	public void setNutrients(List<IngredientItem> nutrients) {
+		this.nutrients = nutrients;
+	}
+
+	public String getDishType() {
+		return dishType;
+	}
+
+	public void setDishType(String dishType) {
+		this.dishType = dishType;
+	}
+
+	public String getTechnique() {
+		return technique;
+	}
+
+	public void setTechnique(String technique) {
+		this.technique = technique;
+	}
+
+	public Boolean getIsPopular() {
+		return isPopular;
+	}
+
+	public void setIsPopular(Boolean isPopular) {
+		this.isPopular = isPopular;
+	}
+
+	public Boolean getIsHoliday() {
+		return isHoliday;
+	}
+
+	public void setIsHoliday(Boolean isHoliday) {
+		this.isHoliday = isHoliday;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+	public String getDietaryConcerns() {
+		return dietaryConcerns;
+	}
+
+	public void setDietaryConcerns(String dietaryConcerns) {
+		this.dietaryConcerns = dietaryConcerns;
+	}
+
+	public Integer getForMember() {
+		return forMember;
+	}
+
+	public void setForMember(Integer forMember) {
+		this.forMember = forMember;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public String getMeal() {
+		return meal;
+	}
+
+	public void setMeal(String meal) {
+		this.meal = meal;
+	}
+
+	public String getCuisine() {
+		return cuisine;
+	}
+
+	public void setCuisine(String cuisine) {
+		this.cuisine = cuisine;
+	}
+
+	public String getCourse() {
+		return course;
+	}
+
+	public void setCourse(String course) {
+		this.course = course;
+	}
+
+	public Integer getPreparationTime() {
+		return preparationTime;
+	}
+
+	public void setPreparationTime(Integer preparationTime) {
+		this.preparationTime = preparationTime;
+	}
+
+	public int getAmountInGram() {
+		return amountInGram;
+	}
+
+	public void setAmountInGram(int amountInGram) {
+		this.amountInGram = amountInGram;
+	}
+
+}
