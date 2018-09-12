@@ -54,16 +54,19 @@ public class HistoryCollection extends GenericCollection {
 
 	@Transient
 	private long count;
-	
+
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public HistoryCollection(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
 		super();
 		this.doctorId = doctorId;
 		this.locationId = locationId;
 		this.hospitalId = hospitalId;
 		this.patientId = patientId;
+	}
+
+	public HistoryCollection() {
 	}
 
 	public ObjectId getId() {

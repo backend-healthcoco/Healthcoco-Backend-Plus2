@@ -1809,6 +1809,16 @@ public interface PathProxy {
 		public static final String GET_USER_PLAN_SUBSCRIPTION = "/getUserPlanSubscription/{id}";
 		public static final String GET_USER_PLAN_SUBSCRIPTIONS = "/getUserPlanSubscriptions/{userId}";
 		public static final String DELETE_USER_PLAN_SUBSCRIPTION = "/UserPlanSubscription/{id}/delete";
+		public static final String ADD_EDIT_ASSESSMENT_PATIENT_DETAIL = "assessment/patientDetail/addEdit";
+		public static final String GET_ASSESSMENT_PATIENT_DETAIL = "assessment/patientDetail/get";
+		public static final String ADD_EDIT_ASSESSMENT_PATIENT_HISTORY = "assessment/patientHistory/addEdit";
+		public static final String GET_ASSESSMENT_PATIENT_HISTORY = "assessment/patientHistory/{assessmentId}/get";
+		public static final String ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT = "assessment/measurementInfo/addEdit";
+		public static final String GET_ASSESSMENT_PATIENT_MEASUREMENT = "assessment/measurementInfo/{assessmentId}/get";
+		public static final String ADD_EDIT_ASSESSMENT_LIFE_STYLE = "assessment/lifeStyle/addEdit";
+		public static final String GET_ASSESSMENT_LIFE_STYLE = "assessment/lifeStyle/{assessmentId}/get";
+		public static final String ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE = "assessment/food/exercise/addEdit";
+		public static final String GET_ASSESSMENT_FOOD_AND_EXCERCISE = "assessment/food/exercise/{assessmentId}/get";
 	}
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
@@ -1877,5 +1887,24 @@ public interface PathProxy {
 		public static final String DISCARD_PROCEDURE_STRUCTURE = "/{id}/discardStructure";
 		public static final String ADD_DIAGRAM = "/addDiagram";
 		public static final String DOWNLOAD_PROCEDURE_SHEET = "/download/{id}";
+	}
+
+	public static final String RECIPE_BASE_URL = BASE_URL + "/recipe";
+
+	public interface RecipeUrls {
+		public static final String ADD_EDIT_NUTRIENT = "nutrient/addEdit";
+		public static final String GET_NUTRIENTS = "nutrient/get";
+		public static final String DELETE_NUTRIENT = "nutrient/{nutrientId}/delete";
+		public static final String GET_NUTRIENT = "nutrient/{nutrientId}/get";
+
+		public static final String ADD_EDIT_INGREDIENT = "ingredient/addEdit";
+		public static final String GET_INGREDIENTS = "ingredient/get";
+		public static final String DELETE_INGREDIENT = "ingredient/{ingredientId}/delete";
+		public static final String GET_INGREDIENT = "ingredient/{ingredientId}/get";
+
+		public static final String ADD_EDIT_RECIPE = "addEdit";
+		public static final String GET_RECIPES = "get";
+		public static final String DELETE_RECIPE = "{recipeId}/delete";
+		public static final String GET_RECIPE = "{recipeId}/get";
 	}
 }

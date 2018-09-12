@@ -1,0 +1,81 @@
+package com.dpdocter.beans;
+
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
+import com.dpdocter.enums.MealType;
+
+public class Meal {
+
+	private ObjectId id;
+
+	private String name;
+
+	private List<IngredientItem> ingredients;
+
+	private List<IngredientItem> nutrients;
+
+	private Quantity quantity;
+
+	private String note;
+
+	private MealType type;
+
+	public MealType getType() {
+		return type;
+	}
+
+	public void setType(MealType type) {
+		this.type = type;
+	}
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<IngredientItem> getIngredients() {
+		return ingredients;
+	}
+
+	public void setIngredients(List<IngredientItem> ingredients) {
+		this.ingredients = ingredients;
+	}
+
+	public List<IngredientItem> getNutrients() {
+		return nutrients;
+	}
+
+	public void setNutrients(List<IngredientItem> nutrients) {
+		this.nutrients = nutrients;
+	}
+
+	public Quantity getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Quantity quantity) {
+		this.quantity = quantity;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+}
