@@ -31,6 +31,38 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	@Field
 	private Boolean Discarded = false;
 
+	private Integer noOfAdultMember = 0;
+
+	private Integer noOfChildMember = 0;
+
+	private String profession;
+	
+	
+
+	public Integer getNoOfAdultMember() {
+		return noOfAdultMember;
+	}
+
+	public void setNoOfAdultMember(Integer noOfAdultMember) {
+		this.noOfAdultMember = noOfAdultMember;
+	}
+
+	public Integer getNoOfChildMember() {
+		return noOfChildMember;
+	}
+
+	public void setNoOfChildMember(Integer noOfChildMember) {
+		this.noOfChildMember = noOfChildMember;
+	}
+
+	public String getProfession() {
+		return profession;
+	}
+
+	public void setProfession(String profession) {
+		this.profession = profession;
+	}
+
 	public Boolean getDiscarded() {
 		return Discarded;
 	}

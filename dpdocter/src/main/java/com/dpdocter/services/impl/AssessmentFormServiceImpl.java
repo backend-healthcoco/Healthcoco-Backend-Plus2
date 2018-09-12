@@ -280,12 +280,10 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
 		}
 		PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+		BeanUtil.map(request, patientRegistrationRequest);
 		patientRegistrationRequest.setFirstName(request.getFirstName());
 		patientRegistrationRequest.setLocalPatientName(request.getFirstName());
-		patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
-		patientRegistrationRequest.setDoctorId(request.getDoctorId());
-		patientRegistrationRequest.setLocationId(request.getLocationId());
-		patientRegistrationRequest.setHospitalId(request.getHospitalId());
+
 		RegisteredPatientDetails patientDetails = null;
 		patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
 		if (patientDetails != null) {
@@ -314,7 +312,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					Fields.field("gender", "$patient.gender"), Fields.field("uniqueId", "$uniqueId"),
 					Fields.field("physicalStatusType", "$physicalStatusType"), Fields.field("goal", "$goal"),
 					Fields.field("discarded", "$discarded"), Fields.field("dob", "$patient.dob"),
-					Fields.field("address", "$patient.address"), Fields.field("community", "$community")));
+					Fields.field("address", "$patient.address"), Fields.field("profession", "$patient.profession"),
+					Fields.field("community", "$community"), Fields.field("noOfAdultMember", "$noOfAdultMember"),
+					Fields.field("noOfChildMember", "$noOfChildMember")));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));

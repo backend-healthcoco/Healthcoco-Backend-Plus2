@@ -1,12 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.enums.MealTimeEnum;
 import com.dpdocter.enums.MealType;
 import com.dpdocter.request.MealRequest;
 
 public class MealTimeAndPatternRequest {
 
-	private MealRequest food;
+	private List<MealRequest> food;
 
 	private MealTimeEnum timeType;
 
@@ -14,21 +16,11 @@ public class MealTimeAndPatternRequest {
 
 	private int toTime;
 
-	private MealType type;
-
-	public MealType getType() {
-		return type;
-	}
-
-	public void setType(MealType type) {
-		this.type = type;
-	}
-
-	public MealRequest getFood() {
+	public List<MealRequest> getFood() {
 		return food;
 	}
 
-	public void setFood(MealRequest food) {
+	public void setFood(List<MealRequest> food) {
 		this.food = food;
 	}
 
