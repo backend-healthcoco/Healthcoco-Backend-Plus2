@@ -16,7 +16,6 @@ public class MealTimeAndPatternRequest {
 
 	private MealType type;
 
-	
 	public MealType getType() {
 		return type;
 	}
@@ -33,22 +32,6 @@ public class MealTimeAndPatternRequest {
 		this.food = food;
 	}
 
-	public MealTimeEnum getTimeType() {
-		return timeType;
-	}
-
-	public void setTimeType(MealTimeEnum timeType) {
-		this.timeType = timeType;
-	}
-
-	public MealTimeEnum gettimeType() {
-		return timeType;
-	}
-
-	public void settimeType(MealTimeEnum timeType) {
-		this.timeType = timeType;
-	}
-
 	public int getFromTime() {
 		return fromTime;
 	}
@@ -63,6 +46,14 @@ public class MealTimeAndPatternRequest {
 
 	public void setToTime(int toTime) {
 		this.toTime = toTime;
+	}
+
+	public MealTimeEnum getTimeType() {
+		return timeType;
+	}
+
+	public void setTimeType(MealTimeEnum timeType) {
+		this.timeType = timeType;
 	}
 
 }
