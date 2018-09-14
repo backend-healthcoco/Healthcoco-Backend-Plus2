@@ -3,17 +3,18 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
-import com.dpdocter.beans.PatientAssesentmentFormHistory;
+import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
 import com.dpdocter.beans.PatientFoodAndExcercise;
 import com.dpdocter.beans.PatientLifeStyle;
 import com.dpdocter.beans.PatientMeasurementInfo;
+import com.dpdocter.response.AssessmentFormHistoryResponse;
 
 public interface AssessmentFormService {
 	public PatientMeasurementInfo addEditPatientMeasurementInfo(PatientMeasurementInfo request);
 
 	public PatientLifeStyle addEditAssessmentLifeStyle(PatientLifeStyle request);
 
-	public PatientAssesentmentFormHistory addEditAssessmentHistory(PatientAssesentmentFormHistory request);
+	public AssessmentFormHistoryResponse addEditAssessmentHistory(PatientAssesentmentHistoryRequest request);
 
 	public PatientFoodAndExcercise addEditFoodAndExcercise(PatientFoodAndExcercise request);
 
@@ -24,7 +25,7 @@ public interface AssessmentFormService {
 
 	public PatientLifeStyle getAssessmentLifeStyle(String assessmentId);
 
-	public PatientAssesentmentFormHistory getAssessmentHistory(String assessmentId);
+	public AssessmentFormHistoryResponse getAssessmentHistory(String assessmentId);
 
 	public PatientMeasurementInfo getPatientMeasurementInfo(String assessmentId);
 

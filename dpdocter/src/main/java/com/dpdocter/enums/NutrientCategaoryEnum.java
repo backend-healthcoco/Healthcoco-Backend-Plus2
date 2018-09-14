@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum NutrientCategaoryEnum {
 	GENERAL("GENERAL"), CARBOHYDRATE("CABOHYDRATE"), LIPIDS("LIPIDS"), PROTEIN_AMINOACIDS("PROTEIN_AMINOACIDS"),
-	MINELRALS("MINERALS"), OTHERS("OTHERS");
+	MINERALS("MINERALS"), OTHERS("OTHERS");
 	private String type;
 
 	public String getType() {
