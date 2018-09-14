@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,12 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
-import com.dpdocter.beans.PatientAssesentmentFormHistory;
+import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
 import com.dpdocter.beans.PatientFoodAndExcercise;
 import com.dpdocter.beans.PatientLifeStyle;
 import com.dpdocter.beans.PatientMeasurementInfo;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.AssessmentPersonalDetailCollection;
+import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFoodAndExcerciseCollection;
@@ -35,6 +37,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AssessmentPersonalDetailRepository;
+import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.PatientFoodAndExerciseRepository;
 import com.dpdocter.repository.PatientLifeStyleRepository;
@@ -42,6 +45,8 @@ import com.dpdocter.repository.PatientMeasurementRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.AssessmentFormHistoryResponse;
+import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.services.AssessmentFormService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -83,6 +88,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 	@Autowired
 	private PatientRepository patientRepository;
+
+	@Autowired
+	private DiseasesRepository diseasesRepository;
 
 	@Transactional
 	@Override
@@ -169,10 +177,15 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 	@Transactional
 	@Override
-	public PatientAssesentmentFormHistory addEditAssessmentHistory(PatientAssesentmentFormHistory request) {
-		PatientAssesentmentFormHistory response = null;
+	public AssessmentFormHistoryResponse addEditAssessmentHistory(PatientAssesentmentHistoryRequest request) {
+		AssessmentFormHistoryResponse response = null;
 		try {
 			HistoryCollection historyCollection = null;
+
+			List<DiseaseListResponse> diseaseListResponses = null;
+
+			List<DiseasesCollection> diseasesCollections = null;
+			DiseaseListResponse diseaseListResponse = null;
 
 			if (DPDoctorUtils.allStringsEmpty(request.getId())) {
 				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
@@ -192,8 +205,49 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				historyCollection.setUpdatedTime(new Date());
 			}
 			historyCollection = historyRepository.save(historyCollection);
-			response = new PatientAssesentmentFormHistory();
+			response = new AssessmentFormHistoryResponse();
 			BeanUtil.map(historyCollection, response);
+
+			if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
+				diseaseListResponses = new ArrayList<DiseaseListResponse>();
+				diseasesCollections = diseasesRepository.findAll(historyCollection.getFamilyhistory());
+				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+					for (DiseasesCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new DiseaseListResponse();
+						BeanUtil.map(diseasesCollection, diseaseListResponse);
+						diseaseListResponses.add(diseaseListResponse);
+					}
+				}
+
+			}
+			response.setFamilyhistory(diseaseListResponses);
+			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
+				diseaseListResponses = new ArrayList<DiseaseListResponse>();
+				diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+					for (DiseasesCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new DiseaseListResponse();
+						BeanUtil.map(diseasesCollection, diseaseListResponse);
+						diseaseListResponses.add(diseaseListResponse);
+					}
+				}
+
+			}
+			response.setMedicalhistory(diseaseListResponses);
+
+			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
+				diseaseListResponses = new ArrayList<DiseaseListResponse>();
+				diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+					for (DiseasesCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new DiseaseListResponse();
+						BeanUtil.map(diseasesCollection, diseaseListResponse);
+						diseaseListResponses.add(diseaseListResponse);
+					}
+				}
+
+			}
+			response.setDiesease(diseaseListResponses);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -377,10 +431,57 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	}
 
 	@Override
-	public PatientAssesentmentFormHistory getAssessmentHistory(String assessmentId) {
-		PatientAssesentmentFormHistory response = null;
+	public AssessmentFormHistoryResponse getAssessmentHistory(String assessmentId) {
+		AssessmentFormHistoryResponse response = null;
 		try {
+			List<DiseaseListResponse> diseaseListResponses = null;
 
+			List<DiseasesCollection> diseasesCollections = null;
+			DiseaseListResponse diseaseListResponse = null;
+			HistoryCollection historyCollection = historyRepository.findByAssessmentId(new ObjectId(assessmentId));
+
+			response = new AssessmentFormHistoryResponse();
+			BeanUtil.map(historyCollection, response);
+
+			if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
+				diseaseListResponses = new ArrayList<DiseaseListResponse>();
+				diseasesCollections = diseasesRepository.findAll(historyCollection.getFamilyhistory());
+				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+					for (DiseasesCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new DiseaseListResponse();
+						BeanUtil.map(diseasesCollection, diseaseListResponse);
+						diseaseListResponses.add(diseaseListResponse);
+					}
+				}
+
+			}
+			response.setFamilyhistory(diseaseListResponses);
+			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
+				diseaseListResponses = new ArrayList<DiseaseListResponse>();
+				diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+					for (DiseasesCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new DiseaseListResponse();
+						BeanUtil.map(diseasesCollection, diseaseListResponse);
+						diseaseListResponses.add(diseaseListResponse);
+					}
+				}
+
+			}
+			response.setMedicalhistory(diseaseListResponses);
+
+			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
+				diseaseListResponses = new ArrayList<DiseaseListResponse>();
+				diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+					for (DiseasesCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new DiseaseListResponse();
+						BeanUtil.map(diseasesCollection, diseaseListResponse);
+						diseaseListResponses.add(diseaseListResponse);
+					}
+				}
+
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

@@ -186,8 +186,7 @@ public class LoginServiceImpl implements LoginService {
 					criteria = new Criteria("doctorId").is(userCollection.getId()).and("isActivate").is(true)
 							.and("hasLoginAccess").ne(false);
 
-					criteria.orOperator(new Criteria("isNutritionist").is(isNutritionist),
-							new Criteria("isNutritionist").exists(isNutritionist));
+					criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
 							.aggregate(
 									Aggregation.newAggregation(

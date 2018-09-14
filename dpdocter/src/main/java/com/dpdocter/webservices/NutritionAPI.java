@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.AssessmentPersonalDetail;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
-import com.dpdocter.beans.PatientAssesentmentFormHistory;
+import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
 import com.dpdocter.beans.PatientFoodAndExcercise;
 import com.dpdocter.beans.PatientLifeStyle;
 import com.dpdocter.beans.PatientMeasurementInfo;
@@ -29,6 +29,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditNutritionReferenceRequest;
 import com.dpdocter.request.NutritionPlanRequest;
+import com.dpdocter.response.AssessmentFormHistoryResponse;
 import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
@@ -303,8 +304,8 @@ public class NutritionAPI {
 	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY)
 	@POST
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY)
-	public Response<PatientAssesentmentFormHistory> addEditAssessmentPatientHistory(
-			PatientAssesentmentFormHistory request) {
+	public Response<AssessmentFormHistoryResponse> addEditAssessmentPatientHistory(
+			PatientAssesentmentHistoryRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -312,7 +313,7 @@ public class NutritionAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					" doctorId , hospitalId ,locationId should not null");
 		}
-		Response<PatientAssesentmentFormHistory> response = new Response<PatientAssesentmentFormHistory>();
+		Response<AssessmentFormHistoryResponse> response = new Response<AssessmentFormHistoryResponse>();
 		response.setData(AssessmentFormService.addEditAssessmentHistory(request));
 
 		return response;
@@ -386,13 +387,13 @@ public class NutritionAPI {
 	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_HISTORY)
 	@GET
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_HISTORY, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE)
-	public Response<PatientAssesentmentFormHistory> getAssessmentHistory(
+	public Response<AssessmentFormHistoryResponse> getAssessmentHistory(
 			@PathParam("assessmentId") String assessmentId) {
 
 		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
 		}
-		Response<PatientAssesentmentFormHistory> response = new Response<PatientAssesentmentFormHistory>();
+		Response<AssessmentFormHistoryResponse> response = new Response<AssessmentFormHistoryResponse>();
 		response.setData(AssessmentFormService.getAssessmentHistory(assessmentId));
 
 		return response;

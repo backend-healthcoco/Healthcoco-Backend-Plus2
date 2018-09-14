@@ -11,9 +11,13 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Addiction;
 import com.dpdocter.beans.DrugsAndAllergies;
+import com.dpdocter.beans.FoodAndAllergies;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.PersonalHistory;
+import com.dpdocter.beans.PrescriptionAddItem;
+import com.dpdocter.request.FoodAndAllergiesRequest;
 
 @Document(collection = "history_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
@@ -57,6 +61,33 @@ public class HistoryCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
+
+	@Field
+	private Boolean isStress = false;
+
+	@Field
+	private List<Addiction> addiction;
+
+	@Field
+	private List<ObjectId> diesease;
+
+	@Field
+	private Boolean everHospitalize = false;
+
+	@Field
+	private List<String> reasons;
+
+	@Field
+	private Integer noOfTime = 0;
+
+	@Field
+	private FoodAndAllergies foodAndAllergies;
+
+	@Field
+	private List<PrescriptionAddItem> existingMedication;
+
+	@Field
+	private ObjectId assessmentId;
 
 	public HistoryCollection(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
 		super();
@@ -181,5 +212,78 @@ public class HistoryCollection extends GenericCollection {
 				+ ", personalHistory=" + personalHistory + ", specialNotes=" + specialNotes + ", count=" + count
 				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
+	public Boolean getIsStress() {
+		return isStress;
+	}
+
+	public void setIsStress(Boolean isStress) {
+		this.isStress = isStress;
+	}
+
+	public List<Addiction> getAddiction() {
+		return addiction;
+	}
+
+	public void setAddiction(List<Addiction> addiction) {
+		this.addiction = addiction;
+	}
+
+	public List<ObjectId> getDiesease() {
+		return diesease;
+	}
+
+	public void setDiesease(List<ObjectId> diesease) {
+		this.diesease = diesease;
+	}
+
+	public Boolean getEverHospitalize() {
+		return everHospitalize;
+	}
+
+	public void setEverHospitalize(Boolean everHospitalize) {
+		this.everHospitalize = everHospitalize;
+	}
+
+	public List<String> getReasons() {
+		return reasons;
+	}
+
+	public void setReasons(List<String> reasons) {
+		this.reasons = reasons;
+	}
+
+	public Integer getNoOfTime() {
+		return noOfTime;
+	}
+
+	public void setNoOfTime(Integer noOfTime) {
+		this.noOfTime = noOfTime;
+	}
+
+	public FoodAndAllergies getFoodAndAllergies() {
+		return foodAndAllergies;
+	}
+
+	public void setFoodAndAllergies(FoodAndAllergies foodAndAllergies) {
+		this.foodAndAllergies = foodAndAllergies;
+	}
+
+	public List<PrescriptionAddItem> getExistingMedication() {
+		return existingMedication;
+	}
+
+	public void setExistingMedication(List<PrescriptionAddItem> existingMedication) {
+		this.existingMedication = existingMedication;
+	}
+
+	public ObjectId getAssessmentId() {
+		return assessmentId;
+	}
+
+	public void setAssessmentId(ObjectId assessmentId) {
+		this.assessmentId = assessmentId;
+	}
+	
 
 }

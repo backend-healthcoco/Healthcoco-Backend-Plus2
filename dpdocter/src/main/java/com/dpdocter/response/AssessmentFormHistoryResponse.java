@@ -1,11 +1,13 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.beans.Addiction;
+import com.dpdocter.beans.DrugsAndAllergies;
+import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.request.FoodAndAllergiesRequest;
 
-public class PatientAssesentmentFormHistory extends GenericCollection {
+public class AssessmentFormHistoryResponse {
 
 	private String id;
 
@@ -17,13 +19,11 @@ public class PatientAssesentmentFormHistory extends GenericCollection {
 
 	private String patientId;
 
-	private List<String> familyhistory;
+	private List<DiseaseListResponse> familyhistory;
 
-	private List<String> medicalhistory;
+	private List<DiseaseListResponse> medicalhistory;
 
 	private DrugsAndAllergies drugsAndAllergies;
-
-	private PersonalHistory personalHistory;
 
 	private List<String> specialNotes;
 
@@ -31,7 +31,7 @@ public class PatientAssesentmentFormHistory extends GenericCollection {
 
 	private List<Addiction> addiction;
 
-	private List<String> diesease;
+	private List<DiseaseListResponse> diesease;
 
 	private Boolean everHospitalize = false;
 
@@ -44,14 +44,6 @@ public class PatientAssesentmentFormHistory extends GenericCollection {
 	private List<PrescriptionAddItem> existingMedication;
 
 	private String assessmentId;
-
-	public String getAssessmentId() {
-		return assessmentId;
-	}
-
-	public void setAssessmentId(String assessmentId) {
-		this.assessmentId = assessmentId;
-	}
 
 	public String getId() {
 		return id;
@@ -93,36 +85,12 @@ public class PatientAssesentmentFormHistory extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public List<String> getFamilyhistory() {
-		return familyhistory;
-	}
-
-	public void setFamilyhistory(List<String> familyhistory) {
-		this.familyhistory = familyhistory;
-	}
-
-	public List<String> getMedicalhistory() {
-		return medicalhistory;
-	}
-
-	public void setMedicalhistory(List<String> medicalhistory) {
-		this.medicalhistory = medicalhistory;
-	}
-
 	public DrugsAndAllergies getDrugsAndAllergies() {
 		return drugsAndAllergies;
 	}
 
 	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
 		this.drugsAndAllergies = drugsAndAllergies;
-	}
-
-	public PersonalHistory getPersonalHistory() {
-		return personalHistory;
-	}
-
-	public void setPersonalHistory(PersonalHistory personalHistory) {
-		this.personalHistory = personalHistory;
 	}
 
 	public List<String> getSpecialNotes() {
@@ -147,14 +115,6 @@ public class PatientAssesentmentFormHistory extends GenericCollection {
 
 	public void setAddiction(List<Addiction> addiction) {
 		this.addiction = addiction;
-	}
-
-	public List<String> getDiesease() {
-		return diesease;
-	}
-
-	public void setDiesease(List<String> diesease) {
-		this.diesease = diesease;
 	}
 
 	public Boolean getEverHospitalize() {
@@ -196,5 +156,39 @@ public class PatientAssesentmentFormHistory extends GenericCollection {
 	public void setExistingMedication(List<PrescriptionAddItem> existingMedication) {
 		this.existingMedication = existingMedication;
 	}
+
+	public String getAssessmentId() {
+		return assessmentId;
+	}
+
+	public void setAssessmentId(String assessmentId) {
+		this.assessmentId = assessmentId;
+	}
+
+	public List<DiseaseListResponse> getFamilyhistory() {
+		return familyhistory;
+	}
+
+	public void setFamilyhistory(List<DiseaseListResponse> familyhistory) {
+		this.familyhistory = familyhistory;
+	}
+
+	public List<DiseaseListResponse> getMedicalhistory() {
+		return medicalhistory;
+	}
+
+	public void setMedicalhistory(List<DiseaseListResponse> medicalhistory) {
+		this.medicalhistory = medicalhistory;
+	}
+
+	public List<DiseaseListResponse> getDiesease() {
+		return diesease;
+	}
+
+	public void setDiesease(List<DiseaseListResponse> diesease) {
+		this.diesease = diesease;
+	}
+	
+	
 
 }
