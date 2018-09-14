@@ -28,7 +28,7 @@ public class ESNutrientDocument {
 	@Field(type = FieldType.String)
 	private NutrientType type = NutrientType.MICRO_NUTRIENT;
 
-	@Field
+	@Field(type = FieldType.String)
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
 
 	@Field(type = FieldType.String)

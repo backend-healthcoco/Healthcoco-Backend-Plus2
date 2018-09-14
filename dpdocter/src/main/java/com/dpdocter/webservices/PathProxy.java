@@ -1843,7 +1843,7 @@ public interface PathProxy {
 		public static final String VERIFY_OTP_MOBILE = "/{mobileNumber}/{otpNumber}/verify";
 
 	}
-	
+
 	public static final String Lab_PRINT_BASE_URL = BASE_URL + "/labPrint";
 
 	public interface LabPrintUrls {
@@ -1869,7 +1869,6 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PROCEDURE_SHEET = "/download/{id}";
 	}
 
-
 	public static final String SOLR_RECIPE_BASE_URL = BASE_URL + "/solr/recipe";
 
 	public interface SolrRecipeUrls {
@@ -1877,10 +1876,10 @@ public interface PathProxy {
 		public static final String SEARCH_NUTRIENTS = "nutrient/search";
 		public static final String SEARCH_INGREDIENTS = "ingredient/search";
 		public static final String SEARCH_RECIPES = "search";
+
 		public static final String SEARCH_EXERCISE = "exercise/search";
 		public static final String SEARCH_RECIPES_FOR_USER_APP = "user/app/search";
 	}
-
 
 	public static final String RECIPE_BASE_URL = BASE_URL + "/recipe";
 
