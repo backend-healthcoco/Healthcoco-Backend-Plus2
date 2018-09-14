@@ -1,8 +1,13 @@
 package com.dpdocter.elasticsearch.services;
 
+import java.util.List;
+
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
+import com.dpdocter.elasticsearch.response.ESIngredientResponse;
+import com.dpdocter.elasticsearch.response.ESNutrientResponse;
+import com.dpdocter.elasticsearch.response.ESRecipeResponse;
 
 public interface ESRecipeService {
 
@@ -11,5 +16,11 @@ public interface ESRecipeService {
 	public boolean addIngredient(ESIngredientDocument request);
 
 	boolean addRecipe(ESRecipeDocument request);
+
+	public List<ESIngredientResponse> searchIngredient(int page, int size, Boolean discarded, String searchTerm);
+
+	public List<ESNutrientResponse> searchNutrient(int page, int size, Boolean discarded, String searchTerm);
+
+	public List<ESRecipeResponse> searchRecipe(int page, int size, Boolean discarded, String searchTerm);
 
 }
