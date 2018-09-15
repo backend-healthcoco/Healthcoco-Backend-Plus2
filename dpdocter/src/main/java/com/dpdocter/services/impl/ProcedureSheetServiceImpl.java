@@ -99,6 +99,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 	public ProcedureSheetResponse addEditProcedureSheet(AddEditProcedureSheetRequest request) {
 		ProcedureSheetResponse response = null;
 		ProcedureSheetCollection procedureSheetCollection = null;
+		ProcedureConsentForm procedureConsentForm = null;
 		List<Map<String, String>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -110,17 +111,36 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				procedureSheetCollection.setCreatedBy(userCollection.getFirstName());
 			}
 
+			if(request.getProcedureConsentForm() != null)
+			{
+				procedureConsentForm= new ProcedureConsentForm();
+				procedureConsentForm.setHeaderFields(request.getProcedureConsentForm().getHeaderFields());
+				procedureConsentForm.setFooterFields(request.getProcedureConsentForm().getFooterFields());
+				procedureConsentForm.setBody(request.getProcedureConsentForm().getBody());
+			}
+			
 			procedureSheetFields = request.getProcedureSheetFields();
 			request.setProcedureSheetFields(null);
+			request.setProcedureConsentForm(null);
 			BeanUtil.map(request, procedureSheetCollection);
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
+			procedureSheetCollection.setProcedureConsentForm(procedureConsentForm);
 			procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
 			if (procedureSheetCollection != null) {
 				response = new ProcedureSheetResponse();
 				procedureSheetFields = procedureSheetCollection.getProcedureSheetFields();
 				procedureSheetCollection.setProcedureSheetFields(null);
+				if(procedureSheetCollection.getProcedureConsentForm() != null)
+				{
+					procedureConsentForm= new ProcedureConsentForm();
+					procedureConsentForm.setHeaderFields(procedureSheetCollection.getProcedureConsentForm().getHeaderFields());
+					procedureConsentForm.setFooterFields(procedureSheetCollection.getProcedureConsentForm().getFooterFields());
+					procedureConsentForm.setBody(procedureSheetCollection.getProcedureConsentForm().getBody());
+				}
+				
 				BeanUtil.map(procedureSheetCollection, response);
 				response.setProcedureSheetFields(procedureSheetFields);
+				response.setProcedureConsentForm(procedureConsentForm);
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 						procedureSheetCollection.getPatientId(), procedureSheetCollection.getDoctorId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
