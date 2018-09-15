@@ -37,6 +37,8 @@ public class ClinicContactUs extends GenericCollection {
 
 	private Date contactLaterOnDate;
 
+	private String mrCode;
+
 	public String getEmailAddress() {
 		return emailAddress;
 	}
@@ -139,6 +141,14 @@ public class ClinicContactUs extends GenericCollection {
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
 	}
 
 }

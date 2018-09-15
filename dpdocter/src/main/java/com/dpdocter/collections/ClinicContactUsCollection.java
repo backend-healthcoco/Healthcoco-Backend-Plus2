@@ -39,6 +39,8 @@ public class ClinicContactUsCollection extends GenericCollection {
 	private String streetAddress;
 	@Field
 	private DoctorContactStateType contactState;
+	@Field
+	private String mrCode;
 
 	public ObjectId getId() {
 		return id;
@@ -142,6 +144,14 @@ public class ClinicContactUsCollection extends GenericCollection {
 
 	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
 	}
 
 	@Override
