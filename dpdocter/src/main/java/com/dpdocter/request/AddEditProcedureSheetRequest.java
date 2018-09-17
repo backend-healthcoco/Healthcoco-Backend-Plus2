@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.beans.ProcedureConsentForm;
-import com.dpdocter.beans.ProcedureConsentFormFields;
+import com.dpdocter.beans.ProcedureSheetField;
 import com.dpdocter.response.ImageURLResponse;
 
 public class AddEditProcedureSheetRequest {
@@ -14,10 +14,11 @@ public class AddEditProcedureSheetRequest {
 	private String locationId;
 	private String hospitalId;
 	private String patientId;
+	private String procedureSheetStructureId;
 	private String procedureName;
 	private ProcedureConsentForm procedureConsentForm;
 	private List<ImageURLResponse> diagrams;
-	private List<Map<String, String>> procedureSheetFields;
+	private List<Map<String, ProcedureSheetField>> procedureSheetFields;
 	private Boolean discarded = false;
 	private String type;
 
@@ -77,11 +78,15 @@ public class AddEditProcedureSheetRequest {
 		this.diagrams = diagrams;
 	}
 
-	public List<Map<String, String>> getProcedureSheetFields() {
-		return procedureSheetFields;
+	public String getProcedureSheetStructureId() {
+		return procedureSheetStructureId;
 	}
 
-	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
+	public void setProcedureSheetStructureId(String procedureSheetStructureId) {
+		this.procedureSheetStructureId = procedureSheetStructureId;
+	}
+
+	public void setProcedureSheetFields(List<Map<String, ProcedureSheetField>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -107,6 +112,10 @@ public class AddEditProcedureSheetRequest {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public List<Map<String, ProcedureSheetField>> getProcedureSheetFields() {
+		return procedureSheetFields;
 	}
 
 	@Override

@@ -7,6 +7,7 @@ public class ProcedureConsentFormFields {
 	private String datatype;
 	private String data;
 	private List<String> dataList;
+	private Integer sequenceNo;
 
 	public String getDatatype() {
 		return datatype;
@@ -30,6 +31,14 @@ public class ProcedureConsentFormFields {
 
 	public void setDataList(List<String> dataList) {
 		this.dataList = dataList;
+	}
+
+	public Integer getSequenceNo() {
+		return sequenceNo;
+	}
+
+	public void setSequenceNo(Integer sequenceNo) {
+		this.sequenceNo = sequenceNo;
 	}
 
 }
