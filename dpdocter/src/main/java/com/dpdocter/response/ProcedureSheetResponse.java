@@ -3,12 +3,11 @@ package com.dpdocter.response;
 import java.util.List;
 import java.util.Map;
 
-import com.dpdocter.beans.Patient;
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.ProcedureConsentForm;
-import com.dpdocter.beans.ProcedureConsentFormFields;
-import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.TreatmentService;
+import com.dpdocter.beans.ProcedureSheetField;
 import com.dpdocter.collections.GenericCollection;
 
 public class ProcedureSheetResponse extends GenericCollection {
@@ -18,10 +17,11 @@ public class ProcedureSheetResponse extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private String patientId;
+	private ObjectId procedureSheetStructureId;
 	private String procedureName;
 	private ProcedureConsentForm procedureConsentForm;
 	private List<ImageURLResponse> diagrams;
-	private List<Map<String, String>> procedureSheetFields;
+	private List<Map<String, ProcedureSheetField>> procedureSheetFields;
 	private Boolean discarded = false;
 	private PatientShortCard patient;
 
@@ -81,11 +81,11 @@ public class ProcedureSheetResponse extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public List<Map<String, String>> getProcedureSheetFields() {
+	public List<Map<String, ProcedureSheetField>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, ProcedureSheetField>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
@@ -111,6 +111,14 @@ public class ProcedureSheetResponse extends GenericCollection {
 
 	public void setProcedureName(String procedureName) {
 		this.procedureName = procedureName;
+	}
+
+	public ObjectId getProcedureSheetStructureId() {
+		return procedureSheetStructureId;
+	}
+
+	public void setProcedureSheetStructureId(ObjectId procedureSheetStructureId) {
+		this.procedureSheetStructureId = procedureSheetStructureId;
 	}
 
 }

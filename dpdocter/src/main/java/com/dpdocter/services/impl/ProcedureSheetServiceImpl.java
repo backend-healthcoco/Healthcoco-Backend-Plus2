@@ -27,6 +27,7 @@ import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.ProcedureConsentForm;
 import com.dpdocter.beans.ProcedureConsentFormFields;
 import com.dpdocter.beans.ProcedureConsentFormStructure;
+import com.dpdocter.beans.ProcedureSheetField;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureSheetCollection;
@@ -100,7 +101,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureSheetResponse response = null;
 		ProcedureSheetCollection procedureSheetCollection = null;
 		ProcedureConsentForm procedureConsentForm = null;
-		List<Map<String, String>> procedureSheetFields = null;
+		List<Map<String, ProcedureSheetField>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(request.getId()));
@@ -163,7 +164,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 	public ProcedureSheetResponse getProcedureSheet(String id) {
 		ProcedureSheetResponse response = null;
 		ProcedureSheetCollection procedureSheetCollection = null;
-		List<Map<String, String>> procedureSheetFields = null;
+		List<Map<String, ProcedureSheetField>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
@@ -600,7 +601,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		if (procedureSheetCollection.getProcedureSheetFields() != null
 				&& !procedureSheetCollection.getProcedureSheetFields().isEmpty()) {
 			items = new ArrayList<DBObject>();
-			for (Map<String, String> fields : procedureSheetCollection.getProcedureSheetFields()) {
+			for (Map<String, ProcedureSheetField> fields : procedureSheetCollection.getProcedureSheetFields()) {
 
 				keys = new ArrayList<String>(fields.keySet());
 				field = "";
@@ -610,7 +611,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 						item = new BasicDBObject();
 						i = keys.get(j);
-						value = fields.get(i);
+						value = fields.get(i).getValue();
 						if (!DPDoctorUtils.anyStringEmpty(i, value)) {
 							field = "<b>" + i + " : </b>" + value;
 							item.put("fieldOne", field);
@@ -618,7 +619,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 						j++;
 						if (j < keys.size()) {
 							i = keys.get(j);
-							value = fields.get(i);
+							value = fields.get(i).getValue();
 							if (!DPDoctorUtils.anyStringEmpty(i, value))
 								field = "<b>" + i + " : </b>" + value;
 
@@ -627,7 +628,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 						j++;
 						if (j < keys.size()) {
 							i = keys.get(j);
-							value = fields.get(i);
+							value = fields.get(i).getValue();
 							if (!DPDoctorUtils.anyStringEmpty(i, value))
 								field = "<b>" + i + " : </b>" + value;
 
@@ -636,7 +637,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 						j++;
 						if (j < keys.size()) {
 							i = keys.get(j);
-							value = fields.get(i);
+							value = fields.get(i).getValue();
 							if (!DPDoctorUtils.anyStringEmpty(i, value))
 								field = "<b>" + i + " : </b>" + value;
 

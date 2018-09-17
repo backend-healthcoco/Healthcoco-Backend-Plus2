@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.ProcedureConsentForm;
+import com.dpdocter.beans.ProcedureSheetField;
 import com.dpdocter.response.ImageURLResponse;
 
 @Document(collection = "procedure_sheet_cl")
@@ -25,13 +26,15 @@ public class ProcedureSheetCollection extends GenericCollection {
 	@Field
 	private ObjectId patientId;
 	@Field
+	private ObjectId procedureSheetStructureId;
+	@Field
 	private String procedureName;
 	@Field
 	private ProcedureConsentForm procedureConsentForm;
 	@Field
 	private List<ImageURLResponse> diagrams;
 	@Field
-	private List<Map<String, String>> procedureSheetFields;
+	private List<Map<String, ProcedureSheetField>> procedureSheetFields;
 	@Field
 	private Boolean discarded = false;
 	@Field
@@ -93,11 +96,19 @@ public class ProcedureSheetCollection extends GenericCollection {
 		this.diagrams = diagrams;
 	}
 
-	public List<Map<String, String>> getProcedureSheetFields() {
+	public ObjectId getProcedureSheetStructureId() {
+		return procedureSheetStructureId;
+	}
+
+	public void setProcedureSheetStructureId(ObjectId procedureSheetStructureId) {
+		this.procedureSheetStructureId = procedureSheetStructureId;
+	}
+
+	public List<Map<String, ProcedureSheetField>> getProcedureSheetFields() {
 		return procedureSheetFields;
 	}
 
-	public void setProcedureSheetFields(List<Map<String, String>> procedureSheetFields) {
+	public void setProcedureSheetFields(List<Map<String, ProcedureSheetField>> procedureSheetFields) {
 		this.procedureSheetFields = procedureSheetFields;
 	}
 
