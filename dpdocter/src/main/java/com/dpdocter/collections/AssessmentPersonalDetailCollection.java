@@ -21,7 +21,7 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	@Field
 	private ObjectId patientId;
 	@Field
-	private String assessmentId;
+	private String assessmentUniqueId;
 	@Field
 	private List<String> physicalStatusType;
 	@Field
@@ -109,12 +109,12 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public String getAssessmentId() {
-		return assessmentId;
+	public String getAssessmentUniqueId() {
+		return assessmentUniqueId;
 	}
 
-	public void setAssessmentId(String assessmentId) {
-		this.assessmentId = assessmentId;
+	public void setAssessmentUniqueId(String assessmentUniqueId) {
+		this.assessmentUniqueId = assessmentUniqueId;
 	}
 
 	public List<String> getPhysicalStatusType() {

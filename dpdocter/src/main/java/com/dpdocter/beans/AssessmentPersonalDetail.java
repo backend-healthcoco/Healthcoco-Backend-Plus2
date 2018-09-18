@@ -24,7 +24,7 @@ public class AssessmentPersonalDetail extends GenericCollection {
 
 	private String gender;
 
-	private String assessmentId;
+	private String assessmentUniqueId;
 
 	private DOB dob;
 
@@ -150,12 +150,14 @@ public class AssessmentPersonalDetail extends GenericCollection {
 		this.community = community;
 	}
 
-	public String getAssessmentId() {
-		return assessmentId;
+	
+
+	public String getAssessmentUniqueId() {
+		return assessmentUniqueId;
 	}
 
-	public void setAssessmentId(String assessmentId) {
-		this.assessmentId = assessmentId;
+	public void setAssessmentUniqueId(String assessmentUniqueId) {
+		this.assessmentUniqueId = assessmentUniqueId;
 	}
 
 	public String getId() {
