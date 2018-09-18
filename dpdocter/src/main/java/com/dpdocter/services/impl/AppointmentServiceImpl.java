@@ -1389,6 +1389,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
+					{
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
@@ -1399,6 +1400,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
 									doctorName, clinicName, clinicContactNum);
+					}
+					else if (request.getState().getState().equals(AppointmentState.RESCHEDULE.getState())) {
+						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
+							sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
+									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+									toDateTime, doctorName, clinicName, clinicContactNum);
+						}
+					}
 				}
 
 				if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())
