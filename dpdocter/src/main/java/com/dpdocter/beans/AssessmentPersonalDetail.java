@@ -1,7 +1,8 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.PhysicalStatusType;
 
 public class AssessmentPersonalDetail extends GenericCollection {
 
@@ -23,11 +24,13 @@ public class AssessmentPersonalDetail extends GenericCollection {
 
 	private String gender;
 
-	private String uniqueId;
+	private String assessmentId;
 
 	private DOB dob;
 
-	private PhysicalStatusType physicalStatusType = PhysicalStatusType.NA;
+	private Integer age;
+
+	private List<String> physicalStatusType;
 
 	private String goal;
 
@@ -115,11 +118,11 @@ public class AssessmentPersonalDetail extends GenericCollection {
 		this.dob = dob;
 	}
 
-	public PhysicalStatusType getPhysicalStatusType() {
+	public List<String> getPhysicalStatusType() {
 		return physicalStatusType;
 	}
 
-	public void setPhysicalStatusType(PhysicalStatusType physicalStatusType) {
+	public void setPhysicalStatusType(List<String> physicalStatusType) {
 		this.physicalStatusType = physicalStatusType;
 	}
 
@@ -147,12 +150,12 @@ public class AssessmentPersonalDetail extends GenericCollection {
 		this.community = community;
 	}
 
-	public String getUniqueId() {
-		return uniqueId;
+	public String getAssessmentId() {
+		return assessmentId;
 	}
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
+	public void setAssessmentId(String assessmentId) {
+		this.assessmentId = assessmentId;
 	}
 
 	public String getId() {
@@ -193,6 +196,14 @@ public class AssessmentPersonalDetail extends GenericCollection {
 
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
 	}
 
 }
