@@ -29,7 +29,7 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	@Field
 	private String community;
 	@Field
-	private Boolean Discarded = false;
+	private Boolean discarded = false;
 
 	private Integer noOfAdultMember = 0;
 
@@ -62,11 +62,11 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	}
 
 	public Boolean getDiscarded() {
-		return Discarded;
+		return discarded;
 	}
 
 	public void setDiscarded(Boolean discarded) {
-		Discarded = discarded;
+		this.discarded = discarded;
 	}
 
 	public ObjectId getId() {

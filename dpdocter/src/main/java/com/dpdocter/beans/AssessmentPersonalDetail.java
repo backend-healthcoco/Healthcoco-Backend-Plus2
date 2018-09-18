@@ -38,7 +38,7 @@ public class AssessmentPersonalDetail extends GenericCollection {
 
 	private String community;
 
-	private Boolean Discarded = false;
+	private Boolean discarded = false;
 
 	private Integer noOfAdultMember = 0;
 
@@ -71,11 +71,11 @@ public class AssessmentPersonalDetail extends GenericCollection {
 	}
 
 	public Boolean getDiscarded() {
-		return Discarded;
+		return discarded;
 	}
 
 	public void setDiscarded(Boolean discarded) {
-		Discarded = discarded;
+		this.discarded = discarded;
 	}
 
 	public String getFirstName() {
@@ -149,8 +149,6 @@ public class AssessmentPersonalDetail extends GenericCollection {
 	public void setCommunity(String community) {
 		this.community = community;
 	}
-
-	
 
 	public String getAssessmentUniqueId() {
 		return assessmentUniqueId;
