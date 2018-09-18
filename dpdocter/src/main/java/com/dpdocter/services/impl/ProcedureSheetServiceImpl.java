@@ -125,6 +125,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			request.setProcedureConsentForm(null);
 			BeanUtil.map(request, procedureSheetCollection);
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
+			procedureSheetCollection.setDiagrams(request.getDiagrams());
 
 			procedureSheetCollection.setProcedureConsentForm(procedureConsentForm);
 			procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
@@ -178,6 +179,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				procedureSheetCollection.setProcedureSheetFields(null);
 				BeanUtil.map(procedureSheetCollection, response);
 				response.setProcedureSheetFields(procedureSheetFields);
+				response.setDiagrams(procedureSheetCollection.getDiagrams());
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 						procedureSheetCollection.getPatientId(), procedureSheetCollection.getDoctorId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());

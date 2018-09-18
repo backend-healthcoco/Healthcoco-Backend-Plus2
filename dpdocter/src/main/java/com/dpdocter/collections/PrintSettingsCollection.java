@@ -72,6 +72,9 @@ public class PrintSettingsCollection extends GenericCollection {
 	private String generalNotes;
 
 	@Field
+	private Boolean isLab = false;
+
+	@Field
 	private Boolean isPidHasDate = true;
 	
 	public Boolean getShowPoweredBy() {
@@ -216,6 +219,14 @@ public class PrintSettingsCollection extends GenericCollection {
 
 	public void setIsPidHasDate(Boolean isPidHasDate) {
 		this.isPidHasDate = isPidHasDate;
+	}
+	
+	public Boolean getIsLab() {
+		return isLab;
+	}
+
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
 	}
 
 	@Override

@@ -243,7 +243,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 					.findByLocationId(new ObjectId(request.getDentalImagingLocationId()));
-			locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			locationCollection = locationRepository.findOne(new ObjectId(request.getDentalImagingLocationId()));
 			if (request.getId() != null) {
 				dentalImagingCollection = dentalImagingRepository.findOne(new ObjectId(request.getId()));
 				if (dentalImagingCollection == null) {

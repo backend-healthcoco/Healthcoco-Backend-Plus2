@@ -33,7 +33,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DeliveryReportsRepository;
-import com.dpdocter.repository.EquipmentLogAMCAndServicingRegisterRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.IPDReportsRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -41,7 +40,6 @@ import com.dpdocter.repository.OPDReportsRepository;
 import com.dpdocter.repository.OTReportsRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
-import com.dpdocter.repository.RepairRecordsOrComplianceBookRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DeliveryReportsLookupResponse;
 import com.dpdocter.response.IPDReportLookupResponse;
@@ -59,11 +57,6 @@ public class ReportsServiceImpl implements ReportsService {
 
 	private static Logger logger = Logger.getLogger(ReportsServiceImpl.class.getName());
 
-	@Autowired
-	RepairRecordsOrComplianceBookRepository repairRecordsOrComplianceBookRepository;
-
-	@Autowired
-	EquipmentLogAMCAndServicingRegisterRepository equipmentLogAMCAndServicingRegisterRepository;
 
 	@Autowired
 	IPDReportsRepository ipdReportsRepository;
