@@ -142,8 +142,8 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						new ObjectId(request.getPatientId()), new ObjectId(response.getLocationId()),
-						new ObjectId(response.getHospitalId()));
+						new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
+						new ObjectId(request.getHospitalId()));
 				BeanUtil.map(patientCollection, response);
 				BeanUtil.map(assessmentPersonalDetailCollection, response);
 
