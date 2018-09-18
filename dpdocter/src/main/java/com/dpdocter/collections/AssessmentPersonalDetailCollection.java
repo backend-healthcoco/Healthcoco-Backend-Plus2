@@ -1,11 +1,11 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.enums.PhysicalStatusType;
 
 @Document(collection = "assessment_personal_detail_cl")
 public class AssessmentPersonalDetailCollection extends GenericCollection {
@@ -21,9 +21,9 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	@Field
 	private ObjectId patientId;
 	@Field
-	private String uniqueId;
+	private String assessmentId;
 	@Field
-	private PhysicalStatusType physicalStatusType = PhysicalStatusType.NA;
+	private List<String> physicalStatusType;
 	@Field
 	private String goal;
 	@Field
@@ -36,8 +36,6 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	private Integer noOfChildMember = 0;
 
 	private String profession;
-	
-	
 
 	public Integer getNoOfAdultMember() {
 		return noOfAdultMember;
@@ -111,19 +109,19 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public String getUniqueId() {
-		return uniqueId;
+	public String getAssessmentId() {
+		return assessmentId;
 	}
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
+	public void setAssessmentId(String assessmentId) {
+		this.assessmentId = assessmentId;
 	}
 
-	public PhysicalStatusType getPhysicalStatusType() {
+	public List<String> getPhysicalStatusType() {
 		return physicalStatusType;
 	}
 
-	public void setPhysicalStatusType(PhysicalStatusType physicalStatusType) {
+	public void setPhysicalStatusType(List<String> physicalStatusType) {
 		this.physicalStatusType = physicalStatusType;
 	}
 

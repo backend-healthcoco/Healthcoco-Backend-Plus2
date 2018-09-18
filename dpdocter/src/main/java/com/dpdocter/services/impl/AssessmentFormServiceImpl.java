@@ -1,11 +1,14 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
 import com.dpdocter.beans.PatientFoodAndExcercise;
 import com.dpdocter.beans.PatientLifeStyle;
@@ -92,6 +96,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	@Autowired
 	private DiseasesRepository diseasesRepository;
 
+	@Value(value = "${Signup.DOB}")
+	private String DOB;
+
 	@Transactional
 	@Override
 	public AssessmentPersonalDetail addEditAssessmentPersonalDetail(AssessmentPersonalDetail request) {
@@ -107,11 +114,23 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					assessmentPersonalDetailCollection = new AssessmentPersonalDetailCollection();
 					request.setPatientId(registerPatientIfNotRegistered(request).toString());
 				}
+				if (request.getDob() != null && request.getDob().getAge() != null
+						&& request.getDob().getAge().getYears() < 0) {
+
+					throw new BusinessException(ServiceError.InvalidInput, DOB);
+				} else if (request.getDob() == null && request.getAge() != null) {
+					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+					int currentDay = localCalendar.get(Calendar.DATE);
+					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+					int currentYear = localCalendar.get(Calendar.YEAR) - request.getAge();
+					request.setDob(new DOB(currentDay, currentMonth, currentYear));
+				}
+
 				BeanUtil.map(request, assessmentPersonalDetailCollection);
 				assessmentPersonalDetailCollection.setCreatedTime(new Date());
 				assessmentPersonalDetailCollection.setUpdatedTime(new Date());
 				assessmentPersonalDetailCollection.setCreatedBy(doctor.getFirstName());
-				assessmentPersonalDetailCollection.setUniqueId("NAF-" + DPDoctorUtils.generateRandomId());
+				assessmentPersonalDetailCollection.setAssessmentId("NAF-" + DPDoctorUtils.generateRandomId());
 			} else {
 				assessmentPersonalDetailCollection = assessmentPersonalDetailRepository
 						.findOne(new ObjectId(request.getId()));
@@ -122,7 +141,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					.save(assessmentPersonalDetailCollection);
 			response = new AssessmentPersonalDetail();
 
-			if (!DPDoctorUtils.anyStringEmpty(response.getPatientId())) {
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 				PatientCollection patientCollection = patientRepository.findLastRegisteredPatientWithPNUM(
 						new ObjectId(response.getLocationId()), new ObjectId(response.getHospitalId()),
 						new Sort(Direction.DESC, "createdTime"));
