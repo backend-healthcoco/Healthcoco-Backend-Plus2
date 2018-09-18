@@ -734,6 +734,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 					String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60,
 							appointmentCollection.getTime().getFromTime() % 60);
+					String _24HourToTime = String.format("%02d:%02d", appointmentCollection.getTime().getToTime() / 60,
+							appointmentCollection.getTime().getToTime() % 60);;
 					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 					if (clinicProfileCollection != null) {
@@ -747,24 +749,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 
 					Date _24HourDt = _24HourSDF.parse(_24HourTime);
+					Date _24HourToDt = _24HourSDF.parse(_24HourToTime);
 
 					final String patientName = (patientCard != null && patientCard.getLocalPatientName() != null)
 							? patientCard.getLocalPatientName().split(" ")[0]
-							: (request.getLocalPatientName() != null ? request.getLocalPatientName().split(" ")[0]
-									: "");
+							: (request.getLocalPatientName() != null ? request.getLocalPatientName().split(" ")[0] : "");
 					final String appointmentId = appointmentCollection.getAppointmentId();
 					final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 							+ sdf.format(appointmentCollection.getFromDate());
 					
-					if(appointmentCollection.getTime() != null)
-					{
-						timeDiff = appointmentCollection.getTime().getToTime() - appointmentCollection.getTime().getFromTime();
-						addMillis = TimeUnit.MINUTES.toMillis(timeDiff);
-					}
-					
-					final String toDateTime = _12HourSDF.format(_24HourDt) + ", "
-							+ sdf.format(new Date(appointmentCollection.getFromDate().getTime() + addMillis));
-
+					final String toDateTime = _12HourSDF.format(_24HourToDt) + ", "
+							+ sdf.format(appointmentCollection.getFromDate());
 					final String clinicName = appointmentLookupResponse.getLocation().getLocationName();
 					final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
 							? appointmentLookupResponse.getLocation().getClinicNumber()
