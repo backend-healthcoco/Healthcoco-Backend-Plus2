@@ -10,7 +10,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -142,9 +141,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			response = new AssessmentPersonalDetail();
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				PatientCollection patientCollection = patientRepository.findLastRegisteredPatientWithPNUM(
-						new ObjectId(response.getLocationId()), new ObjectId(response.getHospitalId()),
-						new Sort(Direction.DESC, "createdTime"));
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						new ObjectId(request.getPatientId()), new ObjectId(response.getLocationId()),
+						new ObjectId(response.getHospitalId()));
 				BeanUtil.map(patientCollection, response);
 				BeanUtil.map(assessmentPersonalDetailCollection, response);
 
