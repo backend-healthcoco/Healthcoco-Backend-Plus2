@@ -387,7 +387,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					Fields.field("discarded", "$discarded"), Fields.field("dob", "$patient.dob"),
 					Fields.field("address", "$patient.address"), Fields.field("profession", "$patient.profession"),
 					Fields.field("community", "$community"), Fields.field("noOfAdultMember", "$noOfAdultMember"),
-					Fields.field("noOfChildMember", "$noOfChildMember")));
+					Fields.field("noOfChildMember", "$noOfChildMember"), Fields.field("createdTime", "$createdTime")));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
