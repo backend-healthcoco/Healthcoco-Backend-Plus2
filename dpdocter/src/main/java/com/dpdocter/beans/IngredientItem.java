@@ -11,7 +11,7 @@ public class IngredientItem {
 
 	private String name;
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
-	private int value;
+	private double value;
 	private QuantityEnum type;
 	private double inPercent;
 	private String note;
@@ -40,11 +40,12 @@ public class IngredientItem {
 		this.category = category;
 	}
 
-	public int getValue() {
+
+	public double getValue() {
 		return value;
 	}
 
-	public void setValue(int value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 

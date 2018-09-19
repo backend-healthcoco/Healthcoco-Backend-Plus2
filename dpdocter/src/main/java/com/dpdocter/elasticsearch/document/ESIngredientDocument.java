@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.dpdocter.beans.IngredientItem;
+import com.dpdocter.beans.MealQuantity;
 
 @Document(indexName = "ingredients_in", type = "ingredients")
 public class ESIngredientDocument {
@@ -18,8 +19,8 @@ public class ESIngredientDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean discarded = false;
 
-	@Field(type = FieldType.String)
-	private Integer amountInGram = 0;
+	@Field(type = FieldType.Nested)
+	private MealQuantity quantity;
 
 	@Field(type = FieldType.String)
 	private String name;
@@ -114,12 +115,12 @@ public class ESIngredientDocument {
 		this.updatedTime = updatedTime;
 	}
 
-	public Integer getAmountInGram() {
-		return amountInGram;
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setAmountInGram(Integer amountInGram) {
-		this.amountInGram = amountInGram;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
 	}
 
 }

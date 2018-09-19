@@ -3,6 +3,7 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.beans.IngredientAddItem;
+import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.enums.MealType;
 
@@ -15,7 +16,7 @@ public class MealRequest {
 
 	private List<IngredientAddItem> nutrients;
 
-	private Quantity quantity;
+	private MealQuantity quantity;
 
 	private String note;
 
@@ -61,11 +62,11 @@ public class MealRequest {
 		this.nutrients = nutrients;
 	}
 
-	public Quantity getQuantity() {
+	public MealQuantity getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Quantity quantity) {
+	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
 	}
 

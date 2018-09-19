@@ -9,19 +9,22 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.dpdocter.beans.IngredientAddItem;
+import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
 
 @Document(indexName = "recipes_in", type = "recipes")
 public class ESRecipeDocument {
-
 	@Id
 	private String id;
 
 	@Field(type = FieldType.String)
 	private String name;
-	
-	@Field(type = FieldType.Integer)
-	private int amountInGram;
+
+	@Field(type = FieldType.Nested)
+	private MealQuantity quantity;
+
+	@Field(type = FieldType.Nested)
+	private List<MealQuantity> equivalentMeasurements;
 
 	@Field(type = FieldType.String)
 	private String videoUrl;
@@ -80,6 +83,9 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Integer)
 	private Integer preparationTime = 0;
+
+	@Field(type = FieldType.Boolean)
+	private boolean verified = false;
 
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
@@ -271,12 +277,20 @@ public class ESRecipeDocument {
 		this.createdBy = createdBy;
 	}
 
-	public int getAmountInGram() {
-		return amountInGram;
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setAmountInGram(int amountInGram) {
-		this.amountInGram = amountInGram;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
+	}
+
+	public List<MealQuantity> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<MealQuantity> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
 }

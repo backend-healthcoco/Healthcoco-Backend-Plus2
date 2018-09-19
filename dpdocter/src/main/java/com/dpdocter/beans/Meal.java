@@ -16,7 +16,7 @@ public class Meal {
 
 	private List<IngredientItem> nutrients;
 
-	private Quantity quantity;
+	private MealQuantity quantity;
 
 	private String note;
 
@@ -62,11 +62,11 @@ public class Meal {
 		this.nutrients = nutrients;
 	}
 
-	public Quantity getQuantity() {
+	public MealQuantity getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Quantity quantity) {
+	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
 	}
 

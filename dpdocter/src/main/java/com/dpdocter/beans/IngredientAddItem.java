@@ -5,10 +5,9 @@ import com.dpdocter.enums.QuantityEnum;
 
 public class IngredientAddItem {
 	private String id;
-
 	private String name;
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
-	private int value;
+	private double value = 0.0;
 	private QuantityEnum type;
 	private double inPercent;
 	private String note;
@@ -21,11 +20,11 @@ public class IngredientAddItem {
 		this.category = category;
 	}
 
-	public int getValue() {
+	public double getValue() {
 		return value;
 	}
 
-	public void setValue(int value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 

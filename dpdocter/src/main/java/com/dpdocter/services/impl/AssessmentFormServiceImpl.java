@@ -378,7 +378,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			Criteria secondCriteria = new Criteria();
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("firstName", "$patient.firstName"),
-					Fields.field("mobileNumber", "$$patient.mobileNumber"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("mobileNumber", "$patient.mobileNumber"), Fields.field("doctorId", "$doctorId"),
 					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("bloodGroup", "$patient.bloodGroup"),
 					Fields.field("gender", "$patient.gender"),

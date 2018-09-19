@@ -6,10 +6,8 @@ import com.dpdocter.enums.QuantityEnum;
 
 public class RecipeItem {
 	private ObjectId id;
-
 	private String name;
-
-	private int value;
+	private double value;
 	private QuantityEnum type;
 	public ObjectId getId() {
 		return id;
@@ -23,10 +21,7 @@ public class RecipeItem {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getValue() {
-		return value;
-	}
-	public void setValue(int value) {
+		public void setValue(int value) {
 		this.value = value;
 	}
 	public QuantityEnum getType() {
@@ -34,6 +29,12 @@ public class RecipeItem {
 	}
 	public void setType(QuantityEnum type) {
 		this.type = type;
+	}
+	public double getValue() {
+		return value;
+	}
+	public void setValue(double value) {
+		this.value = value;
 	}
 	
 }

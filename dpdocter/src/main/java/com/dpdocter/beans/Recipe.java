@@ -7,8 +7,10 @@ import com.dpdocter.collections.GenericCollection;
 public class Recipe extends GenericCollection {
 
 	private String id;
-	
-	private int amountInGram;
+
+	private MealQuantity quantity;
+
+	private List<MealQuantity> equivalentMeasurements;
 
 	private String name;
 
@@ -49,6 +51,16 @@ public class Recipe extends GenericCollection {
 	private String course;
 
 	private Integer preparationTime = 0;
+
+	private boolean verified = false;
+
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
+	}
 
 	public String getName() {
 		return name;
@@ -218,12 +230,20 @@ public class Recipe extends GenericCollection {
 		this.nutrients = nutrients;
 	}
 
-	public int getAmountInGram() {
-		return amountInGram;
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setAmountInGram(int amountInGram) {
-		this.amountInGram = amountInGram;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
+	}
+
+	public List<MealQuantity> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<MealQuantity> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
 }
