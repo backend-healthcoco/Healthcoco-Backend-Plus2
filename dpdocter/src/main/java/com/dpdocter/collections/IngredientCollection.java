@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.IngredientItem;
+import com.dpdocter.beans.MealQuantity;
 
 @Document(collection = "ingredient_cl")
 public class IngredientCollection extends GenericCollection {
@@ -18,7 +19,7 @@ public class IngredientCollection extends GenericCollection {
 	private String name;
 
 	@Field
-	private Integer amountInGram = 0;
+	private MealQuantity quantity;;
 
 	@Field
 	private List<IngredientItem> nutrients;
@@ -102,12 +103,13 @@ public class IngredientCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public Integer getAmountInGram() {
-		return amountInGram;
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setAmountInGram(Integer amountInGram) {
-		this.amountInGram = amountInGram;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
 	}
 
+	
 }

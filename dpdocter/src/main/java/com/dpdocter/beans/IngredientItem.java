@@ -8,7 +8,6 @@ import com.dpdocter.enums.QuantityEnum;
 public class IngredientItem {
 
 	private ObjectId id;
-
 	private String name;
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
 	private double value;
