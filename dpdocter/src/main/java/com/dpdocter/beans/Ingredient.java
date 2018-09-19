@@ -8,7 +8,7 @@ public class Ingredient extends GenericCollection {
 
 	private String id;
 
-	private Integer amountInGram = 0;
+	private MealQuantity quantity;
 
 	private List<IngredientAddItem> nutrients;
 
@@ -88,12 +88,12 @@ public class Ingredient extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public Integer getAmountInGram() {
-		return amountInGram;
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setAmountInGram(Integer amountInGram) {
-		this.amountInGram = amountInGram;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
 	}
 
 }

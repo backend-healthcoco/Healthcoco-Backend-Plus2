@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.IngredientItem;
+import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
 
 @Document(collection = "recipe_cl")
@@ -19,7 +20,10 @@ public class RecipeCollection extends GenericCollection {
 	private String name;
 
 	@Field
-	private int amountInGram;
+	private MealQuantity quantity;
+	
+	@Field
+	private List<MealQuantity> equivalentMeasurements; 
 
 	@Field
 	private String videoUrl;
@@ -77,6 +81,9 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private Integer preparationTime = 0;
+	
+	@Field
+	private boolean verified=false;
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -246,12 +253,28 @@ public class RecipeCollection extends GenericCollection {
 		this.preparationTime = preparationTime;
 	}
 
-	public int getAmountInGram() {
-		return amountInGram;
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setAmountInGram(int amountInGram) {
-		this.amountInGram = amountInGram;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
+	}
+
+	public List<MealQuantity> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<MealQuantity> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
 	}
 
 }
