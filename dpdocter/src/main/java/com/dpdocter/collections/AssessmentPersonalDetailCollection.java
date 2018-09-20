@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class AssessmentPersonalDetailCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
-
 	@Field
 	private ObjectId doctorId;
 	@Field
