@@ -29,12 +29,14 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	private String community;
 	@Field
 	private Boolean discarded = false;
-
+	@Field
 	private Integer noOfAdultMember = 0;
-
+	@Field
 	private Integer noOfChildMember = 0;
-
+	@Field
 	private String profession;
+	@Field
+	private String mobileNumber;
 
 	public Integer getNoOfAdultMember() {
 		return noOfAdultMember;
@@ -138,6 +140,14 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 
 	public void setCommunity(String community) {
 		this.community = community;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 }

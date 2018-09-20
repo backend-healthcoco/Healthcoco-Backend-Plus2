@@ -146,6 +146,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
 						new ObjectId(request.getHospitalId()));
 				BeanUtil.map(patientCollection, response);
+
 				BeanUtil.map(assessmentPersonalDetailCollection, response);
 
 			}
@@ -378,11 +379,10 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			Criteria criteria = new Criteria();
 			Criteria secondCriteria = new Criteria();
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
-					Fields.field("firstName", "$patient.firstName"),
-					Fields.field("mobileNumber", "$patient.mobileNumber"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
-					Fields.field("hospitalId", "$hospitalId"), Fields.field("bloodGroup", "$patient.bloodGroup"),
-					Fields.field("gender", "$patient.gender"),
+					Fields.field("firstName", "$patient.firstName"), Fields.field("mobileNumber", "$mobileNumber"),
+					Fields.field("doctorId", "$doctorId"), Fields.field("patientId", "$patientId"),
+					Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId"),
+					Fields.field("bloodGroup", "$patient.bloodGroup"), Fields.field("gender", "$patient.gender"),
 					Fields.field("assessmentUniqueId", "$assessmentUniqueId"),
 					Fields.field("physicalStatusType", "$physicalStatusType"), Fields.field("goal", "$goal"),
 					Fields.field("discarded", "$discarded"), Fields.field("dob", "$patient.dob"),
