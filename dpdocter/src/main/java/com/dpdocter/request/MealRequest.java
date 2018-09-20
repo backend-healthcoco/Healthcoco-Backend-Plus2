@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.Quantity;
+import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.enums.MealType;
 
 public class MealRequest {
@@ -12,7 +13,7 @@ public class MealRequest {
 
 	private String name;
 
-	private List<IngredientAddItem> ingredients;
+	private List<RecipeItem> ingredients;
 
 	private List<IngredientAddItem> nutrients;
 
@@ -20,7 +21,7 @@ public class MealRequest {
 
 	private String note;
 
-	private MealType type;
+	private MealType type=MealType.RECIPE;
 
 	public MealType getType() {
 		return type;
@@ -46,11 +47,11 @@ public class MealRequest {
 		this.name = name;
 	}
 
-	public List<IngredientAddItem> getIngredients() {
+	public List<RecipeItem> getIngredients() {
 		return ingredients;
 	}
 
-	public void setIngredients(List<IngredientAddItem> ingredients) {
+	public void setIngredients(List<RecipeItem> ingredients) {
 		this.ingredients = ingredients;
 	}
 

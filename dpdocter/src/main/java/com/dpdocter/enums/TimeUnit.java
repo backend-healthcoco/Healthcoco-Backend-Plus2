@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum TimeUnit {
-    MINS("MINS");
+    SEC("SEC"),MINS("MINS"),HOURS("HOURS");
 
     private String timeUnit;
 
