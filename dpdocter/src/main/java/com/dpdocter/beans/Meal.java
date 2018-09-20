@@ -12,7 +12,7 @@ public class Meal {
 
 	private String name;
 
-	private List<IngredientItem> ingredients;
+	private List<RecipeItem> ingredients;
 
 	private List<IngredientItem> nutrients;
 
@@ -46,11 +46,11 @@ public class Meal {
 		this.name = name;
 	}
 
-	public List<IngredientItem> getIngredients() {
+	public List<RecipeItem> getIngredients() {
 		return ingredients;
 	}
 
-	public void setIngredients(List<IngredientItem> ingredients) {
+	public void setIngredients(List<RecipeItem> ingredients) {
 		this.ingredients = ingredients;
 	}
 
