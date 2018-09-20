@@ -109,10 +109,6 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "No Nutritionist found with doctorId");
 				}
-				if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-					assessmentPersonalDetailCollection = new AssessmentPersonalDetailCollection();
-					request.setPatientId(registerPatientIfNotRegistered(request).toString());
-				}
 				if (request.getDob() != null && request.getDob().getAge() != null
 						&& request.getDob().getAge().getYears() < 0) {
 
@@ -124,6 +120,11 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					int currentYear = localCalendar.get(Calendar.YEAR) - request.getAge();
 					request.setDob(new DOB(currentDay, currentMonth, currentYear));
 				}
+				if (DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+					assessmentPersonalDetailCollection = new AssessmentPersonalDetailCollection();
+					request.setPatientId(registerPatientIfNotRegistered(request).toString());
+				}
+				
 
 				BeanUtil.map(request, assessmentPersonalDetailCollection);
 				assessmentPersonalDetailCollection.setCreatedTime(new Date());
