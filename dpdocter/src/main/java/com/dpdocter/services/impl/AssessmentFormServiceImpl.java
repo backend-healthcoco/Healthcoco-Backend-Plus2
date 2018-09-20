@@ -121,10 +121,10 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					request.setDob(new DOB(currentDay, currentMonth, currentYear));
 				}
 				if (DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-					assessmentPersonalDetailCollection = new AssessmentPersonalDetailCollection();
+
 					request.setPatientId(registerPatientIfNotRegistered(request).toString());
 				}
-				
+				assessmentPersonalDetailCollection = new AssessmentPersonalDetailCollection();
 
 				BeanUtil.map(request, assessmentPersonalDetailCollection);
 				assessmentPersonalDetailCollection.setCreatedTime(new Date());
