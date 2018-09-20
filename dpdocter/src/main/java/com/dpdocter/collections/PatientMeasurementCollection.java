@@ -143,11 +143,11 @@ public class PatientMeasurementCollection extends GenericCollection {
 		this.bmr = bmr;
 	}
 
-	public Double getvFat() {
+	public Double getVFat() {
 		return vFat;
 	}
 
-	public void setvFat(Double vFat) {
+	public void setVFat(Double vFat) {
 		this.vFat = vFat;
 	}
 
