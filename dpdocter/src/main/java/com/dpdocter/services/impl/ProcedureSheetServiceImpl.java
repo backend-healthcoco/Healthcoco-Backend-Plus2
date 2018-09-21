@@ -112,18 +112,24 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				procedureSheetCollection.setCreatedBy(userCollection.getFirstName());
 			}
 
-			if(request.getProcedureConsentForm() != null)
-			{
-				procedureConsentForm= new ProcedureConsentForm();
+			if (request.getProcedureConsentForm() != null) {
+				procedureConsentForm = new ProcedureConsentForm();
 				procedureConsentForm.setHeaderFields(request.getProcedureConsentForm().getHeaderFields());
 				procedureConsentForm.setFooterFields(request.getProcedureConsentForm().getFooterFields());
 				procedureConsentForm.setBody(request.getProcedureConsentForm().getBody());
 			}
-			
+
 			procedureSheetFields = request.getProcedureSheetFields();
 			request.setProcedureSheetFields(null);
 			request.setProcedureConsentForm(null);
 			BeanUtil.map(request, procedureSheetCollection);
+			if (request.getDiagrams() != null && request.getDiagrams().isEmpty()) {
+				procedureSheetCollection.setDiagrams(new ArrayList<ImageURLResponse>());
+				procedureSheetCollection.setDiagrams(request.getDiagrams());
+			} else {
+				procedureSheetCollection.setDiagrams(null);
+			}
+
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
 			procedureSheetCollection.setDiagrams(request.getDiagrams());
 
@@ -133,14 +139,15 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				response = new ProcedureSheetResponse();
 				procedureSheetFields = procedureSheetCollection.getProcedureSheetFields();
 				procedureSheetCollection.setProcedureSheetFields(null);
-				if(procedureSheetCollection.getProcedureConsentForm() != null)
-				{
-					procedureConsentForm= new ProcedureConsentForm();
-					procedureConsentForm.setHeaderFields(procedureSheetCollection.getProcedureConsentForm().getHeaderFields());
-					procedureConsentForm.setFooterFields(procedureSheetCollection.getProcedureConsentForm().getFooterFields());
+				if (procedureSheetCollection.getProcedureConsentForm() != null) {
+					procedureConsentForm = new ProcedureConsentForm();
+					procedureConsentForm
+							.setHeaderFields(procedureSheetCollection.getProcedureConsentForm().getHeaderFields());
+					procedureConsentForm
+							.setFooterFields(procedureSheetCollection.getProcedureConsentForm().getFooterFields());
 					procedureConsentForm.setBody(procedureSheetCollection.getProcedureConsentForm().getBody());
 				}
-				
+
 				BeanUtil.map(procedureSheetCollection, response);
 				response.setProcedureSheetFields(procedureSheetFields);
 				response.setProcedureConsentForm(procedureConsentForm);
@@ -294,8 +301,10 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureSheetStructureResponse response = null;
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
 		List<Map<String, ProcedureConsentFormFields>> procedureSheetFields = null;
-		//List<Map<String, ProcedureConsentFormFields>> procedureSheetHeaderFields = null;
-		//List<Map<String, ProcedureConsentFormFields>> procedureSheetFooterFields = null;
+		// List<Map<String, ProcedureConsentFormFields>> procedureSheetHeaderFields =
+		// null;
+		// List<Map<String, ProcedureConsentFormFields>> procedureSheetFooterFields =
+		// null;
 		ProcedureConsentFormStructure procedureConsentFormStructure = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -307,12 +316,13 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				procedureSheetStructureCollection.setCreatedBy(userCollection.getFirstName());
 			}
-			
-			if(request.getProcedureConsentFormStructure() != null)
-			{
+
+			if (request.getProcedureConsentFormStructure() != null) {
 				procedureConsentFormStructure = new ProcedureConsentFormStructure();
-				procedureConsentFormStructure.setHeaderFields(request.getProcedureConsentFormStructure().getHeaderFields());
-				procedureConsentFormStructure.setFooterFields(request.getProcedureConsentFormStructure().getFooterFields());
+				procedureConsentFormStructure
+						.setHeaderFields(request.getProcedureConsentFormStructure().getHeaderFields());
+				procedureConsentFormStructure
+						.setFooterFields(request.getProcedureConsentFormStructure().getFooterFields());
 				procedureConsentFormStructure.setBody(request.getProcedureConsentFormStructure().getBody());
 			}
 			procedureSheetFields = request.getProcedureSheetFields();
@@ -322,16 +332,18 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			procedureSheetStructureCollection.setProcedureSheetFields(procedureSheetFields);
 			procedureSheetStructureCollection.setDiagrams(request.getDiagrams());
 			procedureSheetStructureCollection.setProcedureConsentFormStructure(procedureConsentFormStructure);
-			
+
 			procedureSheetStructureCollection = procedureSheetStructureRepository
 					.save(procedureSheetStructureCollection);
 			if (procedureSheetStructureCollection != null) {
-				if(procedureSheetStructureCollection.getProcedureConsentFormStructure() != null)
-				{
+				if (procedureSheetStructureCollection.getProcedureConsentFormStructure() != null) {
 					procedureConsentFormStructure = new ProcedureConsentFormStructure();
-					procedureConsentFormStructure.setHeaderFields(procedureSheetStructureCollection.getProcedureConsentFormStructure().getHeaderFields());
-					procedureConsentFormStructure.setFooterFields(procedureSheetStructureCollection.getProcedureConsentFormStructure().getFooterFields());
-					procedureConsentFormStructure.setBody(procedureSheetStructureCollection.getProcedureConsentFormStructure().getBody());
+					procedureConsentFormStructure.setHeaderFields(
+							procedureSheetStructureCollection.getProcedureConsentFormStructure().getHeaderFields());
+					procedureConsentFormStructure.setFooterFields(
+							procedureSheetStructureCollection.getProcedureConsentFormStructure().getFooterFields());
+					procedureConsentFormStructure
+							.setBody(procedureSheetStructureCollection.getProcedureConsentFormStructure().getBody());
 				}
 				response = new ProcedureSheetStructureResponse();
 
@@ -342,7 +354,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				response.setDiagrams(procedureSheetStructureCollection.getDiagrams());
 				response.setProcedureSheetFields(procedureSheetFields);
 				response.setProcedureConsentFormStructure(procedureConsentFormStructure);
-				
+
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -388,9 +400,9 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				response = new ProcedureSheetStructureResponse();
 				procedureSheetFields = procedureSheetStructureCollection.getProcedureSheetFields();
 				procedureSheetStructureCollection.setProcedureSheetFields(null);
-				BeanUtil.map(procedureSheetStructureCollection,response);
+				BeanUtil.map(procedureSheetStructureCollection, response);
 				response.setProcedureSheetFields(procedureSheetFields);
-				
+
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -464,7 +476,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			AggregationResults<ProcedureSheetStructureResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, ProcedureSheetStructureCollection.class, ProcedureSheetStructureResponse.class);
 			responses = aggregationResults.getMappedResults();
-			
+
 			for (ProcedureSheetStructureResponse procedureSheetStructureResponse : responses) {
 				procedureSheetStructureResponse = getProcedureSheetStructure(procedureSheetStructureResponse.getId());
 			}
@@ -526,8 +538,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureConsentForm procedureConsentForm = procedureSheetCollection.getProcedureConsentForm();
 		if (procedureConsentForm != null) {
 			field = "";
-			
-			
+
 			if (procedureConsentForm.getHeaderFields() != null && !procedureConsentForm.getHeaderFields().isEmpty()) {
 				for (Map<String, String> map : procedureConsentForm.getHeaderFields()) {
 					for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -540,8 +551,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 						}
 					}
 				}
-				
-				
+
 				field = field + "<br><br>";
 				parameters.put("headerField", field);
 			}
