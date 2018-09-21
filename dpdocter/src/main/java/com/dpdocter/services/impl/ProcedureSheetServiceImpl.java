@@ -123,18 +123,14 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			request.setProcedureSheetFields(null);
 			request.setProcedureConsentForm(null);
 			BeanUtil.map(request, procedureSheetCollection);
-			if (request.getDiagrams() != null && request.getDiagrams().isEmpty()) {
+			if (request.getDiagrams() != null && !request.getDiagrams().isEmpty()) {
 				procedureSheetCollection.setDiagrams(new ArrayList<ImageURLResponse>());
 				procedureSheetCollection.setDiagrams(request.getDiagrams());
 			} else {
 				procedureSheetCollection.setDiagrams(null);
 			}
-<<<<<<< HEAD
-=======
 
-			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
-			procedureSheetCollection.setDiagrams(request.getDiagrams());
->>>>>>> e8213552... HAPPY-3779 - Backend : Doctor :: Procedure Sheet : Issue related to
+
 
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
 			procedureSheetCollection.setProcedureConsentForm(procedureConsentForm);
