@@ -129,6 +129,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			} else {
 				procedureSheetCollection.setDiagrams(null);
 			}
+<<<<<<< HEAD
+=======
+
+			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
+			procedureSheetCollection.setDiagrams(request.getDiagrams());
+>>>>>>> e8213552... HAPPY-3779 - Backend : Doctor :: Procedure Sheet : Issue related to
 
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
 			procedureSheetCollection.setProcedureConsentForm(procedureConsentForm);
