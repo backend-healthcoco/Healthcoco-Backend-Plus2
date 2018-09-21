@@ -123,7 +123,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			request.setProcedureSheetFields(null);
 			request.setProcedureConsentForm(null);
 			BeanUtil.map(request, procedureSheetCollection);
-			if (request.getDiagrams() != null && request.getDiagrams().isEmpty()) {
+			if (request.getDiagrams() != null && !request.getDiagrams().isEmpty()) {
 				procedureSheetCollection.setDiagrams(new ArrayList<ImageURLResponse>());
 				procedureSheetCollection.setDiagrams(request.getDiagrams());
 			} else {
@@ -131,7 +131,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
-			procedureSheetCollection.setDiagrams(request.getDiagrams());
+			
 
 			procedureSheetCollection.setProcedureConsentForm(procedureConsentForm);
 			procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
