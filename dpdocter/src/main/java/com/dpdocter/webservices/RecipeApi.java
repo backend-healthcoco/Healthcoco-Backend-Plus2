@@ -62,6 +62,13 @@ public class RecipeApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 
 		}
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+				request.getName())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"name,doctor,location or hospital should not be null or empty");
+
+		}
 
 		Nutrient nutrient = recipeService.addEditNutrient(request);
 		if (nutrient != null) {
@@ -82,6 +89,13 @@ public class RecipeApi {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+				request.getName())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"name,doctor,location or hospital should not be null or empty");
 
 		}
 		Ingredient ingredient = recipeService.addEditIngredient(request);
@@ -230,6 +244,14 @@ public class RecipeApi {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+				request.getName())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"name,doctor,location or hospital should not be null or empty");
 
 		}
 		Recipe recipe = recipeService.addEditRecipe(request);

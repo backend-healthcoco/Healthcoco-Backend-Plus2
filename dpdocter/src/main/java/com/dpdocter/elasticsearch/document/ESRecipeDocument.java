@@ -93,6 +93,48 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.String)
 	private String createdBy;
 
+	@Field(type = FieldType.String)
+	private String locationId;
+
+	@Field(type = FieldType.String)
+	private String hospitalId;
+
+	@Field(type = FieldType.String)
+	private String doctorId;
+	
+
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	public String getId() {
 		return id;
 	}

@@ -767,13 +767,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
-					Aggregation.match(criteria),
-					Aggregation.lookup("drug_cl", "items.drugId", "_id",
-							"drug"),
+					Aggregation.match(criteria), Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 					new CustomAggregationOperation(
 							new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
-											.append("includeArrayIndex",
+									new BasicDBObject("path", "$drug")
+											.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
 													"arrayIndex2"))),
 					projectList,
 					new CustomAggregationOperation(new BasicDBObject("$group",
@@ -889,7 +887,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						drugAddEditRequest.setExplanation(item.getInstructions());
 						drugCollection.setExplanation(item.getInstructions());
 					}
-					//System.out.println(item.getInstructions());
+					// System.out.println(item.getInstructions());
 					drugAddEditRequest.setDirection(item.getDirection());
 					drugAddEditRequest.setDuration(item.getDuration());
 					drugAddEditRequest.setDosage(item.getDosage());
@@ -946,17 +944,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (prescriptionTest != null && !prescriptionTest.isEmpty()) {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
-				tests = mongoTemplate.aggregate(
-						Aggregation.newAggregation(
-								Aggregation.match(new Criteria("id").is(prescriptionCollection.getId())),
-								Aggregation.unwind("diagnosticTests"),
-								Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id",
-										"diagnosticTest"),
-								Aggregation.unwind("diagnosticTest"),
-								new CustomAggregationOperation(new BasicDBObject("$project",
-										new BasicDBObject("test", "$diagnosticTest").append("recordId",
-												"$diagnosticTests.recordId")))),
-						PrescriptionCollection.class, TestAndRecordDataResponse.class).getMappedResults();
+				tests = mongoTemplate
+						.aggregate(
+								Aggregation.newAggregation(
+										Aggregation.match(new Criteria("id").is(prescriptionCollection.getId())),
+										Aggregation.unwind("diagnosticTests"), Aggregation.lookup("diagnostic_test_cl",
+												"diagnosticTests.testId", "_id", "diagnosticTest"),
+										Aggregation.unwind("diagnosticTest"),
+										new CustomAggregationOperation(new BasicDBObject("$project",
+												new BasicDBObject("test", "$diagnosticTest").append("recordId",
+														"$diagnosticTests.recordId")))),
+								PrescriptionCollection.class, TestAndRecordDataResponse.class)
+						.getMappedResults();
 				response.setDiagnosticTests(tests);
 			}
 			response.setItems(itemDetails);
@@ -976,16 +975,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					opdReports = reportsService.submitOPDReport(opdReports);
 
-					if(sendNotificationToDoctor == null || sendNotificationToDoctor)
-						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(),
-							"RX Added",
-							ComponentType.PRESCRIPTION_REFRESH.getType(), prescriptionCollection.getPatientId().toString(), null);
-					
+					if (sendNotificationToDoctor == null || sendNotificationToDoctor)
+						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), "RX Added",
+								ComponentType.PRESCRIPTION_REFRESH.getType(),
+								prescriptionCollection.getPatientId().toString(), null);
+
 					pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
-								"Your prescription by " + prescriptionCollection.getCreatedBy()
-										+ " is here - Tap to view it!",
-								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
-					
+							"Your prescription by " + prescriptionCollection.getCreatedBy()
+									+ " is here - Tap to view it!",
+							ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
 
 					if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
 						sendMessage(prescriptionCollection);
@@ -1416,33 +1414,31 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$visit")
-												.append("preserveNullAndEmptyArrays",
+										new BasicDBObject("path",
+												"$visit").append("preserveNullAndEmptyArrays",
 														true))),
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
-										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-										.append("locationId", new BasicDBObject("$first", "$locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-										.append("appointmentRequest",
-												new BasicDBObject("$first", "$appointmentRequest"))
-										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-										.append("discarded", new BasicDBObject("$first", "$discarded"))
-										.append("items", new BasicDBObject("$push", "$items"))
-										.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-										.append("advice", new BasicDBObject("$first", "$advice"))
-										.append("tests", new BasicDBObject("$first", "$tests"))
-										.append("time", new BasicDBObject("$first", "$time"))
-										.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-										.append("patientId", new BasicDBObject("$first", "$patientId"))
-										.append("isFeedbackAvailable",
-												new BasicDBObject("$first", "$isFeedbackAvailable"))
-										.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-										.append("visitId", new BasicDBObject("$first", "$visitId"))
-										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-										.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+								.append("name", new BasicDBObject("$first", "$name"))
+								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("discarded", new BasicDBObject("$first", "$discarded"))
+								.append("items", new BasicDBObject("$push", "$items"))
+								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+								.append("advice", new BasicDBObject("$first", "$advice"))
+								.append("tests", new BasicDBObject("$first", "$tests"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+								.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+								.append("visitId", new BasicDBObject("$first", "$visitId"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 
@@ -1463,33 +1459,31 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$visit")
-												.append("preserveNullAndEmptyArrays",
+										new BasicDBObject("path",
+												"$visit").append("preserveNullAndEmptyArrays",
 														true))),
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
-										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-										.append("locationId", new BasicDBObject("$first", "$locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-										.append("appointmentRequest",
-												new BasicDBObject("$first", "$appointmentRequest"))
-										.append("discarded", new BasicDBObject("$first", "$discarded"))
-										.append("items", new BasicDBObject("$push", "$items"))
-										.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-										.append("advice", new BasicDBObject("$first", "$advice"))
-										.append("tests", new BasicDBObject("$first", "$tests"))
-										.append("time", new BasicDBObject("$first", "$time"))
-										.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-										.append("patientId", new BasicDBObject("$first", "$patientId"))
-										.append("isFeedbackAvailable",
-												new BasicDBObject("$first", "$isFeedbackAvailable"))
-										.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-										.append("visitId", new BasicDBObject("$first", "$visitId"))
-										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-										.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+								.append("name", new BasicDBObject("$first", "$name"))
+								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+								.append("discarded", new BasicDBObject("$first", "$discarded"))
+								.append("items", new BasicDBObject("$push", "$items"))
+								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+								.append("advice", new BasicDBObject("$first", "$advice"))
+								.append("tests", new BasicDBObject("$first", "$tests"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+								.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+								.append("visitId", new BasicDBObject("$first", "$visitId"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1510,7 +1504,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
 										(!DPDoctorUtils.anyStringEmpty(data.getRecordId())
-												? data.getRecordId().toString() : null)));
+												? data.getRecordId().toString()
+												: null)));
 							}
 						}
 						prescription.setTests(null);
@@ -1584,33 +1579,30 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									.append("includeArrayIndex", "arrayIndex3"))),
 					new CustomAggregationOperation(
 							new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true)
-											.append("includeArrayIndex",
+									new BasicDBObject("path", "$visit")
+											.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
 													"arrayIndex5"))),
 					projectList,
-					new CustomAggregationOperation(
-							new BasicDBObject("$group",
-									new BasicDBObject("_id", "$_id")
-											.append("name", new BasicDBObject("$first", "$name"))
-											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-											.append("locationId", new BasicDBObject("$first", "$locationId"))
-											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-											.append("discarded", new BasicDBObject("$first", "$discarded"))
-											.append("items", new BasicDBObject("$push", "$items"))
-											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-											.append("advice", new BasicDBObject("$first", "$advice"))
-											.append("tests", new BasicDBObject("$first", "$tests"))
-											.append("time", new BasicDBObject("$first", "$time"))
-											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-											.append("patientId", new BasicDBObject("$first", "$patientId"))
-											.append("isFeedbackAvailable",
-													new BasicDBObject("$first", "$isFeedbackAvailable"))
-											.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-											.append("visitId", new BasicDBObject("$first", "$visitId"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-											.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
+									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
+									.append("items", new BasicDBObject("$push", "$items"))
+									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+									.append("advice", new BasicDBObject("$first", "$advice"))
+									.append("tests", new BasicDBObject("$first", "$tests"))
+									.append("time", new BasicDBObject("$first", "$time"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("visitId", new BasicDBObject("$first", "$visitId"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
 			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
 					"prescription_cl", Prescription.class);
 			prescriptions = aggregationResults.getMappedResults();
@@ -1628,7 +1620,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
 										(!DPDoctorUtils.anyStringEmpty(data.getRecordId())
-												? data.getRecordId().toString() : null)));
+												? data.getRecordId().toString()
+												: null)));
 							}
 						}
 						prescription.setTests(null);
@@ -1688,27 +1681,28 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
-						Aggregation.match(criteria),
-						Aggregation.lookup("drug_cl", "items.drugId", "_id",
-								"drug"),
-						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
-												.append("includeArrayIndex",
-														"arrayIndex2"))),
+						Aggregation.match(criteria), Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex2"))),
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("id", "$_id").append("name", new BasicDBObject("$first", "$name"))
-										.append("locationId", new BasicDBObject("$first", "$locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-										.append("discarded",
-												new BasicDBObject("$first",
-														"$discarded"))
-										.append("items", new BasicDBObject("$push", "$items")
-												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-												.append("createdBy", new BasicDBObject("$first", "$createdBy"))))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$group",
+										new BasicDBObject("id", "$_id")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("locationId", new BasicDBObject("$first", "$locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+												.append("discarded",
+														new BasicDBObject("$first", "$discarded"))
+												.append("items",
+														new BasicDBObject("$push", "$items")
+																.append("createdTime",
+																		new BasicDBObject("$first", "$createdTime"))
+																.append("updatedTime",
+																		new BasicDBObject("$first", "$updatedTime"))
+																.append("createdBy",
+																		new BasicDBObject("$first", "$createdBy"))))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			}
@@ -1755,7 +1749,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Integer prescriptionCount = 0;
 		try {
 
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
+					.and("isPatientDiscarded").ne(true);
 			;
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
@@ -2157,51 +2152,47 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("tests", "$diagnosticTests")));
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.match(new Criteria("_id").is(new ObjectId(prescriptionId))),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
-									.append("includeArrayIndex", "arrayIndex1"))),
-					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
-					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
-					new CustomAggregationOperation(
-							new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
-									.append("preserveNullAndEmptyArrays", true))),
+			Aggregation aggregation = Aggregation
+					.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(prescriptionId))),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
+											.append("includeArrayIndex", "arrayIndex1"))),
+							Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+							Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
+									"appointmentRequest"),
+							Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$appointmentRequest")
+											.append("preserveNullAndEmptyArrays", true))),
 
-					new CustomAggregationOperation(
-							new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$visit")
-											.append("preserveNullAndEmptyArrays",
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays",
 													true))),
-					projectList,
-					new CustomAggregationOperation(
-							new BasicDBObject("$group",
-									new BasicDBObject("_id", "$_id")
-											.append("name", new BasicDBObject("$first", "$name"))
-											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-											.append("locationId", new BasicDBObject("$first", "$locationId"))
-											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-											.append("appointmentRequest",
-													new BasicDBObject("$first", "$appointmentRequest"))
-											.append("discarded", new BasicDBObject("$first", "$discarded"))
-											.append("items", new BasicDBObject("$push", "$items"))
-											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-											.append("advice", new BasicDBObject("$first", "$advice"))
-											.append("tests", new BasicDBObject("$first", "$tests"))
-											.append("time", new BasicDBObject("$first", "$time"))
-											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-											.append("patientId", new BasicDBObject("$first", "$patientId"))
-											.append("isFeedbackAvailable",
-													new BasicDBObject("$first", "$isFeedbackAvailable"))
-											.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-											.append("visitId", new BasicDBObject("$first", "$visitId"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-											.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
+							projectList,
+							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+									.append("name", new BasicDBObject("$first", "$name"))
+									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
+									.append("items", new BasicDBObject("$push", "$items"))
+									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+									.append("advice", new BasicDBObject("$first", "$advice"))
+									.append("tests", new BasicDBObject("$first", "$tests"))
+									.append("time", new BasicDBObject("$first", "$time"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("visitId", new BasicDBObject("$first", "$visitId"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
 			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
 					"prescription_cl", Prescription.class);
 			List<Prescription> prescriptions = aggregationResults.getMappedResults();
@@ -2723,8 +2714,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Prescription", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Prescription", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Prescription", body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2785,19 +2776,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						response.setMailAttachment(mailAttachment);
 						response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
+								? locationCollection.getStreetAddress() + ", "
+								: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
+										? locationCollection.getLandmarkDetails() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
+										? locationCollection.getLocality() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
+										? locationCollection.getCity() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
+										? locationCollection.getState() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
+										? locationCollection.getCountry() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+										? locationCollection.getPostalCode()
+										: "");
 
 						if (address.charAt(address.length() - 2) == ',') {
 							address = address.substring(0, address.length() - 2);
@@ -2863,15 +2861,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 											String drugType = drug.getDrugType() != null
 													? (!DPDoctorUtils.anyStringEmpty(drug.getDrugType().getType())
-															? drug.getDrugType().getType() : "")
+															? drug.getDrugType().getType()
+															: "")
 													: "";
 											String drugName = !DPDoctorUtils.anyStringEmpty(drug.getDrugName())
-													? drug.getDrugName() : "";
+													? drug.getDrugName()
+													: "";
 
 											String durationValue = prescriptionItem.getDuration() != null
 													? (!DPDoctorUtils
 															.anyStringEmpty(prescriptionItem.getDuration().getValue())
-																	? prescriptionItem.getDuration().getValue() : "")
+																	? prescriptionItem.getDuration().getValue()
+																	: "")
 													: "";
 											String durationUnit = prescriptionItem.getDuration() != null
 													? (prescriptionItem.getDuration().getDurationUnit() != null
@@ -2882,7 +2883,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 											if (!DPDoctorUtils.anyStringEmpty(durationValue))
 												durationValue = "," + durationValue + durationUnit;
 											String dosage = !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-													? "," + prescriptionItem.getDosage() : "";
+													? "," + prescriptionItem.getDosage()
+													: "";
 
 											String directions = "";
 											if (prescriptionItem.getDirection() != null
@@ -2924,8 +2926,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 								String patientName = patientCollection.getLocalPatientName() != null
-										? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
-										clinicContactNum = "";
+										? patientCollection.getLocalPatientName().split(" ")[0]
+										: "", doctorName = "", clinicContactNum = "";
 
 								UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
 								if (doctor != null)
@@ -3226,18 +3228,21 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				discards[1] = true;
 
 			long createdTimestamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria().andOperator(new Criteria("patientId").is(new ObjectId(patientId)),
-					new Criteria("updatedTime").gt(new Date(createdTimestamp))).and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria()
+					.andOperator(new Criteria("patientId").is(new ObjectId(patientId)),
+							new Criteria("updatedTime").gt(new Date(createdTimestamp)))
+					.and("isPatientDiscarded").ne(true);
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
 			long count = mongoTemplate.count(new Query(criteria), PrescriptionCollection.class);
-			if(count > 0) {
+			if (count > 0) {
 				response.setData(count);
 				ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
 						Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
 						Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-						Fields.field("discarded", "$discarded"), Fields.field("appointmentRequest", "$appointmentRequest"),
+						Fields.field("discarded", "$discarded"),
+						Fields.field("appointmentRequest", "$appointmentRequest"),
 						Fields.field("inHistory", "$inHistory"), Fields.field("advice", "$advice"),
 						Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
 						Fields.field("patientId", "$patientId"),
@@ -3260,44 +3265,42 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex", "arrayIndex1"))),
 							Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
-							Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+							Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
+									"appointmentRequest"),
 							Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
-											true))),
+									new BasicDBObject("path", "$appointmentRequest")
+											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(
 									new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$visit")
-													.append("preserveNullAndEmptyArrays",
-															true))),
+											new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays",
+													true))),
 							projectList,
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
-											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-											.append("locationId", new BasicDBObject("$first", "$locationId"))
-											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-											.append("appointmentRequest",
-													new BasicDBObject("$first", "$appointmentRequest"))
-											.append("discarded", new BasicDBObject("$first", "$discarded"))
-											.append("items", new BasicDBObject("$push", "$items"))
-											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-											.append("advice", new BasicDBObject("$first", "$advice"))
-											.append("tests", new BasicDBObject("$first", "$tests"))
-											.append("time", new BasicDBObject("$first", "$time"))
-											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-											.append("patientId", new BasicDBObject("$first", "$patientId"))
-											.append("isFeedbackAvailable",
-													new BasicDBObject("$first", "$isFeedbackAvailable"))
-											.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-											.append("visitId", new BasicDBObject("$first", "$visitId"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-							Aggregation.limit(size));
+							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+									.append("name", new BasicDBObject("$first", "$name"))
+									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
+									.append("items", new BasicDBObject("$push", "$items"))
+									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+									.append("advice", new BasicDBObject("$first", "$advice"))
+									.append("tests", new BasicDBObject("$first", "$tests"))
+									.append("time", new BasicDBObject("$first", "$time"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("visitId", new BasicDBObject("$first", "$visitId"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
 
 				} else
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -3305,43 +3308,41 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex", "arrayIndex1"))),
 							Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
-							Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+							Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
+									"appointmentRequest"),
 
 							Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
-											true))),
+									new BasicDBObject("path", "$appointmentRequest")
+											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(
 									new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$visit")
-													.append("preserveNullAndEmptyArrays",
-															true))),
+											new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays",
+													true))),
 							projectList,
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
-											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-											.append("locationId", new BasicDBObject("$first", "$locationId"))
-											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-											.append("appointmentRequest",
-													new BasicDBObject("$first", "$appointmentRequest"))
-											.append("discarded", new BasicDBObject("$first", "$discarded"))
-											.append("items", new BasicDBObject("$push", "$items"))
-											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-											.append("advice", new BasicDBObject("$first", "$advice"))
-											.append("tests", new BasicDBObject("$first", "$tests"))
-											.append("time", new BasicDBObject("$first", "$time"))
-											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-											.append("patientId", new BasicDBObject("$first", "$patientId"))
-											.append("isFeedbackAvailable",
-													new BasicDBObject("$first", "$isFeedbackAvailable"))
-											.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-											.append("visitId", new BasicDBObject("$first", "$visitId"))
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+									.append("name", new BasicDBObject("$first", "$name"))
+									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
+									.append("items", new BasicDBObject("$push", "$items"))
+									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+									.append("advice", new BasicDBObject("$first", "$advice"))
+									.append("tests", new BasicDBObject("$first", "$tests"))
+									.append("time", new BasicDBObject("$first", "$time"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("visitId", new BasicDBObject("$first", "$visitId"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 				AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -3362,7 +3363,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									}
 									diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
 											(!DPDoctorUtils.anyStringEmpty(data.getRecordId())
-													? data.getRecordId().toString() : null)));
+													? data.getRecordId().toString()
+													: null)));
 								}
 							}
 							prescription.setTests(null);
@@ -3570,7 +3572,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (DPDoctorUtils.anyStringEmpty(patientId)) {
 				Aggregation aggregation = Aggregation.newAggregation(
 
-						Aggregation.match(new Criteria("uniqueEmrId").is(uniqueEmrId.toUpperCase()).and("isPatientDiscarded").ne(true)),
+						Aggregation.match(new Criteria("uniqueEmrId").is(uniqueEmrId.toUpperCase())
+								.and("isPatientDiscarded").ne(true)),
 						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),
@@ -3690,8 +3693,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
-		
-		//DoctorCollection doctorCollection = doctorRepository.findOne(prescriptionCollection.getDoctorId());
+
+		// DoctorCollection doctorCollection =
+		// doctorRepository.findOne(prescriptionCollection.getDoctorId());
 
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
@@ -3732,20 +3736,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							} else {
 								drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
 							}
-							//drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
+							// drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName +
+							// genericName;
 							String durationValue = prescriptionItem.getDuration() != null
 									? (prescriptionItem.getDuration().getValue() != null
-											? prescriptionItem.getDuration().getValue() : "")
+											? prescriptionItem.getDuration().getValue()
+											: "")
 									: "";
 							String durationUnit = prescriptionItem.getDuration() != null
-									? (prescriptionItem.getDuration()
-											.getDurationUnit() != null
-													? (!DPDoctorUtils.anyStringEmpty(
-															prescriptionItem.getDuration().getDurationUnit().getUnit())
-																	? prescriptionItem.getDuration().getDurationUnit()
-																			.getUnit()
-																	: "")
-													: "")
+									? (prescriptionItem.getDuration().getDurationUnit() != null
+											? (!DPDoctorUtils.anyStringEmpty(
+													prescriptionItem.getDuration().getDurationUnit().getUnit())
+															? prescriptionItem.getDuration().getDurationUnit().getUnit()
+															: "")
+											: "")
 									: "";
 
 							String directions = "";
@@ -3771,12 +3775,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									} else {
 										prescriptionItem.setInstructions(
 												!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-														? prescriptionItem.getInstructions() : null);
+														? prescriptionItem.getInstructions()
+														: null);
 									}
 								} else {
 									prescriptionItem.setInstructions(
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : null);
+													? prescriptionItem.getInstructions()
+													: null);
 								}
 
 								showIntructions = true;
@@ -3795,27 +3801,33 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 									prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-													? prescriptionItem.getDosage() : "--",
+													? prescriptionItem.getDosage()
+													: "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : null,
+													? prescriptionItem.getInstructions()
+													: null,
 											genericName);
 								} else {
 									prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-													? prescriptionItem.getDosage() : "--",
+													? prescriptionItem.getDosage()
+													: "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : "--",
+													? prescriptionItem.getInstructions()
+													: "--",
 											genericName);
 								}
 							} else {
 								prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
 										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-												? prescriptionItem.getDosage() : "--",
+												? prescriptionItem.getDosage()
+												: "--",
 										duration, directions.isEmpty() ? "--" : directions,
 										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-												? prescriptionItem.getInstructions() : "--",
+												? prescriptionItem.getInstructions()
+												: "--",
 										genericName);
 							}
 							if (prescriptionItem.getDrugQuantity() == null) {
@@ -3877,19 +3889,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
-						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
 
 		if (historyCollection != null) {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 		}
-		
+
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
 				patient,
-				"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
-						? prescriptionCollection.getUniqueEmrId() : "--"),
+				"<b>RxID: </b>"
+						+ (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId()
+								: "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 				prescriptionCollection.getCreatedTime() != null ? prescriptionCollection.getCreatedTime() : new Date(),
 				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
@@ -3900,22 +3915,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
 		Integer topMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null
-						? printSettings.getPageSetup().getTopMargin() : 20)
+						? printSettings.getPageSetup().getTopMargin()
+						: 20)
 				: 20;
 		Integer bottonMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null
-						? printSettings.getPageSetup().getBottomMargin() : 20)
+						? printSettings.getPageSetup().getBottomMargin()
+						: 20)
 				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 
 		response = jasperReportService.createPDF(ComponentType.PRESCRIPTIONS, parameters, prescriptionA4FileName,
@@ -4265,7 +4285,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							new BeanToPropertyValueTransformer("code"));
 					if (codes != null && !codes.isEmpty()) {
 						for (String word : codes) {
-							if(!DPDoctorUtils.anyStringEmpty(word)) {
+							if (!DPDoctorUtils.anyStringEmpty(word)) {
 								word = word.toLowerCase();
 								genericCodes.add(word);
 							}
@@ -4323,36 +4343,35 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							Fields.field("createdBy", "$createdBy"), Fields.field("updatedTime", "$updatedTime"),
 							Fields.field("items.drug", "$drug"), Fields.field("items.duration", "$items.duration")));
 
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.match(new Criteria("isActive").is(true).and("items").exists(true).and("patientId")
-							.is(patientObjectId)),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
-									.append("includeArrayIndex", "arrayIndex1"))),
-					Aggregation
-							.lookup("drug_cl", "items.drugId", "_id",
-									"drug"),
-					new CustomAggregationOperation(
-							new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$drug")
-											.append("preserveNullAndEmptyArrays",
+			Aggregation aggregation = Aggregation
+					.newAggregation(
+							Aggregation.match(new Criteria("isActive").is(true).and("items").exists(true)
+									.and("patientId").is(patientObjectId)),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
+											.append("includeArrayIndex", "arrayIndex1"))),
+							Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays",
 													true))),
-					projectList,
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
-									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("items", new BasicDBObject("$push", "$items"))
-									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
-									.append("advice", new BasicDBObject("$first", "$advice"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+							projectList,
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "$_id")
+											.append("name", new BasicDBObject("$first", "$name"))
+											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("items", new BasicDBObject("$push", "$items"))
+											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+											.append("advice", new BasicDBObject("$first", "$advice"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			List<Prescription> prescriptionCollections = mongoTemplate
 					.aggregate(aggregation, PrescriptionCollection.class, Prescription.class).getMappedResults();
@@ -5219,7 +5238,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		long createdTimestamp = Long.parseLong(updatedTime);
 
 		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-			.is(patientObjectId).and("isPatientDiscarded").ne(true);
+				.is(patientObjectId).and("isPatientDiscarded").ne(true);
 		if (!discarded)
 			criteria.and("discarded").is(discarded);
 		// if(inHistory)criteria.and("inHistory").is(inHistory);
@@ -5413,8 +5432,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		parameters.put("quality", prescriptionCollection.getQuality());
 		parameters.put("type", prescriptionCollection.getType());
-		parameters.put("pupilaryDistance", prescriptionCollection.getPupilaryDistance() != null
-				? prescriptionCollection.getPupilaryDistance() + " mm" : null);
+		parameters.put("pupilaryDistance",
+				prescriptionCollection.getPupilaryDistance() != null
+						? prescriptionCollection.getPupilaryDistance() + " mm"
+						: null);
 		parameters.put("lensType", prescriptionCollection.getLensType());
 		parameters.put("usage", prescriptionCollection.getUsage());
 		parameters.put("remarks", prescriptionCollection.getRemarks());
@@ -5432,12 +5453,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
 				patient,
-				"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
-						? prescriptionCollection.getUniqueEmrId() : "--"),
+				"<b>RxID: </b>"
+						+ (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId()
+								: "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				prescriptionCollection.getUpdatedTime(), printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
+				prescriptionCollection.getUpdatedTime(), printSettings.getHospitalUId(),
+				printSettings.getIsPidHasDate());
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 
@@ -5447,22 +5471,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
 		Integer topMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null
-						? printSettings.getPageSetup().getTopMargin() : 20)
+						? printSettings.getPageSetup().getTopMargin()
+						: 20)
 				: 20;
 		Integer bottonMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null
-						? printSettings.getPageSetup().getBottomMargin() : 20)
+						? printSettings.getPageSetup().getBottomMargin()
+						: 20)
 				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 
 		response = jasperReportService.createPDF(ComponentType.EYE_PRESCRIPTION, parameters,
@@ -5517,19 +5546,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						mailResponse.setMailAttachment(mailAttachment);
 						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
+								? locationCollection.getStreetAddress() + ", "
+								: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
+										? locationCollection.getLandmarkDetails() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
+										? locationCollection.getLocality() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
+										? locationCollection.getCity() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
+										? locationCollection.getState() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
+										? locationCollection.getCountry() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+										? locationCollection.getPostalCode()
+										: "");
 
 						if (address.charAt(address.length() - 2) == ',') {
 							address = address.substring(0, address.length() - 2);
@@ -5558,8 +5594,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Prescription", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Prescription", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Prescription", body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -5657,8 +5693,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 							String patientName = patientCollection.getLocalPatientName() != null
-									? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
-									clinicContactNum = "";
+									? patientCollection.getLocalPatientName().split(" ")[0]
+									: "", doctorName = "", clinicContactNum = "";
 
 							UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
 							if (doctor != null)
@@ -5920,36 +5956,36 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			fileWriter = new FileWriter("/home/ubuntu/editDrugIsPrescribed");
 			fileWriter.append("action,genericCode,Drug,isPrescribed");
 			fileWriter.append("\n");
-			
+
 			br = new BufferedReader(new FileReader(UPDATE_GENERIC_CODES_DATA_FILE));
 			while ((line = br.readLine()) != null) {
 
-					if (lineCount > 0) {
-						String[] fields = line.split(cvsSplitBy);
-						if(fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
-							String reason = fields[3];
-							System.out.println(reason);
-							
-							if(reason.equalsIgnoreCase("SPELLING MISTAKE")){
-								updateSpellingOfGenericCodes(fields[0], fields[2]);
-							}else if(reason.equalsIgnoreCase("REPEAT")){
-								removeRepeatedGenericCodes(fields[0], fields[2], fileWriter);
-							}else if(reason.equalsIgnoreCase("REMOVE")){
-								removeGenericCodes(fields[0], fileWriter);
-							}
+				if (lineCount > 0) {
+					String[] fields = line.split(cvsSplitBy);
+					if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
+						String reason = fields[3];
+						System.out.println(reason);
+
+						if (reason.equalsIgnoreCase("SPELLING MISTAKE")) {
+							updateSpellingOfGenericCodes(fields[0], fields[2]);
+						} else if (reason.equalsIgnoreCase("REPEAT")) {
+							removeRepeatedGenericCodes(fields[0], fields[2], fileWriter);
+						} else if (reason.equalsIgnoreCase("REMOVE")) {
+							removeGenericCodes(fields[0], fileWriter);
 						}
 					}
-					lineCount = lineCount +1;
+				}
+				lineCount = lineCount + 1;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}finally {
+		} finally {
 			if (br != null) {
 				try {
 					br.close();
-					if(fileWriter != null) {
+					if (fileWriter != null) {
 						fileWriter.flush();
 						fileWriter.close();
 					}
@@ -5972,10 +6008,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (drugCollections != null) {
 				for (DrugCollection drugCollection : drugCollections) {
-					long rxCount = mongoTemplate.count(new Query(new Criteria("items.drugId").is(drugCollection.getId())), PrescriptionCollection.class);
-					if(rxCount >0) {
+					long rxCount = mongoTemplate.count(
+							new Query(new Criteria("items.drugId").is(drugCollection.getId())),
+							PrescriptionCollection.class);
+					if (rxCount > 0) {
 						try {
-							fileWriter.append("REMOVE,"+code+","+drugCollection.getId().toString()+","+true);fileWriter.append("\n");
+							fileWriter.append("REMOVE," + code + "," + drugCollection.getId().toString() + "," + true);
+							fileWriter.append("\n");
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -6001,8 +6040,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 //						}
 //					}
 				}
-				
-				//remove generic code and reaction
+
+				// remove generic code and reaction
 //				ESGenericCodesAndReactions codesAndReactions = esGenericCodesAndReactionsRepository.findOne(code);
 //				if(codesAndReactions != null) {
 //						esGenericCodesAndReactionsRepository.delete(codesAndReactions);
@@ -6041,10 +6080,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (drugCollections != null) {
 				for (DrugCollection drugCollection : drugCollections) {
-					long rxCount = mongoTemplate.count(new Query(new Criteria("items.drugId").is(drugCollection.getId())), PrescriptionCollection.class);
-					if(rxCount >0) {
+					long rxCount = mongoTemplate.count(
+							new Query(new Criteria("items.drugId").is(drugCollection.getId())),
+							PrescriptionCollection.class);
+					if (rxCount > 0) {
 						try {
-							fileWriter.append("REPEAT,"+code+","+drugCollection.getId().toString()+","+true);fileWriter.append("\n");
+							fileWriter.append("REPEAT," + code + "," + drugCollection.getId().toString() + "," + true);
+							fileWriter.append("\n");
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -6073,8 +6115,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			}
 
-		 //update generic code and reactions
-			
+			// update generic code and reactions
+
 //			ESGenericCodesAndReactions codesAndReactions = esGenericCodesAndReactionsRepository.findOne(code);
 //			if(codesAndReactions != null && codesAndReactions.getCodes() != null && !codesAndReactions.getCodes().isEmpty()) {
 //				ESGenericCodesAndReactions similarCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(similarToCode);
@@ -6196,24 +6238,29 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 									String drugType = drug.getDrugType() != null
 											? (!DPDoctorUtils.anyStringEmpty(drug.getDrugType().getType())
-													? drug.getDrugType().getType() : "")
+													? drug.getDrugType().getType()
+													: "")
 											: "";
 									String drugName = !DPDoctorUtils.anyStringEmpty(drug.getDrugName())
-											? drug.getDrugName() : "";
+											? drug.getDrugName()
+											: "";
 
 									String durationValue = prescriptionItem.getDuration() != null
 											? (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getValue())
-													? prescriptionItem.getDuration().getValue() : "")
+													? prescriptionItem.getDuration().getValue()
+													: "")
 											: "";
 									String durationUnit = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getDurationUnit() != null
-													? prescriptionItem.getDuration().getDurationUnit().getUnit() : "")
+													? prescriptionItem.getDuration().getDurationUnit().getUnit()
+													: "")
 											: "";
 
 									if (!DPDoctorUtils.anyStringEmpty(durationValue))
 										durationValue = "," + durationValue + durationUnit;
 									String dosage = !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-											? "," + prescriptionItem.getDosage() : "";
+											? "," + prescriptionItem.getDosage()
+											: "";
 
 									String directions = "";
 									if (prescriptionItem.getDirection() != null
@@ -6254,8 +6301,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 						String patientName = patientCollection.getLocalPatientName() != null
-								? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
-								clinicContactNum = "";
+								? patientCollection.getLocalPatientName().split(" ")[0]
+								: "", doctorName = "", clinicContactNum = "";
 
 						UserCollection doctor = userRepository.findOne(prescriptionCollection.getDoctorId());
 						if (doctor != null)
@@ -6319,8 +6366,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 					String patientName = patientCollection.getLocalPatientName() != null
-							? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
-							clinicContactNum = "";
+							? patientCollection.getLocalPatientName().split(" ")[0]
+							: "", doctorName = "", clinicContactNum = "";
 
 					UserCollection doctor = userRepository.findOne(eyePrescriptionCollection.getDoctorId());
 					if (doctor != null)
@@ -6407,19 +6454,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setMailAttachment(mailAttachment);
 				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -6485,19 +6539,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				mailResponse.setMailAttachment(mailAttachment);
 				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -6519,8 +6580,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Prescription", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Prescription", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Prescription", body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -6661,8 +6722,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			br = new BufferedReader(new FileReader(UPLOAD_DRUGS));
 			Map<String, DrugType> drugTypesMap = new HashMap<String, DrugType>();
 			List<DrugType> drugTypes = mongoTemplate
-					.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(null))), DrugTypeCollection.class,
-							DrugType.class)
+					.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(null))),
+							DrugTypeCollection.class, DrugType.class)
 					.getMappedResults();
 			if (drugTypes != null && !drugTypes.isEmpty()) {
 				for (DrugType drugType : drugTypes)
@@ -6702,7 +6763,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 						drugCollection.setDrugName(drugName);
 						drugCollection.setDrugType(drugTypesMap.get(drugType));
-						if(drugCollection.getDrugType() == null) {
+						if (drugCollection.getDrugType() == null) {
 							DrugTypeCollection drugTypeCollection = new DrugTypeCollection();
 							drugTypeCollection.setAdminCreatedTime(new Date());
 							drugTypeCollection.setCreatedBy("ADMIN");
@@ -6710,7 +6771,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							drugTypeCollection.setUpdatedTime(new Date());
 							drugTypeCollection.setType(drugType);
 							drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
-							
+
 							DrugType drugTypeObj = new DrugType();
 							BeanUtil.map(drugTypeCollection, drugTypeObj);
 							drugCollection.setDrugType(drugTypeObj);
@@ -6741,7 +6802,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								int indexOfStart = genericName.indexOf("("), indexOfEnd = genericName.indexOf(")");
 								if (indexOfStart > -1 && indexOfEnd > -1) {
 									key = genericName.substring(0, indexOfStart);
-									value = genericName.substring(indexOfStart+1, indexOfEnd);
+									value = genericName.substring(indexOfStart + 1, indexOfEnd);
 									if (!DPDoctorUtils.anyStringEmpty(value) && value.equalsIgnoreCase("NA"))
 										value = null;
 								} else {
@@ -6756,26 +6817,28 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							for (GenericCode genericCode : genericCodesFromDB) {
 								genericCode.setStrength(generics.get(genericCode.getName()));
 							}
-							
+
 							List<GenericCode> genericCodes = new ArrayList<>();
 							genericCodes.addAll(genericCodesFromDB);
-							
-							if(generics.size() != genericCodes.size()) {
-								for(Entry<String, String> generic : generics.entrySet()) {
+
+							if (generics.size() != genericCodes.size()) {
+								for (Entry<String, String> generic : generics.entrySet()) {
 									boolean isPresent = false;
-									for(GenericCode genericCode : genericCodes)
-										if(generic.getKey().equalsIgnoreCase(genericCode.getName()))isPresent = true;
-									
-									if(!isPresent) {
+									for (GenericCode genericCode : genericCodes)
+										if (generic.getKey().equalsIgnoreCase(genericCode.getName()))
+											isPresent = true;
+
+									if (!isPresent) {
 										GenericCodeCollection genericCodeCollection = new GenericCodeCollection();
 										genericCodeCollection.setAdminCreatedTime(new Date());
 										genericCodeCollection.setName(generic.getKey());
-										genericCodeCollection.setCode(generateGenericCode(genericCodeCollection.getName()));
+										genericCodeCollection
+												.setCode(generateGenericCode(genericCodeCollection.getName()));
 										genericCodeCollection.setCreatedBy("ADMIN");
 										genericCodeCollection.setCreatedTime(new Date());
 										genericCodeCollection.setUpdatedTime(new Date());
 										genericCodeCollection = genericCodeRepository.save(genericCodeCollection);
-										
+
 										GenericCode code = new GenericCode();
 										BeanUtil.map(genericCodeCollection, code);
 										code.setStrength(generic.getValue());
@@ -6783,7 +6846,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									}
 								}
 							}
-							
+
 							drugCollection.setGenericNames(genericCodes);
 						}
 
@@ -6863,17 +6926,23 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugCode = drugType.substring(0, 2) + drugName.substring(0, 3);
 		else
 			drugCode = drugType.substring(0, 2) + drugName.substring(0, 2);
-		
-		List<DrugCollection> drugCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(null).and("drugCode").regex("^" + drugCode, "i")),
-				Aggregation.sort(new Sort(Direction.DESC, "drugCode")), Aggregation.limit(1))
-				, DrugCollection.class, DrugCollection.class).getMappedResults();
+
+		List<DrugCollection> drugCollections = mongoTemplate
+				.aggregate(
+						Aggregation.newAggregation(
+								Aggregation.match(
+										new Criteria("doctorId").is(null).and("drugCode").regex("^" + drugCode, "i")),
+								Aggregation.sort(new Sort(Direction.DESC, "drugCode")), Aggregation.limit(1)),
+						DrugCollection.class, DrugCollection.class)
+				.getMappedResults();
 		DrugCollection drugCollection = null;
-		if(drugCollections != null && !drugCollections.isEmpty())drugCollection = drugCollections.get(0);
+		if (drugCollections != null && !drugCollections.isEmpty())
+			drugCollection = drugCollections.get(0);
 //		DrugCollection drugCollection = drugRepository.findByStartWithDrugCode(drugCode, null, null, null, new Sort(Sort.Direction.DESC, "drugCode"));
-		if(drugName.equalsIgnoreCase("O2")) {
+		if (drugName.equalsIgnoreCase("O2")) {
 			drugCollection = null;
 		}
-		
+
 		if (drugCollection != null) {
 			Integer count = Integer.parseInt(drugCollection.getDrugCode().toUpperCase().replace(drugCode, "")) + 1;
 			if (count < 1000) {
@@ -6891,8 +6960,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	private String generateGenericCode(String genericName) {
 		genericName = genericName.replaceAll("[^a-zA-Z0-9]", "");
 		String genericCode = "GEN" + genericName.substring(0, 3);
-		
-		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode, new Sort(Sort.Direction.DESC, "code"));
+
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode,
+				new Sort(Sort.Direction.DESC, "code"));
 		if (genericCodeCollection != null) {
 			Integer count = Integer.parseInt(genericCodeCollection.getCode().replace(genericCode, "")) + 1;
 			if (count < 1000) {
@@ -6903,15 +6973,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} else {
 			genericCode = genericCode + "0001";
 		}
-		
+
 		genericCode = updateIfGenericCodeExist(genericCode);
-		
+
 		return genericCode;
 	}
-	
+
 	private String updateIfGenericCodeExist(String genericCode) {
-		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode, new Sort(Sort.Direction.DESC, "createdTime"));
-		if(genericCodeCollection != null) {
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode,
+				new Sort(Sort.Direction.DESC, "createdTime"));
+		if (genericCodeCollection != null) {
 			genericCode = genericCode.substring(0, 6);
 			Integer count = Integer.parseInt(genericCodeCollection.getCode().replace(genericCode, "")) + 1;
 			if (count < 1000) {
@@ -6921,9 +6992,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			genericCode = updateIfGenericCodeExist(genericCode);
 		}
-		
+
 		return genericCode;
-		
+
 	}
 
 	@Override
