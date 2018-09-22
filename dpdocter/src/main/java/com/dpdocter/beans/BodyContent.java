@@ -1,16 +1,16 @@
 package com.dpdocter.beans;
 
 public class BodyContent {
-	private Double sFat = 0.0;
+	private Double sfat = 0.0;
 
 	private Double muscles = 0.0;
 
-	public Double getsFat() {
-		return sFat;
+	public Double getSfat() {
+		return sfat;
 	}
 
-	public void setsFat(Double sFat) {
-		this.sFat = sFat;
+	public void setSfat(Double sfat) {
+		this.sfat = sfat;
 	}
 
 	public Double getMuscles() {
