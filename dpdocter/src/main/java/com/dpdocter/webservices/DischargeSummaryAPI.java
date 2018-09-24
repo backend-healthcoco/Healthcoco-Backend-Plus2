@@ -69,10 +69,8 @@ public class DischargeSummaryAPI {
 	@Autowired
 	private ESDischargeSummaryService esDischargeSummaryService;
 
-
 	@Value(value = "${image.path}")
 	private String imagePath;
-
 
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@POST
@@ -82,6 +80,9 @@ public class DischargeSummaryAPI {
 		DischargeSummaryResponse dischargeSummary = null;
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getPatientId(),request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput, "doctorId,patientId,locationId and hospitalId should not be null");
 		}
 		dischargeSummary = dischargeSummaryService.addEditDischargeSummary(request);
 		if (dischargeSummary != null) {
@@ -554,14 +555,14 @@ public class DischargeSummaryAPI {
 
 			throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 		}
-			flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
-			response = new Response<FlowsheetResponse>();
-			response.setData(flowsheetResponses);
+		flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
+		response = new Response<FlowsheetResponse>();
+		response.setData(flowsheetResponses);
 
-			return response;
-
+		return response;
 
 	}
+
 	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
 	@POST
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)

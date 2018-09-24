@@ -400,7 +400,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				if (dischargeSummaryCollection.getDiagrams() != null
 						&& !dischargeSummaryCollection.getDiagrams().isEmpty()) {
 					summaryResponse.setDiagrams(new ArrayList<String>());
-					for (String img : summaryResponse.getDiagrams()) {
+					for (String img : dischargeSummaryCollection.getDiagrams()) {
 						img = getFinalImageURL(img);
 						summaryResponse.getDiagrams().add(img);
 					}
@@ -446,7 +446,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				if (dischargeSummaryCollection.getDiagrams() != null
 						&& !dischargeSummaryCollection.getDiagrams().isEmpty()) {
 					response.setDiagrams(new ArrayList<String>());
-					for (String img : response.getDiagrams()) {
+					for (String img : dischargeSummaryCollection.getDiagrams()) {
 						img = getFinalImageURL(img);
 						response.getDiagrams().add(img);
 					}
@@ -956,7 +956,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getInvestigation())) {
-			parameters.put("investigation", dischargeSummaryCollection.getInvestigation());
+			parameters.put("investigations", dischargeSummaryCollection.getInvestigation());
 		}
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getLabourNotes())) {
