@@ -460,55 +460,71 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "SI");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
 				} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
-
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "DW");
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+				}else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "DI");
 				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
 					customValues.put("EI", componentTypeId);
 					customValues.put("T", "E");
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
 					customValues.put("RI", "SILENT");
 					customValues.put("T", "PR");
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
 					customValues.put("RI", "SILENT");
 					customValues.put("T", "DI");
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
 					customValues.put("RI", "SILENT");
 					customValues.put("T", "DW");
+				}else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RX");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RPV");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RCN");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RT");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RR");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RDS");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RI");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
+				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RR");
+					customValues.put("content-available", 1);
+					customValues.put("sound", "");
 				}
-//				else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
-//					customValues.put("PI",componentTypeId);
-//					customValues.put("T", "RX");
-//				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
-//					customValues.put("PI",componentTypeId);
-//					customValues.put("T", "RPV");
-//				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
-//					customValues.put("PI",componentTypeId);
-//					customValues.put("T", "RCN");
-//				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
-//					customValues.put("PI",componentTypeId);
-//					customValues.put("T", "RT");
-//				}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
-//					customValues.put("PI",componentTypeId);
-//					customValues.put("T", "RR");
-//				}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
-//					customValues.put("PI",componentTypeId);
-//					customValues.put("T", "RDS");
-//				}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
-//					customValues.put("PI",componentTypeId);
-//					customValues.put("T", "RI");
-//				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
-//					customValues.put("PI",componentTypeId);
-//					customValues.put("T", "RR");
-//				}
 			}
 			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
 			service.push(pushToken, payload);
