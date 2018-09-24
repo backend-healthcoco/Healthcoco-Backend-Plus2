@@ -102,7 +102,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				if (dischargeSummaryCollection.getDiagrams() != null
 						&& !dischargeSummaryCollection.getDiagrams().isEmpty()) {
 					summaryResponse.setDiagrams(new ArrayList<String>());
-					for (String img : summaryResponse.getDiagrams()) {
+					for (String img : dischargeSummaryCollection.getDiagrams()) {
 						img = getFinalImageURL(img);
 						summaryResponse.getDiagrams().add(img);
 					}
