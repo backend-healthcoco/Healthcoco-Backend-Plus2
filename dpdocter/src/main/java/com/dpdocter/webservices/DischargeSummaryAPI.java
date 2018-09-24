@@ -73,7 +73,6 @@ public class DischargeSummaryAPI {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@POST
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
@@ -81,6 +80,9 @@ public class DischargeSummaryAPI {
 		Response<DischargeSummaryResponse> response = null;
 		DischargeSummaryResponse dischargeSummary = null;
 		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 		}
 		dischargeSummary = dischargeSummaryService.addEditDischargeSummary(request);
@@ -551,9 +553,9 @@ public class DischargeSummaryAPI {
 		FlowsheetResponse flowsheetResponses = null;
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
-		throw new BusinessException(ServiceError.InvalidInput, "Id is null");
+			throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 		}
-			
+
 		flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
 		response = new Response<FlowsheetResponse>();
 		response.setData(flowsheetResponses);
@@ -582,7 +584,7 @@ public class DischargeSummaryAPI {
 		response.setData(diagram);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
 	@POST
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
