@@ -180,9 +180,10 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			if (admitCardCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Id");
 			}
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					admitCardCollection.getPatientId(), admitCardCollection.getDoctorId(),
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					admitCardCollection.getPatientId(), 
 					admitCardCollection.getLocationId(), admitCardCollection.getHospitalId());
+			
 			response = new AdmitCardResponse();
 			BeanUtil.map(admitCardCollection, response);
 			Patient patient = new Patient();
