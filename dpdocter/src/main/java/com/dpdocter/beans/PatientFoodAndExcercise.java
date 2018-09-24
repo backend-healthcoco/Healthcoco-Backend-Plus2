@@ -25,7 +25,7 @@ public class PatientFoodAndExcercise {
 
 	private List<FoodCravingRequest> foodCravings;
 
-	private Excercise exercise;
+	private List<Excercise> exercise;
 
 	public List<FoodPreferenceEnum> getFoodPrefer() {
 		return foodPrefer;
@@ -51,11 +51,11 @@ public class PatientFoodAndExcercise {
 		this.foodCravings = foodCravings;
 	}
 
-	public Excercise getExercise() {
+	public List<Excercise> getExercise() {
 		return exercise;
 	}
 
-	public void setExercise(Excercise exercise) {
+	public void setExercise(List<Excercise> exercise) {
 		this.exercise = exercise;
 	}
 
