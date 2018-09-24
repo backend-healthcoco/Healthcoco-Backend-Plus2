@@ -34,7 +34,7 @@ public class PatientFoodAndExcerciseCollection extends GenericCollection {
 	@Field
 	private List<FoodCraving> foodCravings;
 	@Field
-	private Excercise exercise;
+	private List<Excercise> exercise;
 	@Field
 	private List<PrescriptionItem> drugs;
 
@@ -110,11 +110,11 @@ public class PatientFoodAndExcerciseCollection extends GenericCollection {
 		this.foodCravings = foodCravings;
 	}
 
-	public Excercise getExercise() {
+	public List<Excercise> getExercise() {
 		return exercise;
 	}
 
-	public void setExercise(Excercise exercise) {
+	public void setExercise(List<Excercise> exercise) {
 		this.exercise = exercise;
 	}
 
