@@ -33,9 +33,9 @@ public class PrescriptionItemDetail {
 	 * private List<Long> dosageTime;
 	 * 
 	 * private List<DrugDirection> direction;
-	 * 
-	 * private String instructions;
 	 */
+	private String instructions;
+
 	private Long inventoryQuantity;
 
 	public Drug getDrug() {
@@ -74,6 +74,14 @@ public class PrescriptionItemDetail {
 	public String toString() {
 		return "PrescriptionItemDetail [drug=" + drug + ", inventoryBatchs=" + inventoryBatchs + ", inventoryQuantity="
 				+ inventoryQuantity + "]";
+	}
+
+	public String getInstructions() {
+		return instructions;
+	}
+
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
 	}
 
 }
