@@ -970,7 +970,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getInvestigation())) {
-			parameters.put("investigation", dischargeSummaryCollection.getInvestigation());
+			parameters.put("investigations", dischargeSummaryCollection.getInvestigation());
 		}
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getLabourNotes())) {
