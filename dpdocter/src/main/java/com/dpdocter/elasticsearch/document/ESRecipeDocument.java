@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
-import com.dpdocter.beans.RecipeItem;
+import com.dpdocter.beans.RecipeAddItem;
 
 @Document(indexName = "recipes_in", type = "recipes")
 public class ESRecipeDocument {
@@ -33,13 +33,13 @@ public class ESRecipeDocument {
 	private List<String> recipeImages;
 
 	@Field(type = FieldType.Nested)
-	private List<RecipeItem> includeIngredients;
+	private List<RecipeAddItem> includeIngredients;
 
 	@Field(type = FieldType.Nested)
-	private List<RecipeItem> excludeIngredients;
+	private List<RecipeAddItem> excludeIngredients;
 
 	@Field(type = FieldType.Nested)
-	private List<RecipeItem> ingredients;
+	private List<RecipeAddItem> ingredients;
 
 	@Field(type = FieldType.Nested)
 
@@ -93,47 +93,11 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.String)
 	private String createdBy;
 
-	@Field(type = FieldType.String)
-	private String locationId;
+	@Field(type = FieldType.Object)
+	private List<String> recipeTiming;
 
-	@Field(type = FieldType.String)
-	private String hospitalId;
-
-	@Field(type = FieldType.String)
-	private String doctorId;
-	
-
-	public boolean isVerified() {
-		return verified;
-	}
-
-	public void setVerified(boolean verified) {
-		this.verified = verified;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
-
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
+	@Field(type = FieldType.Double)
+	private double calaries;
 
 	public String getId() {
 		return id;
@@ -167,27 +131,27 @@ public class ESRecipeDocument {
 		this.recipeImages = recipeImages;
 	}
 
-	public List<RecipeItem> getIncludeIngredients() {
+	public List<RecipeAddItem> getIncludeIngredients() {
 		return includeIngredients;
 	}
 
-	public void setIncludeIngredients(List<RecipeItem> includeIngredients) {
+	public void setIncludeIngredients(List<RecipeAddItem> includeIngredients) {
 		this.includeIngredients = includeIngredients;
 	}
 
-	public List<RecipeItem> getExcludeIngredients() {
+	public List<RecipeAddItem> getExcludeIngredients() {
 		return excludeIngredients;
 	}
 
-	public void setExcludeIngredients(List<RecipeItem> excludeIngredients) {
+	public void setExcludeIngredients(List<RecipeAddItem> excludeIngredients) {
 		this.excludeIngredients = excludeIngredients;
 	}
 
-	public List<RecipeItem> getIngredients() {
+	public List<RecipeAddItem> getIngredients() {
 		return ingredients;
 	}
 
-	public void setIngredients(List<RecipeItem> ingredients) {
+	public void setIngredients(List<RecipeAddItem> ingredients) {
 		this.ingredients = ingredients;
 	}
 
@@ -333,6 +297,30 @@ public class ESRecipeDocument {
 
 	public void setEquivalentMeasurements(List<MealQuantity> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
+	}
+
+	public List<String> getRecipeTiming() {
+		return recipeTiming;
+	}
+
+	public void setRecipeTiming(List<String> recipeTiming) {
+		this.recipeTiming = recipeTiming;
+	}
+
+	public double getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(double calaries) {
+		this.calaries = calaries;
 	}
 
 }

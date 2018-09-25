@@ -28,6 +28,8 @@ public class Recipe extends GenericCollection {
 
 	private String dishType;
 
+	private List<String> recipeTiming;
+
 	private String technique;
 
 	private Boolean isPopular = false;
@@ -53,36 +55,15 @@ public class Recipe extends GenericCollection {
 	private Integer preparationTime = 0;
 
 	private boolean verified = false;
-	
-	private String doctorId;
 
-	private String locationId;
+	private double calaries;
 
-	private String hospitalId;
-	
-
-	public String getDoctorId() {
-		return doctorId;
+	public double getCalaries() {
+		return calaries;
 	}
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
+	public void setCalaries(double calaries) {
+		this.calaries = calaries;
 	}
 
 	public boolean isVerified() {
@@ -275,6 +256,14 @@ public class Recipe extends GenericCollection {
 
 	public void setEquivalentMeasurements(List<MealQuantity> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	public List<String> getRecipeTiming() {
+		return recipeTiming;
+	}
+
+	public void setRecipeTiming(List<String> recipeTiming) {
+		this.recipeTiming = recipeTiming;
 	}
 
 }
