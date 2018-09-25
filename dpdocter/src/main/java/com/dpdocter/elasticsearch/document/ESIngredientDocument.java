@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import com.dpdocter.beans.IngredientItem;
+import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 
 @Document(indexName = "ingredients_in", type = "ingredients")
@@ -29,7 +29,7 @@ public class ESIngredientDocument {
 	private String locationId;
 
 	@Field(type = FieldType.Nested)
-	private List<IngredientItem> nutrients;
+	private List<IngredientAddItem> nutrients;
 
 	@Field(type = FieldType.String)
 	private String doctorId;
@@ -42,6 +42,9 @@ public class ESIngredientDocument {
 
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
+
+	@Field(type = FieldType.Double)
+	private double calaries;
 
 	public String getId() {
 		return id;
@@ -75,11 +78,11 @@ public class ESIngredientDocument {
 		this.locationId = locationId;
 	}
 
-	public List<IngredientItem> getNutrients() {
+	public List<IngredientAddItem> getNutrients() {
 		return nutrients;
 	}
 
-	public void setNutrients(List<IngredientItem> nutrients) {
+	public void setNutrients(List<IngredientAddItem> nutrients) {
 		this.nutrients = nutrients;
 	}
 
@@ -121,6 +124,14 @@ public class ESIngredientDocument {
 
 	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
+	}
+
+	public double getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(double calaries) {
+		this.calaries = calaries;
 	}
 
 }

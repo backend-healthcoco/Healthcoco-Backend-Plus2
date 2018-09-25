@@ -21,9 +21,9 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private MealQuantity quantity;
-
+	
 	@Field
-	private List<MealQuantity> equivalentMeasurements;
+	private List<MealQuantity> equivalentMeasurements; 
 
 	@Field
 	private String videoUrl;
@@ -81,15 +81,15 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private Integer preparationTime = 0;
-
+	
 	@Field
-	private boolean verified = false;
-
-	private ObjectId doctorId;
-
-	private ObjectId locationId;
-
-	private ObjectId hospitalId;
+	private double calaries;
+	
+	@Field
+	private boolean verified=false;
+	
+	@Field
+	private List<String> recipeTiming;
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -283,28 +283,20 @@ public class RecipeCollection extends GenericCollection {
 		this.verified = verified;
 	}
 
-	public ObjectId getDoctorId() {
-		return doctorId;
+	public double getCalaries() {
+		return calaries;
 	}
 
-	public void setDoctorId(ObjectId doctorId) {
-		this.doctorId = doctorId;
+	public void setCalaries(double calaries) {
+		this.calaries = calaries;
 	}
 
-	public ObjectId getLocationId() {
-		return locationId;
+	public List<String> getRecipeTiming() {
+		return recipeTiming;
 	}
 
-	public void setLocationId(ObjectId locationId) {
-		this.locationId = locationId;
-	}
-
-	public ObjectId getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(ObjectId hospitalId) {
-		this.hospitalId = hospitalId;
+	public void setRecipeTiming(List<String> recipeTiming) {
+		this.recipeTiming = recipeTiming;
 	}
 
 }
