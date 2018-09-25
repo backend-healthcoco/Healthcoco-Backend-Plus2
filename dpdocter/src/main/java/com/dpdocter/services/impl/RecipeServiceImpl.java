@@ -183,14 +183,14 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			if (request != null) {
 				if (!request.getRecipeImages().isEmpty() && request.getRecipeImages() != null)
-					for (int index = 0; index < request.getRecipeImages().size(); index++) {
+					for (int index = 0; index <= request.getRecipeImages().size(); index++) {
 						request.getRecipeImages().add(index,
 								request.getRecipeImages().get(index).replace(imagePath, ""));
 					}
 				if (!DPDoctorUtils.anyStringEmpty(request.getVideoUrl())) {
 					request.setVideoUrl(request.getVideoUrl().replace(imagePath, ""));
 				}
-			}
+			
 			RecipeCollection recipeCollection = null;
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
 			if (doctor == null) {
@@ -231,6 +231,11 @@ public class RecipeServiceImpl implements RecipeService {
 					}
 					recipeCollection.setExcludeIngredients(recipeItems);
 				}
+				if (request.getRecipeTiming() != null && !request.getRecipeTiming().isEmpty()) {
+					recipeCollection.setRecipeTiming(new ArrayList<String>());
+					recipeCollection.setRecipeTiming(request.getRecipeTiming());
+
+				}
 
 				if (request.getIncludeIngredients() != null && !request.getIncludeIngredients().isEmpty()) {
 					recipeItems = new ArrayList<RecipeItem>();
@@ -257,11 +262,7 @@ public class RecipeServiceImpl implements RecipeService {
 					recipeCollection.setRecipeImages(new ArrayList<String>());
 					recipeCollection.setRecipeImages(request.getRecipeImages());
 				}
-				if (request.getRecipeImages() != null && !request.getRecipeImages().isEmpty()) {
-
-					recipeCollection.setRecipeImages(new ArrayList<String>());
-					recipeCollection.setRecipeImages(request.getRecipeImages());
-				}
+				
 
 			} else {
 				recipeCollection = new RecipeCollection();
@@ -278,12 +279,13 @@ public class RecipeServiceImpl implements RecipeService {
 			BeanUtil.map(recipeCollection, response);
 			if (response != null) {
 				if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
-					for (int index = 0; index < response.getRecipeImages().size(); index++) {
+					for (int index = 0; index <= response.getRecipeImages().size(); index++) {
 						response.getRecipeImages().add(index, getFinalImageURL(response.getRecipeImages().get(index)));
 					}
 				if (!DPDoctorUtils.anyStringEmpty(response.getVideoUrl())) {
 					response.setVideoUrl(getFinalImageURL(response.getVideoUrl()));
 				}
+			}
 			}
 		} catch (BusinessException e) {
 			logger.error("Error while addedit Recipe " + e.getMessage());
@@ -353,7 +355,7 @@ public class RecipeServiceImpl implements RecipeService {
 			if (response != null && !response.isEmpty()) {
 				for (Recipe recipe : response) {
 					if (!recipe.getRecipeImages().isEmpty() && recipe.getRecipeImages() != null)
-						for (int index = 0; index < recipe.getRecipeImages().size(); index++) {
+						for (int index = 0; index <= recipe.getRecipeImages().size(); index++) {
 							recipe.getRecipeImages().add(index, getFinalImageURL(recipe.getRecipeImages().get(index)));
 						}
 					if (!DPDoctorUtils.anyStringEmpty(recipe.getVideoUrl())) {
@@ -385,7 +387,7 @@ public class RecipeServiceImpl implements RecipeService {
 			BeanUtil.map(recipeCollection, response);
 			if (response != null) {
 				if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
-					for (int index = 0; index < response.getRecipeImages().size(); index++) {
+					for (int index = 0; index <=response.getRecipeImages().size(); index++) {
 						response.getRecipeImages().add(index, getFinalImageURL(response.getRecipeImages().get(index)));
 					}
 				if (!DPDoctorUtils.anyStringEmpty(response.getVideoUrl())) {
@@ -411,7 +413,7 @@ public class RecipeServiceImpl implements RecipeService {
 			BeanUtil.map(recipeCollection, response);
 			if (response != null) {
 				if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
-					for (int index = 0; index < response.getRecipeImages().size(); index++) {
+					for (int index = 0; index <= response.getRecipeImages().size(); index++) {
 						response.getRecipeImages().add(index, getFinalImageURL(response.getRecipeImages().get(index)));
 					}
 				if (!DPDoctorUtils.anyStringEmpty(response.getVideoUrl())) {
