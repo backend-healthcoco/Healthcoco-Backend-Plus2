@@ -1,18 +1,16 @@
-package com.dpdocter.elasticsearch.response;
+package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.beans.IngredientAddItem;
-import com.dpdocter.beans.MealQuantity;
-import com.dpdocter.beans.RecipeItem;
+import org.bson.types.ObjectId;
 
-public class ESRecipeResponse {
+public class DietPlanRecipeItem {
 
-	private String id;
-
-	private String name;
+	private ObjectId id;
 
 	private MealQuantity quantity;
+
+	private String name;
 
 	private List<RecipeItem> includeIngredients;
 
@@ -20,22 +18,18 @@ public class ESRecipeResponse {
 
 	private List<RecipeItem> ingredients;
 
-	private List<IngredientAddItem> nutrients;
+	private List<IngredientItem> nutrients;
 
-	public String getId() {
+	private String direction;
+
+	private String note;
+
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public MealQuantity getQuantity() {
@@ -44,6 +38,14 @@ public class ESRecipeResponse {
 
 	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public List<RecipeItem> getIncludeIngredients() {
@@ -70,12 +72,28 @@ public class ESRecipeResponse {
 		this.ingredients = ingredients;
 	}
 
-	public List<IngredientAddItem> getNutrients() {
+	public List<IngredientItem> getNutrients() {
 		return nutrients;
 	}
 
-	public void setNutrients(List<IngredientAddItem> nutrients) {
+	public void setNutrients(List<IngredientItem> nutrients) {
 		this.nutrients = nutrients;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 }

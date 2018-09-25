@@ -28,7 +28,7 @@ public class Recipe extends GenericCollection {
 
 	private String dishType;
 
-	private List<String> recipeTiming;
+	private List<String> mealTiming;
 
 	private String technique;
 
@@ -65,14 +65,12 @@ public class Recipe extends GenericCollection {
 		this.calaries = calaries;
 	}
 
-
 	private String locationId;
 
 	private String doctorId;
 
 	private String hospitalId;
 
-	
 	public boolean isVerified() {
 		return verified;
 	}
@@ -265,12 +263,12 @@ public class Recipe extends GenericCollection {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
-	public List<String> getRecipeTiming() {
-		return recipeTiming;
+	public List<String> getMealTiming() {
+		return mealTiming;
 	}
 
-	public void setRecipeTiming(List<String> recipeTiming) {
-		this.recipeTiming = recipeTiming;
+	public void setMealTiming(List<String> mealTiming) {
+		this.mealTiming = mealTiming;
 	}
 
 	public String getLocationId() {

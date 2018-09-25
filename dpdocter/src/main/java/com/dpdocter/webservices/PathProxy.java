@@ -1916,4 +1916,13 @@ public interface PathProxy {
 		public static final String DELETE_RECIPE = "{recipeId}/delete";
 		public static final String GET_RECIPE = "{recipeId}/get";
 	}
+
+	public static final String DIET_PLAN_BASE_URL = BASE_URL + "/dietPlan";
+
+	public interface DietPlanUrls {
+		public static final String ADD_EDIT_DIET_PLAN = "addEdit";
+		public static final String GET_DIET_PLANS = "get";
+		public static final String DELETE_DIET_PLAN = "{planId}/delete";
+		public static final String GET_DIET_PLAN = "{planId}/get";
+	}
 }

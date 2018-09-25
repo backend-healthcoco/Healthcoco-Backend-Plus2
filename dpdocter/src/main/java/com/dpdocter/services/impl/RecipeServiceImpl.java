@@ -191,102 +191,102 @@ public class RecipeServiceImpl implements RecipeService {
 				if (!DPDoctorUtils.anyStringEmpty(request.getVideoUrl())) {
 					request.setVideoUrl(request.getVideoUrl().replace(imagePath, ""));
 				}
-			
-			RecipeCollection recipeCollection = null;
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
-			if (doctor == null) {
-				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
-			}
-			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				recipeCollection = recipeRepository.findOne(new ObjectId(request.getId()));
-				if (recipeCollection == null) {
-					throw new BusinessException(ServiceError.NotFound, "Recipe Not found with Id");
-				}
 
-				request.setUpdatedTime(new Date());
-				request.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
-						+ " " + doctor.getFirstName());
-				request.setCreatedTime(recipeCollection.getCreatedTime());
-				BeanUtil.map(request, recipeCollection);
-				if (!DPDoctorUtils.anyStringEmpty(request.getName())) {
-					recipeCollection.setName(request.getName());
+				RecipeCollection recipeCollection = null;
+				UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
+				if (doctor == null) {
+					throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
 				}
-
-				if (request.getIngredients() != null && !request.getIngredients().isEmpty()) {
-					recipeItems = new ArrayList<RecipeItem>();
-					for (RecipeAddItem item : request.getIngredients()) {
-						RecipeItem recipeitem = new RecipeItem();
-						BeanUtil.map(item, recipeitem);
-						recipeItems.add(recipeitem);
+				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+					recipeCollection = recipeRepository.findOne(new ObjectId(request.getId()));
+					if (recipeCollection == null) {
+						throw new BusinessException(ServiceError.NotFound, "Recipe Not found with Id");
 					}
-					recipeCollection.setIngredients(recipeItems);
 
-				}
-
-				if (request.getExcludeIngredients() != null && !request.getExcludeIngredients().isEmpty()) {
-					recipeItems = new ArrayList<RecipeItem>();
-					for (RecipeAddItem item : request.getIngredients()) {
-						RecipeItem recipeitem = new RecipeItem();
-						BeanUtil.map(item, recipeitem);
-						recipeItems.add(recipeitem);
+					request.setUpdatedTime(new Date());
+					request.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+							+ " " + doctor.getFirstName());
+					request.setCreatedTime(recipeCollection.getCreatedTime());
+					BeanUtil.map(request, recipeCollection);
+					if (!DPDoctorUtils.anyStringEmpty(request.getName())) {
+						recipeCollection.setName(request.getName());
 					}
-					recipeCollection.setExcludeIngredients(recipeItems);
-				}
-				if (request.getRecipeTiming() != null && !request.getRecipeTiming().isEmpty()) {
-					recipeCollection.setRecipeTiming(new ArrayList<String>());
-					recipeCollection.setRecipeTiming(request.getRecipeTiming());
 
-				}
+					if (request.getIngredients() != null && !request.getIngredients().isEmpty()) {
+						recipeItems = new ArrayList<RecipeItem>();
+						for (RecipeAddItem item : request.getIngredients()) {
+							RecipeItem recipeitem = new RecipeItem();
+							BeanUtil.map(item, recipeitem);
+							recipeItems.add(recipeitem);
+						}
+						recipeCollection.setIngredients(recipeItems);
 
-				if (request.getIncludeIngredients() != null && !request.getIncludeIngredients().isEmpty()) {
-					recipeItems = new ArrayList<RecipeItem>();
-					for (RecipeAddItem item : request.getIngredients()) {
-						RecipeItem recipeitem = new RecipeItem();
-						BeanUtil.map(item, recipeitem);
-						recipeItems.add(recipeitem);
 					}
-					recipeCollection.setIncludeIngredients(recipeItems);
-				}
 
-				if (request.getNutrients() != null && !request.getNutrients().isEmpty()) {
-					List<IngredientItem> ingredientItems = new ArrayList<IngredientItem>();
-					for (IngredientAddItem item : request.getNutrients()) {
-						IngredientItem ingredientItem = new IngredientItem();
-						BeanUtil.map(item, ingredientItem);
-						ingredientItems.add(ingredientItem);
+					if (request.getExcludeIngredients() != null && !request.getExcludeIngredients().isEmpty()) {
+						recipeItems = new ArrayList<RecipeItem>();
+						for (RecipeAddItem item : request.getIngredients()) {
+							RecipeItem recipeitem = new RecipeItem();
+							BeanUtil.map(item, recipeitem);
+							recipeItems.add(recipeitem);
+						}
+						recipeCollection.setExcludeIngredients(recipeItems);
 					}
-					recipeCollection.setNutrients(ingredientItems);
-				}
+					if (request.getMealTiming() != null && !request.getMealTiming().isEmpty()) {
+						recipeCollection.setMealTiming(new ArrayList<String>());
+						recipeCollection.setMealTiming(request.getMealTiming());
 
-				if (request.getRecipeImages() != null && !request.getRecipeImages().isEmpty()) {
-
-					recipeCollection.setRecipeImages(new ArrayList<String>());
-					recipeCollection.setRecipeImages(request.getRecipeImages());
-				}
-				
-
-			} else {
-				recipeCollection = new RecipeCollection();
-				BeanUtil.map(request, recipeCollection);
-				recipeCollection
-						.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
-								+ " " + doctor.getFirstName());
-				recipeCollection.setUpdatedTime(new Date());
-				recipeCollection.setCreatedTime(new Date());
-
-			}
-			recipeCollection = recipeRepository.save(recipeCollection);
-			response = new Recipe();
-			BeanUtil.map(recipeCollection, response);
-			if (response != null) {
-				if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
-					for (int index = 0; index <= response.getRecipeImages().size(); index++) {
-						response.getRecipeImages().add(index, getFinalImageURL(response.getRecipeImages().get(index)));
 					}
-				if (!DPDoctorUtils.anyStringEmpty(response.getVideoUrl())) {
-					response.setVideoUrl(getFinalImageURL(response.getVideoUrl()));
+
+					if (request.getIncludeIngredients() != null && !request.getIncludeIngredients().isEmpty()) {
+						recipeItems = new ArrayList<RecipeItem>();
+						for (RecipeAddItem item : request.getIngredients()) {
+							RecipeItem recipeitem = new RecipeItem();
+							BeanUtil.map(item, recipeitem);
+							recipeItems.add(recipeitem);
+						}
+						recipeCollection.setIncludeIngredients(recipeItems);
+					}
+
+					if (request.getNutrients() != null && !request.getNutrients().isEmpty()) {
+						List<IngredientItem> ingredientItems = new ArrayList<IngredientItem>();
+						for (IngredientAddItem item : request.getNutrients()) {
+							IngredientItem ingredientItem = new IngredientItem();
+							BeanUtil.map(item, ingredientItem);
+							ingredientItems.add(ingredientItem);
+						}
+						recipeCollection.setNutrients(ingredientItems);
+					}
+
+					if (request.getRecipeImages() != null && !request.getRecipeImages().isEmpty()) {
+
+						recipeCollection.setRecipeImages(new ArrayList<String>());
+						recipeCollection.setRecipeImages(request.getRecipeImages());
+					}
+
+				} else {
+					recipeCollection = new RecipeCollection();
+					BeanUtil.map(request, recipeCollection);
+					recipeCollection
+							.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+									+ " " + doctor.getFirstName());
+					recipeCollection.setUpdatedTime(new Date());
+					recipeCollection.setCreatedTime(new Date());
+
 				}
-			}
+				recipeCollection = recipeRepository.save(recipeCollection);
+				response = new Recipe();
+				BeanUtil.map(recipeCollection, response);
+				if (response != null) {
+					if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
+						for (int index = 0; index <= response.getRecipeImages().size(); index++) {
+							response.getRecipeImages().add(index,
+									getFinalImageURL(response.getRecipeImages().get(index)));
+						}
+					if (!DPDoctorUtils.anyStringEmpty(response.getVideoUrl())) {
+						response.setVideoUrl(getFinalImageURL(response.getVideoUrl()));
+					}
+				}
 			}
 		} catch (BusinessException e) {
 			logger.error("Error while addedit Recipe " + e.getMessage());
@@ -388,7 +388,7 @@ public class RecipeServiceImpl implements RecipeService {
 			BeanUtil.map(recipeCollection, response);
 			if (response != null) {
 				if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
-					for (int index = 0; index <=response.getRecipeImages().size(); index++) {
+					for (int index = 0; index <= response.getRecipeImages().size(); index++) {
 						response.getRecipeImages().add(index, getFinalImageURL(response.getRecipeImages().get(index)));
 					}
 				if (!DPDoctorUtils.anyStringEmpty(response.getVideoUrl())) {
