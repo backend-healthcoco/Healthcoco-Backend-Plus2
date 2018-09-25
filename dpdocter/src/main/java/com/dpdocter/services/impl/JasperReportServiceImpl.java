@@ -4629,14 +4629,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 				false);
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
+		addItems(jasperDesign, columnWidth, "$P{OperationalNotes}", "$P{operationalNotes}", fieldWidth, false, 0,
+				false);
 		addItems(jasperDesign, columnWidth, "$P{FinalDiagnosis}", "$P{finalDiagnosis}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{OperatingSurgeon}", "$P{operatingSurgeon}", fieldWidth, false, 0,
 				false);
 		addItems(jasperDesign, columnWidth, "$P{Anaesthetist}", "$P{anaesthetist}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{AssistingDoctor}", "$P{assistingDoctor}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{AssistingNurse}", "$P{assistingNurse}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{MaterialForHPE}", "$P{materialForHPE}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{OperationalNotes}", "$P{operationalNotes}", fieldWidth, false, 0,
-				false);
+
 	}
 
 	private void createDeliveryReports(JasperDesign jasperDesign, Map<String, Object> parameters,

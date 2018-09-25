@@ -27,6 +27,7 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.GenericCode;
@@ -644,7 +645,8 @@ public class ReportsServiceImpl implements ReportsService {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return opdReportsResponse;}
+		return opdReportsResponse;
+	}
 
 	@Override
 	@Transactional
@@ -984,6 +986,7 @@ public class ReportsServiceImpl implements ReportsService {
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
+		String nameAndCost = "";
 
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				new ObjectId(otReportsLookupResponse.getDoctorId()),
@@ -1048,8 +1051,75 @@ public class ReportsServiceImpl implements ReportsService {
 
 		parameters.put("provisionalDiagnosis", otReportsLookupResponse.getProvisionalDiagnosis());
 		parameters.put("finalDiagnosis", otReportsLookupResponse.getFinalDiagnosis());
-		parameters.put("operatingSurgeon", otReportsLookupResponse.getOperatingSurgeon());
-		parameters.put("anaesthetist", otReportsLookupResponse.getAnaesthetist());
+		if (otReportsLookupResponse.getOperatingSurgeonAndCost() != null) {
+			nameAndCost = !DPDoctorUtils
+					.anyStringEmpty(otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor())
+							? otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor() + "("
+							: null;
+			if (otReportsLookupResponse.getOperatingSurgeonAndCost().getCost() > 0)
+				nameAndCost = nameAndCost + "(Rs." + otReportsLookupResponse.getOperatingSurgeonAndCost().getCost().intValue()
+						+ ")";
+
+		}
+		parameters.put("operatingSurgeon", nameAndCost);
+		nameAndCost = "";
+		if (otReportsLookupResponse.getAnaesthetistAndCost() != null) {
+
+			nameAndCost = !DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getAnaesthetistAndCost().getDoctor())
+					? otReportsLookupResponse.getAnaesthetistAndCost().getDoctor() + "("
+					: null;
+			if (otReportsLookupResponse.getAnaesthetistAndCost().getCost() > 0)
+				nameAndCost = nameAndCost + "(Rs." + otReportsLookupResponse.getAnaesthetistAndCost().getCost().intValue() + ")";
+
+		}
+		parameters.put("anaesthetist", nameAndCost);
+		nameAndCost = "";
+		if (otReportsLookupResponse.getAssitingDoctorsAndCost() != null) {
+			for (DoctorAndCost doctorAndCost : otReportsLookupResponse.getAssitingDoctorsAndCost()) {
+				if (!DPDoctorUtils.anyStringEmpty(nameAndCost)) {
+					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
+							? doctorAndCost.getDoctor() + "("
+							: null;
+					if (doctorAndCost.getCost() > 0)
+						nameAndCost = nameAndCost + "(Rs." + doctorAndCost.getCost().intValue() + ")";
+
+				} else {
+
+					nameAndCost = nameAndCost + (!DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
+							? " , " + doctorAndCost.getDoctor() + "("
+							: null);
+					if (doctorAndCost.getCost() > 0)
+						nameAndCost = nameAndCost + "(Rs." + doctorAndCost.getCost().intValue() + ")";
+
+				}
+			}
+		}
+
+		parameters.put("assistingDoctor", nameAndCost);
+		
+		nameAndCost = "";
+		if (otReportsLookupResponse.getAssitingNursesAndCost() != null) {
+			for (DoctorAndCost doctorAndCost : otReportsLookupResponse.getAssitingNursesAndCost()) {
+				if (!DPDoctorUtils.anyStringEmpty(nameAndCost)) {
+					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
+							? doctorAndCost.getDoctor() + "("
+							: null;
+					if (doctorAndCost.getCost() > 0)
+						nameAndCost = nameAndCost + "(Rs." + doctorAndCost.getCost().intValue() + ")";
+
+				} else {
+
+					nameAndCost = nameAndCost + (!DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
+							? " , " + doctorAndCost.getDoctor() + "("
+							: null);
+					if (doctorAndCost.getCost() > 0)
+						nameAndCost = nameAndCost + "(Rs." + doctorAndCost.getCost() + ")";
+
+				}
+			}
+		}
+
+		parameters.put("assistingNurse", nameAndCost);
 		parameters.put("materialForHPE",
 				otReportsLookupResponse.getMaterialForHPE() != null && otReportsLookupResponse.getMaterialForHPE()
 						? "YES"
@@ -1194,7 +1264,7 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("deliveryType", deliveryReportsLookupResponse.getDeliveryType());
 		parameters.put("formNo", deliveryReportsLookupResponse.getFormNo());
 		parameters.put("remarks", deliveryReportsLookupResponse.getRemarks());
-		
+
 		patientVisitService.generatePatientDetails((printSettings != null
 				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,
