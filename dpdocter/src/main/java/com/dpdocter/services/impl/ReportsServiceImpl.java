@@ -1050,6 +1050,8 @@ public class ReportsServiceImpl implements ReportsService {
 		}
 
 		parameters.put("provisionalDiagnosis", otReportsLookupResponse.getProvisionalDiagnosis());
+		parameters.put("surgeryTitle",
+				otReportsLookupResponse.getSurgery() != null ? otReportsLookupResponse.getSurgery().getTitle() : "");
 		parameters.put("finalDiagnosis", otReportsLookupResponse.getFinalDiagnosis());
 		if (otReportsLookupResponse.getOperatingSurgeonAndCost() != null) {
 			nameAndCost = !DPDoctorUtils
@@ -1095,7 +1097,7 @@ public class ReportsServiceImpl implements ReportsService {
 				}
 			}
 		}
-	
+
 		parameters.put("assistingDoctor", nameAndCost);
 
 		nameAndCost = "";
