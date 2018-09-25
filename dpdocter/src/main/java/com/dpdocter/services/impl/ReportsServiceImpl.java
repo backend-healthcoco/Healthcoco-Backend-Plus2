@@ -1057,8 +1057,8 @@ public class ReportsServiceImpl implements ReportsService {
 							? otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor() + "("
 							: null;
 			if (otReportsLookupResponse.getOperatingSurgeonAndCost().getCost() > 0)
-				nameAndCost = nameAndCost + "(Rs." + otReportsLookupResponse.getOperatingSurgeonAndCost().getCost().intValue()
-						+ ")";
+				nameAndCost = nameAndCost + "(Rs. "
+						+ otReportsLookupResponse.getOperatingSurgeonAndCost().getCost().intValue() + ")";
 
 		}
 		parameters.put("operatingSurgeon", nameAndCost);
@@ -1069,19 +1069,20 @@ public class ReportsServiceImpl implements ReportsService {
 					? otReportsLookupResponse.getAnaesthetistAndCost().getDoctor() + "("
 					: null;
 			if (otReportsLookupResponse.getAnaesthetistAndCost().getCost() > 0)
-				nameAndCost = nameAndCost + "(Rs." + otReportsLookupResponse.getAnaesthetistAndCost().getCost().intValue() + ")";
+				nameAndCost = nameAndCost + "(Rs. "
+						+ otReportsLookupResponse.getAnaesthetistAndCost().getCost().intValue() + ")";
 
 		}
 		parameters.put("anaesthetist", nameAndCost);
 		nameAndCost = "";
 		if (otReportsLookupResponse.getAssitingDoctorsAndCost() != null) {
 			for (DoctorAndCost doctorAndCost : otReportsLookupResponse.getAssitingDoctorsAndCost()) {
-				if (!DPDoctorUtils.anyStringEmpty(nameAndCost)) {
+				if (DPDoctorUtils.anyStringEmpty(nameAndCost)) {
 					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
 							? doctorAndCost.getDoctor() + "("
 							: null;
 					if (doctorAndCost.getCost() > 0)
-						nameAndCost = nameAndCost + "(Rs." + doctorAndCost.getCost().intValue() + ")";
+						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
 
 				} else {
 
@@ -1089,23 +1090,23 @@ public class ReportsServiceImpl implements ReportsService {
 							? " , " + doctorAndCost.getDoctor() + "("
 							: null);
 					if (doctorAndCost.getCost() > 0)
-						nameAndCost = nameAndCost + "(Rs." + doctorAndCost.getCost().intValue() + ")";
+						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
 
 				}
 			}
 		}
-
+	
 		parameters.put("assistingDoctor", nameAndCost);
-		
+
 		nameAndCost = "";
 		if (otReportsLookupResponse.getAssitingNursesAndCost() != null) {
 			for (DoctorAndCost doctorAndCost : otReportsLookupResponse.getAssitingNursesAndCost()) {
-				if (!DPDoctorUtils.anyStringEmpty(nameAndCost)) {
+				if (DPDoctorUtils.anyStringEmpty(nameAndCost)) {
 					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
 							? doctorAndCost.getDoctor() + "("
 							: null;
 					if (doctorAndCost.getCost() > 0)
-						nameAndCost = nameAndCost + "(Rs." + doctorAndCost.getCost().intValue() + ")";
+						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
 
 				} else {
 
@@ -1113,7 +1114,7 @@ public class ReportsServiceImpl implements ReportsService {
 							? " , " + doctorAndCost.getDoctor() + "("
 							: null);
 					if (doctorAndCost.getCost() > 0)
-						nameAndCost = nameAndCost + "(Rs." + doctorAndCost.getCost() + ")";
+						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost() + ")";
 
 				}
 			}
