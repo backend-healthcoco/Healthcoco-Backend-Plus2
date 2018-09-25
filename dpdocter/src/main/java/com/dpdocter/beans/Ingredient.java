@@ -24,6 +24,7 @@ public class Ingredient extends GenericCollection {
 
 	private String note;
 
+	
 	private double calaries;
 
 	public List<IngredientAddItem> getNutrients() {

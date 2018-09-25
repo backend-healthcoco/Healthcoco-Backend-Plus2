@@ -58,6 +58,12 @@ public class Recipe extends GenericCollection {
 
 	private double calaries;
 
+	private String locationId;
+
+	private String doctorId;
+
+	private String hospitalId;
+
 	public double getCalaries() {
 		return calaries;
 	}
@@ -264,6 +270,30 @@ public class Recipe extends GenericCollection {
 
 	public void setRecipeTiming(List<String> recipeTiming) {
 		this.recipeTiming = recipeTiming;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 }
