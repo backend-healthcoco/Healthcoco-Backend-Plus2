@@ -21,9 +21,9 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private MealQuantity quantity;
-	
+
 	@Field
-	private List<MealQuantity> equivalentMeasurements; 
+	private List<MealQuantity> equivalentMeasurements;
 
 	@Field
 	private String videoUrl;
@@ -81,15 +81,23 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private Integer preparationTime = 0;
-	
+
 	@Field
-	private double calaries;
-	
-	@Field
-	private boolean verified=false;
-	
+	private boolean verified = false;
+
 	@Field
 	private List<String> recipeTiming;
+
+	@Field
+	private MealQuantity calaries;
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -283,13 +291,6 @@ public class RecipeCollection extends GenericCollection {
 		this.verified = verified;
 	}
 
-	public double getCalaries() {
-		return calaries;
-	}
-
-	public void setCalaries(double calaries) {
-		this.calaries = calaries;
-	}
 
 	public List<String> getRecipeTiming() {
 		return recipeTiming;

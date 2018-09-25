@@ -97,7 +97,15 @@ public class ESRecipeDocument {
 	private List<String> recipeTiming;
 
 	@Field(type = FieldType.Double)
-	private double calaries;
+	private MealQuantity calaries;
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
 
 	public String getId() {
 		return id;
@@ -313,14 +321,6 @@ public class ESRecipeDocument {
 
 	public void setRecipeTiming(List<String> recipeTiming) {
 		this.recipeTiming = recipeTiming;
-	}
-
-	public double getCalaries() {
-		return calaries;
-	}
-
-	public void setCalaries(double calaries) {
-		this.calaries = calaries;
 	}
 
 }
