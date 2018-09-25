@@ -44,7 +44,15 @@ public class ESIngredientDocument {
 	private Date updatedTime = new Date();
 
 	@Field(type = FieldType.Double)
-	private double calaries;
+	private MealQuantity calaries;
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
 
 	public String getId() {
 		return id;
@@ -124,14 +132,6 @@ public class ESIngredientDocument {
 
 	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
-	}
-
-	public double getCalaries() {
-		return calaries;
-	}
-
-	public void setCalaries(double calaries) {
-		this.calaries = calaries;
 	}
 
 }

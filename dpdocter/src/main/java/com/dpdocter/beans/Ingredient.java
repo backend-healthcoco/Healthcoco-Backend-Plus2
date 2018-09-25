@@ -24,8 +24,15 @@ public class Ingredient extends GenericCollection {
 
 	private String note;
 
-	
-	private double calaries;
+	private MealQuantity calaries;
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
 
 	public List<IngredientAddItem> getNutrients() {
 		return nutrients;
@@ -97,14 +104,6 @@ public class Ingredient extends GenericCollection {
 
 	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
-	}
-
-	public double getCalaries() {
-		return calaries;
-	}
-
-	public void setCalaries(double calaries) {
-		this.calaries = calaries;
 	}
 
 }

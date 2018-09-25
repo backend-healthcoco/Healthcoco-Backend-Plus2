@@ -38,9 +38,17 @@ public class IngredientCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = false;
-	
+
 	@Field
-	private double calaries;
+	private MealQuantity calaries;
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -114,13 +122,4 @@ public class IngredientCollection extends GenericCollection {
 		this.quantity = quantity;
 	}
 
-	public double getCalaries() {
-		return calaries;
-	}
-
-	public void setCalaries(double calaries) {
-		this.calaries = calaries;
-	}
-
-	
 }

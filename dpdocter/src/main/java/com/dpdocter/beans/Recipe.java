@@ -55,8 +55,16 @@ public class Recipe extends GenericCollection {
 	private Integer preparationTime = 0;
 
 	private boolean verified = false;
+	private MealQuantity calaries;
 
-	private double calaries;
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
 
 	private String locationId;
 
@@ -64,14 +72,7 @@ public class Recipe extends GenericCollection {
 
 	private String hospitalId;
 
-	public double getCalaries() {
-		return calaries;
-	}
-
-	public void setCalaries(double calaries) {
-		this.calaries = calaries;
-	}
-
+	
 	public boolean isVerified() {
 		return verified;
 	}
