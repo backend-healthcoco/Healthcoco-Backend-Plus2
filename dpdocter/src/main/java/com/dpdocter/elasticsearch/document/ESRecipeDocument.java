@@ -94,7 +94,7 @@ public class ESRecipeDocument {
 	private String createdBy;
 
 	@Field(type = FieldType.Object)
-	private List<String> recipeTiming;
+	private List<String> mealTiming;
 
 	@Field(type = FieldType.Double)
 	private MealQuantity calaries;
@@ -315,12 +315,12 @@ public class ESRecipeDocument {
 		this.verified = verified;
 	}
 
-	public List<String> getRecipeTiming() {
-		return recipeTiming;
+	public List<String> getMealTiming() {
+		return mealTiming;
 	}
 
-	public void setRecipeTiming(List<String> recipeTiming) {
-		this.recipeTiming = recipeTiming;
+	public void setMealTiming(List<String> mealTiming) {
+		this.mealTiming = mealTiming;
 	}
 
 }

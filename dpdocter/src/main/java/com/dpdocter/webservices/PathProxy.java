@@ -1914,6 +1914,7 @@ public interface PathProxy {
 		public static final String GET_DIET_PLAN = "{planId}/get";
 	}
 
+
 	public static final String COUNTER_BASE_URL = BASE_URL + "/counter";
 
 	public interface CounterUrls {
@@ -1990,5 +1991,6 @@ public interface PathProxy {
 		public static final String LIKE_SESSION_QUESTION = "/session/question/{questionId}/like";
 
 	}
+
 
 }

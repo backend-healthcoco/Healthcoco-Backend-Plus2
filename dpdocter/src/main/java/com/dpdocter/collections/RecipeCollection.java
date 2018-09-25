@@ -86,7 +86,7 @@ public class RecipeCollection extends GenericCollection {
 	private boolean verified = false;
 
 	@Field
-	private List<String> recipeTiming;
+	private List<String> mealTiming;
 
 	@Field
 	private MealQuantity calaries;
@@ -291,13 +291,12 @@ public class RecipeCollection extends GenericCollection {
 		this.verified = verified;
 	}
 
-
-	public List<String> getRecipeTiming() {
-		return recipeTiming;
+	public List<String> getMealTiming() {
+		return mealTiming;
 	}
 
-	public void setRecipeTiming(List<String> recipeTiming) {
-		this.recipeTiming = recipeTiming;
+	public void setMealTiming(List<String> mealTiming) {
+		this.mealTiming = mealTiming;
 	}
 
 }
