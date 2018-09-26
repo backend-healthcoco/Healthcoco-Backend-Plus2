@@ -42,7 +42,7 @@ public class DietPlanAPI {
 	@Path(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN)
 	@POST
 	@ApiOperation(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN, notes = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN)
-	public Response<DietPlan> addEditDietPlan(AddEditCustomWorkRequest request) {
+	public Response<DietPlan> addEditDietPlan(DietPlan request) {
 
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -82,7 +82,7 @@ public class DietPlanAPI {
 	}
 
 	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN)
-	@DELETE
+	@GET
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN)
 	public Response<DietPlan> getDietPlan(@QueryParam("planId") String planId) {
 
