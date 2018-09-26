@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.enums.MealTimeEnum;
 
 public class DietplanAddItem {
+
 	private MealTimeEnum mealTiming;
 
 	private List<DietPlanRecipeAddItem> recipes;

@@ -364,5 +364,4 @@ public class ESRecipeDocument {
 		this.hospitalId = hospitalId;
 	}
 
-	
 }
