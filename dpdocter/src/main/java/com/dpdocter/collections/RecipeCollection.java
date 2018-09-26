@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
@@ -23,7 +24,7 @@ public class RecipeCollection extends GenericCollection {
 	private MealQuantity quantity;
 
 	@Field
-	private List<MealQuantity> equivalentMeasurements;
+	private List<EquivalentQuantities> equivalentMeasurements;
 
 	@Field
 	private String videoUrl;
@@ -42,6 +43,16 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private List<IngredientItem> nutrients;
+	
+	@Field
+	private ObjectId locationId;
+
+	@Field
+	private ObjectId doctorId;
+
+	@Field
+	private ObjectId hospitalId;
+
 
 	@Field
 	private String dishType;
@@ -90,6 +101,9 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private MealQuantity calaries;
+
+	@Field
+	private boolean nutrientValueAtRecipeLevel = false;
 
 	public MealQuantity getCalaries() {
 		return calaries;
@@ -275,11 +289,11 @@ public class RecipeCollection extends GenericCollection {
 		this.quantity = quantity;
 	}
 
-	public List<MealQuantity> getEquivalentMeasurements() {
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
 		return equivalentMeasurements;
 	}
 
-	public void setEquivalentMeasurements(List<MealQuantity> equivalentMeasurements) {
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
@@ -298,5 +312,39 @@ public class RecipeCollection extends GenericCollection {
 	public void setMealTiming(List<String> mealTiming) {
 		this.mealTiming = mealTiming;
 	}
+
+	public boolean isNutrientValueAtRecipeLevel() {
+		return nutrientValueAtRecipeLevel;
+	}
+
+	public void setNutrientValueAtRecipeLevel(boolean nutrientValueAtRecipeLevel) {
+		this.nutrientValueAtRecipeLevel = nutrientValueAtRecipeLevel;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	
 
 }

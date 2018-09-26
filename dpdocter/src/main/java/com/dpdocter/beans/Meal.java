@@ -21,6 +21,10 @@ public class Meal {
 	private String note;
 
 	private MealType type;
+	
+    private MealQuantity calaries;
+	
+	private List<EquivalentQuantities> equivalentMeasurements;
 
 	public MealType getType() {
 		return type;
@@ -78,4 +82,21 @@ public class Meal {
 		this.note = note;
 	}
 
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	
 }

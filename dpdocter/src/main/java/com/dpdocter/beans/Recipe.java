@@ -10,7 +10,7 @@ public class Recipe extends GenericCollection {
 
 	private MealQuantity quantity;
 
-	private List<MealQuantity> equivalentMeasurements;
+	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private String name;
 
@@ -51,11 +51,28 @@ public class Recipe extends GenericCollection {
 	private String cuisine;
 
 	private String course;
+	
+	private String locationId;
+
+	private String doctorId;
+
+	private String hospitalId;
 
 	private Integer preparationTime = 0;
 
 	private boolean verified = false;
+
 	private MealQuantity calaries;
+
+	private boolean nutrientValueAtRecipeLevel = false;
+
+	public boolean isNutrientValueAtRecipeLevel() {
+		return nutrientValueAtRecipeLevel;
+	}
+
+	public void setNutrientValueAtRecipeLevel(boolean nutrientValueAtRecipeLevel) {
+		this.nutrientValueAtRecipeLevel = nutrientValueAtRecipeLevel;
+	}
 
 	public MealQuantity getCalaries() {
 		return calaries;
@@ -65,11 +82,6 @@ public class Recipe extends GenericCollection {
 		this.calaries = calaries;
 	}
 
-	private String locationId;
-
-	private String doctorId;
-
-	private String hospitalId;
 
 	public boolean isVerified() {
 		return verified;
@@ -255,11 +267,11 @@ public class Recipe extends GenericCollection {
 		this.quantity = quantity;
 	}
 
-	public List<MealQuantity> getEquivalentMeasurements() {
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
 		return equivalentMeasurements;
 	}
 
-	public void setEquivalentMeasurements(List<MealQuantity> equivalentMeasurements) {
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
 

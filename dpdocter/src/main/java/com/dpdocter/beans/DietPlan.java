@@ -22,6 +22,16 @@ public class DietPlan extends GenericCollection {
 
 	private List<DietplanAddItem> items;
 
+	private MealQuantity calaries;
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
 	public String getId() {
 		return id;
 	}

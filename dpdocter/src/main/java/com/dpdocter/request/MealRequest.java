@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeAddItem;
@@ -19,6 +20,30 @@ public class MealRequest {
 	private MealQuantity quantity;
 
 	private String note;
+	
+	private MealQuantity calaries;
+	
+	private List<EquivalentQuantities> equivalentMeasurements;
+	
+	
+	
+	
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
+	}
 
 	private MealType type = MealType.RECIPE;
 

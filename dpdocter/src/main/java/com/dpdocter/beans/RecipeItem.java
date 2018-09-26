@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 import com.dpdocter.enums.QuantityEnum;
@@ -9,6 +11,26 @@ public class RecipeItem {
 	private String name;
 	private double value;
 	private QuantityEnum type;
+	private List<EquivalentQuantities> equivalentMeasurements;
+	private MealQuantity calaries;
+	private List<IngredientItem> nutrients;
+	
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
+	public List<IngredientItem> getNutrients() {
+		return nutrients;
+	}
+
+	public void setNutrients(List<IngredientItem> nutrients) {
+		this.nutrients = nutrients;
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -40,6 +62,14 @@ public class RecipeItem {
 
 	public void setValue(double value) {
 		this.value = value;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
 }

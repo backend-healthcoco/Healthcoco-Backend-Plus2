@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 
@@ -21,7 +22,10 @@ public class ESIngredientDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity quantity;
-
+	
+	@Field(type = FieldType.Nested)
+	private List<EquivalentQuantities> equivalentMeasurements;
+	
 	@Field(type = FieldType.String)
 	private String name;
 
@@ -132,6 +136,14 @@ public class ESIngredientDocument {
 
 	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
 }
