@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DietPlan;
+import com.dpdocter.beans.DietplanItem;
 import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -49,6 +51,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 				request.setCreatedTime(dietPlanCollection.getCreatedTime());
 				request.setUniquePlanId(dietPlanCollection.getUniquePlanId());
 				request.setUpdatedTime(new Date());
+				dietPlanCollection.setItems(new ArrayList<DietplanItem>());
 				BeanUtil.map(request, dietPlanCollection);
 
 			} else {
