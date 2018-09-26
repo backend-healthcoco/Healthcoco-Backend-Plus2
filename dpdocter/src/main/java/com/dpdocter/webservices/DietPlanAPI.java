@@ -14,15 +14,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DietPlan;
-import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.services.DietPlansService;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,9 +45,15 @@ public class DietPlanAPI {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getPatientId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("patientId,doctorId,locationId and hospitalId should not be null or empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"patientId,doctorId,locationId and hospitalId should not be null or empty");
+		}
 
 		Response<DietPlan> response = new Response<DietPlan>();
-
+		response.setData(dietPlansService.addEditDietPlan(request));
 		return response;
 	}
 
@@ -58,10 +61,12 @@ public class DietPlanAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLANS, notes = PathProxy.DietPlanUrls.GET_DIET_PLANS)
 	public Response<DietPlan> getDietPlans(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("updatedTime") String updatedTime,
-			@QueryParam("discarded") boolean discarded) {
+			@QueryParam("size") int size, @QueryParam("patientId") String patientId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("updatedTime") long updatedTime, @QueryParam("discarded") boolean discarded) {
 		Response<DietPlan> response = new Response<DietPlan>();
+		response.setDataList(dietPlansService.getDietPlans(page, size, patientId, doctorId, hospitalId, locationId,
+				updatedTime, discarded));
 		return response;
 	}
 
@@ -77,7 +82,7 @@ public class DietPlanAPI {
 		}
 
 		Response<DietPlan> response = new Response<DietPlan>();
-
+		response.setData(dietPlansService.discardDietPlan(planId, discarded));
 		return response;
 	}
 
@@ -92,6 +97,7 @@ public class DietPlanAPI {
 		}
 
 		Response<DietPlan> response = new Response<DietPlan>();
+		response.setData(dietPlansService.getDietPlanById(planId));
 
 		return response;
 	}

@@ -8,11 +8,11 @@ public interface DietPlansService {
 
 	public DietPlan addEditDietPlan(DietPlan request);
 
-	public List<DietPlan> getDietPlans(int page, int size, String doctorId, String hospitalId, String locationId,
-			String updatedTime, boolean discarded);
-
 	public DietPlan getDietPlanById(String planId);
 
 	public DietPlan discardDietPlan(String planId, Boolean discarded);
+
+	List<DietPlan> getDietPlans(int page, int size, String patientId, String doctorId, String hospitalId,
+			String locationId, long updatedTime, boolean discarded);
 
 }
