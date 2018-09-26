@@ -889,8 +889,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Appointment addAppointment(final AppointmentRequest request, Boolean isFormattedResponseRequired) {
 		Appointment response = null;
-		Integer timeDiff = 0;
-		Long addMillis = 0l;
 		
 		DoctorClinicProfileCollection clinicProfileCollection = null;
 		try {
