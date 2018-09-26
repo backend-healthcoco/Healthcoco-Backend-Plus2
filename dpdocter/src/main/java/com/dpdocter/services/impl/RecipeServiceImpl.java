@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
@@ -232,6 +233,7 @@ public class RecipeServiceImpl implements RecipeService {
 						}
 						recipeCollection.setExcludeIngredients(recipeItems);
 					}
+					
 					if (request.getMealTiming() != null && !request.getMealTiming().isEmpty()) {
 						recipeCollection.setMealTiming(new ArrayList<String>());
 						recipeCollection.setMealTiming(request.getMealTiming());
@@ -262,6 +264,12 @@ public class RecipeServiceImpl implements RecipeService {
 
 						recipeCollection.setRecipeImages(new ArrayList<String>());
 						recipeCollection.setRecipeImages(request.getRecipeImages());
+					}
+
+					if (request.getEquivalentMeasurements() != null && !request.getEquivalentMeasurements().isEmpty()) {
+
+						recipeCollection.setEquivalentMeasurements(new ArrayList<EquivalentQuantities>());
+						recipeCollection.setEquivalentMeasurements(request.getEquivalentMeasurements());
 					}
 
 				} else {
@@ -459,6 +467,11 @@ public class RecipeServiceImpl implements RecipeService {
 						ingredientItems.add(ingredientItem);
 					}
 					ingredientCollection.setNutrients(ingredientItems);
+				}
+
+				if (request.getEquivalentMeasurements() != null && !request.getEquivalentMeasurements().isEmpty()) {
+					ingredientCollection.setEquivalentMeasurements(new ArrayList<EquivalentQuantities>());
+					ingredientCollection.setEquivalentMeasurements(request.getEquivalentMeasurements());
 				}
 
 			} else {

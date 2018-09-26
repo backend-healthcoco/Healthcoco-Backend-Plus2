@@ -9,6 +9,8 @@ public class Ingredient extends GenericCollection {
 	private String id;
 
 	private MealQuantity quantity;
+	
+	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private List<IngredientAddItem> nutrients;
 
@@ -104,6 +106,14 @@ public class Ingredient extends GenericCollection {
 
 	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
 }

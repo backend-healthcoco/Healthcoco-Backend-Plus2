@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeAddItem;
@@ -24,7 +25,7 @@ public class ESRecipeDocument {
 	private MealQuantity quantity;
 
 	@Field(type = FieldType.Nested)
-	private List<MealQuantity> equivalentMeasurements;
+	private List<EquivalentQuantities> equivalentMeasurements;
 
 	@Field(type = FieldType.String)
 	private String videoUrl;
@@ -37,12 +38,17 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private List<RecipeAddItem> excludeIngredients;
+	@Field(type = FieldType.String)
+	private String locationId;
+	@Field(type = FieldType.String)
+	private String doctorId;
+	@Field(type = FieldType.String)
+	private String hospitalId;
 
 	@Field(type = FieldType.Nested)
 	private List<RecipeAddItem> ingredients;
 
 	@Field(type = FieldType.Nested)
-
 	private List<IngredientAddItem> nutrients;
 
 	@Field(type = FieldType.String)
@@ -98,6 +104,9 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Double)
 	private MealQuantity calaries;
+
+	@Field(type = FieldType.Boolean)
+	private boolean nutrientValueAtRecipeLevel = false;
 
 	public MealQuantity getCalaries() {
 		return calaries;
@@ -299,11 +308,11 @@ public class ESRecipeDocument {
 		this.quantity = quantity;
 	}
 
-	public List<MealQuantity> getEquivalentMeasurements() {
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
 		return equivalentMeasurements;
 	}
 
-	public void setEquivalentMeasurements(List<MealQuantity> equivalentMeasurements) {
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
@@ -323,4 +332,37 @@ public class ESRecipeDocument {
 		this.mealTiming = mealTiming;
 	}
 
+	public boolean isNutrientValueAtRecipeLevel() {
+		return nutrientValueAtRecipeLevel;
+	}
+
+	public void setNutrientValueAtRecipeLevel(boolean nutrientValueAtRecipeLevel) {
+		this.nutrientValueAtRecipeLevel = nutrientValueAtRecipeLevel;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	
 }

@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 
@@ -20,6 +21,9 @@ public class IngredientCollection extends GenericCollection {
 
 	@Field
 	private MealQuantity quantity;
+
+	@Field
+	private List<EquivalentQuantities> equivalentMeasurements;
 
 	@Field
 	private List<IngredientItem> nutrients;
@@ -120,6 +124,14 @@ public class IngredientCollection extends GenericCollection {
 
 	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
 }

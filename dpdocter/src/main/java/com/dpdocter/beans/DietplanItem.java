@@ -12,6 +12,16 @@ public class DietplanItem {
 
 	private String note;
 
+	private MealQuantity calaries;
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
 	public MealTimeEnum getMealTiming() {
 		return mealTiming;
 	}

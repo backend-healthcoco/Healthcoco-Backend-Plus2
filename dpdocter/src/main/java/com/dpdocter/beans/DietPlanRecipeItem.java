@@ -24,6 +24,16 @@ public class DietPlanRecipeItem {
 
 	private String note;
 
+	private MealQuantity calaries;
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}
