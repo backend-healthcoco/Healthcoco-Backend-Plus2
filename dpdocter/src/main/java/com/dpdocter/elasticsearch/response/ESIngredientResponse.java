@@ -2,6 +2,7 @@ package com.dpdocter.elasticsearch.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 
@@ -16,6 +17,28 @@ public class ESIngredientResponse {
 	private MealQuantity quantity;
 
 	private String note;
+	
+	private MealQuantity calaries;
+	
+	private List<EquivalentQuantities> equivalentMeasurements;
+	
+	
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
+	}
 
 	public MealQuantity getQuantity() {
 		return quantity;

@@ -2,6 +2,7 @@ package com.dpdocter.elasticsearch.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
@@ -21,6 +22,56 @@ public class ESRecipeResponse {
 	private List<RecipeItem> ingredients;
 
 	private List<IngredientAddItem> nutrients;
+
+	private List<EquivalentQuantities> equivalentMeasurements;
+
+	private boolean nutrientValueAtRecipeLevel = false;
+
+	private MealQuantity calaries;
+
+	private List<String> mealTiming;
+
+	private String direction;
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	public boolean isNutrientValueAtRecipeLevel() {
+		return nutrientValueAtRecipeLevel;
+	}
+
+	public void setNutrientValueAtRecipeLevel(boolean nutrientValueAtRecipeLevel) {
+		this.nutrientValueAtRecipeLevel = nutrientValueAtRecipeLevel;
+	}
+
+	public MealQuantity getCalaries() {
+		return calaries;
+	}
+
+	public void setCalaries(MealQuantity calaries) {
+		this.calaries = calaries;
+	}
+
+	public List<String> getMealTiming() {
+		return mealTiming;
+	}
+
+	public void setMealTiming(List<String> mealTiming) {
+		this.mealTiming = mealTiming;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
 
 	public String getId() {
 		return id;

@@ -14,13 +14,10 @@ public class RecipeAddItem {
 	private QuantityEnum type;
 
 	private List<EquivalentQuantities> equivalentMeasurements;
-	
+
 	private MealQuantity calaries;
-	
+
 	private List<IngredientAddItem> nutrients;
-	
-	
-	
 
 	public MealQuantity getCalaries() {
 		return calaries;
