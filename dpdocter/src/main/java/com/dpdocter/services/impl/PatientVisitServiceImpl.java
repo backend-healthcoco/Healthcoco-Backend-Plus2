@@ -971,6 +971,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private void addClinicalNotes(AddMultipleDataRequest request, PatientVisitResponse response,
 			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
 
+		request.getClinicalNote().setSendNotificationToDoctor(false);
 		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false, createdBy,
 				appointment);
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {

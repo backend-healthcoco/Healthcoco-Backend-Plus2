@@ -1586,7 +1586,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 												DiagramsCollection.class, Diagram.class).getMappedResults(),
 										diagramIds));
 			
-			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
+			if(request.getSendNotificationToDoctor() == null || request.getSendNotificationToDoctor())
+				pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
 					"Clinical Notes Added",
 					ComponentType.CLINICAL_NOTES_REFRESH.getType(), clinicalNotesCollection.getPatientId().toString(), null);
 			

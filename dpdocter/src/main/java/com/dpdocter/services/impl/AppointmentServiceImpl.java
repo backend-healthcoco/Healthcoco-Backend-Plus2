@@ -626,9 +626,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			Boolean isStatusChange) {
 		Appointment response = null;
 		
-		Integer timeDiff = 0;
-		Long addMillis = 0l;
-		
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),

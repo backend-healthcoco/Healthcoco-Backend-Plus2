@@ -261,7 +261,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 				}
 				pushNotificationServices.notifyUser(request.getDoctorId(), "Dental imaging request has been updated.",
-						ComponentType.REFRESH_DENTAL_IMAGING.getType(), String.valueOf(dentalImagingCollection.getId()),
+						ComponentType.DENTAL_IMAGING_REQUEST.getType(), String.valueOf(dentalImagingCollection.getId()),
 						null);
 
 			} else {
