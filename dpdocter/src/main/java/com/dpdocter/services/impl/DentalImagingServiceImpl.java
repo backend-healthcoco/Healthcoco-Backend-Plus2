@@ -2230,6 +2230,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			AggregationResults<DentalImagingReports> aggregationResult = mongoTemplate.aggregate(aggregation,
 					DentalImagingReportsCollection.class, DentalImagingReports.class);
 			dentalImagingReports = aggregationResult.getMappedResults();
+			
+			for(DentalImagingReports report  : dentalImagingReports)
+			{
+				report.getReport().setImageUrl(report.getReport().getImageUrl());
+				report.getReport().setThumbnailUrl(report.getReport().getThumbnailUrl());
+			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
