@@ -19,7 +19,7 @@ public interface RecipeService {
 
 	public Ingredient addEditIngredient(Ingredient request);
 
-	public List<Ingredient> getIngredients(IngredientSearchRequest request);
+	public List<Ingredient> getIngredients(int size, int page, boolean discarded, String searchTerm);
 
 	public Ingredient discardIngredient(String id, boolean discarded);
 
@@ -31,6 +31,6 @@ public interface RecipeService {
 
 	Recipe discardRecipe(String id, boolean discarded);
 
-	List<Recipe> getRecipes(RecipeGetRequest request);
+	List<Recipe> getRecipes(int size, int page, boolean discarded, String searchTerm);
 
 }
