@@ -12,10 +12,6 @@ public class DietPlanRecipeItem {
 
 	private String name;
 
-	private List<RecipeItem> includeIngredients;
-
-	private List<RecipeItem> excludeIngredients;
-
 	private List<RecipeItem> ingredients;
 
 	private List<IngredientItem> nutrients;
@@ -56,22 +52,6 @@ public class DietPlanRecipeItem {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public List<RecipeItem> getIncludeIngredients() {
-		return includeIngredients;
-	}
-
-	public void setIncludeIngredients(List<RecipeItem> includeIngredients) {
-		this.includeIngredients = includeIngredients;
-	}
-
-	public List<RecipeItem> getExcludeIngredients() {
-		return excludeIngredients;
-	}
-
-	public void setExcludeIngredients(List<RecipeItem> excludeIngredients) {
-		this.excludeIngredients = excludeIngredients;
 	}
 
 	public List<RecipeItem> getIngredients() {

@@ -1,25 +1,34 @@
 package com.dpdocter.beans;
 
+import com.dpdocter.enums.QuantityEnum;
+
 public class EquivalentQuantities {
-	private MealQuantity quantityFirst;
+	private QuantityEnum servingType;
+	private double value;
+	private QuantityEnum type;
 
-	private MealQuantity quantitySecond;
-
-	public MealQuantity getQuantityFirst() {
-		return quantityFirst;
+	public QuantityEnum getServingType() {
+		return servingType;
 	}
 
-	public void setQuantityFirst(MealQuantity quantityFirst) {
-		this.quantityFirst = quantityFirst;
+	public void setServingType(QuantityEnum servingType) {
+		this.servingType = servingType;
 	}
 
-	public MealQuantity getQuantitySecond() {
-		return quantitySecond;
+	public double getValue() {
+		return value;
 	}
 
-	public void setQuantitySecond(MealQuantity quantitySecond) {
-		this.quantitySecond = quantitySecond;
+	public void setValue(double value) {
+		this.value = value;
 	}
 
-	
+	public QuantityEnum getType() {
+		return type;
+	}
+
+	public void setType(QuantityEnum type) {
+		this.type = type;
+	}
+
 }
