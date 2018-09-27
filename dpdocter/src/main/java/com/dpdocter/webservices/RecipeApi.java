@@ -26,8 +26,6 @@ import com.dpdocter.elasticsearch.services.ESRecipeService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.request.IngredientSearchRequest;
-import com.dpdocter.request.RecipeGetRequest;
 import com.dpdocter.services.RecipeService;
 
 import common.util.web.DPDoctorUtils;
@@ -154,12 +152,13 @@ public class RecipeApi {
 	}
 
 	@Path(value = PathProxy.RecipeUrls.GET_INGREDIENTS)
-	@POST
+	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_INGREDIENTS, notes = PathProxy.RecipeUrls.GET_INGREDIENTS)
-	public Response<Ingredient> getIngredient(IngredientSearchRequest request) {
+	public Response<Ingredient> getIngredients(@QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
 
 		Response<Ingredient> response = new Response<Ingredient>();
-		response.setDataList(recipeService.getIngredients(request));
+		response.setDataList(recipeService.getIngredients(size, page, discarded, searchTerm));
 		return response;
 	}
 
@@ -224,16 +223,12 @@ public class RecipeApi {
 	}
 
 	@Path(value = PathProxy.RecipeUrls.GET_RECIPES)
-	@POST
+	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES, notes = PathProxy.RecipeUrls.GET_RECIPES)
-	public Response<Recipe> getRecipes(RecipeGetRequest request) {
-		if (request == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-
-		}
+	public Response<Recipe> getRecipes(@QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
 		Response<Recipe> response = new Response<Recipe>();
-		response.setDataList(recipeService.getRecipes(request));
+		response.setDataList(recipeService.getRecipes(size, page, discarded, searchTerm));
 		return response;
 	}
 
