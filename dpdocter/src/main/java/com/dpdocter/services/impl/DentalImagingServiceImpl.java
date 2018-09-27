@@ -2248,8 +2248,8 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			
 			for(DentalImagingReports report  : dentalImagingReports)
 			{
-				report.getReport().setImageUrl(report.getReport().getImageUrl());
-				report.getReport().setThumbnailUrl(report.getReport().getThumbnailUrl());
+				report.getReport().setImageUrl(imagePath + report.getReport().getImageUrl());
+				report.getReport().setThumbnailUrl(imagePath + report.getReport().getThumbnailUrl());
 			}
 
 		} catch (Exception e) {
