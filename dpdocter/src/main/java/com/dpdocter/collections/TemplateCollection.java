@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.TemplateAddItem;
 import com.dpdocter.beans.TemplateItem;
 
 @Document(collection = "template_cl")
@@ -37,6 +36,9 @@ public class TemplateCollection extends GenericCollection {
 
 	@Field
 	private List<TemplateItem> items;
+	
+	@Field
+	private Boolean isDefault = true;
 
 	public ObjectId getId() {
 		return id;

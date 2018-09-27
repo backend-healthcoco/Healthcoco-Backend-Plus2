@@ -89,6 +89,12 @@ public class DoctorCollection extends GenericCollection {
 	@Field
 	private String drugTypePlacement = "PREFIX";
 
+	@Field
+	private String mrCode;
+
+	@Field
+	private List<ObjectId> divisionIds;
+
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
 	}
@@ -281,6 +287,22 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setDrugTypePlacement(String drugTypePlacement) {
 		this.drugTypePlacement = drugTypePlacement;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<ObjectId> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<ObjectId> divisionIds) {
+		this.divisionIds = divisionIds;
 	}
 
 	@Override

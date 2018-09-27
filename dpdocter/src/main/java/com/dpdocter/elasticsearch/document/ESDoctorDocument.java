@@ -19,7 +19,7 @@ import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 
 @Document(indexName = "doctors_in", type = "doctors")
-public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoctorDocument>{
+public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoctorDocument> {
 
 	@Id
 	private String id;
@@ -62,7 +62,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> services;
-	
+
 	@Field(type = FieldType.Nested)
 	private DoctorExperience experience;
 
@@ -122,9 +122,15 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@Field(type = FieldType.String)
 	private String doctorSlugURL;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isNutritionist = false;
+
+	@Field(type = FieldType.String)
+	private String mrCode;
+
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> divisionIds;
 
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
@@ -409,6 +415,30 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.services = services;
 	}
 
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<String> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<String> divisionIds) {
+		this.divisionIds = divisionIds;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
@@ -427,8 +457,11 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@Override
 	public int compareTo(ESDoctorDocument o) {
-		if(this.rankingCount < o.rankingCount)return 0;
-		else if(this.rankingCount < o.rankingCount)return -1;
-		else return 1;
+		if (this.rankingCount < o.rankingCount)
+			return 0;
+		else if (this.rankingCount < o.rankingCount)
+			return -1;
+		else
+			return 1;
 	}
 }

@@ -10,18 +10,16 @@ import com.dpdocter.response.PrescriptionInventoryBatchResponse;
 public class PrescriptionItemDetail {
 	private Drug drug;
 
+	private Duration duration;
+
+	private String dosage;
+
 	/*
-	 * private Duration duration;
-	 * 
-	 * private String dosage;
-	 * 
 	 * private DrugType drugType;
 	 * 
 	 * private String drugName;
 	 * 
 	 * private Integer drugQuantity;
-	 * 
-	 * 
 	 */
 
 	private Long totalStock;
@@ -31,11 +29,11 @@ public class PrescriptionItemDetail {
 	 * private String explanation;
 	 * 
 	 * private List<Long> dosageTime;
-	 * 
-	 * private List<DrugDirection> direction;
-	 * 
-	 * private String instructions;
 	 */
+	private List<DrugDirection> direction;
+
+	private String instructions;
+
 	private Long inventoryQuantity;
 
 	public Drug getDrug() {
@@ -68,6 +66,38 @@ public class PrescriptionItemDetail {
 
 	public void setTotalStock(Long totalStock) {
 		this.totalStock = totalStock;
+	}
+
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public String getDosage() {
+		return dosage;
+	}
+
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
+
+	public List<DrugDirection> getDirection() {
+		return direction;
+	}
+
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
+
+	public String getInstructions() {
+		return instructions;
+	}
+
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
 	}
 
 	@Override
