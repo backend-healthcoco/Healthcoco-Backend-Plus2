@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.DishType;
 
 public class AssessmentPersonalDetail extends GenericCollection {
 
@@ -45,6 +46,16 @@ public class AssessmentPersonalDetail extends GenericCollection {
 	private Integer noOfChildMember = 0;
 
 	private String profession;
+
+	private DishType dietType = DishType.VEG;
+
+	public DishType getDietType() {
+		return dietType;
+	}
+
+	public void setDietType(DishType dietType) {
+		this.dietType = dietType;
+	}
 
 	public Integer getNoOfAdultMember() {
 		return noOfAdultMember;
