@@ -499,6 +499,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
 					customValues.put("PI",componentTypeId);
 					customValues.put("T", "RCN");
+					isSilent = true;
 				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
 					customValues.put("PI",componentTypeId);
 					customValues.put("T", "RT");

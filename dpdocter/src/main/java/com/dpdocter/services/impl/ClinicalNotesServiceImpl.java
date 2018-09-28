@@ -1586,7 +1586,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 												DiagramsCollection.class, Diagram.class).getMappedResults(),
 										diagramIds));
 			
-			if(request.getSendNotificationToDoctor() == null || request.getSendNotificationToDoctor())
+			if(!(request.getSendNotificationToDoctor() != null && !request.getSendNotificationToDoctor()))
 				pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
 					"Clinical Notes Added",
 					ComponentType.CLINICAL_NOTES_REFRESH.getType(), clinicalNotesCollection.getPatientId().toString(), null);
@@ -1760,7 +1760,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 										diagramIds));
 			
 			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
-					"Clinical Notes Added",
+					"Clinical Notes Updated",
 					ComponentType.CLINICAL_NOTES_REFRESH.getType(), clinicalNotesCollection.getPatientId().toString(), null);
 
 		} catch (Exception e) {
