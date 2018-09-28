@@ -1889,7 +1889,7 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PROCEDURE_SHEET = "/download/{id}";
 	}
 
-	public static final String SOLR_RECIPE_BASE_URL = BASE_URL + "solr/recipe";
+	public static final String SOLR_RECIPE_BASE_URL = BASE_URL + "/solr/recipe";
 
 	public interface SolrRecipeUrls {
 
