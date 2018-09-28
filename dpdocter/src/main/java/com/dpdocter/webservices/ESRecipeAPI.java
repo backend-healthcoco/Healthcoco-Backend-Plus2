@@ -40,7 +40,7 @@ public class ESRecipeAPI {
 	@GET
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES, notes = PathProxy.SolrRecipeUrls.SEARCH_RECIPES)
 	public Response<ESRecipeResponse> searchRecipe(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
 
 		List<ESRecipeResponse> recipeDocuments = esRecipeService.searchRecipe(page, size, discarded, searchTerm);
@@ -53,7 +53,7 @@ public class ESRecipeAPI {
 	@GET
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_INGREDIENTS, notes = PathProxy.SolrRecipeUrls.SEARCH_INGREDIENTS)
 	public Response<ESIngredientResponse> searchIngredient(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
 
 		List<ESIngredientResponse> ingredientDocument = esRecipeService.searchIngredient(page, size, discarded,
@@ -67,7 +67,7 @@ public class ESRecipeAPI {
 	@GET
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_NUTRIENTS, notes = PathProxy.SolrRecipeUrls.SEARCH_NUTRIENTS)
 	public Response<ESNutrientResponse> searchNutrient(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
 
 		List<ESNutrientResponse> nutrientDocument = esRecipeService.searchNutrient(page, size, discarded, searchTerm);

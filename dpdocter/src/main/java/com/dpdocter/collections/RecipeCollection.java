@@ -53,7 +53,6 @@ public class RecipeCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 
-
 	@Field
 	private String dishType;
 
