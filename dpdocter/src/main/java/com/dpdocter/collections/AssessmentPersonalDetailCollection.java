@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.DishType;
+
 @Document(collection = "assessment_personal_detail_cl")
 public class AssessmentPersonalDetailCollection extends GenericCollection {
 	@Id
@@ -37,6 +39,16 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	private String profession;
 	@Field
 	private String mobileNumber;
+	@Field
+	private DishType dietType = DishType.VEG;
+
+	public DishType getDietType() {
+		return dietType;
+	}
+
+	public void setDietType(DishType dietType) {
+		this.dietType = dietType;
+	}
 
 	public Integer getNoOfAdultMember() {
 		return noOfAdultMember;

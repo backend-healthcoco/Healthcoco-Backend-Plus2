@@ -105,7 +105,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 	@Autowired
 	private DrugRepository drugRepository;
-	
+
 	@Autowired
 	private PrescriptionServices prescriptionservice;
 
@@ -239,7 +239,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(historyCollection.getCreatedBy());
 				request.setCreatedTime(historyCollection.getCreatedTime());
-				
+
 				BeanUtil.map(request, historyCollection);
 				historyCollection.setUpdatedTime(new Date());
 			}
@@ -299,7 +299,8 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					drugAddEditRequest.setDuration(item.getDuration());
 					drugAddEditRequest.setDosage(item.getDosage());
 					drugAddEditRequest.setDosageTime(item.getDosageTime());
-					drug = prescriptionservice.addFavouriteDrug(drugAddEditRequest, drugCollection, historyCollection.getCreatedBy());
+					drug = prescriptionservice.addFavouriteDrug(drugAddEditRequest, drugCollection,
+							historyCollection.getCreatedBy());
 					item.setDrugId(new ObjectId(drug.getId()));
 
 					prescriptionItemDetail.setDrug(drug);
@@ -471,7 +472,8 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					Fields.field("discarded", "$discarded"), Fields.field("dob", "$patient.dob"),
 					Fields.field("address", "$patient.address"), Fields.field("profession", "$patient.profession"),
 					Fields.field("community", "$community"), Fields.field("noOfAdultMember", "$noOfAdultMember"),
-					Fields.field("noOfChildMember", "$noOfChildMember"), Fields.field("createdTime", "$createdTime")));
+					Fields.field("noOfChildMember", "$noOfChildMember"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("createdBy", "$createdBy"),Fields.field("dietType", "$dietType")));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
