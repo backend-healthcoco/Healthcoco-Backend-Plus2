@@ -99,7 +99,7 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.String)
 	private String createdBy;
 
-	@Field(type = FieldType.Object)
+	@Field(type = FieldType.Nested)
 	private List<String> mealTiming;
 
 	@Field(type = FieldType.Nested)
