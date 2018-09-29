@@ -32,6 +32,8 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.services.TransactionalManagementService;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class ESRecipeServiceImpl implements ESRecipeService {
 
@@ -100,10 +102,13 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 	@Override
 	public List<ESRecipeResponse> searchRecipe(int page, int size, Boolean discarded, String searchTerm) {
 		List<ESRecipeResponse> response = null;
-		ESRecipeResponse esRecipeResponse = null;
+		ESRecipeResponse esRecipeResponse = null; 
+		
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm))
-				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", false));
+				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
+		if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+		}
 		List<ESRecipeDocument> recipes = null;
 		SearchQuery searchQuery = null;
 		if (size > 0)
@@ -130,8 +135,10 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		List<ESNutrientResponse> response = null;
 		ESNutrientResponse esNutrientResponse = null;
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm))
-				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", false));
+				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
+		if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+		}
 		if (size == 0)
 			size = 15;
 		List<ESNutrientDocument> nutrients = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
@@ -154,9 +161,10 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		List<ESIngredientResponse> response = null;
 		ESIngredientResponse esIngredientResponse = null;
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm))
-				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", false));
-
+				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
+		if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+		}
 		if (size == 0)
 			size = 15;
 		List<ESIngredientDocument> ingrdients = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
