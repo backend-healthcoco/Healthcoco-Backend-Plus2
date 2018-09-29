@@ -47,7 +47,7 @@ public class ESIngredientDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.Double)
+	@Field(type = FieldType.Nested)
 	private MealQuantity calaries;
 
 	public MealQuantity getCalaries() {
