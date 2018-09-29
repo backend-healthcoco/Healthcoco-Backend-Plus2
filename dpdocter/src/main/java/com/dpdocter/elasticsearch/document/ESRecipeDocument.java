@@ -102,7 +102,7 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Object)
 	private List<String> mealTiming;
 
-	@Field(type = FieldType.Double)
+	@Field(type = FieldType.Nested)
 	private MealQuantity calaries;
 
 	@Field(type = FieldType.Boolean)
