@@ -3,6 +3,7 @@ package com.dpdocter.elasticsearch.response;
 import java.util.List;
 
 import com.dpdocter.beans.EquivalentQuantities;
+import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 
@@ -12,7 +13,7 @@ public class ESIngredientResponse {
 
 	private String name;
 
-	private List<IngredientItem> nutrients;
+	private List<IngredientAddItem> nutrients;
 
 	private MealQuantity quantity;
 
@@ -64,11 +65,11 @@ public class ESIngredientResponse {
 		this.name = name;
 	}
 
-	public List<IngredientItem> getNutrients() {
+	public List<IngredientAddItem> getNutrients() {
 		return nutrients;
 	}
 
-	public void setNutrients(List<IngredientItem> nutrients) {
+	public void setNutrients(List<IngredientAddItem> nutrients) {
 		this.nutrients = nutrients;
 	}
 
