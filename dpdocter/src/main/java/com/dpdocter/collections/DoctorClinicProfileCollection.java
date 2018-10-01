@@ -108,6 +108,15 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private String labType = LabType.DIAGNOSTIC.getType();
 
+	@Field
+	private String mrCode;
+
+	@Field
+	private List<ObjectId> divisionIds;
+
+	@Field
+	private ObjectId cityId;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -346,6 +355,30 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setLabType(String labType) {
 		this.labType = labType;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<ObjectId> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<ObjectId> divisionIds) {
+		this.divisionIds = divisionIds;
+	}
+
+	public ObjectId getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(ObjectId cityId) {
+		this.cityId = cityId;
 	}
 
 	@Override
