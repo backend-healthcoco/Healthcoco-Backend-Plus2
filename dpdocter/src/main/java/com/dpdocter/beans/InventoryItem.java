@@ -7,6 +7,8 @@ import common.util.web.JacksonUtil;
 
 import com.dpdocter.enums.DrugTypePlacement;
 
+import com.dpdocter.enums.DrugTypePlacement;
+
 public class InventoryItem extends GenericCollection {
 
 	private String id;
@@ -130,16 +132,15 @@ public class InventoryItem extends GenericCollection {
 		this.retailPrice = retailPrice;
 	}
 
-
-
 	public String getItemType() {
 		return itemType;
 	}
 
 	public void setItemType(String itemType) {
 		this.itemType = itemType;
-		
+
 	}
+
 	public String getDrugType() {
 		return drugType;
 	}
