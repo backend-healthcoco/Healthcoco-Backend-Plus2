@@ -506,8 +506,8 @@ public class BlogServicesImpl implements BlogService {
 						if (response == null)response = new ArrayList<BlogResponse>();
 
 						for(Blog blog : blogs) {
-							if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
-								blog.setTitleImage(imagePath + blog.getTitleImage());
+							/*if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
+								blog.setTitleImage(imagePath + blog.getTitleImage());*/
 							if (!DPDoctorUtils.anyStringEmpty(request.getUserId())) {
 
 								BlogLikesCollection blogLikesCollection = blogLikesRepository.findbyBlogIdAndUserId(new ObjectId(blog.getId()), new ObjectId(request.getUserId()));
