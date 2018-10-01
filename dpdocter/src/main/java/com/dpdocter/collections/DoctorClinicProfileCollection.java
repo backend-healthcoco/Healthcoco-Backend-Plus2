@@ -117,6 +117,12 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private ObjectId cityId;
 
+	@Field
+	private Boolean isNutritionist;
+
+	@Field
+	private Boolean isSuperAdmin;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -379,6 +385,22 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setCityId(ObjectId cityId) {
 		this.cityId = cityId;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
 	}
 
 	@Override
