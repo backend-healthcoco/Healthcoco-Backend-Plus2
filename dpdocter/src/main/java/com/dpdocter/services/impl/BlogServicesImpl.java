@@ -510,7 +510,6 @@ public class BlogServicesImpl implements BlogService {
 							if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 								blog.setTitleImage(imagePath + blog.getTitleImage());
 							if (!DPDoctorUtils.anyStringEmpty(request.getUserId())) {
-
 								BlogLikesCollection blogLikesCollection = blogLikesRepository.findbyBlogIdAndUserId(new ObjectId(blog.getId()), new ObjectId(request.getUserId()));
 								if (blogLikesCollection != null) {
 									blog.setIsliked(!blogLikesCollection.getDiscarded());

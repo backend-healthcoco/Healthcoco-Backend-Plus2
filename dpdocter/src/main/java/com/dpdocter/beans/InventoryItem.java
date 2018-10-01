@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
+import com.dpdocter.enums.DrugTypePlacement;
+
 public class InventoryItem extends GenericCollection {
 
 	private String id;
@@ -19,6 +21,8 @@ public class InventoryItem extends GenericCollection {
 	private Boolean discarded = false;
 	private String itemType;
 	private Double retailPrice;
+	private String drugType;
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
 	public String getId() {
 		return id;
@@ -138,6 +142,22 @@ public class InventoryItem extends GenericCollection {
 
 	public void setItemType(String itemType) {
 		this.itemType = itemType;
+		
+	}
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override

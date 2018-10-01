@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.DrugTypePlacement;
 
 public class InventoryItemLookupResposne extends GenericCollection {
 
@@ -21,6 +22,8 @@ public class InventoryItemLookupResposne extends GenericCollection {
 	private Boolean discarded = false;
 	private Double retailPrice;
 	private List<InventoryBatch> inventoryBatchs;
+	private String drugType;
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
 	public String getId() {
 		return id;
@@ -132,6 +135,22 @@ public class InventoryItemLookupResposne extends GenericCollection {
 
 	public void setRetailPrice(Double retailPrice) {
 		this.retailPrice = retailPrice;
+	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override

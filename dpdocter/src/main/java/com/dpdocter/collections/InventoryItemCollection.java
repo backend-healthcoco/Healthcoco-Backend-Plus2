@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.DrugTypePlacement;
+
 @Document(collection = "inventory_item_cl")
 public class InventoryItemCollection extends GenericCollection {
 
@@ -34,6 +36,10 @@ public class InventoryItemCollection extends GenericCollection {
 	private Double retailPrice;
 	@Field
 	private String itemType;
+	@Field
+	private String drugType;
+	@Field
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
 	public ObjectId getId() {
 		return id;
@@ -137,6 +143,22 @@ public class InventoryItemCollection extends GenericCollection {
 
 	public void setItemType(String itemType) {
 		this.itemType = itemType;
+	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
 	}
 
 	@Override
