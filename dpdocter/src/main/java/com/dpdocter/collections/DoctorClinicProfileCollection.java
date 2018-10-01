@@ -125,6 +125,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private List<ObjectId> divisionIds;
+	
+	@Field
+	private ObjectId cityId;
 
 	public Boolean getIsNutritionist() {
 		return isNutritionist;
@@ -141,6 +144,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setIsSuperAdmin(Boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
 	}
+	
 
 	public ObjectId getId() {
 		return id;
@@ -396,6 +400,30 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setHasBillingAccess(Boolean hasBillingAccess) {
 		this.hasBillingAccess = hasBillingAccess;
+	}
+	
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<ObjectId> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<ObjectId> divisionIds) {
+		this.divisionIds = divisionIds;
+	}
+
+	public ObjectId getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(ObjectId cityId) {
+		this.cityId = cityId;
 	}
 
 	@Override
