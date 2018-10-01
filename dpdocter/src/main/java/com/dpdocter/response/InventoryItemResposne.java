@@ -1,6 +1,7 @@
 package com.dpdocter.response;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.DrugTypePlacement;
 
 public class InventoryItemResposne extends GenericCollection {
 
@@ -16,6 +17,8 @@ public class InventoryItemResposne extends GenericCollection {
 	private String hospitalId;
 	private Boolean discarded = false;
 	private Double totalStock = 0.0;
+	private String drugType;
+	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
 	public String getId() {
 		return id;
@@ -112,5 +115,23 @@ public class InventoryItemResposne extends GenericCollection {
 	public void setTotalStock(Double totalStock) {
 		this.totalStock = totalStock;
 	}
+
+	public String getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(String drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugTypePlacement() {
+		return drugTypePlacement;
+	}
+
+	public void setDrugTypePlacement(String drugTypePlacement) {
+		this.drugTypePlacement = drugTypePlacement;
+	}
+	
+	
 
 }
