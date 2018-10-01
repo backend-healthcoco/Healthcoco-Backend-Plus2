@@ -5,7 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
-import com.dpdocter.beans.RecipeItem;
+import com.dpdocter.beans.RecipeAddItem;
 
 public class ESRecipeResponse {
 
@@ -15,11 +15,11 @@ public class ESRecipeResponse {
 
 	private MealQuantity quantity;
 
-	private List<RecipeItem> includeIngredients;
+	private List<RecipeAddItem> includeIngredients;
 
-	private List<RecipeItem> excludeIngredients;
+	private List<RecipeAddItem> excludeIngredients;
 
-	private List<RecipeItem> ingredients;
+	private List<RecipeAddItem> ingredients;
 
 	private List<IngredientAddItem> nutrients;
 
@@ -97,27 +97,27 @@ public class ESRecipeResponse {
 		this.quantity = quantity;
 	}
 
-	public List<RecipeItem> getIncludeIngredients() {
+	public List<RecipeAddItem> getIncludeIngredients() {
 		return includeIngredients;
 	}
 
-	public void setIncludeIngredients(List<RecipeItem> includeIngredients) {
+	public void setIncludeIngredients(List<RecipeAddItem> includeIngredients) {
 		this.includeIngredients = includeIngredients;
 	}
 
-	public List<RecipeItem> getExcludeIngredients() {
+	public List<RecipeAddItem> getExcludeIngredients() {
 		return excludeIngredients;
 	}
 
-	public void setExcludeIngredients(List<RecipeItem> excludeIngredients) {
+	public void setExcludeIngredients(List<RecipeAddItem> excludeIngredients) {
 		this.excludeIngredients = excludeIngredients;
 	}
 
-	public List<RecipeItem> getIngredients() {
+	public List<RecipeAddItem> getIngredients() {
 		return ingredients;
 	}
 
-	public void setIngredients(List<RecipeItem> ingredients) {
+	public void setIngredients(List<RecipeAddItem> ingredients) {
 		this.ingredients = ingredients;
 	}
 
