@@ -265,20 +265,20 @@ public class AsyncService {
 				SMS sms = new SMS();
 				smsDetail.setUserName(userCollection.getFirstName());
 				sms.setSmsText(message
-						.replace("{mmount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
+						.replace("{amount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
 						.replace("{patientName}", userNutritionSubscriptionResponse.getTransactionStatus())
 						.replace("{PlanName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(userCollection.getMobileNumber());
 				sms.setSmsAddress(smsAddress);
-
 				smsDetail.setSms(sms);
 				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
 				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 				smsDetails.add(smsDetail);
 				smsTrackDetail.setSmsDetails(smsDetails);
 				sMSServices.sendSMS(smsTrackDetail, true);
+				System.out.println("sms sent");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -316,6 +316,8 @@ public class AsyncService {
 					"nutritionPaymentTemplate.vm");
 			mailService.sendEmail(userCollection.getEmailAddress(), "Healthcoco sent you Transaction Status", body,
 					null);
+			
+			System.out.println("mail sent");
 
 		} catch (Exception e) {
 			e.printStackTrace();
