@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,9 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
+	private static Logger logger = Logger.getLogger(ProcedureSheetServiceImpl.class.getName());
+
+	
 	@Autowired
 	private ProcedureSheetRepository procedureSheetRepository;
 
@@ -162,7 +166,8 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
+			logger.warn(e);
 		}
 		return response;
 	}
@@ -198,7 +203,8 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
+			logger.warn(e);
 		}
 		return response;
 	}
@@ -390,6 +396,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureSheetStructureResponse response = null;
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
 		List<Map<String, ProcedureConsentFormFields>> procedureSheetFields = null;
+		ProcedureConsentFormStructure procedureConsentFormStructure = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
 				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(id));
@@ -397,16 +404,30 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			if (procedureSheetStructureCollection != null) {
+				if (procedureSheetStructureCollection.getProcedureConsentFormStructure() != null) {
+					procedureConsentFormStructure = new ProcedureConsentFormStructure();
+					procedureConsentFormStructure.setHeaderFields(
+							procedureSheetStructureCollection.getProcedureConsentFormStructure().getHeaderFields());
+					procedureConsentFormStructure.setFooterFields(
+							procedureSheetStructureCollection.getProcedureConsentFormStructure().getFooterFields());
+					procedureConsentFormStructure
+							.setBody(procedureSheetStructureCollection.getProcedureConsentFormStructure().getBody());
+				}
 				response = new ProcedureSheetStructureResponse();
 				procedureSheetFields = procedureSheetStructureCollection.getProcedureSheetFields();
 				procedureSheetStructureCollection.setProcedureSheetFields(null);
+				procedureSheetStructureCollection.setProcedureConsentFormStructure(null);
 				BeanUtil.map(procedureSheetStructureCollection, response);
+				response.setDiagrams(procedureSheetStructureCollection.getDiagrams());
 				response.setProcedureSheetFields(procedureSheetFields);
+				response.setProcedureConsentFormStructure(procedureConsentFormStructure);
+
 
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			logger.warn(e);
 		}
 		return response;
 	}
