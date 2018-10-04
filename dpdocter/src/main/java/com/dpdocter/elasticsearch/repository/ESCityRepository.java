@@ -9,9 +9,9 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 
 public interface ESCityRepository extends ElasticsearchRepository<ESCityDocument, String> {
-    
+
 	@Query("{\"bool\": {\"must\": [{\"prefix\": {\"city\": \"?0\"}}]}}")
-    List<ESCityDocument> findByQueryAnnotation(String searchTerm, Pageable pageable);
+	List<ESCityDocument> findByQueryAnnotation(String searchTerm, Pageable pageable);
 
 //    @Query("city:?0* AND isActivated:true AND !geofilt sfield='geoLocation'  pt=?1,?2 d=10")
 //    List<ESCityDocument> findByQueryAnnotation(String searchTerm, double latitude, double longitude);
@@ -20,5 +20,8 @@ public interface ESCityRepository extends ElasticsearchRepository<ESCityDocument
 //    List<ESCityDocument> findByQueryAnnotation(double latitude, double longitude);
 //
 	@Query("{\"bool\": {\"must\": [{\"prefix\": {\"city\": \"?0\"}}]}}")
-    ESCityDocument findByName(String city);
+	ESCityDocument findByName(String city);
+
+	@Query("{\"bool\": {\"must\": [{\"termsQuery\": {\"isActivated\": \"?0\"}}}}")
+	public long count(Boolean isActivated);
 }

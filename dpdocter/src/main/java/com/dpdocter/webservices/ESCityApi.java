@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -59,9 +60,9 @@ public class ESCityApi {
 
 	@GET
 	@ApiOperation(value = "SEARCH_CITY", notes = "SEARCH_CITY")
-	public Response<City> searchCity(@QueryParam(value = "searchTerm") String searchTerm) {
-
-		List<City> searchResonse = esCityService.searchCity(searchTerm);
+	public Response<City> searchCity(@QueryParam(value = "searchTerm") String searchTerm,
+			@QueryParam(value = "isActivated") Boolean isActivated) {
+		List<City> searchResonse = esCityService.searchCity(searchTerm, isActivated);
 		Response<City> response = new Response<City>();
 		response.setDataList(searchResonse);
 		return response;
