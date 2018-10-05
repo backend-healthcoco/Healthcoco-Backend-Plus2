@@ -55,6 +55,7 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.ConsentFormItemJasperdetails;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FormContent;
@@ -3633,16 +3634,50 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		parameters.put("item", consentFormItemJasperdetails);
 
-		patientVisitService.generatePrintSetup(parameters, null, consentFormCollection.getDoctorId());
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				consentFormCollection.getDoctorId(), consentFormCollection.getLocationId(),
+				consentFormCollection.getHospitalId(), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+		patientVisitService.generatePrintSetup(parameters, printSettings, consentFormCollection.getDoctorId());
+		
 		String pdfName = (user != null ? user.getFirstName() : "") + "CONSENTFORM-" + consentFormCollection.getFormId()
 				+ new Date().getTime();
 
-		String layout = "PORTRAIT";
-		String pageSize = "A4";
-		Integer topMargin = 20;
-		Integer bottonMargin = 20;
-		Integer leftMargin = 20;
-		Integer rightMargin = 20;
+//		String layout = "PORTRAIT";
+//		String pageSize = "A4";
+//		Integer topMargin = 20;
+//		Integer bottonMargin = 20;
+//		Integer leftMargin = 20;
+//		Integer rightMargin = 20;
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null
+				? (printSettings.getPageSetup().getPageSize() != null ? printSettings.getPageSetup().getPageSize()
+						: "A4")
+				: "A4") : "A4";
+
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
 		response = jasperReportService.createPDF(ComponentType.CONSENT_FORM, parameters, consentFormA4FileName, layout,
 				pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
