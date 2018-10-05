@@ -37,8 +37,6 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
-import com.dpdocter.enums.FieldAlign;
-import com.dpdocter.enums.PageSize;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -49,8 +47,6 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.ConsentFormCollectionLookupResponse;
 import com.dpdocter.services.CertificatesServices;
 import com.dpdocter.services.FileManager;
-import com.dpdocter.services.JasperReportService;
-import com.dpdocter.services.PatientVisitService;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -74,11 +70,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
 	
-	@Autowired
-	private PatientVisitService patientVisitService;
-	
-	@Autowired
-	private JasperReportService jasperReportService;
+//	@Autowired
+//	private PatientVisitService patientVisitService;
+//	
+//	@Autowired
+//	private JasperReportService jasperReportService;
 	
 	@Value(value = "${jasper.print.patient.certificate.fileName}")
 	private String patientCertificateFileName;
@@ -118,11 +114,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 				certificateTemplateCollection.setCreatedTime(new Date());
 				if(DPDoctorUtils.anyStringEmpty(request.getDoctorId())) certificateTemplateCollection.setCreatedBy("ADMIN");
 				else {
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 					certificateTemplateCollection.setCreatedBy(userCollection.getTitle() +" "+userCollection.getFirstName());
 				}
 			}else {
-				CertificateTemplateCollection oldCertificateTemplateCollection = certificateTemplateRepository.findOne(new ObjectId(request.getId()));
+				CertificateTemplateCollection oldCertificateTemplateCollection = certificateTemplateRepository.findById(new ObjectId(request.getId())).orElse(null);
 				certificateTemplateCollection.setUpdatedTime(new Date());
 				certificateTemplateCollection.setCreatedBy(oldCertificateTemplateCollection.getCreatedBy());
 				certificateTemplateCollection.setCreatedTime(oldCertificateTemplateCollection.getCreatedTime());
@@ -156,7 +152,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	}
 
 	@Override
-	public List<CertificateTemplate> getCertificateTemplates(int page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities, String type) {
+	public List<CertificateTemplate> getCertificateTemplates(long page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities, String type) {
 		List<CertificateTemplate> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -192,7 +188,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	public Boolean discardCertificateTemplates(String templateId, Boolean discarded) {
 		Boolean response = false;
 		try {
-			CertificateTemplateCollection certificateTemplateCollection = certificateTemplateRepository.findOne(new ObjectId(templateId));
+			CertificateTemplateCollection certificateTemplateCollection = certificateTemplateRepository.findById(new ObjectId(templateId)).orElse(null);
 			if(certificateTemplateCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "No Certificate template is found with this Id");
 			}
@@ -219,11 +215,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 				consentFormCollection.setCreatedTime(new Date());
 				if(DPDoctorUtils.anyStringEmpty(request.getDoctorId())) consentFormCollection.setCreatedBy("ADMIN");
 				else {
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 					consentFormCollection.setCreatedBy(userCollection.getTitle() +" "+userCollection.getFirstName());
 				}
 			}else {
-				ConsentFormCollection oldConsentFormCollection = consentFormRepository.findOne(new ObjectId(request.getId()));
+				ConsentFormCollection oldConsentFormCollection = consentFormRepository.findById(new ObjectId(request.getId())).orElse(null);
 				consentFormCollection.setUpdatedTime(new Date());
 				consentFormCollection.setCreatedBy(oldConsentFormCollection.getCreatedBy());
 				consentFormCollection.setCreatedTime(oldConsentFormCollection.getCreatedTime());
@@ -285,7 +281,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	}
 
 	@Override
-	public List<ConsentForm> getPatientCertificates(int page, int size, String patientId, String doctorId,
+	public List<ConsentForm> getPatientCertificates(long page, int size, String patientId, String doctorId,
 			String locationId, String hospitalId, boolean discarded, String updatedTime, String type) {
 		List<ConsentForm> response = null;
 		try {
@@ -395,7 +391,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	public ConsentForm deletePatientCertificate(String certificateId, Boolean discarded) {
 		ConsentForm response = null;
 		try {
-			ConsentFormCollection consentFormCollection = consentFormRepository.findOne(new ObjectId(certificateId));
+			ConsentFormCollection consentFormCollection = consentFormRepository.findById(new ObjectId(certificateId)).orElse(null);
 			if(consentFormCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "No patient certificate is found with this Id");
 			}

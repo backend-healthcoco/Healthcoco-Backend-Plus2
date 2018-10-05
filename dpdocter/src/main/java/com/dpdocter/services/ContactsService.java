@@ -31,24 +31,24 @@ public interface ContactsService {
 	Boolean exportContacts(ExportContactsRequest request);
 
 	DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime,
-			boolean discarded, int page, int size, String role);
+			boolean discarded, long page, int size, String role);
 
 	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm);
+			String updatedTime, boolean discarded, String role, long page, int size, String searchTerm);
 
 	public Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId,
 			boolean discarded, String role, String searchTerm);
 
 	PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
-	List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
+	List<Group> getAllGroups(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded);
 
 	DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, int page, int size, String role);
+			String updatedTime, Boolean discarded, long page, int size, String role);
 
 	DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId, String locationId,
-			String hospitalId, int page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName,
+			String hospitalId, long page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName,
 			String role) throws Exception;
 
 	Boolean sendSMSToGroup(BulkSMSRequest request);

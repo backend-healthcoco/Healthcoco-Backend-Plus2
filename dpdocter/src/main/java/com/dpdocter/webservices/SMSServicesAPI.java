@@ -80,7 +80,7 @@ public class SMSServicesAPI {
     @Path(value = PathProxy.SMSUrls.GET_SMS_DETAILS)
     @GET
     @ApiOperation(value = PathProxy.SMSUrls.GET_SMS_DETAILS, notes = PathProxy.SMSUrls.GET_SMS_DETAILS)
-    public Response<SMSTrack> getSMSDetails(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "patientId") String patientId,
+    public Response<SMSTrack> getSMSDetails(@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "patientId") String patientId,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId) {
     	if(DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)){
@@ -101,7 +101,8 @@ public class SMSServicesAPI {
 	try {
 	    request = request.replaceFirst("data=", "");
 	    ObjectMapper mapper = new ObjectMapper();
-	    List<SMSDeliveryReports> list = mapper.readValue(request, TypeFactory.collectionType(List.class, SMSDeliveryReports.class));
+	    @SuppressWarnings("deprecation")
+		List<SMSDeliveryReports> list = mapper.readValue(request, TypeFactory.collectionType(List.class, SMSDeliveryReports.class));
 	    smsServices.updateDeliveryReports(list);
 	} catch (JsonParseException e) {
 	    logger.error(e);

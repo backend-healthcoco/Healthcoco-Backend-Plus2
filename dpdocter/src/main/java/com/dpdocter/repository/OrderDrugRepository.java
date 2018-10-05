@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.dpdocter.collections.OrderDrugCollection;
-import com.dpdocter.collections.SearchRequestToPharmacyCollection;
 
 @Repository
 public interface OrderDrugRepository extends MongoRepository<OrderDrugCollection, ObjectId> {

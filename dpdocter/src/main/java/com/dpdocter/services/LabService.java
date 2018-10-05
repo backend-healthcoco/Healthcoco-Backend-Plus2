@@ -11,6 +11,6 @@ public interface LabService {
 	List<Clinic> getLabWithReportCount(String doctorId, String locationId, String hospitalId);
 
 	List<Records> getReports(String doctorId, String locationId, String hospitalId, String prescribedByDoctorId,
-			String prescribedByLocationId, String prescribedByHospitalId, int size, int page);
+			String prescribedByLocationId, String prescribedByHospitalId, int size, long page);
 
 }

@@ -53,7 +53,7 @@ public interface RegistrationService {
 
 	Reference deleteReferrence(String referrenceId, Boolean discarded);
 
-	List<ReferenceDetail> getReferences(String range, int page, int size, String doctorId, String locationId,
+	List<ReferenceDetail> getReferences(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded);
 
 	PatientInitialAndCounter getPatientInitialAndCounter(String locationId);
@@ -74,7 +74,7 @@ public interface RegistrationService {
 
 	Profession addProfession(Profession request);
 
-	List<Profession> getProfession(int page, int size, String updatedTime);
+	List<Profession> getProfession(long page, int size, String updatedTime);
 
 	ClinicLogo changeClinicLogo(ClinicLogoAddRequest request);
 
@@ -90,14 +90,14 @@ public interface RegistrationService {
 
 	Role addRole(Role request);
 
-	List<Role> getRole(String range, int page, int size, String locationId, String hospitalId, String updatedTime,
+	List<Role> getRole(String range, long page, int size, String locationId, String hospitalId, String updatedTime,
 			String role);
 
 	void checkPatientCount(String mobileNumber);
 
 	ESDoctorDocument getESDoctorDocument(RegisterDoctorResponse doctorResponse);
 
-	List<ClinicDoctorResponse> getUsers(int page, int size, String locationId, String hospitalId, String updatedTime,
+	List<ClinicDoctorResponse> getUsers(long page, int size, String locationId, String hospitalId, String updatedTime,
 			String role, Boolean active, String userState);
 
 	Role deleteRole(String roleId, Boolean discarded);
@@ -114,7 +114,7 @@ public interface RegistrationService {
 
 	Feedback visibleFeedback(String feedbackId, Boolean isVisible);
 
-	List<Feedback> getFeedback(int page, int size, String doctorId, String locationId, String hospitalId,
+	List<Feedback> getFeedback(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, String type);
 
 	Boolean checkPatientNumber(String oldMobileNumber, String newMobileNumber);
@@ -133,7 +133,7 @@ public interface RegistrationService {
 
 	ConsentForm addConcentForm(FormDataBodyPart file, ConsentForm request);
 
-	List<ConsentForm> getConcentForm(int page, int size, String patientId, String doctorId, String locationId,
+	List<ConsentForm> getConcentForm(long page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId, String PID, String searchTerm, boolean discarded, long updatedTime);
 
 	ConsentForm deleteConcentForm(String consentFormId, boolean discarded);
@@ -147,7 +147,7 @@ public interface RegistrationService {
 
 	public FormContent addeditFromContent(FormContent request);
 
-	public List<FormContent> getFormContents(int page, int size, String doctorId, String locationId, String hospitalId,
+	public List<FormContent> getFormContents(long page, int size, String doctorId, String locationId, String hospitalId,
 			String type, String title, String updatedTime, boolean discarded);
 
 	public FormContent deleteFormContent(String contentId, Boolean discarded);

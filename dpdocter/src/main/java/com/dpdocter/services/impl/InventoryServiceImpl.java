@@ -44,7 +44,6 @@ import com.dpdocter.request.InventorySettingRequest;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 import com.dpdocter.services.InventoryService;
-import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
@@ -84,8 +83,8 @@ public class InventoryServiceImpl implements InventoryService {
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 	
-	@Autowired
-	private PrescriptionServices prescriptionServices;
+//	@Autowired
+//	private PrescriptionServices prescriptionServices;
 
 	@Override
 	@Transactional
@@ -116,7 +115,6 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 			
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("Error while adding inventory item");
 			e.printStackTrace();
 
@@ -141,7 +139,6 @@ public class InventoryServiceImpl implements InventoryService {
 				BeanUtil.map(manufacturerCollection, response);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("Error while adding inventory item");
 			e.printStackTrace();
 
@@ -157,7 +154,7 @@ public class InventoryServiceImpl implements InventoryService {
 		List<InventoryBatch> inventoryBatchs = null;
 		Aggregation aggregation = null;
 		try {
-			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findOne(new ObjectId(id));
+			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findById(new ObjectId(id)).orElse(null);
 			if (inventoryItemCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -193,7 +190,7 @@ public class InventoryServiceImpl implements InventoryService {
 	@Override
 	@Transactional
 	public List<InventoryItemLookupResposne> getInventoryItemList(String locationId, String hospitalId, String type,
-			String searchTerm, int page, int size) {
+			String searchTerm, long page, int size) {
 		List<InventoryItemLookupResposne> response = null;
 		List<InventoryBatch> inventoryBatchs = null;
 		try {
@@ -296,7 +293,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	@Transactional
-	public List<Manufacturer> getManufacturerList(String locationId, String hospitalId, String searchTerm, int page,
+	public List<Manufacturer> getManufacturerList(String locationId, String hospitalId, String searchTerm, long page,
 			int size) {
 		List<Manufacturer> response = null;
 		try {
@@ -342,7 +339,7 @@ public class InventoryServiceImpl implements InventoryService {
 					if (inventoryStock.getInventoryBatch().getId() != null) {
 
 						inventoryBatchCollection = inventoryBatchRepository
-								.findOne(new ObjectId(inventoryStock.getInventoryBatch().getId()));
+								.findById(new ObjectId(inventoryStock.getInventoryBatch().getId())).orElse(null);
 						inventoryBatchCollection
 								.setNoOfItems(inventoryBatchCollection.getNoOfItems() + inventoryStock.getQuantity());
 						inventoryBatchCollection.setNoOfItemsLeft(
@@ -393,7 +390,7 @@ public class InventoryServiceImpl implements InventoryService {
 				}
 
 				inventoryBatchCollection = inventoryBatchRepository
-						.findOne(new ObjectId(inventoryStock.getInventoryBatch().getId()));
+						.findById(new ObjectId(inventoryStock.getInventoryBatch().getId())).orElse(null);
 				inventoryBatchCollection.setNoOfItems(inventoryBatchCollection.getNoOfItems());
 				inventoryBatchCollection
 						.setNoOfItemsLeft(inventoryBatchCollection.getNoOfItemsLeft() - inventoryStock.getQuantity());
@@ -402,7 +399,7 @@ public class InventoryServiceImpl implements InventoryService {
 			inventoryStock.setBatchId(inventoryBatchCollection.getId().toString());
 			BeanUtil.map(inventoryStock, inventoryStockCollection);
 			if (inventoryStockCollection.getItemId() != null) {
-				inventoryItemCollection = inventoryItemRepository.findOne(inventoryStockCollection.getItemId());
+				inventoryItemCollection = inventoryItemRepository.findById(inventoryStockCollection.getItemId()).orElse(null);
 				if (inventoryItemCollection != null) {
 				inventoryStockCollection.setResourceId(inventoryItemCollection.getResourceId());
 				}
@@ -414,7 +411,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 			if (inventoryStockCollection.getItemId() != null) {
 				inventoryItemCollection = inventoryItemRepository
-						.findOne(inventoryStockCollection.getItemId());
+						.findById(inventoryStockCollection.getItemId()).orElse(null);
 
 				if (inventoryItemCollection != null) {
 					List<DrugCollection> drugCollections = drugRepository.findByDrugCodeLocationIdHospitalId(
@@ -438,7 +435,6 @@ public class InventoryServiceImpl implements InventoryService {
 
 			
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("Error while creating stock");
 			e.printStackTrace();
 		}
@@ -449,7 +445,7 @@ public class InventoryServiceImpl implements InventoryService {
 	@Override
 	@Transactional
 	public List<InventoryStockLookupResponse> getInventoryStockList(String locationId, String hospitalId, String itemId,
-			String stockType, String searchTerm, int page, int size) {
+			String stockType, String searchTerm, long page, int size) {
 		List<InventoryStockLookupResponse> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -551,7 +547,6 @@ public class InventoryServiceImpl implements InventoryService {
 			response = new InventoryBatch();
 			BeanUtil.map(inventoryBatchCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("error while adding batch");
 			e.printStackTrace();
 		}
@@ -561,7 +556,7 @@ public class InventoryServiceImpl implements InventoryService {
 	@Override
 	@Transactional
 	public List<InventoryBatch> getInventoryBatchList(String locationId, String hospitalId, String itemId,
-			String searchTerm, int page, int size) {
+			String searchTerm, long page, int size) {
 		List<InventoryBatch> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -602,7 +597,7 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryItem response = null;
 
 		try {
-			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findOne(new ObjectId(id));
+			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findById(new ObjectId(id)).orElse(null);
 			if (inventoryItemCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
@@ -612,7 +607,6 @@ public class InventoryServiceImpl implements InventoryService {
 			response = new InventoryItem();
 			BeanUtil.map(inventoryItemCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("Error while discarding inventory item");
 			e.printStackTrace();
 		}
@@ -626,7 +620,7 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryBatch response = null;
 
 		try {
-			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
+			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findById(new ObjectId(id)).orElse(null);
 			if (inventoryBatchCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
@@ -636,7 +630,6 @@ public class InventoryServiceImpl implements InventoryService {
 			response = new InventoryBatch();
 			BeanUtil.map(inventoryBatchCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("Error while discarding inventory batch");
 			e.printStackTrace();
 		}
@@ -650,7 +643,7 @@ public class InventoryServiceImpl implements InventoryService {
 		InventoryStock response = null;
 
 		try {
-			InventoryStockCollection inventoryStockCollection = inventoryStockRepository.findOne(new ObjectId(id));
+			InventoryStockCollection inventoryStockCollection = inventoryStockRepository.findById(new ObjectId(id)).orElse(null);
 			if (inventoryStockCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No record found");
 			}
@@ -660,7 +653,6 @@ public class InventoryServiceImpl implements InventoryService {
 			response = new InventoryStock();
 			BeanUtil.map(inventoryStockCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("Error while discarding inventory stock");
 			e.printStackTrace();
 		}
@@ -714,7 +706,6 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("Error while getting inventory setting");
 			e.printStackTrace();
 		}
@@ -729,7 +720,7 @@ public class InventoryServiceImpl implements InventoryService {
 		InventorySettingsCollection inventorySettingsCollection = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(id)) {
-				inventorySettingsCollection = inventorySettingRepository.findOne(new ObjectId(id));
+				inventorySettingsCollection = inventorySettingRepository.findById(new ObjectId(id)).orElse(null);
 			} else {
 				inventorySettingsCollection = inventorySettingRepository.findByDoctorIdPatientIdHospitalId(
 						new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
@@ -746,7 +737,6 @@ public class InventoryServiceImpl implements InventoryService {
 				response.setShowInventoryCount(false);
 			} 
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn("Error while getting inventory setting");
 			e.printStackTrace();
 		}
@@ -767,7 +757,6 @@ public class InventoryServiceImpl implements InventoryService {
 				inventoryBatchs = getInventoryBatchList(locationId, hospitalId, inventoryItem.getId(), null, 0, 0);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
 		return inventoryBatchs;
 	}
@@ -821,7 +810,7 @@ public class InventoryServiceImpl implements InventoryService {
 	public InventoryBatch getInventoryBatchById(String id) {
 		InventoryBatch inventoryBatch = null;
 		try {
-			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(id));
+			InventoryBatchCollection inventoryBatchCollection = inventoryBatchRepository.findById(new ObjectId(id)).orElse(null);
 			if (inventoryBatchCollection != null) {
 				inventoryBatch = new InventoryBatch();
 				BeanUtil.map(inventoryBatchCollection, inventoryBatch);
@@ -840,7 +829,7 @@ public class InventoryServiceImpl implements InventoryService {
 		try {
 			ObjectId doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
-			/*DrugCollection originalDrug = drugRepository.findOne(drugObjectId);
+			/*DrugCollection originalDrug = drugRepository.findById(drugObjectId);
 			 * drugCollection = drugRepository.findByDrugCode(drugCode);
 			if (originalDrug == null) {
 				logger.error("Invalid drug Id");

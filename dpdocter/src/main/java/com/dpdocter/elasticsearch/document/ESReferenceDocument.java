@@ -13,19 +13,19 @@ public class ESReferenceDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.text)
     private String reference;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.text)
     private String explanation;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.text)
     private String doctorId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.text)
     private String locationId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.text)
     private String hospitalId;
 
     @Field(type = FieldType.Boolean)

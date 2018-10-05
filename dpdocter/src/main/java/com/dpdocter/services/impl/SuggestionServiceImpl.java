@@ -39,7 +39,7 @@ public class SuggestionServiceImpl implements SuggestionService {
 	private MongoTemplate mongoTemplate;
 
 	@Override
-	public List<Suggestion> getSuggestion(int page, int size, String userId, String suggetionType, String state,
+	public List<Suggestion> getSuggestion(long page, int size, String userId, String suggetionType, String state,
 			String searchTerm) {
 		List<Suggestion> response = null;
 		Aggregation aggregation = null;
@@ -82,7 +82,7 @@ public class SuggestionServiceImpl implements SuggestionService {
 	public Suggestion AddEditSuggestion(Suggestion request) {
 		Suggestion response = null;
 		try {
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getUserId())).orElse(null);
 			if (userCollection != null) {
 				SuggestionCollection suggestionCollection = new SuggestionCollection();
 				if (DPDoctorUtils.anyStringEmpty(request.getId()))

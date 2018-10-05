@@ -9,10 +9,10 @@ public interface DoctorContactUsService {
 
 	public String submitDoctorContactUSInfo(DoctorContactUs doctorContactUs);
 
-	//public List<DoctorContactUs> getDoctorContactList(int page, int size);
+	//public List<DoctorContactUs> getDoctorContactList(long page, int size);
 
 	public DoctorContactUs updateDoctorContactState(String contactId, DoctorContactStateType contactState);
 
-	public List<DoctorContactUs> getDoctorContactList(int page, int size, String searchTerm);
+	public List<DoctorContactUs> getDoctorContactList(long page, int size, String searchTerm);
 	
 }

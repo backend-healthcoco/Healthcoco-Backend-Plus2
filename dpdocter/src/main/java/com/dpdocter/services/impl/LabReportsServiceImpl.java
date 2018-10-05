@@ -23,8 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,13 +37,11 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.LabReportsCollection;
-import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.SMSStatus;
@@ -67,7 +63,6 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LabReportsService;
 import com.dpdocter.services.LocationServices;
-import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -96,8 +91,8 @@ public class LabReportsServiceImpl implements LabReportsService {
 	@Autowired
 	LocationRepository locationRepository;
 
-	@Autowired
-	private PatientVisitService patientVisitService;
+//	@Autowired
+//	private PatientVisitService patientVisitService;
 
 	@Autowired
 	private JasperReportService jasperReportService;
@@ -158,7 +153,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 			BeanUtil.map(labReportsCollection, response);
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
@@ -210,7 +204,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			}
 
 			LabTestSampleCollection labTestSampleCollection = labTestSampleRepository
-					.findOne(new ObjectId(request.getLabTestSampleId()));
+					.findById(new ObjectId(request.getLabTestSampleId())).orElse(null);
 			if (labTestSampleCollection != null) {
 				if (labTestSampleCollection.getIsCompleted() == true
 						&& !DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getParentLabLocationId())
@@ -222,9 +216,9 @@ public class LabReportsServiceImpl implements LabReportsService {
 				labTestSampleCollection.setStatus("REPORTS UPLOADED");
 				labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 				LocationCollection daughterlocationCollection = locationRepository
-						.findOne(labTestSampleCollection.getDaughterLabLocationId());
+						.findById(labTestSampleCollection.getDaughterLabLocationId()).orElse(null);
 				LocationCollection parentLocationCollection = locationRepository
-						.findOne(labTestSampleCollection.getParentLabLocationId());
+						.findById(labTestSampleCollection.getParentLabLocationId()).orElse(null);
 				String message = labReportUploadMessage;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setType("LAB REPORT UPLOAD");
@@ -248,7 +242,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 				smsServices.sendSMS(smsTrackDetail, true);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
@@ -268,7 +261,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 
-			LocationCollection location = locationRepository.findOne(locationObjectId);
+			LocationCollection location = locationRepository.findById(locationObjectId).orElse(null);
 			if (location == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
 			}
@@ -331,16 +324,16 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 			if (labReportsCollection != null) {
 
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 
 				if (request.getMobileNumber() != null) {
 					LocationCollection daughterlocationCollection = locationRepository
-							.findOne(labReportsCollection.getLocationId());
+							.findById(labReportsCollection.getLocationId()).orElse(null);
 					LocationCollection parentLocationCollection = locationRepository
-							.findOne(labReportsCollection.getUploadedByLocationId());
+							.findById(labReportsCollection.getUploadedByLocationId()).orElse(null);
 					String message = labReportUploadMessage;
 
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 					smsTrackDetail.setType("LAB REPORT UPLOAD");
@@ -364,7 +357,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -372,7 +364,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 	@Override
 	@Transactional
-	public List<LabReports> getLabReports(String labTestSampleId, String searchTerm, int page, int size) {
+	public List<LabReports> getLabReports(String labTestSampleId, String searchTerm, long page, int size) {
 		List<LabReports> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -405,7 +397,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 	@Override
 	@Transactional
 	public List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String locationId, String hospitalId,
-			String patientId, String searchTerm, int page, int size) {
+			String patientId, String searchTerm, long page, int size) {
 		List<LabReportsResponse> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -442,7 +434,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 	@Override
 	@Transactional
 	public List<LabReportsResponse> getLabReportsForLab(String doctorId, String locationId, String hospitalId,
-			String patientId, String searchTerm, int page, int size) {
+			String patientId, String searchTerm, long page, int size) {
 		List<LabReportsResponse> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -500,7 +492,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 			labReports = new LabReports();
 			BeanUtil.map(labReportsCollection, labReports);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
@@ -514,7 +505,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 	public LabReportsResponse changePatientShareStatus(String id, Boolean status) {
 		LabReportsResponse labReportsResponse = null;
 		try {
-			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(id));
+			LabReportsCollection labReportsCollection = labReportsRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -602,7 +593,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDoctorId())) {
-				userCollection = userRepository.findOne(new ObjectId(labTestPickupLookupResponse.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(labTestPickupLookupResponse.getDoctorId())).orElse(null);
 				if (userCollection != null)
 					labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 				else

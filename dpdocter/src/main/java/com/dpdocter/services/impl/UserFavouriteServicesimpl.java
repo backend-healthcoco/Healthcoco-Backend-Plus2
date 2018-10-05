@@ -95,7 +95,7 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 	}
 
 	@Override
-	public List<ESDoctorDocument> getFavouriteDoctors(int page, int size, String userId) {
+	public List<ESDoctorDocument> getFavouriteDoctors(long page, int size, String userId) {
 		List<ESDoctorDocument> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -186,7 +186,7 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 	}
 
 	@Override
-	public List<ESUserLocaleDocument> getFavouritePharmacies(int page, int size, String userId) {
+	public List<ESUserLocaleDocument> getFavouritePharmacies(long page, int size, String userId) {
 		List<ESUserLocaleDocument> response = null;
 		try {
 			Aggregation aggregation = null;
@@ -230,7 +230,7 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 	}
 
 	@Override
-	public List<LabResponse> getFavouriteLabs(int page, int size, String userId) {
+	public List<LabResponse> getFavouriteLabs(long page, int size, String userId) {
 		List<LabResponse> response = null;
 		try {
 			Aggregation aggregation = null;

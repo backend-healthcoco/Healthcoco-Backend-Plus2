@@ -75,7 +75,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			}
 			for (UserRoleCollection userRoleCollection : userRoleList) {
 				// create SuperAdmin role
-				roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
+				roleCollection = roleRepository.findById(userRoleCollection.getRoleId()).orElse(null);
 				//superAdminRole = new RoleCollection();
 				//superAdminRole.setCreatedTime(new Date());
 				//superAdminRole.setRole(RoleEnum.SUPER_ADMIN.toString());

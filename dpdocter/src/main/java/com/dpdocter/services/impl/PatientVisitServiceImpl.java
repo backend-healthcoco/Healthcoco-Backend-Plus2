@@ -263,14 +263,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			ObjectId id = patientVisitCollection.getId();
 
 			if (visitId != null)
-				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+				patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			else
 				patientVisitCollection.setId(null);
 
 			if (patientVisitCollection.getId() == null) {
 				patientVisitCollection
 						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
-				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(patientVisitCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					patientVisitCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -365,7 +365,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			PatientVisitCollection patientTrackCollection = patientVisitRepository.find(doctorObjectId,
 					locationObjectId, hospitalObjectId, patientObjectId);
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 
 			if (patientTrackCollection == null) {
 				patientTrackCollection = new PatientVisitCollection();
@@ -405,7 +405,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page,
+	public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, long page,
 			int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
@@ -572,7 +572,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size,
+	public DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, long page, int size,
 			String role) {
 		DoctorContactsResponse response = null;
 		try {
@@ -746,7 +746,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		try {
 
 			if (!DPDoctorUtils.anyStringEmpty(visitId)) {
-				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+				patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 				patientVisitCollection.setUpdatedTime(new Date());
 				if (request.getCreatedTime() != null) {
 					patientVisitCollection.setCreatedTime(request.getCreatedTime());
@@ -782,7 +782,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				patientVisitCollection
 						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
-				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(patientVisitCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					patientVisitCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1002,7 +1002,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	// @Transactional
 	// public List<PatientVisitResponse> getVisit(String doctorId, String
 	// locationId, String hospitalId, String patientId,
-	// int page, int size, Boolean isOTPVerified, String updatedTime, String
+	// long page, int size, Boolean isOTPVerified, String updatedTime, String
 	// visitFor) {
 	// List<PatientVisitResponse> response = null;
 	// List<PatientVisitLookupBean> patientVisitlookupbeans = null;
@@ -1146,7 +1146,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor) {
+			long page, int size, Boolean isOTPVerified, String updatedTime, String visitFor) {
 		List<PatientVisitResponse> response = null;
 		List<PatientVisitLookupBean> patientVisitlookupbeans = null;
 		try {
@@ -1970,7 +1970,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		if (!showUSG && !isLabPrint) {
 			if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
 				EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository
-						.findOne(patientVisitLookupResponse.getEyePrescriptionId());
+						.findById(patientVisitLookupResponse.getEyePrescriptionId()).orElse(null);
 				EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
 				if (eyePrescriptionCollection.getLeftEyeTest() != null) {
 
@@ -2151,7 +2151,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
 		try {
 			Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
-			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			patientTreatmentCollection = patientTreamentRepository.findById(new ObjectId(treatmentId)).orElse(null);
 			if (patientTreatmentCollection != null) {
 				if (patientTreatmentCollection.getDoctorId() != null
 						&& patientTreatmentCollection.getHospitalId() != null
@@ -2164,7 +2164,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 							PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
 							TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-									.findOne(treatment.getTreatmentServiceId());
+									.findById(treatment.getTreatmentServiceId()).orElse(null);
 							patientTreatments.setNo(++no);
 							if (!DPDoctorUtils.anyStringEmpty(treatment.getStatus())) {
 								String status = treatment.getStatus().replaceAll("_", " ");
@@ -2309,7 +2309,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@SuppressWarnings("unchecked")
 	private String getDiseases(List<ObjectId> medicalhistory) {
 		List<DiseasesCollection> diseasesCollections = IteratorUtils
-				.toList(diseasesRepository.findAll(medicalhistory).iterator());
+				.toList(diseasesRepository.findAllById(medicalhistory).iterator());
 		Collection<String> diseases = CollectionUtils.collect(diseasesCollections,
 				new BeanToPropertyValueTransformer("disease"));
 		if (diseases != null && !diseases.isEmpty())
@@ -2413,7 +2413,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()
 					&& !DPDoctorUtils.anyStringEmpty(doctorId)) {
-				UserCollection doctorUser = userRepository.findOne(doctorId);
+				UserCollection doctorUser = userRepository.findById(doctorId).orElse(null);
 				if (doctorUser != null)
 					footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
 			}
@@ -2542,7 +2542,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
 			}
 			if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
-				ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
+				ReferencesCollection referencesCollection = referenceRepository.findById(patientCard.getReferredBy()).orElse(null);
 				if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
 					patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
 
@@ -2599,7 +2599,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		Boolean showTitle = false;
 		try {
 			if (clinicalNotesCollection == null)
-				clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
+				clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(clinicalNotesId)).orElse(null);
 			if (clinicalNotesCollection != null) {
 				if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
 						&& clinicalNotesCollection.getLocationId() != null) {
@@ -2822,7 +2822,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (clinicalNotesCollection.getDiagrams() != null)
 						for (ObjectId diagramId : clinicalNotesCollection.getDiagrams()) {
 							DBObject diagram = new BasicDBObject();
-							DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
+							DiagramsCollection diagramsCollection = diagramsRepository.findById(diagramId).orElse(null);
 							if (diagramsCollection != null) {
 								if (diagramsCollection.getDiagramUrl() != null) {
 									diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
@@ -2873,7 +2873,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PrescriptionCollection prescriptionCollection = null;
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		try {
-			prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
+			prescriptionCollection = prescriptionRepository.findById(new ObjectId(prescriptionId)).orElse(null);
 			if (prescriptionCollection != null) {
 				prescriptionItemsObj.put("resourceId",
 						"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
@@ -2884,7 +2884,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					String labTest = "";
 					for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-								.findOne(tests.getTestId());
+								.findById(tests.getTestId()).orElse(null);
 						if (diagnosticTestCollection != null) {
 							if (DPDoctorUtils.anyStringEmpty(labTest))
 								labTest = diagnosticTestCollection.getTestName();
@@ -2904,7 +2904,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (prescriptionCollection.getItems() != null)
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-								DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+								DrugCollection drug = drugRepository.findById(prescriptionItem.getDrugId()).orElse(null);
 								if (drug != null) {
 									String drugType = drug.getDrugType() != null
 											? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() : "")
@@ -3076,11 +3076,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			List<Records> records = new ArrayList<Records>();
 			List<PatientTreatment> patientTreatments = new ArrayList<PatientTreatment>();
 
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			patientVisitCollection.setUpdatedTime(new Date());
 			patientVisitCollection.setDiscarded(discarded);
 			patientVisitRepository.save(patientVisitCollection);
-			// doctorPatientReceiptRepository.findOne(new ObjectId(receiptId));
+			// doctorPatientReceiptRepository.findById(new ObjectId(receiptId));
 
 			// discard treatment
 			if (patientVisitCollection.getTreatmentId() != null)
@@ -3122,7 +3122,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (patientVisitCollection.getEyePrescriptionId() != null) {
 				eyePrescriptionCollection = eyePrescriptionRepository
-						.findOne(patientVisitCollection.getEyePrescriptionId());
+						.findById(patientVisitCollection.getEyePrescriptionId()).orElse(null);
 				eyePrescriptionCollection.setDiscarded(discarded);
 
 				eyePrescriptionRepository.save(eyePrescriptionCollection);
@@ -3155,7 +3155,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			String mobileNumber) {
 		Boolean response = false;
 		try {
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			if (patientVisitCollection != null) {
 				if (doctorId != null && hospitalId != null && locationId != null) {
 					if (patientVisitCollection.getPrescriptionId() != null) {
@@ -3199,7 +3199,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PatientVisitResponse response = null;
 		try {
 			Appointment appointment = null;
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			if (patientVisitCollection != null) {
 				List<Prescription> prescriptions = new ArrayList<Prescription>();
 				List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
@@ -3272,7 +3272,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime) {
+			long page, int size, Boolean isOTPVerified, String updatedTime) {
 		List<PatientVisit> response = null;
 		try {
 			List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
@@ -3463,7 +3463,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	public void updateAppointmentTime(ObjectId visitId, String appointmentId, WorkingHours workingHours,
 			Date fromDate) {
 		try {
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findById(visitId).orElse(null);
 			patientVisitCollection.setAppointmentId(appointmentId);
 			patientVisitCollection.setFromDate(fromDate);
 			patientVisitCollection.setTime(workingHours);
@@ -3473,7 +3473,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (patientVisitCollection.getClinicalNotesId() != null
 					&& !patientVisitCollection.getClinicalNotesId().isEmpty()) {
 				for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
-					ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
+					ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findById(clinicalNotesId).orElse(null);
 					clinicalNotesCollection.setAppointmentId(appointmentId);
 					clinicalNotesCollection.setFromDate(fromDate);
 					clinicalNotesCollection.setTime(workingHours);
@@ -3484,7 +3484,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (patientVisitCollection.getPrescriptionId() != null
 					&& !patientVisitCollection.getPrescriptionId().isEmpty()) {
 				for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
-					PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+					PrescriptionCollection prescriptionCollection = prescriptionRepository.findById(prescriptionId).orElse(null);
 					prescriptionCollection.setAppointmentId(appointmentId);
 					prescriptionCollection.setFromDate(fromDate);
 					prescriptionCollection.setTime(workingHours);
@@ -3495,7 +3495,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (patientVisitCollection.getTreatmentId() != null && !patientVisitCollection.getTreatmentId().isEmpty()) {
 				for (ObjectId treatmentId : patientVisitCollection.getTreatmentId()) {
 					PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
-							.findOne(treatmentId);
+							.findById(treatmentId).orElse(null);
 					patientTreatmentCollection.setAppointmentId(appointmentId);
 					patientTreatmentCollection.setFromDate(fromDate);
 					patientTreatmentCollection.setTime(workingHours);

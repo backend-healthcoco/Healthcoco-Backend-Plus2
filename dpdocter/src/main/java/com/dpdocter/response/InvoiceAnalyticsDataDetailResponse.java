@@ -2,9 +2,6 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
-import com.dpdocter.beans.Discount;
-import com.dpdocter.beans.Tax;
-
 public class InvoiceAnalyticsDataDetailResponse {
 
 	private Date date;

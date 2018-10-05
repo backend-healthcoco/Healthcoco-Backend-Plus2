@@ -47,7 +47,6 @@ import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
-import com.dpdocter.elasticsearch.repository.ESOralCavityThroatExaminationRepository;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -76,7 +75,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_COMPLAINTS)
 	public Response<ESComplaintsDocument> searchComplaints(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -95,7 +94,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGNOSES)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGNOSES, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGNOSES)
-	public Response<ESDiagnosesDocument> searchDiagnoses(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESDiagnosesDocument> searchDiagnoses(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -115,7 +114,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NOTES)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NOTES, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_NOTES)
-	public Response<ESNotesDocument> searchNotes(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESNotesDocument> searchNotes(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -135,7 +134,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_DIAGRAMS)
-	public Response<ESDiagramsDocument> searchDiagrams(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESDiagramsDocument> searchDiagrams(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -176,7 +175,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INVESTIGATIONS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_INVESTIGATIONS)
 	public Response<ESInvestigationsDocument> searchInvestigations(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -196,7 +195,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSERVATIONS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSERVATIONS)
 	public Response<ESObservationsDocument> searchObservations(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -232,7 +231,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT)
 	public Response<ESPresentComplaintDocument> searchPresentComplaint(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -252,7 +251,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT_HISTORY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT_HISTORY)
 	public Response<ESPresentComplaintHistoryDocument> searchPresentComplaintHistory(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -273,7 +272,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PROVISIONAL_DIAGNOSIS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PROVISIONAL_DIAGNOSIS)
 	public Response<ESProvisionalDiagnosisDocument> searchProvisionalDiagnosis(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -293,7 +292,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_GENERAL_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_GENERAL_EXAM)
 	public Response<ESGeneralExamDocument> searchGeneralExam(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -313,7 +312,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_SYSTEM_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_SYSTEM_EXAM)
 	public Response<ESSystemExamDocument> searchSystemExam(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -333,7 +332,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_MENSTRUAL_HISTORY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_MENSTRUAL_HISTORY)
 	public Response<ESMenstrualHistoryDocument> searchMenstrualHistory(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -353,7 +352,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSTETRIC_HISTORY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSTETRIC_HISTORY)
 	public Response<ESObstetricHistoryDocument> searchObstetricHistory(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -373,7 +372,7 @@ public class ESClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INDICATION_OF_USG, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_INDICATION_OF_USG)
 	public Response<ESIndicationOfUSGDocument> searchIndicationOfUSG(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -392,7 +391,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PA)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PA, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PA)
-	public Response<ESPADocument> searchPA(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESPADocument> searchPA(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -412,7 +411,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PV)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PV, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PV)
-	public Response<ESPVDocument> searchPV(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESPVDocument> searchPV(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -432,7 +431,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PS)
-	public Response<ESPSDocument> searchPS(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESPSDocument> searchPS(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -452,7 +451,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_X_RAY_DETAILS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_X_RAY_DETAILS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_X_RAY_DETAILS)
-	public Response<ESXRayDetailsDocument> searchXRayDetails(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESXRayDetailsDocument> searchXRayDetails(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -471,7 +470,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_ECG_DETAILS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_ECG_DETAILS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_ECG_DETAILS)
-	public Response<ESECGDetailsDocument> searchECGDetails(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESECGDetailsDocument> searchECGDetails(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -490,7 +489,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_ECHO)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_ECHO, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_ECHO)
-	public Response<ESEchoDocument> searchEcho(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESEchoDocument> searchEcho(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -509,7 +508,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_HOLTER)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_HOLTER, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_HOLTER)
-	public Response<ESHolterDocument> searchHolter(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESHolterDocument> searchHolter(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -528,7 +527,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PROCEDURE_NOTE)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PROCEDURE_NOTE, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PROCEDURE_NOTE)
-	public Response<ESProcedureNoteDocument> searchProcedureNote(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESProcedureNoteDocument> searchProcedureNote(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -547,7 +546,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_NOSE)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_NOSE, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_NOSE)
-	public Response<ESPresentingComplaintNoseDocument> searchPCNose(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESPresentingComplaintNoseDocument> searchPCNose(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -566,7 +565,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_EARS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_EARS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_EARS)
-	public Response<ESPresentingComplaintEarsDocument> searchPCEars(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESPresentingComplaintEarsDocument> searchPCEars(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -585,7 +584,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_THROAT)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_THROAT, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_THROAT)
-	public Response<ESPresentingComplaintThroatDocument> searchPCThroat(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESPresentingComplaintThroatDocument> searchPCThroat(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -604,7 +603,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_ORAL_CAVITY)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_ORAL_CAVITY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_ORAL_CAVITY)
-	public Response<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -623,7 +622,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NOSE_EXAM)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NOSE_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_NOSE_EXAM)
-	public Response<ESNoseExaminationDocument> searchNoseExam(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESNoseExaminationDocument> searchNoseExam(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -642,7 +641,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NECK_EXAM)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NECK_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_NECK_EXAM)
-	public Response<ESNeckExaminationDocument> searchNeckExam(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESNeckExaminationDocument> searchNeckExam(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -661,7 +660,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_EARS_EXAM)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_EARS_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_EARS_EXAM)
-	public Response<ESEarsExaminationDocument> searchEarsExam(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESEarsExaminationDocument> searchEarsExam(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -681,7 +680,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_ORAL_CAVITY_THROAT_EXAM)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_ORAL_CAVITY_THROAT_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_ORAL_CAVITY_THROAT_EXAM)
-	public Response<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -700,7 +699,7 @@ public class ESClinicalNotesApi {
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INDIRECT_LARYGOSCOPY_EXAM)
 	@GET
 	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INDIRECT_LARYGOSCOPY_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_INDIRECT_LARYGOSCOPY_EXAM)
-	public Response<ESIndirectLarygoscopyExaminationDocument> searchIndirectLarygoscopyExam(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESIndirectLarygoscopyExaminationDocument> searchIndirectLarygoscopyExam(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,

@@ -140,7 +140,7 @@ public class DoctorLabApi {
 	@Path(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORTS, notes = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORTS)
-	public Response<DoctorLabReportResponse> getDoctorLabReports(@QueryParam("page") int page,
+	public Response<DoctorLabReportResponse> getDoctorLabReports(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("patientId") String patientId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("searchTerm") String searchTerm,
@@ -178,7 +178,7 @@ public class DoctorLabApi {
 	@Path(value = PathProxy.DoctorLabUrls.GET_FAVOURITE_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorLabUrls.GET_FAVOURITE_DOCTOR, notes = PathProxy.DoctorLabUrls.GET_FAVOURITE_DOCTOR)
-	public Response<DoctorLabFavouriteDoctorResponse> getFavouriteDoctors(@QueryParam("page") int page,
+	public Response<DoctorLabFavouriteDoctorResponse> getFavouriteDoctors(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("city") String city) {

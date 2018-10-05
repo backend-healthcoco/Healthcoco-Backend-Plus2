@@ -110,7 +110,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		AdmitCardResponse response = null;
 		try {
 			Patient patientdetail = new Patient();
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid DoctorId");
 			}
@@ -149,7 +149,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				dischargeSummaryRequest.setGeneralExam(request.getExamination());
 				dischargeSummaryService.addEditDischargeSummary(dischargeSummaryRequest);
 			} else {
-				AdmitCardCollection oldAdmitCardCollection = admitCardRepository.findOne(admitCardCollection.getId());
+				AdmitCardCollection oldAdmitCardCollection = admitCardRepository.findById(admitCardCollection.getId()).orElse(null);
 				admitCardCollection.setAdminCreatedTime(oldAdmitCardCollection.getAdminCreatedTime());
 				if (request.getCreatedTime() == null) {
 					admitCardCollection.setCreatedTime(oldAdmitCardCollection.getCreatedTime());
@@ -175,7 +175,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 	public AdmitCardResponse getAdmitCard(String cardId) {
 		AdmitCardResponse response = null;
 		try {
-			AdmitCardCollection admitCardCollection = admitCardRepository.findOne(new ObjectId(cardId));
+			AdmitCardCollection admitCardCollection = admitCardRepository.findById(new ObjectId(cardId)).orElse(null);
 
 			if (admitCardCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Id");
@@ -201,7 +201,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 	@Override
 	public List<AdmitCardResponse> getAdmitCards(String doctorId, String locationId, String hospitalId,
-			String patientId, int page, int size, long updatedTime, Boolean discarded) {
+			String patientId, long page, int size, long updatedTime, Boolean discarded) {
 		List<AdmitCardResponse> response = null;
 		try {
 			Criteria criteria = new Criteria("isPatientDiscarded").ne(true);
@@ -275,7 +275,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 		AdmitCardResponse response = null;
 		try {
-			AdmitCardCollection admitCardCollection = admitCardRepository.findOne(new ObjectId(cardId));
+			AdmitCardCollection admitCardCollection = admitCardRepository.findById(new ObjectId(cardId)).orElse(null);
 			if (admitCardCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(admitCardCollection.getDoctorId(),
 						admitCardCollection.getHospitalId(), admitCardCollection.getLocationId())) {
@@ -340,13 +340,13 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		String response = null;
 
 		try {
-			AdmitCardCollection admitCardCollection = admitCardRepository.findOne(new ObjectId(admitCardId));
+			AdmitCardCollection admitCardCollection = admitCardRepository.findById(new ObjectId(admitCardId)).orElse(null);
 			if (admitCardCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
 						admitCardCollection.getHospitalId());
 
-				UserCollection user = userRepository.findOne(admitCardCollection.getPatientId());
+				UserCollection user = userRepository.findById(admitCardCollection.getPatientId()).orElse(null);
 				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
@@ -531,7 +531,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		PatientCollection patient = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			admitCardCollection = admitCardRepository.findOne(new ObjectId(admitcardId));
+			admitCardCollection = admitCardRepository.findById(new ObjectId(admitcardId)).orElse(null);
 			if (admitCardCollection != null) {
 				if (admitCardCollection.getDoctorId() != null && admitCardCollection.getHospitalId() != null
 						&& admitCardCollection.getLocationId() != null) {
@@ -539,7 +539,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 							&& admitCardCollection.getHospitalId().equals(hospitalId)
 							&& admitCardCollection.getLocationId().equals(locationId)) {
 
-						user = userRepository.findOne(admitCardCollection.getPatientId());
+						user = userRepository.findById(admitCardCollection.getPatientId()).orElse(null);
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 								admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
 								admitCardCollection.getHospitalId());
@@ -558,8 +558,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
@@ -630,9 +630,9 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		PatientCollection patient = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			admitCardCollection = admitCardRepository.findOne(new ObjectId(admitcardId));
+			admitCardCollection = admitCardRepository.findById(new ObjectId(admitcardId)).orElse(null);
 			if (admitCardCollection != null) {
-				user = userRepository.findOne(admitCardCollection.getPatientId());
+				user = userRepository.findById(admitCardCollection.getPatientId()).orElse(null);
 				patient = patientRepository.findByUserIdLocationIdAndHospitalId(admitCardCollection.getPatientId(),
 						admitCardCollection.getLocationId(), admitCardCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());
@@ -650,8 +650,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-				UserCollection doctorUser = userRepository.findOne(admitCardCollection.getDoctorId());
-				LocationCollection locationCollection = locationRepository.findOne(admitCardCollection.getLocationId());
+				UserCollection doctorUser = userRepository.findById(admitCardCollection.getDoctorId()).orElse(null);
+				LocationCollection locationCollection = locationRepository.findById(admitCardCollection.getLocationId()).orElse(null);
 
 				mailResponse = new MailResponse();
 				mailResponse.setMailAttachment(mailAttachment);

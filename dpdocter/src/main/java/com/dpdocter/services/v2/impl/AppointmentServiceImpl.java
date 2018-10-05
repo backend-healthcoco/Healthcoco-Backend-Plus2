@@ -540,8 +540,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			patientId = registerPatientIfNotRegistered(request, doctorId, locationId, hospitalId);
 
-			UserCollection userCollection = userRepository.findOne(doctorId);
-			LocationCollection locationCollection = locationRepository.findOne(locationId);
+			UserCollection userCollection = userRepository.findById(doctorId).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(locationId).orElse(null);
 			PatientCard patientCard = null;
 			List<PatientCard> patientCards = null;
 
@@ -1931,7 +1931,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationId(doctorObjectId,
 							locationObjectId);
 					if (userRoleCollection != null) {
-						RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getId());
+						RoleCollection roleCollection = roleRepository.findById(userRoleCollection.getId()).orElse(null);
 						if (roleCollection != null)
 							if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.RECEPTIONIST_NURSE.getRole())
 									|| roleCollection.getRole().equalsIgnoreCase("RECEPTIONIST")) {
@@ -2055,7 +2055,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 
 			AppointmentCollection appointmentCollection = null;
 
@@ -2184,7 +2184,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Event updateEvent(EventRequest request) {
 		Event response = null;
 		try {
-			AppointmentCollection appointmentCollection = appointmentRepository.findOne(new ObjectId(request.getId()));
+			AppointmentCollection appointmentCollection = appointmentRepository.findById(new ObjectId(request.getId())).orElse(null);
 			if (appointmentCollection != null) {
 				AppointmentCollection appointmentCollectionToCheck = null;
 				if (request.getState().equals(AppointmentState.RESCHEDULE)) {
@@ -2655,7 +2655,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 
 			CustomAppointmentCollection appointmentCollection = null;
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (DPDoctorUtils.anyStringEmpty(request.getPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient Name should not Empty ");
 			}
@@ -2663,7 +2663,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid doctor Id");
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				appointmentCollection = customAppointmentRepository.findOne(new ObjectId(request.getId()));
+				appointmentCollection = customAppointmentRepository.findById(new ObjectId(request.getId())).orElse(null);
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(appointmentCollection.getCreatedBy());
 				request.setCreatedTime(appointmentCollection.getCreatedTime());

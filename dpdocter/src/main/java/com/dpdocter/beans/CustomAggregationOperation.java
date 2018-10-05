@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import org.bson.Document;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
 
@@ -12,8 +13,14 @@ public class CustomAggregationOperation implements AggregationOperation {
         this.operation = operation;
     }
 
-    @Override
-    public DBObject toDBObject(AggregationOperationContext context) {
-        return context.getMappedObject(operation);
-    }
+	@Override
+	public Document toDocument(AggregationOperationContext context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+//    @Override
+//    public DBObject toDBObject(AggregationOperationContext context) {
+//        return context.getMappedObject(operation);
+//    }
 }

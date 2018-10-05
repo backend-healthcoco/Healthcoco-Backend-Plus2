@@ -123,7 +123,7 @@ public class ESMasterServiceImpl implements ESMasterService {
     ESDiagnosticTestRepository esDiagnosticTestRepository;
     
     @Override
-    public List<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    public List<Reference> searchReference(String range, long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<Reference> response = null;
 
@@ -140,6 +140,8 @@ public class ESMasterServiceImpl implements ESMasterService {
 	    case BOTH:
 		response = getCustomGlobalReferences(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		break;
+		default:
+			break;
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -149,7 +151,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	return response;
     }
 
-    private List<Reference> getGlobalReferences(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    private List<Reference> getGlobalReferences(long page, int size, String updatedTime, Boolean discarded, String searchTerm) {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
@@ -167,7 +169,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	return response;
     }
 
-    private List<Reference> getCustomReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private List<Reference> getCustomReferences(long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
@@ -186,7 +188,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	return response;
     }
 
-    private List<Reference> getCustomGlobalReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private List<Reference> getCustomGlobalReferences(long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
@@ -208,7 +210,7 @@ public class ESMasterServiceImpl implements ESMasterService {
     }
 
     @Override
-    public List<DiseaseListResponse> searchDisease(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    public List<DiseaseListResponse> searchDisease(String range, long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<DiseaseListResponse> diseaseListResponses = null;
 
@@ -223,11 +225,13 @@ public class ESMasterServiceImpl implements ESMasterService {
 	case BOTH:
 	    diseaseListResponses = getCustomGlobalDiseases(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
+	default:
+		break;
 	}
 	return diseaseListResponses;
     }
 
-    private List<DiseaseListResponse> getCustomDiseases(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private List<DiseaseListResponse> getCustomDiseases(long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	List<ESDiseasesDocument> diseasesDocuments = null;
@@ -256,7 +260,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	return diseaseListResponses;
     }
 
-    private List<DiseaseListResponse> getGlobalDiseases(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    private List<DiseaseListResponse> getGlobalDiseases(long page, int size, String updatedTime, Boolean discarded, String searchTerm) {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	List<ESDiseasesDocument> diseasesDocuments = null;
 	try {	
@@ -282,7 +286,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	return diseaseListResponses;
     }
 
-    private List<DiseaseListResponse> getCustomGlobalDiseases(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private List<DiseaseListResponse> getCustomGlobalDiseases(long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	List<ESDiseasesDocument> diseasesDocuments = null;
@@ -326,7 +330,7 @@ public class ESMasterServiceImpl implements ESMasterService {
     }
 
     @Override
-    public List<Profession> searchProfession(String searchTerm, String updatedTime, int page, int size) {
+    public List<Profession> searchProfession(String searchTerm, String updatedTime, long page, int size) {
 	List<Profession> response = null;
 	List<ESProfessionDocument> professionDocuments = null;
 	try {
@@ -334,7 +338,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	   if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("profession", searchTerm));
 	   
        SearchQuery searchQuery = null;
-       if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "profession")).build();
+       if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of((int)page, size, Direction.ASC, "profession")).build();
        else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("profession").order(SortOrder.ASC)).build();
        
 	   professionDocuments = elasticsearchTemplate.queryForList(searchQuery, ESProfessionDocument.class);
@@ -387,7 +391,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	}
 
     @Override
-    public List<ProfessionalMembership> searchProfessionalMembership(String searchTerm, String updatedTime, int page, int size) {
+    public List<ProfessionalMembership> searchProfessionalMembership(String searchTerm, String updatedTime, long page, int size) {
 	List<ProfessionalMembership> response = null;
 	List<ESProfessionalMembershipDocument> professionalMembershipDocuments = null;
 	try {
@@ -395,7 +399,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("membership", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "membership")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of((int)page, size, Direction.ASC, "membership")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("membership").order(SortOrder.ASC)).build();
 	       
 	    professionalMembershipDocuments = elasticsearchTemplate.queryForList(searchQuery, ESProfessionalMembershipDocument.class);
@@ -413,7 +417,7 @@ public class ESMasterServiceImpl implements ESMasterService {
     }
 
     @Override
-    public List<EducationInstitute> searchEducationInstitute(String searchTerm, String updatedTime, int page, int size) {
+    public List<EducationInstitute> searchEducationInstitute(String searchTerm, String updatedTime, long page, int size) {
 	List<EducationInstitute> response = null;
 	List<ESEducationInstituteDocument> educationInstituteDocuments = null;
 	try {
@@ -421,7 +425,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of((int)page, size, Direction.ASC, "name")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC)).build();
 	       
 	    educationInstituteDocuments = elasticsearchTemplate.queryForList(searchQuery, ESEducationInstituteDocument.class);
@@ -439,7 +443,7 @@ public class ESMasterServiceImpl implements ESMasterService {
     }
 
     @Override
-    public List<EducationQualification> searchEducationQualification(String searchTerm, String updatedTime, int page, int size) {
+    public List<EducationQualification> searchEducationQualification(String searchTerm, String updatedTime, long page, int size) {
 	List<EducationQualification> response = null;
 	List<ESEducationQualificationDocument> educationQualificationDocuments = null;
 	try {
@@ -447,7 +451,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of((int)page, size, Direction.ASC, "name")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC)).build();
 	       
 	    educationQualificationDocuments = elasticsearchTemplate.queryForList(searchQuery, ESEducationQualificationDocument.class);
@@ -465,7 +469,7 @@ public class ESMasterServiceImpl implements ESMasterService {
     }
 
     @Override
-    public List<MedicalCouncil> searchMedicalCouncil(String searchTerm, String updatedTime, int page, int size) {
+    public List<MedicalCouncil> searchMedicalCouncil(String searchTerm, String updatedTime, long page, int size) {
 	List<MedicalCouncil> response = null;
 	List<ESMedicalCouncilDocument> medicalCouncilDocuments = null;
 	try {
@@ -473,7 +477,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("medicalCouncil", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "medicalCouncil")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of((int)page, size, Direction.ASC, "medicalCouncil")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("medicalCouncil").order(SortOrder.ASC)).build();
 	       
 	    medicalCouncilDocuments = elasticsearchTemplate.queryForList(searchQuery, ESMedicalCouncilDocument.class);
@@ -491,7 +495,7 @@ public class ESMasterServiceImpl implements ESMasterService {
     }
 
     @Override
-    public List<Speciality> searchSpeciality(String searchTerm, String updatedTime, int page, int size) {
+    public List<Speciality> searchSpeciality(String searchTerm, String updatedTime, long page, int size) {
 	List<Speciality> response = null;
 	List<ESSpecialityDocument> specialityDocuments = null;
 	try {
@@ -499,7 +503,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("superSpeciality", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "superSpeciality")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of((int)page, size, Direction.ASC, "superSpeciality")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("superSpeciality").order(SortOrder.ASC)).build();
 	       
 	    specialityDocuments = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);

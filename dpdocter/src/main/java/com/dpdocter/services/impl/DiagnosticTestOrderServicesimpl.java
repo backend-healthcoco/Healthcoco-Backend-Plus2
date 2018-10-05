@@ -55,7 +55,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 	private OrderDiagnosticTestRepository orderDiagnosticTestRepository;
 	
 	@Override
-	public List<LabSearchResponse> searchLabs(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames, int page, int size, Boolean havePackage) {
+	public List<LabSearchResponse> searchLabs(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames, long page, int size, Boolean havePackage) {
 		List<LabSearchResponse> response = null;
 		try{
 			if(havePackage) {
@@ -72,7 +72,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 	}
 
 	private List<LabSearchResponse> getLabsHavingTestPackages(String city, String location, String latitude,
-			String longitude, int page, int size) {
+			String longitude, long page, int size) {
 		List<LabSearchResponse> response = null;
 		try{
 			Aggregation aggregation = Aggregation.newAggregation(
@@ -127,7 +127,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 	}
 
 	private List<LabSearchResponse> serachLabsByTest(String city, String location, String latitude, String longitude,
-			String searchTerm, List<String> testNames, int page, int size) {
+			String searchTerm, List<String> testNames, long page, int size) {
 		List<LabSearchResponse> response = null;
 		try {
 			Aggregation aggregation = Aggregation.newAggregation(
@@ -258,7 +258,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			BeanUtil.map(request, orderDiagnosticTestCollection);
 			
 			if(!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				OrderDiagnosticTestCollection oldOrder = orderDiagnosticTestRepository.findOne(new ObjectId(request.getId()));
+				OrderDiagnosticTestCollection oldOrder = orderDiagnosticTestRepository.findById(new ObjectId(request.getId())).orElse(null);
 				orderDiagnosticTestCollection.setCreatedTime(oldOrder.getCreatedTime());
 				orderDiagnosticTestCollection.setUniqueOrderId(oldOrder.getUniqueOrderId());
 			}else {

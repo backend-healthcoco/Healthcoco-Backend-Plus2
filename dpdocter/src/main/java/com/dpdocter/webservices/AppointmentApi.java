@@ -272,7 +272,7 @@ public class AppointmentApi {
 	public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId,
 			@MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@QueryParam(value = "page") long page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
 			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime,
@@ -291,7 +291,7 @@ public class AppointmentApi {
 	public Response<Object> getPatientAppointments(@QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@QueryParam(value = "page") long page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
 
 		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
@@ -551,7 +551,7 @@ public class AppointmentApi {
 	@Path(PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST)
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST, notes = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST)
-	public Response<CustomAppointment> getCustomAppointments(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<CustomAppointment> getCustomAppointments(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("doctorId") String doctorId,
 			@DefaultValue(value = "0") @QueryParam("updatedTime") String updatedTime,
@@ -657,7 +657,7 @@ public class AppointmentApi {
 	public Response<Event> getEvents(@QueryParam(value = "locationId") String locationId,
 			@MatrixParam(value = "doctorId") List<String> doctorId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@QueryParam(value = "page") long page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "sortBy") String sortBy,
 			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime,

@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.beans.DOB;
 
 public class PrintPatientCardRequest {

@@ -305,7 +305,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						for (TestAndRecordData data : prescription.getTests()) {
 							if (data.getTestId() != null) {
 								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(data.getTestId());
+										.findById(data.getTestId()).orElse(null);
 								DiagnosticTest diagnosticTest = new DiagnosticTest();
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -440,7 +440,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						for (TestAndRecordData data : prescription.getTests()) {
 							if (data.getTestId() != null) {
 								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(data.getTestId());
+										.findById(data.getTestId()).orElse(null);
 								DiagnosticTest diagnosticTest = new DiagnosticTest();
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -469,7 +469,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Transactional
 	public EyePrescription getEyePrescription(String id) {
 		EyePrescription response = null;
-		EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository.findOne(new ObjectId(id));
+		EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository.findById(new ObjectId(id)).orElse(null);
 		if (eyePrescriptionCollection == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Record not found");
 		}
@@ -572,7 +572,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					for (TestAndRecordData data : prescription.getTests()) {
 						if (data.getTestId() != null) {
 							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-									.findOne(data.getTestId());
+									.findById(data.getTestId()).orElse(null);
 							DiagnosticTest diagnosticTest = new DiagnosticTest();
 							if (diagnosticTestCollection != null) {
 								BeanUtil.map(diagnosticTestCollection, diagnosticTest);

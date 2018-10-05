@@ -10,7 +10,7 @@ public interface CertificatesServices {
 
 	Boolean addCertificateTemplates(CertificateTemplate request);
 
-	List<?> getCertificateTemplates(int page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities, String type);
+	List<?> getCertificateTemplates(long page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities, String type);
 
 	Boolean discardCertificateTemplates(String templateId, Boolean discarded);
 
@@ -20,7 +20,7 @@ public interface CertificatesServices {
 
 	ConsentForm getPatientCertificateById(String certificateId);
 
-	List<ConsentForm> getPatientCertificates(int page, int size, String patientId, String doctorId, String locationId,
+	List<ConsentForm> getPatientCertificates(long page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId, boolean discarded, String updatedTime, String type);
 
 	ConsentForm deletePatientCertificate(String certificateId, Boolean discarded);

@@ -320,7 +320,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While adding city", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -332,7 +331,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Boolean activateDeactivateCity(String cityId, boolean activate) {
 		try {
-			CityCollection cityCollection = cityRepository.findOne(new ObjectId(cityId));
+			CityCollection cityCollection = cityRepository.findById(new ObjectId(cityId)).orElse(null);
 			if (cityCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid city Id");
 			}
@@ -343,7 +342,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating city",
 						be.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw be;
@@ -353,7 +351,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating city",
 						e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
@@ -382,7 +379,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While getting cities", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -395,7 +391,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public City getCity(String cityId) {
 		City response = new City();
 		try {
-			CityCollection city = cityRepository.findOne(new ObjectId(cityId));
+			CityCollection city = cityRepository.findById(new ObjectId(cityId)).orElse(null);
 			if (city != null) {
 				BeanUtil.map(city, response);
 			}
@@ -404,7 +400,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While getting city", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -420,7 +415,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
 			BeanUtil.map(landmarkLocality, landmarkLocalityCollection);
 			if (landmarkLocality.getCityId() != null) {
-				cityCollection = cityRepository.findOne(new ObjectId(landmarkLocality.getCityId()));
+				cityCollection = cityRepository.findById(new ObjectId(landmarkLocality.getCityId())).orElse(null);
 			}
 
 			List<GeocodedLocation> geocodedLocations = locationServices
@@ -452,7 +447,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						"Backend Business Exception :: While activating/deactivating landmark locality",
 						e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -595,7 +589,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (doctorCollection.getSpecialities() != null
 								&& !doctorCollection.getSpecialities().isEmpty()) {
 							List<String> specialities = (List<String>) CollectionUtils.collect(
-									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 									new BeanToPropertyValueTransformer("superSpeciality"));
 							doctor.setSpecialities(specialities);
 						}
@@ -895,8 +889,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			patientId = registerPatientIfNotRegistered(request, doctorId, locationId, hospitalId);
 
-			UserCollection userCollection = userRepository.findOne(doctorId);
-			LocationCollection locationCollection = locationRepository.findOne(locationId);
+			UserCollection userCollection = userRepository.findById(doctorId).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(locationId).orElse(null);
 			PatientCard patientCard = null;
 			List<PatientCard> patientCards = null;
 
@@ -1643,7 +1637,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!smsFormatCollection.getContent().contains(SMSContent.CLINIC_NAME.getContent())
 						|| clinicName == null)
 					clinicName = "";
-				if (!smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent())
+				if (!smsFormatCollection.getContent().contains(SMSContent.CLINIC_CONTACT_NUMBER.getContent())
 						|| clinicContactNum == null)
 					clinicContactNum = "";
 				
@@ -1767,7 +1761,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
+			String to, long page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime, Boolean isWeb) {
 		List<Appointment> response = null;
 		try {
@@ -1972,7 +1966,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
-	private List<Appointment> getAppointmentsForWeb(Criteria criteria, SortOperation sortOperation, int page, int size,
+	private List<Appointment> getAppointmentsForWeb(Criteria criteria, SortOperation sortOperation, long page, int size,
 			List<Appointment> response, List<AppointmentLookupResponse> appointmentLookupResponses) {
 
 		CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
@@ -2123,7 +2117,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime) {
+			String to, long page, int size, String updatedTime) {
 		Response<Object> response = new Response<Object>();
 		List<Appointment> appointments = null;
 		List<AppointmentLookupResponse> appointmentLookupResponses = null;
@@ -2353,7 +2347,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (doctorCollection.getSpecialities() != null
 								&& !doctorCollection.getSpecialities().isEmpty()) {
 							List<String> specialities = (List<String>) CollectionUtils.collect(
-									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 									new BeanToPropertyValueTransformer("speciality"));
 							doctor.setSpecialities(specialities);
 						}
@@ -2459,7 +2453,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationId(doctorObjectId,
 							locationObjectId);
 					if (userRoleCollection != null) {
-						RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getId());
+						RoleCollection roleCollection = roleRepository.findById(userRoleCollection.getId()).orElse(null);
 						if (roleCollection != null)
 							if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.RECEPTIONIST_NURSE.getRole())
 									|| roleCollection.getRole().equalsIgnoreCase("RECEPTIONIST")) {
@@ -2581,7 +2575,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 
 			AppointmentCollection appointmentCollection = null;
 
@@ -2710,7 +2704,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Event updateEvent(EventRequest request) {
 		Event response = null;
 		try {
-			AppointmentCollection appointmentCollection = appointmentRepository.findOne(new ObjectId(request.getId()));
+			AppointmentCollection appointmentCollection = appointmentRepository.findById(new ObjectId(request.getId())).orElse(null);
 			if (appointmentCollection != null) {
 				AppointmentCollection appointmentCollectionToCheck = null;
 				if (request.getState().equals(AppointmentState.RESCHEDULE)) {
@@ -3362,7 +3356,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 
 		for (Entry<String, List<PatientQueueCollection>> entry : doctorsPatientQueue.entrySet()) {
-			patientQueueRepository.save(entry.getValue());
+			patientQueueRepository.saveAll(entry.getValue());
 		}
 
 	}
@@ -3629,7 +3623,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 
 			CustomAppointmentCollection appointmentCollection = null;
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (DPDoctorUtils.anyStringEmpty(request.getPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient Name should not Empty ");
 			}
@@ -3637,7 +3631,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid doctor Id");
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				appointmentCollection = customAppointmentRepository.findOne(new ObjectId(request.getId()));
+				appointmentCollection = customAppointmentRepository.findById(new ObjectId(request.getId())).orElse(null);
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(appointmentCollection.getCreatedBy());
 				request.setCreatedTime(appointmentCollection.getCreatedTime());
@@ -3693,7 +3687,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		CustomAppointment response = null;
 		try {
 			CustomAppointmentCollection customAppointmentCollection = customAppointmentRepository
-					.findOne(new ObjectId(appointmentId));
+					.findById(new ObjectId(appointmentId)).orElse(null);
 			if (customAppointmentCollection == null) {
 				logger.warn("No Custom Appointment found for the given id");
 				throw new BusinessException(ServiceError.NotFound, "No Custom Appointment found for the given id");
@@ -3709,7 +3703,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<CustomAppointment> getCustomAppointments(int page, int size, String locationId, String hospitalId,
+	public List<CustomAppointment> getCustomAppointments(long page, int size, String locationId, String hospitalId,
 			String doctorId, String updatedTime, Boolean discarded) {
 
 		List<CustomAppointment> response = null;
@@ -3947,7 +3941,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								&& !doctorCollection.getSpecialities().isEmpty()) {
 							@SuppressWarnings("unchecked")
 							List<String> specialities = (List<String>) CollectionUtils.collect(
-									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 									new BeanToPropertyValueTransformer("superSpeciality"));
 							doctor.setSpecialities(specialities);
 						}
@@ -4062,7 +4056,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								&& !doctorCollection.getSpecialities().isEmpty()) {
 							@SuppressWarnings("unchecked")
 							List<String> specialities = (List<String>) CollectionUtils.collect(
-									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 									new BeanToPropertyValueTransformer("speciality"));
 							doctor.setSpecialities(specialities);
 						}
@@ -4257,7 +4251,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					jasperReportResponse.getFileSystemResource().getFile().delete();
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
 		}
 		return response;
 
@@ -4603,7 +4596,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (isGroupByDoctor) {
 				if (doctorList.contains(calenderResponseForJasper.getDoctorId())) {
 					doctors = "";
-					userCollection = userRepository.findOne(new ObjectId(calenderResponseForJasper.getDoctorId()));
+					userCollection = userRepository.findById(new ObjectId(calenderResponseForJasper.getDoctorId())).orElse(null);
 					if (userCollection != null) {
 						doctors = (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
 								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
@@ -4615,7 +4608,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else {
 				for (String doctorId : doctorList) {
 
-					userCollection = userRepository.findOne(new ObjectId(doctorId));
+					userCollection = userRepository.findById(new ObjectId(doctorId)).orElse(null);
 					if (userCollection != null) {
 						doctors = doctors + (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
 								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
@@ -4685,7 +4678,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
+	public List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, long page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime) {
 		List<Event> response = null;
 		try {
@@ -4926,7 +4919,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page,
+	public List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, long page,
 			int size, String updatedTime, String sortBy, String fromTime, String toTime) {
 		List<Event> response = null;
 		try {

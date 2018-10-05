@@ -14,14 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.EyeObservation;
-import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.EyeObservationCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.EyeObservationRepository;
 import com.dpdocter.services.OphthalmologyService;
-import com.squareup.okhttp.internal.spdy.ErrorCode;
 
 import common.util.web.DPDoctorUtils;
 
@@ -41,7 +39,7 @@ public class OphthalmologyServiceImpl implements OphthalmologyService {
 		EyeObservationCollection eyeObservationCollection = null;
 		if(eyeObservation.getId() != null)
 		{
-			eyeObservationCollection = eyeObservationRepository.findOne(new ObjectId(eyeObservation.getId()));
+			eyeObservationCollection = eyeObservationRepository.findById(new ObjectId(eyeObservation.getId())).orElse(null);
 			BeanUtil.map(eyeObservation, eyeObservationCollection);
 			eyeObservationCollection.setVisualAcuities(eyeObservation.getVisualAcuities());
 			eyeObservationCollection.setEyeTests(eyeObservation.getEyeTests());
@@ -72,7 +70,7 @@ public class OphthalmologyServiceImpl implements OphthalmologyService {
 			throw new BusinessException(ServiceError.NoRecord,"Record not found");
 		}
 		
-		eyeObservationCollection = eyeObservationRepository.findOne(new ObjectId(id));
+		eyeObservationCollection = eyeObservationRepository.findById(new ObjectId(id)).orElse(null);
 		eyeObservationCollection.setDiscarded(discarded);
 		eyeObservationCollection.setUpdatedTime(new Date());
 		eyeObservationCollection = eyeObservationRepository.save(eyeObservationCollection);
@@ -84,7 +82,7 @@ public class OphthalmologyServiceImpl implements OphthalmologyService {
 
 	@Override
 	@Transactional
-	public EyeObservation getEyeObservation(int page, int size, String doctorId, String locationId,
+	public EyeObservation getEyeObservation(long page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded,
 			Boolean inHistory) {
 		
@@ -126,7 +124,7 @@ public class OphthalmologyServiceImpl implements OphthalmologyService {
 	}
 
 	@Override
-	public List<EyeObservation> getEyeObservations(int page, int size, String doctorId, String locationId,
+	public List<EyeObservation> getEyeObservations(long page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean discarded , Boolean isOTPVerified
 			) {
 		

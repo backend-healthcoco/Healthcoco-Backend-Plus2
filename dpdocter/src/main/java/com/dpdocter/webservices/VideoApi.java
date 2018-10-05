@@ -62,7 +62,7 @@ public class VideoApi {
 	    @Path(value = PathProxy.VideoUrls.GET_VIDEO)
 	    @GET
 	    @ApiOperation(value =PathProxy.VideoUrls.GET_VIDEO, notes = PathProxy.VideoUrls.GET_VIDEO)
-	    public Response<Video> getVideoss(@QueryParam("doctorId") String doctorId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page , @QueryParam("size") int size)
+	    public Response<Video> getVideoss(@QueryParam("doctorId") String doctorId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page , @QueryParam("size") int size)
 	    {
 	    	List<Video> videos = null;
 	    	if (doctorId == null) {

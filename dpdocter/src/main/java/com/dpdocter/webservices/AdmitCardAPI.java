@@ -68,7 +68,7 @@ public class AdmitCardAPI {
 	@Path(value = PathProxy.AdmitCardUrls.GET_ADMIT_CARDS)
 	@GET
 	@ApiOperation(value = PathProxy.AdmitCardUrls.GET_ADMIT_CARDS, notes = PathProxy.AdmitCardUrls.GET_ADMIT_CARDS)
-	public Response<AdmitCardResponse> getAdmitCards(@QueryParam(value = "page") int page,
+	public Response<AdmitCardResponse> getAdmitCards(@QueryParam(value = "page") long page,
 			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "patientId") String patientId, @QueryParam("updatedTime") long updatedTime,

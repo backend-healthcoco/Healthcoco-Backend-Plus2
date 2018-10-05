@@ -58,7 +58,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 			issueTrackCollection.setIssueCode(UniqueIdInitial.ISSUETRACK.getInitial()+DPDoctorUtils.generateRandomId());
 			issueTrackCollection.setCreatedTime(new Date());
 	    } else {
-			IssueTrackCollection oldIssueTrackCollection = issueTrackRepository.findOne(new ObjectId(request.getId()));
+			IssueTrackCollection oldIssueTrackCollection = issueTrackRepository.findById(new ObjectId(request.getId())).orElse(null);
 			issueTrackCollection.setCreatedTime(oldIssueTrackCollection.getCreatedTime());
 			issueTrackCollection.setCreatedBy(oldIssueTrackCollection.getCreatedBy());
 			issueTrackCollection.setDiscarded(oldIssueTrackCollection.getDiscarded());
@@ -67,7 +67,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+		UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 		if (request.getId() == null && userCollection != null)issueTrackCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 //		String body = mailBodyGenerator.generateIssueTrackEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
 //		mailService.sendEmail(userCollection.getEmailAddress(), addIssueSubject, body, null);
@@ -90,7 +90,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 
     @Override
     @Transactional
-    public List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+    public List<IssueTrack> getIssues(long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 	    List<String> scope) {
 	List<IssueTrack> response = null;
 	try {
@@ -127,12 +127,12 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	Boolean response = false;
 	IssueTrackCollection issueTrackCollection = null;
 	try {
-	    issueTrackCollection = issueTrackRepository.findOne(new ObjectId(issueId));
+	    issueTrackCollection = issueTrackRepository.findById(new ObjectId(issueId)).orElse(null);
 	    if (issueTrackCollection != null) {
 		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null
 			&& issueTrackCollection.getLocationId() != null) {
-		    if (issueTrackCollection.getDoctorId().equals(doctorId) && issueTrackCollection.getHospitalId().equals(hospitalId)
-			    && issueTrackCollection.getLocationId().equals(locationId)) {
+		    if (issueTrackCollection.getDoctorId().toString().equals(doctorId) && issueTrackCollection.getHospitalId().toString().equals(hospitalId)
+			    && issueTrackCollection.getLocationId().toString().equals(locationId)) {
 			if (issueTrackCollection.getStatus().equals(IssueStatus.COMPLETED)) {
 			    if (IssueStatus.valueOf(status.toUpperCase()).equals(IssueStatus.REOPEN)) {
 				issueTrackCollection.setStatus(IssueStatus.valueOf(status.toUpperCase()));
@@ -172,11 +172,11 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	Boolean response = false;
 	IssueTrackCollection issueTrackCollection = null;
 	try {
-	    issueTrackCollection = issueTrackRepository.findOne(new ObjectId(issueId));
+	    issueTrackCollection = issueTrackRepository.findById(new ObjectId(issueId)).orElse(null);
 	    if (issueTrackCollection != null) {
 		if (!IssueStatus.valueOf(status.toUpperCase()).equals(IssueStatus.REOPEN)) {
 		    issueTrackCollection.setStatus(IssueStatus.valueOf(status.toUpperCase()));
-		    UserCollection userCollection = userRepository.findOne(issueTrackCollection.getDoctorId());
+		    UserCollection userCollection = userRepository.findById(issueTrackCollection.getDoctorId()).orElse(null);
 		    if(userCollection != null){
 		    	if(status.equalsIgnoreCase(IssueStatus.INPROGRESS.getStatus()))
 			    	pushNotificationServices.notifyUser(userCollection.getId().toString(), "We have started working on the issue "+issueTrackCollection.getIssueCode()+", we will keep you upadated on the progress of the issue", null, null, null);
@@ -209,12 +209,12 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     public IssueTrack deleteIssue(String issueId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
     	IssueTrack response = null;
 	try {
-	    IssueTrackCollection issueTrackCollection = issueTrackRepository.findOne(new ObjectId(issueId));
+	    IssueTrackCollection issueTrackCollection = issueTrackRepository.findById(new ObjectId(issueId)).orElse(null);
 	    if (issueTrackCollection != null) {
 		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null
 			&& issueTrackCollection.getLocationId() != null) {
-		    if (issueTrackCollection.getDoctorId().equals(doctorId) && issueTrackCollection.getHospitalId().equals(hospitalId)
-			    && issueTrackCollection.getLocationId().equals(locationId)) {
+		    if (issueTrackCollection.getDoctorId().toString().equals(doctorId) && issueTrackCollection.getHospitalId().toString().equals(hospitalId)
+			    && issueTrackCollection.getLocationId().toString().equals(locationId)) {
 			issueTrackCollection.setDiscarded(discarded);
 			issueTrackCollection.setUpdatedTime(new Date());
 			issueTrackRepository.save(issueTrackCollection);

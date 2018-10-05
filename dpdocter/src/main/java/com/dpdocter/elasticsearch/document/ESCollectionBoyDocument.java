@@ -13,15 +13,15 @@ public class ESCollectionBoyDocument {
 
 	@Id
 	private String id;
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String name;
 	@Field(type = FieldType.Nested)
 	private Age age;
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String gender;
 	@Field(type = FieldType.Nested)
 	private Address address;
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String mobileNumber;
 
 	public String getId() {

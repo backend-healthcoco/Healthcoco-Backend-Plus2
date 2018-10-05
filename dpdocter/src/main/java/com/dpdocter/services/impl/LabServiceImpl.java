@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +98,7 @@ public class LabServiceImpl implements LabService {
 
 	@Override
 	public List<Records> getReports(String doctorId, String locationId, String hospitalId, String prescribedByDoctorId,
-			String prescribedByLocationId, String prescribedByHospitalId, int size, int page) {
+			String prescribedByLocationId, String prescribedByHospitalId, int size, long page) {
 		List<Records> response = null;
 		try {
 			Criteria criteria = new Criteria();

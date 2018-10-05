@@ -229,8 +229,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		
 	}
 
-	private void writeHeader(Class classOfObject, FileWriter fileWriter) throws IOException {
-		int index = 1;
+	private void writeHeader(Class<?> classOfObject, FileWriter fileWriter) throws IOException {
 		String headerString = "";
 	    for (Field field : classOfObject.getDeclaredFields()) {
 	        field.setAccessible(true);
@@ -249,8 +248,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 
 	private void writeData(Object obj, FileWriter fileWriter) throws IllegalArgumentException, IllegalAccessException, IOException {
 		String dataString = "";
-		int index = 1;
-	    for (Field field : obj.getClass().getDeclaredFields()) {
+		for (Field field : obj.getClass().getDeclaredFields()) {
 	    		field.setAccessible(true);
 	    		if(!field.getName().equalsIgnoreCase("dob")) {
 		    		if(DPDoctorUtils.anyStringEmpty(dataString)) dataString = dataString + field.get(obj);

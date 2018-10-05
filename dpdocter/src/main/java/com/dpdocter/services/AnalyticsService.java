@@ -31,39 +31,39 @@ public interface AnalyticsService {
 			String fromDate, String toDate, String queryType, String searchType, String searchTerm);
 
 	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page, int size);
 
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
-			int page, int size);
+			long page, int size);
 
 	public List<AppointmentAverageTimeAnalyticResponse> getAppointmentAverageTimeAnalyticsData(String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String queryType, String searchType,
-			String searchTerm, int page, int size);
+			String searchTerm, long page, int size);
 
 	public List<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
-			int page, int size);
+			long page, int size);
 
 	public List<InvoiceAnalyticsDataDetailResponse> getIncomeDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page, int size);
 
 	public List<IncomeAnalyticsDataResponse> getIncomeAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page, int size);
 
 	public List<PaymentDetailsAnalyticsDataResponse> getPaymentDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page, int size);
 
 	public List<PaymentAnalyticsDataResponse> getPaymentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page, int size);
 
 	public List<AmountDueAnalyticsDataResponse> getAmountDueAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page, int size);
 
 	public List<TreatmentService> getTreatmentsAnalyticsData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, int page, int size);
+			String fromDate, String toDate, String searchType, long page, int size);
 
-	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(int page, int size, String doctorId,
+	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(long page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm);
 
 	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
@@ -72,7 +72,7 @@ public interface AnalyticsService {
 	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate);
 
-	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(int page, int size, String doctorId,
+	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(long page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String type, String searchTerm);
 
 	public DoctorVisitAnalyticResponse getVisitAnalytic(String doctorId, String locationId, String hospitalId,

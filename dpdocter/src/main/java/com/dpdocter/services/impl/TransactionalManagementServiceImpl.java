@@ -1206,7 +1206,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					List<SMSTrackDetail> smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalPatient(
 							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 							prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId(), type,
-							cal.getTime(), new Date(), new PageRequest(0, 1));
+							cal.getTime(), new Date(), PageRequest.of(0, 1));
 
 					if (smsTrackDetails == null || smsTrackDetails.isEmpty()) {
 						String message = downloadAppMessageToPatient;
@@ -1349,7 +1349,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		for (AppLinkDetailsCollection appLinkDetailsCollection : appLinkDetailsCollections) {
 			appLinkDetailsCollection.setCount(0);
 		}
-		appLinkDetailsRepository.save(appLinkDetailsCollections);
+		appLinkDetailsRepository.saveAll(appLinkDetailsCollections);
 	}
 
 	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
@@ -1472,7 +1472,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkPatient(ObjectId id) {
 		try {
-			UserCollection userCollection = userRepository.findOne(id);
+			UserCollection userCollection = userRepository.findById(id).orElse(null);
 			List<PatientCollection> patientCollections = patientRepository.findByUserId(id);
 			if (userCollection != null && patientCollections != null) {
 				for (PatientCollection patientCollection : patientCollections) {
@@ -1499,7 +1499,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkDrug(ObjectId id) {
 		try {
-			DrugCollection drugCollection = drugRepository.findOne(id);
+			DrugCollection drugCollection = drugRepository.findById(id).orElse(null);
 			if (drugCollection != null) {
 				ESDrugDocument esDrugDocument = new ESDrugDocument();
 				BeanUtil.map(drugCollection, esDrugDocument);
@@ -1519,9 +1519,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkDoctorDrug(ObjectId resourceId) {
 		try {
-			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findOne(resourceId);
+			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findById(resourceId).orElse(null);
 			if (doctorDrugCollection != null) {
-				DrugCollection drugCollection = drugRepository.findOne(doctorDrugCollection.getDrugId());
+				DrugCollection drugCollection = drugRepository.findById(doctorDrugCollection.getDrugId()).orElse(null);
 				if (drugCollection != null) {
 					ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
 					BeanUtil.map(drugCollection, esDoctorDrugDocument);
@@ -1540,7 +1540,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkLabTest(ObjectId id) {
 		try {
-			LabTestCollection labTestCollection = labTestRepository.findOne(id);
+			LabTestCollection labTestCollection = labTestRepository.findById(id).orElse(null);
 			if (labTestCollection != null) {
 				ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
 				BeanUtil.map(labTestCollection, esLabTestDocument);
@@ -1556,7 +1556,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkComplaint(ObjectId id) {
 		try {
-			ComplaintCollection complaintCollection = complaintRepository.findOne(id);
+			ComplaintCollection complaintCollection = complaintRepository.findById(id).orElse(null);
 			if (complaintCollection != null) {
 				ESComplaintsDocument esComplaintsDocument = new ESComplaintsDocument();
 				BeanUtil.map(complaintCollection, esComplaintsDocument);
@@ -1572,7 +1572,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkObservation(ObjectId id) {
 		try {
-			ObservationCollection observationCollection = observationRepository.findOne(id);
+			ObservationCollection observationCollection = observationRepository.findById(id).orElse(null);
 			if (observationCollection != null) {
 				ESObservationsDocument esObservationsDocument = new ESObservationsDocument();
 				BeanUtil.map(observationCollection, esObservationsDocument);
@@ -1588,7 +1588,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkInvestigation(ObjectId id) {
 		try {
-			InvestigationCollection investigationCollection = investigationRepository.findOne(id);
+			InvestigationCollection investigationCollection = investigationRepository.findById(id).orElse(null);
 			if (investigationCollection != null) {
 				ESInvestigationsDocument esInvestigationsDocument = new ESInvestigationsDocument();
 				BeanUtil.map(investigationCollection, esInvestigationsDocument);
@@ -1604,7 +1604,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkDiagnosis(ObjectId id) {
 		try {
-			DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
+			DiagnosisCollection diagnosisCollection = diagnosisRepository.findById(id).orElse(null);
 			if (diagnosisCollection != null) {
 				ESDiagnosesDocument esDiagnosesDocument = new ESDiagnosesDocument();
 				BeanUtil.map(diagnosisCollection, esDiagnosesDocument);
@@ -1620,7 +1620,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkNotes(ObjectId id) {
 		try {
-			NotesCollection notesCollection = notesRepository.findOne(id);
+			NotesCollection notesCollection = notesRepository.findById(id).orElse(null);
 			if (notesCollection != null) {
 				ESNotesDocument esNotesDocument = new ESNotesDocument();
 				BeanUtil.map(notesCollection, esNotesDocument);
@@ -1636,7 +1636,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkDiagrams(ObjectId id) {
 		try {
-			DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
+			DiagramsCollection diagramsCollection = diagramsRepository.findById(id).orElse(null);
 			if (diagramsCollection != null) {
 				ESDiagramsDocument esDiagramsDocument = new ESDiagramsDocument();
 				BeanUtil.map(diagramsCollection, esDiagramsDocument);
@@ -1652,7 +1652,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkLocation(ObjectId resourceId) {
 		try {
-			LocationCollection locationCollection = locationRepository.findOne(resourceId);
+			LocationCollection locationCollection = locationRepository.findById(resourceId).orElse(null);
 			if (locationCollection != null) {
 				DoctorLocation doctorLocation = new DoctorLocation();
 				BeanUtil.map(locationCollection, doctorLocation);
@@ -1679,7 +1679,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkDoctor(ObjectId resourceId, ObjectId locationId) {
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
-			UserCollection userCollection = userRepository.findOne(resourceId);
+			UserCollection userCollection = userRepository.findById(resourceId).orElse(null);
 			if (doctorCollection != null && userCollection != null) {
 				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = null;
 				if (locationId == null)
@@ -1693,7 +1693,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 					LocationCollection locationCollection = null;
 					if (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getLocationId())) {
-						locationCollection = locationRepository.findOne(doctorClinicProfileCollection.getLocationId());
+						locationCollection = locationRepository.findById(doctorClinicProfileCollection.getLocationId()).orElse(null);
 					}
 					GeoPoint geoPoint = null;
 
@@ -1766,7 +1766,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkLandmarkLocality(ObjectId resourceId) {
 		try {
-			LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findOne(resourceId);
+			LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findById(resourceId).orElse(null);
 			if (landmarkLocalityCollection != null) {
 				ESLandmarkLocalityDocument esLocalityLandmarkDocument = new ESLandmarkLocalityDocument();
 				BeanUtil.map(landmarkLocalityCollection, esLocalityLandmarkDocument);
@@ -1780,7 +1780,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkCity(ObjectId resourceId) {
 		try {
-			CityCollection cityCollection = cityRepository.findOne(resourceId);
+			CityCollection cityCollection = cityRepository.findById(resourceId).orElse(null);
 			if (cityCollection != null) {
 				ESCityDocument esCityDocument = new ESCityDocument();
 				BeanUtil.map(cityCollection, esCityDocument);
@@ -1795,7 +1795,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkReference(ObjectId resourceId) {
 		try {
-			ReferencesCollection referenceCollection = referenceRepository.findOne(resourceId);
+			ReferencesCollection referenceCollection = referenceRepository.findById(resourceId).orElse(null);
 			if (referenceCollection != null) {
 				ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
 				BeanUtil.map(referenceCollection, esReferenceDocument);
@@ -1809,7 +1809,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkDisease(ObjectId resourceId) {
 		try {
-			DiseasesCollection diseasesCollection = diseasesRepository.findOne(resourceId);
+			DiseasesCollection diseasesCollection = diseasesRepository.findById(resourceId).orElse(null);
 			if (diseasesCollection != null) {
 				ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
 				BeanUtil.map(diseasesCollection, esDiseasesDocument);
@@ -1823,7 +1823,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkDiagnosticTest(ObjectId resourceId) {
 		try {
-			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(resourceId);
+			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findById(resourceId).orElse(null);
 			if (diagnosticTestCollection != null) {
 				ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
 				BeanUtil.map(diagnosticTestCollection, esDiagnosticTestDocument);
@@ -1837,7 +1837,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkTreatmentService(ObjectId resourceId) {
 		try {
-			TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(resourceId);
+			TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findById(resourceId).orElse(null);
 			if (treatmentServicesCollection != null) {
 				ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
 				BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
@@ -1852,7 +1852,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkTreatmentServiceCost(ObjectId resourceId) {
 		try {
 			TreatmentServicesCostCollection treatmentServicesCostCollection = treatmentServicesCostRepository
-					.findOne(resourceId);
+					.findById(resourceId).orElse(null);
 			if (treatmentServicesCostCollection != null) {
 				ESTreatmentServiceCostDocument esTreatmentServiceCostDocument = new ESTreatmentServiceCostDocument();
 				BeanUtil.map(treatmentServicesCostCollection, esTreatmentServiceCostDocument);
@@ -1866,7 +1866,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkXray(ObjectId resourceId) {
 		try {
-			XRayDetailsCollection xRayDetailsCollection = xRayDetailsRepository.findOne(resourceId);
+			XRayDetailsCollection xRayDetailsCollection = xRayDetailsRepository.findById(resourceId).orElse(null);
 			if (xRayDetailsCollection != null) {
 				ESXRayDetailsDocument esxRayDetailsDocument = new ESXRayDetailsDocument();
 				BeanUtil.map(xRayDetailsCollection, esxRayDetailsDocument);
@@ -1880,7 +1880,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkHolter(ObjectId resourceId) {
 		try {
-			HolterCollection holterCollection = holterRepository.findOne(resourceId);
+			HolterCollection holterCollection = holterRepository.findById(resourceId).orElse(null);
 			if (holterCollection != null) {
 				ESHolterDocument esHolterDocument = new ESHolterDocument();
 				BeanUtil.map(holterCollection, esHolterDocument);
@@ -1896,7 +1896,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void checkPharmacy(ObjectId resourceId) {
 		try {
-			LocaleCollection localeCollection = localeRepository.findOne(resourceId);
+			LocaleCollection localeCollection = localeRepository.findById(resourceId).orElse(null);
 			UserCollection userCollection = null;
 			if (localeCollection != null) {
 				userCollection = userRepository.findAdminByMobileNumber(localeCollection.getContactNumber(),
@@ -1919,7 +1919,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkEcho(ObjectId resourceId) {
 		try {
 
-			EchoCollection echoCollection = echoRepository.findOne(resourceId);
+			EchoCollection echoCollection = echoRepository.findById(resourceId).orElse(null);
 			if (echoCollection != null) {
 				ESEchoDocument esEchoDocument = new ESEchoDocument();
 				BeanUtil.map(echoCollection, esEchoDocument);
@@ -1934,7 +1934,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkProcedureNote(ObjectId resourceId) {
 		try {
 
-			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findOne(resourceId);
+			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findById(resourceId).orElse(null);
 			if (procedureNoteCollection != null) {
 				ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
 				BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
@@ -1949,7 +1949,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkECG(ObjectId resourceId) {
 		try {
 
-			ECGDetailsCollection ecgDetailsCollection = ecgDetailsRepository.findOne(resourceId);
+			ECGDetailsCollection ecgDetailsCollection = ecgDetailsRepository.findById(resourceId).orElse(null);
 			if (ecgDetailsCollection != null) {
 				ESECGDetailsDocument esECGDetailsDocument = new ESECGDetailsDocument();
 				BeanUtil.map(ecgDetailsCollection, esECGDetailsDocument);
@@ -1964,7 +1964,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkPS(ObjectId resourceId) {
 		try {
 
-			PSCollection psCollection = psRepository.findOne(resourceId);
+			PSCollection psCollection = psRepository.findById(resourceId).orElse(null);
 			if (psCollection != null) {
 				ESPSDocument espsDocument = new ESPSDocument();
 				BeanUtil.map(psCollection, espsDocument);
@@ -1979,7 +1979,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkPA(ObjectId resourceId) {
 		try {
 
-			PACollection paCollection = paRepository.findOne(resourceId);
+			PACollection paCollection = paRepository.findById(resourceId).orElse(null);
 			if (paCollection != null) {
 				ESPADocument espaDocument = new ESPADocument();
 				BeanUtil.map(paCollection, espaDocument);
@@ -1994,7 +1994,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkPV(ObjectId resourceId) {
 		try {
 
-			PVCollection pvCollection = pvRepository.findOne(resourceId);
+			PVCollection pvCollection = pvRepository.findById(resourceId).orElse(null);
 			if (pvCollection != null) {
 				ESPVDocument espvDocument = new ESPVDocument();
 				BeanUtil.map(pvCollection, espvDocument);
@@ -2009,7 +2009,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkIndicationOfUCG(ObjectId resourceId) {
 		try {
 
-			IndicationOfUSGCollection indicationOfUCGCollection = indicationOfUSGRepository.findOne(resourceId);
+			IndicationOfUSGCollection indicationOfUCGCollection = indicationOfUSGRepository.findById(resourceId).orElse(null);
 			if (indicationOfUCGCollection != null) {
 				ESIndicationOfUSGDocument esIndicationOfUSGDocument = new ESIndicationOfUSGDocument();
 				BeanUtil.map(indicationOfUCGCollection, esIndicationOfUSGDocument);
@@ -2024,7 +2024,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkSystemExam(ObjectId resourceId) {
 		try {
 
-			SystemExamCollection systemExamCollection = systemExamRepository.findOne(resourceId);
+			SystemExamCollection systemExamCollection = systemExamRepository.findById(resourceId).orElse(null);
 			if (systemExamCollection != null) {
 				ESSystemExamDocument esSystemExamDocument = new ESSystemExamDocument();
 				BeanUtil.map(systemExamCollection, esSystemExamDocument);
@@ -2040,7 +2040,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		try {
 
 			ProvisionalDiagnosisCollection provitionalDiagnosisCollection = provisionalDiagnosisRepository
-					.findOne(resourceId);
+					.findById(resourceId).orElse(null);
 			if (provitionalDiagnosisCollection != null) {
 				ESPresentComplaintHistoryDocument esPresentComplaintHistoryDocument = new ESPresentComplaintHistoryDocument();
 				BeanUtil.map(provitionalDiagnosisCollection, esPresentComplaintHistoryDocument);
@@ -2056,7 +2056,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		try {
 
 			PresentComplaintHistoryCollection presentComplaintHistoryCollection = presentComplaintHistoryRepository
-					.findOne(resourceId);
+					.findById(resourceId).orElse(null);
 			if (presentComplaintHistoryCollection != null) {
 				ESPresentComplaintHistoryDocument esPresentComplaintHistoryDocument = new ESPresentComplaintHistoryDocument();
 				BeanUtil.map(presentComplaintHistoryCollection, esPresentComplaintHistoryDocument);
@@ -2071,7 +2071,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkGeneralExam(ObjectId resourceId) {
 		try {
 
-			GeneralExamCollection generalExamCollection = generalExamRepository.findOne(resourceId);
+			GeneralExamCollection generalExamCollection = generalExamRepository.findById(resourceId).orElse(null);
 			if (generalExamCollection != null) {
 				ESGeneralExamDocument esGeneralExamDocument = new ESGeneralExamDocument();
 				BeanUtil.map(generalExamCollection, esGeneralExamDocument);
@@ -2086,7 +2086,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkPresentComplaint(ObjectId resourceId) {
 		try {
 
-			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository.findOne(resourceId);
+			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository.findById(resourceId).orElse(null);
 			if (presentComplaintCollection != null) {
 				ESPresentComplaintDocument esPresentComplaintDocument = new ESPresentComplaintDocument();
 				BeanUtil.map(presentComplaintCollection, esPresentComplaintDocument);
@@ -2101,7 +2101,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkAdvice(ObjectId resourceId) {
 		try {
 
-			AdviceCollection adviceCollection = adviceRepository.findOne(resourceId);
+			AdviceCollection adviceCollection = adviceRepository.findById(resourceId).orElse(null);
 			if (adviceCollection != null) {
 				ESAdvicesDocument esAdvicesDocument = new ESAdvicesDocument();
 				BeanUtil.map(adviceCollection, esAdvicesDocument);
@@ -2117,7 +2117,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		try {
 
 			PresentingComplaintNoseCollection presentingComplaintNoseCollection = presentingComplaintNosesRepository
-					.findOne(resourceId);
+					.findById(resourceId).orElse(null);
 			if (presentingComplaintNoseCollection != null) {
 				ESPresentingComplaintNoseDocument esComplaintNoseDocument = new ESPresentingComplaintNoseDocument();
 				BeanUtil.map(presentingComplaintNoseCollection, esComplaintNoseDocument);
@@ -2133,7 +2133,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		try {
 
 			PresentingComplaintThroatCollection presentingComplaintThroatCollection = presentingComplaintThroatRepository
-					.findOne(resourceId);
+					.findById(resourceId).orElse(null);
 			if (presentingComplaintThroatCollection != null) {
 				ESPresentingComplaintThroatDocument esComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 				BeanUtil.map(presentingComplaintThroatCollection, esComplaintThroatDocument);
@@ -2149,7 +2149,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		try {
 
 			PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository
-					.findOne(resourceId);
+					.findById(resourceId).orElse(null);
 			if (presentingComplaintOralCavityCollection != null) {
 				ESPresentingComplaintOralCavityDocument esComplaintOralCavityDocument = new ESPresentingComplaintOralCavityDocument();
 				BeanUtil.map(presentingComplaintOralCavityCollection, esComplaintOralCavityDocument);
@@ -2164,7 +2164,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkPCEars(ObjectId resourceId) {
 		try {
 
-			PresentingComplaintEarsCollection earsCollection = presentingComplaintEarsRepository.findOne(resourceId);
+			PresentingComplaintEarsCollection earsCollection = presentingComplaintEarsRepository.findById(resourceId).orElse(null);
 			if (earsCollection != null) {
 				ESPresentingComplaintEarsDocument earsDocument = new ESPresentingComplaintEarsDocument();
 				BeanUtil.map(earsCollection, earsDocument);
@@ -2179,7 +2179,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkNoseExam(ObjectId resourceId) {
 		try {
 
-			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findOne(resourceId);
+			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findById(resourceId).orElse(null);
 			if (noseExaminationCollection != null) {
 				ESNoseExaminationDocument noseExaminationDocument = new ESNoseExaminationDocument();
 				BeanUtil.map(noseExaminationCollection, noseExaminationDocument);
@@ -2195,7 +2195,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		try {
 
 			OralCavityAndThroatExaminationCollection cavityAndThroatExamination = oralCavityThroatExaminationRepository
-					.findOne(resourceId);
+					.findById(resourceId).orElse(null);
 			if (cavityAndThroatExamination != null) {
 				ESOralCavityAndThroatExaminationDocument examinationDocument = new ESOralCavityAndThroatExaminationDocument();
 				BeanUtil.map(cavityAndThroatExamination, examinationDocument);
@@ -2211,7 +2211,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		try {
 
 			IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository
-					.findOne(resourceId);
+					.findById(resourceId).orElse(null);
 			if (indirectLarygoscopyExaminationCollection != null) {
 				ESIndirectLarygoscopyExaminationDocument examinationDocument = new ESIndirectLarygoscopyExaminationDocument();
 				BeanUtil.map(indirectLarygoscopyExaminationCollection, examinationDocument);
@@ -2226,7 +2226,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkNeckExam(ObjectId resourceId) {
 		try {
 
-			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findOne(resourceId);
+			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findById(resourceId).orElse(null);
 			if (neckExaminationCollection != null) {
 				ESNeckExaminationDocument examinationDocument = new ESNeckExaminationDocument();
 				BeanUtil.map(neckExaminationCollection, examinationDocument);
@@ -2241,7 +2241,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkEarsExam(ObjectId resourceId) {
 		try {
 
-			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findOne(resourceId);
+			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findById(resourceId).orElse(null);
 			if (earsExaminationCollection != null) {
 				ESEarsExaminationDocument examinationDocument = new ESEarsExaminationDocument();
 				BeanUtil.map(earsExaminationCollection, examinationDocument);
@@ -2256,7 +2256,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkmenstrualHistory(ObjectId resourceId) {
 		try {
 
-			MenstrualHistoryCollection historyCollection = menstrualHistoryRepository.findOne(resourceId);
+			MenstrualHistoryCollection historyCollection = menstrualHistoryRepository.findById(resourceId).orElse(null);
 			if (historyCollection != null) {
 				ESMenstrualHistoryDocument historyDocument = new ESMenstrualHistoryDocument();
 				BeanUtil.map(historyCollection, historyDocument);
@@ -2271,7 +2271,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkObstresrticHistory(ObjectId resourceId) {
 		try {
 
-			ObstetricHistoryCollection historyCollection = obstetricHistoryRepository.findOne(resourceId);
+			ObstetricHistoryCollection historyCollection = obstetricHistoryRepository.findById(resourceId).orElse(null);
 			if (historyCollection != null) {
 				ESObstetricHistoryDocument historyDocument = new ESObstetricHistoryDocument();
 				BeanUtil.map(historyCollection, historyDocument);
@@ -2286,7 +2286,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkLabourNotes(ObjectId resourceId) {
 		try {
 
-			LabourNoteCollection noteCollection = labourNoteRepository.findOne(resourceId);
+			LabourNoteCollection noteCollection = labourNoteRepository.findById(resourceId).orElse(null);
 			if (noteCollection != null) {
 				EsLabourNoteDocument noteDocument = new EsLabourNoteDocument();
 				BeanUtil.map(noteCollection, noteDocument);
@@ -2301,7 +2301,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkBabyNote(ObjectId resourceId) {
 		try {
 
-			BabyNoteCollection noteCollection = babyNoteRepository.findOne(resourceId);
+			BabyNoteCollection noteCollection = babyNoteRepository.findById(resourceId).orElse(null);
 			if (noteCollection != null) {
 				ESBabyNoteDocument noteDocument = new ESBabyNoteDocument();
 				BeanUtil.map(noteCollection, noteDocument);
@@ -2316,7 +2316,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkOperationNote(ObjectId resourceId) {
 		try {
 
-			OperationNoteCollection noteCollection = operationNoteRepository.findOne(resourceId);
+			OperationNoteCollection noteCollection = operationNoteRepository.findById(resourceId).orElse(null);
 			if (noteCollection != null) {
 				ESOperationNoteDocument noteDocument = new ESOperationNoteDocument();
 				BeanUtil.map(noteCollection, noteDocument);
@@ -2331,7 +2331,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkImplant(ObjectId resourceId) {
 		try {
 
-			ImplantCollection implantCollection = implantRepository.findOne(resourceId);
+			ImplantCollection implantCollection = implantRepository.findById(resourceId).orElse(null);
 			if (implantCollection != null) {
 				ESImplantDocument esImplantDocument = new ESImplantDocument();
 				BeanUtil.map(implantCollection, esImplantDocument);
@@ -2346,7 +2346,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void checkCement(ObjectId resourceId) {
 		try {
 
-			CementCollection cementCollection = cementRepository.findOne(resourceId);
+			CementCollection cementCollection = cementRepository.findById(resourceId).orElse(null);
 			if (cementCollection != null) {
 				ESCementDocument cementDocument = new ESCementDocument();
 				BeanUtil.map(cementCollection, cementDocument);

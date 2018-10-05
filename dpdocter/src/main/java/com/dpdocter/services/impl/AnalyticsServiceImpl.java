@@ -146,32 +146,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	@Override
-	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(int page, int size, String doctorId,
+	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(long page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String type, String searchTerm) {
 		List<DoctorPrescriptionItemAnalyticResponse> response = null;
 		try {
 			Criteria criteria = null;
 			Criteria itemCriteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date();
-				to = new Date();
-			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
+			
 			criteria = getCriteria(doctorId, locationId, null);
 
 			Aggregation aggregation = null;
@@ -340,29 +321,29 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			toTime = DPDoctorUtils.getEndTime(to);
 			// it take lot of time
 
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescription"),
-					Aggregation.unwind("totalPrescription"),
-					Aggregation.match(new Criteria("totalPrescription.locationId").is(new ObjectId(locationId))
-							.and("totalPrescription.hospitalId").is(new ObjectId(hospitalId))),
-					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescriptionCreated"),
-
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
-									.append("totalPrescriptionCreated",
-											new BasicDBObject("$first", "$totalPrescriptionCreated"))
-									.append("totalPrescription", new BasicDBObject("$sum", 1)))),
-
-					Aggregation.unwind("totalPrescriptionCreated"),
-
-					Aggregation.match(new Criteria("totalPrescriptionCreated.locationId").is(new ObjectId(locationId))
-							.and("totalPrescriptionCreated.hospitalId").is(new ObjectId(hospitalId))
-							.and("totalPrescriptionCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
-
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$_id")
-									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
-									.append("totalPrescriptionCreated", new BasicDBObject("$sum", 1)))));
+//			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+//					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescription"),
+//					Aggregation.unwind("totalPrescription"),
+//					Aggregation.match(new Criteria("totalPrescription.locationId").is(new ObjectId(locationId))
+//							.and("totalPrescription.hospitalId").is(new ObjectId(hospitalId))),
+//					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescriptionCreated"),
+//
+//					new CustomAggregationOperation(new BasicDBObject("$group",
+//							new BasicDBObject("_id", "$_id")
+//									.append("totalPrescriptionCreated",
+//											new BasicDBObject("$first", "$totalPrescriptionCreated"))
+//									.append("totalPrescription", new BasicDBObject("$sum", 1)))),
+//
+//					Aggregation.unwind("totalPrescriptionCreated"),
+//
+//					Aggregation.match(new Criteria("totalPrescriptionCreated.locationId").is(new ObjectId(locationId))
+//							.and("totalPrescriptionCreated.hospitalId").is(new ObjectId(hospitalId))
+//							.and("totalPrescriptionCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
+//
+//					new CustomAggregationOperation(new BasicDBObject("$group",
+//							new BasicDBObject("_id", "$_id")
+//									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
+//									.append("totalPrescriptionCreated", new BasicDBObject("$sum", 1)))));
 			// trying with query
 
 			data = new DoctorprescriptionAnalyticResponse();
@@ -620,7 +601,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	@Override
-	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(int page, int size, String doctorId,
+	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(long page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
 		List<DoctorTreatmentAnalyticResponse> response = null;
 		try {
@@ -1400,7 +1381,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page,
 			int size) {
 		List<?> response = null;
 		try {
@@ -1440,7 +1421,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	private List<?> getMostPrescribedLabTestsByDate(String locationId, String hospitalId, String fromDate,
-			String toDate, String searchType, int page, int size) {
+			String toDate, String searchType, long page, int size) {
 		List<DiagnosticTestsAnalyticsData> response = null;
 		try {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
@@ -1598,7 +1579,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	private List<?> getMostPrescribedDrugsByDate(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate, String searchType, int page, int size) {
+			String toDate, String searchType, long page, int size) {
 		List<DrugsAnalyticsData> response = null;
 		try {
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
@@ -1769,7 +1750,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	private List<?> getMostPrescribedLabTests(String locationId, String hospitalId, String fromDate, String toDate,
-			String searchType, int page, int size) {
+			String searchType, long page, int size) {
 		List<DiagnosticTest> response = null;
 		try {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
@@ -1858,7 +1839,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	private List<Drug> getMostPrescribedDrugs(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate, String searchType, int page, int size) {
+			String toDate, String searchType, long page, int size) {
 		List<Drug> response = null;
 		try {
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
@@ -1962,7 +1943,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Override
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
-			int page, int size) {
+			long page, int size) {
 		AppointmentAnalyticResponse response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -2088,7 +2069,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Override
 	public List<AppointmentAverageTimeAnalyticResponse> getAppointmentAverageTimeAnalyticsData(String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String queryType, String searchType,
-			String searchTerm, int page, int size) {
+			String searchTerm, long page, int size) {
 		List<AppointmentAverageTimeAnalyticResponse> response = null;
 		try {
 
@@ -2219,7 +2200,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Override
 	public List<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
-			int page, int size) {
+			long page, int size) {
 		List<AppointmentCountAnalyticResponse> response = null;
 		try {
 
@@ -2345,7 +2326,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	private List<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticnDataByPatientGroup(String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, int page, int size) {
+			String locationId, String hospitalId, String fromDate, String toDate, long page, int size) {
 		List<AppointmentCountAnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -2407,7 +2388,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<InvoiceAnalyticsDataDetailResponse> getIncomeDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page,
 			int size) {
 		List<InvoiceAnalyticsDataDetailResponse> response = null;
 		try {
@@ -2543,7 +2524,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<IncomeAnalyticsDataResponse> getIncomeAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page,
 			int size) {
 		List<IncomeAnalyticsDataResponse> response = null;
 		try {
@@ -2614,7 +2595,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	}
 
-	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByPatientGroup(String searchType, int page, int size,
+	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByPatientGroup(String searchType, long page, int size,
 			DateTime start, DateTime end, String doctorId, String locationId, String hospitalId) {
 		List<IncomeAnalyticsDataResponse> response = null;
 		try {
@@ -2694,7 +2675,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return response;
 	}
 
-	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByServices(String searchType, int page, int size,
+	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByServices(String searchType, long page, int size,
 			Criteria criteria) {
 		List<IncomeAnalyticsDataResponse> response = null;
 		criteria.and("discarded").is(false);
@@ -2783,7 +2764,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	}
 
-	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByDoctors(String searchType, int page, int size,
+	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByDoctors(String searchType, long page, int size,
 			Criteria criteria) {
 		List<IncomeAnalyticsDataResponse> response = null;
 		criteria.and("discarded").is(false);
@@ -2877,7 +2858,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	}
 
-	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByDate(String searchType, int page, int size,
+	private List<IncomeAnalyticsDataResponse> getInvoiceIncomeDataByDate(String searchType, long page, int size,
 			Criteria criteria) {
 		criteria.and("discarded").is(false);
 		List<IncomeAnalyticsDataResponse> response = null;
@@ -3034,7 +3015,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<PaymentDetailsAnalyticsDataResponse> getPaymentDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page,
 			int size) {
 		List<PaymentDetailsAnalyticsDataResponse> response = null;
 		try {
@@ -3158,7 +3139,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<PaymentAnalyticsDataResponse> getPaymentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page,
 			int size) {
 		List<PaymentAnalyticsDataResponse> response = null;
 		try {
@@ -3220,7 +3201,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return response;
 	}
 
-	private List<PaymentAnalyticsDataResponse> getPaymentDataByDoctors(String searchType, int page, int size,
+	private List<PaymentAnalyticsDataResponse> getPaymentDataByDoctors(String searchType, long page, int size,
 			Criteria criteria) {
 		criteria.and("discarded").is(false);
 		List<PaymentAnalyticsDataResponse> response = null;
@@ -3331,7 +3312,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return response;
 	}
 
-	private List<PaymentAnalyticsDataResponse> getPaymentDataByPaymentModes(String searchType, int page, int size,
+	private List<PaymentAnalyticsDataResponse> getPaymentDataByPaymentModes(String searchType, long page, int size,
 			Criteria criteria) {
 		List<PaymentAnalyticsDataResponse> response = null;
 		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -3360,7 +3341,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	}
 
-	private List<PaymentAnalyticsDataResponse> getPaymentByDate(String searchType, int page, int size,
+	private List<PaymentAnalyticsDataResponse> getPaymentByDate(String searchType, long page, int size,
 			Criteria criteria) {
 		List<PaymentAnalyticsDataResponse> response = null;
 		AggregationOperation aggregationOperation = null;
@@ -3524,7 +3505,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<AmountDueAnalyticsDataResponse> getAmountDueAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, long page,
 			int size) {
 		List<AmountDueAnalyticsDataResponse> response = null;
 		try {
@@ -3667,7 +3648,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<TreatmentService> getTreatmentsAnalyticsData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, int page, int size) {
+			String fromDate, String toDate, String searchType, long page, int size) {
 		List<TreatmentService> response = null;
 		try {
 			Criteria criteria = new Criteria();

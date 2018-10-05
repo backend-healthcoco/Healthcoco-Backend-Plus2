@@ -212,7 +212,7 @@ public class ClinicalNotesApi {
 
 	@GET
 	@ApiOperation(value = "GET_CLINICAL_NOTES", notes = "GET_CLINICAL_NOTES")
-	public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ClinicalNotes> getNotes(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
@@ -238,7 +238,7 @@ public class ClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID, notes = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
 	public Response<ClinicalNotes> getNotes(@PathParam(value = "patientId") String patientId,
-			@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("page") long page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
@@ -553,7 +553,7 @@ public class ClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS, notes = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
 	public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
@@ -1597,7 +1597,7 @@ public class ClinicalNotesApi {
 	@Path(value = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS)
 	@GET
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS, notes = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS)
-	public Response<EyeObservation> getEyeObservations(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<EyeObservation> getEyeObservations(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,

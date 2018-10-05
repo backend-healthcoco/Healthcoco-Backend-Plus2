@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
@@ -20,28 +19,28 @@ public class ESDrugDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+	@Field(type = FieldType.text)
 	private String drugName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String explanation;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String drugCode;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String drugTypeId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String drugType;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
@@ -50,37 +49,37 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String packForm;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String prizePerPack;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.text))
 	private List<String> specialities;
 
 	@Field(type = FieldType.Long)
 	private long companyRankingCount = 0;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String rxRequired;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String unsafeWith;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String companyName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String packSize;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String MRP;
 
 	@Field(type = FieldType.Nested)
 	private Duration duration;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String dosage;
 
 	@MultiField(mainField = @Field(type = FieldType.Long))
@@ -89,7 +88,7 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Nested)
 	private List<DrugDirection> direction;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.text))
 	private List<String> categories;
 
 	@Field(type = FieldType.Nested)
@@ -107,10 +106,10 @@ public class ESDrugDocument {
 	@Field(type = FieldType.Long)
 	private Double retailPrice;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String stockingUnit;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 	
 	@Override

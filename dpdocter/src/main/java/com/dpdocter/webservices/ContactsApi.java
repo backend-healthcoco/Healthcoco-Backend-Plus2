@@ -84,7 +84,7 @@ public class ContactsApi {
 	@GET
 	@ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
 	public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("role") String role) {
@@ -139,7 +139,7 @@ public class ContactsApi {
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam("role") String role,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 
 		List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId,
 				locationId, hospitalId, updatedTime, discarded, role, page, size, searchTerm);
@@ -257,7 +257,7 @@ public class ContactsApi {
 	@Path(value = PathProxy.ContactsUrls.GET_ALL_GROUPS)
 	@GET
 	@ApiOperation(value = PathProxy.ContactsUrls.GET_ALL_GROUPS, notes = PathProxy.ContactsUrls.GET_ALL_GROUPS)
-	public Response<Object> getAllGroups(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Object> getAllGroups(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,

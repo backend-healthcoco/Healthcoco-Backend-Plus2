@@ -19,7 +19,6 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.beans.Duration;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.PharmacyFeedback;
@@ -102,7 +101,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 		AppointmentGeneralFeedback response = null;
 		AppointmentGeneralFeedbackCollection appointmentGeneralFeedbackCollection = null;
 		appointmentGeneralFeedbackCollection = appointmentGeneralFeedbackRepository
-				.findOne(new ObjectId(feedback.getId()));
+				.findById(new ObjectId(feedback.getId())).orElse(null);
 		if (appointmentGeneralFeedbackCollection == null) {
 			feedback.setCreatedTime(new Date());
 			appointmentGeneralFeedbackCollection = new AppointmentGeneralFeedbackCollection();
@@ -383,7 +382,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 	@Override
 	@Transactional
 	public List<DailyImprovementFeedbackResponse> getDailyImprovementFeedbackList(String prescriptionId , String doctorId,
-		     String locationId, String hospitalId, int page , int size) {
+		     String locationId, String hospitalId, long page , int size) {
 		List<DailyImprovementFeedbackResponse> dailyImprovementFeedbacks = null;
 		LocationCollection locationCollection = null;
 		HospitalCollection hospitalCollection = null;
@@ -400,13 +399,13 @@ public class FeedbackServiceImpl implements FeedbackService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 			{
 				criteria.and("doctorId").is(new ObjectId(doctorId));
-				userCollection = userRepository.findOne(new ObjectId(doctorId));
+				userCollection = userRepository.findById(new ObjectId(doctorId)).orElse(null);
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 			{
 				criteria.and("locationId").is(new ObjectId(locationId));
-				locationCollection = locationRepository.findOne(new ObjectId(locationId));
+				locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 			}
 			
 			criteria.and("discarded").is(false);
@@ -501,7 +500,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
 			{
 				criteria.and("localeId").is(new ObjectId(request.getLocaleId()));
-				localeCollection = localeRepository.findOne(new ObjectId(request.getLocaleId()));
+				localeCollection = localeRepository.findById(new ObjectId(request.getLocaleId())).orElse(null);
 			}
 			
 			
@@ -509,19 +508,19 @@ public class FeedbackServiceImpl implements FeedbackService {
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 			{
 				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
-				hospitalCollection = hospitalRepository.findOne(new ObjectId(request.getHospitalId()));
+				hospitalCollection = hospitalRepository.findById(new ObjectId(request.getHospitalId())).orElse(null);
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
 			{
 				criteria.and("doctorId").is(new ObjectId(request.getDoctorId()));
-				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 			{
 				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
-				locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+				locationCollection = locationRepository.findById(new ObjectId(request.getLocationId())).orElse(null);
 			}
 			
 
@@ -623,7 +622,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 		try {
 
 			PatientFeedbackCollection patientFeedbackCollection = patientFeedbackRepository
-					.findOne(new ObjectId(request.getId()));
+					.findById(new ObjectId(request.getId())).orElse(null);
 
 			if (patientFeedbackCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -632,16 +631,16 @@ public class FeedbackServiceImpl implements FeedbackService {
 			
 
 			if (patientFeedbackCollection.getLocaleId() != null)
-				localeCollection = localeRepository.findOne(patientFeedbackCollection.getDoctorId());
+				localeCollection = localeRepository.findById(patientFeedbackCollection.getDoctorId()).orElse(null);
 
 			if (patientFeedbackCollection.getHospitalId() != null)
-				hospitalCollection = hospitalRepository.findOne(patientFeedbackCollection.getHospitalId());
+				hospitalCollection = hospitalRepository.findById(patientFeedbackCollection.getHospitalId()).orElse(null);
 
 			if (patientFeedbackCollection.getDoctorId() != null)
-				userCollection = userRepository.findOne(patientFeedbackCollection.getDoctorId());
+				userCollection = userRepository.findById(patientFeedbackCollection.getDoctorId()).orElse(null);
 
 			if (patientFeedbackCollection.getLocationId() != null)
-				locationCollection = locationRepository.findOne(patientFeedbackCollection.getLocationId());
+				locationCollection = locationRepository.findById(patientFeedbackCollection.getLocationId()).orElse(null);
 
 			if (patientFeedbackCollection.getPatientId() != null)
 				patientCollection = patientRepository.findByUserId(patientFeedbackCollection.getPatientId());

@@ -129,7 +129,7 @@ public class AsyncService {
 			Integer countfor24Hour = 0;
 			Integer countforHour = 0;
 			Criteria criteria = new Criteria();
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 			}
@@ -214,7 +214,7 @@ public class AsyncService {
 			requestToPharmacyCollection.setReplyType(ReplyType.REQUEST_FULFILLED.getReplyType());
 		}
 		if (!LocaleIds.isEmpty() && LocaleIds != null) {
-			searchRequestToPharmacyRepository.save(searchRequestToPharmacyCollections);
+			searchRequestToPharmacyRepository.saveAll(searchRequestToPharmacyCollections);
 			pushNotificationServices.notifyRefreshAll(RoleEnum.PHARMIST, LocaleIds, "refresh",
 					ComponentType.REFRESH_REQUEST);
 		}
@@ -233,7 +233,7 @@ public class AsyncService {
 			requestToPharmacyCollection.setReplyType(ReplyType.ORDER_FULFILLED.getReplyType());
 		}
 		if (searchRequestToPharmacyCollections != null && !searchRequestToPharmacyCollections.isEmpty()) {
-			searchRequestToPharmacyRepository.save(searchRequestToPharmacyCollections);
+			searchRequestToPharmacyRepository.saveAll(searchRequestToPharmacyCollections);
 			pushNotificationServices.notifyRefresh(userId.toString(), "", "", RoleEnum.PATIENT, "refresh",
 					ComponentType.REFRESH_RESPONSE);
 

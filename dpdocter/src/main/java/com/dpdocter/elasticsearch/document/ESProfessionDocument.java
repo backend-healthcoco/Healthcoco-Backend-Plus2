@@ -13,10 +13,10 @@ public class ESProfessionDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.text)
     private String profession;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.text)
     private String explanation;
 
     @Field(type = FieldType.Date)

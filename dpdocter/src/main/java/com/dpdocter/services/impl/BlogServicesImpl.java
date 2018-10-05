@@ -72,7 +72,7 @@ public class BlogServicesImpl implements BlogService {
 	private FevouriteBlogsRepository fevouriteBlogsRepository;
 
 	@Override
-	public BlogResponse getBlogs(int size, int page, String category, String userId, String title) {
+	public BlogResponse getBlogs(int size, long page, String category, String userId, String title) {
 		BlogResponse response = new BlogResponse();
 
 		List<Blog> listblog = null;
@@ -140,7 +140,7 @@ public class BlogServicesImpl implements BlogService {
 	}
 
 	@Override
-	public List<Blog> getMostLikedOrViewedBlogs(int size, int page, String category, String title, String userId,
+	public List<Blog> getMostLikedOrViewedBlogs(int size, long page, String category, String title, String userId,
 			Boolean forMostLiked) {
 		List<Blog> response = null;
 		try {
@@ -229,7 +229,7 @@ public class BlogServicesImpl implements BlogService {
 			if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
 				blogCollection = blogRepository.findBySlugURL(slugUrl);
 			} else {
-				blogCollection = blogRepository.findOne(new ObjectId(blogId));
+				blogCollection = blogRepository.findById(new ObjectId(blogId)).orElse(null);
 			}
 			if (blogCollection != null) {
 				blogCollection.setViews(blogCollection.getViews() + 1);
@@ -270,9 +270,9 @@ public class BlogServicesImpl implements BlogService {
 		Blog response = null;
 		try {
 			BlogLikesCollection blogLikesCollection = null;
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
 
-			BlogCollection blogCollection = blogRepository.findOne(new ObjectId(blogId));
+			BlogCollection blogCollection = blogRepository.findById(new ObjectId(blogId)).orElse(null);
 			if (userCollection != null && blogCollection != null) {
 				blogLikesCollection = blogLikesRepository.findbyBlogIdAndUserId(new ObjectId(blogId),
 						new ObjectId(userId));
@@ -327,8 +327,8 @@ public class BlogServicesImpl implements BlogService {
 	public Boolean addFevouriteBlog(String blogId, String userId) {
 		try {
 			FavouriteBlogsCollection favouriteBlogsCollection = null;
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
-			BlogCollection blogCollection = blogRepository.findOne(new ObjectId(blogId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
+			BlogCollection blogCollection = blogRepository.findById(new ObjectId(blogId)).orElse(null);
 			if (userCollection != null && blogCollection != null) {
 				favouriteBlogsCollection = fevouriteBlogsRepository.findbyBlogIdAndUserId(new ObjectId(blogId),
 						new ObjectId(userId));
@@ -366,7 +366,7 @@ public class BlogServicesImpl implements BlogService {
 	}
 
 	@Override
-	public List<Blog> getFevouriteBlogs(int size, int page, String category, String userId, String title) {
+	public List<Blog> getFevouriteBlogs(int size, long page, String category, String userId, String title) {
 		List<Blog> response = null;
 		try {
 			Criteria criteria = new Criteria().and("fevourite.discarded").is(false);

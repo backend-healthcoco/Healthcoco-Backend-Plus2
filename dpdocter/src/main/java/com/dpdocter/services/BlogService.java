@@ -8,18 +8,18 @@ import com.dpdocter.request.BlogRequest;
 import com.dpdocter.response.BlogResponse;
 
 public interface BlogService {
-	public BlogResponse getBlogs(int size, int page, String category, String userId, String title);
+	public BlogResponse getBlogs(int size, long page, String category, String userId, String title);
 
 	public Blog getBlog(String id, String slugUrl,String userId);
 
 	public Blog updateLikes(String id, String userId);
 
-	public List<Blog> getMostLikedOrViewedBlogs(int size, int page, String category, String title, String userId,
+	public List<Blog> getMostLikedOrViewedBlogs(int size, long page, String category, String title, String userId,
 			Boolean forMostLiked);
 
 	public Boolean addFevouriteBlog(String blogId, String userId);
 
-	public List<Blog> getFevouriteBlogs(int size, int page, String category, String userId, String title);
+	public List<Blog> getFevouriteBlogs(int size, long page, String category, String userId, String title);
 
 	public BlogCategoryType[] getBlogCategory();
 

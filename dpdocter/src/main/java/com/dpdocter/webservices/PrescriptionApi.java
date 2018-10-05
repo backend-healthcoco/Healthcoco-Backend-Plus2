@@ -343,7 +343,7 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_TEMPLATE, notes = PathProxy.PrescriptionUrls.GET_TEMPLATE)
-	public Response<TemplateAddEditResponseDetails> getAllTemplates(@QueryParam("page") int page,
+	public Response<TemplateAddEditResponseDetails> getAllTemplates(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
@@ -478,7 +478,7 @@ public class PrescriptionApi {
 
 	@GET
 	@ApiOperation(value = "GET_PRESCRIPTIONS", notes = "GET_PRESCRIPTIONS")
-	public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Prescription> getPrescription(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
@@ -501,7 +501,7 @@ public class PrescriptionApi {
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
 	public Response<Object> getPrescriptionByPatientId(@PathParam("patientId") String patientId,
-			@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("page") long page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
@@ -698,7 +698,7 @@ public class PrescriptionApi {
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS)
 	public Response<Object> getPrescriptionItems(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "disease") String disease,
@@ -1091,7 +1091,7 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS, notes = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
-	public Response<EyePrescription> getEyePrescriptions(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<EyePrescription> getEyePrescriptions(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -1249,7 +1249,7 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.GET_INSTRUCTIONS)
 	@GET
-	public Response<Instructions> getInstructions(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Instructions> getInstructions(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,

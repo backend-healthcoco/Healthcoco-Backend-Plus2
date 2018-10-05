@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.dpdocter.beans.DOB;
@@ -17,85 +16,85 @@ public class ESPatientDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String userId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String PID;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String PNUM;
 	
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String userName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String firstName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String localPatientName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String localPatientNameFormatted;
 	
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String gender;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String bloodGroup;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String emailAddress;
 
 	@Field(type = FieldType.Nested)
 	private DOB dob;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String city;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String locality;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String postalCode;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String mobileNumber;
 
-	@Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+	@Field(type = FieldType.text)
 	private String profession;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String hospitalId;
 
-	@Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+	@Field(type = FieldType.text)
 	private String referredBy;
 
 	@Field(type = FieldType.Date)
 	private Date createdTime;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String imageUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String thumbnailUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String colorCode;
 
 	@Field(type = FieldType.Long)
 	private Long registrationDate;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String userUId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private List<String> consultantDoctorIds;
 	
 	@Field(type = FieldType.Boolean)

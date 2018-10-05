@@ -34,7 +34,7 @@ public class EmailTrackAPI {
     @GET
     @ApiOperation(value = "GET_EMAIL_DETAILS", notes = "GET_EMAIL_DETAILS")
     public Response<EmailTrack> getEmailDetails(@QueryParam(value = "patientId") String patientId, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") int page,
+	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") long page,
 	    @QueryParam("size") int size) {
 
 	List<EmailTrack> emailTrackList = emailTackService.getEmailDetails(patientId, doctorId, locationId, hospitalId, page, size);

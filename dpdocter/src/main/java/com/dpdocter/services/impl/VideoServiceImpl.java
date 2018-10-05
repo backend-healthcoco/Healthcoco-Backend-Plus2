@@ -13,19 +13,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.LabReports;
-import com.dpdocter.beans.LabTestPickupLookupResponse;
-import com.dpdocter.beans.LabTestSample;
-import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.Video;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.LabReportsCollection;
-import com.dpdocter.collections.LabTestPickupCollection;
-import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.VideoCollection;
 import com.dpdocter.reflections.BeanUtil;
@@ -84,7 +76,6 @@ public class VideoServiceImpl implements VideoService {
 			BeanUtil.map(videoCollection, response);
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -92,7 +83,7 @@ public class VideoServiceImpl implements VideoService {
 
 	@Override
 	@Transactional
-	public List<Video> getVideos(String doctorId, String searchTerm, int page, int size) {
+	public List<Video> getVideos(String doctorId, String searchTerm, long page, int size) {
 		Aggregation aggregation = null;
 		List<String> specialities = null;
 		List<Video> response = null;
@@ -104,7 +95,7 @@ public class VideoServiceImpl implements VideoService {
 				if (doctorCollection.getSpecialities() != null || !doctorCollection.getSpecialities().isEmpty()) {
 					specialities = new ArrayList<>();
 					for (ObjectId specialityId : doctorCollection.getSpecialities()) {
-						SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+						SpecialityCollection specialityCollection = specialityRepository.findById(specialityId).orElse(null);
 						if (specialityCollection != null) {
 							speciality = specialityCollection.getSpeciality();
 							specialities.add(speciality);
@@ -120,7 +111,6 @@ public class VideoServiceImpl implements VideoService {
 					Video.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;

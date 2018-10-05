@@ -79,7 +79,7 @@ public class IssueTrackApi {
 
     @GET
     @ApiOperation(value = "GET_ISSUE", notes = "GET_ISSUE")
-    public Response<IssueTrack> getIssues(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+    public Response<IssueTrack> getIssues(@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 	    @MatrixParam("scope") List<String> scope) {

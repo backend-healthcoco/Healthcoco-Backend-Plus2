@@ -187,7 +187,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId,
-			String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded,
+			String locationId, String hospitalId, long page, int size, String updatedTime, Boolean discarded,
 			Boolean sortByFirstName, String role) throws Exception {
 		DoctorContactsResponse response = null;
 		List<PatientCard> patientCards = null;
@@ -367,14 +367,14 @@ public class ContactsServiceImpl implements ContactsService {
 			BeanUtil.map(group, groupCollection);
 			if (DPDoctorUtils.allStringsEmpty(groupCollection.getId())) {
 				groupCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(groupCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(groupCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					groupCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
 			} else {
-				GroupCollection oldGroupCollection = groupRepository.findOne(groupCollection.getId());
+				GroupCollection oldGroupCollection = groupRepository.findById(groupCollection.getId()).orElse(null);
 				groupCollection.setCreatedTime(oldGroupCollection.getCreatedTime());
 				groupCollection.setCreatedBy(groupCollection.getCreatedBy());
 				groupCollection.setDiscarded(oldGroupCollection.getDiscarded());
@@ -427,7 +427,7 @@ public class ContactsServiceImpl implements ContactsService {
 		GroupCollection groupCollection = null;
 		List<PatientGroupCollection> patientGroupCollection = null;
 		try {
-			groupCollection = groupRepository.findOne(new ObjectId(groupId));
+			groupCollection = groupRepository.findById(new ObjectId(groupId)).orElse(null);
 			if (groupCollection != null) {
 				groupCollection.setDiscarded(discarded);
 				groupCollection.setUpdatedTime(new Date());

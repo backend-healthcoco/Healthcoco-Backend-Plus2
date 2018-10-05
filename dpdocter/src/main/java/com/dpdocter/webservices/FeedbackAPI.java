@@ -6,7 +6,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -20,17 +19,16 @@ import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
-import com.dpdocter.collections.DailyImprovementFeedbackCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DailyImprovementFeedbackRequest;
 import com.dpdocter.request.FeedbackGetRequest;
 import com.dpdocter.request.PatientFeedbackReplyRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
+import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
 import com.dpdocter.response.DailyImprovementFeedbackResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
-import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
 
 import common.util.web.DPDoctorUtils;
@@ -210,7 +208,7 @@ public class FeedbackAPI {
 	@GET
 	@Path(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
-	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback( @QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback( @QueryParam("page") long page, @QueryParam("size") int size,
 		    @QueryParam(value = "prescriptionId") String prescriptionId, @QueryParam(value = "doctorId") String doctorId,
 		    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
 		Response<DailyImprovementFeedbackResponse> response = new Response<>();

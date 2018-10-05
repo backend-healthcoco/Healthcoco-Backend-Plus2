@@ -99,7 +99,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 							.equals(birthdaySMSDetailsForPatient.getPatient().getLocationId())) {
 
 						UserCollection userCollection = userRepository
-								.findOne(new ObjectId(birthdaySMSDetailsForPatient.getPatient().getUserId()));
+								.findById(new ObjectId(birthdaySMSDetailsForPatient.getPatient().getUserId())).orElse(null);
 						String message = birthdayWishSMStoPatient;
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatient.getDoctorId());
@@ -137,7 +137,6 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 				mailService.sendExceptionMail("Backend Business Exception :: While Sending Birthday SMS to patients",
 						e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Sending Birthday SMS to patients");
@@ -197,7 +196,6 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 				mailService.sendExceptionMail("Backend Business Exception :: While Sending Birthday SMS to Doctor",
 						e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Sending Birthday SMS to Doctor");

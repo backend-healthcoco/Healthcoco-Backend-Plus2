@@ -78,7 +78,7 @@ public interface ClinicalNotesService {
 	Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
 
-	List<?> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId,
+	List<?> getClinicalItems(String type, String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 	void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId,
@@ -87,9 +87,9 @@ public interface ClinicalNotesService {
 	MailResponse getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId,
 			String hospitalId);
 
-	List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
+	List<ClinicalNotes> getClinicalNotes(String patientId, long page, int size, String updatedTime, Boolean discarded);
 
-	List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId, String hospitalId,
+	List<ClinicalNotes> getClinicalNotes(long page, int size, String doctorId, String locationId, String hospitalId,
 			String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory);
 
 	String getClinicalNotesFile(String clinicalNotesId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA,

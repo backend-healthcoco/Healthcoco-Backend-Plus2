@@ -7,19 +7,19 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "labournote_in", type = "labournote")
 public class EsLabourNoteDocument {
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String labourNotes;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
@@ -28,7 +28,7 @@ public class EsLabourNoteDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String speciality;
 
 	public String getId() {

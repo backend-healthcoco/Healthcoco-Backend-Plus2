@@ -67,8 +67,8 @@ public class NutritionAPI {
 	@GET
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_REFERENCES)
 	public Response<NutritionReferenceResponse> getNutritionReference(@QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("role") String role) {
+			@QueryParam("locationId") String locationId, @QueryParam("page") long page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm , @QueryParam("role") String role  ) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

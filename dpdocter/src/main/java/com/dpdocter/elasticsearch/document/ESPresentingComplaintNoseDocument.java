@@ -13,22 +13,22 @@ public class ESPresentingComplaintNoseDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String pcNose;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
 	private Boolean discarded = false;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String speciality;
 
 	@Field(type = FieldType.Date)

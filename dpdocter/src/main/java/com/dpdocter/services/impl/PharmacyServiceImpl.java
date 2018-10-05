@@ -11,7 +11,6 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -58,7 +57,6 @@ import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.scheduler.AsyncService;
-import com.dpdocter.services.LocaleService;
 import com.dpdocter.services.PharmacyService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.UserFavouriteService;
@@ -98,8 +96,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 	@Autowired
 	private LocaleRepository localeRepository;
 
-	@Autowired
-	private ElasticsearchTemplate elasticsearchTemplate;
+//	@Autowired
+//	private ElasticsearchTemplate elasticsearchTemplate;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -119,8 +117,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 	@Autowired
 	private BlockUserRepository blockUserRepository;
 
-	@Autowired
-	private LocaleService localeService;
+//	@Autowired
+//	private LocaleService localeService;
 
 	@Autowired
 	private UserFavouriteService userFavouriteService;
@@ -136,7 +134,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 
-		BlockUserCollection blockUserCollection = mongoTemplate.findOne(
+		BlockUserCollection blockUserCollection = mongoTemplate.findById(
 				new Query(new Criteria("userIds").is(new ObjectId(request.getUserId()))), BlockUserCollection.class);
 		if (blockUserCollection != null) {
 			if (!blockUserCollection.getDiscarded()) {
@@ -281,7 +279,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Override
 	@Transactional
-	public List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, int page, int size) {
+	public List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, long page, int size) {
 		List<SearchRequestFromUserResponse> response = null;
 		try {
 			Criteria criteria = new Criteria("userId").is(new ObjectId(userId));
@@ -307,7 +305,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 				searchRequestFromUserResponse.setCountForNo(countForNo);
 				if (searchRequestFromUserResponse.getLocaleId() != null) {
 					LocaleCollection localeCollection = localeRepository
-							.findOne(new ObjectId(searchRequestFromUserResponse.getLocaleId()));
+							.findById(new ObjectId(searchRequestFromUserResponse.getLocaleId())).orElse(null);
 					if (localeCollection != null) {
 						searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
 					}
@@ -325,7 +323,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 	@Override
 	@Transactional
 	public List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId,
-			String replyType, int page, int size, Double latitude, Double longitude) {
+			String replyType, long page, int size, Double latitude, Double longitude) {
 		List<SearchRequestToPharmacyResponse> response = null;
 		try {
 			Criteria criteria = new Criteria("userId").is(new ObjectId(userId)).and("uniqueRequestId")
@@ -391,7 +389,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			Integer countfor24Hour = 0;
 			Integer countforHour = 0;
 			Criteria criteria = new Criteria();
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 			}
@@ -466,7 +464,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 	}
 
 	@Override
-	public List<OrderDrugsResponse> getPatientOrders(String userId, int page, int size, String updatedTime) {
+	public List<OrderDrugsResponse> getPatientOrders(String userId, long page, int size, String updatedTime) {
 		List<OrderDrugsResponse> response = null;
 		try {
 			Long updatedTImeLong = Long.parseLong(updatedTime);
@@ -609,7 +607,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 	}
 
 	@Override
-	public List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size,
+	public List<SearchRequestFromUserResponse> getPatientRequests(String userId, long page, int size,
 			String updatedTime) {
 		List<SearchRequestFromUserResponse> response = null;
 		try {

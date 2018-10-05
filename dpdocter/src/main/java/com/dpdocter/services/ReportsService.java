@@ -1,7 +1,5 @@
 package com.dpdocter.services;
 
-import java.util.List;
-
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.IPDReports;
 import com.dpdocter.beans.OPDReports;
@@ -22,16 +20,16 @@ public interface ReportsService {
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports);
 
 	IPDReportsResponse getIPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
-			int page, int size, String updatedTime);
+			long page, int size, String updatedTime);
 
 	OPDReportsResponse getOPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
-			int page, int size, String updatedTime);
+			long page, int size, String updatedTime);
 
 	OTReportsResponse getOTReportsList(String locationId, String doctorId, String patientId, String from, String to,
-			int page, int size, String updatedTime);
+			long page, int size, String updatedTime);
 
 	DeliveryReportsResponse getDeliveryReportsList(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime);
+			String to, long page, int size, String updatedTime);
 
 	public Boolean addPrescriptionOPDReports();
 

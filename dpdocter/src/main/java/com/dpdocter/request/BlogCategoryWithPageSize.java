@@ -6,7 +6,7 @@ public class BlogCategoryWithPageSize {
 
 	BlogSuperCategoryType superCategory;
 	
-	int page = 0;
+	long page = 0;
 	
 	int size = 0;
 
@@ -18,11 +18,11 @@ public class BlogCategoryWithPageSize {
 		this.superCategory = superCategory;
 	}
 
-	public int getPage() {
+	public long getPage() {
 		return page;
 	}
 
-	public void setPage(int page) {
+	public void setPage(long page) {
 		this.page = page;
 	}
 

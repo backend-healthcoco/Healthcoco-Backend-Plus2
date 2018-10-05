@@ -34,7 +34,7 @@ public class RankingApi {
 	@Path(value = PathProxy.RankingUrls.GET_DOCTORS_RANKING)
 	@GET
 	@ApiOperation(value = PathProxy.RankingUrls.GET_DOCTORS_RANKING, notes = PathProxy.RankingUrls.GET_DOCTORS_RANKING)
-	public Response<RankingCount> getDoctorsRankingCount(@QueryParam("page") int page, @QueryParam("size") int size){
+	public Response<RankingCount> getDoctorsRankingCount(@QueryParam("page") long page, @QueryParam("size") int size){
 		
 		List<RankingCount> rankingCounts = rankingAlgorithmsServices.getDoctorsRankingCount(page, size);
 		Response<RankingCount> response = new Response<RankingCount>();

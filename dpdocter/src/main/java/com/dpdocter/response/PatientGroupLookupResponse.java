@@ -1,10 +1,7 @@
 package com.dpdocter.response;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.User;
 
 public class PatientGroupLookupResponse {

@@ -3,7 +3,6 @@ package com.dpdocter.collections;
 import java.util.Date;
 import java.util.List;
 
-import com.dpdocter.beans.DentalImagingInvoiceItem;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Location;

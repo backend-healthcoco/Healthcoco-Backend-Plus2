@@ -274,7 +274,7 @@ public class LoginServiceImpl implements LoginService {
 							}
 
 							if (!isStaff) {
-								if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
+								if (!checkHospitalId.containsKey(locationCollection.getHospitalId().toString())) {
 									hospitalCollection = doctorClinicProfileLookupResponse.getHospital();
 									Hospital hospital = new Hospital();
 									BeanUtil.map(hospitalCollection, hospital);
@@ -283,10 +283,7 @@ public class LoginServiceImpl implements LoginService {
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
 									hospitals.add(hospital);
 								} else {
-
-									Hospital hospital = checkHospitalId
-											.get(locationCollection.getHospitalId().toString());
-
+									Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId().toString());
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospitals.add(hospital);
 								}
@@ -297,7 +294,7 @@ public class LoginServiceImpl implements LoginService {
 
 						if (doctorCollection.getSpecialities() != null) {
 							List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
-									.findAll(doctorCollection.getSpecialities());
+									.findAllById(doctorCollection.getSpecialities());
 							List<String> specialities = (List<String>) CollectionUtils.collect(specialityCollections,
 									new BeanToPropertyValueTransformer("superSpeciality"));
 							user.setSpecialities(specialities);
@@ -567,7 +564,7 @@ public class LoginServiceImpl implements LoginService {
 		DoctorLoginPinCollection olddoctorLoginPinCollection = null;
 
 		try {
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "invalid DoctorId");
 			}

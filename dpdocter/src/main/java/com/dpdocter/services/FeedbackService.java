@@ -11,10 +11,10 @@ import com.dpdocter.request.DailyImprovementFeedbackRequest;
 import com.dpdocter.request.FeedbackGetRequest;
 import com.dpdocter.request.PatientFeedbackReplyRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
+import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
 import com.dpdocter.response.DailyImprovementFeedbackResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
-import com.dpdocter.request.PharmacyFeedbackRequest;
 
 public interface FeedbackService {
 
@@ -37,7 +37,7 @@ public interface FeedbackService {
 	List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request, String type);
 
 	List<DailyImprovementFeedbackResponse> getDailyImprovementFeedbackList(String prescriptionId, String doctorId,
-			String locationId, String hospitalId, int page, int size);
+			String locationId, String hospitalId, long page, int size);
 
 	PatientFeedbackResponse addPatientFeedbackReply(PatientFeedbackReplyRequest request);
 

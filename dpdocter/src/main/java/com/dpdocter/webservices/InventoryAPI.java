@@ -148,7 +148,7 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
-	public Response<Object> getInventoryItem(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("type") String type , @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<Object> getInventoryItem(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("type") String type , @QueryParam("page") long page ,@QueryParam("size") int size  )
 	{
 		Response<Object> response = new Response<>();
 		List<InventoryItemLookupResposne> inventoryItems = null;
@@ -199,7 +199,7 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_MANUFACTURERS, notes = PathProxy.InventoryUrls.GET_MANUFACTURERS)
 	@Path(PathProxy.InventoryUrls.GET_MANUFACTURERS)
-	public Response<Manufacturer> getManufacturers(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<Manufacturer> getManufacturers(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page ,@QueryParam("size") int size  )
 	{
 		Response<Manufacturer> response = new Response<>();
 		List<Manufacturer> manufacturers = null;
@@ -225,7 +225,7 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS, notes = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
-	public Response<Object> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId ,@QueryParam("itemId") String itemId,@QueryParam("stockType") String stockType, @QueryParam("searchTerm") String searchTerm , @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<Object> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId ,@QueryParam("itemId") String itemId,@QueryParam("stockType") String stockType, @QueryParam("searchTerm") String searchTerm , @QueryParam("page") long page ,@QueryParam("size") int size  )
 	{
 		Response<Object> response = new Response<>();
 		List<InventoryStockLookupResponse> inventoryStocks = null;
@@ -251,7 +251,7 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES, notes = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
-	public Response<InventoryBatch> getInventoryBatches(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("itemId") String itemId ,@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<InventoryBatch> getInventoryBatches(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("itemId") String itemId ,@QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page ,@QueryParam("size") int size  )
 	{
 		Response<InventoryBatch> response = new Response<>();
 		List<InventoryBatch> inventoryBatches = null;

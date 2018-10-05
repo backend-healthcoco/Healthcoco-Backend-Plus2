@@ -73,7 +73,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 		ClinicContactUsCollection clinicContactUsCollection = new ClinicContactUsCollection();
 
 		try {
-			UserCollection userCollection = userRepository.findOne(new ObjectId(clinicContactUs.getDoctorId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(clinicContactUs.getDoctorId())).orElse(null);
 
 			if (userCollection != null)
 				doctorCollection = doctorRepository.findByUserId(userCollection.getId());
@@ -115,7 +115,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 		if (contactId != null && !(contactId.isEmpty())) {
 			try {
 				ClinicContactUsCollection clinicContactUsCollection = clinicContactUsRepository
-						.findOne(new ObjectId(contactId));
+						.findById(new ObjectId(contactId)).orElse(null);
 				if (clinicContactUsCollection != null) {
 					clinicContactUsCollection.setContactState(contactState);
 					clinicContactUsCollection = clinicContactUsRepository.save(clinicContactUsCollection);
@@ -135,7 +135,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 	}
 
 	@Override
-	public List<ClinicContactUs> getDoctorContactList(int page, int size, String searchTerm) {
+	public List<ClinicContactUs> getDoctorContactList(long page, int size, String searchTerm) {
 		List<ClinicContactUs> response = null;
 		// String searchTerm = null;
 		Criteria criteria = null;

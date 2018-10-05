@@ -241,12 +241,12 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 				
 				rankingCountCollection = rankingCountRepository.save(rankingCountCollection);
 				
-				LocaleCollection localeCollection = localeRepository.findOne(rankingCountCollection.getResourceId());
+				LocaleCollection localeCollection = localeRepository.findById(rankingCountCollection.getResourceId()).orElse(null);
 				localeCollection.setLocaleRankingCount(rankingCountCollection.getRankingCount());
 				localeCollection.setUpdatedTime(new Date());
 				localeCollection = localeRepository.save(localeCollection);
 				
-				ESUserLocaleDocument esUserLocaleDocument = esUserLocaleRepository.findOne(detailResponse.getLocaleId());
+				ESUserLocaleDocument esUserLocaleDocument = esUserLocaleRepository.findById(detailResponse.getLocaleId()).orElse(null);
 				esUserLocaleDocument.setLocaleRankingCount(localeCollection.getLocaleRankingCount());
 				esUserLocaleRepository.save(esUserLocaleDocument);
 			}		
@@ -471,7 +471,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 	}
 
 	@Override
-	public List<RankingCount> getDoctorsRankingCount(int page, int size) {
+	public List<RankingCount> getDoctorsRankingCount(long page, int size) {
 		List<RankingCount> response = null;
 		try {
 			Aggregation aggregation = null;

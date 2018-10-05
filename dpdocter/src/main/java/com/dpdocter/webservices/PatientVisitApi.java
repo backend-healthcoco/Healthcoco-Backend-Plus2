@@ -102,7 +102,7 @@ public class PatientVisitApi {
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS, notes = PathProxy.PatientVisitUrls.GET_VISITS)
 	public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
+			@PathParam(value = "patientId") String patientId, @QueryParam(value = "page") long page,
 			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@QueryParam("visitFor") String visitFor) {
 
@@ -128,7 +128,7 @@ public class PatientVisitApi {
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB, notes = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
 	public Response<PatientVisitResponse> getVisitForWEB(@QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
+			@QueryParam(value = "patientId") String patientId, @QueryParam(value = "page") long page,
 			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@QueryParam("visitFor") String visitFor) {
 
@@ -151,7 +151,7 @@ public class PatientVisitApi {
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD, notes = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
 	public Response<PatientVisit> getVisitsHandheld(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
+			@PathParam(value = "patientId") String patientId, @QueryParam(value = "page") long page,
 			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId)) {

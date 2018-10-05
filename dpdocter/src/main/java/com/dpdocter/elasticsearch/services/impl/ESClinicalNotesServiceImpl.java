@@ -1,5 +1,7 @@
 package com.dpdocter.elasticsearch.services.impl;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,7 +13,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.OrQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -97,7 +98,6 @@ import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 
-@SuppressWarnings("deprecation")
 @Service
 public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
@@ -291,7 +291,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESObservationsDocument> searchObservations(String range, int page, int size, String doctorId,
+	public List<ESObservationsDocument> searchObservations(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESObservationsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -315,7 +315,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESInvestigationsDocument> searchInvestigations(String range, int page, int size, String doctorId,
+	public List<ESInvestigationsDocument> searchInvestigations(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESInvestigationsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -339,7 +339,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESDiagramsDocument> searchDiagrams(String range, int page, int size, String doctorId, String locationId,
+	public List<ESDiagramsDocument> searchDiagrams(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDiagramsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -361,7 +361,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESNotesDocument> searchNotes(String range, int page, int size, String doctorId, String locationId,
+	public List<ESNotesDocument> searchNotes(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESNotesDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -382,7 +382,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESDiagnosesDocument> searchDiagnoses(String range, int page, int size, String doctorId,
+	public List<ESDiagnosesDocument> searchDiagnoses(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDiagnosesDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -404,7 +404,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESComplaintsDocument> searchComplaints(String range, int page, int size, String doctorId,
+	public List<ESComplaintsDocument> searchComplaints(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESComplaintsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -427,7 +427,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPresentComplaintDocument> searchPresentComplaints(String range, int page, int size, String doctorId,
+	public List<ESPresentComplaintDocument> searchPresentComplaints(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentComplaintDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -450,7 +450,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPresentComplaintHistoryDocument> searchPresentComplaintsHistory(String range, int page, int size,
+	public List<ESPresentComplaintHistoryDocument> searchPresentComplaintsHistory(String range, long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESPresentComplaintHistoryDocument> response = null;
@@ -474,7 +474,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESProvisionalDiagnosisDocument> searchProvisionalDiagnosis(String range, int page, int size,
+	public List<ESProvisionalDiagnosisDocument> searchProvisionalDiagnosis(String range, long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESProvisionalDiagnosisDocument> response = null;
@@ -498,7 +498,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESGeneralExamDocument> searchGeneralExam(String range, int page, int size, String doctorId,
+	public List<ESGeneralExamDocument> searchGeneralExam(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESGeneralExamDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -521,7 +521,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESSystemExamDocument> searchSystemExam(String range, int page, int size, String doctorId,
+	public List<ESSystemExamDocument> searchSystemExam(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESSystemExamDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -544,7 +544,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESMenstrualHistoryDocument> searchMenstrualHistory(String range, int page, int size, String doctorId,
+	public List<ESMenstrualHistoryDocument> searchMenstrualHistory(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESMenstrualHistoryDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -567,7 +567,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESObstetricHistoryDocument> searchObstetricHistory(String range, int page, int size, String doctorId,
+	public List<ESObstetricHistoryDocument> searchObstetricHistory(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESObstetricHistoryDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -590,7 +590,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESIndicationOfUSGDocument> searchIndicationOfUSG(String range, int page, int size, String doctorId,
+	public List<ESIndicationOfUSGDocument> searchIndicationOfUSG(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESIndicationOfUSGDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -613,7 +613,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPADocument> searchPA(String range, int page, int size, String doctorId, String locationId,
+	public List<ESPADocument> searchPA(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPADocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -635,7 +635,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPVDocument> searchPV(String range, int page, int size, String doctorId, String locationId,
+	public List<ESPVDocument> searchPV(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPVDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -657,7 +657,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPSDocument> searchPS(String range, int page, int size, String doctorId, String locationId,
+	public List<ESPSDocument> searchPS(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPSDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -679,7 +679,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESECGDetailsDocument> searchECGDetails(String range, int page, int size, String doctorId,
+	public List<ESECGDetailsDocument> searchECGDetails(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESECGDetailsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -702,7 +702,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESEchoDocument> searchEcho(String range, int page, int size, String doctorId, String locationId,
+	public List<ESEchoDocument> searchEcho(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESEchoDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -724,7 +724,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESHolterDocument> searchHolter(String range, int page, int size, String doctorId, String locationId,
+	public List<ESHolterDocument> searchHolter(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESHolterDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -747,7 +747,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESXRayDetailsDocument> searchXRayDetails(String range, int page, int size, String doctorId,
+	public List<ESXRayDetailsDocument> searchXRayDetails(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESXRayDetailsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -770,7 +770,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESComplaintsDocument> getCustomGlobalComplaints(int page, int size, String doctorId, String locationId,
+	private List<ESComplaintsDocument> getCustomGlobalComplaints(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESComplaintsDocument> response = null;
 		try {
@@ -778,7 +778,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -789,7 +789,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -816,7 +816,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESComplaintsDocument> getGlobalComplaints(int page, int size, String doctorId, String updatedTime,
+	private List<ESComplaintsDocument> getGlobalComplaints(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESComplaintsDocument> response = null;
 		try {
@@ -824,7 +824,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -836,7 +836,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -861,7 +861,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESComplaintsDocument> getCustomComplaints(int page, int size, String doctorId, String locationId,
+	private List<ESComplaintsDocument> getCustomComplaints(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESComplaintsDocument> response = null;
 		try {
@@ -877,7 +877,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private List<ESDiagramsDocument> getCustomGlobalDiagrams(int page, int size, String doctorId, String locationId,
+	private List<ESDiagramsDocument> getCustomGlobalDiagrams(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDiagramsDocument> response = null;
 
@@ -886,7 +886,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -898,7 +898,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -914,27 +914,29 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 					.must(QueryBuilders.rangeQuery("updatedTime").from(new Date().getTime()));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				boolQueryBuilder.must(
-						QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")),
-								QueryBuilders.termQuery("doctorId", doctorId)));
+				boolQueryBuilder.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
+						 .should(QueryBuilders.termQuery("doctorId", doctorId))
+						 .minimumShouldMatch(1));
 
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				boolQueryBuilder
-						.must(QueryBuilders.orQuery(
-								QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
-								QueryBuilders.termQuery("locationId", locationId)))
-						.must(QueryBuilders.orQuery(
-								QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
-								QueryBuilders.termQuery("hospitalId", hospitalId)));
+				.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+						 .should(QueryBuilders.termQuery("locationId", locationId))
+						 .minimumShouldMatch(1))
+				.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+						 .should(QueryBuilders.termQuery("hospitalId", hospitalId))
+						 .minimumShouldMatch(1));
 			}
+			
 			if (specialities != null && !specialities.isEmpty()) {
-				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
-				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				BoolQueryBuilder specialityQueryBuilder = boolQuery().should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
-					if(!DPDoctorUtils.anyStringEmpty(speciality))
-					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+						specialityQueryBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
+					}
 				}
-				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder)).minimumNumberShouldMatch(1);
+				specialityQueryBuilder.minimumShouldMatch(1);
+				boolQueryBuilder.must(specialityQueryBuilder);
 			} else
 				boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
 
@@ -946,7 +948,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -961,7 +963,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private List<ESDiagramsDocument> getGlobalDiagrams(int page, int size, String doctorId, String updatedTime,
+	private List<ESDiagramsDocument> getGlobalDiagrams(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESDiagramsDocument> response = null;
 		try {
@@ -969,7 +971,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -981,7 +983,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1000,15 +1002,17 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 					.mustNot(QueryBuilders.existsQuery("hospitalId"));
 
 			if (specialities != null && !specialities.isEmpty()) {
-				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
-				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				BoolQueryBuilder specialityQueryBuilder = boolQuery().should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
-					if(!DPDoctorUtils.anyStringEmpty(speciality))
-					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+						specialityQueryBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
+					}
 				}
-				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder));
+				specialityQueryBuilder.minimumShouldMatch(1);
+				boolQueryBuilder.must(specialityQueryBuilder);
 			} else
 				boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
+
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("tags", searchTerm));
@@ -1018,7 +1022,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -1033,7 +1037,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESDiagramsDocument> getCustomDiagrams(int page, int size, String doctorId, String locationId,
+	private List<ESDiagramsDocument> getCustomDiagrams(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDiagramsDocument> response = null;
 		try {
@@ -1057,7 +1061,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				SearchQuery searchQuery = null;
 				if (size > 0)
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+							.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
 				else
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -1073,7 +1077,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESInvestigationsDocument> getCustomGlobalInvestigations(int page, int size, String doctorId,
+	private List<ESInvestigationsDocument> getCustomGlobalInvestigations(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESInvestigationsDocument> response = null;
 		try {
@@ -1081,7 +1085,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1093,7 +1097,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1119,7 +1123,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESInvestigationsDocument> getGlobalInvestigations(int page, int size, String doctorId,
+	private List<ESInvestigationsDocument> getGlobalInvestigations(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESInvestigationsDocument> response = null;
 		try {
@@ -1127,7 +1131,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1139,7 +1143,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1163,7 +1167,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESInvestigationsDocument> getCustomInvestigations(int page, int size, String doctorId,
+	private List<ESInvestigationsDocument> getCustomInvestigations(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESInvestigationsDocument> response = null;
 		try {
@@ -1183,7 +1187,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESObservationsDocument> getCustomGlobalObservations(int page, int size, String doctorId,
+	private List<ESObservationsDocument> getCustomGlobalObservations(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESObservationsDocument> response = null;
 		try {
@@ -1191,7 +1195,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1203,7 +1207,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1230,7 +1234,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESObservationsDocument> getGlobalObservations(int page, int size, String doctorId, String updatedTime,
+	private List<ESObservationsDocument> getGlobalObservations(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESObservationsDocument> response = null;
 		try {
@@ -1238,7 +1242,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1250,7 +1254,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1274,7 +1278,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESObservationsDocument> getCustomObservations(int page, int size, String doctorId, String locationId,
+	private List<ESObservationsDocument> getCustomObservations(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESObservationsDocument> response = null;
 		try {
@@ -1294,7 +1298,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESDiagnosesDocument> getCustomGlobalDiagnosis(int page, int size, String doctorId, String locationId,
+	private List<ESDiagnosesDocument> getCustomGlobalDiagnosis(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDiagnosesDocument> response = null;
 		try {
@@ -1302,7 +1306,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1314,7 +1318,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1341,7 +1345,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESDiagnosesDocument> getGlobalDiagnosis(int page, int size, String doctorId, String updatedTime,
+	private List<ESDiagnosesDocument> getGlobalDiagnosis(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESDiagnosesDocument> response = null;
 		try {
@@ -1349,7 +1353,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1361,7 +1365,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1386,7 +1390,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESDiagnosesDocument> getCustomDiagnosis(int page, int size, String doctorId, String locationId,
+	private List<ESDiagnosesDocument> getCustomDiagnosis(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDiagnosesDocument> response = null;
 		try {
@@ -1406,7 +1410,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESNotesDocument> getCustomGlobalNotes(int page, int size, String doctorId, String locationId,
+	private List<ESNotesDocument> getCustomGlobalNotes(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 
 		List<ESNotesDocument> response = null;
@@ -1415,7 +1419,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1427,7 +1431,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1453,7 +1457,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESNotesDocument> getGlobalNotes(int page, int size, String doctorId, String updatedTime,
+	private List<ESNotesDocument> getGlobalNotes(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESNotesDocument> response = null;
 		try {
@@ -1461,7 +1465,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1473,7 +1477,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1497,7 +1501,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESNotesDocument> getCustomNotes(int page, int size, String doctorId, String locationId,
+	private List<ESNotesDocument> getCustomNotes(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESNotesDocument> response = null;
 		try {
@@ -1518,7 +1522,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESPresentComplaintDocument> getCustomGlobalPresentComplaints(int page, int size, String doctorId,
+	private List<ESPresentComplaintDocument> getCustomGlobalPresentComplaints(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentComplaintDocument> response = null;
 		try {
@@ -1526,7 +1530,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1538,7 +1542,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1565,7 +1569,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESPresentComplaintDocument> getGlobalPresentComplaints(int page, int size, String doctorId,
+	private List<ESPresentComplaintDocument> getGlobalPresentComplaints(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentComplaintDocument> response = null;
 		try {
@@ -1573,7 +1577,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1585,7 +1589,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1609,7 +1613,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESPresentComplaintDocument> getCustomPresentComplaints(int page, int size, String doctorId,
+	private List<ESPresentComplaintDocument> getCustomPresentComplaints(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentComplaintDocument> response = null;
 		try {
@@ -1629,7 +1633,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESPresentComplaintHistoryDocument> getCustomGlobalPresentComplaintHistory(int page, int size,
+	private List<ESPresentComplaintHistoryDocument> getCustomGlobalPresentComplaintHistory(long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESPresentComplaintHistoryDocument> response = null;
@@ -1638,7 +1642,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1650,7 +1654,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1678,7 +1682,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESPresentComplaintHistoryDocument> getGlobalPresentComplaintHistory(int page, int size,
+	private List<ESPresentComplaintHistoryDocument> getGlobalPresentComplaintHistory(long page, int size,
 			String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentComplaintHistoryDocument> response = null;
 		try {
@@ -1686,7 +1690,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1698,7 +1702,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1723,7 +1727,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESPresentComplaintHistoryDocument> getCustomPresentComplaintHistory(int page, int size,
+	private List<ESPresentComplaintHistoryDocument> getCustomPresentComplaintHistory(long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESPresentComplaintHistoryDocument> response = null;
@@ -1745,7 +1749,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESProvisionalDiagnosisDocument> getCustomGlobalProvisionalDiagnosis(int page, int size,
+	private List<ESProvisionalDiagnosisDocument> getCustomGlobalProvisionalDiagnosis(long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESProvisionalDiagnosisDocument> response = null;
@@ -1754,7 +1758,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1766,7 +1770,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1793,7 +1797,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESProvisionalDiagnosisDocument> getGlobalProvisionalDiagnosis(int page, int size, String doctorId,
+	private List<ESProvisionalDiagnosisDocument> getGlobalProvisionalDiagnosis(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESProvisionalDiagnosisDocument> response = null;
 		try {
@@ -1801,7 +1805,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1813,7 +1817,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1837,7 +1841,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESProvisionalDiagnosisDocument> getCustomProvisionalDiagnosis(int page, int size, String doctorId,
+	private List<ESProvisionalDiagnosisDocument> getCustomProvisionalDiagnosis(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESProvisionalDiagnosisDocument> response = null;
 		try {
@@ -1857,7 +1861,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESGeneralExamDocument> getCustomGlobalGeneralExam(int page, int size, String doctorId,
+	private List<ESGeneralExamDocument> getCustomGlobalGeneralExam(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESGeneralExamDocument> response = null;
 		try {
@@ -1865,7 +1869,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1877,7 +1881,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1904,7 +1908,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESGeneralExamDocument> getGlobalGeneralExam(int page, int size, String doctorId, String updatedTime,
+	private List<ESGeneralExamDocument> getGlobalGeneralExam(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESGeneralExamDocument> response = null;
 		try {
@@ -1912,7 +1916,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1924,7 +1928,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -1948,7 +1952,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESGeneralExamDocument> getCustomGeneralExam(int page, int size, String doctorId, String locationId,
+	private List<ESGeneralExamDocument> getCustomGeneralExam(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESGeneralExamDocument> response = null;
 		try {
@@ -1968,7 +1972,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESSystemExamDocument> getCustomGlobalSystemExam(int page, int size, String doctorId, String locationId,
+	private List<ESSystemExamDocument> getCustomGlobalSystemExam(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESSystemExamDocument> response = null;
 		try {
@@ -1976,7 +1980,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -1988,7 +1992,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2015,7 +2019,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESSystemExamDocument> getGlobalSystemExam(int page, int size, String doctorId, String updatedTime,
+	private List<ESSystemExamDocument> getGlobalSystemExam(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESSystemExamDocument> response = null;
 		try {
@@ -2023,7 +2027,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2035,7 +2039,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2059,7 +2063,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESSystemExamDocument> getCustomSystemExam(int page, int size, String doctorId, String locationId,
+	private List<ESSystemExamDocument> getCustomSystemExam(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESSystemExamDocument> response = null;
 		try {
@@ -2079,7 +2083,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESMenstrualHistoryDocument> getCustomGlobalMenstrualHistory(int page, int size, String doctorId,
+	private List<ESMenstrualHistoryDocument> getCustomGlobalMenstrualHistory(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESMenstrualHistoryDocument> response = null;
 		try {
@@ -2087,7 +2091,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2099,7 +2103,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2126,7 +2130,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESMenstrualHistoryDocument> getGlobalMenstrualHistory(int page, int size, String doctorId,
+	private List<ESMenstrualHistoryDocument> getGlobalMenstrualHistory(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESMenstrualHistoryDocument> response = null;
 		try {
@@ -2134,7 +2138,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2146,7 +2150,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2170,7 +2174,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESMenstrualHistoryDocument> getCustomMenstrualHistory(int page, int size, String doctorId,
+	private List<ESMenstrualHistoryDocument> getCustomMenstrualHistory(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESMenstrualHistoryDocument> response = null;
 		try {
@@ -2295,7 +2299,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESObstetricHistoryDocument> getCustomGlobalObstetricHistory(int page, int size, String doctorId,
+	private List<ESObstetricHistoryDocument> getCustomGlobalObstetricHistory(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESObstetricHistoryDocument> response = null;
 		try {
@@ -2303,7 +2307,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2315,7 +2319,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2342,7 +2346,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESObstetricHistoryDocument> getGlobalObstetricHistory(int page, int size, String doctorId,
+	private List<ESObstetricHistoryDocument> getGlobalObstetricHistory(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESObstetricHistoryDocument> response = null;
 		try {
@@ -2350,7 +2354,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2362,7 +2366,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2386,7 +2390,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESObstetricHistoryDocument> getCustomObstetricsHistory(int page, int size, String doctorId,
+	private List<ESObstetricHistoryDocument> getCustomObstetricsHistory(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESObstetricHistoryDocument> response = null;
 		try {
@@ -2435,7 +2439,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESPADocument> getCustomGlobalPA(int page, int size, String doctorId, String locationId,
+	private List<ESPADocument> getCustomGlobalPA(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPADocument> response = null;
 		try {
@@ -2443,7 +2447,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2455,7 +2459,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2481,7 +2485,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESPADocument> getGlobalPA(int page, int size, String doctorId, String updatedTime, Boolean discarded,
+	private List<ESPADocument> getGlobalPA(long page, int size, String doctorId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESPADocument> response = null;
 		try {
@@ -2489,7 +2493,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2501,7 +2505,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2525,7 +2529,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESPADocument> getCustomPA(int page, int size, String doctorId, String locationId, String hospitalId,
+	private List<ESPADocument> getCustomPA(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPADocument> response = null;
 		try {
@@ -2544,7 +2548,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESProcedureNoteDocument> getCustomProcedureNote(int page, int size, String doctorId, String locationId,
+	private List<ESProcedureNoteDocument> getCustomProcedureNote(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESProcedureNoteDocument> response = null;
 		try {
@@ -2579,7 +2583,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESIndicationOfUSGDocument> getCustomGlobalIndicationOfUSG(int page, int size, String doctorId,
+	private List<ESIndicationOfUSGDocument> getCustomGlobalIndicationOfUSG(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESIndicationOfUSGDocument> response = null;
 		try {
@@ -2587,7 +2591,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2599,7 +2603,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2626,7 +2630,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESIndicationOfUSGDocument> getGlobalIndicationOfUSG(int page, int size, String doctorId,
+	private List<ESIndicationOfUSGDocument> getGlobalIndicationOfUSG(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESIndicationOfUSGDocument> response = null;
 		try {
@@ -2634,7 +2638,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2646,7 +2650,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2670,7 +2674,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
-	private List<ESIndicationOfUSGDocument> getCustomIndicationOfUSG(int page, int size, String doctorId,
+	private List<ESIndicationOfUSGDocument> getCustomIndicationOfUSG(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESIndicationOfUSGDocument> response = null;
 		try {
@@ -2728,7 +2732,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESPVDocument> getCustomGlobalPV(int page, int size, String doctorId, String locationId,
+	private List<ESPVDocument> getCustomGlobalPV(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPVDocument> response = null;
 		try {
@@ -2736,7 +2740,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2748,7 +2752,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2774,7 +2778,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESProcedureNoteDocument> getCustomGlobalProcedureNote(int page, int size, String doctorId,
+	private List<ESProcedureNoteDocument> getCustomGlobalProcedureNote(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESProcedureNoteDocument> response = null;
 		try {
@@ -2782,7 +2786,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2794,7 +2798,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2831,7 +2835,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESPVDocument> getGlobalPV(int page, int size, String doctorId, String updatedTime, Boolean discarded,
+	private List<ESPVDocument> getGlobalPV(long page, int size, String doctorId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESPVDocument> response = null;
 		try {
@@ -2839,7 +2843,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -2851,7 +2855,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -2887,7 +2891,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESPVDocument> getCustomPV(int page, int size, String doctorId, String locationId, String hospitalId,
+	private List<ESPVDocument> getCustomPV(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPVDocument> response = null;
 		try {
@@ -3009,7 +3013,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESPSDocument> getCustomGlobalPS(int page, int size, String doctorId, String locationId,
+	private List<ESPSDocument> getCustomGlobalPS(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPSDocument> response = null;
 		try {
@@ -3017,7 +3021,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3029,7 +3033,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3065,7 +3069,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESPSDocument> getGlobalPS(int page, int size, String doctorId, String updatedTime, Boolean discarded,
+	private List<ESPSDocument> getGlobalPS(long page, int size, String doctorId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESPSDocument> response = null;
 		try {
@@ -3073,7 +3077,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3085,7 +3089,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3110,7 +3114,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESProcedureNoteDocument> getGlobalProcedureNote(int page, int size, String doctorId,
+	private List<ESProcedureNoteDocument> getGlobalProcedureNote(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESProcedureNoteDocument> response = null;
 		try {
@@ -3118,7 +3122,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3130,7 +3134,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3166,7 +3170,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESPSDocument> getCustomPS(int page, int size, String doctorId, String locationId, String hospitalId,
+	private List<ESPSDocument> getCustomPS(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPSDocument> response = null;
 		try {
@@ -3202,7 +3206,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESXRayDetailsDocument> getCustomGlobalXRayDetails(int page, int size, String doctorId,
+	private List<ESXRayDetailsDocument> getCustomGlobalXRayDetails(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESXRayDetailsDocument> response = null;
 		try {
@@ -3210,7 +3214,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3222,7 +3226,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3259,7 +3263,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESXRayDetailsDocument> getGlobalXRayDetails(int page, int size, String doctorId, String updatedTime,
+	private List<ESXRayDetailsDocument> getGlobalXRayDetails(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESXRayDetailsDocument> response = null;
 		try {
@@ -3267,7 +3271,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3279,7 +3283,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3315,7 +3319,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESXRayDetailsDocument> getCustomXRayDetails(int page, int size, String doctorId, String locationId,
+	private List<ESXRayDetailsDocument> getCustomXRayDetails(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESXRayDetailsDocument> response = null;
 		try {
@@ -3351,7 +3355,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESEchoDocument> getCustomGlobalEcho(int page, int size, String doctorId, String locationId,
+	private List<ESEchoDocument> getCustomGlobalEcho(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESEchoDocument> response = null;
 		try {
@@ -3359,7 +3363,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3371,7 +3375,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3407,7 +3411,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESEchoDocument> getGlobalEcho(int page, int size, String doctorId, String updatedTime,
+	private List<ESEchoDocument> getGlobalEcho(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESEchoDocument> response = null;
 		try {
@@ -3415,7 +3419,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3427,7 +3431,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3463,7 +3467,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESEchoDocument> getCustomEcho(int page, int size, String doctorId, String locationId,
+	private List<ESEchoDocument> getCustomEcho(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESEchoDocument> response = null;
 		try {
@@ -3499,7 +3503,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESHolterDocument> getCustomGlobalHolter(int page, int size, String doctorId, String locationId,
+	private List<ESHolterDocument> getCustomGlobalHolter(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESHolterDocument> response = null;
 		try {
@@ -3507,7 +3511,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3519,7 +3523,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3556,7 +3560,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESHolterDocument> getGlobalHolter(int page, int size, String doctorId, String updatedTime,
+	private List<ESHolterDocument> getGlobalHolter(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESHolterDocument> response = null;
 		try {
@@ -3564,7 +3568,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3576,7 +3580,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3612,7 +3616,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESHolterDocument> getCustomHolter(int page, int size, String doctorId, String locationId,
+	private List<ESHolterDocument> getCustomHolter(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESHolterDocument> response = null;
 		try {
@@ -3648,7 +3652,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESECGDetailsDocument> getCustomGlobalECGDetails(int page, int size, String doctorId, String locationId,
+	private List<ESECGDetailsDocument> getCustomGlobalECGDetails(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESECGDetailsDocument> response = null;
 		try {
@@ -3656,7 +3660,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3668,7 +3672,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3705,7 +3709,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESECGDetailsDocument> getGlobalECGDetails(int page, int size, String doctorId, String updatedTime,
+	private List<ESECGDetailsDocument> getGlobalECGDetails(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESECGDetailsDocument> response = null;
 		try {
@@ -3713,7 +3717,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -3725,7 +3729,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -3761,7 +3765,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESECGDetailsDocument> getCustomECGDetails(int page, int size, String doctorId, String locationId,
+	private List<ESECGDetailsDocument> getCustomECGDetails(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESECGDetailsDocument> response = null;
 		try {
@@ -3931,7 +3935,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESProcedureNoteDocument> searchProcedureNote(String range, int page, int size, String doctorId,
+	public List<ESProcedureNoteDocument> searchProcedureNote(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESProcedureNoteDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -3954,7 +3958,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPresentingComplaintNoseDocument> searchPCNose(String range, int page, int size, String doctorId,
+	public List<ESPresentingComplaintNoseDocument> searchPCNose(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintNoseDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -3977,7 +3981,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPresentingComplaintEarsDocument> searchPCEars(String range, int page, int size, String doctorId,
+	public List<ESPresentingComplaintEarsDocument> searchPCEars(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintEarsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -4000,7 +4004,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPresentingComplaintThroatDocument> searchPCThroat(String range, int page, int size, String doctorId,
+	public List<ESPresentingComplaintThroatDocument> searchPCThroat(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintThroatDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -4023,7 +4027,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(String range, int page, int size,
+	public List<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(String range, long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESPresentingComplaintOralCavityDocument> response = null;
@@ -4047,7 +4051,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESNeckExaminationDocument> searchNeckExam(String range, int page, int size, String doctorId,
+	public List<ESNeckExaminationDocument> searchNeckExam(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESNeckExaminationDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -4070,7 +4074,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESNoseExaminationDocument> searchNoseExam(String range, int page, int size, String doctorId,
+	public List<ESNoseExaminationDocument> searchNoseExam(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESNoseExaminationDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -4093,7 +4097,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESEarsExaminationDocument> searchEarsExam(String range, int page, int size, String doctorId,
+	public List<ESEarsExaminationDocument> searchEarsExam(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESEarsExaminationDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -4116,7 +4120,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(String range, int page, int size,
+	public List<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(String range, long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESOralCavityAndThroatExaminationDocument> response = null;
@@ -4140,7 +4144,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 
 	@Override
-	public List<ESIndirectLarygoscopyExaminationDocument> searchIndirectLarygoscopyExam(String range, int page,
+	public List<ESIndirectLarygoscopyExaminationDocument> searchIndirectLarygoscopyExam(String range, long page,
 			int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESIndirectLarygoscopyExaminationDocument> response = null;
@@ -4180,7 +4184,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESPresentingComplaintEarsDocument> getCustomGlobalPCEars(int page, int size, String doctorId,
+	private List<ESPresentingComplaintEarsDocument> getCustomGlobalPCEars(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintEarsDocument> response = null;
 		try {
@@ -4188,7 +4192,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4200,7 +4204,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4237,7 +4241,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESPresentingComplaintEarsDocument> getGlobalPCEars(int page, int size, String doctorId,
+	private List<ESPresentingComplaintEarsDocument> getGlobalPCEars(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintEarsDocument> response = null;
 		try {
@@ -4245,7 +4249,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4257,7 +4261,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4293,7 +4297,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESPresentingComplaintEarsDocument> getCustomPCEars(int page, int size, String doctorId,
+	private List<ESPresentingComplaintEarsDocument> getCustomPCEars(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintEarsDocument> response = null;
 		try {
@@ -4329,7 +4333,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESPresentingComplaintThroatDocument> getCustomGlobalPCThroat(int page, int size, String doctorId,
+	private List<ESPresentingComplaintThroatDocument> getCustomGlobalPCThroat(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintThroatDocument> response = null;
 		try {
@@ -4337,7 +4341,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4349,7 +4353,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4386,7 +4390,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESPresentingComplaintThroatDocument> getGlobalPCThroat(int page, int size, String doctorId,
+	private List<ESPresentingComplaintThroatDocument> getGlobalPCThroat(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintThroatDocument> response = null;
 		try {
@@ -4394,7 +4398,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4406,7 +4410,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4442,7 +4446,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESPresentingComplaintThroatDocument> getCustomPCThroat(int page, int size, String doctorId,
+	private List<ESPresentingComplaintThroatDocument> getCustomPCThroat(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintThroatDocument> response = null;
 		try {
@@ -4478,7 +4482,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESPresentingComplaintOralCavityDocument> getCustomGlobalPCOralCavity(int page, int size,
+	private List<ESPresentingComplaintOralCavityDocument> getCustomGlobalPCOralCavity(long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESPresentingComplaintOralCavityDocument> response = null;
@@ -4487,7 +4491,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4499,7 +4503,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4536,7 +4540,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESPresentingComplaintOralCavityDocument> getGlobalPCOralCavity(int page, int size, String doctorId,
+	private List<ESPresentingComplaintOralCavityDocument> getGlobalPCOralCavity(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintOralCavityDocument> response = null;
 		try {
@@ -4544,7 +4548,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4556,7 +4560,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4592,7 +4596,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESPresentingComplaintOralCavityDocument> getCustomPCOralCavity(int page, int size, String doctorId,
+	private List<ESPresentingComplaintOralCavityDocument> getCustomPCOralCavity(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintOralCavityDocument> response = null;
 		try {
@@ -4629,7 +4633,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESPresentingComplaintNoseDocument> getCustomGlobalPCNose(int page, int size, String doctorId,
+	private List<ESPresentingComplaintNoseDocument> getCustomGlobalPCNose(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintNoseDocument> response = null;
 		try {
@@ -4637,7 +4641,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4649,7 +4653,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4686,7 +4690,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESPresentingComplaintNoseDocument> getGlobalPCNose(int page, int size, String doctorId,
+	private List<ESPresentingComplaintNoseDocument> getGlobalPCNose(long page, int size, String doctorId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintNoseDocument> response = null;
 		try {
@@ -4694,7 +4698,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4706,7 +4710,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4742,7 +4746,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESPresentingComplaintNoseDocument> getCustomPCNose(int page, int size, String doctorId,
+	private List<ESPresentingComplaintNoseDocument> getCustomPCNose(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESPresentingComplaintNoseDocument> response = null;
 		try {
@@ -4778,7 +4782,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESNeckExaminationDocument> getCustomGlobalNeckExam(int page, int size, String doctorId,
+	private List<ESNeckExaminationDocument> getCustomGlobalNeckExam(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESNeckExaminationDocument> response = null;
 		try {
@@ -4786,7 +4790,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4798,7 +4802,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4836,7 +4840,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 */
 	/*
 	*/ @SuppressWarnings("unchecked")
-	private List<ESNeckExaminationDocument> getGlobalNeckExam(int page, int size, String doctorId, String updatedTime,
+	private List<ESNeckExaminationDocument> getGlobalNeckExam(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESNeckExaminationDocument> response = null;
 		try {
@@ -4844,7 +4848,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4856,7 +4860,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4893,7 +4897,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 * @return
 		 */
 	/*
-	*/ private List<ESNeckExaminationDocument> getCustomNeckExam(int page, int size, String doctorId,
+	*/ private List<ESNeckExaminationDocument> getCustomNeckExam(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESNeckExaminationDocument> response = null;
 		try {
@@ -4929,7 +4933,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESNoseExaminationDocument> getCustomGlobalNoseExam(int page, int size, String doctorId,
+	private List<ESNoseExaminationDocument> getCustomGlobalNoseExam(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESNoseExaminationDocument> response = null;
 		try {
@@ -4937,7 +4941,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -4949,7 +4953,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -4987,7 +4991,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 */
 	/*
 	*/ @SuppressWarnings("unchecked")
-	private List<ESNoseExaminationDocument> getGlobalNoseExam(int page, int size, String doctorId, String updatedTime,
+	private List<ESNoseExaminationDocument> getGlobalNoseExam(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESNoseExaminationDocument> response = null;
 		try {
@@ -4995,7 +4999,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -5007,7 +5011,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -5044,7 +5048,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 * @return
 		 */
 	/*
-	*/ private List<ESNoseExaminationDocument> getCustomNoseExam(int page, int size, String doctorId,
+	*/ private List<ESNoseExaminationDocument> getCustomNoseExam(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESNoseExaminationDocument> response = null;
 		try {
@@ -5080,7 +5084,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESEarsExaminationDocument> getCustomGlobalEarsExam(int page, int size, String doctorId,
+	private List<ESEarsExaminationDocument> getCustomGlobalEarsExam(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESEarsExaminationDocument> response = null;
 		try {
@@ -5088,7 +5092,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -5100,7 +5104,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -5138,7 +5142,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 */
 	/*
 	*/ @SuppressWarnings("unchecked")
-	private List<ESEarsExaminationDocument> getGlobalEarsExam(int page, int size, String doctorId, String updatedTime,
+	private List<ESEarsExaminationDocument> getGlobalEarsExam(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESEarsExaminationDocument> response = null;
 		try {
@@ -5146,7 +5150,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -5158,7 +5162,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -5195,7 +5199,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 * @return
 		 */
 	/*
-	*/ private List<ESEarsExaminationDocument> getCustomEarsExam(int page, int size, String doctorId,
+	*/ private List<ESEarsExaminationDocument> getCustomEarsExam(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESEarsExaminationDocument> response = null;
 		try {
@@ -5231,7 +5235,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESIndirectLarygoscopyExaminationDocument> getCustomGlobalIndirectLarygoscopyExam(int page, int size,
+	private List<ESIndirectLarygoscopyExaminationDocument> getCustomGlobalIndirectLarygoscopyExam(long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESIndirectLarygoscopyExaminationDocument> response = null;
@@ -5240,7 +5244,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -5252,7 +5256,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -5290,7 +5294,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 */
 	/*
 	*/ @SuppressWarnings("unchecked")
-	private List<ESIndirectLarygoscopyExaminationDocument> getGlobalIndirectLarygoscopyExam(int page, int size,
+	private List<ESIndirectLarygoscopyExaminationDocument> getGlobalIndirectLarygoscopyExam(long page, int size,
 			String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESIndirectLarygoscopyExaminationDocument> response = null;
 		try {
@@ -5298,7 +5302,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -5310,7 +5314,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -5347,7 +5351,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 * @return
 		 */
 	/*
-	*/ private List<ESIndirectLarygoscopyExaminationDocument> getCustomIndierctLarygoscopyExam(int page, int size,
+	*/ private List<ESIndirectLarygoscopyExaminationDocument> getCustomIndierctLarygoscopyExam(long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESIndirectLarygoscopyExaminationDocument> response = null;
@@ -5385,7 +5389,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESOralCavityAndThroatExaminationDocument> getCustomGlobalOralCavityThroatExam(int page, int size,
+	private List<ESOralCavityAndThroatExaminationDocument> getCustomGlobalOralCavityThroatExam(long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESOralCavityAndThroatExaminationDocument> response = null;
@@ -5394,7 +5398,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -5406,7 +5410,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -5444,7 +5448,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 */
 	/*
 	*/ @SuppressWarnings("unchecked")
-	private List<ESOralCavityAndThroatExaminationDocument> getGlobalOralCavityThroatExam(int page, int size,
+	private List<ESOralCavityAndThroatExaminationDocument> getGlobalOralCavityThroatExam(long page, int size,
 			String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESOralCavityAndThroatExaminationDocument> response = null;
 		try {
@@ -5452,7 +5456,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -5464,7 +5468,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -5501,7 +5505,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 * @return
 		 */
 	/*
-	*/ private List<ESOralCavityAndThroatExaminationDocument> getCustomOralCavityThroatExam(int page, int size,
+	*/ private List<ESOralCavityAndThroatExaminationDocument> getCustomOralCavityThroatExam(long page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESOralCavityAndThroatExaminationDocument> response = null;

@@ -105,7 +105,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
-			userCollection = mongoTemplate.findOne(query, UserCollection.class);
+			userCollection = mongoTemplate.findById(query, UserCollection.class);
 
 			if (userCollection != null) {
 				if (userCollection.getUserState() == UserState.USERSTATECOMPLETE) {
@@ -274,7 +274,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	@Transactional
 	public String resetPassword(ResetPasswordRequest request) {
 		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(request.getUserId()));
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(request.getUserId())).orElse(null);
 			if (tokenCollection == null)
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 			else if (tokenCollection.getIsUsed())
@@ -282,7 +282,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			else {
 				if (!isLinkValid(tokenCollection.getCreatedTime()))
 					return "Your reset password link has expired.";
-				UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+				UserCollection userCollection = userRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				if (userCollection == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 				}
@@ -323,7 +323,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	@Transactional
 	public String checkLinkIsAlreadyUsed(String userId) {
 		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(userId));
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(userId)).orElse(null);
 			if (tokenCollection == null)
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 			else if (tokenCollection.getIsUsed())
@@ -332,7 +332,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			else {
 				if (!isLinkValid(tokenCollection.getCreatedTime()))
 					return "Your reset password link has expired.";
-				UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+				UserCollection userCollection = userRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				if (userCollection == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 				}
@@ -387,7 +387,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	@Override
 	public String resetPasswordPharmacy(ResetPasswordRequest request) {
 		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(request.getUserId()));
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(request.getUserId())).orElse(null);
 			if (tokenCollection == null)
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the SMS that we sent you.";
 			else if (tokenCollection.getIsUsed())
@@ -395,7 +395,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			else {
 				if (!isLinkValid(tokenCollection.getCreatedTime()))
 					return "Your reset password link has expired.";
-				UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+				UserCollection userCollection = userRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				if (userCollection == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the SMS that we sent you.";
 				}
@@ -405,13 +405,13 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				List<OAuth2AuthenticationRefreshTokenCollection> refreshTokenCollections = oAuth2RefreshTokenRepository
 						.findByclientIdAndUserName("healthco2business", userCollection.getMobileNumber());
 				if (!refreshTokenCollections.isEmpty() && refreshTokenCollections != null) {
-					oAuth2RefreshTokenRepository.delete(refreshTokenCollections);
+					oAuth2RefreshTokenRepository.deleteAll(refreshTokenCollections);
 				}
 
 				List<OAuth2AuthenticationAccessTokenCollection> accessTokenCollections = oAuth2AccessTokenRepository
 						.findByClientIdAndUserName("healthco2business", userCollection.getMobileNumber());
 				if (!accessTokenCollections.isEmpty() && accessTokenCollections != null) {
-					oAuth2AccessTokenRepository.delete(accessTokenCollections);
+					oAuth2AccessTokenRepository.deleteAll(accessTokenCollections);
 				}
 				userCollection.setSalt(DPDoctorUtils.generateSalt());
 				String salt = new String(userCollection.getSalt());

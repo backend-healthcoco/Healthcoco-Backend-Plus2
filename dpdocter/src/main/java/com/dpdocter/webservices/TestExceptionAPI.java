@@ -52,7 +52,8 @@ public class TestExceptionAPI {
     @Path("/get")
     public Response<ESProfessionDocument> get(@PathParam("id") String id) {
 	
-    	ESProfessionDocument documents = esProfessionRepository.findOne("55f40520e4b0cb1d08c1700d");
+    	ESProfessionDocument documents = null;
+//    			esProfessionRepository.findById("55f40520e4b0cb1d08c1700d").orElse(null);
     	
     	Response<ESProfessionDocument> response = new Response<ESProfessionDocument>();
     	response.setData(documents);

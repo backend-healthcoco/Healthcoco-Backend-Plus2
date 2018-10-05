@@ -4,7 +4,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.dpdocter.collections.DataDynamicUICollection;
 import com.dpdocter.collections.DentalLabDynamicUICollection;
 
 public interface DentalLabDynamicUIRepository extends MongoRepository<DentalLabDynamicUICollection, ObjectId> {

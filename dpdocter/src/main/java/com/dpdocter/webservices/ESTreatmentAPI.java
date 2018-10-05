@@ -39,7 +39,7 @@ public class ESTreatmentAPI {
     @Path(value = PathProxy.SolrPatientTreatmentUrls.SEARCH)
     @GET
     @ApiOperation(value = PathProxy.SolrPatientTreatmentUrls.SEARCH, notes = PathProxy.SolrPatientTreatmentUrls.SEARCH)
-    public Response<Object> search(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<Object> search(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") long page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {

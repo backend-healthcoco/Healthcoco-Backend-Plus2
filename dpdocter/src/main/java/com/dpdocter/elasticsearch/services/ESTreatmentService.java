@@ -11,6 +11,6 @@ public interface ESTreatmentService {
 
 	void addEditServiceCost(ESTreatmentServiceCostDocument esTreatmentServiceDocument);
 
-	List<?> search(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+	List<?> search(String type, String range, long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 }

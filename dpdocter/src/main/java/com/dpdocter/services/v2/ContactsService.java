@@ -43,7 +43,7 @@ public interface ContactsService {
 			String updatedTime, Boolean discarded, int page, int size, String role);
 
 	DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId, String locationId,
-			String hospitalId, int page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName,
+			String hospitalId, long page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName,
 			String role) throws Exception;
 
 	Boolean sendSMSToGroup(BulkSMSRequest request);

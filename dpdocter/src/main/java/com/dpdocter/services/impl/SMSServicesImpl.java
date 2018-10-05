@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -30,8 +29,6 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +45,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriUtils;
 
-import com.dpdocter.beans.DentalDiagnosticServiceRequest;
 import com.dpdocter.beans.Message;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -73,9 +69,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
-import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
-import com.twilio.sdk.resource.factory.MessageFactory;
 
 import common.util.web.DPDoctorUtils;
 
@@ -335,7 +329,7 @@ public class SMSServicesImpl implements SMSServices {
 			if (doctorObjectId == null) {
 				if (size > 0)
 					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
-							type, new PageRequest(page, size, Direction.DESC, "createdTime"));
+							type, PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
 					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
 							type, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -343,7 +337,7 @@ public class SMSServicesImpl implements SMSServices {
 				if (size > 0)
 					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
 							locationObjectId, hospitalObjectId, type,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
+							PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
 					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
 							locationObjectId, hospitalObjectId, type, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -372,7 +366,7 @@ public class SMSServicesImpl implements SMSServices {
 		for (ObjectId doctorId : doctorIds) {
 			DoctorSMSResponse doctorSMSResponse = new DoctorSMSResponse();
 			int count = smsTrackRepository.getDoctorsSMSCount(doctorId, locationId, hospitalId);
-			UserCollection user = userRepository.findOne(doctorId);
+			UserCollection user = userRepository.findById(doctorId).orElse(null);
 			doctorSMSResponse.setDoctorId(doctorId.toString());
 			if (user != null)
 				doctorSMSResponse.setDoctorName(user.getFirstName());
@@ -384,7 +378,7 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Override
 	@Transactional
-	public List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId,
+	public List<SMSTrack> getSMSDetails(long page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId) {
 		List<SMSTrack> response = null;
 		try {
@@ -715,7 +709,6 @@ public class SMSServicesImpl implements SMSServices {
 			// con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
-			int responseCode = con.getResponseCode();
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -858,10 +851,10 @@ public class SMSServicesImpl implements SMSServices {
 		con.setRequestProperty("User-Agent",
 				"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 		con.setRequestProperty("Accept-Charset", "UTF-8");
-		int responseCode = con.getResponseCode();
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine;
+//		int responseCode = con.getResponseCode();
+//
+//		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//		String inputLine;
 		/* response = new StringBuffer(); */
 
 		

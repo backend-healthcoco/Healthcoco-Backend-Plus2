@@ -42,7 +42,7 @@ public class BlogApi {
 	@Path(value = PathProxy.BlogsUrls.GET_BLOGS)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOGS, notes = PathProxy.BlogsUrls.GET_BLOGS)
-	public Response<BlogResponse> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+	public Response<BlogResponse> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") long page,
 			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
 			@QueryParam(value = "title") String title) {
 		BlogResponse blogresponse = blogService.getBlogs(size, page, category, userId, title);
@@ -54,7 +54,7 @@ public class BlogApi {
 	@Path(value = PathProxy.BlogsUrls.GET_BLOG_LIST)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_LIST, notes = PathProxy.BlogsUrls.GET_BLOG_LIST)
-	public Response<Object> getBlogList(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+	public Response<Object> getBlogList(@QueryParam(value = "size") int size, @QueryParam(value = "page") long page,
 			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
 			@QueryParam(value = "title") String title) {
 		BlogResponse blogresponse = blogService.getBlogs(size, page, category, userId, title);
@@ -101,7 +101,7 @@ public class BlogApi {
 	@Path(value = PathProxy.BlogsUrls.GET__MOST_LIKES_OR_VIEWED_BLOGS)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET__MOST_LIKES_OR_VIEWED_BLOGS, notes = PathProxy.BlogsUrls.GET__MOST_LIKES_OR_VIEWED_BLOGS)
-	public Response<Blog> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+	public Response<Blog> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") long page,
 			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
 			@QueryParam(value = "title") String title, @QueryParam(value = "forMostLike") boolean forMostLike) {
 		List<Blog> blogresponse = blogService.getMostLikedOrViewedBlogs(size, page, category, title, userId,
@@ -125,7 +125,7 @@ public class BlogApi {
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_FEVOURITE_BLOGS, notes = PathProxy.BlogsUrls.GET_FEVOURITE_BLOGS)
 	public Response<Object> getFevouriteBlogs(@QueryParam(value = "size") int size,
-			@QueryParam(value = "page") int page, @QueryParam(value = "userId") String userId,
+			@QueryParam(value = "page") long page, @QueryParam(value = "userId") String userId,
 			@QueryParam(value = "category") String category, @QueryParam(value = "title") String title) {
 		List<Blog> blogList = blogService.getFevouriteBlogs(size, page, category, userId, title);
 		Response<Object> response = new Response<Object>();

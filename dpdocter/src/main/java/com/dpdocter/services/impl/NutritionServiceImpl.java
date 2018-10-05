@@ -141,7 +141,7 @@ public class NutritionServiceImpl implements NutritionService {
 			patientId = registerPatientIfNotRegistered(request, doctorId, locationId, hospitalId);
 			response = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(request.getId()));
+				nutritionReferenceCollection = nutritionReferenceRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (nutritionReferenceCollection == null) {
 				nutritionReferenceCollection = new NutritionReferenceCollection();
@@ -155,8 +155,9 @@ public class NutritionServiceImpl implements NutritionService {
 				BeanUtil.map(nutritionReferenceCollection, response);
 				NutritionGoalStatusStampingCollection nutritionGoalStatusStampingCollection = null;
 				UserCollection userCollection = null;
-				if (response.getDoctorId() != null) {
-					userCollection = userRepository.findOne(new ObjectId(response.getDoctorId()));
+				if(response.getDoctorId() != null)
+				{
+					userCollection = userRepository.findById(new ObjectId(response.getDoctorId())).orElse(null);
 					response.setDoctorName(userCollection.getFirstName());
 				}
 				nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
@@ -187,13 +188,14 @@ public class NutritionServiceImpl implements NutritionService {
 					nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
 							.save(nutritionGoalStatusStampingCollection);
 				}
-				if (response.getLocationId() != null) {
-					LocationCollection locationCollection = locationRepository
-							.findOne(new ObjectId(response.getLocationId()));
+				if(response.getLocationId() != null)
+				{
+					LocationCollection locationCollection = locationRepository.findById(new ObjectId(response.getLocationId())).orElse(null);
 					response.setLocationName(locationCollection.getLocationName());
 				}
-				if (response.getDoctorId() != null) {
-					userCollection = userRepository.findOne(new ObjectId(response.getDoctorId()));
+				if(response.getDoctorId() != null)
+				{
+					userCollection = userRepository.findById(new ObjectId(response.getDoctorId())).orElse(null);
 					response.setDoctorName(userCollection.getFirstName());
 				}
 
@@ -215,9 +217,8 @@ public class NutritionServiceImpl implements NutritionService {
 
 	@Override
 	@Transactional
-	public List<NutritionReferenceResponse> getNutritionReferenceList(String doctorId, String locationId, String role,
-			int page, int size) {
-		List<NutritionReferenceResponse> nutritionReferenceResponses = null;
+	public List<NutritionReferenceResponse> getNutritionReferenceList(String doctorId, String locationId, String role, long page , int size) {
+		List<NutritionReferenceResponse> nutritionReferenceResponses= null;
 		LocationCollection locationCollection = null;
 		UserCollection userCollection = null;
 		try {
@@ -233,7 +234,7 @@ public class NutritionServiceImpl implements NutritionService {
 				} else {
 					criteria.and("doctorId").is(new ObjectId(doctorId));
 				}
-				userCollection = userRepository.findOne(new ObjectId(doctorId));
+				userCollection = userRepository.findById(new ObjectId(doctorId)).orElse(null);
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
@@ -246,7 +247,7 @@ public class NutritionServiceImpl implements NutritionService {
 				} else {
 					criteria.and("locationId").is(new ObjectId(locationId));
 				}
-				locationCollection = locationRepository.findOne(new ObjectId(locationId));
+				locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 			}
 			if (size > 0)
 				nutritionReferenceResponses = mongoTemplate.aggregate(
@@ -269,13 +270,10 @@ public class NutritionServiceImpl implements NutritionService {
 				if (userCollection != null) {
 					nutritionReferenceResponse.setDoctorName(userCollection.getFirstName());
 				}
-
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						new ObjectId(nutritionReferenceResponse.getPatientId()),
-						new ObjectId(nutritionReferenceResponse.getLocationId()),
-						new ObjectId(nutritionReferenceResponse.getHospitalId()));
-				if (patientCollection != null) {
-					UserCollection patient = userRepository.findOne(patientCollection.getUserId());
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(nutritionReferenceResponse.getPatientId()), new ObjectId(nutritionReferenceResponse.getLocationId()), new ObjectId(nutritionReferenceResponse.getHospitalId())); 
+				if(patientCollection != null)
+				{
+					UserCollection patient = userRepository.findById(patientCollection.getUserId()).orElse(null);
 					PatientShortCard patientCard = new PatientShortCard();
 					BeanUtil.map(patient, patientCard);
 					BeanUtil.map(patientCollection, patientCard);
@@ -310,7 +308,6 @@ public class NutritionServiceImpl implements NutritionService {
 			nutritionGoalAnalytics.setMetGoalCount(
 					getGoalStatusCount(doctorId, locationId, role, GoalStatus.MET_GOALS.getType(), fromDate, toDate));
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return nutritionGoalAnalytics;
@@ -320,10 +317,13 @@ public class NutritionServiceImpl implements NutritionService {
 		Boolean response = false;
 		NutritionReferenceCollection nutritionReferenceCollection = null;
 		try {
-			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(id));
-				if (nutritionReferenceCollection != null) {
-					if (!DPDoctorUtils.anyStringEmpty(regularityStatus)) {
+			if(!DPDoctorUtils.anyStringEmpty(id))
+			{
+				nutritionReferenceCollection = nutritionReferenceRepository.findById(new ObjectId(id)).orElse(null);
+				if(nutritionReferenceCollection != null)
+				{
+					if(!DPDoctorUtils.anyStringEmpty(regularityStatus))
+					{
 						nutritionReferenceCollection.setRegularityStatus(regularityStatus);
 					}
 					if (!DPDoctorUtils.anyStringEmpty(goalStatus)) {
@@ -358,8 +358,7 @@ public class NutritionServiceImpl implements NutritionService {
 							nutritionGoalStatusStampingCollection.setGoalStatus(goalStatus);
 							nutritionGoalStatusStampingCollection.setCreatedTime(new Date());
 							nutritionGoalStatusStampingCollection.setUpdatedTime(new Date());
-							UserCollection userCollection = userRepository
-									.findOne(nutritionReferenceCollection.getReferredDoctorId());
+							UserCollection userCollection = userRepository.findById(nutritionReferenceCollection.getReferredDoctorId()).orElse(null);
 							nutritionGoalStatusStampingCollection.setCreatedBy(userCollection.getCreatedBy());
 							nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
 									.save(nutritionGoalStatusStampingCollection);
@@ -369,7 +368,6 @@ public class NutritionServiceImpl implements NutritionService {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return response;
@@ -379,25 +377,27 @@ public class NutritionServiceImpl implements NutritionService {
 		NutritionReferenceResponse response = null;
 		NutritionReferenceCollection nutritionReferenceCollection = null;
 		try {
-			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(id));
-				if (nutritionReferenceCollection != null) {
+			if(!DPDoctorUtils.anyStringEmpty(id))
+			{
+				nutritionReferenceCollection = nutritionReferenceRepository.findById(new ObjectId(id)).orElse(null);
+				if(nutritionReferenceCollection != null)
+				{
 					response = new NutritionReferenceResponse();
 					BeanUtil.map(nutritionReferenceCollection, response);
-					LocationCollection locationCollection = locationRepository
-							.findOne(new ObjectId(response.getHospitalId()));
-					if (locationCollection != null) {
+					LocationCollection locationCollection = locationRepository.findById(new ObjectId(response.getHospitalId())).orElse(null);
+					if(locationCollection != null)
+					{
 						response.setLocationName(locationCollection.getLocationName());
 					}
-					UserCollection userCollection = userRepository.findOne(new ObjectId(response.getLocationId()));
-					if (userCollection != null) {
+					UserCollection userCollection = userRepository.findById(new ObjectId(response.getLocationId())).orElse(null);
+					if(userCollection != null)
+					{
 						response.setDoctorName(userCollection.getFirstName());
 					}
-					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-							new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
-							new ObjectId(response.getHospitalId()));
-					if (patientCollection != null) {
-						UserCollection patient = userRepository.findOne(patientCollection.getUserId());
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()), new ObjectId(response.getHospitalId())); 
+					if(patientCollection != null)
+					{
+						UserCollection patient = userRepository.findById(patientCollection.getUserId()).orElse(null);
 						PatientShortCard patientCard = new PatientShortCard();
 						BeanUtil.map(patient, patientCard);
 						BeanUtil.map(patientCollection, patientCard);
@@ -407,7 +407,6 @@ public class NutritionServiceImpl implements NutritionService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
 		}
 		return response;
 	}
@@ -453,8 +452,8 @@ public class NutritionServiceImpl implements NutritionService {
 			Query query = new Query();
 			query.addCriteria(criteria);
 			count = mongoOperations.count(query, NutritionGoalStatusStampingCollection.class);
-		} catch (Exception e) {
-			// TODO: handle exception
+		}
+			catch (Exception e) {
 		}
 		return count;
 	}
@@ -614,7 +613,7 @@ public class NutritionServiceImpl implements NutritionService {
 		SubscriptionNutritionPlan response = null;
 		try {
 			SubscriptionNutritionPlanCollection subscriptionNutritionPlanCollection = subscritptionNutritionPlanRepository
-					.findOne(new ObjectId(id));
+					.findById(new ObjectId(id)).orElse(null);
 			response = new SubscriptionNutritionPlan();
 			if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlanCollection.getBackgroundImage())) {
 				subscriptionNutritionPlanCollection
@@ -815,17 +814,17 @@ public class NutritionServiceImpl implements NutritionService {
 
 			UserNutritionSubscriptionCollection nutritionSubscriptionCollection = new UserNutritionSubscriptionCollection();
 			BeanUtil.map(request, nutritionSubscriptionCollection);
-			UserCollection userCollection = userRepository.findOne(nutritionSubscriptionCollection.getUserId());
+			UserCollection userCollection = userRepository.findById(nutritionSubscriptionCollection.getUserId()).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "user not found By Id ");
 			}
 			NutritionPlanCollection nutritionPlanCollection = nutritionPlanRepository
-					.findOne(nutritionSubscriptionCollection.getNutritionPlanId());
+					.findById(nutritionSubscriptionCollection.getNutritionPlanId()).orElseGet(null);
 			if (nutritionPlanCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Nutrition Plan not found By Id ");
 			}
 			SubscriptionNutritionPlanCollection subscriptionNutritionPlanCollection = subscritptionNutritionPlanRepository
-					.findOne(nutritionSubscriptionCollection.getSubscriptionPlanId());
+					.findById(nutritionSubscriptionCollection.getSubscriptionPlanId()).orElseGet(null);
 
 			if (subscriptionNutritionPlanCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "subscription Plan not found By Id ");
@@ -924,7 +923,7 @@ public class NutritionServiceImpl implements NutritionService {
 		UserNutritionSubscription response = null;
 		try {
 			UserNutritionSubscriptionCollection nutritionSubscriptionCollection = userNutritionSubscriptionRepository
-					.findOne(new ObjectId(id));
+					.findById(new ObjectId(id)).orElseGet(null);
 			if (nutritionSubscriptionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Subscrition Plan not found By Id ");
 			}

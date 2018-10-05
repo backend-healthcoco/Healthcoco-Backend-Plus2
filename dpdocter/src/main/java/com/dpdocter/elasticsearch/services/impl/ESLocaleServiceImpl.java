@@ -1,11 +1,6 @@
 package com.dpdocter.elasticsearch.services.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -14,31 +9,21 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.SMS;
-import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.LocaleCollection;
-import com.dpdocter.collections.SMSTrackDetail;
-import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.enums.Resource;
-import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.UserSearchRequest;
-import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.google.common.collect.Lists;
 
 @Service
 public class ESLocaleServiceImpl implements ESLocaleService {
@@ -74,8 +59,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 	@Override
 	public List<ESUserLocaleDocument> getLocale(UserSearchRequest userSearchRequest, Integer distance) {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(userSearchRequest.getLatitude())
-						.lon(userSearchRequest.getLongitude()).distance(distance + "km"))
+				.filter(QueryBuilders.geoDistanceQuery("geoPoint").point(userSearchRequest.getLatitude(), userSearchRequest.getLongitude()).distance(distance + "km"))
 				.must(QueryBuilders.matchPhrasePrefixQuery("isLocaleListed", true))
 				.must(QueryBuilders.matchPhrasePrefixQuery("isOpen", true));
 		List<ESUserLocaleDocument> esUserLocaleDocuments = elasticsearchTemplate.queryForList(
@@ -88,7 +72,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 	@Override
 	public Boolean updateStatus(String localeId, Boolean isOpen) {
 		Boolean response = false;
-		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findOne(localeId);
+		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findById(localeId).orElse(null);
 		if (esUserLocale == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		} else {
@@ -102,7 +86,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 	@Override
 	public Boolean updateLocale(String localeId, LocaleCollection localeCollection) {
 		Boolean response = false;
-		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findOne(localeId);
+		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findById(localeId).orElse(null);
 		if (esUserLocale == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		} else {

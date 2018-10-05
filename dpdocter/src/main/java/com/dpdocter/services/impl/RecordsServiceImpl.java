@@ -305,7 +305,7 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
 
 			if (DPDoctorUtils.allStringsEmpty(createdBy)) {
-				UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(recordsCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 							+ userCollection.getFirstName();
@@ -314,7 +314,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 			recordsCollection.setCreatedBy(createdBy);
 
-			LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
+			LocationCollection locationCollection = locationRepository.findById(recordsCollection.getLocationId()).orElse(null);
 			if (locationCollection != null) {
 				recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
 			}
@@ -330,7 +330,7 @@ public class RecordsServiceImpl implements RecordsService {
 					|| !prescriptionCollection.getDiagnosticTests().isEmpty())) {
 				List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
 				for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
-					if (data.getTestId().equals(recordsCollection.getDiagnosticTestId().toString())) {
+					if (data.getTestId().toString().equals(recordsCollection.getDiagnosticTestId().toString())) {
 						data.setRecordId(recordsCollection.getId());
 					}
 					tests.add(data);
@@ -343,7 +343,7 @@ public class RecordsServiceImpl implements RecordsService {
 			if (prescriptionCollection != null && !DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())) {
 				if (recordsCollection.getRecordsState()
 						.equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
-					UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(prescriptionCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						String subject = approvedRecordToDoctorSubject;
 						subject = subject.replace("{patientName}", localPatientName)
@@ -358,7 +358,7 @@ public class RecordsServiceImpl implements RecordsService {
 					}
 				} else if (recordsCollection.getRecordsState()
 						.equalsIgnoreCase(RecordsState.APPROVAL_REQUIRED.toString())) {
-					UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(prescriptionCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						String subject = notApprovedRecordToDoctorSubject;
 						subject = subject.replace("{patientName}", localPatientName)
@@ -459,7 +459,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 				recordsCollection.setRecordsPath(recordPath);
 			}
-			RecordsCollection oldRecord = recordsRepository.findOne(new ObjectId(request.getId()));
+			RecordsCollection oldRecord = recordsRepository.findById(new ObjectId(request.getId())).orElse(null);
 			recordsCollection.setCreatedTime(oldRecord.getCreatedTime());
 			recordsCollection.setCreatedBy(oldRecord.getCreatedBy());
 			recordsCollection.setUploadedByLocation(oldRecord.getUploadedByLocation());
@@ -525,7 +525,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsTagsCollection.setCreatedTime(new Date());
 				recordsTagsCollections.add(recordsTagsCollection);
 			}
-			recordsTagsRepository.save(recordsTagsCollections);
+			recordsTagsRepository.saveAll(recordsTagsCollections);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -553,7 +553,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 				if (request.getSize() > 0)
 					recordsTagsCollections = recordsTagsRepository.findByTagsId(tagObjectId,
-							new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
+							PageRequest.of((int)request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
 				else
 					recordsTagsCollections = recordsTagsRepository.findByTagsId(tagObjectId,
 							new Sort(Sort.Direction.DESC, "createdTime"));
@@ -610,7 +610,7 @@ public class RecordsServiceImpl implements RecordsService {
 							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 							Aggregation.unwind("patientVisit"),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((request.getPage()) * request.getSize()),
+							Aggregation.skip((long)request.getPage() * request.getSize()),
 							Aggregation.limit(request.getSize()));
 				else
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -694,7 +694,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public String getPatientEmailAddress(String patientId) {
 		String emailAddress = null;
 		try {
-			UserCollection userCollection = userRepository.findOne(new ObjectId(patientId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(patientId)).orElse(null);
 			if (userCollection != null) {
 				emailAddress = userCollection.getEmailAddress();
 			} else {
@@ -715,7 +715,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public FileDownloadResponse getRecordFile(String recordId) {
 		FileDownloadResponse response = null;
 		try {
-			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+			RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (recordsCollection != null) {
 				if (recordsCollection.getRecordsPath() != null) {
 					BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
@@ -755,7 +755,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public Records deleteRecord(String recordId, Boolean discarded) {
 		Records response = null;
 		try {
-			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+			RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (recordsCollection == null) {
 				logger.warn("Record Not found.Check RecordId");
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
@@ -788,7 +788,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public Tags deleteTag(String tagId, Boolean discarded) {
 		Tags response = null;
 		try {
-			TagsCollection tagsCollection = tagsRepository.findOne(new ObjectId(tagId));
+			TagsCollection tagsCollection = tagsRepository.findById(new ObjectId(tagId)).orElse(null);
 			if (tagsCollection == null) {
 				logger.warn("Tag Not found.Check tag Id");
 				throw new BusinessException(ServiceError.NoRecord, "Tag Not found.Check tag Id");
@@ -962,7 +962,7 @@ public class RecordsServiceImpl implements RecordsService {
 		Records record = null;
 		try {
 			// RecordsCollection recordCollection =
-			// recordsRepository.findOne(new ObjectId(recordId));
+			// recordsRepository.findById(new ObjectId(recordId));
 			Criteria criteria = new Criteria("id").is(recordId).and("isPatientDiscarded").ne(true);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
@@ -1001,7 +1001,7 @@ public class RecordsServiceImpl implements RecordsService {
 		MailResponse mailResponse = null;
 		MailAttachment mailAttachment = null;
 		try {
-			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+			RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(recordId)).orElse(null);
 
 			if (recordsCollection != null) {
 
@@ -1026,8 +1026,8 @@ public class RecordsServiceImpl implements RecordsService {
 							new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 				}
 
-				UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-				LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+				UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 
 				mailResponse = new MailResponse();
 				mailResponse.setMailAttachment(mailAttachment);
@@ -1094,7 +1094,7 @@ public class RecordsServiceImpl implements RecordsService {
 	@Transactional
 	public void changeLabelAndDescription(String recordId, String label, String explanation) {
 		try {
-			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+			RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (recordsCollection == null) {
 				logger.warn("Record not found.Check RecordId !");
 				throw new BusinessException(ServiceError.NoRecord, "Record not found.Check RecordId !");
@@ -1119,7 +1119,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId,
+	public List<Records> getRecords(long page, int size, String doctorId, String hospitalId, String locationId,
 			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory) {
 		List<Records> records = null;
 		List<RecordsLookupResponse> recordsLookupResponses = null;
@@ -1211,7 +1211,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public Response<Object> getRecordsByPatientId(String patientId, int page, int size, String updatedTime,
+	public Response<Object> getRecordsByPatientId(String patientId, long page, int size, String updatedTime,
 			Boolean discarded, Boolean isDoctorApp) {
 		Response<Object> response = new Response<Object>();
 		List<Records> records = null;
@@ -1314,7 +1314,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public List<Records> getRecordsByDoctorId(String doctorId, int page, int size, String updatedTime,
+	public List<Records> getRecordsByDoctorId(String doctorId, long page, int size, String updatedTime,
 			Boolean discarded) {
 		List<Records> records = null;
 		// List<RecordsCollection> recordsCollections = null;
@@ -1430,7 +1430,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 			RecordsCollection recordsCollection = null, oldRecord = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				recordsCollection = recordsRepository.findOne(new ObjectId(request.getId()));
+				recordsCollection = recordsRepository.findById(new ObjectId(request.getId())).orElse(null);
 				oldRecord = recordsCollection;
 			}
 			if (recordsCollection == null)
@@ -1475,13 +1475,13 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection
 						.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
 				recordsCollection.setCreatedTime(createdTime);
-				UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(recordsCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					recordsCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
-				LocationCollection locationCollection = locationRepository.findOne(recordsCollection.getLocationId());
+				LocationCollection locationCollection = locationRepository.findById(recordsCollection.getLocationId()).orElse(null);
 				if (locationCollection != null) {
 					recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
 				}
@@ -1594,7 +1594,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public Records changeRecordState(String recordId, String recordsState) {
 		Records response = null;
 		try {
-			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+			RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (recordsCollection == null) {
 				logger.warn("Record Not found.Check RecordId");
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
@@ -1606,7 +1606,7 @@ public class RecordsServiceImpl implements RecordsService {
 			BeanUtil.map(recordsCollection, response);
 			if (recordsState.equalsIgnoreCase(RecordsState.APPROVED_BY_DOCTOR.toString())
 					&& recordsCollection.getShareWithPatient()) {
-				UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
+				UserCollection patientUserCollection = userRepository.findById(recordsCollection.getPatientId()).orElse(null);
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
 						recordsCollection.getPatientId(), recordsCollection.getLocationId(),
 						recordsCollection.getHospitalId());
@@ -1618,7 +1618,7 @@ public class RecordsServiceImpl implements RecordsService {
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 			} else if (recordsState.equalsIgnoreCase(RecordsState.DECLINED_BY_DOCTOR.toString())) {
-				UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(recordsCollection.getDoctorId()).orElse(null);
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
 						recordsCollection.getPatientId(), recordsCollection.getLocationId(),
 						recordsCollection.getHospitalId());
@@ -1669,11 +1669,11 @@ public class RecordsServiceImpl implements RecordsService {
 
 			UserRecordsCollection userRecordsCollection = null, oldRecord = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				oldRecord = userRecordsRepository.findOne(new ObjectId(request.getId()));
+				oldRecord = userRecordsRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
 					request.getLocationId())) {
-				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id");
 				}
@@ -1681,7 +1681,7 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 
 			else {
-				userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+				userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -1768,7 +1768,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public UserRecords getUserRecordById(String recordId) {
 		UserRecords userRecords = null;
 		try {
-			UserRecordsCollection userRecordsCollection = userRecordsRepository.findOne(new ObjectId(recordId));
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (userRecordsCollection != null) {
 				userRecords = new UserRecords();
 				BeanUtil.map(userRecordsCollection, userRecords);
@@ -1790,7 +1790,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	public Response<Object> getUserRecordsByuserId(String patientId, String doctorId, String locationId,
-			String hospitalId, int page, int size, String updatedTime, Boolean discarded) {
+			String hospitalId, long page, int size, String updatedTime, Boolean discarded) {
 		Response<Object> response = new Response<Object>();
 		List<UserRecords> dataList = null;
 		try {
@@ -1910,7 +1910,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public UserRecords deleteUserRecord(String recordId, Boolean discarded, Boolean isVisible) {
 		UserRecords response = null;
 		try {
-			UserRecordsCollection userRecordsCollection = userRecordsRepository.findOne(new ObjectId(recordId));
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (userRecordsCollection == null) {
 				logger.warn("User Record Not found.Check Record Id");
 				throw new BusinessException(ServiceError.NoRecord, "User Record Not found.Check Record Id");
@@ -1950,11 +1950,11 @@ public class RecordsServiceImpl implements RecordsService {
 
 	public Boolean sendSMSForRecord(RecordsSmsRequest request) {
 		Boolean status = false;
-		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+		UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
 		if (userCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "User not found");
 		}
-		RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(request.getRecordId()));
+		RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(request.getRecordId())).orElse(null);
 		if (recordsCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record not found");
 		}
@@ -1990,7 +1990,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public UserRecords deleteUserRecordsFile(String recordId, List<String> fileIds) {
 		UserRecords response = null;
 		try {
-			UserRecordsCollection userRecordsCollection = userRecordsRepository.findOne(new ObjectId(recordId));
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (userRecordsCollection == null) {
 				logger.warn("User Record Not found.Check RecordId");
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
@@ -2046,7 +2046,7 @@ public class RecordsServiceImpl implements RecordsService {
 	public UserRecords shareUserRecordsFile(String recordId, String userId) {
 		UserRecords response = null;
 		try {
-			UserRecordsCollection userRecordsCollection = userRecordsRepository.findOne(new ObjectId(recordId));
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (userRecordsCollection == null) {
 				logger.warn("User Record Not found.Check RecordId");
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
@@ -2060,12 +2060,12 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
 			}
 
-			UserCollection doctor = userRepository.findOne(userRecordsCollection.getDoctorId());
+			UserCollection doctor = userRepository.findById(userRecordsCollection.getDoctorId()).orElse(null);
 			if (doctor != null) {
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 						userRecordsCollection.getShareWith(), userRecordsCollection.getDoctorId(),
 						userRecordsCollection.getLocationId(), userRecordsCollection.getHospitalId());
-				UserCollection patient = userRepository.findOne(userRecordsCollection.getPatientId());
+				UserCollection patient = userRepository.findById(userRecordsCollection.getPatientId()).orElse(null);
 
 				pushNotificationServices.notifyUser(userRecordsCollection.getShareWith().toString(),
 						"Dr." + doctor.getFirstName() + "has shared record with you - Tap to view it!",
@@ -2120,7 +2120,7 @@ public class RecordsServiceImpl implements RecordsService {
 			Date createdTime = new Date();
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -2189,7 +2189,7 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			String localPatientName = null;
 			String patientMobileNumber = null;
-			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+			RecordsCollection recordsCollection = recordsRepository.findById(new ObjectId(recordId)).orElse(null);
 			if (recordsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No record found with recordId");
 			}
@@ -2238,8 +2238,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	public Integer getUserRecordsByuserIdCount(String patientId, String doctorId, String locationId, String hospitalId,
-			int page, int size, String updatedTime, Boolean discarded) {
-		// TODO Auto-generated method stub
+			long page, int size, String updatedTime, Boolean discarded) {
 		return null;
 	}
 

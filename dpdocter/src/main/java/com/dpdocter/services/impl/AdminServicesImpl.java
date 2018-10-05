@@ -174,8 +174,8 @@ public class AdminServicesImpl implements AdminServices {
 	@Autowired
 	private DrugRepository drugRepository;
 
-	@Autowired
-	private DrugTypeRepository drugTypeRepository;
+//	@Autowired
+//	private DrugTypeRepository drugTypeRepository;
 
 	@Autowired
 	private ProfessionalMembershipRepository professionalMembershipRepository;
@@ -321,10 +321,10 @@ public class AdminServicesImpl implements AdminServices {
 	@Override
 	@Transactional
 	public void importDrug() {
-		String csvFile = "/home/ubuntu/Drugs.csv";
+//		String csvFile = "/home/ubuntu/Drugs.csv";
 		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = ",";
+//		String line = "";
+//		String cvsSplitBy = ",";
 
 		try {
 			// br = new BufferedReader(new FileReader(csvFile));
@@ -661,7 +661,7 @@ public class AdminServicesImpl implements AdminServices {
 		return response;
 	}
 
-	private void discardDuplicateClinicalItemsInDb(String doctorId, String resource, String fieldName, Class className) {
+	private void discardDuplicateClinicalItemsInDb(String doctorId, String resource, String fieldName, Class<?> className) {
 		
 		List<ClinicalItemsResponse> items = mongoTemplate.aggregate(Aggregation.newAggregation(
 				Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId)).and("discarded").is(false)),

@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
-import com.dpdocter.collections.PatientVisitCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.IncomeAnalyticType;
 import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.SearchType;
@@ -668,19 +665,19 @@ public class AnalyticServiceImpl implements AnalyticService {
 
 	public List<PatientAnalyticResponse> getinvoiceIncome(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String queryType, String searchType, String searchTerm) {
-		List<PatientAnalyticResponse> response = null;
-		Criteria criteria = new Criteria();
-		if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-			criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
-		}
-		if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-			criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
-		}
-		Aggregation aggregation = null;
-		CustomAggregationOperation aggregationOperation = null;
-		switch (IncomeAnalyticType.valueOf(queryType.toUpperCase())) {
-
-		}
+//		List<PatientAnalyticResponse> response = null;
+//		Criteria criteria = new Criteria();
+//		if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+//			criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
+//		}
+//		if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+//			criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
+//		}
+//		Aggregation aggregation = null;
+//		CustomAggregationOperation aggregationOperation = null;
+//		switch (IncomeAnalyticType.valueOf(queryType.toUpperCase())) {
+//
+//		}
 
 		return null;
 	}

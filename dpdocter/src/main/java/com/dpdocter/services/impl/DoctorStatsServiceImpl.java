@@ -111,7 +111,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = results.getMappedResults();
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}
@@ -140,7 +139,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = new ArrayList<DoctorStats>();
 			doctorStats = results.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}
@@ -168,7 +166,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = new ArrayList<DoctorStats>();
 			doctorStats = results.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}
@@ -191,7 +188,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = new ArrayList<DoctorStats>();
 			doctorStats = results.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}
@@ -214,7 +210,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = new ArrayList<DoctorStats>();
 			doctorStats = results.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}
@@ -237,7 +232,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = new ArrayList<DoctorStats>();
 			doctorStats = results.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}
@@ -261,7 +255,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = new ArrayList<DoctorStats>();
 			doctorStats = results.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}
@@ -285,7 +278,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = new ArrayList<DoctorStats>();
 			doctorStats = results.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}
@@ -309,7 +301,6 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 			doctorStats = new ArrayList<DoctorStats>();
 			doctorStats = results.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.warn(e);
 			e.printStackTrace();
 		}

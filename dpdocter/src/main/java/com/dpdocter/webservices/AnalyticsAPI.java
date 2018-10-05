@@ -80,7 +80,7 @@ public class AnalyticsAPI {
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("fromDate") String fromDate,
 			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchType") String searchType, @QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(type, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
@@ -105,7 +105,7 @@ public class AnalyticsAPI {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam("queryType") String queryType, @QueryParam("searchType") String searchType,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -126,7 +126,7 @@ public class AnalyticsAPI {
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
 			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
 			@QueryParam("searchType") String searchType, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -148,7 +148,7 @@ public class AnalyticsAPI {
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
 			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
 			@QueryParam("searchType") String searchType, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -169,7 +169,7 @@ public class AnalyticsAPI {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@DefaultValue(value = "ALL") @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchType") String searchType, @QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -189,7 +189,7 @@ public class AnalyticsAPI {
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
 			@QueryParam("toDate") String toDate, @DefaultValue(value = "ALL") @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchType") String searchType, @QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -210,7 +210,7 @@ public class AnalyticsAPI {
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
 			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchType") String searchType, @QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -231,7 +231,7 @@ public class AnalyticsAPI {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@DefaultValue(value = "ALL") @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchType") String searchType, @QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -251,7 +251,7 @@ public class AnalyticsAPI {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@DefaultValue(value = "ALL") @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchType") String searchType, @QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
@@ -270,7 +270,7 @@ public class AnalyticsAPI {
 	public Response<TreatmentService> getTreatmentsAnalyticsData(@QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchType") String searchType, @QueryParam("page") long page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
@@ -317,7 +317,7 @@ public class AnalyticsAPI {
 	@Path(value = PathProxy.AnalyticsUrls.GET_TREATMENT_ANALYTIC)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_TREATMENT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_TREATMENT_ANALYTIC)
-	public Response<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(@QueryParam("page") int page,
+	public Response<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
@@ -354,7 +354,7 @@ public class AnalyticsAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PRESCRIPTION_ITEM_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_PRESCRIPTION_ITEM_ANALYTIC)
 	public Response<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(@PathParam("type") String type,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam("searchTerm") String searchTerm) {

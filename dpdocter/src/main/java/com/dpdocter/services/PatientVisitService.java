@@ -26,10 +26,10 @@ public interface PatientVisitService {
 
 	boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
 
-	DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size,
+	DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, long page, int size,
 			String role);
 
-	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size,
+	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, long page, int size,
 			String role);
 
 	PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
@@ -37,7 +37,7 @@ public interface PatientVisitService {
 	PatientVisitResponse getVisit(String visitId);
 
 	List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor);
+			long page, int size, Boolean isOTPVerified, String updatedTime, String visitFor);
 
 	Boolean email(String visitId, String emailAddress);
 
@@ -46,7 +46,7 @@ public interface PatientVisitService {
 	Boolean smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 
 	List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime);
+			long page, int size, Boolean isOTPVerified, String updatedTime);
 
 	String editRecord(String id, VisitedFor prescription);
 

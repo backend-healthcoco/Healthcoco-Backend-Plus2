@@ -154,7 +154,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded, int page, int size, String role) {
+			String updatedTime, boolean discarded, long page, int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
 			response = getSpecifiedPatientCards(null, doctorId, locationId, hospitalId, page, size, updatedTime,
@@ -170,7 +170,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, int page, int size, String role) {
+			String updatedTime, Boolean discarded, long page, int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
 			response = getSpecifiedPatientCards(null, doctorId, locationId, hospitalId, page, size, updatedTime,
@@ -187,7 +187,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId,
-			String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded,
+			String locationId, String hospitalId, long page, int size, String updatedTime, Boolean discarded,
 			Boolean sortByFirstName, String role) throws Exception {
 		DoctorContactsResponse response = null;
 		List<PatientCard> patientCards = null;
@@ -367,14 +367,14 @@ public class ContactsServiceImpl implements ContactsService {
 			BeanUtil.map(group, groupCollection);
 			if (DPDoctorUtils.allStringsEmpty(groupCollection.getId())) {
 				groupCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(groupCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(groupCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					groupCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
 			} else {
-				GroupCollection oldGroupCollection = groupRepository.findOne(groupCollection.getId());
+				GroupCollection oldGroupCollection = groupRepository.findById(groupCollection.getId()).orElse(null);
 				groupCollection.setCreatedTime(oldGroupCollection.getCreatedTime());
 				groupCollection.setCreatedBy(groupCollection.getCreatedBy());
 				groupCollection.setDiscarded(oldGroupCollection.getDiscarded());
@@ -427,7 +427,7 @@ public class ContactsServiceImpl implements ContactsService {
 		GroupCollection groupCollection = null;
 		List<PatientGroupCollection> patientGroupCollection = null;
 		try {
-			groupCollection = groupRepository.findOne(new ObjectId(groupId));
+			groupCollection = groupRepository.findById(new ObjectId(groupId)).orElse(null);
 			if (groupCollection != null) {
 				groupCollection.setDiscarded(discarded);
 				groupCollection.setUpdatedTime(new Date());
@@ -493,11 +493,9 @@ public class ContactsServiceImpl implements ContactsService {
 	 */
 	@Override
 	@Transactional
-	public List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
+	public List<Group> getAllGroups(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
 		List<Group> groups = null;
-		List<GroupCollection> groupCollections = null;
-
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
@@ -600,7 +598,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded, String role, int page, int size,
+			String hospitalId, String updatedTime, boolean discarded, String role, long page, int size,
 			String searchTerm) {
 		List<RegisteredPatientDetails> registeredPatientDetails = null;
 		List<PatientCard> patientCards = null;
@@ -731,7 +729,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 					Reference reference = new Reference();
 					if (referredBy != null) {
-						ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
+						ReferencesCollection referencesCollection = referenceRepository.findById(referredBy).orElse(null);
 						if (referencesCollection != null)
 							BeanUtil.map(referencesCollection, reference);
 					}
@@ -811,11 +809,9 @@ public class ContactsServiceImpl implements ContactsService {
 		PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
 
 		try {
-			ObjectId patientObjecId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			ObjectId patientObjecId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 				patientObjecId = new ObjectId(request.getPatientId());
-			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
-				doctorObjectId = new ObjectId(request.getDoctorId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
@@ -935,7 +931,6 @@ public class ContactsServiceImpl implements ContactsService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return status;

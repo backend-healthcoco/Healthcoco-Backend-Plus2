@@ -60,7 +60,7 @@ public class VersionControlServiceImpl implements VersionControlService{
 	
 	@Override
 	@Transactional
-	public List<VersionControl> getVersionsList(int page, int size ,String searchTerm)
+	public List<VersionControl> getVersionsList(long page, int size ,String searchTerm)
 	{
 		List<VersionControl> response = null;
 		Criteria criteria = null;

@@ -39,11 +39,11 @@ public interface AppointmentService {
 	Clinic getClinic(String locationId, String role, Boolean active);
 
 	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
+			String to, long page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime, Boolean isWeb);
 
 	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime);
+			String to, long page, int size, String updatedTime);
 
 	Lab getLab(String locationId, String patientId, Boolean active);
 
@@ -92,7 +92,7 @@ public interface AppointmentService {
 
 	public CustomAppointment getCustomAppointmentById(String appointmentId);
 
-	public List<CustomAppointment> getCustomAppointments(int page, int size, String locationId, String hospitalId,
+	public List<CustomAppointment> getCustomAppointments(long page, int size, String locationId, String hospitalId,
 			String doctorId, String updatedTime, Boolean discarded);
 
 	public AVGTimeDetail getCustomAppointmentAVGTimeDetail(String locationId, String hospitalId, String doctorId);
@@ -114,12 +114,12 @@ public interface AppointmentService {
 			Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes,
 			Boolean showPatientGroups);
 
-	List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
+	List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, long page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime);
 
 	Event getEventById(String eventId);
 
-	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
+	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, long page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime);
 
 }

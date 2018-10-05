@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -33,12 +31,10 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -53,7 +49,6 @@ import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ColorCode;
-import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
@@ -193,7 +188,7 @@ public class SignUpServiceImpl implements SignUpService {
 	@Transactional
 	public String verifyUser(String tokenId) {
 		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(tokenId)).orElse(null);
 			if (tokenCollection == null) {
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 			} else if (tokenCollection.getIsUsed()) {
@@ -204,11 +199,11 @@ public class SignUpServiceImpl implements SignUpService {
 					return "We were unable to verify your Healthcoco+ account."
 							+ " Please contact support@healthcoco.com for completing your account verification.";
 				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-						.findOne(tokenCollection.getResourceId());
+						.findById(tokenCollection.getResourceId()).orElse(null);
 				if (doctorClinicProfileRepository == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 				}
-				UserCollection userCollection = userRepository.findOne(doctorClinicProfileCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(doctorClinicProfileCollection.getDoctorId()).orElse(null);
 				userCollection.setIsVerified(true);
 				userCollection.setUserState(UserState.NOTACTIVATED);
 				userRepository.save(userCollection);
@@ -238,7 +233,7 @@ public class SignUpServiceImpl implements SignUpService {
 	@Transactional
 	public String verifyLocale(String tokenId) {
 		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(tokenId)).orElse(null);
 			if (tokenCollection == null) {
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification SMS that we sent you.";
 			} else if (tokenCollection.getIsUsed()) {
@@ -249,7 +244,7 @@ public class SignUpServiceImpl implements SignUpService {
 					return "We were unable to verify your Healthcoco account."
 							+ " Please contact support@healthcoco.com for completing your account verification.";
 
-				UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+				UserCollection userCollection = userRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				LocaleCollection localeCollection = localeRepository
 						.findByMobileNumber(userCollection.getMobileNumber());
 				userCollection.setIsVerified(true);
@@ -550,7 +545,7 @@ public class SignUpServiceImpl implements SignUpService {
 				}
 				// This batch update will unlock all the locked users.(make
 				// signedup flag =true)
-				userRepository.save(userCollections);
+				userRepository.saveAll(userCollections);
 				isUnlocked = true;
 			}
 		}
@@ -950,7 +945,7 @@ public class SignUpServiceImpl implements SignUpService {
 				userRoleCollection.setCreatedTime(new Date());
 				userRoleCollections.add(userRoleCollection);
 			}
-			userRoleRepository.save(userRoleCollections);
+			userRoleRepository.saveAll(userRoleCollections);
 
 			// Subscribe Doctor with Clinic
 			/*SubscriptionDetail detail = new SubscriptionDetail();
@@ -1027,11 +1022,11 @@ public class SignUpServiceImpl implements SignUpService {
 				for (AccessControl accessControl : accessControls) {
 					Role role = new Role();
 					for (RoleCollection roleCollection : roleCollections) {
-						if (accessControl.getRoleOrUserId().equals(roleCollection.getId()))
+						if (accessControl.getRoleOrUserId().equals(roleCollection.getId().toString()))
 							role.setRole(RoleEnum.HOSPITAL_ADMIN.getRole());
-						if (accessControl.getRoleOrUserId().equals(roleCollection.getId()))
+						if (accessControl.getRoleOrUserId().equals(roleCollection.getId().toString()))
 							role.setRole(RoleEnum.LOCATION_ADMIN.getRole());
-						if (accessControl.getRoleOrUserId().equals(roleCollection.getId()))
+						if (accessControl.getRoleOrUserId().equals(roleCollection.getId().toString()))
 							role.setRole(RoleEnum.DOCTOR.getRole());
 					}
 					BeanUtil.map(accessControl.getAccessModules(), role);

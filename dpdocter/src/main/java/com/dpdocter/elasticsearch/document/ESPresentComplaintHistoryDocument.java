@@ -13,16 +13,16 @@ public class ESPresentComplaintHistoryDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String presentComplaintHistory;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
@@ -31,7 +31,7 @@ public class ESPresentComplaintHistoryDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.text)
 	private String speciality;
 
 	public String getId() {
