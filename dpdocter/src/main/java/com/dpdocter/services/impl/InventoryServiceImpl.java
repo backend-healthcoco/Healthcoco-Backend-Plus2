@@ -103,6 +103,7 @@ public class InventoryServiceImpl implements InventoryService {
 			}
 			InventoryItemCollection inventoryItemCollection = new InventoryItemCollection();
 			BeanUtil.map(inventoryItem, inventoryItemCollection);
+			inventoryItemCollection.setDrugType(inventoryItem.getDrugType());
 			inventoryItemCollection.setCreatedTime(new Date());
 			inventoryItemCollection = inventoryItemRepository.save(inventoryItemCollection);
 			if (inventoryItemCollection != null) {
