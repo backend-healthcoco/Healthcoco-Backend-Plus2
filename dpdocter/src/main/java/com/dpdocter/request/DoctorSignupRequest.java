@@ -4,67 +4,72 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.dpdocter.beans.DOB;
+
 /**
  * @author veeraj
  */
 
 public class DoctorSignupRequest {
-   
+
 	private String title;
-	
+
 	private String firstName;
 
-    private char[] password;
+	private char[] password;
 
-    private String emailAddress;
+	private String emailAddress;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private String gender;
+	private String gender;
 
-    private DOB dob;
+	private DOB dob;
 
-    private List<String> specialities;
+	private List<String> specialities;
 
-    private String locationName;
+	private String locationName;
 
-    private String country;
+	private String country;
 
-    private String state;
+	private String state;
 
-    private String city;
+	private String city;
 
-    private String streetAddress;
+	private String streetAddress;
 
-    private String registerNumber;
-    
-    public DOB getDob() {
-	return dob;
-    }
+	private String registerNumber;
 
-    public void setDob(DOB dob) {
-	this.dob = dob;
-    }
+	private String mrCode;
 
-    public String getFirstName() {
-	return firstName;
-    }
+	private String cityId;
+	
+	public DOB getDob() {
+		return dob;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
 
-    public char[] getPassword() {
-	return password;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setPassword(char[] password) {
-	this.password = password;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getEmailAddress() {
-	return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
-    }
+	public char[] getPassword() {
+		return password;
+	}
+
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
+	}
 
 	public String getMobileNumber() {
 		return mobileNumber;
@@ -148,6 +153,22 @@ public class DoctorSignupRequest {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public String getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(String cityId) {
+		this.cityId = cityId;
 	}
 
 	@Override

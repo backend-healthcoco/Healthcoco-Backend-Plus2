@@ -7,10 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -31,6 +34,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
@@ -38,6 +42,7 @@ import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PCUserCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -64,6 +69,7 @@ import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PCUserRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SpecialityRepository;
@@ -77,6 +83,7 @@ import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
+import com.dpdocter.response.PharmaLicenseResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.ForgotPasswordService;
@@ -84,6 +91,7 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
+import com.dpdocter.services.SubscriptionService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
 import com.mongodb.DuplicateKeyException;
@@ -183,6 +191,12 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Value(value = "${Signup.unlockPatientBasedOn80PercentMatch}")
 	private String unlockPatientBasedOn80PercentMatch;
+	
+	@Autowired
+	private PCUserRepository pcUserRepository; 
+	
+	@Autowired
+	private SubscriptionService subscriptionService;
 
 	@Override
 	@Transactional
@@ -829,7 +843,6 @@ public class SignUpServiceImpl implements SignUpService {
 	@Transactional
 	public DoctorSignUp doctorSignUp(DoctorSignupRequest request) {
 		DoctorSignUp response = null;
-
 		try {
 			if (DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 				logger.warn("Email Address cannot be null");
@@ -944,6 +957,47 @@ public class SignUpServiceImpl implements SignUpService {
 				userRoleCollections.add(userRoleCollection);
 			}
 			userRoleRepository.save(userRoleCollections);
+			
+			
+		/*	if(request.getMrCode() != null)
+			{
+				pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
+				List<PharmaLicenseResponse> pharmaLicenseResponses = pharmaService.getLicenses(pcUserCollection.getCompanyId().toString(), 0, 0);
+				for(PharmaLicenseResponse pharmaLicenseResponse : pharmaLicenseResponses)
+				{
+					if(pharmaLicenseResponse.getAvailable() > 0)
+					{
+						licenseResponse = pharmaLicenseResponse;
+						break;
+					}
+				}
+			}
+			
+			// Subscribe Doctor with Clinic
+			SubscriptionDetail detail = new SubscriptionDetail();
+			detail.setCreatedBy("Admin");
+			detail.setDoctorId(userCollection.getId().toString());
+			detail.setIsDemo(true);
+			detail.setMonthsforSms(1);
+			detail.setMonthsforSuscrption(1);
+			detail.setNoOfsms(500);
+			Set<String> locationSet = new HashSet<String>();
+			locationSet.add(locationCollection.getId().toString());
+			detail.setLocationIds(locationSet);
+			if(licenseResponse != null)
+			{
+				detail.setIsDemo(false);
+				detail.setFromDate(new Date());
+				detail.setToDate(DateUtils.addMonths(new Date(), licenseResponse.getDuration()));
+				detail.setLicenseId(licenseResponse.getId());
+				licenseResponse.setAvailable(licenseResponse.getAvailable() - 1);
+				licenseResponse.setConsumed(licenseResponse.getConsumed() + 1);
+				PharmaLicenseCollection pharmaLicenseCollection = new PharmaLicenseCollection();
+				BeanUtil.map(licenseResponse, pharmaLicenseCollection);
+				pharmaLicenseRepository.save(pharmaLicenseCollection);
+				
+			}
+			subscriptionService.activate(detail);*/
 
 			// Subscribe Doctor with Clinic
 			/*SubscriptionDetail detail = new SubscriptionDetail();
