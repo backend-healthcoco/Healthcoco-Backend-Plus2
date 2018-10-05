@@ -1,24 +1,15 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.NutrientCategaoryEnum;
 import com.dpdocter.enums.QuantityEnum;
 
 public class IngredientAddItem {
 	private String id;
 	private String name;
-	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
 	private double value = 0.0;
 	private QuantityEnum type;
 	private double inPercent;
 	private String note;
-
-	public NutrientCategaoryEnum getCategory() {
-		return category;
-	}
-
-	public void setCategory(NutrientCategaoryEnum category) {
-		this.category = category;
-	}
+	private String nutrientCode;
 
 	public double getValue() {
 		return value;
@@ -66,6 +57,14 @@ public class IngredientAddItem {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getNutrientCode() {
+		return nutrientCode;
+	}
+
+	public void setNutrientCode(String nutrientCode) {
+		this.nutrientCode = nutrientCode;
 	}
 
 }

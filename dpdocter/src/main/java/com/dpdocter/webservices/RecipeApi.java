@@ -144,10 +144,11 @@ public class RecipeApi {
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENTS, notes = PathProxy.RecipeUrls.GET_NUTRIENTS)
 	public Response<Nutrient> getNutrients(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("category") String category) {
 
 		Response<Nutrient> response = new Response<Nutrient>();
-		response.setDataList(recipeService.getNutrients(size, page, discarded, searchTerm));
+		response.setDataList(recipeService.getNutrients(size, page, discarded, searchTerm, category));
 		return response;
 	}
 

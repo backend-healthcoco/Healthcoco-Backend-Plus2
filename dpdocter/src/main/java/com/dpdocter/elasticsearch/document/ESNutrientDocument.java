@@ -40,6 +40,17 @@ public class ESNutrientDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
+	@Field(type = FieldType.String)
+	private String nutrientCode;
+
+	public String getNutrientCode() {
+		return nutrientCode;
+	}
+
+	public void setNutrientCode(String nutrientCode) {
+		this.nutrientCode = nutrientCode;
+	}
+
 	public String getId() {
 		return id;
 	}

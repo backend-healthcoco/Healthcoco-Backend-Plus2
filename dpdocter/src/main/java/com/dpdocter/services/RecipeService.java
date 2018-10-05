@@ -11,7 +11,7 @@ import com.dpdocter.request.RecipeGetRequest;
 public interface RecipeService {
 	public Nutrient addEditNutrient(Nutrient request);
 
-	public List<Nutrient> getNutrients(int size, int page, boolean discarded, String searchTerm);
+	public List<Nutrient> getNutrients(int size, int page, boolean discarded, String searchTerm, String category);
 
 	public Nutrient discardNutrient(String id, boolean discarded);
 

@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EquivalentQuantities;
+import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
@@ -41,9 +42,6 @@ public class RecipeCollection extends GenericCollection {
 	@Field
 	private List<RecipeItem> ingredients;
 
-	@Field
-	private List<IngredientItem> nutrients;
-	
 	@Field
 	private ObjectId locationId;
 
@@ -100,6 +98,33 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private MealQuantity calaries;
+
+	@Field
+	private MealQuantity fat;
+
+	@Field
+	private MealQuantity protein;
+
+	@Field
+	private MealQuantity carbohydreate;
+
+	@Field
+	private List<IngredientItem> genralNutrients;
+
+	@Field
+	private List<IngredientItem> carbNutrients;
+
+	@Field
+	private List<IngredientItem> lipidNutrients;
+
+	@Field
+	private List<IngredientItem> prooteinAminoAcidNutrients;
+
+	@Field
+	private List<IngredientItem> mineralNutrients;
+
+	@Field
+	private List<IngredientItem> otherNutrients;
 
 	@Field
 	private boolean nutrientValueAtRecipeLevel = false;
@@ -174,14 +199,6 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setIngredients(List<RecipeItem> ingredients) {
 		this.ingredients = ingredients;
-	}
-
-	public List<IngredientItem> getNutrients() {
-		return nutrients;
-	}
-
-	public void setNutrients(List<IngredientItem> nutrients) {
-		this.nutrients = nutrients;
 	}
 
 	public String getDishType() {
@@ -344,6 +361,76 @@ public class RecipeCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	
+	public MealQuantity getFat() {
+		return fat;
+	}
+
+	public void setFat(MealQuantity fat) {
+		this.fat = fat;
+	}
+
+	public MealQuantity getProtein() {
+		return protein;
+	}
+
+	public void setProtein(MealQuantity protein) {
+		this.protein = protein;
+	}
+
+	public MealQuantity getCarbohydreate() {
+		return carbohydreate;
+	}
+
+	public void setCarbohydreate(MealQuantity carbohydreate) {
+		this.carbohydreate = carbohydreate;
+	}
+
+	public List<IngredientItem> getGenralNutrients() {
+		return genralNutrients;
+	}
+
+	public void setGenralNutrients(List<IngredientItem> genralNutrients) {
+		this.genralNutrients = genralNutrients;
+	}
+
+	public List<IngredientItem> getCarbNutrients() {
+		return carbNutrients;
+	}
+
+	public void setCarbNutrients(List<IngredientItem> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public List<IngredientItem> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(List<IngredientItem> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
+	}
+
+	public List<IngredientItem> getProoteinAminoAcidNutrients() {
+		return prooteinAminoAcidNutrients;
+	}
+
+	public void setProoteinAminoAcidNutrients(List<IngredientItem> prooteinAminoAcidNutrients) {
+		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
+	}
+
+	public List<IngredientItem> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public void setMineralNutrients(List<IngredientItem> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public List<IngredientItem> getOtherNutrients() {
+		return otherNutrients;
+	}
+
+	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
+		this.otherNutrients = otherNutrients;
+	}
 
 }

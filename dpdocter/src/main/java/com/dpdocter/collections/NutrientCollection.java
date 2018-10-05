@@ -28,13 +28,24 @@ public class NutrientCollection extends GenericCollection {
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
 
 	@Field
-	private String locationId;
+	private ObjectId locationId;
 
 	@Field
-	private String doctorId;
+	private ObjectId doctorId;
 
 	@Field
-	private String hospitalId;
+	private ObjectId hospitalId;
+
+	@Field
+	private String nutrientCode;
+
+	public String getNutrientCode() {
+		return nutrientCode;
+	}
+
+	public void setNutrientCode(String nutrientCode) {
+		this.nutrientCode = nutrientCode;
+	}
 
 	public NutrientType getType() {
 		return type;
@@ -44,27 +55,27 @@ public class NutrientCollection extends GenericCollection {
 		this.type = type;
 	}
 
-	public String getLocationId() {
+	public ObjectId getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(String locationId) {
+	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
 
-	public String getDoctorId() {
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public String getHospitalId() {
+	public ObjectId getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(String hospitalId) {
+	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
@@ -107,7 +118,5 @@ public class NutrientCollection extends GenericCollection {
 	public void setCategory(NutrientCategaoryEnum category) {
 		this.category = category;
 	}
-
-	
 
 }

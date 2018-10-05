@@ -2,18 +2,17 @@ package com.dpdocter.beans;
 
 import org.bson.types.ObjectId;
 
-import com.dpdocter.enums.NutrientCategaoryEnum;
 import com.dpdocter.enums.QuantityEnum;
 
 public class IngredientItem {
 
 	private ObjectId id;
 	private String name;
-	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
 	private double value;
 	private QuantityEnum type;
 	private double inPercent;
 	private String note;
+	private String nutrientCode;
 
 	public double getInPercent() {
 		return inPercent;
@@ -31,14 +30,15 @@ public class IngredientItem {
 		this.note = note;
 	}
 
-	public NutrientCategaoryEnum getCategory() {
-		return category;
+	
+
+	public String getNutrientCode() {
+		return nutrientCode;
 	}
 
-	public void setCategory(NutrientCategaoryEnum category) {
-		this.category = category;
+	public void setNutrientCode(String nutrientCode) {
+		this.nutrientCode = nutrientCode;
 	}
-
 
 	public double getValue() {
 		return value;

@@ -15,13 +15,6 @@ public class ESRecipeResponse {
 
 	private MealQuantity quantity;
 
-	private List<RecipeAddItem> includeIngredients;
-
-	private List<RecipeAddItem> excludeIngredients;
-
-	private List<RecipeAddItem> ingredients;
-
-	private List<IngredientAddItem> nutrients;
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 
@@ -97,36 +90,6 @@ public class ESRecipeResponse {
 		this.quantity = quantity;
 	}
 
-	public List<RecipeAddItem> getIncludeIngredients() {
-		return includeIngredients;
-	}
 
-	public void setIncludeIngredients(List<RecipeAddItem> includeIngredients) {
-		this.includeIngredients = includeIngredients;
-	}
-
-	public List<RecipeAddItem> getExcludeIngredients() {
-		return excludeIngredients;
-	}
-
-	public void setExcludeIngredients(List<RecipeAddItem> excludeIngredients) {
-		this.excludeIngredients = excludeIngredients;
-	}
-
-	public List<RecipeAddItem> getIngredients() {
-		return ingredients;
-	}
-
-	public void setIngredients(List<RecipeAddItem> ingredients) {
-		this.ingredients = ingredients;
-	}
-
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
-	}
-
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
-	}
 
 }

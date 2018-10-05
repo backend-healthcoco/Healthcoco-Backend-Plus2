@@ -48,9 +48,6 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Nested)
 	private List<RecipeAddItem> ingredients;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> nutrients;
-
 	@Field(type = FieldType.String)
 	private String dishType;
 
@@ -104,6 +101,33 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity calaries;
+
+	@Field(type = FieldType.Nested)
+	private MealQuantity fat;
+
+	@Field(type = FieldType.Nested)
+	private MealQuantity protein;
+
+	@Field(type = FieldType.Nested)
+	private MealQuantity carbohydreate;
+
+	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> genralNutrients;
+
+	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> carbNutrients;
+
+	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> lipidNutrients;
+
+	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> prooteinAminoAcidNutrients;
+
+	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> mineralNutrients;
+
+	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> otherNutrients;
 
 	@Field(type = FieldType.Boolean)
 	private boolean nutrientValueAtRecipeLevel = false;
@@ -172,12 +196,52 @@ public class ESRecipeDocument {
 		this.ingredients = ingredients;
 	}
 
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
+	public MealQuantity getFat() {
+		return fat;
 	}
 
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
+	public void setFat(MealQuantity fat) {
+		this.fat = fat;
+	}
+
+	public MealQuantity getProtein() {
+		return protein;
+	}
+
+	public void setProtein(MealQuantity protein) {
+		this.protein = protein;
+	}
+
+	public MealQuantity getCarbohydreate() {
+		return carbohydreate;
+	}
+
+	public void setCarbohydreate(MealQuantity carbohydreate) {
+		this.carbohydreate = carbohydreate;
+	}
+
+	public List<IngredientAddItem> getGenralNutrients() {
+		return genralNutrients;
+	}
+
+	public void setGenralNutrients(List<IngredientAddItem> genralNutrients) {
+		this.genralNutrients = genralNutrients;
+	}
+
+	public List<IngredientAddItem> getCarbNutrients() {
+		return carbNutrients;
+	}
+
+	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public List<IngredientAddItem> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
 	}
 
 	public String getDishType() {
@@ -362,6 +426,18 @@ public class ESRecipeDocument {
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public void setProoteinAminoAcidNutrients(List<IngredientAddItem> prooteinAminoAcidNutrients) {
+		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
+	}
+
+	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
+		this.otherNutrients = otherNutrients;
 	}
 
 }
