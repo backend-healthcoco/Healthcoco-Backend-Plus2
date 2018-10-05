@@ -7,6 +7,8 @@ import org.apache.commons.collections.IteratorUtils;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -306,23 +308,23 @@ public class ESCityServiceImpl implements ESCityService {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm));
 			}
 
-			if (isActivated == null) {
-				citySize = (int) esCityRepository.count();
-			} else {
+			if (isActivated != null) {
 				boolQueryBuilder.must(QueryBuilders.termQuery("isActivated", isActivated));
-				citySize = (int) esCityRepository.count(isActivated);
-
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				if (citySize > 0) {
-					cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-							.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, citySize)).build(),
+					cities = elasticsearchTemplate.queryForList(
+							new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, citySize))
+									.withSort(SortBuilders.fieldSort("city").order(SortOrder.ASC)).build(),
 							ESCityDocument.class);
 				}
 			} else {
 				if (citySize > 0) {
-					cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-							.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, citySize)).build(),
+					cities = elasticsearchTemplate.queryForList(
+							new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, citySize))
+									.withSort(SortBuilders.fieldSort("city").order(SortOrder.ASC)).build(),
 							ESCityDocument.class);
 				}
 			}
