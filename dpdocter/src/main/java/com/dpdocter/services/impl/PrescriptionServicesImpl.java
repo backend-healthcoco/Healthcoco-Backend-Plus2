@@ -4192,6 +4192,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 				}
 				drugCollection.setCreatedBy(createdBy);
+				drugCollection.setDrugTypePlacement(request.getDrugTypePlacement());
 
 				Date createdTime = new Date();
 				drugCollection.setCreatedTime(createdTime);
