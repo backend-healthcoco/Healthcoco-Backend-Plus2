@@ -17,11 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.collections.DoctorContactUsCollection;
+import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorContactUsRepository;
+import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -56,6 +58,9 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 
 	@Value(value = "${mail.signup.request.subject}")
 	private String signupRequestSubject;
+	
+	@Autowired
+	private TokenRepository tokenRepository;
 
 	@Override
 	@Transactional
@@ -69,11 +74,19 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				doctorContactUsCollection.setUserName(doctorContactUs.getEmailAddress());
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
 
+				
+				TokenCollection tokenCollection = new TokenCollection();
+				tokenCollection.setResourceId(doctorContactUsCollection.getId());
+				tokenCollection.setCreatedTime(new Date());
+				tokenCollection = tokenRepository.save(tokenCollection);
+				
 				String body = mailBodyGenerator.generateActivationEmailBody(
-						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), null,
+						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), tokenCollection.getId(),
 						"doctorWelcomeTemplate.vm", null, null);
 				mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
 
+				
+				
 				body = mailBodyGenerator.generateContactEmailBody(doctorContactUs, "Doctor");
 				mailService.sendEmail(mailTo, signupRequestSubject, body, null);
 

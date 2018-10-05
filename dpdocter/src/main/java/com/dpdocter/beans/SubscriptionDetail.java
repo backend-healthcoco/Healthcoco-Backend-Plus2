@@ -30,6 +30,8 @@ public class SubscriptionDetail extends GenericCollection {
 
 	private Boolean isExpired = true;
 
+	private String licenseId;
+
 	public Integer getMonthsforSuscrption() {
 		return monthsforSubscrption;
 	}
@@ -124,6 +126,22 @@ public class SubscriptionDetail extends GenericCollection {
 
 	public void setIsExpired(Boolean isExpired) {
 		this.isExpired = isExpired;
+	}
+
+	public Integer getMonthsforSubscrption() {
+		return monthsforSubscrption;
+	}
+
+	public void setMonthsforSubscrption(Integer monthsforSubscrption) {
+		this.monthsforSubscrption = monthsforSubscrption;
+	}
+
+	public String getLicenseId() {
+		return licenseId;
+	}
+
+	public void setLicenseId(String licenseId) {
+		this.licenseId = licenseId;
 	}
 
 }
