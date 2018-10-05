@@ -304,6 +304,7 @@ public class ESCityServiceImpl implements ESCityService {
 		try {
 			List<ESCityDocument> cities = null;
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+			citySize = (int) esCityRepository.count();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm));
 			}
