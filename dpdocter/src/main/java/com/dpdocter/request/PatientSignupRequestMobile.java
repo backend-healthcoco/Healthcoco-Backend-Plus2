@@ -10,6 +10,8 @@ public class PatientSignupRequestMobile {
 	private String internalPromoCode;
 
 	private boolean isNewPatientNeedToBeCreated;
+	
+	private String emailAddress;
 
 	public String getName() {
 		return name;
@@ -49,6 +51,15 @@ public class PatientSignupRequestMobile {
 
 	public void setInternalPromoCode(String internalPromoCode) {
 		this.internalPromoCode = internalPromoCode;
+	}
+
+	
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	@Override
