@@ -28,6 +28,12 @@ import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.NutrientCollection;
 import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.document.ESIngredientDocument;
+import com.dpdocter.elasticsearch.document.ESNutrientDocument;
+import com.dpdocter.elasticsearch.document.ESRecipeDocument;
+import com.dpdocter.elasticsearch.repository.ESIngredientRepository;
+import com.dpdocter.elasticsearch.repository.ESNutrientRepository;
+import com.dpdocter.elasticsearch.repository.ESRecipeRepository;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -63,6 +69,15 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
+
+	@Autowired
+	private ESRecipeRepository eSRecipeRepository;
+
+	@Autowired
+	private ESIngredientRepository esIngredientRepository;
+
+	@Autowired
+	private ESNutrientRepository esNutrientRepository;
 
 	@Override
 	public Nutrient addEditNutrient(Nutrient request) {
@@ -140,6 +155,7 @@ public class RecipeServiceImpl implements RecipeService {
 	public Nutrient discardNutrient(String id, boolean discarded) {
 		Nutrient response = null;
 		try {
+			ESNutrientDocument esNutrientDocument = null;
 			NutrientCollection nutrientCollection = nutrientRepository.findOne(new ObjectId(id));
 			if (nutrientCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Nutrient Not found with Id");
@@ -147,6 +163,11 @@ public class RecipeServiceImpl implements RecipeService {
 			nutrientCollection.setDiscarded(discarded);
 			nutrientCollection.setUpdatedTime(new Date());
 			nutrientCollection = nutrientRepository.save(nutrientCollection);
+			esNutrientDocument = esNutrientRepository.findOne(id);
+			if (esNutrientDocument != null) {
+				esNutrientDocument.setDiscarded(discarded);
+				esNutrientRepository.save(esNutrientDocument);
+			}
 			response = new Nutrient();
 			BeanUtil.map(nutrientCollection, response);
 		} catch (BusinessException e) {
@@ -284,16 +305,7 @@ public class RecipeServiceImpl implements RecipeService {
 				recipeCollection = recipeRepository.save(recipeCollection);
 				response = new Recipe();
 				BeanUtil.map(recipeCollection, response);
-				if (response != null) {
-					if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
-						for (int index = 0; index <= response.getRecipeImages().size(); index++) {
-							response.getRecipeImages().add(index,
-									getFinalImageURL(response.getRecipeImages().get(index)));
-						}
-					if (!DPDoctorUtils.anyStringEmpty(response.getVideoUrl())) {
-						response.setVideoUrl(getFinalImageURL(response.getVideoUrl()));
-					}
-				}
+				
 			}
 		} catch (BusinessException e) {
 			logger.error("Error while addedit Recipe " + e.getMessage());
@@ -390,24 +402,23 @@ public class RecipeServiceImpl implements RecipeService {
 	public Recipe discardRecipe(String id, boolean discarded) {
 		Recipe response = null;
 		try {
+			ESRecipeDocument document = null;
 			RecipeCollection recipeCollection = recipeRepository.findOne(new ObjectId(id));
 			if (recipeCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "recipe Not found with Id");
 			}
+
 			recipeCollection.setDiscarded(discarded);
 			recipeCollection.setUpdatedTime(new Date());
 			recipeCollection = recipeRepository.save(recipeCollection);
 			response = new Recipe();
-			BeanUtil.map(recipeCollection, response);
-			if (response != null) {
-				if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
-					for (int index = 0; index <= response.getRecipeImages().size(); index++) {
-						response.getRecipeImages().add(index, getFinalImageURL(response.getRecipeImages().get(index)));
-					}
-				if (!DPDoctorUtils.anyStringEmpty(response.getVideoUrl())) {
-					response.setVideoUrl(getFinalImageURL(response.getVideoUrl()));
-				}
+			document = eSRecipeRepository.findOne(id);
+			if (document != null) {
+				document.setDiscarded(discarded);
+				eSRecipeRepository.save(document);
 			}
+			BeanUtil.map(recipeCollection, response);
+
 		} catch (BusinessException e) {
 			logger.error("Error while delete Recipe " + e.getMessage());
 			e.printStackTrace();
@@ -552,6 +563,7 @@ public class RecipeServiceImpl implements RecipeService {
 	public Ingredient discardIngredient(String id, boolean discarded) {
 		Ingredient response = null;
 		try {
+			ESIngredientDocument esIngredientDocument = null;
 			IngredientCollection ingredientCollection = ingredientRepository.findOne(new ObjectId(id));
 			if (ingredientCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Ingredients Not found with Id");
@@ -559,6 +571,12 @@ public class RecipeServiceImpl implements RecipeService {
 			ingredientCollection.setDiscarded(discarded);
 			ingredientCollection.setUpdatedTime(new Date());
 			ingredientCollection = ingredientRepository.save(ingredientCollection);
+			esIngredientDocument = esIngredientRepository.findOne(id);
+			if (esIngredientDocument != null) {
+				esIngredientDocument.setDiscarded(discarded);
+				esIngredientDocument.setDiscarded(discarded);
+				esIngredientRepository.save(esIngredientDocument);
+			}
 			response = new Ingredient();
 			BeanUtil.map(ingredientCollection, response);
 		} catch (BusinessException e) {

@@ -66,7 +66,7 @@ public class Recipe extends GenericCollection {
 
 	private boolean nutrientValueAtRecipeLevel = false;
 
-	public boolean isNutrientValueAtRecipeLevel() {
+	public boolean getNutrientValueAtRecipeLevel() {
 		return nutrientValueAtRecipeLevel;
 	}
 

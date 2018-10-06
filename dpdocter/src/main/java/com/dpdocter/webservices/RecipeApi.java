@@ -143,8 +143,15 @@ public class RecipeApi {
 	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENTS)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENTS, notes = PathProxy.RecipeUrls.GET_NUTRIENTS)
+<<<<<<< HEAD
 	public Response<Nutrient> getNutrients(@QueryParam("size") int size, @QueryParam("page") int page,
 			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+=======
+	public Response<Nutrient> getNutrients(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") Boolean discarded,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("category") String category) {
+>>>>>>> 4cc37115a... HAPPY-3849
 
 		Response<Nutrient> response = new Response<Nutrient>();
 		response.setDataList(recipeService.getNutrients(size, page, discarded, searchTerm));
@@ -154,8 +161,10 @@ public class RecipeApi {
 	@Path(value = PathProxy.RecipeUrls.GET_INGREDIENTS)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_INGREDIENTS, notes = PathProxy.RecipeUrls.GET_INGREDIENTS)
-	public Response<Ingredient> getIngredients(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+	public Response<Ingredient> getIngredients(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") Boolean discarded,
+			@QueryParam("searchTerm") String searchTerm) {
 
 		Response<Ingredient> response = new Response<Ingredient>();
 		response.setDataList(recipeService.getIngredients(size, page, discarded, searchTerm));
@@ -166,6 +175,8 @@ public class RecipeApi {
 	@DELETE
 	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_INGREDIENT, notes = PathProxy.RecipeUrls.DELETE_INGREDIENT)
 	public Response<Ingredient> deleteIngredient(@PathParam("ingredientId") String ingredientId,
+			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId,
 			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(ingredientId)) {
 			logger.warn("Invalid Input");
@@ -181,6 +192,8 @@ public class RecipeApi {
 	@DELETE
 	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_NUTRIENT, notes = PathProxy.RecipeUrls.DELETE_NUTRIENT)
 	public Response<Nutrient> deleteNutrient(@PathParam("nutrientId") String nutrientId,
+			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId,
 			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(nutrientId)) {
 			logger.warn("Invalid Input");
@@ -195,7 +208,8 @@ public class RecipeApi {
 	@Path(value = PathProxy.RecipeUrls.DELETE_RECIPE)
 	@DELETE
 	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_RECIPE, notes = PathProxy.RecipeUrls.DELETE_RECIPE)
-	public Response<Recipe> deleteRecipe(@PathParam("recipeId") String recipeId,
+	public Response<Recipe> deleteRecipe(@PathParam("recipeId") String recipeId, @PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
@@ -225,8 +239,10 @@ public class RecipeApi {
 	@Path(value = PathProxy.RecipeUrls.GET_RECIPES)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES, notes = PathProxy.RecipeUrls.GET_RECIPES)
-	public Response<Recipe> getRecipes(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+	public Response<Recipe> getRecipes(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") Boolean discarded,
+			@QueryParam("searchTerm") String searchTerm) {
 		Response<Recipe> response = new Response<Recipe>();
 		response.setDataList(recipeService.getRecipes(size, page, discarded, searchTerm));
 		return response;
@@ -251,13 +267,22 @@ public class RecipeApi {
 		}
 		Recipe recipe = recipeService.addEditRecipe(request);
 		Response<Recipe> response = new Response<Recipe>();
-		response.setData(recipe);
 
 		if (recipe != null) {
 			ESRecipeDocument document = new ESRecipeDocument();
 			BeanUtil.map(recipe, document);
 			esRecipeService.addRecipe(document);
 		}
+		if (recipe != null) {
+			if (recipe.getRecipeImages() != null && !recipe.getRecipeImages().isEmpty())
+				for (int index = 0; index <= recipe.getRecipeImages().size(); index++) {
+					recipe.getRecipeImages().add(index, getFinalImageURL(recipe.getRecipeImages().get(index)));
+				}
+			if (!DPDoctorUtils.anyStringEmpty(recipe.getVideoUrl())) {
+				recipe.setVideoUrl(getFinalImageURL(recipe.getVideoUrl()));
+			}
+		}
+		response.setData(recipe);
 
 		return response;
 	}

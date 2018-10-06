@@ -312,7 +312,7 @@ public class RecipeCollection extends GenericCollection {
 		this.mealTiming = mealTiming;
 	}
 
-	public boolean isNutrientValueAtRecipeLevel() {
+	public boolean getNutrientValueAtRecipeLevel() {
 		return nutrientValueAtRecipeLevel;
 	}
 
