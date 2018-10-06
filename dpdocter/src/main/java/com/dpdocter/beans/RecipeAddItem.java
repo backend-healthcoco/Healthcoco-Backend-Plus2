@@ -36,8 +36,6 @@ public class RecipeAddItem {
 	private List<IngredientAddItem> mineralNutrients;
 
 	private List<IngredientAddItem> otherNutrients;
-	
-	
 
 	public MealQuantity getFiber() {
 		return fiber;
