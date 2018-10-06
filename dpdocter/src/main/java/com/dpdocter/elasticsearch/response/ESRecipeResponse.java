@@ -34,7 +34,7 @@ public class ESRecipeResponse {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
-	public boolean isNutrientValueAtRecipeLevel() {
+	public boolean getNutrientValueAtRecipeLevel() {
 		return nutrientValueAtRecipeLevel;
 	}
 

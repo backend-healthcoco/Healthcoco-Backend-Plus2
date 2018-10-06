@@ -1902,18 +1902,18 @@ public interface PathProxy {
 
 	public interface RecipeUrls {
 		public static final String ADD_EDIT_NUTRIENT = "nutrient/addEdit";
-		public static final String GET_NUTRIENTS = "nutrient/get";
-		public static final String DELETE_NUTRIENT = "nutrient/{nutrientId}/delete";
+		public static final String GET_NUTRIENTS = "nutrient/{doctorId}/{locationId}/{hospitalId}/get";
+		public static final String DELETE_NUTRIENT = "nutrient/{nutrientId}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_NUTRIENT = "nutrient/{nutrientId}/get";
 
 		public static final String ADD_EDIT_INGREDIENT = "ingredient/addEdit";
-		public static final String GET_INGREDIENTS = "ingredient/get";
-		public static final String DELETE_INGREDIENT = "ingredient/{ingredientId}/delete";
+		public static final String GET_INGREDIENTS = "ingredient/{doctorId}/{locationId}/{hospitalId}/get";
+		public static final String DELETE_INGREDIENT = "ingredient/{ingredientId}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_INGREDIENT = "ingredient/{ingredientId}/get";
 
 		public static final String ADD_EDIT_RECIPE = "addEdit";
-		public static final String GET_RECIPES = "get";
-		public static final String DELETE_RECIPE = "{recipeId}/delete";
+		public static final String GET_RECIPES = "{doctorId}/{locationId}/{hospitalId}/get";
+		public static final String DELETE_RECIPE = "{recipeId}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_RECIPE = "{recipeId}/get";
 	}
 

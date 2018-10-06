@@ -396,7 +396,7 @@ public class ESRecipeDocument {
 		this.mealTiming = mealTiming;
 	}
 
-	public boolean isNutrientValueAtRecipeLevel() {
+	public boolean getNutrientValueAtRecipeLevel() {
 		return nutrientValueAtRecipeLevel;
 	}
 
