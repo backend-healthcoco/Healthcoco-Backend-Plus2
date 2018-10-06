@@ -25,6 +25,8 @@ public class RecipeItem {
 
 	private MealQuantity carbohydreate;
 
+	private MealQuantity fiber;
+
 	private List<IngredientItem> genralNutrients;
 
 	private List<IngredientItem> carbNutrients;
@@ -93,7 +95,6 @@ public class RecipeItem {
 		this.lipidNutrients = lipidNutrients;
 	}
 
-
 	public List<IngredientItem> getProoteinAminoAcidNutrients() {
 		return prooteinAminoAcidNutrients;
 	}
@@ -156,6 +157,14 @@ public class RecipeItem {
 
 	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
 	}
 
 }

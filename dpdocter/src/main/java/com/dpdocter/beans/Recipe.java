@@ -67,6 +67,8 @@ public class Recipe extends GenericCollection {
 	private MealQuantity protein;
 
 	private MealQuantity carbohydreate;
+	
+	private MealQuantity fiber;
 
 	private List<IngredientAddItem> genralNutrients;
 
@@ -384,6 +386,14 @@ public class Recipe extends GenericCollection {
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
 	}
 
 }

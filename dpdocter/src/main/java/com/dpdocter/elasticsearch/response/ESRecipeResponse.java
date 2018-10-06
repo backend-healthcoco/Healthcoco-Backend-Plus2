@@ -15,7 +15,6 @@ public class ESRecipeResponse {
 
 	private MealQuantity quantity;
 
-
 	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private boolean nutrientValueAtRecipeLevel = false;
@@ -25,6 +24,14 @@ public class ESRecipeResponse {
 	private List<String> mealTiming;
 
 	private String direction;
+	
+	private MealQuantity fiber;
+
+	private MealQuantity fat;
+
+	private MealQuantity protein;
+
+	private MealQuantity carbohydreate;
 
 	public List<EquivalentQuantities> getEquivalentMeasurements() {
 		return equivalentMeasurements;
@@ -88,6 +95,38 @@ public class ESRecipeResponse {
 
 	public void setQuantity(MealQuantity quantity) {
 		this.quantity = quantity;
+	}
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
+
+	public MealQuantity getFat() {
+		return fat;
+	}
+
+	public void setFat(MealQuantity fat) {
+		this.fat = fat;
+	}
+
+	public MealQuantity getProtein() {
+		return protein;
+	}
+
+	public void setProtein(MealQuantity protein) {
+		this.protein = protein;
+	}
+
+	public MealQuantity getCarbohydreate() {
+		return carbohydreate;
+	}
+
+	public void setCarbohydreate(MealQuantity carbohydreate) {
+		this.carbohydreate = carbohydreate;
 	}
 
 

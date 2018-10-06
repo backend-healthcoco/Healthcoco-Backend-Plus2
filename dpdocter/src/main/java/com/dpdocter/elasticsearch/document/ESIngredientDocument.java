@@ -55,6 +55,9 @@ public class ESIngredientDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity carbohydreate;
+	
+	@Field(type = FieldType.Nested)
+	private MealQuantity fiber;
 
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> genralNutrients;
@@ -233,6 +236,14 @@ public class ESIngredientDocument {
 
 	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
 	}
 
 }

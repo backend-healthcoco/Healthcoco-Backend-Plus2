@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EquivalentQuantities;
-import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
@@ -107,6 +106,17 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private MealQuantity carbohydreate;
+	
+	@Field
+	private MealQuantity fiber;
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
 
 	@Field
 	private List<IngredientItem> genralNutrients;

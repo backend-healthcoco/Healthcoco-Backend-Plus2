@@ -9,7 +9,6 @@ public class IngredientItem {
 	private ObjectId id;
 	private String name;
 	private double value;
-	private QuantityEnum type;
 	private double inPercent;
 	private String note;
 	private String nutrientCode;
@@ -30,8 +29,6 @@ public class IngredientItem {
 		this.note = note;
 	}
 
-	
-
 	public String getNutrientCode() {
 		return nutrientCode;
 	}
@@ -46,14 +43,6 @@ public class IngredientItem {
 
 	public void setValue(double value) {
 		this.value = value;
-	}
-
-	public QuantityEnum getType() {
-		return type;
-	}
-
-	public void setType(QuantityEnum type) {
-		this.type = type;
 	}
 
 	public ObjectId getId() {

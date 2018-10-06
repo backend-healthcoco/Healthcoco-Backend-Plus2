@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import com.dpdocter.collections.GenericCollection;
 
 public class Ingredient extends GenericCollection {
@@ -9,7 +11,7 @@ public class Ingredient extends GenericCollection {
 	private String id;
 
 	private MealQuantity quantity;
-	
+
 	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private String name;
@@ -25,12 +27,14 @@ public class Ingredient extends GenericCollection {
 	private String note;
 
 	private MealQuantity calaries;
-	
+
 	private MealQuantity fat;
 
 	private MealQuantity protein;
 
 	private MealQuantity carbohydreate;
+
+	private MealQuantity fiber;
 
 	private List<IngredientAddItem> genralNutrients;
 
@@ -196,6 +200,12 @@ public class Ingredient extends GenericCollection {
 		this.otherNutrients = otherNutrients;
 	}
 
+	public MealQuantity getFiber() {
+		return fiber;
+	}
 
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
 
 }

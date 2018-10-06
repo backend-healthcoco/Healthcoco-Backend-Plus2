@@ -23,6 +23,8 @@ public class RecipeAddItem {
 
 	private MealQuantity carbohydreate;
 
+	private MealQuantity fiber;
+
 	private List<IngredientAddItem> genralNutrients;
 
 	private List<IngredientAddItem> carbNutrients;
@@ -34,6 +36,16 @@ public class RecipeAddItem {
 	private List<IngredientAddItem> mineralNutrients;
 
 	private List<IngredientAddItem> otherNutrients;
+	
+	
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
 
 	public MealQuantity getCalaries() {
 		return calaries;
