@@ -23,6 +23,7 @@ public class DietPlan extends GenericCollection {
 	private List<DietplanAddItem> items;
 
 	private MealQuantity calaries;
+	
 
 	public MealQuantity getCalaries() {
 		return calaries;

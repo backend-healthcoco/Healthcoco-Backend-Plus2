@@ -12,7 +12,7 @@ public class DietplanItem {
 
 	private String note;
 
-	private MealQuantity calaries;
+	private MealQuantity calaries;	
 
 	public MealQuantity getCalaries() {
 		return calaries;
