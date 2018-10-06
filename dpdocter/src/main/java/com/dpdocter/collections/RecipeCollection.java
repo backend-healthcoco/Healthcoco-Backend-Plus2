@@ -43,7 +43,7 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private List<IngredientItem> nutrients;
-	
+
 	@Field
 	private ObjectId locationId;
 
@@ -100,6 +100,44 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private MealQuantity calaries;
+
+	@Field
+	private MealQuantity fat;
+
+	@Field
+	private MealQuantity protein;
+
+	@Field
+	private MealQuantity carbohydreate;
+
+	@Field
+	private MealQuantity fiber;
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
+
+	@Field
+	private List<IngredientItem> genralNutrients;
+
+	@Field
+	private List<IngredientItem> carbNutrients;
+
+	@Field
+	private List<IngredientItem> lipidNutrients;
+
+	@Field
+	private List<IngredientItem> prooteinAminoAcidNutrients;
+
+	@Field
+	private List<IngredientItem> mineralNutrients;
+
+	@Field
+	private List<IngredientItem> otherNutrients;
 
 	@Field
 	private boolean nutrientValueAtRecipeLevel = false;
@@ -343,7 +381,5 @@ public class RecipeCollection extends GenericCollection {
 	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-
-	
 
 }

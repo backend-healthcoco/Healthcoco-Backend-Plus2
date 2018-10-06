@@ -1,14 +1,12 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.enums.NutrientCategaoryEnum;
-import com.dpdocter.enums.QuantityEnum;
 
 public class IngredientAddItem {
 	private String id;
 	private String name;
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
 	private double value = 0.0;
-	private QuantityEnum type;
 	private double inPercent;
 	private String note;
 
@@ -26,14 +24,6 @@ public class IngredientAddItem {
 
 	public void setValue(double value) {
 		this.value = value;
-	}
-
-	public QuantityEnum getType() {
-		return type;
-	}
-
-	public void setType(QuantityEnum type) {
-		this.type = type;
 	}
 
 	public double getInPercent() {
