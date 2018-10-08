@@ -80,7 +80,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				tokenCollection.setCreatedTime(new Date());
 				tokenCollection = tokenRepository.save(tokenCollection);
 				
-				String body = mailBodyGenerator.generateActivationEmailBody(
+				String body = mailBodyGenerator.doctorWelcomeEmailBody(
 						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), tokenCollection.getId(),
 						"doctorWelcomeTemplate.vm", null, null);
 				mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);

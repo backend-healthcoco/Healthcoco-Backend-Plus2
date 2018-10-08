@@ -210,6 +210,22 @@ public class SignUpApi {
 		response.setData(string);
 		return response;
 	}
+	
+	
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.WELCOME_USER)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.WELCOME_USER, notes = PathProxy.SignUpUrls.WELCOME_USER)
+	public Response<DoctorContactUs> welcomeUser(@PathParam(value = "tokenId") String tokenId) {
+		if (tokenId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		DoctorContactUs contactUs = signUpService.welcomeUser(tokenId);
+		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
+		response.setData(contactUs);
+		return response;
+	}
 
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)

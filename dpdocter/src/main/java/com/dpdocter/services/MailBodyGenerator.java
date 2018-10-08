@@ -57,4 +57,7 @@ public interface MailBodyGenerator {
 
 	String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName,
 			List<MailAttachment> reports, String templatePath);
+
+	String doctorWelcomeEmailBody(String fName, String tokenId, String templatePath, String doctorName,
+			String clinicName) throws Exception;
 }

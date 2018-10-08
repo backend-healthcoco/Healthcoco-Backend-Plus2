@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.CollectionBoy;
+import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
@@ -39,6 +40,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -65,6 +67,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocaleRepository;
@@ -85,6 +88,7 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.response.PharmaLicenseResponse;
 import com.dpdocter.services.AccessControlServices;
+import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.GenerateUniqueUserNameService;
@@ -197,6 +201,9 @@ public class SignUpServiceImpl implements SignUpService {
 	
 	@Autowired
 	private SubscriptionService subscriptionService;
+	
+	@Autowired
+	private DoctorContactUsRepository doctorContactUsRepository;
 
 	@Override
 	@Transactional
@@ -239,6 +246,43 @@ public class SignUpServiceImpl implements SignUpService {
 			e.printStackTrace();
 			logger.error(e + " Error occured while Activating user");
 			throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
+		}
+
+	}
+	
+	
+	@Override
+	@Transactional
+	public DoctorContactUs welcomeUser(String tokenId) {
+		DoctorContactUs doctorContactUs = null;
+		try {
+			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
+			if (tokenCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord , "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
+			} else if (tokenCollection.getIsUsed()) {
+				throw new BusinessException(ServiceError.Forbidden , "Your welcome link has already been used."
+						+ " Please contact support@healthcoco.com for completing your email verification");
+						
+			} else {
+				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findOne(tokenCollection.getResourceId());
+				if(doctorContactUsCollection != null)
+				{
+					doctorContactUs = new DoctorContactUs();
+					BeanUtil.map(doctorContactUsCollection, doctorContactUs);
+				}
+				tokenCollection.setIsUsed(true);
+				tokenRepository.save(tokenCollection);
+				return doctorContactUs;
+			}
+		} catch (IllegalArgumentException argumentException) {
+			throw new BusinessException(ServiceError.Forbidden ,"Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while registering user");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while registerings user");
 		}
 
 	}

@@ -21,6 +21,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	@Value(value = "${verify.link}")
 	private String link;
+	
+	@Value(value = "${welcome.link}")
+	private String welcomeLink;
 
 	@Value(value = "${login.link}")
 	private String loginLink;
@@ -73,6 +76,28 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
 		model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		return text;
+	}
+	
+	@Override
+	@Transactional
+	public String doctorWelcomeEmailBody(String fName, String tokenId, String templatePath, String doctorName,
+			String clinicName) throws Exception {
+
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("fName", fName);
+		model.put("doctorName", doctorName);
+		model.put("clinicName", clinicName);
+		model.put("link", welcomeLink + "/" + tokenId);
+		model.put("loginLink", loginLink);
+		model.put("imageURL", imagePath + "templatesImage");
+		model.put("contactUsEmail", contactUsEmail);
+		model.put("fbLink", fbLink);
+		model.put("twitterLink", twitterLink);
+		model.put("linkedInLink", linkedInLink);
+		model.put("googlePlusLink", googlePlusLink);
+	//	model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}
