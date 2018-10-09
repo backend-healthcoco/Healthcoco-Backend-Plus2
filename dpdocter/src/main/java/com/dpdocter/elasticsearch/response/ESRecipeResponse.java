@@ -5,7 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
-import com.dpdocter.beans.RecipeAddItem;
+import com.dpdocter.response.RecipeItemResponse;
 
 public class ESRecipeResponse {
 
@@ -15,25 +15,20 @@ public class ESRecipeResponse {
 
 	private MealQuantity quantity;
 
-	private List<RecipeAddItem> includeIngredients;
-
-	private List<RecipeAddItem> excludeIngredients;
-
-	private List<RecipeAddItem> ingredients;
-
-	private List<IngredientAddItem> nutrients;
-
-
 	private List<EquivalentQuantities> equivalentMeasurements;
+
+	private List<RecipeItemResponse> ingredients;
 
 	private boolean nutrientValueAtRecipeLevel = false;
 
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	private List<String> mealTiming;
 
 	private String direction;
-	
+
+	private Double cost = 0.0;
+
 	private MealQuantity fiber;
 
 	private MealQuantity fat;
@@ -41,6 +36,20 @@ public class ESRecipeResponse {
 	private MealQuantity protein;
 
 	private MealQuantity carbohydreate;
+
+	private List<IngredientAddItem> generalNutrients;
+
+	private List<IngredientAddItem> carbNutrients;
+
+	private List<IngredientAddItem> lipidNutrients;
+
+	private List<IngredientAddItem> proteinAminoAcidNutrients;
+
+	private List<IngredientAddItem> vitaminNutrients;
+
+	private List<IngredientAddItem> mineralNutrients;
+
+	private List<IngredientAddItem> otherNutrients;
 
 	public List<EquivalentQuantities> getEquivalentMeasurements() {
 		return equivalentMeasurements;
@@ -58,12 +67,12 @@ public class ESRecipeResponse {
 		this.nutrientValueAtRecipeLevel = nutrientValueAtRecipeLevel;
 	}
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public List<String> getMealTiming() {
@@ -138,37 +147,78 @@ public class ESRecipeResponse {
 		this.carbohydreate = carbohydreate;
 	}
 
-
-	public void setIncludeIngredients(List<RecipeAddItem> includeIngredients) {
-		this.includeIngredients = includeIngredients;
-	}
-
-	public List<RecipeAddItem> getExcludeIngredients() {
-		return excludeIngredients;
-	}
-
-	public void setExcludeIngredients(List<RecipeAddItem> excludeIngredients) {
-		this.excludeIngredients = excludeIngredients;
-	}
-
-	public List<RecipeAddItem> getIngredients() {
+	public List<RecipeItemResponse> getIngredients() {
 		return ingredients;
 	}
 
-	public void setIngredients(List<RecipeAddItem> ingredients) {
+	public void setIngredients(List<RecipeItemResponse> ingredients) {
 		this.ingredients = ingredients;
 	}
 
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
+	public List<IngredientAddItem> getGeneralNutrients() {
+		return generalNutrients;
 	}
 
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
+	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
 	}
 
-	public List<RecipeAddItem> getIncludeIngredients() {
-		return includeIngredients;
+	public List<IngredientAddItem> getCarbNutrients() {
+		return carbNutrients;
 	}
+
+	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public List<IngredientAddItem> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
+	}
+
+	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
+	}
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public List<IngredientAddItem> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public List<IngredientAddItem> getOtherNutrients() {
+		return otherNutrients;
+	}
+
+	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
+		this.otherNutrients = otherNutrients;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	
 
 }
