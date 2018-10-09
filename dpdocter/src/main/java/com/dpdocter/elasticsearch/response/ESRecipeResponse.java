@@ -3,9 +3,8 @@ package com.dpdocter.elasticsearch.response;
 import java.util.List;
 
 import com.dpdocter.beans.EquivalentQuantities;
-import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
-import com.dpdocter.beans.RecipeAddItem;
+import com.dpdocter.response.RecipeItemResponse;
 
 public class ESRecipeResponse {
 
@@ -17,6 +16,8 @@ public class ESRecipeResponse {
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 
+	private List<RecipeItemResponse> ingredients;
+
 	private boolean nutrientValueAtRecipeLevel = false;
 
 	private MealQuantity calaries;
@@ -24,7 +25,7 @@ public class ESRecipeResponse {
 	private List<String> mealTiming;
 
 	private String direction;
-	
+
 	private MealQuantity fiber;
 
 	private MealQuantity fat;
@@ -129,6 +130,12 @@ public class ESRecipeResponse {
 		this.carbohydreate = carbohydreate;
 	}
 
+	public List<RecipeItemResponse> getIngredients() {
+		return ingredients;
+	}
 
+	public void setIngredients(List<RecipeItemResponse> ingredients) {
+		this.ingredients = ingredients;
+	}
 
 }
