@@ -14,6 +14,16 @@ public class DietplanAddItem {
 
 	private MealQuantity calaries;
 
+	private Integer toTime = 0;
+
+	public Integer getToTime() {
+		return toTime;
+	}
+
+	public void setToTime(Integer toTime) {
+		this.toTime = toTime;
+	}
+
 	public MealQuantity getCalaries() {
 		return calaries;
 	}
