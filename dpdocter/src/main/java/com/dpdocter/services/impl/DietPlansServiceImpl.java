@@ -61,8 +61,8 @@ public class DietPlansServiceImpl implements DietPlansService {
 						.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 								+ userCollection.getFirstName());
 				dietPlanCollection.setCreatedTime(new Date());
-				dietPlanCollection
-						.setUniquePlanId(UniqueIdInitial.DIET_PLAN.getInitial() + DPDoctorUtils.generateRandomId());
+				dietPlanCollection.setUniquePlanId(
+						UniqueIdInitial.DIET_PLAN.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				dietPlanCollection.setUpdatedTime(new Date());
 
 			}
@@ -86,7 +86,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 		List<DietPlan> response = null;
 		try {
 
-			Criteria criteria = new Criteria("updatedTime").gt(updatedTime).and("discarded").is(discarded);
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime)).and("discarded").is(discarded);
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
@@ -123,7 +123,6 @@ public class DietPlansServiceImpl implements DietPlansService {
 			logger.error(e + "Error while getting Diet Plans : " + e.getCause().getMessage());
 			throw new BusinessException(ServiceError.Unknown,
 					" Error while getting Diet Plans : " + e.getCause().getMessage());
-
 		}
 		return response;
 	}
