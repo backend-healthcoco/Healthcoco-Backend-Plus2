@@ -67,16 +67,16 @@ public class Recipe extends GenericCollection {
 	private MealQuantity protein;
 
 	private MealQuantity carbohydreate;
-	
+
 	private MealQuantity fiber;
 
-	private List<IngredientAddItem> genralNutrients;
+	private List<IngredientAddItem> generalNutrients;
 
 	private List<IngredientAddItem> carbNutrients;
 
 	private List<IngredientAddItem> lipidNutrients;
 
-	private List<IngredientAddItem> prooteinAminoAcidNutrients;
+	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	private List<IngredientAddItem> mineralNutrients;
 
@@ -292,14 +292,6 @@ public class Recipe extends GenericCollection {
 		this.carbohydreate = carbohydreate;
 	}
 
-	public List<IngredientAddItem> getGenralNutrients() {
-		return genralNutrients;
-	}
-
-	public void setGenralNutrients(List<IngredientAddItem> genralNutrients) {
-		this.genralNutrients = genralNutrients;
-	}
-
 	public List<IngredientAddItem> getCarbNutrients() {
 		return carbNutrients;
 	}
@@ -314,14 +306,6 @@ public class Recipe extends GenericCollection {
 
 	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
 		this.lipidNutrients = lipidNutrients;
-	}
-
-	public List<IngredientAddItem> getProoteinAminoAcidNutrients() {
-		return prooteinAminoAcidNutrients;
-	}
-
-	public void setProoteinAminoAcidNutrients(List<IngredientAddItem> prooteinAminoAcidNutrients) {
-		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
 	}
 
 	public List<IngredientAddItem> getMineralNutrients() {
@@ -394,6 +378,22 @@ public class Recipe extends GenericCollection {
 
 	public void setFiber(MealQuantity fiber) {
 		this.fiber = fiber;
+	}
+
+	public List<IngredientAddItem> getGeneralNutrients() {
+		return generalNutrients;
+	}
+
+	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
 }

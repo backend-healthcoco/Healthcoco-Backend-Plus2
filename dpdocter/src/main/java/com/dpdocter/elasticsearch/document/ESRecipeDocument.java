@@ -112,7 +112,7 @@ public class ESRecipeDocument {
 	private MealQuantity carbohydreate;
 
 	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> genralNutrients;
+	private List<IngredientAddItem> generalNutrients;
 
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> carbNutrients;
@@ -121,7 +121,7 @@ public class ESRecipeDocument {
 	private List<IngredientAddItem> lipidNutrients;
 
 	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> prooteinAminoAcidNutrients;
+	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> mineralNutrients;
@@ -218,14 +218,6 @@ public class ESRecipeDocument {
 
 	public void setCarbohydreate(MealQuantity carbohydreate) {
 		this.carbohydreate = carbohydreate;
-	}
-
-	public List<IngredientAddItem> getGenralNutrients() {
-		return genralNutrients;
-	}
-
-	public void setGenralNutrients(List<IngredientAddItem> genralNutrients) {
-		this.genralNutrients = genralNutrients;
 	}
 
 	public List<IngredientAddItem> getCarbNutrients() {
@@ -428,16 +420,36 @@ public class ESRecipeDocument {
 		this.hospitalId = hospitalId;
 	}
 
-	public void setProoteinAminoAcidNutrients(List<IngredientAddItem> prooteinAminoAcidNutrients) {
-		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
-	}
-
 	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
 		this.mineralNutrients = mineralNutrients;
 	}
 
 	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
 		this.otherNutrients = otherNutrients;
+	}
+
+	public List<IngredientAddItem> getGeneralNutrients() {
+		return generalNutrients;
+	}
+
+	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
+	}
+
+	public List<IngredientAddItem> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public List<IngredientAddItem> getOtherNutrients() {
+		return otherNutrients;
 	}
 
 }

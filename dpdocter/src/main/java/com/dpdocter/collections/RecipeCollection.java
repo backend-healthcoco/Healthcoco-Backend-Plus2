@@ -106,20 +106,12 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private MealQuantity carbohydreate;
-	
+
 	@Field
 	private MealQuantity fiber;
 
-	public MealQuantity getFiber() {
-		return fiber;
-	}
-
-	public void setFiber(MealQuantity fiber) {
-		this.fiber = fiber;
-	}
-
 	@Field
-	private List<IngredientItem> genralNutrients;
+	private List<IngredientItem> generalNutrients;
 
 	@Field
 	private List<IngredientItem> carbNutrients;
@@ -128,7 +120,7 @@ public class RecipeCollection extends GenericCollection {
 	private List<IngredientItem> lipidNutrients;
 
 	@Field
-	private List<IngredientItem> prooteinAminoAcidNutrients;
+	private List<IngredientItem> proteinAminoAcidNutrients;
 
 	@Field
 	private List<IngredientItem> mineralNutrients;
@@ -138,6 +130,14 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private boolean nutrientValueAtRecipeLevel = false;
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
 
 	public MealQuantity getCalaries() {
 		return calaries;
@@ -395,14 +395,6 @@ public class RecipeCollection extends GenericCollection {
 		this.carbohydreate = carbohydreate;
 	}
 
-	public List<IngredientItem> getGenralNutrients() {
-		return genralNutrients;
-	}
-
-	public void setGenralNutrients(List<IngredientItem> genralNutrients) {
-		this.genralNutrients = genralNutrients;
-	}
-
 	public List<IngredientItem> getCarbNutrients() {
 		return carbNutrients;
 	}
@@ -419,14 +411,6 @@ public class RecipeCollection extends GenericCollection {
 		this.lipidNutrients = lipidNutrients;
 	}
 
-	public List<IngredientItem> getProoteinAminoAcidNutrients() {
-		return prooteinAminoAcidNutrients;
-	}
-
-	public void setProoteinAminoAcidNutrients(List<IngredientItem> prooteinAminoAcidNutrients) {
-		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
-	}
-
 	public List<IngredientItem> getMineralNutrients() {
 		return mineralNutrients;
 	}
@@ -441,6 +425,22 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
 		this.otherNutrients = otherNutrients;
+	}
+
+	public List<IngredientItem> getGeneralNutrients() {
+		return generalNutrients;
+	}
+
+	public void setGeneralNutrients(List<IngredientItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
 }
