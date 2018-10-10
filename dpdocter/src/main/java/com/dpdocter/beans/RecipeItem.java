@@ -24,13 +24,13 @@ public class RecipeItem {
 
 	private MealQuantity fiber;
 
-	private List<IngredientItem> genralNutrients;
+	private List<IngredientItem> generalNutrients;
 
 	private List<IngredientItem> carbNutrients;
 
 	private List<IngredientItem> lipidNutrients;
 
-	private List<IngredientItem> prooteinAminoAcidNutrients;
+	private List<IngredientItem> proteinAminoAcidNutrients;
 
 	private List<IngredientItem> mineralNutrients;
 
@@ -72,14 +72,6 @@ public class RecipeItem {
 		this.carbohydreate = carbohydreate;
 	}
 
-	public List<IngredientItem> getGenralNutrients() {
-		return genralNutrients;
-	}
-
-	public void setGenralNutrients(List<IngredientItem> genralNutrients) {
-		this.genralNutrients = genralNutrients;
-	}
-
 	public List<IngredientItem> getCarbNutrients() {
 		return carbNutrients;
 	}
@@ -94,14 +86,6 @@ public class RecipeItem {
 
 	public void setLipidNutrients(List<IngredientItem> lipidNutrients) {
 		this.lipidNutrients = lipidNutrients;
-	}
-
-	public List<IngredientItem> getProoteinAminoAcidNutrients() {
-		return prooteinAminoAcidNutrients;
-	}
-
-	public void setProoteinAminoAcidNutrients(List<IngredientItem> prooteinAminoAcidNutrients) {
-		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
 	}
 
 	public List<IngredientItem> getMineralNutrients() {
@@ -171,6 +155,23 @@ public class RecipeItem {
 
 	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
 		this.otherNutrients = otherNutrients;
+	}
+
+	public List<IngredientItem> getGeneralNutrients() {
+		return generalNutrients;
+	}
+
+	public void setGeneralNutrients(List<IngredientItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
+
 	}
 
 }

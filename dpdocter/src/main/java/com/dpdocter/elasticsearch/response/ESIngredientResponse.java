@@ -4,7 +4,10 @@ import java.util.List;
 
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
+<<<<<<< HEAD
 import com.dpdocter.beans.IngredientItem;
+=======
+>>>>>>> 613fa84d8... HAPPY-3724
 import com.dpdocter.beans.MealQuantity;
 
 public class ESIngredientResponse {
@@ -22,8 +25,32 @@ public class ESIngredientResponse {
 	private MealQuantity calaries;
 	
 	private List<EquivalentQuantities> equivalentMeasurements;
+<<<<<<< HEAD
 	
 	
+=======
+
+	private MealQuantity fat;
+
+	private MealQuantity protein;
+
+	private MealQuantity carbohydreate;
+	
+	private MealQuantity fiber;
+	
+	private List<IngredientAddItem> generalNutrients;
+
+	private List<IngredientAddItem> carbNutrients;
+
+	private List<IngredientAddItem> lipidNutrients;
+
+	private List<IngredientAddItem> proteinAminoAcidNutrients;
+
+	private List<IngredientAddItem> mineralNutrients;
+
+	private List<IngredientAddItem> otherNutrients;
+
+>>>>>>> 613fa84d8... HAPPY-3724
 
 	public MealQuantity getCalaries() {
 		return calaries;
@@ -79,6 +106,62 @@ public class ESIngredientResponse {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
+
+	public List<IngredientAddItem> getGeneralNutrients() {
+		return generalNutrients;
+	}
+
+	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientAddItem> getCarbNutrients() {
+		return carbNutrients;
+	}
+
+	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public List<IngredientAddItem> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
+	}
+
+	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
+	}
+
+	public List<IngredientAddItem> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public List<IngredientAddItem> getOtherNutrients() {
+		return otherNutrients;
+	}
+
+	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
+		this.otherNutrients = otherNutrients;
 	}
 
 }

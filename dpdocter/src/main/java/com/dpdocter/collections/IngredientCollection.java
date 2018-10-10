@@ -60,7 +60,7 @@ public class IngredientCollection extends GenericCollection {
 	private MealQuantity fiber;
 
 	@Field
-	private List<IngredientAddItem> genralNutrients;
+	private List<IngredientAddItem> generalNutrients;
 
 	@Field
 	private List<IngredientAddItem> carbNutrients;
@@ -69,7 +69,7 @@ public class IngredientCollection extends GenericCollection {
 	private List<IngredientAddItem> lipidNutrients;
 
 	@Field
-	private List<IngredientAddItem> prooteinAminoAcidNutrients;
+	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	@Field
 	private List<IngredientAddItem> mineralNutrients;
@@ -197,14 +197,6 @@ public class IngredientCollection extends GenericCollection {
 		this.fiber = fiber;
 	}
 
-	public List<IngredientAddItem> getGenralNutrients() {
-		return genralNutrients;
-	}
-
-	public void setGenralNutrients(List<IngredientAddItem> genralNutrients) {
-		this.genralNutrients = genralNutrients;
-	}
-
 	public List<IngredientAddItem> getCarbNutrients() {
 		return carbNutrients;
 	}
@@ -221,14 +213,6 @@ public class IngredientCollection extends GenericCollection {
 		this.lipidNutrients = lipidNutrients;
 	}
 
-	public List<IngredientAddItem> getProoteinAminoAcidNutrients() {
-		return prooteinAminoAcidNutrients;
-	}
-
-	public void setProoteinAminoAcidNutrients(List<IngredientAddItem> prooteinAminoAcidNutrients) {
-		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
-	}
-
 	public List<IngredientAddItem> getMineralNutrients() {
 		return mineralNutrients;
 	}
@@ -243,6 +227,22 @@ public class IngredientCollection extends GenericCollection {
 
 	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
 		this.otherNutrients = otherNutrients;
+	}
+
+	public List<IngredientAddItem> getGeneralNutrients() {
+		return generalNutrients;
+	}
+
+	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
 }

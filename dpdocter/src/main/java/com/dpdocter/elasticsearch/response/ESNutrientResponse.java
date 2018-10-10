@@ -1,5 +1,8 @@
 package com.dpdocter.elasticsearch.response;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.enums.NutrientCategaoryEnum;
 import com.dpdocter.enums.NutrientType;
 
@@ -14,6 +17,8 @@ public class ESNutrientResponse {
 	private NutrientType type = NutrientType.MICRO_NUTRIENT;
 
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
+	
+	private String nutrientCode;
 
 	public String getId() {
 		return id;
@@ -53,6 +58,14 @@ public class ESNutrientResponse {
 
 	public void setCategory(NutrientCategaoryEnum category) {
 		this.category = category;
+	}
+
+	public String getNutrientCode() {
+		return nutrientCode;
+	}
+
+	public void setNutrientCode(String nutrientCode) {
+		this.nutrientCode = nutrientCode;
 	}
 
 }

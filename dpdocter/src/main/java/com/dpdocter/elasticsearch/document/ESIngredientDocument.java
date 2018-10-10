@@ -22,10 +22,10 @@ public class ESIngredientDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity quantity;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<EquivalentQuantities> equivalentMeasurements;
-	
+
 	@Field(type = FieldType.String)
 	private String name;
 
@@ -58,12 +58,12 @@ public class ESIngredientDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity carbohydreate;
-	
+
 	@Field(type = FieldType.Nested)
 	private MealQuantity fiber;
 
 	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> genralNutrients;
+	private List<IngredientAddItem> generalNutrients;
 
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> carbNutrients;
@@ -72,7 +72,7 @@ public class ESIngredientDocument {
 	private List<IngredientAddItem> lipidNutrients;
 
 	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> prooteinAminoAcidNutrients;
+	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> mineralNutrients;
@@ -208,12 +208,20 @@ public class ESIngredientDocument {
 		this.carbohydreate = carbohydreate;
 	}
 
-	public List<IngredientAddItem> getGenralNutrients() {
-		return genralNutrients;
+	public List<IngredientAddItem> getGeneralNutrients() {
+		return generalNutrients;
 	}
 
-	public void setGenralNutrients(List<IngredientAddItem> genralNutrients) {
-		this.genralNutrients = genralNutrients;
+	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
 	public List<IngredientAddItem> getCarbNutrients() {
@@ -230,14 +238,6 @@ public class ESIngredientDocument {
 
 	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
 		this.lipidNutrients = lipidNutrients;
-	}
-
-	public List<IngredientAddItem> getProoteinAminoAcidNutrients() {
-		return prooteinAminoAcidNutrients;
-	}
-
-	public void setProoteinAminoAcidNutrients(List<IngredientAddItem> prooteinAminoAcidNutrients) {
-		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
 	}
 
 	public List<IngredientAddItem> getMineralNutrients() {
