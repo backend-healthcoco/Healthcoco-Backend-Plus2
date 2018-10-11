@@ -128,6 +128,9 @@ public class ESRecipeDocument {
 	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> vitaminNutrients;
+	
+	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> mineralNutrients;
 
 	@Field(type = FieldType.Nested)
@@ -458,6 +461,7 @@ public class ESRecipeDocument {
 		return otherNutrients;
 	}
 
+
 	public List<IngredientAddItem> getNutrients() {
 		return nutrients;
 	}
@@ -466,5 +470,14 @@ public class ESRecipeDocument {
 		this.nutrients = nutrients;
 	}
 
+
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
+	}
 
 }

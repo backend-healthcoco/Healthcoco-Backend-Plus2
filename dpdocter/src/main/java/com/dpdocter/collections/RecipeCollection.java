@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EquivalentQuantities;
+import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
@@ -124,6 +125,9 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private List<IngredientItem> proteinAminoAcidNutrients;
+	
+	@Field
+	private List<IngredientAddItem> vitaminNutrients;	
 
 	@Field
 	private List<IngredientItem> mineralNutrients;
@@ -452,6 +456,14 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setProteinAminoAcidNutrients(List<IngredientItem> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
+	}
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
 	}
 
 }

@@ -72,6 +72,9 @@ public class ESIngredientDocument {
 	private List<IngredientAddItem> lipidNutrients;
 
 	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> vitaminNutrients;
+
+	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	@Field(type = FieldType.Nested)
@@ -126,62 +129,6 @@ public class ESIngredientDocument {
 
 	public void setNutrients(List<IngredientAddItem> nutrients) {
 		this.nutrients = nutrients;
-	}
-
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
-
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
-
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
-
-	public MealQuantity getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(MealQuantity quantity) {
-		this.quantity = quantity;
-	}
-
-	public List<EquivalentQuantities> getEquivalentMeasurements() {
-		return equivalentMeasurements;
-	}
-
-	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
-		this.equivalentMeasurements = equivalentMeasurements;
-	}
-
-	public MealQuantity getFiber() {
-		return fiber;
-	}
-
-	public void setFiber(MealQuantity fiber) {
-		this.fiber = fiber;
 	}
 
 	public MealQuantity getFat() {
@@ -254,6 +201,70 @@ public class ESIngredientDocument {
 
 	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
 		this.otherNutrients = otherNutrients;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public MealQuantity getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
 	}
 
 }
