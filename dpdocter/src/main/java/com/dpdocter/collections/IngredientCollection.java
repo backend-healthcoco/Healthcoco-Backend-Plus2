@@ -72,6 +72,9 @@ public class IngredientCollection extends GenericCollection {
 	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	@Field
+	private List<IngredientAddItem> vitaminNutrients;
+
+	@Field
 	private List<IngredientAddItem> mineralNutrients;
 
 	@Field
@@ -243,6 +246,14 @@ public class IngredientCollection extends GenericCollection {
 
 	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
+	}
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
 	}
 
 }

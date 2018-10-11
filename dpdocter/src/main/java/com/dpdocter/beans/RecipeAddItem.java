@@ -33,6 +33,8 @@ public class RecipeAddItem {
 
 	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
+	private List<IngredientAddItem> vitaminNutrients;
+
 	private List<IngredientAddItem> mineralNutrients;
 
 	private List<IngredientAddItem> otherNutrients;
@@ -163,6 +165,14 @@ public class RecipeAddItem {
 
 	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
+	}
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
 	}
 
 }

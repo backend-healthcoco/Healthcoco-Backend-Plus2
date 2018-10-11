@@ -69,6 +69,9 @@ public class ESIngredientDocument {
 	private List<IngredientAddItem> lipidNutrients;
 
 	@Field(type = FieldType.Nested)
+	private List<IngredientAddItem> vitaminNutrients;
+
+	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	@Field(type = FieldType.Nested)
@@ -243,6 +246,14 @@ public class ESIngredientDocument {
 
 	public void setFiber(MealQuantity fiber) {
 		this.fiber = fiber;
+	}
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
 	}
 
 }
