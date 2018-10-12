@@ -65,7 +65,7 @@ public class SignUpApi {
 
 	@Autowired
 	private ClinicContactUsService clinicContactUsService;
-	
+
 	@Autowired
 	private PromotionService promotionService;
 
@@ -97,7 +97,8 @@ public class SignUpApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
 		}
 		if (request.getInternalPromoCode() != null) {
-			InternalPromotionGroup promotionGroup = promotionService.getPromotionGroup(request.getInternalPromoCode().trim());
+			InternalPromotionGroup promotionGroup = promotionService
+					.getPromotionGroup(request.getInternalPromoCode().trim());
 			if (promotionGroup != null) {
 				InternalPromoCode internalPromoCode = new InternalPromoCode();
 				internalPromoCode.setMobileNumber(request.getMobileNumber());
@@ -108,7 +109,7 @@ public class SignUpApi {
 				throw new BusinessException(ServiceError.InvalidInput, "Promo code not found");
 			}
 		}
-		
+
 		List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
 
 		if (request.isNewPatientNeedToBeCreated()) {
@@ -210,22 +211,6 @@ public class SignUpApi {
 		String string = signUpService.verifyUser(tokenId);
 		Response<String> response = new Response<String>();
 		response.setData(string);
-		return response;
-	}
-	
-	
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.WELCOME_USER)
-	@GET
-	@ApiOperation(value = PathProxy.SignUpUrls.WELCOME_USER, notes = PathProxy.SignUpUrls.WELCOME_USER)
-	public Response<DoctorContactUs> welcomeUser(@PathParam(value = "tokenId") String tokenId) {
-		if (tokenId == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		DoctorContactUs contactUs = signUpService.welcomeUser(tokenId);
-		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
-		response.setData(contactUs);
 		return response;
 	}
 
@@ -343,18 +328,18 @@ public class SignUpApi {
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	public Response<CollectionBoyResponse> collectionBoySignup(CollectionBoy request) {
-		Response<CollectionBoyResponse> response  = null;
-		
-			if (request == null || request.getPassword() == null || request.getPassword().trim().isEmpty()) {
-				logger.warn("Request send  is NULL");
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");
-			}
-			CollectionBoyResponse collectionBoy = signUpService.signupCollectionBoys(request);
-			response = new Response<CollectionBoyResponse>();
-			response.setData(collectionBoy);
+		Response<CollectionBoyResponse> response = null;
+
+		if (request == null || request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+			logger.warn("Request send  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");
+		}
+		CollectionBoyResponse collectionBoy = signUpService.signupCollectionBoys(request);
+		response = new Response<CollectionBoyResponse>();
+		response.setData(collectionBoy);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
@@ -390,6 +375,21 @@ public class SignUpApi {
 
 		Response<DoctorSignUp> response = new Response<DoctorSignUp>();
 		response.setData(doctorSignUp);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.WELCOME_USER)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.WELCOME_USER, notes = PathProxy.SignUpUrls.WELCOME_USER)
+	public Response<DoctorContactUs> welcomeUser(@PathParam(value = "tokenId") String tokenId) {
+		if (tokenId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		DoctorContactUs contactUs = signUpService.welcomeUser(tokenId);
+		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
+		response.setData(contactUs);
 		return response;
 	}
 

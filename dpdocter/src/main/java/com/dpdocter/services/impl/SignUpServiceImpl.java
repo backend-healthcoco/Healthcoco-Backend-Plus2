@@ -253,11 +253,11 @@ public class SignUpServiceImpl implements SignUpService {
 			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
 			if (tokenCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord , "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
-			} else if (tokenCollection.getIsUsed()) {
+			}/* else if (tokenCollection.getIsUsed()) {
 				throw new BusinessException(ServiceError.Forbidden , "Your welcome link has already been used."
 						+ " Please contact support@healthcoco.com for completing your email verification");
 						
-			} else {
+			} */else {
 				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findOne(tokenCollection.getResourceId());
 				if(doctorContactUsCollection != null)
 				{
