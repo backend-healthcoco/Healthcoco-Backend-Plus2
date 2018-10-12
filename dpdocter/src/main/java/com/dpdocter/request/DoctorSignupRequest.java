@@ -42,7 +42,7 @@ public class DoctorSignupRequest {
 	private String mrCode;
 
 	private String cityId;
-	
+
 	public DOB getDob() {
 		return dob;
 	}

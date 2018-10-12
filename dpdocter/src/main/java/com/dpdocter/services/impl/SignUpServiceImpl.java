@@ -7,13 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -35,7 +32,6 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
@@ -86,9 +82,7 @@ import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
-import com.dpdocter.response.PharmaLicenseResponse;
 import com.dpdocter.services.AccessControlServices;
-import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.GenerateUniqueUserNameService;
@@ -887,6 +881,7 @@ public class SignUpServiceImpl implements SignUpService {
 	@Transactional
 	public DoctorSignUp doctorSignUp(DoctorSignupRequest request) {
 		DoctorSignUp response = null;
+		PCUserCollection pcUserCollection = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 				logger.warn("Email Address cannot be null");
@@ -916,7 +911,15 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setCreatedTime(new Date());
 			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
-			userCollection.setUserState(UserState.NOTVERIFIED);
+			userCollection.setUserState(UserState.NOTACTIVATED);
+			char[] salt = DPDoctorUtils.generateSalt();
+			userCollection.setSalt(salt);
+			char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
+			for (int i = 0; i < request.getPassword().length; i++)
+				passwordWithSalt[i] = request.getPassword()[i];
+			for (int i = 0; i < salt.length; i++)
+				passwordWithSalt[i + request.getPassword().length] = salt[i];
+			userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 			userCollection = userRepository.save(userCollection);
 			// save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();
@@ -938,9 +941,17 @@ public class SignUpServiceImpl implements SignUpService {
 			doctorCollection.setRegisterNumber(request.getRegisterNumber());
 			doctorCollection.setUserId(userCollection.getId());
 			doctorCollection.setCreatedTime(new Date());
+			if (request.getMrCode() != null) {
+				 pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
+				if (pcUserCollection != null) {
+					doctorCollection.setDivisionIds(pcUserCollection.getDivisionId());
+				}
+			}
 			doctorCollection = doctorRepository.save(doctorCollection);
-
+			
+			
 			userCollection = userRepository.save(userCollection);
+			
 
 			HospitalCollection hospitalCollection = new HospitalCollection();
 			BeanUtil.map(request, hospitalCollection);
@@ -989,6 +1000,15 @@ public class SignUpServiceImpl implements SignUpService {
 			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
 			doctorClinicProfileCollection.setLocationId(locationCollection.getId());
 			doctorClinicProfileCollection.setCreatedTime(new Date());
+			if(pcUserCollection != null)
+			{
+				doctorClinicProfileCollection.setMrCode(pcUserCollection.getMrCode());
+				doctorClinicProfileCollection.setDivisionIds(pcUserCollection.getDivisionId());
+			}
+			if(request.getCityId() != null)
+			{
+				doctorClinicProfileCollection.setCityId(new ObjectId(request.getCityId()));
+			}
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 
 			Collection<ObjectId> roleIds = CollectionUtils.collect(roleCollections,
