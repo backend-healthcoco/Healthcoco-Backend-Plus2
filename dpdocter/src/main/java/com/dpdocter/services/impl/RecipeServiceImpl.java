@@ -207,7 +207,7 @@ public class RecipeServiceImpl implements RecipeService {
 
 		try {
 			if (request != null) {
-				if (!request.getRecipeImages().isEmpty() && request.getRecipeImages() != null)
+				if (request.getRecipeImages() != null && !request.getRecipeImages().isEmpty())
 					for (int index = 0; index <= request.getRecipeImages().size(); index++) {
 						request.getRecipeImages().add(index,
 								request.getRecipeImages().get(index).replace(imagePath, ""));
@@ -251,7 +251,7 @@ public class RecipeServiceImpl implements RecipeService {
 				recipeCollection = recipeRepository.save(recipeCollection);
 				response = new Recipe();
 				BeanUtil.map(recipeCollection, response);
-				
+
 			}
 		} catch (BusinessException e) {
 			logger.error("Error while addedit Recipe " + e.getMessage());
@@ -380,7 +380,7 @@ public class RecipeServiceImpl implements RecipeService {
 			response = new Recipe();
 			BeanUtil.map(recipeCollection, response);
 			if (response != null) {
-				if (!response.getRecipeImages().isEmpty() && response.getRecipeImages() != null)
+				if (response.getRecipeImages() != null && !response.getRecipeImages().isEmpty())
 					for (int index = 0; index <= response.getRecipeImages().size(); index++) {
 						response.getRecipeImages().add(index, getFinalImageURL(response.getRecipeImages().get(index)));
 					}
