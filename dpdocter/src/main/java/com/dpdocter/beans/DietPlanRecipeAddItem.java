@@ -16,8 +16,8 @@ public class DietPlanRecipeAddItem {
 
 	private String note;
 
-	private MealQuantity calaries;
-	
+	private MealQuantity calories;
+
 	private MealQuantity fat;
 
 	private MealQuantity protein;
@@ -26,25 +26,17 @@ public class DietPlanRecipeAddItem {
 
 	private MealQuantity fiber;
 
-	private List<IngredientAddItem> genralNutrients;
+	private List<IngredientAddItem> generalNutrients;
 
 	private List<IngredientAddItem> carbNutrients;
 
 	private List<IngredientAddItem> lipidNutrients;
 
-	private List<IngredientAddItem> prooteinAminoAcidNutrients;
+	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
 	private List<IngredientAddItem> mineralNutrients;
 
 	private List<IngredientAddItem> otherNutrients;
-
-	public MealQuantity getCalaries() {
-		return calaries;
-	}
-
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
-	}
 
 	public String getId() {
 		return id;
@@ -78,7 +70,6 @@ public class DietPlanRecipeAddItem {
 		this.ingredients = ingredients;
 	}
 
-	
 	public String getDirection() {
 		return direction;
 	}
@@ -127,14 +118,6 @@ public class DietPlanRecipeAddItem {
 		this.fiber = fiber;
 	}
 
-	public List<IngredientAddItem> getGenralNutrients() {
-		return genralNutrients;
-	}
-
-	public void setGenralNutrients(List<IngredientAddItem> genralNutrients) {
-		this.genralNutrients = genralNutrients;
-	}
-
 	public List<IngredientAddItem> getCarbNutrients() {
 		return carbNutrients;
 	}
@@ -151,16 +134,32 @@ public class DietPlanRecipeAddItem {
 		this.lipidNutrients = lipidNutrients;
 	}
 
-	public List<IngredientAddItem> getProoteinAminoAcidNutrients() {
-		return prooteinAminoAcidNutrients;
-	}
-
-	public void setProoteinAminoAcidNutrients(List<IngredientAddItem> prooteinAminoAcidNutrients) {
-		this.prooteinAminoAcidNutrients = prooteinAminoAcidNutrients;
-	}
-
 	public List<IngredientAddItem> getMineralNutrients() {
 		return mineralNutrients;
+	}
+
+	public MealQuantity getCalories() {
+		return calories;
+	}
+
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
+	}
+
+	public List<IngredientAddItem> getGeneralNutrients() {
+		return generalNutrients;
+	}
+
+	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
 	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {

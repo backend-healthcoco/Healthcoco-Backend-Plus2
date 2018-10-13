@@ -12,7 +12,7 @@ public class DietplanAddItem {
 
 	private String note;
 
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	private Integer toTime = 0;
 
@@ -24,12 +24,14 @@ public class DietplanAddItem {
 		this.toTime = toTime;
 	}
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	
+
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public MealTimeEnum getMealTiming() {
