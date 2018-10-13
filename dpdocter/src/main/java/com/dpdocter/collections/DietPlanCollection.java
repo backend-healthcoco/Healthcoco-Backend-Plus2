@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DietplanItem;
+import com.dpdocter.beans.MealQuantity;
 @Document(collection = "diet_plan_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class DietPlanCollection extends GenericCollection {
@@ -29,6 +30,8 @@ public class DietPlanCollection extends GenericCollection {
 	private Boolean discarded = false;
 	@Field
 	private List<DietplanItem> items;
+	@Field
+	private MealQuantity calories;
 
 	public ObjectId getId() {
 		return id;
@@ -92,6 +95,14 @@ public class DietPlanCollection extends GenericCollection {
 
 	public void setItems(List<DietplanItem> items) {
 		this.items = items;
+	}
+
+	public MealQuantity getCalories() {
+		return calories;
+	}
+
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 }
