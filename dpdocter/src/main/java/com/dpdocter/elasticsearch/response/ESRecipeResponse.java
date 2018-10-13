@@ -20,7 +20,7 @@ public class ESRecipeResponse {
 
 	private boolean nutrientValueAtRecipeLevel = false;
 
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	private List<String> mealTiming;
 
@@ -50,12 +50,12 @@ public class ESRecipeResponse {
 		this.nutrientValueAtRecipeLevel = nutrientValueAtRecipeLevel;
 	}
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public List<String> getMealTiming() {

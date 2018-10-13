@@ -60,7 +60,7 @@ public class Recipe extends GenericCollection {
 
 	private boolean verified = false;
 
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	private MealQuantity fat;
 
@@ -94,12 +94,12 @@ public class Recipe extends GenericCollection {
 		this.nutrientValueAtRecipeLevel = nutrientValueAtRecipeLevel;
 	}
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public boolean isVerified() {

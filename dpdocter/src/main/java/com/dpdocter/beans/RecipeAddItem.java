@@ -15,7 +15,7 @@ public class RecipeAddItem {
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	private MealQuantity fat;
 
@@ -47,12 +47,12 @@ public class RecipeAddItem {
 		this.fiber = fiber;
 	}
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public String getId() {

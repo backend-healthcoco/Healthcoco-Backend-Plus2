@@ -16,7 +16,7 @@ public class ESIngredientResponse {
 
 	private String note;
 
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 
@@ -25,9 +25,9 @@ public class ESIngredientResponse {
 	private MealQuantity protein;
 
 	private MealQuantity carbohydreate;
-	
+
 	private MealQuantity fiber;
-	
+
 	private List<IngredientAddItem> generalNutrients;
 
 	private List<IngredientAddItem> carbNutrients;
@@ -40,13 +40,12 @@ public class ESIngredientResponse {
 
 	private List<IngredientAddItem> otherNutrients;
 
-
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public List<EquivalentQuantities> getEquivalentMeasurements() {

@@ -17,7 +17,7 @@ public class RecipeItem {
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	private MealQuantity fat;
 
@@ -32,8 +32,8 @@ public class RecipeItem {
 	private List<IngredientItem> carbNutrients;
 
 	private List<IngredientItem> lipidNutrients;
-	
-	private List<IngredientAddItem> vitaminNutrients;	
+
+	private List<IngredientAddItem> vitaminNutrients;
 
 	private List<IngredientItem> proteinAminoAcidNutrients;
 
@@ -41,12 +41,12 @@ public class RecipeItem {
 
 	private List<IngredientItem> otherNutrients;
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public MealQuantity getFat() {
@@ -156,6 +156,7 @@ public class RecipeItem {
 	public List<IngredientItem> getGeneralNutrients() {
 		return generalNutrients;
 	}
+	
 
 	public void setGeneralNutrients(List<IngredientItem> generalNutrients) {
 		this.generalNutrients = generalNutrients;

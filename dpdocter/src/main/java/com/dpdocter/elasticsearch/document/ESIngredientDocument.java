@@ -45,7 +45,7 @@ public class ESIngredientDocument {
 	private Date updatedTime = new Date();
 
 	@Field(type = FieldType.Nested)
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity fat;
@@ -80,12 +80,12 @@ public class ESIngredientDocument {
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> otherNutrients;
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public String getId() {

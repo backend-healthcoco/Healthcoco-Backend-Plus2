@@ -100,7 +100,7 @@ public class ESRecipeDocument {
 	private List<String> mealTiming;
 
 	@Field(type = FieldType.Nested)
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity fat;
@@ -125,7 +125,7 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> vitaminNutrients;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> mineralNutrients;
 
@@ -135,12 +135,12 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Boolean)
 	private boolean nutrientValueAtRecipeLevel = false;
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public String getId() {
