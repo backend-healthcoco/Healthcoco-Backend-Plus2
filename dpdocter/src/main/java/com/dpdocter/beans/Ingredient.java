@@ -26,7 +26,7 @@ public class Ingredient extends GenericCollection {
 
 	private String note;
 
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	private MealQuantity fat;
 
@@ -44,18 +44,18 @@ public class Ingredient extends GenericCollection {
 
 	private List<IngredientAddItem> proteinAminoAcidNutrients;
 
-	private List<IngredientAddItem> vitaminNutrients;	
+	private List<IngredientAddItem> vitaminNutrients;
 
 	private List<IngredientAddItem> mineralNutrients;
 
 	private List<IngredientAddItem> otherNutrients;
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public List<IngredientAddItem> getNutrients() {

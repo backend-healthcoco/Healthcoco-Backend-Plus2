@@ -100,7 +100,7 @@ public class RecipeCollection extends GenericCollection {
 	private List<String> mealTiming;
 
 	@Field
-	private MealQuantity calaries;
+	private MealQuantity calories;
 
 	@Field
 	private MealQuantity fat;
@@ -125,9 +125,9 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private List<IngredientItem> proteinAminoAcidNutrients;
-	
+
 	@Field
-	private List<IngredientAddItem> vitaminNutrients;	
+	private List<IngredientAddItem> vitaminNutrients;
 
 	@Field
 	private List<IngredientItem> mineralNutrients;
@@ -146,12 +146,12 @@ public class RecipeCollection extends GenericCollection {
 		this.fiber = fiber;
 	}
 
-	public MealQuantity getCalaries() {
-		return calaries;
+	public MealQuantity getCalories() {
+		return calories;
 	}
 
-	public void setCalaries(MealQuantity calaries) {
-		this.calaries = calaries;
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
 	}
 
 	public Boolean getDiscarded() {
