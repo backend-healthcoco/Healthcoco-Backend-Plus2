@@ -46,7 +46,7 @@ public class Recipe extends GenericCollection {
 
 	private String meal;
 
-	private String cuisine;
+	private List<String> cuisine;
 
 	private String course;
 
@@ -213,12 +213,13 @@ public class Recipe extends GenericCollection {
 	public void setMeal(String meal) {
 		this.meal = meal;
 	}
+	
 
-	public String getCuisine() {
+	public List<String> getCuisine() {
 		return cuisine;
 	}
 
-	public void setCuisine(String cuisine) {
+	public void setCuisine(List<String> cuisine) {
 		this.cuisine = cuisine;
 	}
 

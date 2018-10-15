@@ -79,7 +79,7 @@ public class ESRecipeDocument {
 	private String meal;
 
 	@Field(type = FieldType.String)
-	private String cuisine;
+	private List<String> cuisine;
 
 	@Field(type = FieldType.String)
 	private String course;
@@ -319,14 +319,6 @@ public class ESRecipeDocument {
 		this.meal = meal;
 	}
 
-	public String getCuisine() {
-		return cuisine;
-	}
-
-	public void setCuisine(String cuisine) {
-		this.cuisine = cuisine;
-	}
-
 	public String getCourse() {
 		return course;
 	}
@@ -461,6 +453,14 @@ public class ESRecipeDocument {
 
 	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public List<String> getCuisine() {
+		return cuisine;
+	}
+
+	public void setCuisine(List<String> cuisine) {
+		this.cuisine = cuisine;
 	}
 
 }
