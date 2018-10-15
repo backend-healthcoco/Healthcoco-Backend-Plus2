@@ -95,6 +95,9 @@ public class DoctorCollection extends GenericCollection {
 	@Field
 	private List<ObjectId> divisionIds;
 
+	@Field
+	private String deviceType;
+
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
 	}
@@ -303,6 +306,14 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setDivisionIds(List<ObjectId> divisionIds) {
 		this.divisionIds = divisionIds;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 
 	@Override

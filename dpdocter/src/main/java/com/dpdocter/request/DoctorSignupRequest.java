@@ -43,6 +43,8 @@ public class DoctorSignupRequest {
 
 	private String cityId;
 
+	private String deviceType;
+
 	public DOB getDob() {
 		return dob;
 	}
@@ -169,6 +171,14 @@ public class DoctorSignupRequest {
 
 	public void setCityId(String cityId) {
 		this.cityId = cityId;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 
 	@Override
