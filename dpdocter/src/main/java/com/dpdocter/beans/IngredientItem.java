@@ -8,18 +8,10 @@ public class IngredientItem {
 
 	private ObjectId id;
 	private String name;
-	private double value;
-	private double inPercent;
+	private Double value;
+	private QuantityEnum type = QuantityEnum.G;
 	private String note;
 	private String nutrientCode;
-
-	public double getInPercent() {
-		return inPercent;
-	}
-
-	public void setInPercent(double inPercent) {
-		this.inPercent = inPercent;
-	}
 
 	public String getNote() {
 		return note;
@@ -37,12 +29,20 @@ public class IngredientItem {
 		this.nutrientCode = nutrientCode;
 	}
 
-	public double getValue() {
+	public Double getValue() {
 		return value;
 	}
 
-	public void setValue(double value) {
+	public void setValue(Double value) {
 		this.value = value;
+	}
+
+	public QuantityEnum getType() {
+		return type;
+	}
+
+	public void setType(QuantityEnum type) {
+		this.type = type;
 	}
 
 	public ObjectId getId() {

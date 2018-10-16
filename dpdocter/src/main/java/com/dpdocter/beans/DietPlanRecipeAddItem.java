@@ -37,6 +37,8 @@ public class DietPlanRecipeAddItem {
 	private List<IngredientAddItem> mineralNutrients;
 
 	private List<IngredientAddItem> otherNutrients;
+	
+	private List<IngredientAddItem> vitaminNutrients;
 
 	public String getId() {
 		return id;
@@ -172,6 +174,14 @@ public class DietPlanRecipeAddItem {
 
 	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
 		this.otherNutrients = otherNutrients;
+	}
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
 	}
 
 }

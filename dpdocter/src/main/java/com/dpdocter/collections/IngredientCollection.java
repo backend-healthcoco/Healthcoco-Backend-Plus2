@@ -60,25 +60,25 @@ public class IngredientCollection extends GenericCollection {
 	private MealQuantity fiber;
 
 	@Field
-	private List<IngredientAddItem> generalNutrients;
+	private List<IngredientItem> generalNutrients;
 
 	@Field
-	private List<IngredientAddItem> carbNutrients;
+	private List<IngredientItem> carbNutrients;
 
 	@Field
-	private List<IngredientAddItem> lipidNutrients;
+	private List<IngredientItem> lipidNutrients;
 
 	@Field
-	private List<IngredientAddItem> proteinAminoAcidNutrients;
+	private List<IngredientItem> proteinAminoAcidNutrients;
 
 	@Field
-	private List<IngredientAddItem> vitaminNutrients;
+	private List<IngredientItem> vitaminNutrients;
 
 	@Field
-	private List<IngredientAddItem> mineralNutrients;
+	private List<IngredientItem> mineralNutrients;
 
 	@Field
-	private List<IngredientAddItem> otherNutrients;
+	private List<IngredientItem> otherNutrients;
 
 	public MealQuantity getCalories() {
 		return calories;
@@ -200,60 +200,60 @@ public class IngredientCollection extends GenericCollection {
 		this.fiber = fiber;
 	}
 
-	public List<IngredientAddItem> getCarbNutrients() {
-		return carbNutrients;
-	}
-
-	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
-		this.carbNutrients = carbNutrients;
-	}
-
-	public List<IngredientAddItem> getLipidNutrients() {
-		return lipidNutrients;
-	}
-
-	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
-		this.lipidNutrients = lipidNutrients;
-	}
-
-	public List<IngredientAddItem> getMineralNutrients() {
-		return mineralNutrients;
-	}
-
-	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
-		this.mineralNutrients = mineralNutrients;
-	}
-
-	public List<IngredientAddItem> getOtherNutrients() {
-		return otherNutrients;
-	}
-
-	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
-		this.otherNutrients = otherNutrients;
-	}
-
-	public List<IngredientAddItem> getGeneralNutrients() {
+	public List<IngredientItem> getGeneralNutrients() {
 		return generalNutrients;
 	}
 
-	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+	public void setGeneralNutrients(List<IngredientItem> generalNutrients) {
 		this.generalNutrients = generalNutrients;
 	}
 
-	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+	public List<IngredientItem> getCarbNutrients() {
+		return carbNutrients;
+	}
+
+	public void setCarbNutrients(List<IngredientItem> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public List<IngredientItem> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(List<IngredientItem> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
+	}
+
+	public List<IngredientItem> getProteinAminoAcidNutrients() {
 		return proteinAminoAcidNutrients;
 	}
 
-	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+	public void setProteinAminoAcidNutrients(List<IngredientItem> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
-	public List<IngredientAddItem> getVitaminNutrients() {
+	public List<IngredientItem> getVitaminNutrients() {
 		return vitaminNutrients;
 	}
 
-	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+	public void setVitaminNutrients(List<IngredientItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public List<IngredientItem> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public void setMineralNutrients(List<IngredientItem> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public List<IngredientItem> getOtherNutrients() {
+		return otherNutrients;
+	}
+
+	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
+		this.otherNutrients = otherNutrients;
 	}
 
 }

@@ -38,9 +38,9 @@ public interface PathProxy {
 		public static final String SUBMIT_CLINIC_CONTACT = "/submitClinicContact";
 
 		public static final String SIGNUP_COLLECTION_BOY = "/collectionBoy";
-		
+
 		public static final String WELCOME_USER = "/welcome/{tokenId}";
-		
+
 		public static final String DOCTOR_SIGNUP = "/doctor";
 
 	}
@@ -1900,6 +1900,7 @@ public interface PathProxy {
 		public static final String SEARCH_NUTRIENTS = "nutrient/search";
 		public static final String SEARCH_INGREDIENTS = "ingredient/search";
 		public static final String SEARCH_RECIPES = "search";
+		public static final String SEARCH_EXERCISE = "exercise/search";
 	}
 
 	public static final String RECIPE_BASE_URL = BASE_URL + "/recipe";
@@ -1928,5 +1929,37 @@ public interface PathProxy {
 		public static final String GET_DIET_PLANS = "get";
 		public static final String DELETE_DIET_PLAN = "{planId}/delete";
 		public static final String GET_DIET_PLAN = "{planId}/get";
+	}
+
+	public static final String COUNTER_BASE_URL = BASE_URL + "/counter";
+
+	public interface CounterUrls {
+
+		public static final String ADD_EDIT_WATER_COUNTER = "water/addEdit";
+		public static final String GET_WATER_COUNTER = "waterT/{counterId}/get";
+		public static final String DELETE_WATER_COUNTER = "water/{counterId}/delete";
+		public static final String GET_WATER_COUNTERS = "water/{userId}/list/get";
+
+		public static final String ADD_EDIT_WEIGHT_COUNTER = "weight/addEdit";
+		public static final String GET_WEIGHT_COUNTER = "weight/{counterId}/get";
+		public static final String DELETE_WEIGHT_COUNTER = "weight/{counterId}/delete";
+		public static final String GET_WEIGHT_COUNTERS = "weight/{userId}/list/get";
+
+		public static final String ADD_EDIT_MEAL_COUNTER = "meal/addEdit";
+		public static final String GET_MEAL_COUNTER = "meal/{counterId}/get";
+		public static final String DELETE_MEAL_COUNTER = "meal/{counterId}/delete";
+		public static final String GET_MEAL_COUNTERS = "meal/{userId}/list/get";
+
+		public static final String ADD_EDIT_EXERCISE_COUNTER = "exercise/addEdit";
+		public static final String GET_EXERCISE_COUNTER = "exercise/{counterId}/get";
+		public static final String DELETE_EXERCISE_COUNTER = "exercise/{counterId}/delete";
+		public static final String GET_EXERCISE_COUNTERS = "exercise/{userId}/list/get";
+
+		public static final String ADD_EDIT_WATER_COUNTER_SETTING = "water/setting/addEdit";
+		public static final String GET_WATER_COUNTER_SETTING = "water/setting/{userId}/get";
+
+		public static final String ADD_EDIT_WEIGHT_COUNTER_SETTING = "weight/setting/addEdit";
+		public static final String GET_WEIGHT_COUNTER_SETTING = "weight/setting/{userId}/get";
+
 	}
 }

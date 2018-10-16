@@ -168,6 +168,7 @@ public class RecipeServiceImpl implements RecipeService {
 			nutrientCollection = nutrientRepository.save(nutrientCollection);
 			esNutrientDocument = esNutrientRepository.findOne(id);
 			if (esNutrientDocument != null) {
+				esNutrientDocument.setUpdatedTime(new Date());
 				esNutrientDocument.setDiscarded(discarded);
 				esNutrientRepository.save(esNutrientDocument);
 			}
@@ -357,6 +358,7 @@ public class RecipeServiceImpl implements RecipeService {
 			response = new Recipe();
 			document = eSRecipeRepository.findOne(id);
 			if (document != null) {
+				document.setUpdatedTime(new Date());
 				document.setDiscarded(discarded);
 				eSRecipeRepository.save(document);
 			}
@@ -500,7 +502,7 @@ public class RecipeServiceImpl implements RecipeService {
 			ingredientCollection = ingredientRepository.save(ingredientCollection);
 			esIngredientDocument = esIngredientRepository.findOne(id);
 			if (esIngredientDocument != null) {
-				esIngredientDocument.setDiscarded(discarded);
+				esIngredientDocument.setUpdatedTime(new Date());
 				esIngredientDocument.setDiscarded(discarded);
 				esIngredientRepository.save(esIngredientDocument);
 			}

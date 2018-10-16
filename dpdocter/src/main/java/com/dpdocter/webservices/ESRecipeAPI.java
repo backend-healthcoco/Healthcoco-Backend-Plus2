@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Exercise;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.response.ESIngredientResponse;
 import com.dpdocter.elasticsearch.response.ESNutrientResponse;
@@ -74,6 +75,20 @@ public class ESRecipeAPI {
 		Response<ESNutrientResponse> response = new Response<ESNutrientResponse>();
 		response.setDataList(nutrientDocument);
 		return response;
+
+	}
+
+	@Path(value = PathProxy.SolrRecipeUrls.SEARCH_EXERCISE)
+	@GET
+	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_EXERCISE, notes = PathProxy.SolrRecipeUrls.SEARCH_EXERCISE)
+	public Response<Exercise> searchExercise(@QueryParam("page") int page, @QueryParam("size") int size,
+			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		List<Exercise> documents = esRecipeService.searchExercise(page, size, discarded, searchTerm);
+		Response<Exercise> response = new Response<Exercise>();
+		response.setDataList(documents);
+		return response;
+
 	}
 
 }
