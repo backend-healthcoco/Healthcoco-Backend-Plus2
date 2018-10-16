@@ -883,7 +883,7 @@ public class NutritionServiceImpl implements NutritionService {
 			if (response != null) {
 				if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 					asyncService.sendMessage(response, userCollection);
-					if (DPDoctorUtils.anyStringEmpty(userCollection.getEmailAddress()))
+					if (!DPDoctorUtils.anyStringEmpty(userCollection.getEmailAddress()))
 						asyncService.createMailNutritionTransactionStatus(response, userCollection);
 				}
 				if (nutritionPlan != null) {
