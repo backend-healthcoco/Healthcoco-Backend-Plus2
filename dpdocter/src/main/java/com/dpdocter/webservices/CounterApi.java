@@ -67,7 +67,7 @@ public class CounterApi {
 	@Path(value = PathProxy.CounterUrls.GET_WATER_COUNTER)
 	@GET
 	@ApiOperation(value = PathProxy.CounterUrls.GET_WATER_COUNTER, notes = PathProxy.CounterUrls.GET_WATER_COUNTER)
-	public Response<WaterCounter> getWaterTrackerById(@PathParam("counterId") String counterId) {
+	public Response<WaterCounter> getWaterCounterById(@PathParam("counterId") String counterId) {
 
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
@@ -148,9 +148,9 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTER)
+	@Path(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTERS)
 	@GET
-	@ApiOperation(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTER, notes = PathProxy.CounterUrls.GET_WEIGHT_COUNTER)
+	@ApiOperation(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTERS, notes = PathProxy.CounterUrls.GET_WEIGHT_COUNTERS)
 	public Response<WeightCounter> getWeightCounter(@PathParam("userId") String userId, @QueryParam("size") int size,
 			@QueryParam("page") int page, @QueryParam("fromDate") String fromDate,
 			@QueryParam("toDate") String toDate) {
