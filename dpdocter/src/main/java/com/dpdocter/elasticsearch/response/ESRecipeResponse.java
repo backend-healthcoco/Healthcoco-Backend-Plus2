@@ -219,6 +219,4 @@ public class ESRecipeResponse {
 		this.cost = cost;
 	}
 
-	
-
 }

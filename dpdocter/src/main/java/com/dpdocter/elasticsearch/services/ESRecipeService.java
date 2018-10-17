@@ -9,6 +9,7 @@ import com.dpdocter.elasticsearch.document.ESRecipeDocument;
 import com.dpdocter.elasticsearch.response.ESIngredientResponse;
 import com.dpdocter.elasticsearch.response.ESNutrientResponse;
 import com.dpdocter.elasticsearch.response.ESRecipeResponse;
+import com.dpdocter.elasticsearch.response.ESRecipeUserAppResponse;
 
 public interface ESRecipeService {
 
@@ -25,5 +26,7 @@ public interface ESRecipeService {
 	public List<ESRecipeResponse> searchRecipe(int page, int size, Boolean discarded, String searchTerm);
 
 	List<Exercise> searchExercise(int page, int size, Boolean discarded, String searchTerm);
+
+	List<ESRecipeUserAppResponse> searchRecipeForUserApp(int page, int size, Boolean discarded, String searchTerm);
 
 }

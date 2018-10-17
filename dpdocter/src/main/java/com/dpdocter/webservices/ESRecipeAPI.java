@@ -19,6 +19,7 @@ import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.response.ESIngredientResponse;
 import com.dpdocter.elasticsearch.response.ESNutrientResponse;
 import com.dpdocter.elasticsearch.response.ESRecipeResponse;
+import com.dpdocter.elasticsearch.response.ESRecipeUserAppResponse;
 import com.dpdocter.elasticsearch.services.ESRecipeService;
 
 import common.util.web.Response;
@@ -45,6 +46,20 @@ public class ESRecipeAPI {
 			@QueryParam(value = "searchTerm") String searchTerm) {
 
 		List<ESRecipeResponse> recipeDocuments = esRecipeService.searchRecipe(page, size, discarded, searchTerm);
+		Response<ESRecipeResponse> response = new Response<ESRecipeResponse>();
+		response.setDataList(recipeDocuments);
+		return response;
+	}
+
+	@Path(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES_FOR_USER_APP)
+	@GET
+	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES_FOR_USER_APP, notes = PathProxy.SolrRecipeUrls.SEARCH_RECIPES_FOR_USER_APP)
+	public Response<ESRecipeResponse> searchRecipeForUserApp(@QueryParam("page") int page, @QueryParam("size") int size,
+			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+
+		List<ESRecipeUserAppResponse> recipeDocuments = esRecipeService.searchRecipeForUserApp(page, size, discarded,
+				searchTerm);
 		Response<ESRecipeResponse> response = new Response<ESRecipeResponse>();
 		response.setDataList(recipeDocuments);
 		return response;

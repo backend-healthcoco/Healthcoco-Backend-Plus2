@@ -29,6 +29,7 @@ import com.dpdocter.elasticsearch.repository.ESRecipeRepository;
 import com.dpdocter.elasticsearch.response.ESIngredientResponse;
 import com.dpdocter.elasticsearch.response.ESNutrientResponse;
 import com.dpdocter.elasticsearch.response.ESRecipeResponse;
+import com.dpdocter.elasticsearch.response.ESRecipeUserAppResponse;
 import com.dpdocter.elasticsearch.services.ESRecipeService;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -106,11 +107,11 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 	@Override
 	public List<ESRecipeResponse> searchRecipe(int page, int size, Boolean discarded, String searchTerm) {
 		List<ESRecipeResponse> response = null;
-		ESRecipeResponse esRecipeResponse = null; 
-		
+		ESRecipeResponse esRecipeResponse = null;
+
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
-		if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
 		}
 		List<ESRecipeDocument> recipes = null;
@@ -140,7 +141,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		ESNutrientResponse esNutrientResponse = null;
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
-		if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
 		}
 		if (size == 0)
@@ -166,7 +167,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		ESIngredientResponse esIngredientResponse = null;
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
-		if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
 		}
 		if (size == 0)
@@ -186,7 +187,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		return response;
 
 	}
-	
+
 	@Override
 	public List<Exercise> searchExercise(int page, int size, Boolean discarded, String searchTerm) {
 
@@ -218,6 +219,39 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 			throw new BusinessException(ServiceError.Unknown,
 					"Error while search exercise:  " + e.getCause().getMessage());
 
+		}
+		return response;
+
+	}
+
+	@Override
+	public List<ESRecipeUserAppResponse> searchRecipeForUserApp(int page, int size, Boolean discarded,
+			String searchTerm) {
+		List<ESRecipeUserAppResponse> response = null;
+		ESRecipeUserAppResponse esRecipeResponse = null;
+
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded))
+				.must(QueryBuilders.matchPhrasePrefixQuery("verified", true));
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+		}
+		List<ESRecipeDocument> recipes = null;
+		SearchQuery searchQuery = null;
+		if (size > 0)
+			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+					.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+		else
+			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+					.withPageable(new PageRequest(0, 15, Direction.DESC, "updatedTime")).build();
+		recipes = elasticsearchTemplate.queryForList(searchQuery, ESRecipeDocument.class);
+		if (recipes != null && !recipes.isEmpty()) {
+			response = new ArrayList<ESRecipeUserAppResponse>();
+			for (ESRecipeDocument recipe : recipes) {
+				esRecipeResponse = new ESRecipeUserAppResponse();
+				BeanUtil.map(recipe, esRecipeResponse);
+				response.add(esRecipeResponse);
+			}
 		}
 		return response;
 

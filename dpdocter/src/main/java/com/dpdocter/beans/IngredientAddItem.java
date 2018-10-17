@@ -13,7 +13,8 @@ public class IngredientAddItem {
 	private Double value;
 	private QuantityEnum type = QuantityEnum.G;
 	private String note;
-
+	private String nutrientCode;
+	private Boolean isImportant = false;
 	public NutrientCategaoryEnum getCategory() {
 		return category;
 	}
@@ -68,6 +69,22 @@ public class IngredientAddItem {
 
 	public void setInPercent(double inPercent) {
 		this.inPercent = inPercent;
+	}
+
+	public Boolean getIsImportant() {
+		return isImportant;
+	}
+
+	public void setIsImportant(Boolean isImportant) {
+		this.isImportant = isImportant;
+	}
+
+	public String getNutrientCode() {
+		return nutrientCode;
+	}
+
+	public void setNutrientCode(String nutrientCode) {
+		this.nutrientCode = nutrientCode;
 	}
 
 }
