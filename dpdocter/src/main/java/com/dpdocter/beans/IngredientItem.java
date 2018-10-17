@@ -12,6 +12,15 @@ public class IngredientItem {
 	private QuantityEnum type = QuantityEnum.G;
 	private String note;
 	private String nutrientCode;
+	private Boolean isImportant = false;
+
+	public Boolean getIsImportant() {
+		return isImportant;
+	}
+
+	public void setIsImportant(Boolean isImportant) {
+		this.isImportant = isImportant;
+	}
 
 	public String getNote() {
 		return note;

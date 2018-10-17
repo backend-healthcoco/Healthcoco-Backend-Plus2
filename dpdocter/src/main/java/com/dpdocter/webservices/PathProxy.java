@@ -1901,6 +1901,7 @@ public interface PathProxy {
 		public static final String SEARCH_INGREDIENTS = "ingredient/search";
 		public static final String SEARCH_RECIPES = "search";
 		public static final String SEARCH_EXERCISE = "exercise/search";
+		public static final String SEARCH_RECIPES_FOR_USER_APP = "user/app/search";
 	}
 
 	public static final String RECIPE_BASE_URL = BASE_URL + "/recipe";

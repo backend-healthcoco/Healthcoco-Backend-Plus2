@@ -9,6 +9,7 @@ public class IngredientAddItem {
 	private QuantityEnum type = QuantityEnum.G;
 	private String note;
 	private String nutrientCode;
+	private Boolean isImportant = false;
 
 	public String getNote() {
 		return note;
@@ -56,6 +57,14 @@ public class IngredientAddItem {
 
 	public void setNutrientCode(String nutrientCode) {
 		this.nutrientCode = nutrientCode;
+	}
+
+	public Boolean getIsImportant() {
+		return isImportant;
+	}
+
+	public void setIsImportant(Boolean isImportant) {
+		this.isImportant = isImportant;
 	}
 
 }
