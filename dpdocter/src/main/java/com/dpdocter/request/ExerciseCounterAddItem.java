@@ -1,12 +1,15 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Distance;
 import com.dpdocter.beans.MealQuantity;
+import com.dpdocter.beans.SimpleCalorie;
 
-public class ExerciseAddEdit {
-	
+public class ExerciseCounterAddItem {
+
 	private ObjectId id;
 
 	private String name;
@@ -16,6 +19,16 @@ public class ExerciseAddEdit {
 	private Distance distance;
 
 	private MealQuantity calories;
+
+	private List<SimpleCalorie> simpleCalories;
+
+	public List<SimpleCalorie> getSimpleCalories() {
+		return simpleCalories;
+	}
+
+	public void setSimpleCalories(List<SimpleCalorie> simpleCalories) {
+		this.simpleCalories = simpleCalories;
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -56,7 +69,5 @@ public class ExerciseAddEdit {
 	public void setCalories(MealQuantity calories) {
 		this.calories = calories;
 	}
-	
-	
 
 }
