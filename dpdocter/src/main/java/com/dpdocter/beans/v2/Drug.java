@@ -5,6 +5,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.DrugTypePlacement;
+import com.dpdocter.response.PrescriptionInventoryBatchResponse;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Drug {
@@ -56,6 +57,8 @@ public class Drug {
 	private Double retailPrice;
 
 	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
+
+	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
 	public String getId() {
 		return id;
@@ -247,6 +250,14 @@ public class Drug {
 
 	public void setDurationUnit(String durationUnit) {
 		this.durationUnit = durationUnit;
+	}
+
+	public List<PrescriptionInventoryBatchResponse> getInventoryBatchs() {
+		return inventoryBatchs;
+	}
+
+	public void setInventoryBatchs(List<PrescriptionInventoryBatchResponse> inventoryBatchs) {
+		this.inventoryBatchs = inventoryBatchs;
 	}
 
 	@Override

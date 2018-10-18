@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.v2.DiagnosticTest;
+import com.dpdocter.beans.v2.Drug;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
@@ -27,6 +28,7 @@ import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.beans.v2.PrescriptionItemDetail;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.DiagnosticTestCollection;
+import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -575,5 +577,89 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					"Error while getting prescription : " + e.getCause().getMessage());
 		}
 		return prescription;
+	}
+	
+	@Override
+	@Transactional
+	public List<Drug> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded ,  String searchTerm) {
+		List<Drug> response = null;
+		try {
+			AggregationResults<Drug> results = mongoTemplate.aggregate(getDrugCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm),
+					DrugCollection.class, Drug.class);
+			response = results.getMappedResults();
+			
+			if (response != null && !response.isEmpty()) {
+				for (Drug drug : response) {
+
+					if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getDrugCode())) {
+						InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+								drug.getLocationId(), drug.getHospitalId(), drug.getDrugCode());
+						if (inventoryItem != null) {
+							InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
+									.getInventoryItem(inventoryItem.getId());
+							drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+							List<PrescriptionInventoryBatchResponse> inventoryBatchs = null;
+							if (inventoryItemLookupResposne.getInventoryBatchs() != null) {
+								inventoryBatchs = new ArrayList<>();
+								for (InventoryBatch inventoryBatch : inventoryItemLookupResposne.getInventoryBatchs()) {
+									PrescriptionInventoryBatchResponse batchResponse = new PrescriptionInventoryBatchResponse();
+									BeanUtil.map(inventoryBatch, batchResponse);
+									inventoryBatchs.add(batchResponse);
+								}
+
+								drug.setInventoryBatchs(inventoryBatchs);
+							}
+						}
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+
+	private Aggregation getDrugCustomGlobalAggregation(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, boolean discarded, String searchTerm) {
+		long createdTimeStamp = Long.parseLong(updatedTime);
+
+		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+		if (!discarded)
+			criteria.and("discarded").is(discarded);
+
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+				criteria.orOperator(
+						new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
+								.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
+						new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null));
+			} else {
+				criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)),
+						new Criteria("doctorId").is(null));
+			}
+		} else if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			criteria.orOperator(new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+					.is(new ObjectId(hospitalId)), new Criteria("locationId").is(null).and("hospitalId").is(null));
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+			criteria.and("drugName").regex("^" + searchTerm, "i");
+
+		Aggregation aggregation = null;
+
+		if (size > 0)
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+					Aggregation.limit(size));
+		else
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+		return aggregation;
+
 	}
 }
