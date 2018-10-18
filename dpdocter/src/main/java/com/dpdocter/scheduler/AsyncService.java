@@ -65,7 +65,7 @@ public class AsyncService {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	@Value(value = "${nutrition.suscription.plan.transaction.success.message=}")
+	@Value(value = "${nutrition.suscription.plan.transaction.success.message}")
 	private String successmassage;
 
 	@Value(value = "${nutrition.suscription.plan.transaction.decline.message}")
