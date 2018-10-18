@@ -16,6 +16,9 @@ public class ExerciseCounter extends GenericCollection {
 	private MealQuantity calories;
 
 	private String userId;
+	
+	private List<SimpleCalorie> simpleCalories;
+
 
 	public String getUserId() {
 		return userId;
@@ -55,6 +58,14 @@ public class ExerciseCounter extends GenericCollection {
 
 	public void setCalories(MealQuantity calories) {
 		this.calories = calories;
+	}
+
+	public List<SimpleCalorie> getSimpleCalories() {
+		return simpleCalories;
+	}
+
+	public void setSimpleCalories(List<SimpleCalorie> simpleCalories) {
+		this.simpleCalories = simpleCalories;
 	}
 
 }

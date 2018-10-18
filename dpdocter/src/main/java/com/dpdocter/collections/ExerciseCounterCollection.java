@@ -9,7 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.MealQuantity;
-import com.dpdocter.request.ExerciseAddEdit;
+import com.dpdocter.beans.SimpleCalorie;
+import com.dpdocter.request.ExerciseCounterAddItem;
 
 @Document(collection = "exercise_counter_cl")
 public class ExerciseCounterCollection extends GenericCollection {
@@ -18,11 +19,16 @@ public class ExerciseCounterCollection extends GenericCollection {
 	@Field
 	private Date date = new Date();
 	@Field
-	private List<ExerciseAddEdit> exercises;
+	private List<ExerciseCounterAddItem> exercises;
 	@Field
 	private MealQuantity calories;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private List<SimpleCalorie> simpleCalories;
+
+	@Field
+	private ObjectId userId;
 
 	public ObjectId getId() {
 		return id;
@@ -40,11 +46,11 @@ public class ExerciseCounterCollection extends GenericCollection {
 		this.date = date;
 	}
 
-	public List<ExerciseAddEdit> getExercises() {
+	public List<ExerciseCounterAddItem> getExercises() {
 		return exercises;
 	}
 
-	public void setExercises(List<ExerciseAddEdit> exercises) {
+	public void setExercises(List<ExerciseCounterAddItem> exercises) {
 		this.exercises = exercises;
 	}
 
@@ -62,6 +68,22 @@ public class ExerciseCounterCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public List<SimpleCalorie> getSimpleCalories() {
+		return simpleCalories;
+	}
+
+	public void setSimpleCalories(List<SimpleCalorie> simpleCalories) {
+		this.simpleCalories = simpleCalories;
+	}
+
+	public ObjectId getUserId() {
+		return userId;
+	}
+
+	public void setUserId(ObjectId userId) {
+		this.userId = userId;
 	}
 
 }
