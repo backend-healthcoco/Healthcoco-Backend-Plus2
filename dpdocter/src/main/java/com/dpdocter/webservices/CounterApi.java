@@ -1,7 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -17,7 +15,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.Exercise;
+import com.dpdocter.beans.CaloriesCounter;
+import com.dpdocter.beans.ExerciseCounter;
+import com.dpdocter.beans.MealCounter;
 import com.dpdocter.beans.WaterCounter;
 import com.dpdocter.beans.WaterCounterSetting;
 import com.dpdocter.beans.WeightCounter;
@@ -57,10 +57,10 @@ public class CounterApi {
 			throw new BusinessException(ServiceError.InvalidInput, "userId should not be null or empty");
 
 		}
-		WaterCounter tracker = counterService.addEditWaterCounter(request);
+		WaterCounter counter = counterService.addEditWaterCounter(request);
 
 		Response<WaterCounter> response = new Response<WaterCounter>();
-		response.setData(tracker);
+		response.setData(counter);
 		return response;
 	}
 
@@ -246,6 +246,213 @@ public class CounterApi {
 		}
 		Response<WaterCounterSetting> response = new Response<WaterCounterSetting>();
 		response.setData(counterService.getWaterCounterSetting(userId));
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.ADD_EDIT_MEAL_COUNTER)
+	@POST
+	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_MEAL_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_MEAL_COUNTER)
+	public Response<MealCounter> addMealCounter(MealCounter request) {
+
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "userId should not be null or empty");
+
+		}
+		MealCounter counter = counterService.addEditMealCounter(request);
+
+		Response<MealCounter> response = new Response<MealCounter>();
+		response.setData(counter);
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.GET_MEAL_COUNTER)
+	@GET
+	@ApiOperation(value = PathProxy.CounterUrls.GET_MEAL_COUNTER, notes = PathProxy.CounterUrls.GET_MEAL_COUNTER)
+	public Response<MealCounter> getMealCounterById(@PathParam("counterId") String counterId) {
+
+		if (DPDoctorUtils.anyStringEmpty(counterId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		MealCounter counter = counterService.getMealCounterById(counterId);
+		Response<MealCounter> response = new Response<MealCounter>();
+		response.setData(counter);
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.GET_MEAL_COUNTERS)
+	@GET
+	@ApiOperation(value = PathProxy.CounterUrls.GET_MEAL_COUNTERS, notes = PathProxy.CounterUrls.GET_MEAL_COUNTERS)
+	public Response<MealCounter> getMealCounters(@PathParam("userId") String userId, @QueryParam("size") int size,
+			@QueryParam("page") int page, @QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
+			@QueryParam("mealTime") String mealTime) {
+		if (DPDoctorUtils.anyStringEmpty(userId, mealTime)) {
+			logger.warn("userId,mealtime must not null or empty");
+			throw new BusinessException(ServiceError.InvalidInput, "userId,mealtime must not null or empty");
+
+		}
+		Response<MealCounter> response = new Response<MealCounter>();
+		response.setDataList(counterService.getMealCounters(page, size, userId, fromDate, toDate, mealTime));
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.DELETE_MEAL_COUNTER)
+	@DELETE
+	@ApiOperation(value = PathProxy.CounterUrls.DELETE_MEAL_COUNTER, notes = PathProxy.CounterUrls.DELETE_MEAL_COUNTER)
+	public Response<MealCounter> deleteMealCounter(@PathParam("counterId") String counterId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(counterId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<MealCounter> response = new Response<MealCounter>();
+		response.setData(counterService.deleteMealCounter(counterId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
+	@POST
+	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
+	public Response<ExerciseCounter> addExerciseCounter(ExerciseCounter request) {
+
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "userId should not be null or empty");
+
+		}
+		ExerciseCounter counter = counterService.addEditExerciseCounter(request);
+
+		Response<ExerciseCounter> response = new Response<ExerciseCounter>();
+		response.setData(counter);
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTER)
+	@GET
+	@ApiOperation(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTER, notes = PathProxy.CounterUrls.GET_EXERCISE_COUNTER)
+	public Response<ExerciseCounter> getExerciseCounterById(@PathParam("counterId") String counterId) {
+
+		if (DPDoctorUtils.anyStringEmpty(counterId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		ExerciseCounter counter = counterService.getExerciseCounterById(counterId);
+		Response<ExerciseCounter> response = new Response<ExerciseCounter>();
+		response.setData(counter);
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTERS)
+	@GET
+	@ApiOperation(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTERS, notes = PathProxy.CounterUrls.GET_EXERCISE_COUNTERS)
+	public Response<ExerciseCounter> getExerciseCounters(@PathParam("userId") String userId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate) {
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<ExerciseCounter> response = new Response<ExerciseCounter>();
+		response.setDataList(counterService.getExerciseCounters(page, size, userId, fromDate, toDate));
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.DELETE_EXERCISE_COUNTER)
+	@DELETE
+	@ApiOperation(value = PathProxy.CounterUrls.DELETE_EXERCISE_COUNTER, notes = PathProxy.CounterUrls.DELETE_EXERCISE_COUNTER)
+	public Response<ExerciseCounter> deleteExerciseCounter(@PathParam("counterId") String counterId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(counterId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<ExerciseCounter> response = new Response<ExerciseCounter>();
+		response.setData(counterService.deleteExerciseCounter(counterId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
+	@POST
+	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
+	public Response<CaloriesCounter> addCaloriesCounter(CaloriesCounter request) {
+
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "userId should not be null or empty");
+
+		}
+		CaloriesCounter counter = counterService.addEditCaloriesCounter(request);
+
+		Response<CaloriesCounter> response = new Response<CaloriesCounter>();
+		response.setData(counter);
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.GET_CALORIES_COUNTER)
+	@GET
+	@ApiOperation(value = PathProxy.CounterUrls.GET_CALORIES_COUNTER, notes = PathProxy.CounterUrls.GET_CALORIES_COUNTER)
+	public Response<CaloriesCounter> getCaloriesCounterById(@PathParam("counterId") String counterId) {
+
+		if (DPDoctorUtils.anyStringEmpty(counterId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		CaloriesCounter counter = counterService.getCaloriesCounterById(counterId);
+		Response<CaloriesCounter> response = new Response<CaloriesCounter>();
+		response.setData(counter);
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.GET_CALORIES_COUNTERS)
+	@GET
+	@ApiOperation(value = PathProxy.CounterUrls.GET_CALORIES_COUNTERS, notes = PathProxy.CounterUrls.GET_CALORIES_COUNTERS)
+	public Response<CaloriesCounter> getCaloriesCounters(@PathParam("userId") String userId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate) {
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<CaloriesCounter> response = new Response<CaloriesCounter>();
+		response.setDataList(counterService.getCaloriesCounters(page, size, userId, fromDate, toDate));
+		return response;
+	}
+
+	@Path(value = PathProxy.CounterUrls.DELETE_CALORIES_COUNTER)
+	@DELETE
+	@ApiOperation(value = PathProxy.CounterUrls.DELETE_CALORIES_COUNTER, notes = PathProxy.CounterUrls.DELETE_CALORIES_COUNTER)
+	public Response<CaloriesCounter> deleteCaloriesCounter(@PathParam("counterId") String counterId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(counterId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<CaloriesCounter> response = new Response<CaloriesCounter>();
+		response.setData(counterService.deleteColariesCounter(counterId, discarded));
 		return response;
 	}
 

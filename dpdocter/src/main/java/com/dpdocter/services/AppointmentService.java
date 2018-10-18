@@ -12,6 +12,7 @@ import com.dpdocter.beans.CustomAppointment;
 import com.dpdocter.beans.Event;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
+import com.dpdocter.beans.NutritionAppointment;
 import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
@@ -81,7 +82,7 @@ public interface AppointmentService {
 
 	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
 			String from, String to);
-	
+
 	public void updateQueue();
 
 	public CustomAppointment addCustomAppointment(CustomAppointment request);
@@ -116,4 +117,13 @@ public interface AppointmentService {
 
 	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime);
+
+	NutritionAppointment deleteNutritionAppointment(String appointmentId, Boolean discarded);
+
+	NutritionAppointment getNutritionAppointmentById(String appointmentId);
+
+	List<NutritionAppointment> getNutritionAppointments(int page, int size, String userId, String fromDate,
+			String toDate);
+
+	NutritionAppointment addEditNutritionAppointment(NutritionAppointment request);
 }

@@ -32,7 +32,7 @@ public class MealCounterCollection extends GenericCollection {
 	private ObjectId userId;
 
 	@Field
-	private SimpleCalorie simpleCalorie;
+	private List<SimpleCalorie> simpleCalories;
 
 	@Field
 	private MealTimeEnum mealTime = MealTimeEnum.BREAKFAST;
@@ -95,12 +95,14 @@ public class MealCounterCollection extends GenericCollection {
 		this.note = note;
 	}
 
-	public SimpleCalorie getSimpleCalorie() {
-		return simpleCalorie;
+	
+
+	public List<SimpleCalorie> getSimpleCalories() {
+		return simpleCalories;
 	}
 
-	public void setSimpleCalorie(SimpleCalorie simpleCalorie) {
-		this.simpleCalorie = simpleCalorie;
+	public void setSimpleCalories(List<SimpleCalorie> simpleCalories) {
+		this.simpleCalories = simpleCalories;
 	}
 
 	public MealTimeEnum getMealTime() {

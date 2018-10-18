@@ -1956,6 +1956,11 @@ public interface PathProxy {
 		public static final String DELETE_EXERCISE_COUNTER = "exercise/{counterId}/delete";
 		public static final String GET_EXERCISE_COUNTERS = "exercise/{userId}/list/get";
 
+		public static final String ADD_EDIT_CALORIES_COUNTER = "calories/addEdit";
+		public static final String GET_CALORIES_COUNTER = "calories/{counterId}/get";
+		public static final String DELETE_CALORIES_COUNTER = "calories/{counterId}/delete";
+		public static final String GET_CALORIES_COUNTERS = "calories/{userId}/list/get";
+
 		public static final String ADD_EDIT_WATER_COUNTER_SETTING = "water/setting/addEdit";
 		public static final String GET_WATER_COUNTER_SETTING = "water/setting/{userId}/get";
 

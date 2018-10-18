@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.CaloriesCounter;
 import com.dpdocter.beans.Exercise;
 import com.dpdocter.beans.ExerciseCounter;
 import com.dpdocter.beans.MealCounter;
@@ -52,5 +53,13 @@ public interface CounterService {
 	public List<ExerciseCounter> getExerciseCounters(int page, int size, String userId, String fromDate, String toDate);
 
 	public ExerciseCounter addEditExerciseCounter(ExerciseCounter request);
+
+	public CaloriesCounter deleteColariesCounter(String counterId, Boolean discarded);
+
+	public CaloriesCounter getCaloriesCounterById(String counterId);
+
+	public List<CaloriesCounter> getCaloriesCounters(int page, int size, String userId, String fromDate, String toDate);
+
+	public CaloriesCounter addEditCaloriesCounter(CaloriesCounter request);
 
 }

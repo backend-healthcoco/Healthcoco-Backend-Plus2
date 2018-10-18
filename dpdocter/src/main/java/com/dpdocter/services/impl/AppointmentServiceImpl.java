@@ -58,6 +58,7 @@ import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.NutritionAppointment;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientQueue;
@@ -82,6 +83,7 @@ import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.NutritionAppointmentCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -118,6 +120,7 @@ import com.dpdocter.repository.CustomAppointmentRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.NutritionAppointmentRepository;
 import com.dpdocter.repository.PatientQueueRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -198,6 +201,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private AppointmentRepository appointmentRepository;
+
+	@Autowired
+	private NutritionAppointmentRepository nutritionAppointmentRepository;
 
 	@Autowired
 	private LocationServices locationServices;
@@ -1878,83 +1884,83 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
 					response = new ArrayList<Appointment>();
 
-				for (AppointmentLookupResponse collection : appointmentLookupResponses) {
-					ObjectId doctorObjectId = new ObjectId(collection.getDoctorId());
-					ObjectId locationObjectId = new ObjectId(collection.getLocationId());
-					ObjectId hospitalObjectId = new ObjectId(collection.getHospitalId());
-					Appointment appointment = new Appointment();
-					PatientCard patientCard = null;
-					if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
-						patientCard = collection.getPatientCard();
-						if (patientCard != null) {
-							patientCard.setId(patientCard.getUserId());
+					for (AppointmentLookupResponse collection : appointmentLookupResponses) {
+						ObjectId doctorObjectId = new ObjectId(collection.getDoctorId());
+						ObjectId locationObjectId = new ObjectId(collection.getLocationId());
+						ObjectId hospitalObjectId = new ObjectId(collection.getHospitalId());
+						Appointment appointment = new Appointment();
+						PatientCard patientCard = null;
+						if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
+							patientCard = collection.getPatientCard();
+							if (patientCard != null) {
+								patientCard.setId(patientCard.getUserId());
 
+								if (patientCard.getUser() != null) {
+									patientCard.setColorCode(patientCard.getUser().getColorCode());
+									patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
+								}
+								patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+								patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+
+							}
+						}
+						BeanUtil.map(collection, appointment);
+						appointment.setPatient(patientCard);
+
+						// -----------------------------------------
+
+						if (isRegisteredPatientRequired == true && patientCard != null) {
+							RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
 							if (patientCard.getUser() != null) {
-								patientCard.setColorCode(patientCard.getUser().getColorCode());
-								patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
+								BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
+								if (patientCard.getUser().getId() != null) {
+									registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
+								}
 							}
-							patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
-							patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 
-						}
-					}
-					BeanUtil.map(collection, appointment);
-					appointment.setPatient(patientCard);
-
-					// -----------------------------------------
-
-					if (isRegisteredPatientRequired == true && patientCard != null) {
-						RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
-						if (patientCard.getUser() != null) {
-							BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
-							if (patientCard.getUser().getId() != null) {
-								registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
+							Patient patient = new Patient();
+							BeanUtil.map(patientCard, patient);
+							patient.setPatientId(patientCard.getUser().getId().toString());
+							ObjectId referredBy = null;
+							if (patientCard.getReferredBy() != null) {
+								referredBy = new ObjectId(patientCard.getReferredBy());
 							}
+
+							patientCard.setReferredBy(null);
+							BeanUtil.map(patientCard, registeredPatientDetail);
+
+							registeredPatientDetail.setPatient(patient);
+							registeredPatientDetail.setAddress(patientCard.getAddress());
+
+							registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
+							registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
+							registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
+							registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
+							registeredPatientDetail.setPID(patientCard.getPID());
+							registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
+
+							if (patientCard.getDob() != null) {
+								registeredPatientDetail.setDob(patientCard.getDob());
+							}
+
+							Reference reference = new Reference();
+							if (referredBy != null) {
+								ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
+								if (referencesCollection != null)
+									BeanUtil.map(referencesCollection, reference);
+							}
+							registeredPatientDetail.setReferredBy(reference);
+							registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
+							appointment.setRegisteredPatientDetails(registeredPatientDetail);
+							appointment.setPatient(null);
 						}
 
-						Patient patient = new Patient();
-						BeanUtil.map(patientCard, patient);
-						patient.setPatientId(patientCard.getUser().getId().toString());
-						ObjectId referredBy = null;
-						if (patientCard.getReferredBy() != null) {
-							referredBy = new ObjectId(patientCard.getReferredBy());
+						// -----------------------------------------
+
+						if (collection.getDoctor() != null) {
+							appointment.setDoctorName(
+									collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
 						}
-
-						patientCard.setReferredBy(null);
-						BeanUtil.map(patientCard, registeredPatientDetail);
-
-						registeredPatientDetail.setPatient(patient);
-						registeredPatientDetail.setAddress(patientCard.getAddress());
-
-						registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
-						registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
-						registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
-						registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
-						registeredPatientDetail.setPID(patientCard.getPID());
-						registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
-
-						if (patientCard.getDob() != null) {
-							registeredPatientDetail.setDob(patientCard.getDob());
-						}
-
-						Reference reference = new Reference();
-						if (referredBy != null) {
-							ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
-							if (referencesCollection != null)
-								BeanUtil.map(referencesCollection, reference);
-						}
-						registeredPatientDetail.setReferredBy(reference);
-						registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
-						appointment.setRegisteredPatientDetails(registeredPatientDetail);
-						appointment.setPatient(null);
-					}
-
-					// -----------------------------------------
-
-					if (collection.getDoctor() != null) {
-						appointment.setDoctorName(
-								collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
-					}
 						if (collection.getLocation() != null) {
 							appointment.setLocationName(collection.getLocation().getLocationName());
 							appointment.setClinicNumber(collection.getLocation().getClinicNumber());
@@ -2027,11 +2033,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
 						.append("patient._id", "$patientCard.userId").append("patient.userId", "$patientCard.userId")
 						.append("patient.localPatientName", "$patientCard.localPatientName")
-						.append("patient.PID", "$patientCard.PID")
-						.append("patient.PNUM", "$patientCard.PNUM")
+						.append("patient.PID", "$patientCard.PID").append("patient.PNUM", "$patientCard.PNUM")
 						.append("patient.imageUrl", new BasicDBObject("$cond",
-								new BasicDBObject(
-										"if", new BasicDBObject("eq", Arrays.asList("$patientCard.imageUrl", null)))
+								new BasicDBObject("if",
+										new BasicDBObject("eq", Arrays.asList("$patientCard.imageUrl", null)))
 												.append("then",
 														new BasicDBObject("$concat",
 																Arrays.asList(imagePath, "$patientCard.imageUrl")))
@@ -5111,6 +5116,140 @@ public class AppointmentServiceImpl implements AppointmentService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public NutritionAppointment addEditNutritionAppointment(NutritionAppointment request) {
+		NutritionAppointment response = null;
+		try {
+			NutritionAppointmentCollection appointmentCollection = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				appointmentCollection = nutritionAppointmentRepository.findOne(new ObjectId(request.getId()));
+				if (appointmentCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Appointment not found By Id ");
+				}
+				request.setCreatedBy(appointmentCollection.getCreatedBy());
+				request.setCreatedTime(appointmentCollection.getCreatedTime());
+				appointmentCollection = new NutritionAppointmentCollection();
+				BeanUtil.map(request, appointmentCollection);
+
+			} else {
+				appointmentCollection = new NutritionAppointmentCollection();
+				BeanUtil.map(request, appointmentCollection);
+				UserCollection userCollection = userRepository.findOne(appointmentCollection.getUserId());
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "user not found By Id ");
+				}
+
+				appointmentCollection.setCreatedTime(new Date());
+				appointmentCollection.setCreatedBy(
+						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "" : userCollection.getTitle())
+								+ userCollection.getFirstName());
+
+			}
+			appointmentCollection = nutritionAppointmentRepository.save(appointmentCollection);
+			response = new NutritionAppointment();
+			BeanUtil.map(appointmentCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while add edit Nutrition Appointment  : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while add edit Nutrition Appointment  : " + e.getCause().getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<NutritionAppointment> getNutritionAppointments(int page, int size, String userId, String fromDate,
+			String toDate) {
+		List<NutritionAppointment> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(false);
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
+			}
+			criteria.and("toDate").gte(from).lte(to).and("userId").is(new ObjectId(userId));
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate")));
+
+			}
+			AggregationResults<NutritionAppointment> aggregationResults = mongoTemplate.aggregate(aggregation,
+					NutritionAppointmentCollection.class, NutritionAppointment.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while getting Nutrition Appointment : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while getting Nutrition Appointment : " + e.getCause().getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public NutritionAppointment getNutritionAppointmentById(String appointmentId) {
+		NutritionAppointment response = null;
+		try {
+
+			NutritionAppointmentCollection nutritionAppointmentCollection = nutritionAppointmentRepository
+					.findOne(new ObjectId(appointmentId));
+			response = new NutritionAppointment();
+			BeanUtil.map(nutritionAppointmentCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while getting Nutrition Appointment : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting Nutrition Appointment : " + e.getCause().getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public NutritionAppointment deleteNutritionAppointment(String appointmentId, Boolean discarded) {
+		NutritionAppointment response = null;
+		try {
+			NutritionAppointmentCollection nutritionAppointmentCollection = nutritionAppointmentRepository
+					.findOne(new ObjectId(appointmentId));
+			if (nutritionAppointmentCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Appointment not found with Id ");
+			}
+			nutritionAppointmentCollection.setUpdatedTime(new Date());
+			nutritionAppointmentCollection.setDiscarded(discarded);
+			nutritionAppointmentCollection = nutritionAppointmentRepository.save(nutritionAppointmentCollection);
+			response = new NutritionAppointment();
+			BeanUtil.map(nutritionAppointmentCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while deleting nutrition Appointment : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while deleting nutrition Appointment : " + e.getCause().getMessage());
+
 		}
 		return response;
 	}
