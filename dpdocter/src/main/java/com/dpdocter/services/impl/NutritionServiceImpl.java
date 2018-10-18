@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -527,7 +526,8 @@ public class NutritionServiceImpl implements NutritionService {
 
 			Aggregation aggregation = null;
 
-			Criteria criteria = new Criteria("id").is(new ObjectId(id)).and("subscriptionNutritionPlan.discarded").is(false);
+			Criteria criteria = new Criteria("id").is(new ObjectId(id)).and("subscriptionNutritionPlan.discarded")
+					.is(false);
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("subscription_nutrition_plan_cl", "_id", "nutritionPlanId",
@@ -884,8 +884,12 @@ public class NutritionServiceImpl implements NutritionService {
 			if (response != null) {
 				if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 					asyncService.sendMessage(response, userCollection);
-					if (!DPDoctorUtils.anyStringEmpty(userCollection.getEmailAddress()))
-						asyncService.createMailNutritionTransactionStatus(response, userCollection);
+					PatientCollection patientCollection = patientRepository
+							.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+
+					if (patientCollection != null && !DPDoctorUtils.anyStringEmpty(patientCollection.getEmailAddress()))
+						userCollection.setEmailAddress(patientCollection.getEmailAddress());
+					asyncService.createMailNutritionTransactionStatus(response, userCollection);
 				}
 				if (nutritionPlan != null) {
 					if (!DPDoctorUtils.anyStringEmpty(nutritionPlan.getBannerImage())) {

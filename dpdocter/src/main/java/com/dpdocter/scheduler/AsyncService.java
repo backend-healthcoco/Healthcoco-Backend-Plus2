@@ -65,7 +65,7 @@ public class AsyncService {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	@Value(value = "${nutrition.suscription.plan.transaction.success.message}")
+	@Value(value = "${nutrition.suscription.plan.transaction.success.message=}")
 	private String successmassage;
 
 	@Value(value = "${nutrition.suscription.plan.transaction.decline.message}")
@@ -265,8 +265,7 @@ public class AsyncService {
 				SMS sms = new SMS();
 				smsDetail.setUserName(userCollection.getFirstName());
 				sms.setSmsText(message
-						.replace("{amount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
-						.replace("{patientName}", userCollection.getFirstName())
+						.replace("{amount}", "Rs. " + userNutritionSubscriptionResponse.getAmount().toString())
 						.replace("{PlanName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
 
 				SMSAddress smsAddress = new SMSAddress();
@@ -316,7 +315,7 @@ public class AsyncService {
 					"nutritionPaymentTemplate.vm");
 			mailService.sendEmail(userCollection.getEmailAddress(), "Healthcoco sent you Transaction Status", body,
 					null);
-			
+
 			System.out.println("mail sent");
 
 		} catch (Exception e) {
