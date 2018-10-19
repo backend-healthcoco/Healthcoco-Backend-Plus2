@@ -526,7 +526,8 @@ public class NutritionServiceImpl implements NutritionService {
 
 			Aggregation aggregation = null;
 
-			Criteria criteria = new Criteria("id").is(new ObjectId(id)).and("subscriptionNutritionPlan.discarded").is(false);
+			Criteria criteria = new Criteria("id").is(new ObjectId(id)).and("subscriptionNutritionPlan.discarded")
+					.is(false);
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("subscription_nutrition_plan_cl", "_id", "nutritionPlanId",
@@ -882,7 +883,7 @@ public class NutritionServiceImpl implements NutritionService {
 
 			if (response != null) {
 				if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-					asyncService.sendMessage(response, userCollection);
+					asyncService.sendNutritionTransactionStatusMessage(response, userCollection);
 					if (!DPDoctorUtils.anyStringEmpty(userCollection.getEmailAddress()))
 						asyncService.createMailNutritionTransactionStatus(response, userCollection);
 				}

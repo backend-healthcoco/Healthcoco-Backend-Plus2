@@ -5,13 +5,14 @@ import java.util.List;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
-import com.dpdocter.request.IngredientSearchRequest;
-import com.dpdocter.request.RecipeGetRequest;
+import com.dpdocter.request.RecipeCounterAddItem;
+import com.dpdocter.response.RecentRecipeResponse;
 
 public interface RecipeService {
 	public Nutrient addEditNutrient(Nutrient request);
 
-	public List<Nutrient> getNutrients(int size, int page, boolean discarded, String searchTerm, String category);
+	public List<Nutrient> getNutrients(int size, int page, boolean discarded, String searchTerm, String category,
+			String doctorId, String locationId, String hospitalId);
 
 	public Nutrient discardNutrient(String id, boolean discarded);
 
@@ -19,7 +20,8 @@ public interface RecipeService {
 
 	public Ingredient addEditIngredient(Ingredient request);
 
-	public List<Ingredient> getIngredients(int size, int page, boolean discarded, String searchTerm);
+	public List<Ingredient> getIngredients(int size, int page, boolean discarded, String searchTerm, String doctorId,
+			String locationId, String hospitalId);
 
 	public Ingredient discardIngredient(String id, boolean discarded);
 
@@ -31,6 +33,15 @@ public interface RecipeService {
 
 	Recipe discardRecipe(String id, boolean discarded);
 
-	List<Recipe> getRecipes(int size, int page, boolean discarded, String searchTerm);
+	List<Recipe> getRecipes(int size, int page, boolean discarded, String searchTerm, String doctorId,
+			String locationId, String hospitalId);
+
+	List<Recipe> getFavouriteRecipe(int size, int page, boolean discarded, String searchTerm, String userId);
+
+	Boolean addFavouriteRecipe(String userId, String recipeId);
+
+	List<RecipeCounterAddItem> getFrequentRecipe(int size, int page, boolean discarded, String userId);
+
+	List<RecentRecipeResponse> getRecentRecipe(int size, int page, String userId, boolean discarded, String mealTime);
 
 }

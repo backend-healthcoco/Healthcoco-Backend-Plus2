@@ -27,7 +27,7 @@ public class NutritionAppointmentCollection extends GenericCollection {
 	@Field
 	private String note;
 	@Field
-	private AppointmentState state;
+	private AppointmentState state = AppointmentState.NEW;
 	@Field
 	private Boolean discarded = false;
 	@Field

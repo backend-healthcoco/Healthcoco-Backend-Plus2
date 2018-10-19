@@ -1028,6 +1028,8 @@ public interface PathProxy {
 		public static final String GET_EVENTS = "/event/get";
 
 		public static final String GET_EVENT_BY_ID = "/event/{eventId}";
+
+		public static final String ADD_NUTRITION_APPOINTMENT = "/nutrition/add";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
@@ -1921,6 +1923,10 @@ public interface PathProxy {
 		public static final String GET_RECIPES = "{doctorId}/{locationId}/{hospitalId}/get";
 		public static final String DELETE_RECIPE = "{recipeId}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_RECIPE = "{recipeId}/get";
+		public static final String ADD_FAVOURITE_RECIPE = "favourite/add";
+		public static final String GET_RECENT_RECIPE = "recent/{userId}/get";
+		public static final String GET_FREQUENT_RECIPE = "frequent/{userId}/get";
+
 	}
 
 	public static final String DIET_PLAN_BASE_URL = BASE_URL + "/dietPlan";

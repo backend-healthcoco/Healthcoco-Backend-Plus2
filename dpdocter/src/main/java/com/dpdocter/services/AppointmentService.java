@@ -125,5 +125,5 @@ public interface AppointmentService {
 	List<NutritionAppointment> getNutritionAppointments(int page, int size, String userId, String fromDate,
 			String toDate);
 
-	NutritionAppointment addEditNutritionAppointment(NutritionAppointment request);
+	Boolean addEditNutritionAppointment(NutritionAppointment request);
 }

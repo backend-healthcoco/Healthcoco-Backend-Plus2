@@ -26,6 +26,7 @@ import com.dpdocter.elasticsearch.services.ESRecipeService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.response.RecentRecipeResponse;
 import com.dpdocter.services.RecipeService;
 
 import common.util.web.DPDoctorUtils;
@@ -149,7 +150,8 @@ public class RecipeApi {
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("category") String category) {
 
 		Response<Nutrient> response = new Response<Nutrient>();
-		response.setDataList(recipeService.getNutrients(size, page, discarded, searchTerm, category));
+		response.setDataList(recipeService.getNutrients(size, page, discarded, searchTerm, category, doctorId,
+				locationId, hospitalId));
 		return response;
 	}
 
@@ -162,7 +164,8 @@ public class RecipeApi {
 			@QueryParam("searchTerm") String searchTerm) {
 
 		Response<Ingredient> response = new Response<Ingredient>();
-		response.setDataList(recipeService.getIngredients(size, page, discarded, searchTerm));
+		response.setDataList(
+				recipeService.getIngredients(size, page, discarded, searchTerm, doctorId, locationId, hospitalId));
 		return response;
 	}
 
@@ -239,7 +242,8 @@ public class RecipeApi {
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") Boolean discarded,
 			@QueryParam("searchTerm") String searchTerm) {
 		Response<Recipe> response = new Response<Recipe>();
-		response.setDataList(recipeService.getRecipes(size, page, discarded, searchTerm));
+		response.setDataList(
+				recipeService.getRecipes(size, page, discarded, searchTerm, doctorId, locationId, hospitalId));
 		return response;
 	}
 
@@ -257,7 +261,7 @@ public class RecipeApi {
 				request.getName())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"name,doctor,location or hospital Id should not be null or empty");
+					"name,doctorId,locationId or hospitalId should not be null or empty");
 
 		}
 		Recipe recipe = recipeService.addEditRecipe(request);
@@ -289,4 +293,51 @@ public class RecipeApi {
 			return null;
 	}
 
+	@Path(value = PathProxy.RecipeUrls.ADD_FAVOURITE_RECIPE)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.ADD_FAVOURITE_RECIPE, notes = PathProxy.RecipeUrls.ADD_FAVOURITE_RECIPE)
+	public Response<Boolean> getRecipes(@QueryParam("userId") String userId, @QueryParam("recipeId") String recipeId) {
+		Response<Boolean> response = new Response<Boolean>();
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "user Id should not be null or empty");
+
+		}
+
+		response.setData(recipeService.addFavouriteRecipe(userId, recipeId));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE, notes = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
+	public Response<RecentRecipeResponse> getRecentRecipes(@PathParam("userId") String userId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
+			@QueryParam("mealTime") String mealTime) {
+
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "user Id should not be null or empty");
+
+		}
+
+		Response<RecentRecipeResponse> response = new Response<RecentRecipeResponse>();
+		response.setDataList(recipeService.getRecentRecipe(size, page, userId, discarded, mealTime));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE, notes = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
+	public Response<RecentRecipeResponse> getFrequenttRecipes(@PathParam("userId") String userId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "user Id should not be null or empty");
+
+		}
+		Response<RecentRecipeResponse> response = new Response<RecentRecipeResponse>();
+		response.setDataList(recipeService.getFrequentRecipe(size, page, discarded, userId));
+		return response;
+	}
 }

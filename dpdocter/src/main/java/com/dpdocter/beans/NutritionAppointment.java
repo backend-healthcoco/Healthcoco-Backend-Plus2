@@ -20,15 +20,13 @@ public class NutritionAppointment extends GenericCollection {
 
 	private String note;
 
-	private AppointmentState state;
+	private AppointmentState state = AppointmentState.NEW;
 
 	private Boolean discarded = false;
 
 	private String userId;
 
 	private String mobileNumber;
-	
-	
 
 	public String getMobileNumber() {
 		return mobileNumber;

@@ -16,15 +16,14 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.Ingredient;
-import com.dpdocter.beans.IngredientAddItem;
-import com.dpdocter.beans.IngredientItem;
+import com.dpdocter.beans.MealCounter;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
-import com.dpdocter.beans.RecipeAddItem;
 import com.dpdocter.beans.RecipeItem;
+import com.dpdocter.collections.FavouriteRecipeCollection;
 import com.dpdocter.collections.IngredientCollection;
+import com.dpdocter.collections.MealCounterCollection;
 import com.dpdocter.collections.NutrientCollection;
 import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.collections.UserCollection;
@@ -37,13 +36,13 @@ import com.dpdocter.elasticsearch.repository.ESRecipeRepository;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.FavouriteRecipeRepository;
 import com.dpdocter.repository.IngredientRepository;
 import com.dpdocter.repository.NutrientRepository;
 import com.dpdocter.repository.RecipeRepository;
-import com.dpdocter.repository.UserRecordsRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.request.IngredientSearchRequest;
-import com.dpdocter.request.RecipeGetRequest;
+import com.dpdocter.request.RecipeCounterAddItem;
+import com.dpdocter.response.RecentRecipeResponse;
 import com.dpdocter.services.RecipeService;
 import com.mongodb.BasicDBObject;
 
@@ -79,6 +78,9 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Autowired
 	private ESNutrientRepository esNutrientRepository;
+
+	@Autowired
+	private FavouriteRecipeRepository favouriteRecipeRepository;
 
 	@Override
 	public Nutrient addEditNutrient(Nutrient request) {
@@ -125,14 +127,23 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public List<Nutrient> getNutrients(int size, int page, boolean discarded, String searchTerm, String category) {
+	public List<Nutrient> getNutrients(int size, int page, boolean discarded, String searchTerm, String category,
+			String doctorId, String locationId, String hospitalId) {
 		List<Nutrient> response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
-			criteria = criteria.and("category").is(category.toUpperCase());
+			if (!DPDoctorUtils.anyStringEmpty(category))
+				criteria = criteria.and("category").is(category.toUpperCase());
+
+			if (!DPDoctorUtils.allStringsEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.allStringsEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -265,7 +276,8 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public List<Recipe> getRecipes(int size, int page, boolean discarded, String searchTerm) {
+	public List<Recipe> getRecipes(int size, int page, boolean discarded, String searchTerm, String doctorId,
+			String locationId, String hospitalId) {
 		List<Recipe> response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
@@ -273,6 +285,12 @@ public class RecipeServiceImpl implements RecipeService {
 				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex(searchTerm));
 			}
+			if (!DPDoctorUtils.allStringsEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.allStringsEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
 			CustomAggregationOperation aggregationOperationFirst = new CustomAggregationOperation(new BasicDBObject(
 					"$group",
@@ -445,14 +463,20 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public List<Ingredient> getIngredients(int size, int page, boolean discarded, String searchTerm) {
+	public List<Ingredient> getIngredients(int size, int page, boolean discarded, String searchTerm, String doctorId,
+			String locationId, String hospitalId) {
 		List<Ingredient> response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
-
+			if (!DPDoctorUtils.allStringsEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.allStringsEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("quantity", new BasicDBObject("$first", "$quantity"))
 							.append("name", new BasicDBObject("$first", "$name"))
@@ -540,6 +564,153 @@ public class RecipeServiceImpl implements RecipeService {
 			return imagePath + imageURL;
 		else
 			return null;
+	}
+
+	@Override
+	public Boolean addFavouriteRecipe(String userId, String recipeId) {
+		Boolean response = true;
+		try {
+			FavouriteRecipeCollection recipeCollection = favouriteRecipeRepository.findByUserId(new ObjectId(userId),
+					new ObjectId(recipeId));
+
+			if (recipeCollection != null) {
+				recipeCollection.setDiscarded(true);
+			}
+
+			else {
+				UserCollection user = userRepository.findOne(new ObjectId(userId));
+				recipeCollection = new FavouriteRecipeCollection();
+
+				recipeCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(user.getTitle()) ? user.getTitle() : "")
+						+ " " + user.getFirstName());
+				recipeCollection.setUpdatedTime(new Date());
+				recipeCollection.setCreatedTime(new Date());
+				recipeCollection.setUserId(new ObjectId(userId));
+				recipeCollection.setRecipeId(new ObjectId(recipeId));
+			}
+			recipeCollection = favouriteRecipeRepository.save(recipeCollection);
+			response = true;
+
+		} catch (
+
+		BusinessException e) {
+			logger.error("Error while add to Favourite Recipe " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while add to Favourite Recipe " + e.getMessage());
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public List<Recipe> getFavouriteRecipe(int size, int page, boolean discarded, String searchTerm, String userId) {
+		List<Recipe> response = null;
+		try {
+			Criteria criteria = new Criteria("favRecipe.discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("name").regex("^" + searchTerm));
+			if (!DPDoctorUtils.allStringsEmpty(userId))
+				criteria.and("favRecipe.userId").is(new ObjectId(userId));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("discarded").is(false)),
+						Aggregation.lookup("favourite_recipes_cl", "_id", "recipeId", "favRecipe"),
+						Aggregation.unwind("favRecipe"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")), Aggregation.skip(page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("discarded").is(false)),
+						Aggregation.lookup("favourite_recipes_cl", "_id", "recipeId", "favRecipe"),
+						Aggregation.unwind("favRecipe"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, RecipeCollection.class, Recipe.class).getMappedResults();
+		} catch (BusinessException e) {
+			logger.error("Error while getting Favourite Recipe " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Favourite Recipe " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<RecipeCounterAddItem> getFrequentRecipe(int size, int page, boolean discarded, String userId) {
+		List<RecipeCounterAddItem> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.allStringsEmpty(userId))
+				criteria.and("userId").is(new ObjectId(userId));
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$racipe.id").append("name", new BasicDBObject("$first", "$racipe.name"))
+							.append("quantity", new BasicDBObject("$first", "$racipe.quantity"))
+							.append("note", new BasicDBObject("$first", "$racipe.note"))
+							.append("equivalentMeasurements",
+									new BasicDBObject("$first", "$racipe.equivalentMeasurements"))
+							.append("calories", new BasicDBObject("$first", "$racipe.calories"))
+							.append("fat", new BasicDBObject("$first", "$racipe.fat"))
+							.append("protein", new BasicDBObject("$first", "$racipe.protein"))
+							.append("fiber", new BasicDBObject("$first", "$racipe.fiber"))
+							.append("carbohydreate", new BasicDBObject("$first", "$racipe.carbohydreate"))));
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("recipes"),
+						Aggregation.lookup("recipe_cl", "recipes._id", "_id", "recipe"), Aggregation.unwind("recipe"),
+						Aggregation.match(new Criteria("recipe.discarded").is(false)),
+						Aggregation.sort(new Sort(Direction.DESC, "date")), aggregationOperation,
+						Aggregation.skip(page * size), Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("recipes"),
+						Aggregation.lookup("recipe_cl", "recipes._id", "recipeId", "recipe"),
+						Aggregation.unwind("recipe"), Aggregation.match(new Criteria("recipe.discarded").is(false)),
+						aggregationOperation, Aggregation.sort(new Sort(Direction.DESC, "date")));
+			}
+			response = mongoTemplate.aggregate(aggregation, MealCounterCollection.class, RecipeCounterAddItem.class)
+					.getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting Favourite Recipe " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Favourite Recipe " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<RecentRecipeResponse> getRecentRecipe(int size, int page, String userId, boolean discarded,
+			String mealTime) {
+		List<RecentRecipeResponse> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.allStringsEmpty(userId))
+				criteria.and("userId").is(new ObjectId(userId));
+
+			if (!DPDoctorUtils.allStringsEmpty(mealTime))
+				criteria.and("mealTime").is(new ObjectId(mealTime.toUpperCase()));
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+
+						Aggregation.sort(new Sort(Direction.DESC, "date")), Aggregation.skip(page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "date")));
+			}
+			response = mongoTemplate.aggregate(aggregation, MealCounterCollection.class, RecentRecipeResponse.class)
+					.getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting Recent Recipe " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Recent Recipe " + e.getMessage());
+
+		}
+		return response;
 	}
 
 }

@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.FavouriteRateCardTestCollection;
 
 @Repository
