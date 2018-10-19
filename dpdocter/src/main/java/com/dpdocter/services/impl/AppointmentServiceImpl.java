@@ -5137,8 +5137,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	
 
 	@Override
-	public NutritionAppointment addEditNutritionAppointment(NutritionAppointment request) {
-		NutritionAppointment response = null;
+	public Boolean addEditNutritionAppointment(NutritionAppointment request) {
+		Boolean response = false;
 		try {
 			NutritionAppointmentCollection appointmentCollection = null;
 
@@ -5167,8 +5167,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			}
 			appointmentCollection = nutritionAppointmentRepository.save(appointmentCollection);
-			response = new NutritionAppointment();
-			BeanUtil.map(appointmentCollection, response);
+			response = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();

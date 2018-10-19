@@ -319,19 +319,14 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 	}
 
-	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
+	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,String time,
 			String templatePath) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("orderId", orderId);
 		model.put("planName", planName);
 		model.put("amount", amount);
 		model.put("patientName", patientName);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
+		model.put("time", time);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}

@@ -33,7 +33,7 @@ public interface MailBodyGenerator {
 			String mailRecordCreatedDate, String medicalRecordType, String templatePath);
 
 	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
-			String templatePath);
+			String time, String templatePath);
 
 	public String generateFeedbackEmailBody(String patientName, String doctorName, String locationName,
 			String uniqueFeedbackId, String templatePath);

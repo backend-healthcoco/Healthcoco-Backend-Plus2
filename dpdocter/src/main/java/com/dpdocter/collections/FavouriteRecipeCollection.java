@@ -5,15 +5,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "fevourite_Blogs_cl")
-public class FavouriteBlogsCollection extends GenericCollection {
-
+@Document(collection = "favourite_recipes_cl")
+public class FavouriteRecipeCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
 	private ObjectId userId;
 	@Field
-	private ObjectId blogId;
+	private ObjectId recipeId;
 	@Field
 	private Boolean discarded = false;
 
@@ -33,12 +32,12 @@ public class FavouriteBlogsCollection extends GenericCollection {
 		this.userId = userId;
 	}
 
-	public ObjectId getBlogId() {
-		return blogId;
+	public ObjectId getRecipeId() {
+		return recipeId;
 	}
 
-	public void setBlogId(ObjectId blogId) {
-		this.blogId = blogId;
+	public void setRecipeId(ObjectId recipeId) {
+		this.recipeId = recipeId;
 	}
 
 	public Boolean getDiscarded() {
