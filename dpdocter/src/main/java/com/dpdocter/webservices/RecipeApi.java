@@ -326,9 +326,9 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
+	@Path(value = PathProxy.RecipeUrls.GET_FREQUENT_RECIPE)
 	@GET
-	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE, notes = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_FREQUENT_RECIPE, notes = PathProxy.RecipeUrls.GET_FREQUENT_RECIPE)
 	public Response<RecentRecipeResponse> getFrequenttRecipes(@PathParam("userId") String userId,
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
