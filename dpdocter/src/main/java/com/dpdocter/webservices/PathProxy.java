@@ -1943,7 +1943,7 @@ public interface PathProxy {
 	public interface CounterUrls {
 
 		public static final String ADD_EDIT_WATER_COUNTER = "water/addEdit";
-		public static final String GET_WATER_COUNTER = "waterT/{counterId}/get";
+		public static final String GET_WATER_COUNTER = "water/{counterId}/get";
 		public static final String DELETE_WATER_COUNTER = "water/{counterId}/delete";
 		public static final String GET_WATER_COUNTERS = "water/{userId}/list/get";
 
