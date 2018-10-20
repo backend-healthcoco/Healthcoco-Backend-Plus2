@@ -387,9 +387,9 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
+	@Path(value = PathProxy.CounterUrls.ADD_EDIT_CALORIES_COUNTER)
 	@POST
-	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
+	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_CALORIES_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_CALORIES_COUNTER)
 	public Response<CaloriesCounter> addCaloriesCounter(CaloriesCounter request) {
 
 		if (request == null) {
