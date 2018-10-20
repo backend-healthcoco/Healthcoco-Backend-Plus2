@@ -9,5 +9,5 @@ import com.dpdocter.collections.WaterCounterCollection;
 
 public interface WaterCounterRepository extends MongoRepository<WaterCounterCollection, ObjectId> {
 	@Query("{'userId' : ?0, 'date' : {$gte : ?1 ,$lte : ?2},'discarded' : false }")
-	public WaterCounterCollection findByuserId(ObjectId userId, DateTime toDate, DateTime fromDate);
+	public WaterCounterCollection findByuserId(ObjectId userId, DateTime fromDate, DateTime toDate);
 }

@@ -9,6 +9,6 @@ import com.dpdocter.collections.MealCounterCollection;
 
 public interface MealCounterRepository extends MongoRepository<MealCounterCollection, ObjectId> {
 	@Query("{'userId' : ?0, 'date' : {$gte : ?1 ,$lte : ?2},'mealTime': ?3,'discarded' : false }")
-	public MealCounterCollection findByuserId(ObjectId userId, DateTime toDate, DateTime fromDate,String mealTime);
+	public MealCounterCollection findByuserId(ObjectId userId, DateTime fromDate, DateTime toDate, String mealTime);
 
 }
