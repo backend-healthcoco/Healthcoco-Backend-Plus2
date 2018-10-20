@@ -9,6 +9,6 @@ import com.dpdocter.collections.ExerciseCounterCollection;
 
 public interface ExerciseCounterRepository extends MongoRepository<ExerciseCounterCollection, ObjectId> {
 	@Query("{'userId' : ?0, 'date' : {$gte : ?1 ,$lte : ?2},'discarded' : false }")
-	public ExerciseCounterCollection findByuserId(ObjectId userId, DateTime toDate, DateTime fromDate);
+	public ExerciseCounterCollection findByuserId(ObjectId userId, DateTime fromDate, DateTime toDate);
 
 }

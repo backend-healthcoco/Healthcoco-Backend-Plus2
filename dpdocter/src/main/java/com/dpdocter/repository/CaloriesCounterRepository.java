@@ -10,6 +10,6 @@ import com.dpdocter.collections.CaloriesCounterCollection;
 public interface CaloriesCounterRepository extends MongoRepository<CaloriesCounterCollection, ObjectId> {
 
 	@Query("{'userId' : ?0, 'date' : {$gte : ?1 ,$lte : ?2},'discarded' : false }")
-	public CaloriesCounterCollection findByuserId(ObjectId userId, DateTime toDate, DateTime fromDate);
+	public CaloriesCounterCollection findByuserId(ObjectId userId, DateTime fromDate, DateTime toDate);
 
 }

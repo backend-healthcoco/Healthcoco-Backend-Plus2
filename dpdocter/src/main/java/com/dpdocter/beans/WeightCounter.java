@@ -18,6 +18,7 @@ public class WeightCounter extends GenericCollection {
 
 	private Date date;
 
+	
 	public Date getDate() {
 		return date;
 	}

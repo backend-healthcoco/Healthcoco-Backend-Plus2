@@ -24,6 +24,14 @@ public class WeightCounterCollection extends GenericCollection {
 	@Field
 	private Date date = new Date();
 
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
 	public Boolean getDiscarded() {
 		return discarded;
 	}
