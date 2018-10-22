@@ -91,7 +91,7 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			NutrientCollection nutrientCollection = null;
 
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
+			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
 			}
@@ -235,7 +235,7 @@ public class RecipeServiceImpl implements RecipeService {
 				}
 
 				RecipeCollection recipeCollection = null;
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
+				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
 				}
@@ -490,7 +490,7 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			IngredientCollection ingredientCollection = null;
 
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
+			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
 			}
