@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -367,7 +368,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
+			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new Document(
 					"$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("id", "$_id").append("patientName", "$patientLabTestSamples.patientName")
@@ -396,7 +397,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
-					new BasicDBObject("$group",
+					new Document("$group",
 							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
@@ -469,7 +470,7 @@ public class LocationServiceImpl implements LocationServices {
 							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 							Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
+			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new Document(
 					"$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("id", "$_id").append("patientName", "$patientLabTestSamples.patientName")
@@ -498,7 +499,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
-					new BasicDBObject("$group",
+					new Document("$group",
 							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
@@ -569,7 +570,7 @@ public class LocationServiceImpl implements LocationServices {
 							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 							Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
+			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new Document(
 					"$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("id", "$_id").append("patientName", "$patientLabTestSamples.patientName")
@@ -598,7 +599,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
-					new BasicDBObject("$group",
+					new Document("$group",
 							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
@@ -692,7 +693,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
+			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new Document(
 					"$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("id", "$_id").append("pId", "$patientLabTestSamples.uid")
@@ -723,7 +724,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
-					new BasicDBObject("$group",
+					new Document("$group",
 							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
@@ -834,7 +835,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
+			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new Document(
 					"$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("id", "$_id").append("patientName", "$patientLabTestSamples.patientName")
@@ -865,7 +866,7 @@ public class LocationServiceImpl implements LocationServices {
 											.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 											.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
-					new BasicDBObject("$group",
+					new Document("$group",
 							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
@@ -983,7 +984,7 @@ public class LocationServiceImpl implements LocationServices {
 							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 							Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new BasicDBObject(
+			CustomAggregationOperation aggregationOperation1 = new CustomAggregationOperation(new Document(
 					"$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("id", "$_id").append("patientName", "$patientLabTestSamples.patientName")
@@ -1021,7 +1022,7 @@ public class LocationServiceImpl implements LocationServices {
 													.append("labTestSamples",
 															new BasicDBObject("$push", "$labTestSamples"))));
 			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(
-					new BasicDBObject("$group",
+					new Document("$group",
 							new BasicDBObject("_id", "$_id.id")
 									.append("daughterLabCRN", new BasicDBObject("$first", "$daughterLabCRN"))
 									.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
@@ -1060,7 +1061,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
 						Aggregation.unwind("parentLab"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.match(orOperator), aggregationOperation1, projectList, aggregationOperation2,
@@ -1075,7 +1076,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
 						Aggregation.unwind("parentLab"),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.match(orOperator), aggregationOperation1, projectList, aggregationOperation2,
@@ -1821,7 +1822,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
 					Fields.field("createdTime", "$createdTime")));
 
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("specimen", "$specimen"))
 							.append("rateCards", new BasicDBObject("$push", "$rateCardTest")).append("createdTime",
 									new BasicDBObject("$first", "$createdTime"))));
@@ -2150,7 +2151,7 @@ public class LocationServiceImpl implements LocationServices {
 							Fields.field("labTestSamples.createdBy", "$labTestSamples.createdBy"),
 							Fields.field("createdTime", "$createdTime")));
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(
-					new BasicDBObject("$group",
+					new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("uid", "$uid").append("patientName", "$patientName")
 											.append("mobileNumber", "$mobileNumber"))
@@ -2172,7 +2173,7 @@ public class LocationServiceImpl implements LocationServices {
 								Aggregation.unwind("labTestSamples"),
 								Aggregation.lookup("lab_reports_cl", "patientLabTestSamples.labTestSampleIds",
 										"labTestSampleId", "labReport"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$labReport").append("preserveNullAndEmptyArrays",
 												true))),
 								Aggregation.lookup("location_cl", "daughterLabLocationId", "_id",
@@ -2191,7 +2192,7 @@ public class LocationServiceImpl implements LocationServices {
 								Aggregation.unwind("labTestSamples"),
 								Aggregation.lookup("lab_reports_cl", "patientLabTestSamples.labTestSampleIds",
 										"labTestSampleId", "labReport"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$labReport").append("preserveNullAndEmptyArrays",
 												true))),
 								Aggregation.lookup("location_cl", "daughterLabLocationId", "_id",
@@ -2269,7 +2270,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("labTestSamples.createdTime", "$labTestSamples.createdTime"),
 					Fields.field("labTestSamples.updatedTime", "$labTestSamples.updatedTime"),
 					Fields.field("labTestSamples.createdBy", "$labTestSamples.createdBy")));
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("id", "$id").append("patientName", "$patientName").append("mobileNumber",
 									"$mobileNumber")).append("patientName", new BasicDBObject("$first", "$patientName"))
@@ -2337,7 +2338,7 @@ public class LocationServiceImpl implements LocationServices {
 				}
 			}
 
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("specimen", "$diagnosticTest.specimen"))
 							.append("diagnosticTests", new BasicDBObject("$push", "$diagnosticTest")).append("specimen",
 									new BasicDBObject("$first", "$diagnosticTest.specimen"))));

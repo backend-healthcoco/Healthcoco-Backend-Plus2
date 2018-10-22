@@ -15,6 +15,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -482,9 +483,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
 						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 						Aggregation.match(criteria), projectList,
@@ -496,9 +497,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
 						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.unwind("uploadedByDoctor"),
 						Aggregation.unwind("uploadedByLocation"), Aggregation.match(criteria), projectList,
@@ -574,9 +575,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
 					Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 					Aggregation.match(criteria), projectList);

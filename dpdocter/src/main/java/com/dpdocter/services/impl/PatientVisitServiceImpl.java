@@ -21,6 +21,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -430,7 +431,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
-					redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+					redactOperations = new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
@@ -439,7 +440,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 													.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 					criteria2.and("consultantDoctorIds").is(doctorObjectId);
 				} else {
-					redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+					redactOperations = new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
@@ -448,14 +449,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					criteria2.and("doctorId").is(doctorObjectId);
 				}
 			} else {
-				redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+				redactOperations = new CustomAggregationOperation(new Document("$redact",
 						new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 								new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 								new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)))))
 										.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 			}
 
-			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("userId", "$patient.userId")
 							.append("firstName", "$patient.firstName")
 							.append("localPatientName", "$patient.localPatientName")
@@ -475,7 +476,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("createdTime", "$patient.createdTime").append("updatedTime", "$patient.updatedTime")
 							.append("createdBy", "$patient.createdBy").append("visitedTime", "$visitedTime")));
 
-			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("patientId", "$patientId"))
 							.append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
@@ -513,32 +514,32 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.group("$patientId").max("$visitedTime").as("visitedTime"),
 						new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))),
+								new Document("$sort", new BasicDBObject("visitedTime", -1))),
 						Aggregation.skip(page * size), Aggregation.limit(size),
 
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 
 						redactOperations, Aggregation.lookup("user_cl", "_id", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 						projectOperations, groupOperations, new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))));
+								new Document("$sort", new BasicDBObject("visitedTime", -1))));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.group("$patientId").max("$visitedTime").as("visitedTime"),
 						new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))),
+								new Document("$sort", new BasicDBObject("visitedTime", -1))),
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 
 						redactOperations, Aggregation.lookup("user_cl", "_id", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 						projectOperations, groupOperations, new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))));
+								new Document("$sort", new BasicDBObject("visitedTime", -1))));
 			}
 
 			List<PatientCard> patientCards = mongoTemplate
@@ -597,7 +598,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
-					redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+					redactOperations = new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
@@ -606,7 +607,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 													.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 					criteria2.and("consultantDoctorIds").is(doctorObjectId);
 				} else {
-					redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+					redactOperations = new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
@@ -615,14 +616,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					criteria2.and("doctorId").is(doctorObjectId);
 				}
 			} else {
-				redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+				redactOperations = new CustomAggregationOperation(new Document("$redact",
 						new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 								new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 								new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)))))
 										.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 			}
 
-			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("userId", "$patient.userId")
 							.append("firstName", "$patient.firstName")
 							.append("localPatientName", "$patient.localPatientName")
@@ -642,7 +643,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("createdTime", "$patient.createdTime").append("updatedTime", "$patient.updatedTime")
 							.append("createdBy", "$patient.createdBy").append("count", "$count")));
 
-			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("patientId", "$patientId"))
 							.append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
@@ -680,31 +681,31 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.group("$patientId").count().as("count"),
 						// Aggregation.project("total").and("patientId").previousOperation(),
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("count", -1))),
 						Aggregation.skip(page * size), Aggregation.limit(size),
 
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 
 						redactOperations, Aggregation.lookup("user_cl", "_id", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 						projectOperations, groupOperations,
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))));
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("count", -1))));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.group("$patientId").count().as("count"),
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("count", -1))),
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 
 						redactOperations, Aggregation.lookup("user_cl", "_id", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 						projectOperations, groupOperations,
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))));
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("count", -1))));
 			}
 
 			List<PatientCard> patientCards = mongoTemplate
@@ -1055,7 +1056,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	// aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 	// Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 	// "appointmentRequest"),
-	// new CustomAggregationOperation(new BasicDBObject("$unwind",
+	// new CustomAggregationOperation(new Document("$unwind",
 	// new BasicDBObject("path",
 	// "$appointmentRequest").append("preserveNullAndEmptyArrays",
 	// true))),
@@ -1194,7 +1195,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 
@@ -1206,7 +1207,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
@@ -1273,7 +1274,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionFirstProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
@@ -1311,7 +1312,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionGroupAggregationOperationForDrugs() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", new BasicDBObject("_id", "$_id"))
 						.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -1356,7 +1357,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionProjectAggregationOperationForDiagnosticTests() {
-		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
@@ -1389,7 +1390,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionFirstGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", new BasicDBObject("_id", "$_id"))
 						.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -1435,7 +1436,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionSecondProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project",
+		return new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
@@ -1468,7 +1469,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionSecondGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1490,7 +1491,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation clinicalNotesFirstProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
@@ -1513,7 +1514,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation clinicalNotesFirstGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1536,7 +1537,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation clinicalNotesSecondProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project",
+		return new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
@@ -1551,7 +1552,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation clinicalNotesSecondGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1574,7 +1575,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation patientTreatmentFirstProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project",
+		return new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
@@ -1616,7 +1617,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation patientTreatmentFirstGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 				.append("patientId", new BasicDBObject("$first", "$patientId"))
 				.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1658,7 +1659,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation patientTreatmentSecondProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project",
+		return new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
@@ -1692,7 +1693,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation patientTreatmentSecondGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1715,7 +1716,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation recordsProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
@@ -1746,7 +1747,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation recordsGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1790,10 +1791,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject(
+							new CustomAggregationOperation(new Document(
 									"$unwind",
 									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -3407,10 +3408,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject(
+							new CustomAggregationOperation(new Document(
 									"$unwind",
 									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -3526,7 +3527,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 									true))),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));

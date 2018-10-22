@@ -14,6 +14,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -576,7 +577,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("updatedTime").gte(new Date(from));
 			}
 
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first", "$patientId"))
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -614,7 +615,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "dentalImagingLocationId", "_id", "location"),
 						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
@@ -623,7 +624,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("services"),
 						Aggregation.lookup("location_cl", "dentalImagingLocationId", "_id", "location"),
 						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
@@ -985,7 +986,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
 					Aggregation.lookup("dental_diagnostic_service_cl", "dentalDiagnosticServiceId", "_id", "service"),
 					Aggregation.unwind("service"), Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", "$locationId")
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("location", new BasicDBObject("$first", "$location"))
@@ -1608,14 +1609,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalImagingLocationId", "_id", "dentalImagingLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalImagingLab")
 										.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -1624,14 +1625,14 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalImagingLocationId", "_id", "dentalImagingLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalImagingLab")
 										.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
@@ -1690,7 +1691,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("invoiceDate").lte(end);
 			}
 
-			CustomAggregationOperation customAggregationOperation = new CustomAggregationOperation(new BasicDBObject(
+			CustomAggregationOperation customAggregationOperation = new CustomAggregationOperation(new Document(
 					"$group",
 					new BasicDBObject("_id", "$id").append("totalCost", new BasicDBObject("$sum", "$totalCost"))));
 
@@ -2098,7 +2099,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			switch (SearchType.valueOf(searchType.toUpperCase())) {
 			case DAILY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("day", new BasicDBObject("$first", "$day"))
@@ -2112,7 +2113,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			case WEEKLY: {
 
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
 										.append("day", new BasicDBObject("$first", "$day"))
@@ -2126,7 +2127,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			case MONTHLY: {
 
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 								.append("day", new BasicDBObject("$first", "$day"))
 								.append("city", new BasicDBObject("$first", "$city"))
@@ -2139,7 +2140,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 			case YEARLY: {
 
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 								.append("day", new BasicDBObject("$first", "$day"))
 								.append("city", new BasicDBObject("$first", "$city"))
@@ -2299,7 +2300,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					Fields.field("dentalImaging.invoiceId", "$invoiceId"),
 					Fields.field("dentalImaging.isVisited", "$isVisited")));
 
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$dentalImaging.doctorId")
 							.append("doctorId", new BasicDBObject("$first", "$dentalImaging.doctorId"))
 							.append("doctor", new BasicDBObject("$first", "$dentalImaging.doctor"))
@@ -2396,7 +2397,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					Fields.field("dentalImaging.invoiceId", "$invoiceId"),
 					Fields.field("dentalImaging.isVisited", "$isVisited")));
 
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$dentalImaging.doctorId")
 							.append("doctorId", new BasicDBObject("$first", "$dentalImaging.doctorId"))
 							.append("doctor", new BasicDBObject("$first", "$dentalImaging.doctor"))

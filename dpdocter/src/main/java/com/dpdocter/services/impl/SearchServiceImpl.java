@@ -1,7 +1,6 @@
 package com.dpdocter.services.impl;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +13,8 @@ import java.util.Set;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.lucene.search.join.ScoreMode;
+import org.bson.Document;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -25,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -39,7 +36,6 @@ import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
-import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
@@ -583,20 +579,20 @@ public class SearchServiceImpl implements SearchService {
 												"location.city").is(city)),
 										Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 										Aggregation.unwind("doctor"), Aggregation.unwind("doctor.specialities"),
-										new CustomAggregationOperation(new BasicDBObject("$group",
+										new CustomAggregationOperation(new Document("$group",
 												new BasicDBObject("_id", "$doctor.specialities").append("count",
 														new BasicDBObject("$sum", 1)))),
 										Aggregation.lookup("speciality_cl", "_id", "_id", "speciality"),
 										Aggregation.unwind("speciality"),
-										new CustomAggregationOperation(new BasicDBObject("$project",
+										new CustomAggregationOperation(new Document("$project",
 												new BasicDBObject("fields.key", "$speciality.speciality")
 														.append("fields.value", "$count")
 														.append("resourceType",
 																new BasicDBObject("$concat", Arrays.asList("DOCTOR")))
 														.append("totalCount", "$count"))),
-										new CustomAggregationOperation(new BasicDBObject("$sort",
+										new CustomAggregationOperation(new Document("$sort",
 												new BasicDBObject("fields.value", -1))),
-										new CustomAggregationOperation(new BasicDBObject("$group",
+										new CustomAggregationOperation(new Document("$group",
 												new BasicDBObject("_id", "$resourceType")
 														.append("resourceType",
 																new BasicDBObject("$first", "$resourceType"))

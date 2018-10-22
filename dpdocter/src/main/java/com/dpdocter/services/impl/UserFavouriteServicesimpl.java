@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -108,7 +109,7 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 					Aggregation.lookup("location_cl", "locationId", "_id", "lab"), Aggregation.unwind("lab"),
 					Aggregation.lookup("doctor_clinic_profile_cl", "resourceId", "doctorId", "clinicProfileCollection"),
 					Aggregation.unwind("clinicProfileCollection"),
-					new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+					new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
 							new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$clinicProfileCollection.locationId", "$locationId")))
 							.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 					Aggregation.sort(new Sort(Direction.DESC, "updatedTime")),
@@ -119,7 +120,7 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 						Aggregation.lookup("user_cl", "resourceId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "lab"), Aggregation.unwind("lab"),
 						Aggregation.lookup("doctor_clinic_profile_cl", "resourceId", "doctorId", "clinicProfileCollection"), Aggregation.unwind("clinicProfileCollection"),
-						new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+						new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
 								new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$clinicProfileCollection.locationId", "$locationId")))
 								.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")));

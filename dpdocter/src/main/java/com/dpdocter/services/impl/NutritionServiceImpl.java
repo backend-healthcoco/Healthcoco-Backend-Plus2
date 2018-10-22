@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -948,7 +949,7 @@ public class NutritionServiceImpl implements NutritionService {
 		try {
 			Aggregation aggregation = null;
 
-			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("nutritionPlan.title", "$title").append("nutritionPlan._id", "$_id")
 							.append("nutritionPlan.id", "$_id")
 							.append("nutritionPlan.planImage", new BasicDBObject("$cond",
@@ -976,7 +977,7 @@ public class NutritionServiceImpl implements NutritionService {
 							.append("nutritionPlan.updatedTime", "$updatedTime")
 							.append("nutritionPlan.createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$category").append("category", new BasicDBObject("$first", "$category"))
 							.append("rank", new BasicDBObject("$first", "$rank"))
 							.append("nutritionPlan", new BasicDBObject("$push", "$nutritionPlan"))));

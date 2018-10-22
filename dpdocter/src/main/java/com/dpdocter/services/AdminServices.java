@@ -33,4 +33,6 @@ public interface AdminServices {
 	Boolean copyClinicalItems(String doctorId, String locationId, List<String> drIds);
 
 	Boolean updateLocationIdInRole();
+
+	void importLandmarkLocality();
 }

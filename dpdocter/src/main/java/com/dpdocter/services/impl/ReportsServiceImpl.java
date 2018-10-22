@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -939,11 +940,11 @@ public class ReportsServiceImpl implements ReportsService {
 									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 									Aggregation.unwind("location"),
 									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$patientCollection")
 													.append("preserveNullAndEmptyArrays", true))),
 									new CustomAggregationOperation(
-											new BasicDBObject("$redact",
+											new Document("$redact",
 													new BasicDBObject("$cond",
 															new BasicDBObject("if", new BasicDBObject("$eq",
 																	Arrays.asList("$patientCollection.locationId",
@@ -1192,10 +1193,10 @@ public class ReportsServiceImpl implements ReportsService {
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patientCollection.locationId", "$locationId")))

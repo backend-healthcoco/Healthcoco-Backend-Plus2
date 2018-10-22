@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -302,7 +303,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 			
 			if (!discarded)criteria.and("discarded").is(discarded);
 			
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 					.append("doctorId", "$doctorId")
 					.append("locationId", "$locationId")
 					.append("hospitalId", "$hospitalId")
@@ -319,7 +320,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("updatedTime", "$updatedTime")
 					.append("createdBy", "$createdBy")));
 			
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 					.append("locationId", new BasicDBObject("$first", "$locationId"))
 					.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -341,7 +342,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -356,7 +357,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -416,7 +417,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					Aggregation.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(certificateId))),
 							Aggregation.lookup("patient_cl","patientId", "userId", "patientCollection"),
 							Aggregation.unwind("patientCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$redact", 
+							new CustomAggregationOperation(new Document("$redact", 
 									new BasicDBObject("$cond",
 											new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patientCollection.locationId", "$locationId")))
 											.append("then", "$$KEEP")

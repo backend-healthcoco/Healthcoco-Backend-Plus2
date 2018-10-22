@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -549,10 +550,10 @@ public class FeedbackServiceImpl implements FeedbackService {
 			{
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointment"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointment").append("preserveNullAndEmptyArrays", true))),Aggregation.match(criteria),
 						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
@@ -562,10 +563,10 @@ public class FeedbackServiceImpl implements FeedbackService {
 			{
 				aggregation = Aggregation.newAggregation(
 				Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
-				new CustomAggregationOperation(new BasicDBObject("$unwind",
+				new CustomAggregationOperation(new Document("$unwind",
 						new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
 				Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointment"),
-				new CustomAggregationOperation(new BasicDBObject("$unwind",
+				new CustomAggregationOperation(new Document("$unwind",
 						new BasicDBObject("path", "$appointment").append("preserveNullAndEmptyArrays", true))),Aggregation.match(criteria),
 				Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}

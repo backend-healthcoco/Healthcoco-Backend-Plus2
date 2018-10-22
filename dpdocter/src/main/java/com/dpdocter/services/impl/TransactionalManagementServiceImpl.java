@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -804,18 +805,18 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.and("locationAppointments.fromDate").gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
 							
 							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"), 
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$doctor")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
 									new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
 									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("locationId", "$locationId")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("locationId", "$locationId")
 									.append("userId", "$userId")
 									.append("locationAdminName", "$locationAdmin.firstName")
 									.append("locationAdminMobileNumber", "$locationAdmin.mobileNumber")
@@ -828,7 +829,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.append("drAppointments.doctorId", "$locationAppointments.doctorId")
 									)),
 							
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$locationId")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$locationId")
 									.append("locationId", new BasicDBObject("$first","$locationId"))
 									.append("userId", new BasicDBObject("$first","$userId"))
 									.append("locationAdminName", new BasicDBObject("$first","$locationAdminName"))
@@ -839,7 +840,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.append("drAppointments", new BasicDBObject("$addToSet","$drAppointments"))
 									)),
 							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
 							);
 					
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
@@ -1057,18 +1058,18 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.and("locationAppointments.fromDate").gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
 							
 							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"), 
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$doctor")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
 									new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
 									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("locationId", "$locationId")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("locationId", "$locationId")
 									.append("userId", "$userId")
 									.append("locationAdminName", "$receptionist.firstName")
 									.append("locationAdminMobileNumber", "$receptionist.mobileNumber")
@@ -1081,7 +1082,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.append("drAppointments.doctorId", "$locationAppointments.doctorId")
 									)),
 							
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$locationId")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$locationId")
 									.append("locationId", new BasicDBObject("$first","$locationId"))
 									.append("userId", new BasicDBObject("$first","$userId"))
 									.append("locationAdminName", new BasicDBObject("$first","$locationAdminName"))
@@ -1092,7 +1093,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.append("drAppointments", new BasicDBObject("$addToSet","$drAppointments"))
 									)),
 							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
 							);
 					
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate

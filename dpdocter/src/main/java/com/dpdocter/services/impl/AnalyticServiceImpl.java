@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.collections.PatientGroupCollection;
-import com.dpdocter.enums.IncomeAnalyticType;
 import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
@@ -74,7 +74,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("day", "$day").append("month", "$month").append("year",
 													"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -90,7 +90,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -105,7 +105,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 
 				case MONTHLY: {
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("month", "$month").append("year", "$year"))
 													.append("day", new BasicDBObject("$first", "$day"))
@@ -119,7 +119,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("month", new BasicDBObject("$first", "$month"))
@@ -167,7 +167,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
 											.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
@@ -181,7 +181,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				}
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
 											.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
@@ -195,7 +195,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("month", "$month").append("year", "$year").append("city",
 											"$city")).append("day", new BasicDBObject("$first", "$day"))
@@ -209,7 +209,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year").append("city", "$city"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("month", new BasicDBObject("$first", "$month"))
@@ -259,7 +259,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				case DAILY: {
 
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("day", "$day").append("month", "$month").append("year",
 													"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -274,7 +274,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -290,7 +290,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				case MONTHLY: {
 
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("month", "$month").append("year", "$year"))
 													.append("day", new BasicDBObject("$first", "$day"))
@@ -304,7 +304,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("month", new BasicDBObject("$first", "$month"))
@@ -354,7 +354,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
 											.append("groupId", "$groupId"))
@@ -371,7 +371,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
 											.append("groupId", "$groupId"))
@@ -388,7 +388,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 
 				case MONTHLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("month", "$month").append("year", "$year").append("groupId",
 											"$groupId")).append("day", new BasicDBObject("$first", "$day"))
@@ -405,7 +405,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				case YEARLY: {
 
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("year", "$year").append("groupId", "$groupId"))
 													.append("day", new BasicDBObject("$first", "$day"))
@@ -463,7 +463,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("day", "$day").append("month", "$month").append("year",
 													"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -481,7 +481,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				case WEEKLY: {
 
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("week", "$week").append("month", "$month").append("year",
 													"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -497,7 +497,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 
 				case MONTHLY: {
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("month", "$month").append("year", "$year"))
 													.append("day", new BasicDBObject("$first", "$day"))
@@ -512,7 +512,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("city", new BasicDBObject("$first", "$city"))
@@ -568,7 +568,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("day", "$day").append("month", "$month").append("year",
 													"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -584,7 +584,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
 											.append("groupId", "$groupId"))
@@ -600,7 +600,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				case MONTHLY: {
 
 					aggregationOperation = new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("month", "$month").append("year", "$year"))
 													.append("day", new BasicDBObject("$first", "$day"))
@@ -614,7 +614,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("city", new BasicDBObject("$first", "$city"))

@@ -15,6 +15,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1400,20 +1401,20 @@ public class BillingServiceImpl implements BillingService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$invoice").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("doctor_patient_receipt_cl", "receiptId", "_id", "receipt"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$receipt").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.skip((page) * size), Aggregation.limit(size),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$invoice").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("doctor_patient_receipt_cl", "receiptId", "_id", "receipt"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$receipt").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
@@ -2100,12 +2101,12 @@ public class BillingServiceImpl implements BillingService {
 			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
 							Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$invoiceCollection").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -2273,12 +2274,12 @@ public class BillingServiceImpl implements BillingService {
 			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
 							Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$invoiceCollection").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))

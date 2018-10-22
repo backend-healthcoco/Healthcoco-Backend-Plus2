@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -114,7 +115,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
 							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 							Aggregation.match(new Criteria().orOperator(
@@ -122,22 +123,22 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									new Criteria("patientGroupCollections").size(0))),
 							
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$patientGroupCollections")
+									new Document("$unwind", new BasicDBObject("path", "$patientGroupCollections")
 											.append("preserveNullAndEmptyArrays", true))),
 									
 							
 							Aggregation.lookup("group_cl", "patientGroupCollections.groupId", "_id", "groups"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$groups")
+									new Document("$unwind", new BasicDBObject("path", "$groups")
 											.append("preserveNullAndEmptyArrays", true))),
 							
 							
 							Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$reference")
+									new Document("$unwind", new BasicDBObject("path", "$reference")
 											.append("preserveNullAndEmptyArrays", true))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 									.append("PID", "$PID")
 									.append("localPatientName", "$localPatientName")
 									.append("mobileNumber", "$user.mobileNumber")
@@ -160,7 +161,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("referredBy", "$reference.reference")
 									.append("groups", "$groups.name"))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 									.append("PID", new BasicDBObject("$first","$PID"))
 									.append("localPatientName", new BasicDBObject("$first","$localPatientName"))
 									.append("mobileNumber", new BasicDBObject("$first","$mobileNumber"))

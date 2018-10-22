@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -224,7 +225,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		if (sortByFirstName) {
 
-			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("_id", "$_id").append("userId", "$userId").append("firstName", "$firstName")
 							.append("localPatientName", "$localPatientName")
 							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
@@ -245,7 +246,7 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("id", "$_id").append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
 							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
@@ -284,13 +285,13 @@ public class ContactsServiceImpl implements ContactsService {
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						projectOperations, groupOperations,
 						new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
+								new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						projectOperations, groupOperations, new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))));
+								new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))));
 		} else {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),

@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1284,7 +1285,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -1432,7 +1433,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName, "i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -1679,7 +1680,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName, "i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -2169,7 +2170,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -2356,7 +2357,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -3069,7 +3070,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 		Boolean response = false;
 		try {
 			List<TreatmentServiceUpdateResponse> treatmentServiceUpdateResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$group",  
+					Aggregation.newAggregation(new CustomAggregationOperation(new Document("$group",  
 							new BasicDBObject("_id", new BasicDBObject("name", "$name")
 									                .append("locationId", "$locationId"))
 							.append("count", new BasicDBObject("$sum", 1))

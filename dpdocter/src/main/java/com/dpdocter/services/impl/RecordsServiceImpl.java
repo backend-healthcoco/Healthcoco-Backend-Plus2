@@ -15,6 +15,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1879,7 +1880,7 @@ public class RecordsServiceImpl implements RecordsService {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("mobileNumber")
 								.is(mobileNumber)),
-						new CustomAggregationOperation(new BasicDBObject("$redact",
+						new CustomAggregationOperation(new Document("$redact",
 								new BasicDBObject("$cond",
 										new BasicDBObject()
 												.append("if",

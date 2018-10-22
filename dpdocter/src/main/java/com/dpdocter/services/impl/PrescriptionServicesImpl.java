@@ -33,6 +33,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -822,19 +823,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("updatedTime", "$updatedTime")));
 
 			Aggregation aggregation = Aggregation.newAggregation(
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
 					Aggregation.match(criteria),
 					Aggregation.lookup("drug_cl", "items.drugId", "_id",
 							"drug"),
 					new CustomAggregationOperation(
-							new BasicDBObject("$unwind",
+							new Document("$unwind",
 									new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex",
 													"arrayIndex2"))),
 					projectList,
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1010,7 +1011,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id",
 										"diagnosticTest"),
 								Aggregation.unwind("diagnosticTest"),
-								new CustomAggregationOperation(new BasicDBObject("$project",
+								new CustomAggregationOperation(new Document("$project",
 										new BasicDBObject("test", "$diagnosticTest").append("recordId",
 												"$diagnosticTests.recordId")))),
 						PrescriptionCollection.class, TestAndRecordDataResponse.class).getMappedResults();
@@ -1456,7 +1457,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
@@ -1464,18 +1465,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$visit")
 												.append("preserveNullAndEmptyArrays",
 														true))),
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1503,7 +1504,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			} else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
@@ -1511,18 +1512,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$visit")
 												.append("preserveNullAndEmptyArrays",
 														true))),
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1628,22 +1629,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
 					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex3"))),
 					new CustomAggregationOperation(
-							new BasicDBObject("$unwind",
+							new Document("$unwind",
 									new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex",
 													"arrayIndex5"))),
 					projectList,
 					new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id", "$_id")
 											.append("name", new BasicDBObject("$first", "$name"))
 											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
@@ -1739,19 +1740,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.match(criteria),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id",
 								"drug"),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex",
 														"arrayIndex2"))),
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1769,16 +1770,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			else
 				aggregation = Aggregation.newAggregation(
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.match(criteria), Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex2"))),
 						projectList,
 
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2212,26 +2213,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("_id").is(new ObjectId(prescriptionId))),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
 					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 					new CustomAggregationOperation(
-							new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
+							new Document("$unwind", new BasicDBObject("path", "$appointmentRequest")
 									.append("preserveNullAndEmptyArrays", true))),
 
 					new CustomAggregationOperation(
-							new BasicDBObject("$unwind",
+							new Document("$unwind",
 									new BasicDBObject("path", "$visit")
 											.append("preserveNullAndEmptyArrays",
 													true))),
 					projectList,
 					new CustomAggregationOperation(
-							new BasicDBObject("$group",
+							new Document("$group",
 									new BasicDBObject("_id", "$_id")
 											.append("name", new BasicDBObject("$first", "$name"))
 											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
@@ -3309,24 +3310,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex", "arrayIndex1"))),
 							Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 							Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 							Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$visit")
 													.append("preserveNullAndEmptyArrays",
 															true))),
 							projectList,
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -3354,25 +3355,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 				} else
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex", "arrayIndex1"))),
 							Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 							Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 
 							Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$visit")
 													.append("preserveNullAndEmptyArrays",
 															true))),
 							projectList,
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -4370,19 +4371,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("isActive").is(true).and("items").exists(true).and("patientId")
 							.is(patientObjectId)),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
 					Aggregation
 							.lookup("drug_cl", "items.drugId", "_id",
 									"drug"),
 					new CustomAggregationOperation(
-							new BasicDBObject("$unwind",
+							new Document("$unwind",
 									new BasicDBObject("path", "$drug")
 											.append("preserveNullAndEmptyArrays",
 													true))),
 					projectList,
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 									.append("locationId", new BasicDBObject("$first", "$locationId"))

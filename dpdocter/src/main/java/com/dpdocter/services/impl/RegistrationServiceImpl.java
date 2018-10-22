@@ -21,6 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -1293,14 +1294,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.is(userObjectId);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 					Aggregation.match(
 							new Criteria().orOperator(new Criteria("patientGroupCollections.discarded").is(false),
 									new Criteria("patientGroupCollections").size(0))),
 					Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays", true))));
 
 			List<PatientCollectionResponse> patientCollectionResponses = mongoTemplate
@@ -2661,7 +2662,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 
-			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("isActivate", new BasicDBObject("$first", "$isActivate"))
@@ -3168,11 +3169,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_cl", "userId", "userId", "patientCard"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$patientCard")
 												.append("preserveNullAndEmptyArrays", true))),
 								Aggregation.lookup("user_cl", "userId", "_id", "user"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 								Aggregation.match(patientCriteria), projectList, Aggregation.skip((page) * size),
 								Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
@@ -3181,11 +3182,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_cl", "userId", "userId", "patientCard"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$patientCard")
 												.append("preserveNullAndEmptyArrays", true))),
 								Aggregation.lookup("user_cl", "userId", "_id", "user"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 								Aggregation.match(patientCriteria), projectList,
 								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
@@ -3756,14 +3757,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.aggregate(
 							Aggregation.newAggregation(Aggregation.match(new Criteria("PID").ne(null)),
 									Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
-									new CustomAggregationOperation(new BasicDBObject(
+									new CustomAggregationOperation(new Document(
 											"$group",
 											new BasicDBObject("_id",
 													new BasicDBObject("locationId", "$locationId")
 															.append("PID", "$PID")).append("count",
 																	new BasicDBObject("$sum", 1)))),
 									new CustomAggregationOperation(
-											new BasicDBObject("$project",
+											new Document("$project",
 													new BasicDBObject("locationId", "$locationId").append("PID", "$PID")
 															.append("keep", new BasicDBObject("$cond",
 																	new BasicDBObject("if",
@@ -4085,7 +4086,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							.aggregate(Aggregation.newAggregation(
 									Aggregation.match(new Criteria("mobileNumber").is(request.getMobileNumber())),
 
-									new CustomAggregationOperation(new BasicDBObject("$redact",
+									new CustomAggregationOperation(new Document("$redact",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if",
 															new BasicDBObject("$ne",
@@ -4104,7 +4105,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 													Aggregation
 															.lookup("user_cl", "mobileNumber", "mobileNumber", "user"),
 													Aggregation.unwind("user"),
-													new CustomAggregationOperation(new BasicDBObject("$redact",
+													new CustomAggregationOperation(new Document("$redact",
 															new BasicDBObject("$cond",
 																	new BasicDBObject("if", new BasicDBObject("$ne",
 																			Arrays.asList("$user.emailAddress",
@@ -4112,7 +4113,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 																							.append("then", "$$KEEP")
 																							.append("else",
 																									"$$PRUNE")))),
-													new CustomAggregationOperation(new BasicDBObject("$project",
+													new CustomAggregationOperation(new Document("$project",
 															new BasicDBObject("id", "user.id")))),
 									UserCollection.class, UserCollection.class)
 							.getMappedResults();

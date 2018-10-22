@@ -15,6 +15,7 @@ import java.util.TimeZone;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1077,7 +1078,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			 * criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to))); }
 			 */
 
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first", "$patientId"))
 							.append("patientName", new BasicDBObject("$first", "$patientName"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
@@ -1132,7 +1133,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			 * String processStatus;
 			 */
 
-//			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject(
+//			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new Document(
 //					"$group",
 //					new BasicDBObject("uniqueWorkId", "$uniqueWorkId")
 //							.append("dentalWork", new BasicDBObject("$first", "$dentalWork"))
@@ -1175,14 +1176,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("dentalWorksSamples"),
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.match(criteria), aggregationOperation,
@@ -1192,14 +1193,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("dentalWorksSamples"),
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.match(criteria), aggregationOperation,
@@ -1827,7 +1828,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"),
 					Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(criteria));
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1888,13 +1889,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(criteria));
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -3084,13 +3085,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -3099,14 +3100,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
@@ -3170,11 +3171,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -3182,10 +3183,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 

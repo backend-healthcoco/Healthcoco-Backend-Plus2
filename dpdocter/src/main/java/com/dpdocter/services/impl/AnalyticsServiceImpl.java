@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -173,10 +174,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							Aggregation.unwind("prescription"), Aggregation.unwind("prescription.items"),
 							Aggregation.lookup("drug_cl", "doctorId", "doctorId", "totalCount"),
 							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
-							new CustomAggregationOperation(new BasicDBObject("$project",
+							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("totalCount", "$totalCount").append("itemId",
 											"$prescription.items.drugId"))),
-							new CustomAggregationOperation(new BasicDBObject(
+							new CustomAggregationOperation(new Document(
 									"$group",
 									new BasicDBObject(
 											"_id",
@@ -184,7 +185,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 													.append("name", new BasicDBObject("$first", "$totalCount.drugName"))
 													.append("totalCount", new BasicDBObject("$sum", 1)))),
 
-							new CustomAggregationOperation(new BasicDBObject("$project",
+							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("name", "$name").append("totalCount",
 											new BasicDBObject("$cond", new BasicDBObject("$if", new BasicDBObject("$eq",
 													new Object[] { new BasicDBObject("$itemId", "totalCount._id") })
@@ -198,17 +199,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							Aggregation.lookup("drug_cl", "doctorId", "doctorId", "totalCount"),
 							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
 
-							new CustomAggregationOperation(new BasicDBObject("$project",
+							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("totalCount", "$totalCount").append("itemId",
 											"$prescription.items.drugId"))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("drugId", "$totalCount._id").append("itemId", "$itemId"))
 													.append("itemId", new BasicDBObject("$first", "$itemId"))
 													.append("drug", new BasicDBObject("$first", "$totalCount"))
 													.append("Count", new BasicDBObject("$sum", 1)))),
 
-							new CustomAggregationOperation(new BasicDBObject("$project",
+							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("name", "$drug.drugName").append("totalCount",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("itemId", "$drug._id"))
@@ -231,15 +232,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.unwind("diagnosticTests"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$group", new BasicDBObject("_id", "$diagnosticTests.testId"))
+									new Document("$group", new BasicDBObject("_id", "$diagnosticTests.testId"))
 											.append("itemId", new BasicDBObject("$first", "$diagnosticTests.testId"))),
 
 							Aggregation.lookup("diagnostic_test_cl", "doctorid", "doctorid", "totalCount"),
 
 							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
 
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "$totalCount._id")
+							new CustomAggregationOperation(new Document("$group",
+									new Document("_id", "$totalCount._id")
 											.append("name", new BasicDBObject("$first", "$totalCount.testName"))
 
 											.append("totalCount", new BasicDBObject("$sum",
@@ -253,14 +254,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.unwind("diagnosticTests"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$group", new BasicDBObject("_id", "$diagnosticTests.testId"))
+									new Document("$group", new BasicDBObject("_id", "$diagnosticTests.testId"))
 											.append("itemId", new BasicDBObject("$first", "$diagnosticTests.testId"))),
 
 							Aggregation.lookup("diagnostic_test_cl", "doctorid", "doctorid", "totalCount"),
 
 							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
 
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", "$totalCount._id")
 											.append("name", new BasicDBObject("$first", "$totalCount.testName"))
 
@@ -328,7 +329,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 //							.and("totalPrescription.hospitalId").is(new ObjectId(hospitalId))),
 //					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "totalPrescriptionCreated"),
 //
-//					new CustomAggregationOperation(new BasicDBObject("$group",
+//					new CustomAggregationOperation(new Document("$group",
 //							new BasicDBObject("_id", "$_id")
 //									.append("totalPrescriptionCreated",
 //											new BasicDBObject("$first", "$totalPrescriptionCreated"))
@@ -340,7 +341,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 //							.and("totalPrescriptionCreated.hospitalId").is(new ObjectId(hospitalId))
 //							.and("totalPrescriptionCreated.adminCreatedTime").gte(fromTime).lte(toTime)),
 //
-//					new CustomAggregationOperation(new BasicDBObject("$group",
+//					new CustomAggregationOperation(new Document("$group",
 //							new BasicDBObject("_id", "$_id")
 //									.append("totalPrescription", new BasicDBObject("$first", "$totalPrescription"))
 //									.append("totalPrescriptionCreated", new BasicDBObject("$sum", 1)))));
@@ -477,7 +478,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"),
-						new CustomAggregationOperation(new BasicDBObject("$redact",
+						new CustomAggregationOperation(new Document("$redact",
 								new BasicDBObject("$cond",
 										new BasicDBObject()
 												.append("if",
@@ -486,7 +487,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		"$createdTime")))
 												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))
+						new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")))
 
 				);
 				appointmentCount = mongoTemplate
@@ -587,7 +588,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"), Aggregation.unwind("visit"),
 					Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
+					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id"))));
 			total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
 					.getMappedResults().size();
 			data.setTotalVisitedPatient(total);
@@ -654,7 +655,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
 								new CustomAggregationOperation(
-										new BasicDBObject("$group",
+										new Document("$group",
 												new BasicDBObject("_id", "$treatments.treatmentServiceId")
 														.append("treatmentServiceId",
 																new BasicDBObject("$first",
@@ -682,7 +683,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
 								new CustomAggregationOperation(
-										new BasicDBObject("$group",
+										new Document("$group",
 												new BasicDBObject("_id", "$treatments.treatmentServiceId")
 														.append("treatmentServiceId",
 																new BasicDBObject("$first",
@@ -809,7 +810,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
@@ -824,7 +825,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -838,7 +839,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("month", new BasicDBObject("$first", "$month"))
@@ -851,7 +852,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("month", new BasicDBObject("$first", "$month"))
@@ -900,7 +901,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
 											.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
@@ -914,7 +915,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
 											.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
@@ -928,7 +929,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("month", "$month").append("year", "$year").append("city",
 											"$city")).append("day", new BasicDBObject("$first", "$day"))
@@ -942,7 +943,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year").append("city", "$city"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("month", new BasicDBObject("$first", "$month"))
@@ -991,7 +992,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
@@ -1005,7 +1006,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -1020,7 +1021,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case MONTHLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("month", new BasicDBObject("$first", "$month"))
@@ -1033,7 +1034,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("month", new BasicDBObject("$first", "$month"))
@@ -1084,7 +1085,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
 											.append("groupId", "$groupId"))
@@ -1101,7 +1102,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
 											.append("groupId", "$groupId"))
@@ -1118,7 +1119,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case MONTHLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("month", "$month").append("year", "$year").append("groupId",
 											"$groupId")).append("day", new BasicDBObject("$first", "$day"))
@@ -1134,7 +1135,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year").append("groupId", "$groupId"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("city", new BasicDBObject("$first", "$city"))
@@ -1189,7 +1190,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
@@ -1205,7 +1206,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -1219,7 +1220,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("city", new BasicDBObject("$first", "$city"))
@@ -1233,7 +1234,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("city", new BasicDBObject("$first", "$city"))
@@ -1288,7 +1289,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
@@ -1302,7 +1303,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
 											.append("groupId", "$groupId"))
@@ -1317,7 +1318,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case MONTHLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("city", new BasicDBObject("$first", "$city"))
@@ -1330,7 +1331,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("city", new BasicDBObject("$first", "$city"))
@@ -1455,7 +1456,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
@@ -1468,7 +1469,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case WEEKLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -1481,7 +1482,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("tests", new BasicDBObject("$push", "$tests"))
@@ -1491,7 +1492,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					break;
 				}
 				case YEARLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("tests", new BasicDBObject("$push", "$tests"))
@@ -1506,7 +1507,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					break;
 				}
 			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("day", new BasicDBObject("$first", "$day"))
@@ -1520,12 +1521,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.unwind("$diagnosticTests"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$diagnosticTests.testId")
 										.append("count", new BasicDBObject("$sum", 1))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
 						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
-						new CustomAggregationOperation(new BasicDBObject("$project",
+						new CustomAggregationOperation(new Document("$project",
 								new BasicDBObject("tests.locationId", "$test.locationId").append("tests.id", "$test.id")
 										.append("tests.hospitalId", "$test.hospitalId")
 										.append("tests.testName", "$test.testName")
@@ -1545,12 +1546,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.unwind("$diagnosticTests"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$diagnosticTests.testId")
 										.append("count", new BasicDBObject("$sum", 1))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
 						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
-						new CustomAggregationOperation(new BasicDBObject("$project",
+						new CustomAggregationOperation(new Document("$project",
 								new BasicDBObject("tests.locationId", "$test.locationId").append("tests.id", "$test.id")
 										.append("tests.hospitalId", "$test.hospitalId")
 										.append("tests.testName", "$test.testName")
@@ -1613,7 +1614,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
@@ -1626,7 +1627,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case WEEKLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("day", new BasicDBObject("$first", "$day"))
@@ -1639,7 +1640,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("drugs", new BasicDBObject("$push", "$drugs"))
@@ -1649,7 +1650,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					break;
 				}
 				case YEARLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
 									.append("drugs", new BasicDBObject("$push", "$drugs"))
@@ -1664,7 +1665,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					break;
 				}
 			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("day", new BasicDBObject("$first", "$day"))
@@ -1676,11 +1677,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$items"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$items.drugId").append("count", new BasicDBObject("$sum", 1))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
 						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
-						new CustomAggregationOperation(new BasicDBObject("$project",
+						new CustomAggregationOperation(new Document("$project",
 								new BasicDBObject("drugs.locationId", "$drug.locationId")
 										.append("drugs.hospitalId", "$drug.hospitalId").append("drugs.id", "$drug.id")
 										.append("drugs.doctorId", "$drug.doctorId")
@@ -1708,11 +1709,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$items"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$items.drugId").append("count", new BasicDBObject("$sum", 1))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime")))),
 						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
-						new CustomAggregationOperation(new BasicDBObject("$project",
+						new CustomAggregationOperation(new Document("$project",
 								new BasicDBObject("drugs.locationId", "$drug.locationId").append("drugs.id", "$drug.id")
 										.append("drugs.hospitalId", "$drug.hospitalId")
 										.append("drugs.doctorId", "$drug.doctorId")
@@ -1783,12 +1784,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.unwind("$diagnosticTests"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$diagnosticTests.testId").append("count",
 										new BasicDBObject("$sum", 1)))),
 						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
 
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$_id")
 										.append("locationId", new BasicDBObject("$first", "$test.locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$test.hospitalId"))
@@ -1807,11 +1808,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.unwind("$diagnosticTests"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("_id", "$diagnosticTests.testId").append("count",
 										new BasicDBObject("$sum", 1)))),
 						Aggregation.lookup("diagnostic_test_cl", "_id", "_id", "test"), Aggregation.unwind("test"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$_id")
 										.append("locationId", new BasicDBObject("$first", "$test.locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$test.hospitalId"))
@@ -1876,7 +1877,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.group("$items.drugId").count().as("count"),
 						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
 
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$_id")
 										.append("locationId", new BasicDBObject("$first", "$drug.locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$drug.hospitalId"))
@@ -1905,7 +1906,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.group("$items.drugId").count().as("count"),
 						Aggregation.lookup("drug_cl", "_id", "_id", "drug"), Aggregation.unwind("drug"),
 
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$_id")
 										.append("locationId", new BasicDBObject("$first", "$drug.locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$drug.hospitalId"))
@@ -1989,15 +1990,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_queue_cl", "appointmentId", "appointmentId", "patientQueue"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patientQueue")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 									.append("date", new BasicDBObject("$first", "$fromDate"))
 									.append("fromTime", new BasicDBObject("$first", "$time.fromTime"))
 									.append("waitedFor", new BasicDBObject("$max", "$patientQueue.waitedFor"))
@@ -2014,15 +2015,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_queue_cl", "appointmentId", "appointmentId", "patientQueue"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patientQueue")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 									.append("date", new BasicDBObject("$first", "$fromDate"))
 									.append("fromTime", new BasicDBObject("$first", "$time.fromTime"))
 									.append("waitedFor", new BasicDBObject("$max", "$patientQueue.waitedFor"))
@@ -2109,7 +2110,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
@@ -2121,7 +2122,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year"))
@@ -2135,7 +2136,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
 									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
@@ -2145,7 +2146,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
 									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
@@ -2158,7 +2159,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					break;
 				}
 			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
@@ -2249,7 +2250,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("count", new BasicDBObject("$sum", 1))
@@ -2260,7 +2261,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("count", new BasicDBObject("$sum", 1)).append("date",
@@ -2270,7 +2271,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("count", new BasicDBObject("$sum", 1))
 									.append("date", new BasicDBObject("$first", "$fromDate"))));
@@ -2279,7 +2280,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("count", new BasicDBObject("$sum", 1))
 									.append("date", new BasicDBObject("$first", "$fromDate"))));
@@ -2291,7 +2292,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					break;
 				}
 			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("count", new BasicDBObject("$sum", 1))
@@ -2369,7 +2370,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					Aggregation.match(criteria),
 					Aggregation.lookup("appointment_cl", "patientId", "patientId", "appointment"),
 					Aggregation.unwind("appointment"), Aggregation.match(criteria2),
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("groupName", "$group.name")).append("count",
 									new BasicDBObject("$sum", 1)))));
 
@@ -2429,7 +2430,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			}
 			criteria.and("discarded").is(false);
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("uniqueInvoiceId", "$uniqueInvoiceId"))
 							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
 							.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
@@ -2443,7 +2444,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
 						Aggregation.unwind("patient"), Aggregation.match(criteria2),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject(
+						new CustomAggregationOperation(new Document("$project", new BasicDBObject(
 								"resultantDiscount",
 								new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 										Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
@@ -2479,7 +2480,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
 						Aggregation.unwind("patient"), Aggregation.match(criteria2),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject(
+						new CustomAggregationOperation(new Document("$project", new BasicDBObject(
 								"resultantDiscount",
 								new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 										Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
@@ -2599,7 +2600,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime start, DateTime end, String doctorId, String locationId, String hospitalId) {
 		List<IncomeAnalyticsDataResponse> response = null;
 		try {
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("groupName", "$groupName"))
 							.append("count", new BasicDBObject("$sum", 1))
 							.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
@@ -2629,7 +2630,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					Aggregation.lookup("doctor_patient_invoice_cl", "patientId", "patientId", "invoice"),
 					Aggregation.unwind("invoice"), Aggregation.match(criteria2),
 					Aggregation.unwind("invoice.invoiceItems"),
-					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("resultantDiscount",
+					new CustomAggregationOperation(new Document("$project", new BasicDBObject("resultantDiscount",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 									Arrays.asList("$invoice.totalDiscount.unit", UnitType.PERCENT.name()))).append(
 											"then",
@@ -2657,7 +2658,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 													.append("groupName", "$group.name"))),
 					aggregationOperation);
 			// , Aggregation.skip(page * size), Aggregation.limit(size)
-			// new CustomAggregationOperation(new BasicDBObject("$group", new
+			// new CustomAggregationOperation(new Document("$group", new
 			// BasicDBObject("_id", new BasicDBObject("groupName",
 			// "$group.name"))
 			// .append("count", new BasicDBObject("$sum", 1)))));
@@ -2679,7 +2680,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria) {
 		List<IncomeAnalyticsDataResponse> response = null;
 		criteria.and("discarded").is(false);
-		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+		AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", new BasicDBObject("itemId", "$itemId"))
 						.append("serviceName", new BasicDBObject("$first", "$serviceName"))
 						.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
@@ -2691,7 +2692,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		Aggregation aggregation = null;
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("invoiceItems"),
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 							new BasicDBObject("resultantDiscount",
 									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
@@ -2725,7 +2726,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					Aggregation.skip(page * size), Aggregation.limit(size));
 		} else {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("invoiceItems"),
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 							new BasicDBObject("resultantDiscount",
 									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
@@ -2768,7 +2769,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria) {
 		List<IncomeAnalyticsDataResponse> response = null;
 		criteria.and("discarded").is(false);
-		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+		AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", new BasicDBObject("doctorId", "$doctorId"))
 						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 						.append("title", new BasicDBObject("$first", "$title"))
@@ -2783,7 +2784,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 							new BasicDBObject("resultantDiscount",
 									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
@@ -2819,7 +2820,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		} else {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 							new BasicDBObject("resultantDiscount",
 									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
@@ -2867,7 +2868,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 			case DAILY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
@@ -2880,7 +2881,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			case WEEKLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
 										.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
@@ -2893,7 +2894,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			case MONTHLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 								.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
 								.append("cost", new BasicDBObject("$sum", "$resultantCost"))
@@ -2903,7 +2904,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				break;
 			}
 			case YEARLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 								.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
 								.append("cost", new BasicDBObject("$sum", "$resultantCost"))
@@ -2918,7 +2919,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				break;
 			}
 		else {
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 									.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
@@ -2931,7 +2932,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		Aggregation aggregation = null;
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 							new BasicDBObject("resultantDiscount",
 									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
@@ -2970,7 +2971,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					Aggregation.skip(page * size), Aggregation.limit(size));
 		} else {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 							new BasicDBObject("resultantDiscount",
 									new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 											Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
@@ -3065,7 +3066,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 												Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
 												Aggregation.unwind("patient"), Aggregation.match(criteria2),
 												new CustomAggregationOperation(
-														new BasicDBObject("$group",
+														new Document("$group",
 																new BasicDBObject("_id", "$uniqueReceiptId")
 																		.append("date",
 																				new BasicDBObject("$first",
@@ -3100,7 +3101,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 												Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
 												Aggregation.unwind("patient"), Aggregation.match(criteria2),
 												new CustomAggregationOperation(
-														new BasicDBObject("$group",
+														new Document("$group",
 																new BasicDBObject("_id", "$uniqueReceiptId")
 																		.append("date",
 																				new BasicDBObject("$first",
@@ -3205,7 +3206,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria) {
 		criteria.and("discarded").is(false);
 		List<PaymentAnalyticsDataResponse> response = null;
-		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+		AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", new BasicDBObject("doctorId", "$doctorId"))
 						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 						.append("title", new BasicDBObject("$first", "$title"))
@@ -3222,7 +3223,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$project",
+							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("cash",
 											new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 													Arrays.asList("$modeOfPayment", ModeOfPayment.CASH.name()))).append(
@@ -3266,7 +3267,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$project",
+							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("cash",
 											new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
 													Arrays.asList("$modeOfPayment", ModeOfPayment.CASH.name()))).append(
@@ -3315,7 +3316,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	private List<PaymentAnalyticsDataResponse> getPaymentDataByPaymentModes(String searchType, long page, int size,
 			Criteria criteria) {
 		List<PaymentAnalyticsDataResponse> response = null;
-		AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+		AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", new BasicDBObject("modeOfPayment", "$modeOfPayment"))
 						.append("modeOfPayment", new BasicDBObject("$first", "$modeOfPayment"))
 						.append("total", new BasicDBObject("$sum", "$total"))));
@@ -3324,13 +3325,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		criteria.and("discarded").is(false);
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 							new BasicDBObject("total", "$amountPaid").append("modeOfPayment", "$modeOfPayment"))),
 					aggregationOperation, Aggregation.sort(Direction.ASC, "modeOfPayment"),
 					Aggregation.skip(page * size), Aggregation.limit(size));
 		} else {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 							new BasicDBObject("total", "$amountPaid").append("modeOfPayment", "$modeOfPayment"))),
 					aggregationOperation, Aggregation.sort(Direction.ASC, "modeOfPayment"));
 		}
@@ -3349,7 +3350,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 			case DAILY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("cash", new BasicDBObject("$sum", "$cash"))
@@ -3363,7 +3364,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			case WEEKLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
 										.append("cash", new BasicDBObject("$sum", "$cash"))
@@ -3377,7 +3378,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			case MONTHLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 								.append("cash", new BasicDBObject("$sum", "$cash"))
 								.append("card", new BasicDBObject("$sum", "$card"))
@@ -3388,7 +3389,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				break;
 			}
 			case YEARLY: {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 								.append("cash", new BasicDBObject("$sum", "$cash"))
 								.append("card", new BasicDBObject("$sum", "$card"))
@@ -3404,7 +3405,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				break;
 			}
 		else {
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 									.append("cash", new BasicDBObject("$sum", "$cash"))
@@ -3419,7 +3420,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		criteria.and("discarded").is(false);
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(
-					new BasicDBObject("$project", new BasicDBObject("cash", new BasicDBObject("$cond",
+					new Document("$project", new BasicDBObject("cash", new BasicDBObject("$cond",
 							new BasicDBObject("if",
 									new BasicDBObject("$eq",
 											Arrays.asList("$modeOfPayment", ModeOfPayment.CASH.name())))
@@ -3459,7 +3460,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					Aggregation.skip(page * size), Aggregation.limit(size));
 		} else {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(
-					new BasicDBObject("$project", new BasicDBObject("cash", new BasicDBObject("$cond",
+					new Document("$project", new BasicDBObject("cash", new BasicDBObject("$cond",
 							new BasicDBObject("if",
 									new BasicDBObject("$eq",
 											Arrays.asList("$modeOfPayment", ModeOfPayment.CASH.name())))
@@ -3555,7 +3556,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 								Aggregation.unwind("patient"), Aggregation.match(criteria2),
-								new CustomAggregationOperation(new BasicDBObject("$project",
+								new CustomAggregationOperation(new Document("$project",
 										new BasicDBObject("debitAmount", "$debitAmount")
 												.append("creditAmount", "$creditAmount")
 												.append("patientId", "$patientId")
@@ -3564,7 +3565,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																Arrays.asList("$debitAmount", "$creditAmount")))
 												.append("patientName", "$patient.localPatientName")
 												.append("pid", "$patient.PID"))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
+								new CustomAggregationOperation(new Document("$group",
 										new BasicDBObject("_id", "$patientId")
 												.append("invoiced", new BasicDBObject("$sum", "$debitAmount"))
 												.append("received", new BasicDBObject("$sum", "$creditAmount"))
@@ -3576,7 +3577,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 								Aggregation.unwind("patient"), Aggregation.match(criteria2),
-								new CustomAggregationOperation(new BasicDBObject("$project",
+								new CustomAggregationOperation(new Document("$project",
 										new BasicDBObject("debitAmount", "$debitAmount")
 												.append("creditAmount", "$creditAmount")
 												.append("patientId", "$patientId")
@@ -3585,7 +3586,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																Arrays.asList("$debitAmount", "$creditAmount")))
 												.append("patientName", "$patient.localPatientName")
 												.append("pid", "$patient.PID"))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
+								new CustomAggregationOperation(new Document("$group",
 										new BasicDBObject("_id", "$patientId")
 												.append("invoiced", new BasicDBObject("$sum", "$debitAmount"))
 												.append("received", new BasicDBObject("$sum", "$creditAmount"))
@@ -3598,14 +3599,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 								Aggregation.unwind("doctor"),
-								new CustomAggregationOperation(new BasicDBObject("$project",
+								new CustomAggregationOperation(new Document("$project",
 										new BasicDBObject("debitAmount", "$debitAmount")
 												.append("creditAmount", "$creditAmount").append("doctorId", "$doctorId")
 												.append("total",
 														new BasicDBObject("$subtract",
 																Arrays.asList("$debitAmount", "$creditAmount")))
 												.append("doctorName", "$doctor.firstName"))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
+								new CustomAggregationOperation(new Document("$group",
 										new BasicDBObject("_id", "$doctorId")
 												.append("invoiced", new BasicDBObject("$sum", "$debitAmount"))
 												.append("received", new BasicDBObject("$sum", "$creditAmount"))
@@ -3616,14 +3617,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 								Aggregation.unwind("doctor"),
-								new CustomAggregationOperation(new BasicDBObject("$project",
+								new CustomAggregationOperation(new Document("$project",
 										new BasicDBObject("debitAmount", "$debitAmount")
 												.append("creditAmount", "$creditAmount").append("doctorId", "$doctorId")
 												.append("total",
 														new BasicDBObject("$subtract",
 																Arrays.asList("$debitAmount", "$creditAmount")))
 												.append("doctorName", "$doctor.firstName"))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
+								new CustomAggregationOperation(new Document("$group",
 										new BasicDBObject("_id", "$doctorId")
 												.append("invoiced", new BasicDBObject("$sum", "$debitAmount"))
 												.append("received", new BasicDBObject("$sum", "$creditAmount"))
@@ -3708,7 +3709,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
 								Aggregation.unwind("$treatmentServices"),
 								new CustomAggregationOperation(
-										new BasicDBObject("$group",
+										new Document("$group",
 												new BasicDBObject("id", "$_id")
 														.append("locationId",
 																new BasicDBObject("$first",
@@ -3757,7 +3758,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
 								Aggregation.unwind("$treatmentServices"),
 								new CustomAggregationOperation(
-										new BasicDBObject("$group",
+										new Document("$group",
 												new BasicDBObject("id", "$_id")
 														.append("locationId",
 																new BasicDBObject("$first",

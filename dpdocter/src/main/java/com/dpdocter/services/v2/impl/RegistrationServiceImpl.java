@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +26,9 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorLabReportRepository;
-import com.dpdocter.response.v2.ClinicDoctorResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
+import com.dpdocter.response.v2.ClinicDoctorResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.DynamicUIService;
 import com.dpdocter.services.PushNotificationServices;
@@ -144,7 +145,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 
-			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("isActivate", new BasicDBObject("$first", "$isActivate"))

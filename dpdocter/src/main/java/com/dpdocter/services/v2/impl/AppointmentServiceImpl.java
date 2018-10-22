@@ -5,16 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -27,14 +25,12 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.CustomAppointment;
 import com.dpdocter.beans.Event;
-import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -52,7 +48,6 @@ import com.dpdocter.collections.CustomAppointmentCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -1457,13 +1452,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 											Aggregation.unwind("location"),
 
 											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
+											new CustomAggregationOperation(new Document(
 													"$unwind",
 													new BasicDBObject(
 															"path", "$patientCard").append("preserveNullAndEmptyArrays",
 																	true))),
 											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
+													new Document("$redact",
 															new BasicDBObject("$cond",
 																	new BasicDBObject("if", new BasicDBObject("$eq",
 																			Arrays.asList("$patientCard.locationId",
@@ -1486,13 +1481,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 											Aggregation.unwind("location"),
 											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
+											new CustomAggregationOperation(new Document(
 													"$unwind",
 													new BasicDBObject(
 															"path", "$patientCard").append("preserveNullAndEmptyArrays",
 																	true))),
 											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
+													new Document("$redact",
 															new BasicDBObject("$cond",
 																	new BasicDBObject("if", new BasicDBObject("$eq",
 																			Arrays.asList("$patientCard.locationId",
@@ -1635,7 +1630,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	private List<Appointment> getAppointmentsForWeb(Criteria criteria, SortOperation sortOperation, int page, int size,
 			List<Appointment> response, List<AppointmentLookupResponse> appointmentLookupResponses) {
 
-		CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+		CustomAggregationOperation projectOperation = new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("patientId", "$patientId").append("time", "$time")
 						.append("state", "$state").append("isRescheduled", "$isRescheduled")
@@ -1678,7 +1673,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("patient.mobileNumber", "$patientUser.mobileNumber")
 						.append("patient.colorCode", "$patientUser.colorCode")));
 
-		CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+		CustomAggregationOperation groupOperation = new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
 						.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1725,13 +1720,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 											Aggregation.unwind("doctor"),
 											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
+											new CustomAggregationOperation(new Document(
 													"$unwind",
 													new BasicDBObject(
 															"path", "$patientCard").append("preserveNullAndEmptyArrays",
 																	true))),
 											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
+													new Document("$redact",
 															new BasicDBObject("$cond",
 																	new BasicDBObject("if", new BasicDBObject("$eq",
 																			Arrays.asList("$patientCard.locationId",
@@ -1754,13 +1749,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 											Aggregation.unwind("doctor"),
 											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
+											new CustomAggregationOperation(new Document(
 													"$unwind",
 													new BasicDBObject(
 															"path", "$patientCard").append("preserveNullAndEmptyArrays",
 																	true))),
 											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
+													new Document("$redact",
 															new BasicDBObject("$cond",
 																	new BasicDBObject("if", new BasicDBObject("$eq",
 																			Arrays.asList("$patientCard.locationId",

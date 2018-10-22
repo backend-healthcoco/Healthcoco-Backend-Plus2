@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -435,7 +436,7 @@ public class BlogServicesImpl implements BlogService {
 		try {
 			
 			CustomAggregationOperation projectOperation = new CustomAggregationOperation(
-					new BasicDBObject("$project", new BasicDBObject("title","$title")
+					new Document("$project", new BasicDBObject("title","$title")
 							.append("titleImage", new BasicDBObject("$cond", 
 									new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$titleImage", null)))
 									          .append("then", new BasicDBObject("$concat", Arrays.asList(imagePath, "$titleImage")))
@@ -454,7 +455,7 @@ public class BlogServicesImpl implements BlogService {
 										
 			
 			CustomAggregationOperation groupOperation = new CustomAggregationOperation(
-					new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+					new Document("$group", new BasicDBObject("id", "$_id")
 							.append("title", new BasicDBObject("$first","$title"))
 							.append("titleImage", new BasicDBObject("$first","$titleImage"))
 							.append("superCategory", new BasicDBObject("$first","$superCategory"))

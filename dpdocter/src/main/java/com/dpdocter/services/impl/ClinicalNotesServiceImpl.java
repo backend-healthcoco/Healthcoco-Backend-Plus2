@@ -19,6 +19,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1843,7 +1844,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
@@ -1853,7 +1854,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 								"appointmentRequest"),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
@@ -4115,7 +4116,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
@@ -4126,7 +4127,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 								"appointmentRequest"),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
@@ -8529,7 +8530,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("id").in(ids)),
 					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
-					new CustomAggregationOperation(new BasicDBObject("$redact",
+					new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
@@ -8638,7 +8639,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("id").in(ids)),
 					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
-					new CustomAggregationOperation(new BasicDBObject("$redact",
+					new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",

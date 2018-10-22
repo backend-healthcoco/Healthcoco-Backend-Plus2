@@ -11,6 +11,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -1655,11 +1656,11 @@ public class HistoryServicesImpl implements HistoryServices {
 				matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -1667,18 +1668,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1699,11 +1700,11 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -1711,18 +1712,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$familyhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "'$specialNotes'").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1744,11 +1745,11 @@ public class HistoryServicesImpl implements HistoryServices {
 			} else {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -1756,18 +1757,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$familyhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "'$specialNotes'").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1788,11 +1789,11 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -1800,18 +1801,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$familyhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "'$specialNotes'").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2336,11 +2337,11 @@ public class HistoryServicesImpl implements HistoryServices {
 				matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -2348,18 +2349,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2380,11 +2381,11 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				} else
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -2392,18 +2393,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2425,10 +2426,10 @@ public class HistoryServicesImpl implements HistoryServices {
 			} else {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -2436,17 +2437,17 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2467,11 +2468,11 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -2479,18 +2480,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2749,27 +2750,27 @@ public class HistoryServicesImpl implements HistoryServices {
 
 		aggregation = Aggregation
 				.newAggregation(
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 										true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 										true))),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$specialNotes").append("preserveNullAndEmptyArrays",
 												true))),
 						Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
 						Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 						Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 										true))),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$medicalhistory").append(
 												"preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$_id")
 										.append("patientId", new BasicDBObject("$first", "$patientId"))
 										.append("locationId", new BasicDBObject("$first", "$locationId"))

@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,7 +84,6 @@ import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ContactUsRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DrugRepository;
-import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.EducationInstituteRepository;
 import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
@@ -318,6 +318,46 @@ public class AdminServicesImpl implements AdminServices {
 		}
 	}
 
+	@Override
+	@Transactional
+	public void importLandmarkLocality() {
+		String csvFile = "/home/ubuntu/landmarkLocalities.csv";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+
+		try {
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				CityCollection cityCollection = new CityCollection();
+				cityCollection.setCity(obj[0]);
+				cityCollection.setState(obj[1]);
+				cityCollection.setCountry("India");
+				List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
+						cityCollection.getCity() + " " + cityCollection.getState() + " " + cityCollection.getCountry());
+
+				if (geocodedLocations != null && !geocodedLocations.isEmpty())
+					BeanUtil.map(geocodedLocations.get(0), cityCollection);
+
+				cityCollection = cityRepository.save(cityCollection);
+				ESCityDocument esCityDocument = new ESCityDocument();
+				BeanUtil.map(cityCollection, esCityDocument);
+				esCityDocument.setGeoPoint(new GeoPoint(cityCollection.getLatitude(), cityCollection.getLongitude()));
+				esCityService.addCities(esCityDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 	@Override
 	@Transactional
 	public void importDrug() {
@@ -666,15 +706,15 @@ public class AdminServicesImpl implements AdminServices {
 		List<ClinicalItemsResponse> items = mongoTemplate.aggregate(Aggregation.newAggregation(
 				Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId)).and("discarded").is(false)),
 				Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
-				new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+				new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 						.append("resourceIds", "$_id").append("resourceName", "$"+fieldName).append("resourceIdsForEs", "$_id"))),
-				new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$resourceName")
+				new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$resourceName")
 								.append("keepResourceId", new BasicDBObject("$first", "$resourceIds"))
 								.append("resourceIds", new BasicDBObject("$addToSet", "$resourceIds"))
 								.append("resourceIdsForEs", new BasicDBObject("$addToSet", "$resourceIdsForEs"))
 								.append("resourceName", new BasicDBObject("$first","$resourceName"))
 								.append("count", new BasicDBObject("$sum", 1)))),
-				new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+				new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
 						new BasicDBObject("if", new BasicDBObject("$gt", Arrays.asList("$count", 1)))
 						.append("then", "$$KEEP").append("else", "$$PRUNE"))))), 
 				className, ClinicalItemsResponse.class).getMappedResults();

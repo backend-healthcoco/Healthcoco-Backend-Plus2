@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -397,7 +398,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
 							.and("userState").is("USERSTATECOMPLETE")),
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", "$mobileNumber")
 									.append("userIds", new BasicDBObject("$push", "$_id")).append("mobileNumber",
 											new BasicDBObject("$first", "$mobileNumber")))));
@@ -418,7 +419,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 							Aggregation.unwind("response"),
 							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
 							Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
 											.append("uniqueRequestId",
 													new BasicDBObject("$first", "$uniqueRequestId")))));
@@ -441,7 +442,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 							Aggregation.unwind("response"),
 							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
 							Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
 											.append("uniqueRequestId",
 													new BasicDBObject("$first", "$uniqueRequestId")))));
@@ -472,7 +473,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			Criteria criteria = new Criteria("userId").is(new ObjectId(userId)).and("updatedTime")
 					.gte(new Date(updatedTImeLong));
 			Aggregation aggregation = null;
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("localeId", "$localeId").append("userId", "$userId")
 							.append("uniqueRequestId", "$uniqueRequestId")
 							.append("uniqueResponseId", "$uniqueResponseId").append("wayOfOrder", "$wayOfOrder")
@@ -486,7 +487,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 							.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
 							.append("isCancelled", "$isCancelled")));
 
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("id", "$_id").append("localeId", new BasicDBObject("$first", "$localeId"))
 							.append("userId", new BasicDBObject("$first", "$userId"))
 							.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId"))
@@ -510,16 +511,16 @@ public class PharmacyServiceImpl implements PharmacyService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("search_request_from_user_cl", "uniqueRequestId", "uniqueRequestId",
 								"searchRequestFromUser"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$searchRequestFromUser").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
 								"searchRequestToPharmacy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$searchRequestToPharmacy")
 										.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("locale_cl", "localeId", "_id", "locale"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays", true))),
 						project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -527,16 +528,16 @@ public class PharmacyServiceImpl implements PharmacyService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("search_request_from_user_cl", "uniqueRequestId", "uniqueRequestId",
 								"searchRequestFromUser"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$searchRequestFromUser").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
 								"searchRequestToPharmacy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$searchRequestToPharmacy")
 										.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("locale_cl", "localeId", "_id", "locale"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays", true))),
 						project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
@@ -617,7 +618,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 					.gte(new Date(updatedTImeLong));
 			Aggregation aggregation = null;
 			CustomAggregationOperation project = new CustomAggregationOperation(
-					new BasicDBObject("$project",
+					new Document("$project",
 							new BasicDBObject("localeId", "$localeId").append("userId", "$userId")
 									.append("uniqueRequestId", "$uniqueRequestId")
 									.append("prescriptionRequest", "$prescriptionRequest")
@@ -643,7 +644,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
 
 			CustomAggregationOperation group = new CustomAggregationOperation(
-					new BasicDBObject("$group",
+					new Document("$group",
 							new BasicDBObject("id", "$_id").append("localeId", new BasicDBObject("$first", "$localeId"))
 									.append("userId", new BasicDBObject("$first", "$userId"))
 									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId"))
@@ -673,7 +674,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 						.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
 								Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays",
 												true))),
 								project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
@@ -683,7 +684,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 						.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
 								Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays",
 												true))),
 								project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
