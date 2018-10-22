@@ -20,16 +20,6 @@ public class ExerciseCounterAddItem {
 
 	private MealQuantity calories;
 
-	private List<SimpleCalorie> simpleCalories;
-
-	public List<SimpleCalorie> getSimpleCalories() {
-		return simpleCalories;
-	}
-
-	public void setSimpleCalories(List<SimpleCalorie> simpleCalories) {
-		this.simpleCalories = simpleCalories;
-	}
-
 	public ObjectId getId() {
 		return id;
 	}
