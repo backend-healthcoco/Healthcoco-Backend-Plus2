@@ -287,7 +287,8 @@ public class LoginServiceImpl implements LoginService {
 											.get(locationCollection.getHospitalId().toString());
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
-									hospitals.add(hospital);
+									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
+//									hospitals.add(hospital);
 								}
 							}
 						}
