@@ -37,8 +37,6 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
-import com.dpdocter.enums.FieldAlign;
-import com.dpdocter.enums.PageSize;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;

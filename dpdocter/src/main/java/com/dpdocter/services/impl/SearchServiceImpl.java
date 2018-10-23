@@ -35,9 +35,9 @@ import org.springframework.util.StringUtils;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
+import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
-import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
@@ -70,7 +70,6 @@ public class SearchServiceImpl implements SearchService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public SearchDoctorResponse searchDoctors(int page, int size, String city, String location, String latitude,
 			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
@@ -107,6 +106,12 @@ public class SearchServiceImpl implements SearchService {
 					.must(QueryBuilders.matchQuery("isClinic", true));
 
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
+				
+				long cityCount = elasticsearchTemplate.count(new CriteriaQuery(new Criteria("city").is(city).and("isActivated").is(true)), ESCityDocument.class);
+				
+				if(cityCount == 0) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid City");
+				}
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 				boolQueryBuilderForNearByDoctors.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 			}
@@ -238,22 +243,24 @@ public class SearchServiceImpl implements SearchService {
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")
-						&& response.getDoctors() != null && !response.getDoctors().isEmpty()) {
+						&& response.getDoctors() != null && !response.getDoctors().isEmpty()
+						&& response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()) {
 					for (String matchSpeciality : response.getDoctors().get(0).getSpecialities()) {
-						if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))
+						if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))
 								.equalsIgnoreCase((matchSpeciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
-										.replaceAll("--", "-"))))
+										.replaceAll("-(\\s*-)+", "88"))))
 							response.setUnformattedSpeciality(matchSpeciality);
 					}
 					speciality = speciality.replace("-", " ");
 					response.setSpeciality(StringUtils.capitalize(speciality));
 					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
 				} else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")
-						&& response.getDoctors() != null && !response.getDoctors().isEmpty()) {
+						&& response.getDoctors() != null && !response.getDoctors().isEmpty()
+						&& response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()) {
 
 					for (String matchService : response.getDoctors().get(0).getServices()) {
-						if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("--", "-"))
-								.equalsIgnoreCase((matchService.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+						if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))
+								.equalsIgnoreCase((matchService.toLowerCase().trim().replaceAll("-(\\s*-)+", "88")
 										.replaceAll("--", "-"))))
 							response.setUnformattedService(matchService);
 					}
