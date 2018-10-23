@@ -876,7 +876,17 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setCreatedTime(new Date());
 			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
-			userCollection.setUserState(UserState.NOTVERIFIED);
+
+			userCollection.setUserState(UserState.NOTACTIVATED);
+			userCollection.setIsVerified(true);
+			char[] salt = DPDoctorUtils.generateSalt();
+			userCollection.setSalt(salt);
+			char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
+			for (int i = 0; i < request.getPassword().length; i++)
+				passwordWithSalt[i] = request.getPassword()[i];
+			for (int i = 0; i < salt.length; i++)
+				passwordWithSalt[i + request.getPassword().length] = salt[i];
+			userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 			userCollection = userRepository.save(userCollection);
 			// save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();
@@ -997,7 +1007,7 @@ public class SignUpServiceImpl implements SignUpService {
 				licenseResponse.setAvailable(licenseResponse.getAvailable() - 1);
 				licenseResponse.setConsumed(licenseResponse.getConsumed() + 1);
 				PharmaLicenseCollection pharmaLicenseCollection = new PharmaLicenseCollection();
-				BeanUtil.map(licenseResponse, pharmaLicenseCollection);
+				BeanUtil.map(licenseResponse, pharmaL"isVerified" : falseicenseCollection);
 				pharmaLicenseRepository.save(pharmaLicenseCollection);
 				
 			}

@@ -95,7 +95,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = false;
-	
+
 	@Field
 	private Boolean isPatientDiscarded = false;
 
@@ -122,7 +122,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private String PNUM;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -399,7 +399,7 @@ public class PatientCollection extends GenericCollection {
 	public void setPNUM(String pNUM) {
 		PNUM = pNUM;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
