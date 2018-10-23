@@ -912,6 +912,7 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
 			userCollection.setUserState(UserState.NOTACTIVATED);
+			userCollection.setIsVerified(true);
 			char[] salt = DPDoctorUtils.generateSalt();
 			userCollection.setSalt(salt);
 			char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
@@ -1057,7 +1058,7 @@ public class SignUpServiceImpl implements SignUpService {
 				licenseResponse.setAvailable(licenseResponse.getAvailable() - 1);
 				licenseResponse.setConsumed(licenseResponse.getConsumed() + 1);
 				PharmaLicenseCollection pharmaLicenseCollection = new PharmaLicenseCollection();
-				BeanUtil.map(licenseResponse, pharmaLicenseCollection);
+				BeanUtil.map(licenseResponse, pharmaL"isVerified" : falseicenseCollection);
 				pharmaLicenseRepository.save(pharmaLicenseCollection);
 				
 			}

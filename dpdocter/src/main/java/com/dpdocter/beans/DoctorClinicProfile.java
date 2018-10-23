@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.DoctorFacility;
@@ -129,6 +130,12 @@ public class DoctorClinicProfile {
 	private Boolean isNutritionist = false;
 
 	private Boolean isSuperAdmin = false;
+
+	private String mrCode;
+
+	private List<ObjectId> divisionIds;
+
+	private ObjectId cityId;
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
@@ -608,6 +615,30 @@ public class DoctorClinicProfile {
 
 	public void setHasBillingAccess(Boolean hasBillingAccess) {
 		this.hasBillingAccess = hasBillingAccess;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<ObjectId> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<ObjectId> divisionIds) {
+		this.divisionIds = divisionIds;
+	}
+
+	public ObjectId getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(ObjectId cityId) {
+		this.cityId = cityId;
 	}
 
 	@Override

@@ -95,7 +95,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = false;
-	
+
 	@Field
 	private Boolean isPatientDiscarded = false;
 
@@ -125,9 +125,12 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean isNutritionActive = false;
-	
-	
-	
+
+	@Field
+	private String fatherName;
+
+	@Field
+	private String motherName;
 
 	public ObjectId getId() {
 		return id;
@@ -412,6 +415,22 @@ public class PatientCollection extends GenericCollection {
 
 	public void setIsNutritionActive(Boolean isNutritionActive) {
 		this.isNutritionActive = isNutritionActive;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
 	}
 
 	@Override
