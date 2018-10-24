@@ -15,4 +15,7 @@ public interface CityRepository extends MongoRepository<CityCollection, ObjectId
     @Query("{'state': ?0}")
     List<CityCollection> findAll(String state, Sort sort);
 
+    @Query("{'city': ?0}")
+	CityCollection findByName(String city);
+
 }

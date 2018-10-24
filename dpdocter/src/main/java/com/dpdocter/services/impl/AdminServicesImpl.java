@@ -41,6 +41,7 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.InvestigationCollection;
+import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ObservationCollection;
@@ -57,6 +58,7 @@ import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
 import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
+import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
@@ -68,6 +70,7 @@ import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
 import com.dpdocter.elasticsearch.repository.ESInvestigationsRepository;
+import com.dpdocter.elasticsearch.repository.ESLandmarkLocalityRepository;
 import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
 import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
 import com.dpdocter.elasticsearch.repository.ESProcedureNoteRepository;
@@ -88,6 +91,7 @@ import com.dpdocter.repository.EducationInstituteRepository;
 import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.InvestigationRepository;
+import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MedicalCouncilRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
@@ -245,6 +249,12 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Autowired
 	UserRoleRepository userRoleRepository;
+	
+	@Autowired
+	LandmarkLocalityRepository landmarkLocalityRepository;
+	
+	@Autowired
+	ESLandmarkLocalityRepository esLandmarkLocalityRepository;
 	
 	@Override
 	@Transactional
@@ -829,6 +839,51 @@ public class AdminServicesImpl implements AdminServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	public Boolean importLandmarkLocalities() {
+		
+		String csvFile = "/home/ubuntu/landmarklocalities.csv";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+
+		try {
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				
+				CityCollection cityCollection = cityRepository.findByName(obj[3]);
+				
+				if(cityCollection != null) {
+					LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
+					landmarkLocalityCollection.setCityId(cityCollection.getId());
+					landmarkLocalityCollection.setLocality(obj[0]);
+					landmarkLocalityCollection.setLatitude(Double.parseDouble(obj[1]));
+					landmarkLocalityCollection.setLongitude(Double.parseDouble(obj[2]));
+					
+					landmarkLocalityCollection = landmarkLocalityRepository.save(landmarkLocalityCollection);
+					ESLandmarkLocalityDocument esLandmarkLocalityDocument = new ESLandmarkLocalityDocument();
+					BeanUtil.map(landmarkLocalityCollection, esLandmarkLocalityDocument);
+					esLandmarkLocalityDocument.setGeoPoint(new GeoPoint(landmarkLocalityCollection.getLatitude(), landmarkLocalityCollection.getLongitude()));
+					
+					transactionalManagementService.addResource(new ObjectId(esLandmarkLocalityDocument.getId()),
+							Resource.LANDMARKLOCALITY, false);
+					esCityService.addLocalityLandmark(esLandmarkLocalityDocument);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return true;
 	}
 
 }
