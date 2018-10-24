@@ -37,12 +37,14 @@ public interface RecipeService {
 	List<Recipe> getRecipes(int size, int page, boolean discarded, String searchTerm, String doctorId,
 			String locationId, String hospitalId);
 
-	List<Recipe> getFavouriteRecipe(int size, int page, boolean discarded, String searchTerm, String userId);
+	List<RecipeCounterAddItem> getFavouriteRecipe(int size, int page, boolean discarded, String searchTerm, String userId);
 
 	Boolean addFavouriteRecipe(String userId, String recipeId);
 
 	List<RecipeCounterAddItem> getFrequentRecipe(int size, int page, boolean discarded, String userId);
 
 	List<RecentRecipeResponse> getRecentRecipe(int size, int page, String userId, boolean discarded, String mealTime);
+
+	
 
 }
