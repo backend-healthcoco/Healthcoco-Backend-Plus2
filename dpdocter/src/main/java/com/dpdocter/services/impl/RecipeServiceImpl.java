@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.Ingredient;
-import com.dpdocter.beans.MealCounter;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
 import com.dpdocter.beans.RecipeItem;
@@ -604,8 +603,9 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public List<Recipe> getFavouriteRecipe(int size, int page, boolean discarded, String searchTerm, String userId) {
-		List<Recipe> response = null;
+	public List<RecipeCounterAddItem> getFavouriteRecipe(int size, int page, boolean discarded, String searchTerm,
+			String userId) {
+		List<RecipeCounterAddItem> response = null;
 		try {
 			Criteria criteria = new Criteria("favRecipe.discarded").is(discarded);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
@@ -627,7 +627,8 @@ public class RecipeServiceImpl implements RecipeService {
 						Aggregation.unwind("favRecipe"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")));
 			}
-			response = mongoTemplate.aggregate(aggregation, RecipeCollection.class, Recipe.class).getMappedResults();
+			response = mongoTemplate.aggregate(aggregation, RecipeCollection.class, RecipeCounterAddItem.class)
+					.getMappedResults();
 		} catch (BusinessException e) {
 			logger.error("Error while getting Favourite Recipe " + e.getMessage());
 			e.printStackTrace();

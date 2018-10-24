@@ -340,4 +340,19 @@ public class RecipeApi {
 		response.setDataList(recipeService.getFrequentRecipe(size, page, discarded, userId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE, notes = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE)
+	public Response<RecentRecipeResponse> getFavouritetRecipes(@PathParam("userId") String userId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "user Id should not be null or empty");
+
+		}
+		Response<RecentRecipeResponse> response = new Response<RecentRecipeResponse>();
+		response.setDataList(recipeService.getFrequentRecipe(size, page, discarded, userId));
+		return response;
+	}
 }

@@ -1926,6 +1926,7 @@ public interface PathProxy {
 		public static final String ADD_FAVOURITE_RECIPE = "favourite/add";
 		public static final String GET_RECENT_RECIPE = "recent/{userId}/get";
 		public static final String GET_FREQUENT_RECIPE = "frequent/{userId}/get";
+		public static final String GET_FAVOURITE_RECIPE = "favourite/{userId}/get";
 
 	}
 
