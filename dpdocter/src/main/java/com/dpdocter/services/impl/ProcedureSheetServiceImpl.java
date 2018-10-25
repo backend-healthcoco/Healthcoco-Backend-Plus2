@@ -130,8 +130,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				procedureSheetCollection.setDiagrams(null);
 			}
 
-
-
 			procedureSheetCollection.setProcedureSheetFields(procedureSheetFields);
 			procedureSheetCollection.setProcedureConsentForm(procedureConsentForm);
 			procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
@@ -560,7 +558,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 
 			if (procedureConsentForm.getFooterFields() != null && !procedureConsentForm.getFooterFields().isEmpty()) {
-				int i = 0;
 				items = new ArrayList<DBObject>();
 
 				Boolean isImage = false;
@@ -615,40 +612,48 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				keys = new ArrayList<String>(fields.keySet());
 				field = "";
 				String i = "";
+				List<String> fieldList = null;
 				if (keys != null && !keys.isEmpty()) {
-					for (int j = 0; j < fields.keySet().size(); j++) {
-
-						item = new BasicDBObject();
-						i = keys.get(j);
+					for (int index = 0; index < fields.keySet().size(); index++) {
+						i = keys.get(index);
+						fieldList = new ArrayList<String>();
 						value = fields.get(i).getValue();
 						if (!DPDoctorUtils.anyStringEmpty(i, value)) {
 							field = "<b>" + i + " : </b>" + value;
-							item.put("fieldOne", field);
+							if (fields.get(i).getSequenceNo() != null) {
+								fieldList.set(fields.get(i).getSequenceNo(), field);
+							}
 						}
-						j++;
-						if (j < keys.size()) {
-							i = keys.get(j);
-							value = fields.get(i).getValue();
-							if (!DPDoctorUtils.anyStringEmpty(i, value))
-								field = "<b>" + i + " : </b>" + value;
+
+					}
+					for (int index = 0; index < fieldList.size(); index++) {
+						item = new BasicDBObject();
+						if (!DPDoctorUtils.anyStringEmpty(fieldList.get(index))) {
+							field = fieldList.get(index);
+							item.put("fieldOne", field);
+
+						}
+						index++;
+						if (index < fields.size()) {
+
+							if (!DPDoctorUtils.anyStringEmpty(fieldList.get(index)))
+								field = fieldList.get(index);
 
 							item.put("fieldTwo", field);
 						}
-						j++;
-						if (j < keys.size()) {
-							i = keys.get(j);
-							value = fields.get(i).getValue();
-							if (!DPDoctorUtils.anyStringEmpty(i, value))
-								field = "<b>" + i + " : </b>" + value;
+						index++;
+						if (index < fields.size()) {
+
+							if (!DPDoctorUtils.anyStringEmpty(fieldList.get(index)))
+								field = fieldList.get(index);
 
 							item.put("fieldThree", field);
 						}
-						j++;
-						if (j < keys.size()) {
-							i = keys.get(j);
-							value = fields.get(i).getValue();
-							if (!DPDoctorUtils.anyStringEmpty(i, value))
-								field = "<b>" + i + " : </b>" + value;
+						index++;
+						if (index < fields.size()) {
+
+							if (!DPDoctorUtils.anyStringEmpty(fieldList.get(index)))
+								field = fieldList.get(index);
 
 							item.put("fieldFour", field);
 						}
