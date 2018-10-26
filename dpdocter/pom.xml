@@ -11,9 +11,6 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -30,13 +27,13 @@
 						<filtering>true</filtering>
 					</resource>
 				</resources>
-<!-- 				<plugins> -->
-<!-- 					<plugin> -->
-<!-- 						<groupId>org.apache.tomcat.maven</groupId> -->
-<!-- 						<artifactId>tomcat7-maven-plugin</artifactId> -->
-<!-- 						<version>2.0</version> -->
-<!-- 					</plugin> -->
-<!-- 				</plugins> -->
+				<plugins>
+					<plugin>
+						<groupId>org.apache.tomcat.maven</groupId>
+						<artifactId>tomcat7-maven-plugin</artifactId>
+						<version>2.0</version>
+					</plugin>
+				</plugins>
 
 			</build>
 		</profile>
@@ -62,6 +59,9 @@
 		</profile>
 		<profile>
 			<id>qa</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -1176,6 +1176,22 @@
 		    <artifactId>asm</artifactId>
 		    <version>6.2.1</version>
 		</dependency>		
+		<!-- https://mvnrepository.com/artifact/org.jboss.spec.javax.net.ssl/jboss-jsse-api_8.0_spec -->
+<dependency>
+    <groupId>org.jboss.spec.javax.net.ssl</groupId>
+    <artifactId>jboss-jsse-api_8.0_spec</artifactId>
+    <version>1.0.0.Final</version>
+</dependency>
+		<dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jkutner</groupId>
+            <artifactId>env-keystore</artifactId>
+            <version>0.1.2</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<testResources>
@@ -1224,18 +1240,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-
-
-
-<!-- <plugin> -->
-<!--     <groupId>org.apache.maven.plugins</groupId> -->
-<!--     <artifactId>maven-compiler-plugin</artifactId> -->
-<!--     <version>3.8.0</version> -->
-<!--     <configuration> -->
-<!--         <release>10</release> -->
-<!--     </configuration> -->
-<!-- </plugin> -->
-
 		</plugins>
 	</build>
 	<repositories>
