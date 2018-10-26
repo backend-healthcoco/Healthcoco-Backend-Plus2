@@ -638,50 +638,48 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				keys = new ArrayList<String>(fields.keySet());
 				field = "";
 				String i = "";
-				List<String> fieldList = null;
+				String [] fieldList = null;
 				if (keys != null && !keys.isEmpty()) {
+					fieldList = new String [fields.keySet().size()];
 					for (int index = 0; index < fields.keySet().size(); index++) {
 						i = keys.get(index);
-						fieldList = new ArrayList<String>();
 						value = fields.get(i).getValue();
 						if (!DPDoctorUtils.anyStringEmpty(i, value)) {
 							field = "<b>" + i + " : </b>" + value;
 							if (fields.get(i).getSequenceNo() != null) {
-								fieldList.set(fields.get(i).getSequenceNo(), field);
+								fieldList[fields.get(i).getSequenceNo().intValue()]= field;
 							}
 						}
 
 					}
-					for (int index = 0; index < fieldList.size(); index++) {
+					for (int index = 0; index < fieldList.length; index++) {
 						item = new BasicDBObject();
-						if (!DPDoctorUtils.anyStringEmpty(fieldList.get(index))) {
-							field = fieldList.get(index);
-							item.put("fieldOne", field);
+						if (!DPDoctorUtils.anyStringEmpty(fieldList[index])) {
+							
+							item.put("fieldOne", fieldList[index]);
 
+						}
+						index++;
+						if (index < fieldList.length) {
+
+							if (!DPDoctorUtils.anyStringEmpty(fieldList[index]))
+
+							item.put("fieldTwo", fieldList[index]);
+						}
+						index++;
+						if (index < fieldList.length) {
+
+							if (!DPDoctorUtils.anyStringEmpty(fieldList[index]))
+								
+
+							item.put("fieldThree", fieldList[index]);
 						}
 						index++;
 						if (index < fields.size()) {
 
-							if (!DPDoctorUtils.anyStringEmpty(fieldList.get(index)))
-								field = fieldList.get(index);
+							if (!DPDoctorUtils.anyStringEmpty(fieldList[index]))
 
-							item.put("fieldTwo", field);
-						}
-						index++;
-						if (index < fields.size()) {
-
-							if (!DPDoctorUtils.anyStringEmpty(fieldList.get(index)))
-								field = fieldList.get(index);
-
-							item.put("fieldThree", field);
-						}
-						index++;
-						if (index < fields.size()) {
-
-							if (!DPDoctorUtils.anyStringEmpty(fieldList.get(index)))
-								field = fieldList.get(index);
-
-							item.put("fieldFour", field);
+							item.put("fieldFour", fieldList[index]);
 						}
 
 						items.add(item);
