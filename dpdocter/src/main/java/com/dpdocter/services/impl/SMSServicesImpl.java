@@ -134,7 +134,7 @@ public class SMSServicesImpl implements SMSServices {
 	@Autowired
 	private SubscriptionDetailRepository subscriptionDetailRepository;
 
-	@Async
+	
 	@Override
 	@Transactional
 	public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
