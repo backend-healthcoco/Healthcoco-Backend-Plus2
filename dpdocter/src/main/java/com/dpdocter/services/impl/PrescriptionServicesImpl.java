@@ -1672,7 +1672,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-					Fields.field("updatedTime", "$updatedTime")));
+					Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("isDefault", "$isDefault")));
 
 			Aggregation aggregation = null;
 
@@ -1702,7 +1703,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 																.append("updatedTime",
 																		new BasicDBObject("$first", "$updatedTime"))
 																.append("createdBy",
-																		new BasicDBObject("$first", "$createdBy"))))),
+																		new BasicDBObject("$first", "$createdBy"))
+																.append("isDefault",
+																		new BasicDBObject("$first", "$isDefault"))))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			}
@@ -1727,7 +1730,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										.append("items", new BasicDBObject("$push", "$items"))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+										.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+										.append("isDefault", new BasicDBObject("$first", "$isDefault")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			response = mongoTemplate
