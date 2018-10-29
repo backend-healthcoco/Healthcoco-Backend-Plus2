@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Exercise;
-import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.response.ESIngredientResponse;
 import com.dpdocter.elasticsearch.response.ESNutrientResponse;
 import com.dpdocter.elasticsearch.response.ESRecipeResponse;

@@ -85,7 +85,7 @@ public class RecipeCollection extends GenericCollection {
 	private List<String> cuisine;
 
 	@Field
-	private String course;
+	private List<String> course;
 
 	@Field
 	private Integer preparationTime = 0;
@@ -447,11 +447,11 @@ public class RecipeCollection extends GenericCollection {
 		this.cuisine = cuisine;
 	}
 
-	public String getCourse() {
+	public List<String> getCourse() {
 		return course;
 	}
 
-	public void setCourse(String course) {
+	public void setCourse(List<String> course) {
 		this.course = course;
 	}
 
