@@ -17,6 +17,8 @@ public class Vaccine extends GenericCollection {
 	private VaccineRoute route;
 	private String bodySite;
 	private Integer dosage;
+	private Date givenDate;
+	private Age age;
 
 	public String getName() {
 		return name;
@@ -66,10 +68,26 @@ public class Vaccine extends GenericCollection {
 		this.dosage = dosage;
 	}
 
+	public Date getGivenDate() {
+		return givenDate;
+	}
+
+	public void setGivenDate(Date givenDate) {
+		this.givenDate = givenDate;
+	}
+
+	public Age getAge() {
+		return age;
+	}
+
+	public void setAge(Age age) {
+		this.age = age;
+	}
+
 	@Override
 	public String toString() {
 		return "Vaccine [name=" + name + ", dueDate=" + dueDate + ", status=" + status + ", route=" + route
-				+ ", bodySite=" + bodySite + ", dosage=" + dosage + "]";
+				+ ", bodySite=" + bodySite + ", dosage=" + dosage + ", givenDate=" + givenDate + ", age=" + age + "]";
 	}
 
 }
