@@ -106,6 +106,9 @@ public class DrugCollection extends GenericCollection {
 	@Field
 	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
+	@Field
+	private ObjectId drugCompanyId;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -339,6 +342,14 @@ public class DrugCollection extends GenericCollection {
 
 	public void setDrugTypePlacement(String drugTypePlacement) {
 		this.drugTypePlacement = drugTypePlacement;
+	}
+
+	public ObjectId getDrugCompanyId() {
+		return drugCompanyId;
+	}
+
+	public void setDrugCompanyId(ObjectId drugCompanyId) {
+		this.drugCompanyId = drugCompanyId;
 	}
 
 	@Override

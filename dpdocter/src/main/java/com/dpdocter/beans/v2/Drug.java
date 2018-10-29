@@ -62,6 +62,8 @@ public class Drug {
 
 	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
+	private String drugCompanyId;
+
 	public String getId() {
 		return id;
 	}
@@ -268,6 +270,14 @@ public class Drug {
 
 	public void setInventoryBatchs(List<PrescriptionInventoryBatchResponse> inventoryBatchs) {
 		this.inventoryBatchs = inventoryBatchs;
+	}
+
+	public String getDrugCompanyId() {
+		return drugCompanyId;
+	}
+
+	public void setDrugCompanyId(String drugCompanyId) {
+		this.drugCompanyId = drugCompanyId;
 	}
 
 	@Override
