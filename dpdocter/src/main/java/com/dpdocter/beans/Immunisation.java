@@ -11,7 +11,9 @@ public class Immunisation extends GenericCollection {
 
 	private String id;
 	private String patientId;
-	private List<Vaccination> vaccinations;
+	private String locationId;
+	private String hospitalId;
+	private List<Vaccine> vaccines;
 
 	public String getId() {
 		return id;
@@ -29,17 +31,36 @@ public class Immunisation extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public List<Vaccination> getVaccinations() {
-		return vaccinations;
+	
+
+	public List<Vaccine> getVaccines() {
+		return vaccines;
 	}
 
-	public void setVaccinations(List<Vaccination> vaccinations) {
-		this.vaccinations = vaccinations;
+	public void setVaccines(List<Vaccine> vaccines) {
+		this.vaccines = vaccines;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	@Override
 	public String toString() {
-		return "Immunisation [id=" + id + ", patientId=" + patientId + ", vaccinations=" + vaccinations + "]";
+		return "Immunisation [id=" + id + ", patientId=" + patientId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", vaccines=" + vaccines + "]";
 	}
 
 }
