@@ -1337,6 +1337,12 @@ public interface PathProxy {
 
 		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
 
+		public static final String ADD_EDIT_EXPENSE = "/expense/add";
+
+		public static final String GET_EXPENSES = "/expense/get";
+
+		public static final String DELETE_EXPENSE = "/expense/{expenseId}/delete";
+
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
