@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DoctorExpense;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
@@ -365,25 +366,26 @@ public class BillingApi {
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.DOWNLOAD_MULTIPLE_RECEIPT, notes = PathProxy.BillingUrls.DOWNLOAD_MULTIPLE_RECEIPT)
 	public Response<String> downloadMultipleReceipt(ListIdrequest request) {
-		
+
 		if (request == null || request.getIds() == null || request.getIds().isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		
+
 		Response<String> response = new Response<String>();
 		response.setData(billingService.downloadMultipleReceipt(request.getIds()));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT)
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT, notes = PathProxy.BillingUrls.EMAIL_MULTIPLE_RECEIPT)
 	public Response<Boolean> emailMultipleReceipt(ListIdrequest request) {
-		
-		if (request == null || request.getIds() == null || request.getIds().isEmpty() || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
+
+		if (request == null || request.getIds() == null || request.getIds().isEmpty()
+				|| DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput,"Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		billingService.emailMultipleReceipt(request.getIds(), request.getEmailAddress());
 		Response<Boolean> response = new Response<Boolean>();
@@ -395,14 +397,69 @@ public class BillingApi {
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS, notes = PathProxy.BillingUrls.CHANGE_INVOICE_ITEM_TREATMENT_STATUS)
 	public Response<Boolean> changeInvoiceItemTreatmentStatus(InvoiceItemChangeStatusRequest request) {
-		
+
 		if (request == null || request.getInvoiceId() == null || request.getItemId().isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(billingService.changeInvoiceTreatmentStatus(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.ADD_EDIT_RECEIPT)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.ADD_EDIT_RECEIPT, notes = PathProxy.BillingUrls.ADD_EDIT_RECEIPT)
+	public Response<DoctorExpense> addEditExpense(DoctorExpense request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		DoctorExpense expense = billingService.addEditDoctorExpense(request);
+
+		Response<DoctorExpense> response = new Response<DoctorExpense>();
+		response.setData(expense);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.GET_EXPENSES)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_EXPENSES, notes = PathProxy.BillingUrls.GET_EXPENSES)
+	public Response<DoctorExpense> getExpenses(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("type") String type) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		List<DoctorExpense> expenses = billingService.getDoctorExpenses(type, page, size, doctorId, locationId,
+				hospitalId, updatedTime, discarded);
+
+		Response<DoctorExpense> response = new Response<DoctorExpense>();
+		response.setDataList(expenses);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.DELETE_EXPENSE)
+	@DELETE
+	@ApiOperation(value = PathProxy.BillingUrls.DELETE_EXPENSE, notes = PathProxy.BillingUrls.DELETE_EXPENSE)
+	public Response<DoctorExpense> deleteExpense(@PathParam("expenseId") String expenseId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(expenseId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		DoctorExpense expense = billingService.deleteDoctorExpense(expenseId, discarded);
+
+		Response<DoctorExpense> response = new Response<DoctorExpense>();
+		response.setData(expense);
 		return response;
 	}
 }

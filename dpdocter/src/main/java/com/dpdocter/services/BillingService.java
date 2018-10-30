@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.DoctorExpense;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
@@ -72,5 +73,12 @@ public interface BillingService {
 	void emailMultipleReceipt(List<String> ids, String emailAddress);
 
 	Boolean changeInvoiceTreatmentStatus(InvoiceItemChangeStatusRequest request);
+
+	DoctorExpense addEditDoctorExpense(DoctorExpense request);
+
+	List<DoctorExpense> getDoctorExpenses(String type, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded);
+
+	DoctorExpense deleteDoctorExpense(String expenseId, Boolean discarded);
 
 }

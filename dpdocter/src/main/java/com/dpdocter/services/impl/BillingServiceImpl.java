@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.DoctorExpense;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
@@ -46,6 +47,7 @@ import com.dpdocter.beans.ReceiptJasperDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
@@ -65,6 +67,7 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorExpenseRepository;
 import com.dpdocter.repository.DoctorPatientDueAmountRepository;
 import com.dpdocter.repository.DoctorPatientInvoiceRepository;
 import com.dpdocter.repository.DoctorPatientLedgerRepository;
@@ -175,13 +178,16 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	DrugRepository drugRepository;
-	
+
 	@Autowired
 	private PrescriptionServices prescriptionServices;
-	
+
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
+
+	@Autowired
+	private DoctorExpenseRepository doctorExpenseRepository;
+
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
 		InvoiceAndReceiptInitials response = null;
@@ -277,13 +283,12 @@ public class BillingServiceImpl implements BillingService {
 
 				List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository
 						.findByInvoiceId(doctorPatientInvoiceCollection.getId(), false);
-				
-				
+
 				if (doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()) {
 					throw new BusinessException(ServiceError.Unknown,
 							"Invoice cannot be edited as receipt is already added.");
 				}
-			    if(paidAmount > request.getGrandTotal()) {
+				if (paidAmount > request.getGrandTotal()) {
 					throw new BusinessException(ServiceError.Unknown,
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
@@ -508,11 +513,11 @@ public class BillingServiceImpl implements BillingService {
 						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + dueAmount);
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 			}
-			
+
 			pushNotificationServices.notifyUser(doctorPatientInvoiceCollection.getDoctorId().toString(),
-					"Invoice Added",
-					ComponentType.INVOICE_REFRESH.getType(), doctorPatientInvoiceCollection.getPatientId().toString(), null);
-			
+					"Invoice Added", ComponentType.INVOICE_REFRESH.getType(),
+					doctorPatientInvoiceCollection.getPatientId().toString(), null);
+
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -662,18 +667,17 @@ public class BillingServiceImpl implements BillingService {
 			amountCollection.setDueAmount(amountCollection.getDueAmount()
 					- doctorPatientInvoiceCollection.getBalanceAmount() - advanceAmount);
 			doctorPatientDueAmountRepository.save(amountCollection);
-			
+
 			if (doctorPatientInvoiceCollection != null && doctorPatientInvoiceCollection.getInvoiceItems() != null) {
 				itemIds = CollectionUtils.collect(doctorPatientInvoiceCollection.getInvoiceItems(),
 						new BeanToPropertyValueTransformer("itemId"));
 			}
-			
 
 			if (doctorPatientInvoiceCollection != null) {
 				response = new DoctorPatientInvoice();
 				BeanUtil.map(doctorPatientInvoiceCollection, response);
 			}
-			
+
 			for (ObjectId itemId : itemIds) {
 				// itemId);
 				DrugCollection drug = drugRepository.findOne(itemId);
@@ -684,8 +688,8 @@ public class BillingServiceImpl implements BillingService {
 					Long quantity = inventoryService.getInventoryStockItemCount(response.getLocationId(),
 							response.getHospitalId(), drug.getDrugCode(),
 							doctorPatientInvoiceCollection.getId().toString());
-					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(response.getLocationId(),
-							response.getHospitalId(), drug.getDrugCode());
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+							response.getLocationId(), response.getHospitalId(), drug.getDrugCode());
 					if (inventoryStock != null) {
 						InventoryBatch inventoryBatch = inventoryService
 								.getInventoryBatchById(inventoryStock.getBatchId());
@@ -902,11 +906,11 @@ public class BillingServiceImpl implements BillingService {
 					response.setTotalDueAmount(amountResponse.getTotalDueAmount());
 				}
 			}
-			
+
 			pushNotificationServices.notifyUser(doctorPatientReceiptCollection.getDoctorId().toString(),
-					"Receipt Added",
-					ComponentType.RECEIPT_REFRESH.getType(), doctorPatientReceiptCollection.getPatientId().toString(), null);
-			
+					"Receipt Added", ComponentType.RECEIPT_REFRESH.getType(),
+					doctorPatientReceiptCollection.getPatientId().toString(), null);
+
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -1894,8 +1898,8 @@ public class BillingServiceImpl implements BillingService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Invoice", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice",
+					body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2000,8 +2004,8 @@ public class BillingServiceImpl implements BillingService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Receipt", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipt", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipt",
+					body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2063,13 +2067,11 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	/*
-<<<<<<< HEAD
-	 * private void updateInventoryItem(String itemId, String locationId ,
-	 * String hospitalId , Quantity quantity) { InventoryStockCollection
-=======
-	 * private void updateInventoryItem(String itemId, String locationId , String
-	 * hospitalId , Quantity quantity) { InventoryStockCollection
->>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
+	 * <<<<<<< HEAD private void updateInventoryItem(String itemId, String
+	 * locationId , String hospitalId , Quantity quantity) {
+	 * InventoryStockCollection ======= private void updateInventoryItem(String
+	 * itemId, String locationId , String hospitalId , Quantity quantity) {
+	 * InventoryStockCollection >>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
 	 * inventoryStockCollection =
 	 * inventoryStockRepository.getByResourceIdLocationIdHospitalId(itemId,
 	 * locationId, hospitalId); if(inventoryStockCollection != null) { Long
@@ -2352,8 +2354,8 @@ public class BillingServiceImpl implements BillingService {
 				String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 						mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), "",
 						"Receipts", "multipleEmrMailTemplate.vm");
-				Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipts", body,
-						mailResponse.getMailAttachment());
+				Boolean response = mailService.sendEmail(emailAddress,
+						mailResponse.getDoctorName() + " sent you Receipts", body, mailResponse.getMailAttachment());
 				if (response != null && mailResponse.getMailAttachment() != null
 						&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 					if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2393,5 +2395,102 @@ public class BillingServiceImpl implements BillingService {
 			logger.error(e.getMessage());
 		}
 		return status;
+	}
+
+	@Override
+	public DoctorExpense addEditDoctorExpense(DoctorExpense request) {
+		DoctorExpense response = null;
+		try {
+			DoctorExpenseCollection expenseCollection = null;
+			UserCollection userCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				expenseCollection = doctorExpenseRepository.findOne(new ObjectId(request.getId()));
+				if (expenseCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor Expense not found with Id");
+				}
+				request.setCreatedBy(expenseCollection.getCreatedBy());
+				request.setCreatedTime(expenseCollection.getCreatedTime());
+				request.setUpdatedTime(new Date());
+				BeanUtil.map(request, expenseCollection);
+			} else {
+				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
+				}
+				expenseCollection = new DoctorExpenseCollection();
+				BeanUtil.map(request, expenseCollection);
+				expenseCollection.setCreatedBy(
+						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "Dr." : userCollection.getTitle())
+								+ " " + userCollection.getFirstName());
+				expenseCollection.setCreatedTime(new Date());
+				expenseCollection.setAdminCreatedTime(new Date());
+			}
+			expenseCollection = doctorExpenseRepository.save(expenseCollection);
+			response = new DoctorExpense();
+			BeanUtil.map(expenseCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<DoctorExpense> getDoctorExpenses(String type, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<DoctorExpense> response = null;
+		try {
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
+					.ne(true);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(type))
+				criteria.and("type").is(type);
+			if (size > 0) {
+				response = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "onDate")),
+								Aggregation.skip((page) * size), Aggregation.limit(size)),
+						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
+			} else {
+				response = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "onDate"))),
+						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public DoctorExpense deleteDoctorExpense(String expenseId, Boolean discarded) {
+		DoctorExpense response = null;
+		try {
+
+			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findOne(new ObjectId(expenseId));
+			if (expenseCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor Expense not found with Id");
+			}
+			expenseCollection.setDiscarded(discarded);
+			expenseCollection.setUpdatedTime(new Date());
+			response = new DoctorExpense();
+			BeanUtil.map(expenseCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 }
