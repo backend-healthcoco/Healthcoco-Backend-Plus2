@@ -9,8 +9,13 @@ import com.dpdocter.enums.QuantityEnum;
 public class RecipeItem {
 	private ObjectId id;
 	private String name;
+
 	private double value;
 	private QuantityEnum type;
+
+
+	private MealQuantity quantity;
+
 	private List<EquivalentQuantities> equivalentMeasurements;
 	private MealQuantity calories;
 
@@ -124,20 +129,13 @@ public class RecipeItem {
 		this.name = name;
 	}
 
-	public QuantityEnum getType() {
-		return type;
+
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setType(QuantityEnum type) {
-		this.type = type;
-	}
-
-	public double getValue() {
-		return value;
-	}
-
-	public void setValue(double value) {
-		this.value = value;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
 	}
 
 	public List<EquivalentQuantities> getEquivalentMeasurements() {
@@ -184,6 +182,22 @@ public class RecipeItem {
 
 	public void setVitaminNutrients(List<IngredientItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(double value) {
+		this.value = value;
+	}
+
+	public QuantityEnum getType() {
+		return type;
+	}
+
+	public void setType(QuantityEnum type) {
+		this.type = type;
 	}
 
 

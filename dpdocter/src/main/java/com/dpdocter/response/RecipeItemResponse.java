@@ -12,9 +12,7 @@ public class RecipeItemResponse {
 
 	private String name;
 
-	private double value;
-
-	private QuantityEnum type;
+	private MealQuantity quantity;
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 
@@ -44,20 +42,12 @@ public class RecipeItemResponse {
 		this.name = name;
 	}
 
-	public double getValue() {
-		return value;
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setValue(double value) {
-		this.value = value;
-	}
-
-	public QuantityEnum getType() {
-		return type;
-	}
-
-	public void setType(QuantityEnum type) {
-		this.type = type;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
 	}
 
 	public List<EquivalentQuantities> getEquivalentMeasurements() {
