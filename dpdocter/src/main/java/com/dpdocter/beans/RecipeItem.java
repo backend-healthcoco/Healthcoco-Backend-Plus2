@@ -4,16 +4,12 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.dpdocter.enums.QuantityEnum;
-
 public class RecipeItem {
 	private ObjectId id;
 
 	private String name;
 
-	private double value;
-
-	private QuantityEnum type;
+	private MealQuantity quantity;
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 
@@ -121,20 +117,13 @@ public class RecipeItem {
 		this.name = name;
 	}
 
-	public QuantityEnum getType() {
-		return type;
+
+	public MealQuantity getQuantity() {
+		return quantity;
 	}
 
-	public void setType(QuantityEnum type) {
-		this.type = type;
-	}
-
-	public double getValue() {
-		return value;
-	}
-
-	public void setValue(double value) {
-		this.value = value;
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
 	}
 
 	public List<EquivalentQuantities> getEquivalentMeasurements() {
