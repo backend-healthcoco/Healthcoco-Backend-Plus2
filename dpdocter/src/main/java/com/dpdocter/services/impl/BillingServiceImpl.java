@@ -2442,8 +2442,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
-					.ne(true);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -2464,6 +2463,44 @@ public class BillingServiceImpl implements BillingService {
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "onDate"))),
 						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Double countDoctorExpenses(String type, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		Double response = 0.0;
+		try {
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
+					.ne(true);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(type))
+				criteria.and("type").is(type);
+
+			DoctorExpense doctorExpense =  mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("locationId", "$locationId").append("hospitalId",
+													"hospitalId")).append("cost",
+															new BasicDBObject("$sum", "$cost"))))),
+					DoctorExpenseCollection.class, DoctorExpense.class).getUniqueMappedResult();
+			if(doctorExpense!=null) {
+				response=doctorExpense.getCost();
 			}
 
 		} catch (Exception e) {
