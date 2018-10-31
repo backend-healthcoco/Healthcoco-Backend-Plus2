@@ -408,9 +408,9 @@ public class BillingApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.BillingUrls.ADD_EDIT_RECEIPT)
+	@Path(value = PathProxy.BillingUrls.ADD_EDIT_EXPENSE)
 	@POST
-	@ApiOperation(value = PathProxy.BillingUrls.ADD_EDIT_RECEIPT, notes = PathProxy.BillingUrls.ADD_EDIT_RECEIPT)
+	@ApiOperation(value = PathProxy.BillingUrls.ADD_EDIT_EXPENSE, notes = PathProxy.BillingUrls.ADD_EDIT_EXPENSE)
 	public Response<DoctorExpense> addEditExpense(DoctorExpense request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
@@ -443,6 +443,26 @@ public class BillingApi {
 
 		Response<DoctorExpense> response = new Response<DoctorExpense>();
 		response.setDataList(expenses);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.TOTAL_EXPENSES_COST)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.TOTAL_EXPENSES_COST, notes = PathProxy.BillingUrls.TOTAL_EXPENSES_COST)
+	public Response<Double> countExpenses(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("type") String type) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Double count = billingService.countDoctorExpenses(type, doctorId, locationId, hospitalId, updatedTime,
+				discarded);
+
+		Response<Double> response = new Response<Double>();
+		response.setData(count);
 		return response;
 	}
 

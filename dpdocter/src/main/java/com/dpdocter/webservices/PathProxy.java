@@ -1343,6 +1343,8 @@ public interface PathProxy {
 
 		public static final String DELETE_EXPENSE = "/expense/{expenseId}/delete";
 
+		public static final String TOTAL_EXPENSES_COST = "/total/expense/cost";
+
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
