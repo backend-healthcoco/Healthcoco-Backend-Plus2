@@ -3202,6 +3202,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				break;
 			}
 			case "PAYMENTMODES": {
+				response = getPaymentDataByPaymentModes(searchType, page, size, criteria);
 				break;
 			}
 			default: {
@@ -3528,7 +3529,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		try {
 			Criteria criteria = new Criteria();
 			Criteria criteria2 = new Criteria();
-
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
@@ -3542,26 +3546,21 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+				fromTime = DPDoctorUtils.getStartTime(from);
+				toTime = DPDoctorUtils.getEndTime(to);
+				criteria.and("receivedDate").gte(fromTime).lte(toTime);
 
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("receivedDate").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				criteria.and("receivedDate").lte(end);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				fromTime = DPDoctorUtils.getStartTime(from);
+				criteria.and("receivedDate").gte(fromTime);
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				to = new Date(Long.parseLong(toDate));
+				toTime = DPDoctorUtils.getEndTime(to);
+				criteria.and("receivedDate").lte(toTime);
 			}
 			criteria.and("discarded").is(false);
 			Aggregation aggregation = null;
