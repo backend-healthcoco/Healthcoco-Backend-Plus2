@@ -15,6 +15,7 @@ import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
 import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
+import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
@@ -77,5 +78,8 @@ public interface AnalyticsService {
 
 	public DoctorVisitAnalyticResponse getVisitAnalytic(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate);
+
+	List<ExpenseCountResponse> getDoctorExpenseAnalytic( String doctorId, String locationId,
+			String hospitalId, Boolean discarded, String fromDate, String toDate);
 
 }

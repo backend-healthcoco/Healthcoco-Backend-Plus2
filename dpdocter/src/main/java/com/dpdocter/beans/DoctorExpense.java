@@ -15,7 +15,7 @@ public class DoctorExpense extends GenericCollection {
 	public ModeOfPayment modeOfPayment = ModeOfPayment.CASH;
 	public String chequeNo;
 	public Double cost = 0.0;
-	public Date onDate = new Date();
+	public Date toDate = new Date();
 	public String notes;
 	public Boolean discarded = false;
 	public String uniqueExpenseId;
@@ -84,12 +84,12 @@ public class DoctorExpense extends GenericCollection {
 		this.cost = cost;
 	}
 
-	public Date getOnDate() {
-		return onDate;
+	public Date getToDate() {
+		return toDate;
 	}
 
-	public void setOnDate(Date onDate) {
-		this.onDate = onDate;
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 
 	public String getNotes() {

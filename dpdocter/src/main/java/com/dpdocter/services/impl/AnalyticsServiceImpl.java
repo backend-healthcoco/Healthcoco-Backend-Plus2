@@ -27,12 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.DoctorExpense;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TretmentAnalyticMongoResponse;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
@@ -64,6 +66,7 @@ import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
 import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
 import com.dpdocter.response.DrugsAnalyticsData;
+import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
@@ -3203,7 +3206,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				break;
 			}
 			case "PAYMENTMODES": {
-				response = getPaymentDataByPaymentModes(searchType, page, size, criteria);
 				break;
 			}
 			default: {
@@ -3825,6 +3827,68 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While getting most prescribed drugs");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting most prescribed drugs");
+		}
+		return response;
+	}
+
+	@Override
+	public List<ExpenseCountResponse> getDoctorExpenseAnalytic(String doctorId, String locationId, String hospitalId,
+			Boolean discarded, String fromDate, String toDate) {
+		List<ExpenseCountResponse> response = null;
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
+			}
+
+			localCalendar.setTime(from);
+			int fromDay = localCalendar.get(Calendar.DATE);
+			int fromMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int fromYear = localCalendar.get(Calendar.YEAR);
+			fromTime = new DateTime(fromYear, fromMonth, fromDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			localCalendar.setTime(to);
+			fromDay = localCalendar.get(Calendar.DATE);
+			fromMonth = localCalendar.get(Calendar.MONTH) + 1;
+			fromYear = localCalendar.get(Calendar.YEAR);
+			toTime = new DateTime(fromYear, fromMonth, fromDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			Criteria criteria = new Criteria("toDate").gte(fromTime).lte(toTime);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			response = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "type").append("cost", new BasicDBObject("$sum", "$cost"))
+											.append("type", new BasicDBObject("$first", "$type"))))),
+					DoctorExpenseCollection.class, ExpenseCountResponse.class).getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}

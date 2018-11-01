@@ -2455,13 +2455,13 @@ public class BillingServiceImpl implements BillingService {
 			if (size > 0) {
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "onDate")),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate")),
 								Aggregation.skip((page) * size), Aggregation.limit(size)),
 						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
 			} else {
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "onDate"))),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate"))),
 						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
 			}
 
@@ -2479,8 +2479,7 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
-					.ne(true);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -2491,7 +2490,7 @@ public class BillingServiceImpl implements BillingService {
 			if (!DPDoctorUtils.anyStringEmpty(type))
 				criteria.and("type").is(type);
 
-			DoctorExpense doctorExpense =  mongoTemplate.aggregate(
+			DoctorExpense doctorExpense = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							new CustomAggregationOperation(new BasicDBObject("$group",
 									new BasicDBObject("_id",
@@ -2499,8 +2498,8 @@ public class BillingServiceImpl implements BillingService {
 													"hospitalId")).append("cost",
 															new BasicDBObject("$sum", "$cost"))))),
 					DoctorExpenseCollection.class, DoctorExpense.class).getUniqueMappedResult();
-			if(doctorExpense!=null) {
-				response=doctorExpense.getCost();
+			if (doctorExpense != null) {
+				response = doctorExpense.getCost();
 			}
 
 		} catch (Exception e) {

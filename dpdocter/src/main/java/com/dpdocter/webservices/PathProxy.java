@@ -1575,6 +1575,7 @@ public interface PathProxy {
 		public static final String GET_PRESCRIPTION_ANALYTIC = "/doctor/prescription";
 		public static final String GET_PRESCRIPTION_ITEM_ANALYTIC = "/doctor/prescription/{type}";
 		public static final String GET_PATIENT_VISIT_ANALYTIC = "/doctor/visit";
+		public static final String GET_DOCTOR_EXPENSE_ANALYTICS = "/doctor/expense";
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
