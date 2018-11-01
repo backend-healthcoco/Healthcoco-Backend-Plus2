@@ -29,14 +29,13 @@ public class DoctorExpenseCollection extends GenericCollection {
 	@Field
 	public Double cost = 0.0;
 	@Field
-	public Date onDate=new Date();
+	public Date toDate = new Date();
 	@Field
 	public String notes;
 	@Field
 	public Boolean discarded = false;
 	@Field
 	public String uniqueExpenseId;
-
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -118,12 +117,12 @@ public class DoctorExpenseCollection extends GenericCollection {
 		this.cost = cost;
 	}
 
-	public Date getOnDate() {
-		return onDate;
+	public Date getToDate() {
+		return toDate;
 	}
 
-	public void setOnDate(Date onDate) {
-		this.onDate = onDate;
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 
 	public String getNotes() {
