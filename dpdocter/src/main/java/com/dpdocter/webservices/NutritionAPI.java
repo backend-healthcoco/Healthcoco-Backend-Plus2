@@ -443,9 +443,9 @@ public class NutritionAPI {
 
 	}
 
-	@Path(value = PathProxy.NutritionUrl.ADD_NUTRIION_RECORD)
+	@Path(value = PathProxy.NutritionUrl.ADD_NUTRITION_RECORD)
 	@POST
-	@ApiOperation(value = PathProxy.NutritionUrl.ADD_NUTRIION_RECORD, notes = PathProxy.NutritionUrl.ADD_NUTRIION_RECORD)
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_NUTRITION_RECORD, notes = PathProxy.NutritionUrl.ADD_NUTRITION_RECORD)
 	public Response<NutritionRecord> addNutritionRecord(NutritionRecord request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -464,9 +464,9 @@ public class NutritionAPI {
 	}
 
 	@POST
-	@Path(value = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD_MULTIPART_FILE)
+	@Path(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
-	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD_MULTIPART_FILE, notes = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD_MULTIPART_FILE)
+	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE, notes = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE)
 	public Response<RecordsFile> uploadNutritionRecordMultipart(@FormDataParam("file") FormDataBodyPart file,
 			@FormDataParam("data") FormDataBodyPart data) {
 
@@ -489,8 +489,8 @@ public class NutritionAPI {
 	}
 
 	@POST
-	@Path(value = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD)
-	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD, notes = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD)
+	@Path(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD)
+	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD, notes = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD)
 	public Response<RecordsFile> uploadNutritionRecord(DoctorLabReportUploadRequest request) {
 		if (request == null || request.getFileDetails() == null) {
 			logger.warn("Invalid Input");
@@ -511,9 +511,9 @@ public class NutritionAPI {
 			return null;
 	}
 
-	@Path(value = PathProxy.NutritionUrl.GET_NUTRIION_RECORD_BY_ID)
+	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORD_BY_ID)
 	@GET
-	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRIION_RECORD_BY_ID, notes = PathProxy.NutritionUrl.GET_NUTRIION_RECORD_BY_ID)
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORD_BY_ID, notes = PathProxy.NutritionUrl.GET_NUTRITION_RECORD_BY_ID)
 	public Response<NutritionRecord> getRecordById(@PathParam("recordId") String recordId) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Record Id Cannot Be Empty");
@@ -528,9 +528,9 @@ public class NutritionAPI {
 
 	}
 
-	@Path(value = PathProxy.NutritionUrl.GET_NUTRIION_RECORDS)
+	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORDS)
 	@GET
-	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRIION_RECORDS, notes = PathProxy.NutritionUrl.GET_NUTRIION_RECORDS)
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORDS, notes = PathProxy.NutritionUrl.GET_NUTRITION_RECORDS)
 	public Response<NutritionRecord> getDoctorLabReports(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
@@ -543,6 +543,19 @@ public class NutritionAPI {
 		response.setDataList(records);
 		return response;
 
+	}
+
+	@Path(PathProxy.NutritionUrl.DELETE_NUTRITION_RECORD)
+	@DELETE
+	@ApiOperation(value = PathProxy.NutritionUrl.DELETE_NUTRITION_RECORD, notes = PathProxy.NutritionUrl.DELETE_NUTRITION_RECORD)
+	public Response<NutritionRecord> deleteUserPlanSubscription(@PathParam("recordId") String recordId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(recordId)) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+		Response<NutritionRecord> response = new Response<NutritionRecord>();
+		response.setData(nutritionRecordService.deleteNutritionRecord(recordId, discarded));
+		return response;
 	}
 
 }
