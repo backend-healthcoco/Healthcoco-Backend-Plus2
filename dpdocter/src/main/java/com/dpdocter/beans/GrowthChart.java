@@ -20,6 +20,7 @@ public class GrowthChart extends GenericCollection {
 	private String bloodSugarF;
 	private String bloodSugarPP;
 	private String bmd;
+	private Boolean discarded = false;
 
 	public String getId() {
 		return id;
@@ -147,6 +148,14 @@ public class GrowthChart extends GenericCollection {
 
 	public void setBmd(String bmd) {
 		this.bmd = bmd;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	@Override
