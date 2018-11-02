@@ -1,15 +1,12 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
 import java.util.Date;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
-import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.beans.Age;
 import com.dpdocter.enums.VaccineRoute;
 import com.dpdocter.enums.VaccineStatus;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class Vaccine extends GenericCollection {
+public class VaccineRequest {
 
 	private String id;
 	private String name;
@@ -18,6 +15,7 @@ public class Vaccine extends GenericCollection {
 	private VaccineRoute route;
 	private String bodySite;
 	private Integer dosage;
+	private String vaccineBrandId;
 	private Date givenDate;
 	private Age age;
 
@@ -91,12 +89,6 @@ public class Vaccine extends GenericCollection {
 
 	public void setAge(Age age) {
 		this.age = age;
-	}
-
-	@Override
-	public String toString() {
-		return "Vaccine [name=" + name + ", dueDate=" + dueDate + ", status=" + status + ", route=" + route
-				+ ", bodySite=" + bodySite + ", dosage=" + dosage + ", givenDate=" + givenDate + ", age=" + age + "]";
 	}
 
 }
