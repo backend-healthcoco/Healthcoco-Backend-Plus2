@@ -19,6 +19,7 @@ public class Vaccine extends GenericCollection {
 	private String bodySite;
 	private Integer dosage;
 	private Date givenDate;
+	private VaccineBrand vaccineBrand;
 	private Age age;
 
 	public String getId() {
@@ -91,6 +92,14 @@ public class Vaccine extends GenericCollection {
 
 	public void setAge(Age age) {
 		this.age = age;
+	}
+
+	public VaccineBrand getVaccineBrand() {
+		return vaccineBrand;
+	}
+
+	public void setVaccineBrand(VaccineBrand vaccineBrand) {
+		this.vaccineBrand = vaccineBrand;
 	}
 
 	@Override

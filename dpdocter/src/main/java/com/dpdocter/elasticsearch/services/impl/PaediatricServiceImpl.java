@@ -66,7 +66,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		return response;
 	}
 	
-	public List<GrowthChart> getGrowthChartById(String patientId, String doctorId, String locationId, String hospitalId, int page, int size) {
+	/*public List<GrowthChart> getGrowthChartById(String patientId, String doctorId, String locationId, String hospitalId, int page, int size) {
 		List<GrowthChart> growthCharts = null;
 		GrowthChartCollection growthChartCollection = null;
 		try {
@@ -84,7 +84,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 		}
 		return response;
-	}
+	}*/
 
 	public Boolean discardGrowthChart(String id, Boolean discarded) {
 		Boolean response = false;
