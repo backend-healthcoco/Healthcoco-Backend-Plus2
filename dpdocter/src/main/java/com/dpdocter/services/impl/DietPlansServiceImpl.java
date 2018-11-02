@@ -30,6 +30,8 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class DietPlansServiceImpl implements DietPlansService {
+	
+	
 	private static Logger logger = Logger.getLogger(DietPlansServiceImpl.class.getName());
 	@Autowired
 	private DietPlanRepository dietPlanRepository;
@@ -37,6 +39,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 	private UserRepository userRepository;
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
 
 	@Override
 	public DietPlan addEditDietPlan(DietPlan request) {
@@ -47,6 +50,9 @@ public class DietPlansServiceImpl implements DietPlansService {
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				dietPlanCollection = dietPlanRepository.findOne(new ObjectId(request.getId()));
+				if (dietPlanCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, " No Diet Plan found with Id ");
+				}
 				request.setCreatedBy(dietPlanCollection.getCreatedBy());
 				request.setCreatedTime(dietPlanCollection.getCreatedTime());
 				request.setUniquePlanId(dietPlanCollection.getUniquePlanId());
@@ -166,5 +172,6 @@ public class DietPlansServiceImpl implements DietPlansService {
 		}
 		return response;
 	}
+
 
 }
