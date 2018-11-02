@@ -482,4 +482,20 @@ public class BillingApi {
 		response.setData(expense);
 		return response;
 	}
+
+	@Path(value = PathProxy.BillingUrls.GET_EXPENSE)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_EXPENSE, notes = PathProxy.BillingUrls.GET_EXPENSE)
+	public Response<DoctorExpense> getExpense(@PathParam("expenseId") String expenseId) {
+		if (DPDoctorUtils.anyStringEmpty(expenseId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		DoctorExpense expense = billingService.getDoctorExpense(expenseId);
+
+		Response<DoctorExpense> response = new Response<DoctorExpense>();
+		response.setData(expense);
+		return response;
+	}
 }

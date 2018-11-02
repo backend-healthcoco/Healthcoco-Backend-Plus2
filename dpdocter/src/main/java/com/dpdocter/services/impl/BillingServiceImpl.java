@@ -64,6 +64,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.SMSStatus;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -2411,6 +2412,8 @@ public class BillingServiceImpl implements BillingService {
 				request.setCreatedBy(expenseCollection.getCreatedBy());
 				request.setCreatedTime(expenseCollection.getCreatedTime());
 				request.setUpdatedTime(new Date());
+				request.setUniqueExpenseId(expenseCollection.getUniqueExpenseId());
+				expenseCollection = new DoctorExpenseCollection();
 				BeanUtil.map(request, expenseCollection);
 			} else {
 				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
@@ -2419,6 +2422,8 @@ public class BillingServiceImpl implements BillingService {
 				}
 				expenseCollection = new DoctorExpenseCollection();
 				BeanUtil.map(request, expenseCollection);
+				expenseCollection.setUniqueExpenseId(
+						UniqueIdInitial.EXPENSE.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				expenseCollection.setCreatedBy(
 						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "Dr." : userCollection.getTitle())
 								+ " " + userCollection.getFirstName());
@@ -2520,6 +2525,22 @@ public class BillingServiceImpl implements BillingService {
 			}
 			expenseCollection.setDiscarded(discarded);
 			expenseCollection.setUpdatedTime(new Date());
+			response = new DoctorExpense();
+			BeanUtil.map(expenseCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	public DoctorExpense getDoctorExpense(String expenseId) {
+		DoctorExpense response = null;
+		try {
+
+			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findOne(new ObjectId(expenseId));
 			response = new DoctorExpense();
 			BeanUtil.map(expenseCollection, response);
 

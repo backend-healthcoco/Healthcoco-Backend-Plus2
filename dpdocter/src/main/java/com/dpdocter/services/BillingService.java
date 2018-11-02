@@ -84,4 +84,6 @@ public interface BillingService {
 	Double countDoctorExpenses(String type, String doctorId, String locationId, String hospitalId, String updatedTime,
 			Boolean discarded);
 
+	DoctorExpense getDoctorExpense(String expenseId);
+
 }
