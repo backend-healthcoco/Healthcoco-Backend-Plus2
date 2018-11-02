@@ -1369,6 +1369,8 @@ public interface PathProxy {
 
 		public static final String GET_EXPENSES = "/expense/get";
 
+		public static final String GET_EXPENSE = "/expense/{expenseId}/get";
+
 		public static final String DELETE_EXPENSE = "/expense/{expenseId}/delete";
 
 		public static final String TOTAL_EXPENSES_COST = "/total/expense/cost";
