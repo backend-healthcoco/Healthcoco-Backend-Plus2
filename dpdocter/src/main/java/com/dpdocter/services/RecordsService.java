@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
+import com.dpdocter.beans.NutritionRecord;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.Tags;

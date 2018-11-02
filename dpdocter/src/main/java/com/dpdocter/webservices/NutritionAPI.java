@@ -1,5 +1,7 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -13,21 +15,26 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
+import com.dpdocter.beans.NutritionRecord;
 import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
 import com.dpdocter.beans.PatientFoodAndExcercise;
 import com.dpdocter.beans.PatientLifeStyle;
 import com.dpdocter.beans.PatientMeasurementInfo;
+import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.UserNutritionSubscription;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditNutritionReferenceRequest;
+import com.dpdocter.request.DoctorLabReportUploadRequest;
+import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.AssessmentFormHistoryResponse;
 import com.dpdocter.response.NutritionPlanResponse;
@@ -35,7 +42,10 @@ import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.services.AssessmentFormService;
+import com.dpdocter.services.NutritionRecordService;
 import com.dpdocter.services.NutritionService;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -55,7 +65,13 @@ public class NutritionAPI {
 	private NutritionService nutritionService;
 
 	@Autowired
+	private NutritionRecordService nutritionRecordService;
+
+	@Autowired
 	private AssessmentFormService AssessmentFormService;
+
+	@Value(value = "${image.path}")
+	private String imagePath;
 
 	@POST
 	@Path(PathProxy.NutritionUrl.ADD_EDIT_NUTRITION_REFERENCE)
@@ -411,6 +427,122 @@ public class NutritionAPI {
 
 		response.setData(AssessmentFormService.getPatientMeasurementInfo(assessmentId));
 		return response;
+	}
+
+	@Path(value = PathProxy.NutritionUrl.UPDATE_IS_SHARE_WITH_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.UPDATE_IS_SHARE_WITH_PATIENT, notes = PathProxy.NutritionUrl.UPDATE_IS_SHARE_WITH_PATIENT)
+	public Response<Boolean> updateShareWithPatent(@PathParam("recordId") String recordId) {
+		if (DPDoctorUtils.anyStringEmpty(recordId)) {
+			logger.warn("Record Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(nutritionRecordService.updateShareWithPatient(recordId));
+		return response;
+
+	}
+
+	@Path(value = PathProxy.NutritionUrl.ADD_NUTRIION_RECORD)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_NUTRIION_RECORD, notes = PathProxy.NutritionUrl.ADD_NUTRIION_RECORD)
+	public Response<NutritionRecord> addNutritionRecord(NutritionRecord request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+				request.getPatientId()) || request.getRecordsFiles() == null || request.getRecordsFiles().isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		NutritionRecord nutritionRecord = nutritionRecordService.addNutritionRecord(request);
+
+		Response<NutritionRecord> response = new Response<NutritionRecord>();
+		response.setData(nutritionRecord);
+		return response;
+	}
+
+	@POST
+	@Path(value = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD_MULTIPART_FILE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD_MULTIPART_FILE, notes = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD_MULTIPART_FILE)
+	public Response<RecordsFile> uploadNutritionRecordMultipart(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
+
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		MyFiileRequest request = data.getValueAs(MyFiileRequest.class);
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(file.getContentDisposition().getFileName())) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		RecordsFile recordsFile = nutritionRecordService.uploadNutritionRecord(file, request);
+		if (recordsFile != null) {
+			recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
+		}
+
+		Response<RecordsFile> response = new Response<RecordsFile>();
+		response.setData(recordsFile);
+		return response;
+	}
+
+	@POST
+	@Path(value = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD)
+	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD, notes = PathProxy.NutritionUrl.UPLOAD_NUTRIION_RECORD)
+	public Response<RecordsFile> uploadNutritionRecord(DoctorLabReportUploadRequest request) {
+		if (request == null || request.getFileDetails() == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		RecordsFile recordsFiles = nutritionRecordService.uploadNutritionRecord(request);
+
+		Response<RecordsFile> response = new Response<RecordsFile>();
+		response.setData(recordsFiles);
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
+
+	@Path(value = PathProxy.NutritionUrl.GET_NUTRIION_RECORD_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRIION_RECORD_BY_ID, notes = PathProxy.NutritionUrl.GET_NUTRIION_RECORD_BY_ID)
+	public Response<NutritionRecord> getRecordById(@PathParam("recordId") String recordId) {
+		if (DPDoctorUtils.anyStringEmpty(recordId)) {
+			logger.warn("Record Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "report Id Cannot Be Empty");
+		}
+
+		NutritionRecord nutritionRecord = nutritionRecordService.getNutritionRecord(recordId);
+
+		Response<NutritionRecord> response = new Response<NutritionRecord>();
+		response.setData(nutritionRecord);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.NutritionUrl.GET_NUTRIION_RECORDS)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRIION_RECORDS, notes = PathProxy.NutritionUrl.GET_NUTRIION_RECORDS)
+	public Response<NutritionRecord> getDoctorLabReports(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("discarded") Boolean discarded,
+			@QueryParam("isnutrition") @DefaultValue("isNutrition") Boolean isNutrition) {
+
+		List<NutritionRecord> records = nutritionRecordService.getNutritionRecord(page, size, patientId, doctorId,
+				locationId, hospitalId, searchTerm, discarded, isNutrition);
+		Response<NutritionRecord> response = new Response<NutritionRecord>();
+		response.setDataList(records);
+		return response;
+
 	}
 
 }
