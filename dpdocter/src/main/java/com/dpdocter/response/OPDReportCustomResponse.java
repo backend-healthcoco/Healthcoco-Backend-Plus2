@@ -3,8 +3,9 @@ package com.dpdocter.response;
 import java.util.Date;
 
 import com.dpdocter.beans.Patient;
+import com.dpdocter.collections.GenericCollection;
 
-public class OPDReportCustomResponse {
+public class OPDReportCustomResponse extends GenericCollection  {
 
 	private String id;
 	private String patientId;

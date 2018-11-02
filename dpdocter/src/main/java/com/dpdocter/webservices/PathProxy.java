@@ -1364,6 +1364,15 @@ public interface PathProxy {
 		public static final String EMAIL_MULTIPLE_RECEIPT = "receipt/email";
 
 		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
+
+		public static final String ADD_EDIT_EXPENSE = "/expense/add";
+
+		public static final String GET_EXPENSES = "/expense/get";
+
+		public static final String DELETE_EXPENSE = "/expense/{expenseId}/delete";
+
+		public static final String TOTAL_EXPENSES_COST = "/total/expense/cost";
+
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
@@ -1566,6 +1575,7 @@ public interface PathProxy {
 		public static final String GET_PRESCRIPTION_ANALYTIC = "/doctor/prescription";
 		public static final String GET_PRESCRIPTION_ITEM_ANALYTIC = "/doctor/prescription/{type}";
 		public static final String GET_PATIENT_VISIT_ANALYTIC = "/doctor/visit";
+		public static final String GET_DOCTOR_EXPENSE_ANALYTICS = "/doctor/expense";
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";

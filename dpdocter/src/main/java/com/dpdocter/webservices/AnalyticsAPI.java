@@ -29,6 +29,7 @@ import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
 import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
+import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
@@ -383,6 +384,24 @@ public class AnalyticsAPI {
 				toDate);
 		Response<DoctorVisitAnalyticResponse> response = new Response<DoctorVisitAnalyticResponse>();
 		response.setData(data);
+		return response;
+	}
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_DOCTOR_EXPENSE_ANALYTICS)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_DOCTOR_EXPENSE_ANALYTICS, notes = PathProxy.AnalyticsUrls.GET_DOCTOR_EXPENSE_ANALYTICS)
+	public Response<ExpenseCountResponse> getPatintVisitAnalytic(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
+			@QueryParam("discarded") boolean discarded) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
+		}
+
+		List<ExpenseCountResponse> data = analyticsService.getDoctorExpenseAnalytic(doctorId, locationId, hospitalId,
+				discarded, fromDate, toDate);
+		Response<ExpenseCountResponse> response = new Response<ExpenseCountResponse>();
+		response.setDataList(data);
 		return response;
 	}
 
