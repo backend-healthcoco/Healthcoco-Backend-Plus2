@@ -1791,13 +1791,13 @@ public interface PathProxy {
 		public static final String GET_ASSESSMENT_LIFE_STYLE = "assessment/lifeStyle/{assessmentId}/get";
 		public static final String ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE = "assessment/food/exercise/addEdit";
 		public static final String GET_ASSESSMENT_FOOD_AND_EXCERCISE = "assessment/food/exercise/{assessmentId}/get";
-		public static final String ADD_NUTRIION_RECORD = "/record/addEdit";
-		public static final String UPLOAD_NUTRIION_RECORD_MULTIPART_FILE = "/record/upload/file/multipart";
-		public static final String UPLOAD_NUTRIION_RECORD = "/record/upload/file";
-		public static final String GET_NUTRIION_RECORDS = "/record/get";
-		public static final String GET_NUTRIION_RECORD_BY_ID = "/record/{recordId}/get";
+		public static final String ADD_NUTRITION_RECORD = "/record/addEdit";
+		public static final String UPLOAD_NUTRITION_RECORD_MULTIPART_FILE = "/record/upload/file/multipart";
+		public static final String UPLOAD_NUTRITION_RECORD = "/record/upload/file";
+		public static final String GET_NUTRITION_RECORDS = "/record/get";
+		public static final String GET_NUTRITION_RECORD_BY_ID = "/record/{recordId}/get";
 		public static final String UPDATE_IS_SHARE_WITH_PATIENT = "/updateIsShareWithPatient/{recordId}";
-		public static final String DELETE_NUTRIION_RECORD = "/record/{recordId}/delete";
+		public static final String DELETE_NUTRITION_RECORD = "/record/{recordId}/delete";
 	}
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
