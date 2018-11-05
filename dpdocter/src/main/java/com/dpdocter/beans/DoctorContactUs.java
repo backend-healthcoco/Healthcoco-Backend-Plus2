@@ -38,6 +38,7 @@ public class DoctorContactUs extends GenericCollection {
 	private Boolean isVerified;
 	private Boolean toList;
 	private String deviceType;
+	private String mrCode;
 
 	public String getId() {
 		return id;
@@ -157,6 +158,14 @@ public class DoctorContactUs extends GenericCollection {
 
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
 	}
 
 	@Override
