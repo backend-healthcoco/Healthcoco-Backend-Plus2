@@ -274,7 +274,7 @@ public class LoginServiceImpl implements LoginService {
 							}
 
 							if (!isStaff) {
-								if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
+								if (!checkHospitalId.containsKey(locationCollection.getHospitalId().toString())) {
 									hospitalCollection = doctorClinicProfileLookupResponse.getHospital();
 									Hospital hospital = new Hospital();
 									BeanUtil.map(hospitalCollection, hospital);
@@ -288,7 +288,9 @@ public class LoginServiceImpl implements LoginService {
 											.get(locationCollection.getHospitalId().toString());
 
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
-									hospitals.add(hospital);
+									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
+									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
+//									hospitals.add(hospital);
 								}
 							}
 						}

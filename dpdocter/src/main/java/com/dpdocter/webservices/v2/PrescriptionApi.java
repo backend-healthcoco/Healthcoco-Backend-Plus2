@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -14,11 +15,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.v2.Drug;
 import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.v2.PrescriptionServices;
+import com.dpdocter.webservices.v2.PathProxy;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -58,6 +61,27 @@ public class PrescriptionApi {
 
 		Response<Prescription> response = new Response<Prescription>();
 		response.setDataList(prescriptions);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.SEARCH_DRUGS)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.SEARCH_DRUGS, notes = PathProxy.PrescriptionUrls.SEARCH_DRUGS)
+	public Response<Drug> searchDrug( @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+
+		if (DPDoctorUtils.anyStringEmpty(doctorId,locationId,hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		List<Drug> drugDocuments = prescriptionServices.getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<Drug> response = new Response<Drug>();
+		response.setDataList(drugDocuments);
 		return response;
 	}
 }

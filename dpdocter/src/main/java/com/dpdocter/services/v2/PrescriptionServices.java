@@ -5,6 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.EyePrescription;
+import com.dpdocter.beans.v2.Drug;
 import com.dpdocter.beans.v2.Prescription;
 
 public interface PrescriptionServices {
@@ -41,6 +42,9 @@ public interface PrescriptionServices {
 	EyePrescription getEyePrescription(String id);
 
 	Prescription getPrescriptionById(String prescriptionId);
+
+	List<Drug> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded, String searchTerm);
 
 	/*List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId);
 

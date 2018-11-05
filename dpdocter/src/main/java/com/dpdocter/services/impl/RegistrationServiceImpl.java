@@ -2223,26 +2223,32 @@ public class RegistrationServiceImpl implements RegistrationService {
 				logger.warn(role);
 				throw new BusinessException(ServiceError.NoRecord, role);
 			}
+			
+			System.out.println("Doctor register request :: " + request);
+			
 			UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(),
 					request.getEmailAddress());
-
+			
+			
 			UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationIdHospitalId(
 					userCollection.getId(), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()));
+			
 			if (userRoleCollection != null) {
 				if (userRoleCollection.getRoleId().toString().equals(request.getRoleId())) {
 					logger.error("User has  already assigned " + doctorRole.getRole() + "in clinic");
 					throw new BusinessException(ServiceError.InvalidInput,
 							"User has  already assigned " + doctorRole.getRole() + " in clinic");
 				}
-
 				userRoleCollection = new UserRoleCollection(userCollection.getId(), new ObjectId(request.getRoleId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 				userRoleCollection.setCreatedTime(new Date());
 				userRoleCollection = userRoleRepository.save(userRoleCollection);
 			} else {
-				logger.error("User is already added in clinic");
-				throw new BusinessException(ServiceError.Unknown, "User is already added in clinic");
+				userRoleCollection = new UserRoleCollection(userCollection.getId(), new ObjectId(request.getRoleId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+				userRoleCollection.setCreatedTime(new Date());
+				userRoleCollection = userRoleRepository.save(userRoleCollection);
 			}
 
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());

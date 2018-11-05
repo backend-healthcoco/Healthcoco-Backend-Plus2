@@ -156,6 +156,8 @@ public interface PathProxy {
 
 	public interface PrescriptionUrls {
 		
+		public static final String SEARCH_DRUGS = "/searchDrug";
+		
 	}
 	
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";

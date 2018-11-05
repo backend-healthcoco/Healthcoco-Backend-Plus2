@@ -129,7 +129,7 @@ public class DoctorRegisterRequest {
 		return "DoctorRegisterRequest [title=" + title + ", userId=" + userId + ", firstName=" + firstName
 				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", roleId=" + roleId
-				+ ", isActivate=" + isActivate + ", colorCode=" + colorCode + "]";
+				+ ", isActivate=" + isActivate + ", colorCode=" + colorCode + ", speciality=" + speciality + "]";
 	}
 
 }
