@@ -54,6 +54,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	@Value(value = "${set.password.link}")
 	private String setPasswordLink;
+	
+	@Value(value = "${welcome.link}")
+	private String welcomeLink;
 
 	@Override
 	@Transactional
@@ -64,7 +67,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("fName", fName);
 		model.put("doctorName", doctorName);
 		model.put("clinicName", clinicName);
-		model.put("link", link + "/" + tokenId);
+		model.put("link", welcomeLink + "/" + tokenId);
 		model.put("loginLink", loginLink);
 		model.put("imageURL", imagePath + "templatesImage");
 		model.put("contactUsEmail", contactUsEmail);

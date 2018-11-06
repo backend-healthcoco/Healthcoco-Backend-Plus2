@@ -45,4 +45,6 @@ public interface SignUpService {
 
 	DoctorSignUp doctorSignUp(DoctorSignupRequest request);
 
+	com.dpdocter.beans.DoctorContactUs welcomeUser(String tokenId);
+
 }

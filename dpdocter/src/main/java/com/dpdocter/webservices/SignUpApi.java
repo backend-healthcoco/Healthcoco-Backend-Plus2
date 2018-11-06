@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.ClinicContactUs;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.DoctorContactUs;
+import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.InternalPromoCode;
 import com.dpdocter.beans.InternalPromotionGroup;
 import com.dpdocter.beans.RegisteredPatientDetails;
@@ -27,6 +28,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.request.VerifyUnlockPatientRequest;
@@ -336,5 +338,59 @@ public class SignUpApi {
 			response.setData(collectionBoy);
 		return response;
 	}
+	
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.WELCOME_USER)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.WELCOME_USER, notes = PathProxy.SignUpUrls.WELCOME_USER)
+	public Response<DoctorContactUs> welcomeUser(@PathParam(value = "tokenId") String tokenId) {
+		if (tokenId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		DoctorContactUs contactUs = signUpService.welcomeUser(tokenId);
+		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
+		response.setData(contactUs);
+		return response;
+	}
 
+	@Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
+	@POST
+	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
+	public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(),
+				request.getMobileNumber(), request.getCity())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} else if (request.getFirstName().length() < 2) {
+			logger.warn(firstNameValidaton);
+			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+		}
+
+		DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request);
+		if (doctorSignUp != null) {
+			if (doctorSignUp.getUser() != null) {
+				if (doctorSignUp.getUser().getImageUrl() != null) {
+					doctorSignUp.getUser().setImageUrl(getFinalImageURL(doctorSignUp.getUser().getImageUrl()));
+				}
+				if (doctorSignUp.getUser().getThumbnailUrl() != null) {
+					doctorSignUp.getUser().setThumbnailUrl(getFinalImageURL(doctorSignUp.getUser().getThumbnailUrl()));
+				}
+			}
+			if (doctorSignUp.getHospital() != null) {
+				if (doctorSignUp.getHospital().getHospitalImageUrl() != null) {
+					doctorSignUp.getHospital()
+							.setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
+				}
+			}
+			transnationalService.checkDoctor(new ObjectId(doctorSignUp.getUser().getId()), null);
+
+		}
+
+		Response<DoctorSignUp> response = new Response<DoctorSignUp>();
+		response.setData(doctorSignUp);
+		return response;
+	}
+
+	
 }

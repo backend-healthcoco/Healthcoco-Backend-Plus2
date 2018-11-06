@@ -38,6 +38,10 @@ public interface PathProxy {
 		public static final String SUBMIT_CLINIC_CONTACT = "/submitClinicContact";
 
 		public static final String SIGNUP_COLLECTION_BOY = "/collectionBoy";
+		
+		public static final String WELCOME_USER = "/welcome/{tokenId}";
+
+		public static final String DOCTOR_SIGNUP = "/doctor";
 
 	}
 
