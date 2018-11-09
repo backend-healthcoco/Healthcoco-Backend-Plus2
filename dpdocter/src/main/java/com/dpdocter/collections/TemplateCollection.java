@@ -38,6 +38,9 @@ public class TemplateCollection extends GenericCollection {
 	@Field
 	private List<TemplateItem> items;
 
+	@Field
+	private Boolean isDefault = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -92,6 +95,14 @@ public class TemplateCollection extends GenericCollection {
 
 	public void setItems(List<TemplateItem> items) {
 		this.items = items;
+	}
+
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
 	}
 
 	@Override

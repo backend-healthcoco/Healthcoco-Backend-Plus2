@@ -6,80 +6,91 @@ import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.collections.GenericCollection;
 
 public class TemplateAddEditResponseDetails extends GenericCollection {
-    private String id;
+	private String id;
 
-    private String name;
+	private String name;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private List<TemplateItemDetail> items;
+	private List<TemplateItemDetail> items;
 
-    private Boolean discarded;
+	private Boolean discarded;
 
-    public String getId() {
-	return id;
-    }
+	private Boolean isDefault = false;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getName() {
-	return name;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public List<TemplateItemDetail> getItems() {
-	return items;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setItems(List<TemplateItemDetail> items) {
-	this.items = items;
-    }
+	public List<TemplateItemDetail> getItems() {
+		return items;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public void setItems(List<TemplateItemDetail> items) {
+		this.items = items;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    @Override
-    public String toString() {
-	return "TemplateAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + ", items=" + items + ", deleted=" + discarded + "]";
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+
+	@Override
+	public String toString() {
+		return "TemplateAddEditResponseDetails [id=" + id + ", name=" + name + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", deleted="
+				+ discarded + "]";
+	}
 
 }
