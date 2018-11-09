@@ -852,6 +852,7 @@ public class SignUpServiceImpl implements SignUpService {
 	@Transactional
 	public DoctorSignUp doctorSignUp(DoctorSignupRequest request) {
 		DoctorSignUp response = null;
+		PCUserCollection pcUserCollection = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 				logger.warn("Email Address cannot be null");
@@ -960,10 +961,19 @@ public class SignUpServiceImpl implements SignUpService {
 
 			locationCollection = locationRepository.save(locationCollection);
 			// save user location.
+			
 			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
 			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
 			doctorClinicProfileCollection.setLocationId(locationCollection.getId());
+			doctorClinicProfileCollection.setMrCode(request.getMrCode());
 			doctorClinicProfileCollection.setCreatedTime(new Date());
+			if(request.getMrCode() != null){
+				pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
+				if(pcUserCollection != null){
+					doctorClinicProfileCollection.setDivisionIds(pcUserCollection.getDivisionId());
+					doctorClinicProfileCollection.setMrCode(pcUserCollection.getMrCode());
+				}
+			}
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 
 			Collection<ObjectId> roleIds = CollectionUtils.collect(roleCollections,
@@ -976,6 +986,8 @@ public class SignUpServiceImpl implements SignUpService {
 				userRoleCollections.add(userRoleCollection);
 			}
 			userRoleRepository.save(userRoleCollections);
+			
+			
 			
 			
 		/*	if(request.getMrCode() != null)
