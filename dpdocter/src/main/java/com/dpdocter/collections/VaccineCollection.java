@@ -1,29 +1,31 @@
-package com.dpdocter.request;
+package com.dpdocter.collections;
 
 import java.util.Date;
+
+import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.enums.VaccineRoute;
 import com.dpdocter.enums.VaccineStatus;
 
-public class VaccineRequest {
+public class VaccineCollection extends GenericCollection {
 
-	private String id;
+	private ObjectId id;
 	private String name;
 	private Date dueDate;
 	private VaccineStatus status = VaccineStatus.GIVEN;
 	private VaccineRoute route;
 	private String bodySite;
 	private Integer dosage;
-	private String vaccineBrandId;
+	private ObjectId vaccineBrandId;
 	private Date givenDate;
 	private Age age;
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
@@ -75,6 +77,14 @@ public class VaccineRequest {
 		this.dosage = dosage;
 	}
 
+	public ObjectId getVaccineBrandId() {
+		return vaccineBrandId;
+	}
+
+	public void setVaccineBrandId(ObjectId vaccineBrandId) {
+		this.vaccineBrandId = vaccineBrandId;
+	}
+
 	public Date getGivenDate() {
 		return givenDate;
 	}
@@ -91,12 +101,11 @@ public class VaccineRequest {
 		this.age = age;
 	}
 
-	public String getVaccineBrandId() {
-		return vaccineBrandId;
-	}
-
-	public void setVaccineBrandId(String vaccineBrandId) {
-		this.vaccineBrandId = vaccineBrandId;
+	@Override
+	public String toString() {
+		return "VaccineCollection [id=" + id + ", name=" + name + ", dueDate=" + dueDate + ", status=" + status
+				+ ", route=" + route + ", bodySite=" + bodySite + ", dosage=" + dosage + ", vaccineBrandId="
+				+ vaccineBrandId + ", givenDate=" + givenDate + ", age=" + age + "]";
 	}
 
 }
