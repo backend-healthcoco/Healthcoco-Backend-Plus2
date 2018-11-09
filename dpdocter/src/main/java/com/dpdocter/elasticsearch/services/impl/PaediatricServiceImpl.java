@@ -6,17 +6,25 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dpdocter.beans.GrowthChart;
+import com.dpdocter.beans.Vaccine;
 import com.dpdocter.collections.GrowthChartCollection;
+import com.dpdocter.collections.VaccineCollection;
+import com.dpdocter.elasticsearch.repository.VaccineRepository;
 import com.dpdocter.elasticsearch.services.PaediatricService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.GrowthChartRepository;
+import com.dpdocter.request.VaccineRequest;
+import com.dpdocter.response.VaccineResponse;
 
 public class PaediatricServiceImpl implements PaediatricService{
 	
 	@Autowired
 	private GrowthChartRepository growthChartRepository;
+	
+	@Autowired
+	private VaccineRepository vaccineRepository;
 
 	public GrowthChart addEditGrowthChart(GrowthChart growthChart)
 	{
@@ -105,4 +113,32 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
+	
+
+	public VaccineResponse addEditVaccine(VaccineRequest request)
+	{
+		 VaccineResponse response = null;
+		 VaccineCollection vaccineCollection = null;
+		try {
+			if(request.getId() != null)
+			{
+				vaccineCollection = vaccineRepository.findOne(new ObjectId(request.getId()));
+			}
+			else
+			{
+				vaccineCollection = new VaccineCollection();
+			}
+			BeanUtil.map(request, vaccineCollection);
+			vaccineCollection = vaccineRepository.save(vaccineCollection);
+			if(vaccineCollection != null){
+				response = new VaccineResponse();
+				 BeanUtil.map(vaccineCollection, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return response;
+	}
+	
 }
