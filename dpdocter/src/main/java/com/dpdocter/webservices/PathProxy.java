@@ -1994,4 +1994,12 @@ public interface PathProxy {
 		public static final String GET_WEIGHT_COUNTER_SETTING = "weight/setting/{userId}/get";
 
 	}
+	
+	public static final String PAEDIATRIC_BASE_URL = BASE_URL + "/paediatric";
+	
+	public interface PaediatricUrls {
+		public static final String ADD_EDIT_VACCINE = "vaccine/addEdit";
+		public static final String GET_VACCINE_BY_ID = "vaccine/get/{id}";
+	}
+	
 }
