@@ -276,21 +276,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 				for (Prescription prescription : prescriptions) {
 
-					if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
-						for (PrescriptionItemDetail itemDetail : prescription.getItems()) {
+					
+					if(prescription.getItems() != null && !prescription.getItems().isEmpty())
+					{
+						for(PrescriptionItemDetail itemDetail : prescription.getItems())
+						{
 							if (itemDetail.getDrug() != null) {
 								itemDetail.getDrug().setDosage(itemDetail.getDosage());
 								itemDetail.getDrug().setDirection(itemDetail.getDirection());
 								itemDetail.getDrug().setDuration(itemDetail.getDuration());
 							}
 
+							
 							itemDetail.setDuration(null);
 							itemDetail.setDosage(null);
 							itemDetail.setDirection(null);
-
+							
 						}
 					}
-
+					
 					if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : prescription.getTests()) {
