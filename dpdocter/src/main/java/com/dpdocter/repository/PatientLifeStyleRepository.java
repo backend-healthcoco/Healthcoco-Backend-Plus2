@@ -14,6 +14,6 @@ public interface PatientLifeStyleRepository extends MongoRepository<PatientLifeS
 	PatientLifeStyleCollection findByUserIdDoctorIdLocationIdAndHospitalId(ObjectId patientId, ObjectId doctorId,
 			ObjectId locationId, ObjectId hospitalId);
 
-	@Query("{'assessmentId': ?0,}")
+	@Query("{'assessmentId': ?0}")
 	PatientLifeStyleCollection findByassessmentId(ObjectId assessmentId);
 }

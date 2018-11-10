@@ -15,6 +15,6 @@ public interface PatientMeasurementRepository extends MongoRepository<PatientMea
 	PatientMeasurementCollection findByUserIdDoctorIdLocationIdAndHospitalId(ObjectId patientId, ObjectId doctorId,
 			ObjectId locationId, ObjectId hospitalId);
 
-	@Query("{'assessmentId': ?0,}")
+	@Query("{'assessmentId': ?0}")
 	PatientMeasurementCollection findByassessmentId(ObjectId assessmentId);
 }
