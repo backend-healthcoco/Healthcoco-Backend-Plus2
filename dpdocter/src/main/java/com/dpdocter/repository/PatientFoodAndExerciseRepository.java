@@ -14,6 +14,6 @@ public interface PatientFoodAndExerciseRepository extends MongoRepository<Patien
 	PatientFoodAndExcerciseCollection findByUserIdDoctorIdLocationIdAndHospitalId(ObjectId patientId, ObjectId doctorId,
 			ObjectId locationId, ObjectId hospitalId);
 	
-	@Query("{'assessmentId': ?0,}")
+	@Query("{'assessmentId': ?0}")
 	PatientFoodAndExcerciseCollection findByassessmentId(ObjectId assessmentId);
 }
