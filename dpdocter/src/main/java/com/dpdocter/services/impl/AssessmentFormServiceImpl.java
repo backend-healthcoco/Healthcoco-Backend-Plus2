@@ -525,8 +525,10 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		try {
 			PatientLifeStyleCollection lifeStyleCollection = patientLifeStyleRepository
 					.findByassessmentId(new ObjectId(assessmentId));
-			response = new PatientLifeStyle();
-			BeanUtil.map(lifeStyleCollection, response);
+			if (lifeStyleCollection != null) {
+				response = new PatientLifeStyle();
+				BeanUtil.map(lifeStyleCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -544,7 +546,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			List<DiseasesCollection> diseasesCollections = null;
 			DiseaseListResponse diseaseListResponse = null;
 			HistoryCollection historyCollection = historyRepository.findByAssessmentId(new ObjectId(assessmentId));
-
+			if(historyCollection!=null) {
 			response = new AssessmentFormHistoryResponse();
 			BeanUtil.map(historyCollection, response);
 
@@ -587,6 +589,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				}
 
 			}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -600,8 +603,10 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		try {
 			PatientMeasurementCollection measurementCollection = patientMeasurementRepository
 					.findByassessmentId(new ObjectId(assessmentId));
+			if(measurementCollection!=null) {
 			response = new PatientMeasurementInfo();
 			BeanUtil.map(measurementCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -616,8 +621,10 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		try {
 			PatientFoodAndExcerciseCollection foodAndExcerciseCollection = patientFoodAndExerciseRepository
 					.findByassessmentId(new ObjectId(assessmentId));
+			if(foodAndExcerciseCollection!=null) {
 			response = new PatientFoodAndExcercise();
 			BeanUtil.map(foodAndExcerciseCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
