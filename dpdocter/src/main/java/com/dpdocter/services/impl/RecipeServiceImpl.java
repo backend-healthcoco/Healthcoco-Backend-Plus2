@@ -573,7 +573,7 @@ public class RecipeServiceImpl implements RecipeService {
 					new ObjectId(recipeId));
 
 			if (recipeCollection != null) {
-				recipeCollection.setDiscarded(true);
+				recipeCollection.setDiscarded(!recipeCollection.getDiscarded());
 			}
 
 			else {
