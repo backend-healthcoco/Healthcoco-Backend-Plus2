@@ -1849,4 +1849,93 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PROCEDURE_SHEET = "/download/{id}";
 	}
 
+
+	public static final String SOLR_RECIPE_BASE_URL = BASE_URL + "/solr/recipe";
+
+	public interface SolrRecipeUrls {
+
+		public static final String SEARCH_NUTRIENTS = "nutrient/search";
+		public static final String SEARCH_INGREDIENTS = "ingredient/search";
+		public static final String SEARCH_RECIPES = "search";
+		public static final String SEARCH_EXERCISE = "exercise/search";
+		public static final String SEARCH_RECIPES_FOR_USER_APP = "user/app/search";
+	}
+
+	public static final String RECIPE_BASE_URL = BASE_URL + "/recipe";
+
+	public interface RecipeUrls {
+		public static final String ADD_EDIT_NUTRIENT = "nutrient/addEdit";
+		public static final String GET_NUTRIENTS = "nutrient/{doctorId}/{locationId}/{hospitalId}/get";
+		public static final String DELETE_NUTRIENT = "nutrient/{nutrientId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String GET_NUTRIENT = "nutrient/{nutrientId}/get";
+
+		public static final String ADD_EDIT_INGREDIENT = "ingredient/addEdit";
+		public static final String GET_INGREDIENTS = "ingredient/{doctorId}/{locationId}/{hospitalId}/get";
+		public static final String DELETE_INGREDIENT = "ingredient/{ingredientId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String GET_INGREDIENT = "ingredient/{ingredientId}/get";
+
+		public static final String ADD_EDIT_RECIPE = "addEdit";
+		public static final String GET_RECIPES = "{doctorId}/{locationId}/{hospitalId}/get";
+		public static final String DELETE_RECIPE = "{recipeId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String GET_RECIPE = "{recipeId}/get";
+		public static final String ADD_FAVOURITE_RECIPE = "favourite/add";
+		public static final String GET_RECENT_RECIPE = "recent/{userId}/get";
+		public static final String GET_FREQUENT_RECIPE = "frequent/{userId}/get";
+		public static final String GET_FAVOURITE_RECIPE = "favourite/{userId}/get";
+
+	}
+
+	public static final String DIET_PLAN_BASE_URL = BASE_URL + "/dietPlan";
+
+	public interface DietPlanUrls {
+		public static final String ADD_EDIT_DIET_PLAN = "addEdit";
+		public static final String GET_DIET_PLANS = "get";
+		public static final String DELETE_DIET_PLAN = "{planId}/delete";
+		public static final String GET_DIET_PLAN = "{planId}/get";
+	}
+
+	public static final String COUNTER_BASE_URL = BASE_URL + "/counter";
+
+	public interface CounterUrls {
+
+		public static final String ADD_EDIT_WATER_COUNTER = "water/addEdit";
+		public static final String GET_WATER_COUNTER = "water/{counterId}/get";
+		public static final String DELETE_WATER_COUNTER = "water/{counterId}/delete";
+		public static final String GET_WATER_COUNTERS = "water/{userId}/list/get";
+
+		public static final String ADD_EDIT_WEIGHT_COUNTER = "weight/addEdit";
+		public static final String GET_WEIGHT_COUNTER = "weight/{counterId}/get";
+		public static final String DELETE_WEIGHT_COUNTER = "weight/{counterId}/delete";
+		public static final String GET_WEIGHT_COUNTERS = "weight/{userId}/list/get";
+
+		public static final String ADD_EDIT_MEAL_COUNTER = "meal/addEdit";
+		public static final String GET_MEAL_COUNTER = "meal/{counterId}/get";
+		public static final String DELETE_MEAL_COUNTER = "meal/{counterId}/delete";
+		public static final String GET_MEAL_COUNTERS = "meal/{userId}/list/get";
+
+		public static final String ADD_EDIT_EXERCISE_COUNTER = "exercise/addEdit";
+		public static final String GET_EXERCISE_COUNTER = "exercise/{counterId}/get";
+		public static final String DELETE_EXERCISE_COUNTER = "exercise/{counterId}/delete";
+		public static final String GET_EXERCISE_COUNTERS = "exercise/{userId}/list/get";
+
+		public static final String ADD_EDIT_CALORIES_COUNTER = "calories/addEdit";
+		public static final String GET_CALORIES_COUNTER = "calories/{counterId}/get";
+		public static final String DELETE_CALORIES_COUNTER = "calories/{counterId}/delete";
+		public static final String GET_CALORIES_COUNTERS = "calories/{userId}/list/get";
+
+		public static final String ADD_EDIT_WATER_COUNTER_SETTING = "water/setting/addEdit";
+		public static final String GET_WATER_COUNTER_SETTING = "water/setting/{userId}/get";
+
+		public static final String ADD_EDIT_WEIGHT_COUNTER_SETTING = "weight/setting/addEdit";
+		public static final String GET_WEIGHT_COUNTER_SETTING = "weight/setting/{userId}/get";
+
+	}
+	
+	public static final String PAEDIATRIC_BASE_URL = BASE_URL + "/paediatric";
+	
+	public interface PaediatricUrls {
+		public static final String ADD_EDIT_VACCINE = "vaccine/addEdit";
+		public static final String GET_VACCINE_BY_ID = "vaccine/get/{id}";
+	}
+	
 }

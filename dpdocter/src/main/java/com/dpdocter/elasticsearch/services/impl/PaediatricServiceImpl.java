@@ -1,12 +1,10 @@
 package com.dpdocter.elasticsearch.services.impl;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.GrowthChart;
-import com.dpdocter.beans.Vaccine;
 import com.dpdocter.collections.GrowthChartCollection;
 import com.dpdocter.collections.VaccineCollection;
 import com.dpdocter.elasticsearch.repository.VaccineRepository;
@@ -26,6 +24,9 @@ public class PaediatricServiceImpl implements PaediatricService{
 	@Autowired
 	private VaccineRepository vaccineRepository;
 
+	
+	@Override
+	@Transactional
 	public GrowthChart addEditGrowthChart(GrowthChart growthChart)
 	{
 		GrowthChart response = null;
@@ -54,6 +55,8 @@ public class PaediatricServiceImpl implements PaediatricService{
 		return response;
 	}
 	
+	@Override
+	@Transactional
 	public GrowthChart getGrowthChartById(String id) {
 		GrowthChart response = null;
 		GrowthChartCollection growthChartCollection = null;
@@ -94,6 +97,8 @@ public class PaediatricServiceImpl implements PaediatricService{
 		return response;
 	}*/
 
+	@Override
+	@Transactional
 	public Boolean discardGrowthChart(String id, Boolean discarded) {
 		Boolean response = false;
 		GrowthChartCollection growthChartCollection = null;
@@ -115,6 +120,8 @@ public class PaediatricServiceImpl implements PaediatricService{
 	}
 	
 
+	@Override
+	@Transactional
 	public VaccineResponse addEditVaccine(VaccineRequest request)
 	{
 		 VaccineResponse response = null;
@@ -140,5 +147,28 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public VaccineResponse getVaccineById(String id) {
+		VaccineResponse response = null;
+		VaccineCollection vaccineCollection = null;
+		try {
+			vaccineCollection = vaccineRepository.findOne(new ObjectId(id));
+			if (vaccineCollection != null) {
+				response = new VaccineResponse();
+				BeanUtil.map(vaccineCollection, response);
+			} else {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw e;
+
+		}
+		return response;
+	}
+	
 	
 }
