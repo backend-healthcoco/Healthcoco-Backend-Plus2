@@ -3548,16 +3548,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				to = new Date(Long.parseLong(toDate));
 				fromTime = DPDoctorUtils.getStartTime(from);
 				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("receivedDate").gte(fromTime).lte(toTime);
+				criteria.and("createdTime").gte(fromTime).lte(toTime);
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				fromTime = DPDoctorUtils.getStartTime(from);
-				criteria.and("receivedDate").gte(fromTime);
+				criteria.and("createdTime").gte(fromTime);
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				to = new Date(Long.parseLong(toDate));
 				toTime = DPDoctorUtils.getEndTime(to);
-				criteria.and("receivedDate").lte(toTime);
+				criteria.and("createdTime").lte(toTime);
 			}
 			criteria.and("discarded").is(false);
 			Aggregation aggregation = null;
