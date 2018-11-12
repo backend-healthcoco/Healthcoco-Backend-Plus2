@@ -106,10 +106,12 @@ public class SearchServiceImpl implements SearchService {
 					.must(QueryBuilders.matchQuery("isClinic", true));
 
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
-				
-				long cityCount = elasticsearchTemplate.count(new CriteriaQuery(new Criteria("city").is(city).and("isActivated").is(true)), ESCityDocument.class);
-				
-				if(cityCount == 0) {
+
+				long cityCount = elasticsearchTemplate.count(
+						new CriteriaQuery(new Criteria("city").is(city).and("isActivated").is(true)),
+						ESCityDocument.class);
+
+				if (cityCount == 0) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid City");
 				}
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
@@ -244,25 +246,48 @@ public class SearchServiceImpl implements SearchService {
 
 				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")
 						&& ((response.getDoctors() != null && !response.getDoctors().isEmpty())
-						||( response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()))) {
-					for (String matchSpeciality : response.getDoctors().get(0).getSpecialities()) {
-						if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))
-								.equalsIgnoreCase((matchSpeciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
-										.replaceAll("-(\\s*-)+", "88"))))
-							response.setUnformattedSpeciality(matchSpeciality);
+								|| (response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()))) {
+					if (response.getDoctors() != null && !response.getDoctors().isEmpty()) {
+						for (String matchSpeciality : response.getDoctors().get(0).getSpecialities()) {
+							if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+									.replaceAll("-(\\s*-)+", "88"))
+											.equalsIgnoreCase((matchSpeciality.toLowerCase().trim()
+													.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))))
+								response.setUnformattedSpeciality(matchSpeciality);
+						}
+					} else {
+						for (String matchSpeciality : response.getNearByDoctors().get(0).getSpecialities()) {
+							if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+									.replaceAll("-(\\s*-)+", "88"))
+											.equalsIgnoreCase((matchSpeciality.toLowerCase().trim()
+													.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))))
+								response.setUnformattedSpeciality(matchSpeciality);
+						}
 					}
 					speciality = speciality.replace("-", " ");
 					response.setSpeciality(StringUtils.capitalize(speciality));
 					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
 				} else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")
 						&& ((response.getDoctors() != null && !response.getDoctors().isEmpty())
-								||( response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()))) {
+								|| (response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()))) {
+					if (response.getDoctors() != null && !response.getDoctors().isEmpty()) {
+						for (String matchService : response.getDoctors().get(0).getServices()) {
+							if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+									.replaceAll("-(\\s*-)+", "88"))
+											.equalsIgnoreCase((matchService.toLowerCase().trim()
+													.replaceAll("-(\\s*-)+", "88").replaceAll("--", "-"))))
+								response.setUnformattedService(matchService);
+						}
+					} else {
 
-					for (String matchService : response.getDoctors().get(0).getServices()) {
-						if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))
-								.equalsIgnoreCase((matchService.toLowerCase().trim().replaceAll("-(\\s*-)+", "88")
-										.replaceAll("--", "-"))))
-							response.setUnformattedService(matchService);
+						for (String matchService : response.getNearByDoctors().get(0).getServices()) {
+							if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+									.replaceAll("-(\\s*-)+", "88"))
+											.equalsIgnoreCase((matchService.toLowerCase().trim()
+													.replaceAll("-(\\s*-)+", "88").replaceAll("--", "-"))))
+								response.setUnformattedService(matchService);
+						}
+
 					}
 					service = service.replace("-", " ");
 					response.setService(StringUtils.capitalize(service));
