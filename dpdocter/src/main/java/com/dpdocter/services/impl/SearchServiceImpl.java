@@ -243,8 +243,8 @@ public class SearchServiceImpl implements SearchService {
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")
-						&& response.getDoctors() != null && !response.getDoctors().isEmpty()
-						&& response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()) {
+						&& ((response.getDoctors() != null && !response.getDoctors().isEmpty())
+						||( response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()))) {
 					for (String matchSpeciality : response.getDoctors().get(0).getSpecialities()) {
 						if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))
 								.equalsIgnoreCase((matchSpeciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
@@ -255,8 +255,8 @@ public class SearchServiceImpl implements SearchService {
 					response.setSpeciality(StringUtils.capitalize(speciality));
 					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
 				} else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")
-						&& response.getDoctors() != null && !response.getDoctors().isEmpty()
-						&& response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()) {
+						&& ((response.getDoctors() != null && !response.getDoctors().isEmpty())
+								||( response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()))) {
 
 					for (String matchService : response.getDoctors().get(0).getServices()) {
 						if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))
