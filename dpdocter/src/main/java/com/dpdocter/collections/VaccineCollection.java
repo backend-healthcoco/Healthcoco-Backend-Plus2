@@ -3,22 +3,44 @@ package com.dpdocter.collections;
 import java.util.Date;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.enums.VaccineRoute;
 import com.dpdocter.enums.VaccineStatus;
 
+@Document(collection = "vaccine_cl")
 public class VaccineCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
+	private ObjectId doctorId;
+	@Field
+	private ObjectId locationId;
+	@Field
+	private ObjectId hospitalId;
+	@Field
+	private ObjectId patientId;
+	@Field
 	private String name;
+	@Field
 	private Date dueDate;
+	@Field
 	private VaccineStatus status = VaccineStatus.GIVEN;
+	@Field
 	private VaccineRoute route;
+	@Field
 	private String bodySite;
+	@Field
 	private Integer dosage;
+	@Field
 	private ObjectId vaccineBrandId;
+	@Field
 	private Date givenDate;
+	@Field
 	private Age age;
 
 	public ObjectId getId() {
@@ -99,6 +121,38 @@ public class VaccineCollection extends GenericCollection {
 
 	public void setAge(Age age) {
 		this.age = age;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public ObjectId getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
 	}
 
 	@Override

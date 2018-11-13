@@ -11,6 +11,10 @@ import com.dpdocter.enums.VaccineStatus;
 public class VaccineResponse extends GenericCollection {
 
 	private String id;
+	private String doctorId;
+	private String locationId;
+	private String hospitalId;
+	private String patientId;
 	private String name;
 	private Date dueDate;
 	private VaccineStatus status = VaccineStatus.GIVEN;
@@ -99,6 +103,38 @@ public class VaccineResponse extends GenericCollection {
 
 	public void setVaccineBrand(VaccineBrand vaccineBrand) {
 		this.vaccineBrand = vaccineBrand;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
 }
