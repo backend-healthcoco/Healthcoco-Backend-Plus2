@@ -2000,6 +2000,7 @@ public interface PathProxy {
 	public interface PaediatricUrls {
 		public static final String ADD_EDIT_VACCINE = "vaccine/addEdit";
 		public static final String GET_VACCINE_BY_ID = "vaccine/get/{id}";
+		public static final String GET_VACCINES = "vaccine/getList";
 	}
 	
 }
