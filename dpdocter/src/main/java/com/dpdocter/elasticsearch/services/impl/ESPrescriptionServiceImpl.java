@@ -135,6 +135,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<?> response = null;
 		List<ESDrugDocument> esDrugDocuments = null;
 		List<DrugDocument> drugDocuments = null;
+		//Please remove this in next release. Its an hack for IOS 
+			searchByGenericName = false;
+		//
 		if (page > 0)
 			return response;
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
