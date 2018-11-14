@@ -3,7 +3,6 @@ package com.dpdocter.beans;
 import java.util.Date;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.ExpenseType;
 import com.dpdocter.enums.ModeOfPayment;
 
 public class DoctorExpense extends GenericCollection {
@@ -11,7 +10,7 @@ public class DoctorExpense extends GenericCollection {
 	public String doctorId;
 	public String locationId;
 	public String hospitalId;
-	public ExpenseType type = ExpenseType.OTHER;
+	public String expenseType;
 	public ModeOfPayment modeOfPayment = ModeOfPayment.CASH;
 	public String chequeNo;
 	public Double cost = 0.0;
@@ -52,12 +51,12 @@ public class DoctorExpense extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public ExpenseType getType() {
-		return type;
+	public String getExpenseType() {
+		return expenseType;
 	}
 
-	public void setType(ExpenseType type) {
-		this.type = type;
+	public void setExpenseType(String expenseType) {
+		this.expenseType = expenseType;
 	}
 
 	public ModeOfPayment getModeOfPayment() {

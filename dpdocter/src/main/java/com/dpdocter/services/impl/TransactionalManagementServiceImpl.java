@@ -56,6 +56,7 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.ECGDetailsCollection;
 import com.dpdocter.collections.EarsExaminationCollection;
 import com.dpdocter.collections.EchoCollection;
+import com.dpdocter.collections.ExpenseTypeCollection;
 import com.dpdocter.collections.GeneralExamCollection;
 import com.dpdocter.collections.HolterCollection;
 import com.dpdocter.collections.ImplantCollection;
@@ -115,6 +116,7 @@ import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
 import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
+import com.dpdocter.elasticsearch.document.ESExpenseTypeDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESImplantDocument;
@@ -150,10 +152,12 @@ import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
+import com.dpdocter.elasticsearch.repository.ESExpenseTypeRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
+import com.dpdocter.elasticsearch.services.ESExpenseTypeService;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
@@ -186,6 +190,7 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.ECGDetailsRepository;
 import com.dpdocter.repository.EarsExaminationRepository;
 import com.dpdocter.repository.EchoRepository;
+import com.dpdocter.repository.ExpenseTypeRepository;
 import com.dpdocter.repository.GeneralExamRepository;
 import com.dpdocter.repository.HolterRepository;
 import com.dpdocter.repository.ImplantRepository;
@@ -461,7 +466,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
+	@Autowired
+	private ExpenseTypeRepository expenseTypeRepository;
+
+	@Autowired
+	private ESExpenseTypeService exExpenseTypeService;
+
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
 
@@ -646,6 +657,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							break;
 						case IMPLANT:
 							checkImplant(transactionalCollection.getResourceId());
+							break;
+						case EXPENSE_TYPE:
+							checkExpenseType(transactionalCollection.getResourceId());
 							break;
 						case COLLECTION_BOY:
 							break;
@@ -1023,9 +1037,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				logger.error(e);
 			}
 	}
-	
-	
-	
+
 	@Override
 	@Transactional
 	public void sendAppointmentScheduleToStaff() {
@@ -1187,6 +1199,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			logger.error(e);
 		}
 	}
+
 	// @Scheduled(cron = "0 0/30 9 * * *", zone = "IST")
 	@Override
 	@Transactional
@@ -1309,9 +1322,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							SMSDetail smsDetail = new SMSDetail();
 							SMS sms = new SMS();
-							sms.setSmsText("You have an appointment "
-									+ " @ " + dateTime
-									+ " with " + appointmentPatientReminderResponse.getDoctorTitle() + " "
+							sms.setSmsText("You have an appointment " + " @ " + dateTime + " with "
+									+ appointmentPatientReminderResponse.getDoctorTitle() + " "
 									+ appointmentPatientReminderResponse.getDoctorName()
 									+ (!DPDoctorUtils
 											.anyStringEmpty(appointmentPatientReminderResponse.getLocationName())
@@ -1319,7 +1331,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													: "")
 									+ (!DPDoctorUtils
 											.anyStringEmpty(appointmentPatientReminderResponse.getClinicNumber())
-													? ", " + appointmentPatientReminderResponse.getClinicNumber() : "")
+													? ", " + appointmentPatientReminderResponse.getClinicNumber()
+													: "")
 									+ ". Download Healthcoco App- " + patientAppBitLink);
 
 							SMSAddress smsAddress = new SMSAddress();
@@ -2350,6 +2363,21 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESCementDocument cementDocument = new ESCementDocument();
 				BeanUtil.map(cementCollection, cementDocument);
 				esDischargeSummaryService.addCement(cementDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkExpenseType(ObjectId resourceId) {
+		try {
+
+			ExpenseTypeCollection typeCollection = expenseTypeRepository.findOne(resourceId);
+			if (typeCollection != null) {
+				ESExpenseTypeDocument expenseDocument = new ESExpenseTypeDocument();
+				BeanUtil.map(typeCollection, expenseDocument);
+				exExpenseTypeService.addEditExpenseType(expenseDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

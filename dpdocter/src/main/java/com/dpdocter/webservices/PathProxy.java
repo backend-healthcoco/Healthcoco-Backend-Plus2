@@ -1344,6 +1344,14 @@ public interface PathProxy {
 		public static final String DELETE_EXPENSE = "/expense/{expenseId}/delete";
 
 		public static final String TOTAL_EXPENSES_COST = "/total/expense/cost";
+		
+		public static final String ADD_EXPENSE_TYPE = "/expenseType/add";
+
+		public static final String GET_EXPENSE_TYPE = "/expenseType/get";
+
+		public static final String DELETE_EXPENSE_TYPE = "/expenseType/{expenseTypeId}/delete";
+
+		public static final String GET_EXPENSE_TYPE_BY_ID = "/expenseType/{expenseTypeId}/view";
 
 	}
 
@@ -2002,6 +2010,13 @@ public interface PathProxy {
 		public static final String GET_SESSION_QUESTION = "/session/question/{id}/get";
 		public static final String DELETE_SESSION_QUESTION = "/session/question/{id}/delete";
 		public static final String LIKE_SESSION_QUESTION = "/session/question/{questionId}/like";
+
+	}
+	
+	public static final String SOLR_BILLING_BASE_URL = BASE_URL + "/solr/billing";
+
+	public interface SolrBillingUrls {
+		public static final String SEARCH_EXPENSE_TYPES = "searchExpenceTypes/{range}";
 
 	}
 

@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.DoctorExpense;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.ExpenseType;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
@@ -83,5 +84,17 @@ public interface BillingService {
 
 	Double countDoctorExpenses(String type, String doctorId, String locationId, String hospitalId, String updatedTime,
 			Boolean discarded);
+
+	DoctorExpense getDoctorExpense(String expenseId);
+
+	public ExpenseType addEditExpenseType(ExpenseType request);
+
+	public ExpenseType getExpenseType(String expenseTypeId);
+
+	public Boolean deleteExpenseType(String expenseTypeId, Boolean discarded);
+
+	public List<ExpenseType> getExpenseType(int page, int size, String doctorId, String locationId, String hospitalId,
+			String searchTerm, Boolean discarded);
+
 
 }
