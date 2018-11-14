@@ -1,4 +1,6 @@
-package com.dpdocter.elasticsearch.services;
+package com.dpdocter.services;
+
+import java.util.List;
 
 import com.dpdocter.beans.GrowthChart;
 import com.dpdocter.request.VaccineRequest;
@@ -15,5 +17,7 @@ public interface PaediatricService {
 	GrowthChart getGrowthChartById(String id);
 
 	Boolean discardGrowthChart(String id, Boolean discarded);
+
+	List<VaccineResponse> getVaccineList(String patientId, String doctorId, String locationId, String hospitalId);
 
 }

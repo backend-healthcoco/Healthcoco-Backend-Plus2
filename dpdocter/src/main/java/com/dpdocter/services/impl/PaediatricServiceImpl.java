@@ -1,21 +1,44 @@
-package com.dpdocter.elasticsearch.services.impl;
+package com.dpdocter.services.impl;
+
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GrowthChart;
+import com.dpdocter.beans.NutritionGoalAnalytics;
+import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.collections.GrowthChartCollection;
+import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.NutritionReferenceCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.VaccineCollection;
-import com.dpdocter.elasticsearch.repository.VaccineRepository;
-import com.dpdocter.elasticsearch.services.PaediatricService;
+import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.GrowthChartRepository;
+import com.dpdocter.repository.VaccineRepository;
 import com.dpdocter.request.VaccineRequest;
+import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.VaccineResponse;
+import com.dpdocter.services.PaediatricService;
+import com.mongodb.BasicDBObject;
 
+import common.util.web.DPDoctorUtils;
+
+@Service
 public class PaediatricServiceImpl implements PaediatricService{
 	
 	@Autowired
@@ -24,6 +47,8 @@ public class PaediatricServiceImpl implements PaediatricService{
 	@Autowired
 	private VaccineRepository vaccineRepository;
 
+	@Autowired
+	private MongoTemplate mongoTemplate;
 	
 	@Override
 	@Transactional
@@ -170,5 +195,49 @@ public class PaediatricServiceImpl implements PaediatricService{
 		return response;
 	}
 	
+	@Override
+	@Transactional
+	public List<VaccineResponse> getVaccineList(String patientId , String doctorId, String locationId, String hospitalId) {
+		List<VaccineResponse> responses = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", new BasicDBObject("dueDate", "$vaccineResponses.dueDate"))
+							.append("vaccineResponses", new BasicDBObject("$push", "$vaccineResponses")).append("dueDate",
+									new BasicDBObject("$first", "$diagnosticTest.dueDate"))));
+			
+			
+			responses = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
+									Aggregation.unwind("vaccineBrand"),Aggregation.match(criteria),aggregationOperation,
+									Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+							VaccineCollection.class, VaccineResponse.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		}
+		return responses;
+	}
 	
 }

@@ -6,7 +6,6 @@ import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.MedicalHistoryHandler;
-import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.PersonalInformation;
 import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.beans.Reference;
@@ -97,6 +96,8 @@ public class PatientRegistrationRequest {
 	private MedicalHistoryHandler pastMedicalHistoryHandler;
 
 	private MedicalHistoryHandler familyMedicalHistoryHandler;
+
+	private Boolean isChild = false;
 
 	public String getRecordId() {
 		return recordId;
@@ -432,6 +433,14 @@ public class PatientRegistrationRequest {
 
 	public void setFamilyMedicalHistoryHandler(MedicalHistoryHandler familyMedicalHistoryHandler) {
 		this.familyMedicalHistoryHandler = familyMedicalHistoryHandler;
+	}
+
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
 	}
 
 	@Override
