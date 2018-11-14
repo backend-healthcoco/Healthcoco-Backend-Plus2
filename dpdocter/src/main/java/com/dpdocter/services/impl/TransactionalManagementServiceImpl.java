@@ -56,6 +56,7 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.ECGDetailsCollection;
 import com.dpdocter.collections.EarsExaminationCollection;
 import com.dpdocter.collections.EchoCollection;
+import com.dpdocter.collections.ExpenseTypeCollection;
 import com.dpdocter.collections.GeneralExamCollection;
 import com.dpdocter.collections.HolterCollection;
 import com.dpdocter.collections.ImplantCollection;
@@ -115,6 +116,7 @@ import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
 import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
+import com.dpdocter.elasticsearch.document.ESExpenseTypeDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESImplantDocument;
@@ -150,10 +152,12 @@ import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
+import com.dpdocter.elasticsearch.repository.ESExpenseTypeRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
+import com.dpdocter.elasticsearch.services.ESExpenseTypeService;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
@@ -186,6 +190,7 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.ECGDetailsRepository;
 import com.dpdocter.repository.EarsExaminationRepository;
 import com.dpdocter.repository.EchoRepository;
+import com.dpdocter.repository.ExpenseTypeRepository;
 import com.dpdocter.repository.GeneralExamRepository;
 import com.dpdocter.repository.HolterRepository;
 import com.dpdocter.repository.ImplantRepository;
@@ -461,7 +466,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
+	@Autowired
+	private ExpenseTypeRepository expenseTypeRepository;
+
+	@Autowired
+	private ESExpenseTypeService exExpenseTypeService;
+
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
 
@@ -474,7 +485,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
-	@Scheduled(cron="00 00 3 * * *", zone="IST")
+	@Scheduled(cron = "00 00 3 * * *", zone = "IST")
 //	@Scheduled(fixedDelay = 1800000)
 	@Override
 	@Transactional
@@ -648,6 +659,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						case IMPLANT:
 							checkImplant(transactionalCollection.getResourceId());
 							break;
+						case EXPENSE_TYPE:
+							checkExpenseType(transactionalCollection.getResourceId());
+							break;
 						case COLLECTION_BOY:
 							break;
 						case STATE:
@@ -791,107 +805,130 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
-				if(roleCollection != null) {
+				if (roleCollection != null) {
 					Aggregation aggregation = Aggregation.newAggregation(
 							Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
-							Aggregation.lookup("user_cl", "userId", "_id", "locationAdmin"), Aggregation.unwind("locationAdmin"),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+							Aggregation.lookup("user_cl", "userId", "_id", "locationAdmin"),
+							Aggregation.unwind("locationAdmin"),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"),
 							Aggregation.lookup("user_device_cl", "userId", "userIds", "userDevices"),
 							Aggregation.lookup("appointment_cl", "locationId", "locationId", "locationAppointments"),
 							Aggregation.unwind("locationAppointments"),
-							Aggregation.match(new Criteria("locationAppointments.state").is(AppointmentState.CONFIRM.getState())
-									.and("locationAppointments.type").is(AppointmentType.APPOINTMENT.getType())
-									.and("locationAppointments.fromDate").gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
-							
-							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"), 
+							Aggregation.match(new Criteria("locationAppointments.state")
+									.is(AppointmentState.CONFIRM.getState()).and("locationAppointments.type")
+									.is(AppointmentType.APPOINTMENT.getType()).and("locationAppointments.fromDate")
+									.gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
+
+							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$doctor")
-											.append("preserveNullAndEmptyArrays", true))),
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patient")
-											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-									new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("locationId", "$locationId")
-									.append("userId", "$userId")
-									.append("locationAdminName", "$locationAdmin.firstName")
-									.append("locationAdminMobileNumber", "$locationAdmin.mobileNumber")
-									.append("locationAdminEmailAddress", "$locationAdmin.emailAddress")
-									.append("locationName", "$location.locationName")
-									.append("userDevices", "$userDevices")
-									.append("drAppointments.time", "$locationAppointments.time")
-									.append("drAppointments.localPatientName", "$patient.localPatientName")
-									.append("drAppointments.doctorName", new BasicDBObject("$concat",Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
-									.append("drAppointments.doctorId", "$locationAppointments.doctorId")
-									)),
-							
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$locationId")
-									.append("locationId", new BasicDBObject("$first","$locationId"))
-									.append("userId", new BasicDBObject("$first","$userId"))
-									.append("locationAdminName", new BasicDBObject("$first","$locationAdminName"))
-									.append("locationAdminMobileNumber", new BasicDBObject("$first","$locationAdminMobileNumber"))
-									.append("locationName", new BasicDBObject("$first","$locationName"))
-									.append("locationAdminEmailAddress", new BasicDBObject("$first","$locationAdminEmailAddress"))
-									.append("userDevices", new BasicDBObject("$first","$userDevices"))
-									.append("drAppointments", new BasicDBObject("$addToSet","$drAppointments"))
-									)),
-							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
-							);
-					
+									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+
+							new CustomAggregationOperation(new BasicDBObject("$project",
+									new BasicDBObject("locationId", "$locationId").append("userId", "$userId")
+											.append("locationAdminName", "$locationAdmin.firstName")
+											.append("locationAdminMobileNumber", "$locationAdmin.mobileNumber")
+											.append("locationAdminEmailAddress", "$locationAdmin.emailAddress")
+											.append("locationName", "$location.locationName")
+											.append("userDevices", "$userDevices")
+											.append("drAppointments.time", "$locationAppointments.time")
+											.append("drAppointments.localPatientName", "$patient.localPatientName")
+											.append("drAppointments.doctorName",
+													new BasicDBObject("$concat",
+															Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
+											.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
+
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$locationId")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("userId", new BasicDBObject("$first", "$userId"))
+											.append("locationAdminName",
+													new BasicDBObject("$first", "$locationAdminName"))
+											.append("locationAdminMobileNumber",
+													new BasicDBObject("$first", "$locationAdminMobileNumber"))
+											.append("locationName", new BasicDBObject("$first", "$locationName"))
+											.append("locationAdminEmailAddress",
+													new BasicDBObject("$first", "$locationAdminEmailAddress"))
+											.append("userDevices", new BasicDBObject("$first", "$userDevices"))
+											.append("drAppointments",
+													new BasicDBObject("$addToSet", "$drAppointments")))),
+
+							new CustomAggregationOperation(new BasicDBObject("$sort",
+									new BasicDBObject("locationAppointments.time.fromTime", 1))));
+
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
-							.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class).getMappedResults();
-					
+							.aggregate(aggregation, UserRoleCollection.class,
+									LocationAdminAppointmentLookupResponse.class)
+							.getMappedResults();
+
 					Map<String, LocationAdminAppointmentLookupResponse> locationDetailsMap = new HashMap<String, LocationAdminAppointmentLookupResponse>();
-					if(aggregationResults != null && !aggregationResults.isEmpty()) {
+					if (aggregationResults != null && !aggregationResults.isEmpty()) {
 						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-						
-						for(LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
+
+						for (LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
 							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
 							int count = 0;
-							if (lookupResponse.getDrAppointments() != null && !lookupResponse.getDrAppointments().isEmpty())
-								for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : lookupResponse.getDrAppointments()) {
-									
+							if (lookupResponse.getDrAppointments() != null
+									&& !lookupResponse.getDrAppointments().isEmpty())
+								for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : lookupResponse
+										.getDrAppointments()) {
+
 									String _24HourTime = String.format("%02d:%02d",
 											appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
 											appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
 
 									Date _24HourDt = _24HourSDF.parse(_24HourTime);
 
-									if (doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
-										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										response.setMessage(response.getMessage() + ", " + appointmentDoctorReminderResponse.getLocalPatientName()
-												+ "(" + _12HourSDF.format(_24HourDt) + ")");
+									if (doctorAppointmentSMSResponseMap
+											.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
+										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
+												.get(appointmentDoctorReminderResponse.getDoctorId().toString());
+										response.setMessage(response.getMessage() + ", "
+												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
+												+ _12HourSDF.format(_24HourDt) + ")");
 										count = count + 1;
-										doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+										doctorAppointmentSMSResponseMap.put(
+												appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 									} else {
 										DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
 										response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ":" +appointmentDoctorReminderResponse.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
+										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ":"
+												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
+												+ _12HourSDF.format(_24HourDt) + ")");
 										count = count + 1;
 										response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
-										doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+										doctorAppointmentSMSResponseMap.put(
+												appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 									}
 								}
 							lookupResponse.setTotalAppointments(count);
 							String message = "";
-							for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
-								if(DPDoctorUtils.anyStringEmpty(message))message = entry.getValue().getMessage();
-								else message = message + " "+entry.getValue().getMessage();
+							for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap
+									.entrySet()) {
+								if (DPDoctorUtils.anyStringEmpty(message))
+									message = entry.getValue().getMessage();
+								else
+									message = message + " " + entry.getValue().getMessage();
 							}
 							lookupResponse.setMessage(message);
 							locationDetailsMap.put(lookupResponse.getLocationId(), lookupResponse);
-					}
-					for (Entry<String, LocationAdminAppointmentLookupResponse> entry : locationDetailsMap.entrySet()) {
+						}
+						for (Entry<String, LocationAdminAppointmentLookupResponse> entry : locationDetailsMap
+								.entrySet()) {
 							LocationAdminAppointmentLookupResponse response = entry.getValue();
-							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have " + response.getTotalAppointments()
-									+ " appointments scheduled today.\n" + response.getMessage()
-									+ ".\nHave a Healthy and Happy day!!";
-							
+							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
+									+ response.getTotalAppointments() + " appointments scheduled today.\n"
+									+ response.getMessage() + ".\nHave a Healthy and Happy day!!";
+
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							smsTrackDetail.setDoctorId(response.getUserId());
 							smsTrackDetail.setType("APPOINTMENT");
@@ -912,12 +949,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							smsTrackDetail.setSmsDetails(smsDetails);
 							sMSServices.sendSMS(smsTrackDetail, true);
 							if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-								pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-										null, response.getUserDevices());
+								pushNotificationServices.notifyUser(null, message,
+										ComponentType.CALENDAR_REMINDER.getType(), null, response.getUserDevices());
 							}
-					}	
+						}
+					}
 				}
-				}				
 			}
 //			sendAppointmentScheduleToStaff();
 			sendEventReminderToDoctor();
@@ -926,108 +963,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			logger.error(e);
 		}
 	}
-	
+
 	@Transactional
 	public void sendEventReminderToDoctor() {
-			try {
-				if (sendSMS) {
-					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-					localCalendar.setTime(new Date());
-					int currentDay = localCalendar.get(Calendar.DATE);
-					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-					int currentYear = localCalendar.get(Calendar.YEAR);
-					DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-					DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-									.is(AppointmentType.EVENT.getType()).and("fromDate").gte(fromTime).and("toDate")
-									.lte(toTime)),
-							Aggregation.unwind("doctorIds"),
-							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.lookup("user_device_cl", "doctorIds", "userIds", "userDevices"),
-							Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
-					AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
-							.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
-
-					List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults
-							.getMappedResults();
-					Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
-
-					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-
-					if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
-						for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
-							
-							String _24HourTime = String.format("%02d:%02d",
-									appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
-									appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
-
-							Date _24HourDt = _24HourSDF.parse(_24HourTime);
-
-							if (doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
-								DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
-										.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-								response.setMessage(response.getMessage() + ", " + appointmentDoctorReminderResponse.getSubject()
-										+ "(" + _12HourSDF.format(_24HourDt) + ")");
-								doctorAppointmentSMSResponseMap
-										.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-							} else {
-								DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
-								response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-								response.setMessage(appointmentDoctorReminderResponse.getSubject() + "(" + _12HourSDF.format(_24HourDt) + ")");
-								response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
-								doctorAppointmentSMSResponseMap
-										.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-							}
-						}
-
-					for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
-						DoctorAppointmentSMSResponse response = entry.getValue();
-						UserCollection userCollection = response.getDoctor();
-						String message = "Healthcoco! Today's event:\n" + response.getMessage();
-						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-						smsTrackDetail.setDoctorId(userCollection.getId());
-						smsTrackDetail.setType("EVENTS");
-						SMSDetail smsDetail = new SMSDetail();
-						smsDetail.setUserId(userCollection.getId());
-						SMS sms = new SMS();
-						smsDetail.setUserName(userCollection.getFirstName());
-						sms.setSmsText(message);
-
-						SMSAddress smsAddress = new SMSAddress();
-						smsAddress.setRecipient(userCollection.getMobileNumber());
-						sms.setSmsAddress(smsAddress);
-
-						smsDetail.setSms(sms);
-						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-						smsDetails.add(smsDetail);
-						smsTrackDetail.setSmsDetails(smsDetails);
-						sMSServices.sendSMS(smsTrackDetail, true);
-						if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-							pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-									null, response.getUserDevices());
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e);
-			}
-	}
-	
-	
-	
-	@Override
-	@Transactional
-	public void sendAppointmentScheduleToStaff() {
 		try {
+			if (sendSMS) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 				localCalendar.setTime(new Date());
@@ -1040,112 +980,229 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-				RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.RECEPTIONIST_NURSE.getRole());
-				if(roleCollection != null) {
-					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
-							Aggregation.lookup("user_cl", "userId", "_id", "receptionist"), Aggregation.unwind("receptionist"),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-							Aggregation.lookup("appointment_cl", "locationId", "locationId", "locationAppointments"),
-							Aggregation.unwind("locationAppointments"),
-							Aggregation.match(new Criteria("locationAppointments.state").is(AppointmentState.CONFIRM.getState())
-									.and("locationAppointments.type").is(AppointmentType.APPOINTMENT.getType())
-									.and("locationAppointments.fromDate").gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
-							
-							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"), 
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$doctor")
-											.append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patient")
-											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-									new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("locationId", "$locationId")
-									.append("userId", "$userId")
-									.append("locationAdminName", "$receptionist.firstName")
-									.append("locationAdminMobileNumber", "$receptionist.mobileNumber")
-									.append("locationAdminEmailAddress", "$receptionist.emailAddress")
-									.append("locationName", "$location.locationName")
-									.append("userDevices", "$userDevices")
-									.append("drAppointments.time", "$locationAppointments.time")
-									.append("drAppointments.localPatientName", "$patient.localPatientName")
-									.append("drAppointments.doctorName", new BasicDBObject("$concat",Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
-									.append("drAppointments.doctorId", "$locationAppointments.doctorId")
-									)),
-							
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$locationId")
-									.append("locationId", new BasicDBObject("$first","$locationId"))
-									.append("userId", new BasicDBObject("$first","$userId"))
-									.append("locationAdminName", new BasicDBObject("$first","$locationAdminName"))
-									.append("locationAdminMobileNumber", new BasicDBObject("$first","$locationAdminMobileNumber"))
-									.append("locationName", new BasicDBObject("$first","$locationName"))
-									.append("locationAdminEmailAddress", new BasicDBObject("$first","$locationAdminEmailAddress"))
-									.append("userDevices", new BasicDBObject("$first","$userDevices"))
-									.append("drAppointments", new BasicDBObject("$addToSet","$drAppointments"))
-									)),
-							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
-							);
-					
-					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
-							.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class).getMappedResults();
-					
-					System.out.println(aggregationResults.size());
-					Map<String, LocationAdminAppointmentLookupResponse> locationDetailsMap = new HashMap<String, LocationAdminAppointmentLookupResponse>();
-					if(aggregationResults != null && !aggregationResults.isEmpty()) {
-						System.out.println("get response");
-						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-						
-						for(LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
-							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
-							int count = 0;
-							if (lookupResponse.getDrAppointments() != null && !lookupResponse.getDrAppointments().isEmpty())
-								for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : lookupResponse.getDrAppointments()) {
-									
-									String _24HourTime = String.format("%02d:%02d",
-											appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
-											appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
+				Aggregation aggregation = Aggregation.newAggregation(
+						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
+								.is(AppointmentType.EVENT.getType()).and("fromDate").gte(fromTime).and("toDate")
+								.lte(toTime)),
+						Aggregation.unwind("doctorIds"), Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("user_device_cl", "doctorIds", "userIds", "userDevices"),
+						Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
+				AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
+						.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
 
-									Date _24HourDt = _24HourSDF.parse(_24HourTime);
+				List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults
+						.getMappedResults();
+				Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
 
-									if (doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
-										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										response.setMessage(response.getMessage() + ", " + appointmentDoctorReminderResponse.getLocalPatientName()
-												+ "(" + _12HourSDF.format(_24HourDt) + ")");
-										count = count + 1;
-										doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-									} else {
-										DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
-										response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ":" +appointmentDoctorReminderResponse.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
-										count = count + 1;
-										response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
-										doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-									}
+				SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+				SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+
+				if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
+					for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
+
+						String _24HourTime = String.format("%02d:%02d",
+								appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
+								appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
+
+						Date _24HourDt = _24HourSDF.parse(_24HourTime);
+
+						if (doctorAppointmentSMSResponseMap
+								.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
+							DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
+									.get(appointmentDoctorReminderResponse.getDoctorId().toString());
+							response.setMessage(
+									response.getMessage() + ", " + appointmentDoctorReminderResponse.getSubject() + "("
+											+ _12HourSDF.format(_24HourDt) + ")");
+							doctorAppointmentSMSResponseMap
+									.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+						} else {
+							DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
+							response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
+							response.setMessage(appointmentDoctorReminderResponse.getSubject() + "("
+									+ _12HourSDF.format(_24HourDt) + ")");
+							response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
+							doctorAppointmentSMSResponseMap
+									.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+						}
+					}
+
+				for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
+					DoctorAppointmentSMSResponse response = entry.getValue();
+					UserCollection userCollection = response.getDoctor();
+					String message = "Healthcoco! Today's event:\n" + response.getMessage();
+					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+					smsTrackDetail.setDoctorId(userCollection.getId());
+					smsTrackDetail.setType("EVENTS");
+					SMSDetail smsDetail = new SMSDetail();
+					smsDetail.setUserId(userCollection.getId());
+					SMS sms = new SMS();
+					smsDetail.setUserName(userCollection.getFirstName());
+					sms.setSmsText(message);
+
+					SMSAddress smsAddress = new SMSAddress();
+					smsAddress.setRecipient(userCollection.getMobileNumber());
+					sms.setSmsAddress(smsAddress);
+
+					smsDetail.setSms(sms);
+					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+					smsDetails.add(smsDetail);
+					smsTrackDetail.setSmsDetails(smsDetails);
+					sMSServices.sendSMS(smsTrackDetail, true);
+					if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
+						pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
+								null, response.getUserDevices());
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	@Override
+	@Transactional
+	public void sendAppointmentScheduleToStaff() {
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+			DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.RECEPTIONIST_NURSE.getRole());
+			if (roleCollection != null) {
+				Aggregation aggregation = Aggregation.newAggregation(
+						Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
+						Aggregation.lookup("user_cl", "userId", "_id", "receptionist"),
+						Aggregation.unwind("receptionist"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("appointment_cl", "locationId", "locationId", "locationAppointments"),
+						Aggregation.unwind("locationAppointments"),
+						Aggregation.match(new Criteria("locationAppointments.state")
+								.is(AppointmentState.CONFIRM.getState()).and("locationAppointments.type")
+								.is(AppointmentType.APPOINTMENT.getType()).and("locationAppointments.fromDate")
+								.gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
+
+						Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+								new BasicDBObject("if",
+										new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
+												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+
+						new CustomAggregationOperation(new BasicDBObject("$project",
+								new BasicDBObject("locationId", "$locationId").append("userId", "$userId")
+										.append("locationAdminName", "$receptionist.firstName")
+										.append("locationAdminMobileNumber", "$receptionist.mobileNumber")
+										.append("locationAdminEmailAddress", "$receptionist.emailAddress")
+										.append("locationName", "$location.locationName")
+										.append("userDevices", "$userDevices")
+										.append("drAppointments.time", "$locationAppointments.time")
+										.append("drAppointments.localPatientName", "$patient.localPatientName")
+										.append("drAppointments.doctorName",
+												new BasicDBObject("$concat",
+														Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
+										.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
+
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("id", "$locationId")
+										.append("locationId", new BasicDBObject("$first", "$locationId"))
+										.append("userId", new BasicDBObject("$first", "$userId"))
+										.append("locationAdminName", new BasicDBObject("$first", "$locationAdminName"))
+										.append("locationAdminMobileNumber",
+												new BasicDBObject("$first", "$locationAdminMobileNumber"))
+										.append("locationName", new BasicDBObject("$first", "$locationName"))
+										.append("locationAdminEmailAddress",
+												new BasicDBObject("$first", "$locationAdminEmailAddress"))
+										.append("userDevices", new BasicDBObject("$first", "$userDevices"))
+										.append("drAppointments", new BasicDBObject("$addToSet", "$drAppointments")))),
+
+						new CustomAggregationOperation(new BasicDBObject("$sort",
+								new BasicDBObject("locationAppointments.time.fromTime", 1))));
+
+				List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
+						.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class)
+						.getMappedResults();
+
+				System.out.println(aggregationResults.size());
+				Map<String, LocationAdminAppointmentLookupResponse> locationDetailsMap = new HashMap<String, LocationAdminAppointmentLookupResponse>();
+				if (aggregationResults != null && !aggregationResults.isEmpty()) {
+					System.out.println("get response");
+					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+
+					for (LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
+						Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
+						int count = 0;
+						if (lookupResponse.getDrAppointments() != null && !lookupResponse.getDrAppointments().isEmpty())
+							for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : lookupResponse
+									.getDrAppointments()) {
+
+								String _24HourTime = String.format("%02d:%02d",
+										appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
+										appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
+
+								Date _24HourDt = _24HourSDF.parse(_24HourTime);
+
+								if (doctorAppointmentSMSResponseMap
+										.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
+									DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
+											.get(appointmentDoctorReminderResponse.getDoctorId().toString());
+									response.setMessage(response.getMessage() + ", "
+											+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
+											+ _12HourSDF.format(_24HourDt) + ")");
+									count = count + 1;
+									doctorAppointmentSMSResponseMap
+											.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+								} else {
+									DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
+									response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
+									response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ":"
+											+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
+											+ _12HourSDF.format(_24HourDt) + ")");
+									count = count + 1;
+									response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
+									doctorAppointmentSMSResponseMap
+											.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 								}
-							lookupResponse.setTotalAppointments(count);
-							String message = "";
-							for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
-								if(DPDoctorUtils.anyStringEmpty(message))message = entry.getValue().getMessage();
-								else message = message + " "+entry.getValue().getMessage();
 							}
-							lookupResponse.setMessage(message);
-							locationDetailsMap.put(lookupResponse.getLocationId(), lookupResponse);
+						lookupResponse.setTotalAppointments(count);
+						String message = "";
+						for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap
+								.entrySet()) {
+							if (DPDoctorUtils.anyStringEmpty(message))
+								message = entry.getValue().getMessage();
+							else
+								message = message + " " + entry.getValue().getMessage();
+						}
+						lookupResponse.setMessage(message);
+						locationDetailsMap.put(lookupResponse.getLocationId(), lookupResponse);
 					}
 					for (Entry<String, LocationAdminAppointmentLookupResponse> entry : locationDetailsMap.entrySet()) {
-							LocationAdminAppointmentLookupResponse response = entry.getValue();
-							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have " + response.getTotalAppointments()
-									+ " appointments scheduled today.\n" + response.getMessage()
-									+ ".\nHave a Healthy and Happy day!!";
-							
-							System.out.println(response.getUserId().toString() + response.getLocationAdminName() + ".."+response.getLocationAdminEmailAddress()+ ".."+response.getLocationAdminMobileNumber());
-							System.out.println(response.getUserDevices() != null);
-							System.out.println(message);
+						LocationAdminAppointmentLookupResponse response = entry.getValue();
+						String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
+								+ response.getTotalAppointments() + " appointments scheduled today.\n"
+								+ response.getMessage() + ".\nHave a Healthy and Happy day!!";
+
+						System.out.println(response.getUserId().toString() + response.getLocationAdminName() + ".."
+								+ response.getLocationAdminEmailAddress() + ".."
+								+ response.getLocationAdminMobileNumber());
+						System.out.println(response.getUserDevices() != null);
+						System.out.println(message);
 //							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 //							smsTrackDetail.setDoctorId(response.getUserId());
 //							smsTrackDetail.setType("APPOINTMENT");
@@ -1169,19 +1226,19 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 //								pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
 //										null, response.getUserDevices());
 //							}
-					}	
-						
+					}
+
+				} else {
+					System.out.println("null response");
 				}
-					else {
-						System.out.println("null response");
-					}	
-				}				
+			}
 //			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 		}
 	}
+
 	// @Scheduled(cron = "0 0/30 9 * * *", zone = "IST")
 	@Override
 	@Transactional
@@ -1304,9 +1361,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							SMSDetail smsDetail = new SMSDetail();
 							SMS sms = new SMS();
-							sms.setSmsText("You have an appointment "
-									+ " @ " + dateTime
-									+ " with " + appointmentPatientReminderResponse.getDoctorTitle() + " "
+							sms.setSmsText("You have an appointment " + " @ " + dateTime + " with "
+									+ appointmentPatientReminderResponse.getDoctorTitle() + " "
 									+ appointmentPatientReminderResponse.getDoctorName()
 									+ (!DPDoctorUtils
 											.anyStringEmpty(appointmentPatientReminderResponse.getLocationName())
@@ -1314,7 +1370,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													: "")
 									+ (!DPDoctorUtils
 											.anyStringEmpty(appointmentPatientReminderResponse.getClinicNumber())
-													? ", " + appointmentPatientReminderResponse.getClinicNumber() : "")
+													? ", " + appointmentPatientReminderResponse.getClinicNumber()
+													: "")
 									+ ". Download Healthcoco App- " + patientAppBitLink);
 
 							SMSAddress smsAddress = new SMSAddress();
@@ -2345,6 +2402,21 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESCementDocument cementDocument = new ESCementDocument();
 				BeanUtil.map(cementCollection, cementDocument);
 				esDischargeSummaryService.addCement(cementDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkExpenseType(ObjectId resourceId) {
+		try {
+
+			ExpenseTypeCollection typeCollection = expenseTypeRepository.findOne(resourceId);
+			if (typeCollection != null) {
+				ESExpenseTypeDocument expenseDocument = new ESExpenseTypeDocument();
+				BeanUtil.map(typeCollection, expenseDocument);
+				exExpenseTypeService.addEditExpenseType(expenseDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

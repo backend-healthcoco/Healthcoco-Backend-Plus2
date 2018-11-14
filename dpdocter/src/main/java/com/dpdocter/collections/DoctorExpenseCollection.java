@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.enums.ExpenseType;
 import com.dpdocter.enums.ModeOfPayment;
 
 @Document(collection = "doctor_expense_cl")
@@ -21,7 +20,7 @@ public class DoctorExpenseCollection extends GenericCollection {
 	@Field
 	public ObjectId hospitalId;
 	@Field
-	public ExpenseType type = ExpenseType.OTHER;
+	public String expenseType;
 	@Field
 	public ModeOfPayment modeOfPayment = ModeOfPayment.CASH;
 	@Field
@@ -85,12 +84,12 @@ public class DoctorExpenseCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public ExpenseType getType() {
-		return type;
+	public String getExpenseType() {
+		return expenseType;
 	}
 
-	public void setType(ExpenseType type) {
-		this.type = type;
+	public void setExpenseType(String expenseType) {
+		this.expenseType = expenseType;
 	}
 
 	public ModeOfPayment getModeOfPayment() {

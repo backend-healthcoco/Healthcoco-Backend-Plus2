@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.ExpenseType;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
@@ -54,11 +56,14 @@ import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.ExpenseTypeCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.document.ESExpenseTypeDocument;
+import com.dpdocter.elasticsearch.services.ESExpenseTypeService;
 import com.dpdocter.enums.BillingType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.InvoiceItemType;
@@ -74,6 +79,7 @@ import com.dpdocter.repository.DoctorPatientInvoiceRepository;
 import com.dpdocter.repository.DoctorPatientLedgerRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.ExpenseTypeRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -188,6 +194,12 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private DoctorExpenseRepository doctorExpenseRepository;
+
+	@Autowired
+	private ExpenseTypeRepository expenseTypeRepository;
+
+	@Autowired
+	private ESExpenseTypeService esExpenseTypeService;
 
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
@@ -2534,7 +2546,7 @@ public class BillingServiceImpl implements BillingService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public DoctorExpense getDoctorExpense(String expenseId) {
 		DoctorExpense response = null;
@@ -2547,6 +2559,112 @@ public class BillingServiceImpl implements BillingService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public ExpenseType addEditExpenseType(ExpenseType request) {
+		ExpenseType response = null;
+		try {
+			ExpenseTypeCollection expenseTypeCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(request.getId()));
+				if (expenseTypeCollection == null) {
+					throw new BusinessException(ServiceError.InvalidInput, "Expense Not Found with Id");
+				}
+				request.setCreatedBy(expenseTypeCollection.getCreatedBy());
+				request.setCreatedTime(expenseTypeCollection.getCreatedTime());
+				expenseTypeCollection = new ExpenseTypeCollection();
+				BeanUtil.map(request, expenseTypeCollection);
+
+			} else {
+				request.setCreatedBy("ADMIN");
+				request.setCreatedTime(new Date());
+				expenseTypeCollection = new ExpenseTypeCollection();
+				BeanUtil.map(request, expenseTypeCollection);
+			}
+			expenseTypeCollection = expenseTypeRepository.save(expenseTypeCollection);
+			ESExpenseTypeDocument esDocument = new ESExpenseTypeDocument();
+			esExpenseTypeService.addEditExpenseType(esDocument);
+			response = new ExpenseType();
+			BeanUtil.map(expenseTypeCollection, response);
+		} catch (Exception e) {
+			logger.error("Error occurred while adding or editing Expense Type", e);
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing Expense Type");
+		}
+		return response;
+	}
+
+	@Override
+	public ExpenseType getExpenseType(String expenseTypeId) {
+		ExpenseType response = null;
+		try {
+
+			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(expenseTypeId));
+			response = new ExpenseType();
+			BeanUtil.map(expenseTypeCollection, response);
+
+		} catch (Exception e) {
+			logger.error("Error occurred while getting Expense Type", e);
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while getting Expense Type");
+		}
+		return response;
+	}
+
+	@Override
+	public List<ExpenseType> getExpenseType(int page, int size, String doctorId, String locationId, String hospitalId,
+			String searchTerm, Boolean discarded) {
+		List<ExpenseType> response = null;
+		try {
+			Criteria criteria = new Criteria();
+
+			new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId))
+					.and("hospitalId").is(new ObjectId(hospitalId));
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("name").regex("^" + searchTerm));
+			}
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			}
+
+			AggregationResults<ExpenseType> results = mongoTemplate.aggregate(aggregation, ExpenseTypeCollection.class,
+					ExpenseType.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			logger.error("Error occurred while getting Expense Type", e);
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while getting Expense Type");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean deleteExpenseType(String expenseTypeId, Boolean discarded) {
+		Boolean response = false;
+		try {
+			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(expenseTypeId));
+			if (expenseTypeCollection == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Expense Type Not Found with Id");
+			}
+			expenseTypeCollection.setUpdatedTime(new Date());
+			expenseTypeCollection.setDiscarded(discarded);
+			expenseTypeCollection = expenseTypeRepository.save(expenseTypeCollection);
+			ESExpenseTypeDocument esDocument = new ESExpenseTypeDocument();
+			esExpenseTypeService.addEditExpenseType(esDocument);
+			response = true;
+		} catch (Exception e) {
+			logger.error("Error occurred while getting Expense Type ", e);
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while getting Expense Type");
 		}
 		return response;
 	}

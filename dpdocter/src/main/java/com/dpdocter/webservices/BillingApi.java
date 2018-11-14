@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.DoctorExpense;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.ExpenseType;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -496,6 +497,65 @@ public class BillingApi {
 
 		Response<DoctorExpense> response = new Response<DoctorExpense>();
 		response.setData(expense);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.ADD_EXPENSE_TYPE)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.ADD_EXPENSE_TYPE, notes = PathProxy.BillingUrls.ADD_EXPENSE_TYPE)
+	public Response<ExpenseType> addExpenseType(ExpenseType request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+				request.getName())) {
+			throw new BusinessException(ServiceError.InvalidInput, "doctorId, locationId, hospitalId should not null");
+		}
+
+		Response<ExpenseType> response = new Response<ExpenseType>();
+		response.setData(billingService.addEditExpenseType(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.GET_EXPENSE_TYPE_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_EXPENSE_TYPE_BY_ID, notes = PathProxy.BillingUrls.GET_EXPENSE_TYPE_BY_ID)
+	public Response<ExpenseType> getExpenseById(@QueryParam("expenseTypeId") String expenseTypeId) {
+		if (DPDoctorUtils.anyStringEmpty(expenseTypeId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<ExpenseType> response = new Response<ExpenseType>();
+		response.setData(billingService.getExpenseType(expenseTypeId));
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.GET_EXPENSE_TYPE)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_EXPENSE_TYPE, notes = PathProxy.BillingUrls.GET_EXPENSE_TYPE)
+	public Response<ExpenseType> getExpenses(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded,
+			@QueryParam("searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "doctorId, locationId, hospitalId should not null");
+		}
+		Response<ExpenseType> response = new Response<ExpenseType>();
+		response.setDataList(
+				billingService.getExpenseType(page, size, doctorId, locationId, hospitalId, searchTerm, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.DELETE_EXPENSE_TYPE)
+	@DELETE
+	@ApiOperation(value = PathProxy.BillingUrls.DELETE_EXPENSE_TYPE, notes = PathProxy.BillingUrls.DELETE_EXPENSE_TYPE)
+	public Response<Boolean> discardExpenseType(@PathParam("expenseTypeId") String expenseTypeId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(expenseTypeId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(billingService.deleteExpenseType(expenseTypeId, discarded));
 		return response;
 	}
 }
