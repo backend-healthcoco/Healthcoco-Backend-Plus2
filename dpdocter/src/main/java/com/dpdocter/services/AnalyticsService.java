@@ -29,7 +29,7 @@ public interface AnalyticsService {
 			String hospitalId, String fromDate, String toDate);
 
 	public List<PatientAnalyticResponse> getPatientCount(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String queryType, String searchType, String searchTerm);
+			String fromDate, String toDate, String queryType, String searchType, String searchTerm, Boolean showDetail);
 
 	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
@@ -79,7 +79,8 @@ public interface AnalyticsService {
 	public DoctorVisitAnalyticResponse getVisitAnalytic(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate);
 
-	List<ExpenseCountResponse> getDoctorExpenseAnalytic( String doctorId, String locationId,
-			String hospitalId, Boolean discarded, String fromDate, String toDate);
+	List<ExpenseCountResponse> getDoctorExpenseAnalytic(String doctorId, String searchType, String locationId,
+			String hospitalId, Boolean discarded, String fromDate, String toDate, String expenseType,
+			String paymentMode);
 
 }

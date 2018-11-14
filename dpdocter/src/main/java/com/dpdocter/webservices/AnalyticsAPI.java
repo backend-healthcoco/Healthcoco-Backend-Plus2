@@ -61,13 +61,13 @@ public class AnalyticsAPI {
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam("queryType") String queryType, @QueryParam("searchType") String searchType,
-			@QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("showDetail") Boolean showDetail) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
 		}
 		List<PatientAnalyticResponse> patientAnalyticResponse = analyticsService.getPatientCount(doctorId, locationId,
-				hospitalId, fromDate, toDate, queryType, searchType, searchTerm);
+				hospitalId, fromDate, toDate, queryType, searchType, searchTerm, showDetail);
 
 		Response<PatientAnalyticResponse> response = new Response<PatientAnalyticResponse>();
 		response.setDataList(patientAnalyticResponse);
@@ -393,13 +393,14 @@ public class AnalyticsAPI {
 	public Response<ExpenseCountResponse> getPatintVisitAnalytic(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("discarded") boolean discarded) {
+			@QueryParam("discarded") boolean discarded, @QueryParam("searchType") String searchType,
+			@QueryParam("expenseType") String expenseType, @QueryParam("paymentMode") String paymentMode) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
 
-		List<ExpenseCountResponse> data = analyticsService.getDoctorExpenseAnalytic(doctorId, locationId, hospitalId,
-				discarded, fromDate, toDate);
+		List<ExpenseCountResponse> data = analyticsService.getDoctorExpenseAnalytic(doctorId, searchType, locationId,
+				hospitalId, discarded, fromDate, toDate, expenseType, paymentMode);
 		Response<ExpenseCountResponse> response = new Response<ExpenseCountResponse>();
 		response.setDataList(data);
 		return response;

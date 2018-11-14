@@ -1,15 +1,59 @@
 package com.dpdocter.response;
 
+import java.util.Date;
+
 public class ExpenseCountResponse {
-	private String type;
+
+	private int day;
+
+	private int month;
+
+	private int year;
+
+	private int week;
+
 	private Double cost;
 
-	public String getType() {
-		return type;
+	private Date toDate;
+
+	public int getDay() {
+		return day;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setDay(int day) {
+		this.day = day;
+	}
+
+	public int getMonth() {
+		return month;
+	}
+
+	public void setMonth(int month) {
+		this.month = month;
+	}
+
+	public int getYear() {
+		return year;
+	}
+
+	public void setYear(int year) {
+		this.year = year;
+	}
+
+	public int getWeek() {
+		return week;
+	}
+
+	public void setWeek(int week) {
+		this.week = week;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 
 	public Double getCost() {
