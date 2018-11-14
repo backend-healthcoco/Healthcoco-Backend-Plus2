@@ -77,13 +77,13 @@ public interface BillingService {
 
 	DoctorExpense addEditDoctorExpense(DoctorExpense request);
 
-	List<DoctorExpense> getDoctorExpenses(String type, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded);
+	List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String paymentMode);
 
 	DoctorExpense deleteDoctorExpense(String expenseId, Boolean discarded);
 
-	Double countDoctorExpenses(String type, String doctorId, String locationId, String hospitalId, String updatedTime,
-			Boolean discarded);
+	Double countDoctorExpenses(String expenseType, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String paymentMode);
 
 	DoctorExpense getDoctorExpense(String expenseId);
 

@@ -2453,8 +2453,8 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public List<DoctorExpense> getDoctorExpenses(String type, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+	public List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded,String paymentMode) {
 		List<DoctorExpense> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -2467,8 +2467,12 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
-			if (!DPDoctorUtils.anyStringEmpty(type))
-				criteria.and("type").is(type);
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("expenseType").is(expenseType.toUpperCase());
+			}
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
+			}
 			if (size > 0) {
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
@@ -2490,8 +2494,8 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public Double countDoctorExpenses(String type, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	public Double countDoctorExpenses(String expenseType, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded,String paymentMode) {
 		Double response = 0.0;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -2504,9 +2508,12 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
-			if (!DPDoctorUtils.anyStringEmpty(type))
-				criteria.and("type").is(type);
-
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("expenseType").is(expenseType.toUpperCase());
+			}
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
+			}
 			DoctorExpense doctorExpense = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							new CustomAggregationOperation(new BasicDBObject("$group",

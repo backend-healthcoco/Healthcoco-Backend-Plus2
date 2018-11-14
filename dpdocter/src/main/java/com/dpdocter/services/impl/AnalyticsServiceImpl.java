@@ -783,7 +783,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<PatientAnalyticResponse> getPatientCount(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String queryType, String searchType, String searchTerm) {
+			String fromDate, String toDate, String queryType, String searchType, String searchTerm,
+			Boolean showDetail) {
 		List<PatientAnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -810,15 +811,24 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria.and("toDate").lte(toTime);
 			}
 			Aggregation aggregation = null;
+			ProjectionOperation projectList2 = null;
 			CustomAggregationOperation aggregationOperation = null;
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
+
 				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 						Fields.field("patients._id", "$userId"),
 						Fields.field("patients.localPatientName", "$localPatientName"),
 						Fields.field("patients.pid", "$PID"), Fields.field("patients.firstName", "$firstName"),
 						Fields.field("patients.registrationDate", "$registrationDate"),
 						Fields.field("patients.createdTime", "$createdTime"), Fields.field("date", "$createdTime")));
+
+				projectList2 = new ProjectionOperation(Fields.from(Fields.field("day", "$day"),
+						Fields.field("month", "$month"), Fields.field("week", "$week"), Fields.field("year", "$year"),
+						Fields.field("date", "$date"), Fields.field("count", "$size:'$patients'")));
+				if (showDetail) {
+					projectList2.and("patients").as("patients");
+				}
 
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -907,6 +917,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Fields.field("patient.registrationDate", "$registrationDate"),
 						Fields.field("patient.createdTime", "$createdTime"), Fields.field("date", "$createdTime"),
 						Fields.field("city", "$address.city")));
+				projectList2 = new ProjectionOperation(Fields.from(Fields.field("day", "$day"),
+						Fields.field("month", "$month"), Fields.field("week", "$week"), Fields.field("year", "$year"),
+						Fields.field("city", "$city"), Fields.field("date", "$date"),
+						Fields.field("count", "$size:'$patients'")));
+				if (showDetail) {
+					projectList2.and("patients").as("patients");
+				}
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					criteria.and("address.city").is(searchTerm);
 				}
@@ -983,7 +1000,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
+						aggregationOperation, projectList2, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
 				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 						"patient_cl", PatientAnalyticResponse.class);
 				response = aggregationResults.getMappedResults();
@@ -997,6 +1014,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Fields.field("patient.registrationDate", "$registrationDate"),
 						Fields.field("patient.createdTime", "$createdTime"), Fields.field("date", "$createdTime"),
 						Fields.field("city", "$address.city")));
+				projectList2 = new ProjectionOperation(Fields.from(Fields.field("day", "$day"),
+						Fields.field("month", "$month"), Fields.field("week", "$week"), Fields.field("year", "$year"),
+						Fields.field("city", "$city"), Fields.field("date", "$date"),
+						Fields.field("count", "$size:'$patients'")));
+				if (showDetail) {
+					projectList2.and("patients").as("patients");
+				}
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					criteria.and("address.locality").is(searchTerm);
 				}
@@ -1074,7 +1098,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("date").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						aggregationOperation, projectList2,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 						"patient_cl", PatientAnalyticResponse.class);
 				response = aggregationResults.getMappedResults();
@@ -1090,6 +1115,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								Fields.field("patient.createdTime", "$patient.createdTime"),
 								Fields.field("groupName", "$group.name"), Fields.field("date", "$createdTime"),
 								Fields.field("groupId", "$group._id")));
+				projectList2 = new ProjectionOperation(Fields.from(Fields.field("day", "$day"),
+						Fields.field("month", "$month"), Fields.field("week", "$week"), Fields.field("year", "$year"),
+						Fields.field("groupName", "$groupName"), Fields.field("groupId", "$groupId"),
+						Fields.field("date", "$date"), Fields.field("count", "$size:'$patients'")));
+				if (showDetail) {
+					projectList2.and("patients").as("patients");
+				}
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria = criteria.and("patient.doctorId").is(new ObjectId(doctorId)).and("group.doctorId")
 							.is(new ObjectId(doctorId));
@@ -1180,7 +1212,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
+						aggregationOperation, projectList2, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
 
 				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 						PatientGroupCollection.class, PatientAnalyticResponse.class);
@@ -1193,9 +1225,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Fields.field("patient.localPatientName", "$localPatientName"),
 						Fields.field("patient.PID", "$PID"), Fields.field("patient.firstName", "$user.firstName"),
 						Fields.field("patient.registrationDate", "$registrationDate"),
-						Fields.field("patient.createdTime", "$visit.createdTime"),
+						Fields.field("patient.createdTime", "$createdTime"),
 						Fields.field("patient.visitedTime", "$visit.time"),
 						Fields.field("date", "$visit.createdTime")));
+
+				projectList2 = new ProjectionOperation(Fields.from(Fields.field("day", "$day"),
+						Fields.field("month", "$month"), Fields.field("week", "$week"), Fields.field("year", "$year"),
+						Fields.field("groupName", "$groupName"), Fields.field("groupId", "$groupId"),
+						Fields.field("date", "$date"), Fields.field("count", "$size:'$patients'")));
+				if (showDetail) {
+					projectList2.and("patients").as("patients");
+				}
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria = criteria.and("patient.doctorId").is(new ObjectId(doctorId)).and("visit.doctorId")
 							.is(new ObjectId(doctorId));
@@ -1215,13 +1255,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
-											.append("city", new BasicDBObject("$first", "$city"))
 											.append("month", new BasicDBObject("$first", "$month"))
 											.append("year", new BasicDBObject("$first", "$year"))
-
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("data", new BasicDBObject("$push", "$patient"))
-											.append("count", new BasicDBObject("$size", "$data"))));
+											.append("date", new BasicDBObject("$first", "$date"))
+											.append("patients", new BasicDBObject("$push", "$patient"))));
 					break;
 				}
 
@@ -1231,12 +1268,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("day", new BasicDBObject("$first", "$day"))
-													.append("city", new BasicDBObject("$first", "$city"))
 													.append("month", new BasicDBObject("$first", "$month"))
 													.append("year", new BasicDBObject("$first", "$year"))
-													.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-													.append("data", new BasicDBObject("$push", "$patient"))
-													.append("count", new BasicDBObject("$size", "$data"))));
+													.append("date", new BasicDBObject("$first", "$date"))
+													.append("patients", new BasicDBObject("$push", "$patient"))));
 					break;
 				}
 
@@ -1244,12 +1279,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("data", new BasicDBObject("$push", "$patient"))
-									.append("count", new BasicDBObject("$size", "$data"))));
+									.append("date", new BasicDBObject("$first", "$date"))
+									.append("patients", new BasicDBObject("$push", "$patient"))));
 
 					break;
 				}
@@ -1258,11 +1291,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("data", new BasicDBObject("$push", "$patient"))));
+									.append("date", new BasicDBObject("$first", "$date"))
+									.append("patients", new BasicDBObject("$push", "$patient"))));
 
 					break;
 
@@ -1278,7 +1310,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						projectList.and("visit.createdTime").extractDayOfMonth().as("day").and("visit.createdTime")
 								.extractMonth().as("month").and("visit.createdTime").extractYear().as("year")
 								.and("visit.createdTime").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "count")));
+						aggregationOperation, projectList2, Aggregation.sort(new Sort(Sort.Direction.DESC, "count")));
 
 				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 						"patient_cl", PatientAnalyticResponse.class);
@@ -1294,8 +1326,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						Fields.field("patient.PID", "$patient.PID"),
 						Fields.field("patient.firstName", "$user.firstName"),
 						Fields.field("patient.registrationDate", "$patient.registrationDate"),
-						Fields.field("patient.createdTime", "$createdTime"),
+						Fields.field("patient.createdTime", "$patient.createdTime"),
 						Fields.field("patient.visitedTime", "$time"), Fields.field("createdTime", "$createdTime")));
+
+				projectList2 = new ProjectionOperation(Fields.from(Fields.field("day", "$day"),
+						Fields.field("month", "$month"), Fields.field("week", "$week"), Fields.field("year", "$year"),
+						Fields.field("date", "$date"), Fields.field("count", "$size:'$patients'")));
+				if (showDetail) {
+					projectList2.and("patients").as("patients");
+				}
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria = criteria.and("patient.doctorId").is(new ObjectId(doctorId)).and("patient.doctorId")
 							.is(new ObjectId(doctorId));
@@ -1314,7 +1353,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
-											.append("city", new BasicDBObject("$first", "$city"))
 											.append("month", new BasicDBObject("$first", "$month"))
 											.append("year", new BasicDBObject("$first", "$year"))
 											.append("date", new BasicDBObject("$first", "$createdTime"))
@@ -1329,7 +1367,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 									new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
 											.append("groupId", "$groupId"))
 													.append("day", new BasicDBObject("$first", "$day"))
-													.append("city", new BasicDBObject("$first", "$city"))
 													.append("month", new BasicDBObject("$first", "$month"))
 													.append("year", new BasicDBObject("$first", "$year"))
 													.append("date", new BasicDBObject("$first", "$createdTime"))
@@ -1342,7 +1379,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("date", new BasicDBObject("$first", "$createdTime"))
@@ -1355,7 +1391,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("day", new BasicDBObject("$first", "$day"))
-									.append("city", new BasicDBObject("$first", "$city"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("date", new BasicDBObject("$first", "$createdTime"))
@@ -1368,13 +1403,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				default:
 					break;
 				}
+
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 						Aggregation.unwind("user"), Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
 						Aggregation.unwind("patient"), Aggregation.match(criteria),
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
+						aggregationOperation, projectList2, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")));
 				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 						"patient_visit_cl", PatientAnalyticResponse.class);
 				response = aggregationResults.getMappedResults();
@@ -1387,10 +1423,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				break;
 
 			}
-			for (PatientAnalyticResponse patientAnalyticResponse : response) {
-				patientAnalyticResponse.setCount(patientAnalyticResponse.getPatients().size());
 
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While getting patient analytic");
@@ -3827,8 +3860,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	@Override
-	public List<ExpenseCountResponse> getDoctorExpenseAnalytic(String doctorId, String locationId, String hospitalId,
-			Boolean discarded, String fromDate, String toDate) {
+	public List<ExpenseCountResponse> getDoctorExpenseAnalytic(String doctorId, String searchType, String locationId,
+			String hospitalId, Boolean discarded, String fromDate, String toDate, String expenseType,
+			String paymentMode) {
 		List<ExpenseCountResponse> response = null;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -3874,11 +3908,61 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("expenseType").is(expenseType.toUpperCase());
+			}
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
+			}
+			AggregationOperation aggregationOperation = null;
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("cost", "$cost"), Fields.field("toDate", "$toDate")));
+			if (!DPDoctorUtils.anyStringEmpty(searchType))
+				switch (SearchType.valueOf(searchType.toUpperCase())) {
+
+				case DAILY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
+											.append("cost", new BasicDBObject("$sum", "$cost"))
+											.append("toDate", new BasicDBObject("$first", "$toDate"))));
+
+					break;
+				}
+
+				case WEEKLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("week", "$week").append("month", "$month").append("year",
+											"$year")).append("cost", new BasicDBObject("$sum", "$cost"))
+													.append("toDate", new BasicDBObject("$first", "$toDate"))));
+
+					break;
+				}
+
+				case MONTHLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
+									.append("cost", new BasicDBObject("$sum", "$cost"))
+									.append("toDate", new BasicDBObject("$first", "$toDate"))));
+					break;
+				}
+				case YEARLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
+									.append("cost", new BasicDBObject("$sum", "$cost"))
+									.append("toDate", new BasicDBObject("$first", "$toDate"))));
+
+					break;
+
+				}
+				default:
+					break;
+				}
+			projectList.and("toDate").extractDayOfMonth().as("day").and("toDate").extractMonth().as("month")
+					.and("toDate").extractYear().as("year").and("toDate").extractWeek().as("week");
 			response = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "type").append("cost", new BasicDBObject("$sum", "$cost"))
-											.append("type", new BasicDBObject("$first", "$type"))))),
+					Aggregation.newAggregation(Aggregation.match(criteria), projectList, aggregationOperation),
 					DoctorExpenseCollection.class, ExpenseCountResponse.class).getMappedResults();
 
 		} catch (Exception e) {

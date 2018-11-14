@@ -433,14 +433,15 @@ public class BillingApi {
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("type") String type) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
+			@QueryParam("expenseType") String expenseType, @QueryParam("paymentMode") String paymentMode) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		List<DoctorExpense> expenses = billingService.getDoctorExpenses(type, page, size, doctorId, locationId,
-				hospitalId, updatedTime, discarded);
+		List<DoctorExpense> expenses = billingService.getDoctorExpenses(expenseType, page, size, doctorId, locationId,
+				hospitalId, updatedTime, discarded, paymentMode);
 
 		Response<DoctorExpense> response = new Response<DoctorExpense>();
 		response.setDataList(expenses);
@@ -453,14 +454,15 @@ public class BillingApi {
 	public Response<Double> countExpenses(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("type") String type) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
+			@QueryParam("expenseType") String expenseType, @QueryParam("paymentMode") String paymentMode) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		Double count = billingService.countDoctorExpenses(type, doctorId, locationId, hospitalId, updatedTime,
-				discarded);
+		Double count = billingService.countDoctorExpenses(expenseType, doctorId, locationId, hospitalId, updatedTime,
+				discarded, paymentMode);
 
 		Response<Double> response = new Response<Double>();
 		response.setData(count);
