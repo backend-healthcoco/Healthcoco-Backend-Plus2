@@ -14,7 +14,7 @@ public class Vaccine extends GenericCollection {
 	private String id;
 	private String name;
 	private Date dueDate;
-	private VaccineStatus status = VaccineStatus.GIVEN;
+	private VaccineStatus status = VaccineStatus.PLANNED;
 	private VaccineRoute route;
 	private String bodySite;
 	private Integer dosage;

@@ -12,11 +12,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.elasticsearch.services.PaediatricService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.VaccineResponse;
+import com.dpdocter.services.PaediatricService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
