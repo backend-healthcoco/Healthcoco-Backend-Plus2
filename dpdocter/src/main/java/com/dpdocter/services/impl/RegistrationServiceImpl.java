@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,6 +82,7 @@ import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.beans.UserReminders;
+import com.dpdocter.beans.Vaccine;
 import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
@@ -103,6 +106,7 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.IPDReportsCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.MasterBabyImmunizationCollection;
 import com.dpdocter.collections.OPDReportsCollection;
 import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -124,6 +128,7 @@ import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserNutritionSubscriptionCollection;
 import com.dpdocter.collections.UserRemindersCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.collections.VaccineCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
@@ -157,6 +162,7 @@ import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.MasterBabyImmunizationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -172,6 +178,7 @@ import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRemindersRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
+import com.dpdocter.repository.VaccineRepository;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
@@ -210,6 +217,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.DateUtil;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
@@ -338,6 +346,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
+	
+	@Autowired
+	private MasterBabyImmunizationRepository masterBabyImmunizationRepository;
+	
+	@Autowired
+	private VaccineRepository vaccineRepository;
 
 	@Value(value = "${jasper.print.consentForm.a4.fileName}")
 	private String consentFormA4FileName;
@@ -690,6 +704,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 					ComponentType.PATIENT_REFRESH.getType(), null, null);
 
+			
+			if(request.getIsChild() == true)
+			{
+				createImmunisationChart(registeredPatientDetails);
+			}
+			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -721,6 +742,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 				}
 			}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1081,6 +1104,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 					ComponentType.PATIENT_REFRESH.getType(), null, null);
 
+
 			if (request.getLocationId() != null) {
 				LocationCollection locationCollection = locationRepository
 						.findOne(new ObjectId(request.getLocationId()));
@@ -1092,6 +1116,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			}
 
+			if(request.getIsChild() == true)
+			{
+				createImmunisationChart(registeredPatientDetails);
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -4695,4 +4724,35 @@ public class RegistrationServiceImpl implements RegistrationService {
 	 * vaccineRepository.save(vaccineCollections); }
 	 */
 
+	
+	@Async
+	@Transactional
+	private void createImmunisationChart(RegisteredPatientDetails request)
+	{
+		List<VaccineCollection> vaccineCollections = new ArrayList<>();
+		Calendar calendar = new GregorianCalendar();
+		if(request.getDob() != null)		
+		{
+			calendar.set(request.getDob().getYears(), request.getDob().getMonths() -1 , request.getDob().getDays(), 0, 0);
+		}
+		
+		List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository.findAll();
+		for (MasterBabyImmunizationCollection masterBabyImmunizationCollection : babyImmunizationCollections) {
+			VaccineCollection vaccineCollection = new VaccineCollection();
+			vaccineCollection.setPatientId(new ObjectId(request.getUserId()));
+			vaccineCollection.setLocationId(new ObjectId(request.getLocationId()));
+			vaccineCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+			vaccineCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			vaccineCollection.setLongName(masterBabyImmunizationCollection.getLongName());
+			vaccineCollection.setName(masterBabyImmunizationCollection.getLongName());
+			Calendar dob = calendar;
+			dob.add(Calendar.MONTH, masterBabyImmunizationCollection.getPeriodTime());
+			vaccineCollection.setDueDate(dob.getTime());
+			vaccineCollections.add(vaccineCollection);
+		}
+		
+		vaccineRepository.save(vaccineCollections);
+	}
+	
+	
 }
