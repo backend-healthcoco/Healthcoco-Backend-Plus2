@@ -236,14 +236,19 @@ public class PatientVisitApi {
 			@DefaultValue("false") @QueryParam("isCustomPDF") Boolean isCustomPDF,
 			@DefaultValue("false") @QueryParam("showLMP") Boolean showLMP,
 			@DefaultValue("false") @QueryParam("showEDD") Boolean showEDD,
-			@DefaultValue("false") @QueryParam("showNoOfChildren") Boolean showNoOfChildren) {
+			@DefaultValue("false") @QueryParam("showNoOfChildren") Boolean showNoOfChildren,
+			@DefaultValue("false") @QueryParam("showPrescription") Boolean showPrescription,
+			@DefaultValue("false") @QueryParam("showTreatment") Boolean showTreatment,
+			@DefaultValue("false") @QueryParam("showclinicalNotes") Boolean showclinicalNotes,
+			@DefaultValue("false") @QueryParam("showVitalSign") Boolean showVitalSign) {
 		if (DPDoctorUtils.allStringsEmpty(visitId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
 		response.setData(patientVisitService.getPatientVisitFile(visitId, showPH, showPLH, showFH, showDA, showUSG,
-				isLabPrint, isCustomPDF, showLMP, showEDD, showNoOfChildren));
+				isLabPrint, isCustomPDF, showLMP, showEDD, showNoOfChildren, showPrescription, showTreatment,
+				showclinicalNotes, showVitalSign));
 		return response;
 	}
 
