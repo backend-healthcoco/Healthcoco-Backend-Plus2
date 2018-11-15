@@ -66,6 +66,12 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	private List<UserNutritionSubscriptionResponse> userNutritionSubscriptions;
 
+	private Boolean isChild = false;
+
+	private String fatherName;
+
+	private String motherName;
+
 	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
 		return userNutritionSubscriptions;
 	}
@@ -290,6 +296,30 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	public void setPNUM(String pNUM) {
 		PNUM = pNUM;
+	}
+
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
 	}
 
 	@Override

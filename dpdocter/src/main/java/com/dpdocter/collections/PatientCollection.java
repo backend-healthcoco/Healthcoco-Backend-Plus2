@@ -123,6 +123,18 @@ public class PatientCollection extends GenericCollection {
 	@Field
 	private String PNUM;
 
+	@Field
+	private Boolean isNutritionActive = false;
+
+	@Field
+	private String fatherName;
+
+	@Field
+	private String motherName;
+
+	@Field
+	private Boolean isChild = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -399,7 +411,39 @@ public class PatientCollection extends GenericCollection {
 	public void setPNUM(String pNUM) {
 		PNUM = pNUM;
 	}
-	
+
+	public Boolean getIsNutritionActive() {
+		return isNutritionActive;
+	}
+
+	public void setIsNutritionActive(Boolean isNutritionActive) {
+		this.isNutritionActive = isNutritionActive;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
+
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
