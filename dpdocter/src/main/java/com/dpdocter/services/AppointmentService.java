@@ -122,7 +122,7 @@ public interface AppointmentService {
 	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime);
 	
-	Boolean checkToday(int i, int yearOfDate, String timeZone);
+	Boolean checkToday(int dayOfDate, int yearOfDate, String timeZone);
 
-	Integer getMinutesOfDay(Date dateObj);
+	Integer getMinutesOfDay(Date date);
 }

@@ -1,6 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,8 +85,7 @@ public class WebAppointmentApi {
 	@Path(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
 	@GET
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL, notes = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
-	public Response<WebDoctorClinicsResponse> getClinicsByDoctorSlugURL(@PathParam("doctorSlugUrl") String doctorSlugUrl) {
-		
+	public Response<WebDoctorClinicsResponse> getClinicsByDoctorSlugURL(@PathParam("doctorSlugUrl") String doctorSlugUrl) {		
 		WebDoctorClinicsResponse webDoctorClinicsResponse = webAppointmentService.getClinicsByDoctorSlugURL(doctorSlugUrl);
 		Response<WebDoctorClinicsResponse> response = new Response<WebDoctorClinicsResponse>();
 		response.setData(webDoctorClinicsResponse);
@@ -229,5 +227,4 @@ public class WebAppointmentApi {
 		response.setDataList(users);
 		return response;
 	}
-
 }

@@ -58,14 +58,6 @@ public class WebClinicResponse {
 		this.postalCode = postalCode;
 	}
 
-	public String getLocality() {
-		return locality;
-	}
-
-	public void setLocality(String locality) {
-		this.locality = locality;
-	}
-
 	public String getLocationName() {
 		return locationName;
 	}
@@ -80,6 +72,14 @@ public class WebClinicResponse {
 
 	public void setStreetAddress(String streetAddress) {
 		this.streetAddress = streetAddress;
+	}
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
 	}
 
 	@Override
