@@ -4549,10 +4549,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			vaccineCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 			vaccineCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			vaccineCollection.setLongName(masterBabyImmunizationCollection.getLongName());
-			vaccineCollection.setName(masterBabyImmunizationCollection.getLongName());
-			Calendar dob = calendar;
-			dob.add(Calendar.MONTH, masterBabyImmunizationCollection.getPeriodTime());
-			vaccineCollection.setDueDate(dob.getTime());
+			vaccineCollection.setName(masterBabyImmunizationCollection.getName());
+			vaccineCollection.setDuration(masterBabyImmunizationCollection.getDuration());
+			DateTime dueDate = new DateTime(calendar);
+			dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
+			vaccineCollection.setDueDate(dueDate.toDate());
 			vaccineCollections.add(vaccineCollection);
 		}
 		

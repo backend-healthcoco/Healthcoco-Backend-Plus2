@@ -119,15 +119,18 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isSuperAdmin = false;
-	
+
 	@Field
 	private String mrCode;
 
 	@Field
 	private List<ObjectId> divisionIds;
-	
+
 	@Field
 	private ObjectId cityId;
+
+	@Field
+	private Boolean isVaccinationModuleOn = false;
 
 	public Boolean getIsNutritionist() {
 		return isNutritionist;
@@ -144,7 +147,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setIsSuperAdmin(Boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
 	}
-	
 
 	public ObjectId getId() {
 		return id;
@@ -401,7 +403,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setHasBillingAccess(Boolean hasBillingAccess) {
 		this.hasBillingAccess = hasBillingAccess;
 	}
-	
+
 	public String getMrCode() {
 		return mrCode;
 	}
@@ -424,6 +426,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setCityId(ObjectId cityId) {
 		this.cityId = cityId;
+	}
+
+	public Boolean getIsVaccinationModuleOn() {
+		return isVaccinationModuleOn;
+	}
+
+	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
+		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
 	@Override

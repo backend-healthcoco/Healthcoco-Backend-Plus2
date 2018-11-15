@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 @Document(collection = "master_baby_immunization_cl")
 public class MasterBabyImmunizationCollection {
 
@@ -9,6 +10,7 @@ public class MasterBabyImmunizationCollection {
 	private String name;
 	private String longName;
 	private Integer periodTime;
+	private String duration;
 
 	public ObjectId getId() {
 		return id;
@@ -40,6 +42,14 @@ public class MasterBabyImmunizationCollection {
 
 	public void setPeriodTime(Integer periodTime) {
 		this.periodTime = periodTime;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
 	}
 
 	@Override
