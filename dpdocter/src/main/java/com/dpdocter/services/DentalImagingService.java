@@ -102,4 +102,6 @@ public interface DentalImagingService {
 
 	DentalImagingInvoice addEditInvoice(DentalImagingInvoice request, Boolean fromRequest);
 
+	Integer countHospitalAssociatedDoctor(String hospitalId,String searchTerm);
+
 }
