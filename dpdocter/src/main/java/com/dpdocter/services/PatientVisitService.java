@@ -55,12 +55,14 @@ public interface PatientVisitService {
 
 	String getPatientVisitFile(String visitId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA,
 			Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
-			Boolean showNoOfChildren);
+			Boolean showNoOfChildren, Boolean showPrescription, Boolean showTreatment, Boolean showclinicalNotes,
+			Boolean showVitalSign);
 
 	void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId);
 
 	void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId,
-			String firstName, String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId, Boolean isPidHasDate);
+			String firstName, String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId,
+			Boolean isPidHasDate);
 
 	void updateAppointmentTime(ObjectId visitId, String appointmentId, WorkingHours workingHours, Date fromDate);
 
@@ -68,8 +70,11 @@ public interface PatientVisitService {
 			Boolean showDA, Map<String, Object> parameters);
 
 	PatientVisitResponse getPatientLastVisit(String doctorId, String locationId, String hospitalId, String patientId);
-	
+
+
+
 	ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
 			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
-			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection);
+			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection, Boolean showVitalSign);
+
 }
