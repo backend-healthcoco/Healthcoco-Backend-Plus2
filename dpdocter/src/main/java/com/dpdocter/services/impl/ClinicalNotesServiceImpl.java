@@ -8617,7 +8617,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(clinicalnote, clinicalNotesCollection);
 			ClinicalNotesJasperDetails clinicalJasperDetails = patientVisitService.getClinicalNotesJasperDetails(clinicalnote.getId().toString(), contentLineStyle, parameters, 
-									false, false, false, false, false, clinicalNotesCollection);
+									false, false, false, false, false, clinicalNotesCollection,false);
 			clinicalJasperDetails.setTitle(simpleDateFormat.format(clinicalNotesCollection.getCreatedTime()) + "(Clinical Notes : " + clinicalNotesCollection.getUniqueEmrId() +")");
 			clinicalNotes.add(clinicalJasperDetails);
 		}
