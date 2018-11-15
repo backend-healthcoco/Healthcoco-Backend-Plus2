@@ -524,6 +524,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("AI",componentTypeId);
 					customValues.put("T", "AR");
 					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT_STATUS_CHANGE.getType())) {
+					customValues.put("AI",componentTypeId);
+					customValues.put("T", "ASC");
+					isSilent = true;
 				}
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
 					customValues.put("RI", componentTypeId);
