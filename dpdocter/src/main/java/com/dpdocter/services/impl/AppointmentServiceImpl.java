@@ -3158,9 +3158,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			return null;
 	}
 
-	private Integer getMinutesOfDay(Date date) {
-		DateTime dateTime = new DateTime(new Date(), DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		;
+	@Override
+	public Integer getMinutesOfDay(Date date) {
+		DateTime dateTime = new DateTime(new Date(), DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));;
 		Integer currentMinute = dateTime.getMinuteOfDay();
 		return currentMinute;
 	}
@@ -3179,7 +3179,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	// return status;
 	// }
 
-	private Boolean checkToday(int dayOfDate, int yearOfDate, String timeZone) {
+	@Override
+	public Boolean checkToday(int dayOfDate, int yearOfDate, String timeZone) {
 		Boolean status = false;
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
 		if (yearOfDate == localCalendar.get(Calendar.YEAR) && dayOfDate == localCalendar.get(Calendar.DAY_OF_YEAR)) {

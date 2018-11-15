@@ -1816,6 +1816,14 @@ public interface PathProxy {
 		public static final String GET_RESOURCES_COUNT_BY_CITY = "/resources/countByCity/{city}";
 	}
 
+	public static final String WEB_APPOINTMENT_BASE_URL = "/web/appointment";
+
+	public interface WebAppointmentUrls {
+		public static final String GET_CLINICS_BY_DOCTOR_SLUG_URL = "/clinics/{doctorSlugUrl}";
+		public static final String GET_TIME_SLOTS = "/getTimeSlots/{doctorId}/{locationId}/{date}";
+
+	}
+	
 	public static final String Lab_PRINT_BASE_URL = BASE_URL + "/labPrint";
 
 	public interface LabPrintUrls {
