@@ -133,6 +133,8 @@ public class DoctorClinicProfile {
 
 	private ObjectId cityId;
 
+	private Boolean isVaccinationModuleOn = false;
+
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
 	}
@@ -620,6 +622,14 @@ public class DoctorClinicProfile {
 
 	public void setCityId(ObjectId cityId) {
 		this.cityId = cityId;
+	}
+
+	public Boolean getIsVaccinationModuleOn() {
+		return isVaccinationModuleOn;
+	}
+
+	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
+		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
 	@Override

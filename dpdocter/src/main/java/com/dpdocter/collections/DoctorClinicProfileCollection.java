@@ -109,6 +109,17 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private String labType = LabType.DIAGNOSTIC.getType();
 
 	@Field
+	private Boolean hasLoginAccess = true;
+
+	@Field
+	private Boolean hasBillingAccess = true;
+
+	@Field
+	private Boolean isNutritionist = false;
+
+	@Field
+	private Boolean isSuperAdmin = false;
+
 	private String mrCode;
 
 	@Field
@@ -118,17 +129,11 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private ObjectId cityId;
 
 	@Field
-	private Boolean isNutritionist;
+	private Boolean isVaccinationModuleOn = false;
 
-
-	@Field
-	private Boolean isSuperAdmin;
-
-	// This Id Use For set default doctor in Get User API At doctor level
 	@Field
 	private ObjectId defaultDoctorId;
 
-	
 	public ObjectId getId() {
 		return id;
 	}
@@ -369,6 +374,22 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.labType = labType;
 	}
 
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
+	}
+
 	public String getMrCode() {
 		return mrCode;
 	}
@@ -416,9 +437,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setDefaultDoctorId(ObjectId defaultDoctorId) {
 		this.defaultDoctorId = defaultDoctorId;
 	}
-	
-	
-	
+
+	public Boolean getIsVaccinationModuleOn() {
+		return isVaccinationModuleOn;
+	}
+
+	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
+		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
 
 	@Override
 	public String toString() {
@@ -433,5 +459,5 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ isSendRegularCheckupSMS + ", regularCheckUpMonths=" + regularCheckUpMonths + ", checkUpTypeEnum="
 				+ checkUpTypeEnum + "]";
 	}
-	
+
 }

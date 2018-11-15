@@ -44,6 +44,8 @@ public class VaccineCollection extends GenericCollection {
 	private Date givenDate;
 	@Field
 	private Age age;
+	@Field
+	private String duration;
 
 	public ObjectId getId() {
 		return id;
@@ -163,6 +165,14 @@ public class VaccineCollection extends GenericCollection {
 
 	public void setLongName(String longName) {
 		this.longName = longName;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
 	}
 
 	@Override
