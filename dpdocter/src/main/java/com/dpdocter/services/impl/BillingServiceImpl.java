@@ -2495,8 +2495,8 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded,String paymentMode) {
+	public List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String paymentMode) {
 		List<DoctorExpense> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -2536,8 +2536,8 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public Double countDoctorExpenses(String expenseType, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded,String paymentMode) {
+	public Double countDoctorExpenses(String expenseType, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String paymentMode) {
 		Double response = 0.0;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -2618,6 +2618,7 @@ public class BillingServiceImpl implements BillingService {
 		ExpenseType response = null;
 		try {
 			ExpenseTypeCollection expenseTypeCollection = null;
+			UserCollection userCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(request.getId()));
 				if (expenseTypeCollection == null) {
@@ -2629,9 +2630,16 @@ public class BillingServiceImpl implements BillingService {
 				BeanUtil.map(request, expenseTypeCollection);
 
 			} else {
-				request.setCreatedBy("ADMIN");
-				request.setCreatedTime(new Date());
+				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
+				}
 				expenseTypeCollection = new ExpenseTypeCollection();
+				expenseTypeCollection.setCreatedBy(
+						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "Dr." : userCollection.getTitle())
+								+ " " + userCollection.getFirstName());
+				expenseTypeCollection.setCreatedTime(new Date());
+
 				BeanUtil.map(request, expenseTypeCollection);
 			}
 			expenseTypeCollection = expenseTypeRepository.save(expenseTypeCollection);
