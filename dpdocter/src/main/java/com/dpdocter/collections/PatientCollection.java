@@ -132,6 +132,9 @@ public class PatientCollection extends GenericCollection {
 	@Field
 	private String motherName;
 
+	@Field
+	private Boolean isChild = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -431,6 +434,14 @@ public class PatientCollection extends GenericCollection {
 
 	public void setMotherName(String motherName) {
 		this.motherName = motherName;
+	}
+
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
 	}
 
 	@Override

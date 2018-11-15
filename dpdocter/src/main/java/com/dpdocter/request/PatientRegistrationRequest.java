@@ -99,6 +99,10 @@ public class PatientRegistrationRequest {
 
 	private Boolean isChild = false;
 
+	private String fatherName;
+
+	private String motherName;
+
 	public String getRecordId() {
 		return recordId;
 	}
@@ -441,6 +445,22 @@ public class PatientRegistrationRequest {
 
 	public void setIsChild(Boolean isChild) {
 		this.isChild = isChild;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
 	}
 
 	@Override
