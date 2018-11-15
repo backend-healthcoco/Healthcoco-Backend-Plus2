@@ -207,21 +207,21 @@ public class PaediatricServiceImpl implements PaediatricService{
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
-			
+		/*	
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("dueDate", "$vaccineResponses.dueDate"))
 							.append("vaccineResponses", new BasicDBObject("$push", "$vaccineResponses")).append("dueDate",
 									new BasicDBObject("$first", "$diagnosticTest.dueDate"))));
 			
-			
-			responses = mongoTemplate
-					.aggregate(
-							Aggregation.newAggregation(
-									Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-									Aggregation.unwind("vaccineBrand"),Aggregation.match(criteria),aggregationOperation,
-									Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-							VaccineCollection.class, VaccineResponse.class)
-					.getMappedResults();
+			*/
+			responses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
+											true))),
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+					VaccineCollection.class, VaccineResponse.class).getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();

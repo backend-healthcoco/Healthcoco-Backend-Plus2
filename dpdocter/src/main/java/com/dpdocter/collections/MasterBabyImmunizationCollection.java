@@ -1,12 +1,14 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
-
+import org.springframework.data.mongodb.core.mapping.Document;
+@Document(collection = "master_baby_immunization_cl")
 public class MasterBabyImmunizationCollection {
 
 	private ObjectId id;
 	private String name;
-	private String vaccine;
+	private String longName;
+	private Integer periodTime;
 
 	public ObjectId getId() {
 		return id;
@@ -24,17 +26,26 @@ public class MasterBabyImmunizationCollection {
 		this.name = name;
 	}
 
-	public String getVaccine() {
-		return vaccine;
+	public String getLongName() {
+		return longName;
 	}
 
-	public void setVaccine(String vaccine) {
-		this.vaccine = vaccine;
+	public void setLongName(String longName) {
+		this.longName = longName;
+	}
+
+	public Integer getPeriodTime() {
+		return periodTime;
+	}
+
+	public void setPeriodTime(Integer periodTime) {
+		this.periodTime = periodTime;
 	}
 
 	@Override
 	public String toString() {
-		return "MasterBabyImmunizationCollection [id=" + id + ", name=" + name + ", vaccine=" + vaccine + "]";
+		return "MasterBabyImmunizationCollection [id=" + id + ", name=" + name + ", longName=" + longName
+				+ ", periodTime=" + periodTime + "]";
 	}
 
 }

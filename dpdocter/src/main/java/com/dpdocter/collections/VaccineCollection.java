@@ -27,9 +27,11 @@ public class VaccineCollection extends GenericCollection {
 	@Field
 	private String name;
 	@Field
+	private String longName;
+	@Field
 	private Date dueDate;
 	@Field
-	private VaccineStatus status = VaccineStatus.GIVEN;
+	private VaccineStatus status = VaccineStatus.PLANNED;
 	@Field
 	private VaccineRoute route;
 	@Field
@@ -153,6 +155,14 @@ public class VaccineCollection extends GenericCollection {
 
 	public void setPatientId(ObjectId patientId) {
 		this.patientId = patientId;
+	}
+
+	public String getLongName() {
+		return longName;
+	}
+
+	public void setLongName(String longName) {
+		this.longName = longName;
 	}
 
 	@Override
