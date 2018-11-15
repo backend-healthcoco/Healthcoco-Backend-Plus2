@@ -640,6 +640,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+	
+	
+	@Override
+	@Transactional
+	public Integer countCustomGlobalDrugs( String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded ,  String searchTerm) {
+		Integer response = 0;
+		try {
+			AggregationResults<Drug> results = mongoTemplate.aggregate(getDrugCustomGlobalAggregation( 0,0,doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm),
+					DrugCollection.class, Drug.class);
+			response = results.getMappedResults().size();
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
 
 	private Aggregation getDrugCustomGlobalAggregation(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String searchTerm) {
