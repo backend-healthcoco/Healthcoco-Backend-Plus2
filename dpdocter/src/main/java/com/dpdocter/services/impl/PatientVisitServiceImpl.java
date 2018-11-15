@@ -1813,8 +1813,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				UserCollection user = patientVisitLookupResponse.getPatientUser();
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						null, false, false, false, false, false, false, false, false, false, false, true, true, true,
-						true);
+						null, false, false, false, false, false, false, false, false, false, false, false, false, false,
+						false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
