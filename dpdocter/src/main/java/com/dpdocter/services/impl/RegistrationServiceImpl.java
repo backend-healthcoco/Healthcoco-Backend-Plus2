@@ -657,6 +657,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 				}
 
+				if (referencesCollection != null) {
+					if (referencesCollection.getMobileNumber() != null) {
+						sendReferenceMessage(patientCollection, locationCollection.getLocationName(),
+								referencesCollection.getMobileNumber());
+					}
+				}
+
 				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
 					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
@@ -4652,5 +4659,40 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		return response;
 	}
+
+	/*
+	 * @Async
+	 * 
+	 * @Transactional private void createImmunisationChart(RegisteredPatientDetails
+	 * request) { List<VaccineCollection> vaccineCollections = new ArrayList<>();
+	 * Calendar calendar = new GregorianCalendar(); if(request.getDob() != null) {
+	 * calendar.set(request.getDob().getYears(), request.getDob().getMonths() -1 ,
+	 * request.getDob().getDays(), 0, 0); }
+	 * 
+	 * UserCollection userCollection = userRepository.findOne(new
+	 * ObjectId(request.getDoctorId()));
+	 * 
+	 * List<MasterBabyImmunizationCollection> babyImmunizationCollections =
+	 * masterBabyImmunizationRepository.findAll(); for
+	 * (MasterBabyImmunizationCollection masterBabyImmunizationCollection :
+	 * babyImmunizationCollections) { VaccineCollection vaccineCollection = new
+	 * VaccineCollection(); vaccineCollection.setPatientId(new
+	 * ObjectId(request.getUserId())); vaccineCollection.setLocationId(new
+	 * ObjectId(request.getLocationId())); vaccineCollection.setHospitalId(new
+	 * ObjectId(request.getHospitalId())); vaccineCollection.setDoctorId(new
+	 * ObjectId(request.getDoctorId()));
+	 * vaccineCollection.setLongName(masterBabyImmunizationCollection.getLongName())
+	 * ; vaccineCollection.setName(masterBabyImmunizationCollection.getName());
+	 * vaccineCollection.setDuration(masterBabyImmunizationCollection.getDuration())
+	 * ; vaccineCollection.setPeriodTime(masterBabyImmunizationCollection.
+	 * getPeriodTime()); DateTime dueDate = new DateTime(calendar);
+	 * dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
+	 * vaccineCollection.setDueDate(dueDate.toDate());
+	 * vaccineCollection.setCreatedTime(new Date()); if(userCollection != null) {
+	 * vaccineCollection.setCreatedBy(userCollection.getFirstName()); }
+	 * vaccineCollections.add(vaccineCollection); }
+	 * 
+	 * vaccineRepository.save(vaccineCollections); }
+	 */
 
 }
