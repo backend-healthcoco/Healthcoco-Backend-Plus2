@@ -218,7 +218,7 @@ public interface PathProxy {
 
 		public static final String UPDATE_PATIENT_NUMBER = "/patient/{doctorId}/{locationId}/{hospitalId}/{oldPatientId}";
 
-		public static final String SET_DEFAULT_DOCTOR_IN_LIST = "set/default/doctor";
+		public static final String SET_DEFAULT_DOCTOR_IN_LIST = "set/default/{doctorId}/{locationId}/{hospitalId}/doctor";
 
 	}
 
@@ -1377,7 +1377,7 @@ public interface PathProxy {
 		public static final String DELETE_EXPENSE = "/expense/{expenseId}/delete";
 
 		public static final String TOTAL_EXPENSES_COST = "/total/expense/cost";
-		
+
 		public static final String ADD_EXPENSE_TYPE = "/expenseType/add";
 
 		public static final String GET_EXPENSE_TYPE = "/expenseType/get";
@@ -2005,15 +2005,15 @@ public interface PathProxy {
 		public static final String GET_WEIGHT_COUNTER_SETTING = "weight/setting/{userId}/get";
 
 	}
-	
+
 	public static final String PAEDIATRIC_BASE_URL = BASE_URL + "/paediatric";
-	
+
 	public interface PaediatricUrls {
 		public static final String ADD_EDIT_VACCINE = "vaccine/addEdit";
 		public static final String GET_VACCINE_BY_ID = "vaccine/get/{id}";
 		public static final String GET_VACCINES = "vaccine/getList";
 	}
-	
+
 	public static final String SOLR_BILLING_BASE_URL = BASE_URL + "/solr/billing";
 
 	public interface SolrBillingUrls {
