@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -191,7 +192,12 @@ public class PaediatricServiceImpl implements PaediatricService{
 	public List<VaccineResponse> getVaccineList(String patientId , String doctorId, String locationId, String hospitalId , String updatedTime) {
 		List<VaccineResponse> responses = null;
 		try {
-			Criteria criteria = new Criteria();
+			//Criteria criteria = new Criteria();
+			
+			long createdTimestamp = Long.parseLong(updatedTime);
+			
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
+			
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}

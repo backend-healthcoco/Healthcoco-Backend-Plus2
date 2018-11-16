@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -70,7 +71,7 @@ public class PaediatricAPI {
 	@Path(value = PathProxy.PaediatricUrls.GET_VACCINES)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINES, notes = PathProxy.PaediatricUrls.GET_VACCINES)
-	public Response<VaccineResponse> getVaccines(@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId ) {
+	public Response<VaccineResponse> getVaccines(@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(patientId,doctorId,locationId,hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
