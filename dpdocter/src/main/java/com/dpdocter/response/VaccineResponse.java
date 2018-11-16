@@ -24,6 +24,8 @@ public class VaccineResponse extends GenericCollection {
 	private Date givenDate;
 	private Age age;
 	private VaccineBrand vaccineBrand;
+	private String note;
+	private String duration;
 
 	public String getId() {
 		return id;
@@ -135,6 +137,22 @@ public class VaccineResponse extends GenericCollection {
 
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
 	}
 
 }

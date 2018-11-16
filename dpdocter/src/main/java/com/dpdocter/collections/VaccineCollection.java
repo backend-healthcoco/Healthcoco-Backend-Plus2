@@ -46,6 +46,8 @@ public class VaccineCollection extends GenericCollection {
 	private Age age;
 	@Field
 	private String duration;
+	@Field
+	private Integer periodTime;
 
 	public ObjectId getId() {
 		return id;
@@ -173,6 +175,14 @@ public class VaccineCollection extends GenericCollection {
 
 	public void setDuration(String duration) {
 		this.duration = duration;
+	}
+
+	public Integer getPeriodTime() {
+		return periodTime;
+	}
+
+	public void setPeriodTime(Integer periodTime) {
+		this.periodTime = periodTime;
 	}
 
 	@Override

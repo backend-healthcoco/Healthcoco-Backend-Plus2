@@ -18,6 +18,9 @@ public interface PaediatricService {
 
 	Boolean discardGrowthChart(String id, Boolean discarded);
 
-	List<VaccineResponse> getVaccineList(String patientId, String doctorId, String locationId, String hospitalId);
+	//List<VaccineResponse> getVaccineList(String patientId, String doctorId, String locationId, String hospitalId);
+
+	List<VaccineResponse> getVaccineList(String patientId, String doctorId, String locationId, String hospitalId,
+			String updatedTime);
 
 }
