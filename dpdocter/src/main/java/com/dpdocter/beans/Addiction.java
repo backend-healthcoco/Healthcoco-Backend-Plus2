@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.enums.AddictionType;
+import com.dpdocter.enums.SearchType;
 
 public class Addiction {
 
@@ -8,9 +9,11 @@ public class Addiction {
 
 	private String alcoholType;
 
+	private SearchType consumeTime;
+
 	private Integer noOfTime = 0;
 
-	private Integer quantiry;
+	private MealQuantity quantity;
 
 	public AddictionType getType() {
 		return type;
@@ -36,12 +39,20 @@ public class Addiction {
 		this.noOfTime = noOfTime;
 	}
 
-	public Integer getQuantiry() {
-		return quantiry;
+	public SearchType getConsumeTime() {
+		return consumeTime;
 	}
 
-	public void setQuantiry(Integer quantiry) {
-		this.quantiry = quantiry;
+	public void setConsumeTime(SearchType consumeTime) {
+		this.consumeTime = consumeTime;
+	}
+
+	public MealQuantity getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(MealQuantity quantity) {
+		this.quantity = quantity;
 	}
 
 }
