@@ -76,7 +76,7 @@ public class PaediatricAPI {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<VaccineResponse> vaccineResponse = paediatricService.getVaccineList(patientId, doctorId, locationId, hospitalId);
+		List<VaccineResponse> vaccineResponse = paediatricService.getVaccineList(patientId, doctorId, locationId, hospitalId,updatedTime);
 		Response<VaccineResponse> response = new Response<VaccineResponse>();
 		response.setDataList(vaccineResponse);
 		return response;
