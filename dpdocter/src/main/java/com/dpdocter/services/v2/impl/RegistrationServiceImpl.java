@@ -24,6 +24,7 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.response.v2.ClinicDoctorResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
@@ -42,16 +43,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	private static Logger logger = Logger.getLogger(RegistrationServiceImpl.class.getName());
 
-
 	// @Autowired
 	// private GroupRepository groupRepository;
 
-	
-
 	@Autowired
 	private AccessControlServices accessControlServices;
-
-	
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -61,8 +57,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	DynamicUIService dynamicUIService;
-
-
 
 	@Value(value = "${jasper.print.consentForm.a4.fileName}")
 	private String consentFormA4FileName;
@@ -118,18 +112,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private SMSServices smsServices;
 
-	
-
-
+	@Autowired
+	DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Override
 	@Transactional
-	public List<ClinicDoctorResponse> getUsers(int page, int size, String locationId, String hospitalId,
-			String updatedTime, String role, Boolean active, String userState) {
+	public List<ClinicDoctorResponse> getUsers(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, String role, Boolean active, String userState) {
 		List<ClinicDoctorResponse> response = null;
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		try {
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 			Criteria criteria = new Criteria();
+			String defaultDoctorId = null;
+
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			}
@@ -143,7 +139,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 					criteria.and("user.userState").is(userState);
 				}
 			}
-
+			if (!DPDoctorUtils.allStringsEmpty(doctorId, locationId)) {
+				doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+				defaultDoctorId = (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getDefaultDoctorId())
+						? doctorClinicProfileCollection.getDefaultDoctorId().toString()
+						: null);
+			}
 			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -195,7 +197,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.unwind("location"),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
 								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-
 								Aggregation.unwind("doctor"), Aggregation.match(criteria)),
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
@@ -210,7 +211,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 						clinicDoctorResponse.setUserId(doctorClinicProfileLookupResponse.getUser().getId().toString());
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
-						//clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
+						// clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
 
 						Criteria roleCriteria = new Criteria();
 
@@ -257,31 +258,32 @@ public class RegistrationServiceImpl implements RegistrationService {
 								roleObj.setAccessModules(accessControl.getAccessModules());
 								roles.add(roleObj);
 							}
-							//clinicDoctorResponse.setRole(roles);
-							clinicDoctorResponse
-									.setColorCode(doctorClinicProfileLookupResponse.getUser().getColorCode());
-							/*if (clinicDoctorResponse.getRole() != null) {
-								List<String> roleList = new ArrayList<>();
-								for (Role userRole : clinicDoctorResponse.getRole()) {
-									if (userRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-											|| userRole.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())) {
-										clinicDoctorResponse.setWebRole(RoleEnum.ADMIN.getRole());
-									}
-									roleList.add(userRole.getRole());
-								}
-
-								if (roleList.contains(RoleEnum.HOSPITAL_ADMIN.getRole())
-										&& roleList.contains(RoleEnum.LOCATION_ADMIN.getRole())) {
-									clinicDoctorResponse.setIsSuperAdmin(true);
-								}
+							if (!DPDoctorUtils.anyStringEmpty(defaultDoctorId)) {
+								if (doctorClinicProfileLookupResponse.getDoctorId().equals(defaultDoctorId))
+									clinicDoctorResponse.setIsDefault(true);
 
 							}
-							if (clinicDoctorResponse.getWebRole() == null
-									|| clinicDoctorResponse.getWebRole().isEmpty()) {
-								if (clinicDoctorResponse.getRole() != null) {
-									clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole());
-								}
-							}*/
+
+							// clinicDoctorResponse.setRole(roles);
+
+							/*
+							 * if (clinicDoctorResponse.getRole() != null) { List<String> roleList = new
+							 * ArrayList<>(); for (Role userRole : clinicDoctorResponse.getRole()) { if
+							 * (userRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) ||
+							 * userRole.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())) {
+							 * clinicDoctorResponse.setWebRole(RoleEnum.ADMIN.getRole()); }
+							 * roleList.add(userRole.getRole()); }
+							 * 
+							 * if (roleList.contains(RoleEnum.HOSPITAL_ADMIN.getRole()) &&
+							 * roleList.contains(RoleEnum.LOCATION_ADMIN.getRole())) {
+							 * clinicDoctorResponse.setIsSuperAdmin(true); }
+							 * 
+							 * } if (clinicDoctorResponse.getWebRole() == null ||
+							 * clinicDoctorResponse.getWebRole().isEmpty()) { if
+							 * (clinicDoctorResponse.getRole() != null) {
+							 * clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole
+							 * ()); } }
+							 */
 							response.add(clinicDoctorResponse);
 						}
 					}
@@ -295,5 +297,4 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	
 }

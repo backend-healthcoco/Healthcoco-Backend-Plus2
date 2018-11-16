@@ -95,7 +95,7 @@ public class RegistrationApi {
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
-	
+
 	@Autowired
 	private HistoryServices historyServices;
 
@@ -144,25 +144,23 @@ public class RegistrationApi {
 					false);
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 		}
-		
-		if(request.getFamilyMedicalHistoryHandler() != null)
-		{
+
+		if (request.getFamilyMedicalHistoryHandler() != null) {
 			request.getFamilyMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
 			historyServices.handleFamilyHistory(request.getFamilyMedicalHistoryHandler());
 		}
-		
-		if(request.getPastMedicalHistoryHandler() != null)
-		{
+
+		if (request.getPastMedicalHistoryHandler() != null) {
 			request.getPastMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
 			historyServices.handleMedicalHistory(request.getPastMedicalHistoryHandler());
 		}
-		
-		if(request.getPersonalHistoryAddRequest() != null)
-		{
+
+		if (request.getPersonalHistoryAddRequest() != null) {
 			request.getPersonalHistoryAddRequest().setPatientId(registeredPatientDetails.getPatient().getPatientId());
+
 			historyServices.assignPersonalHistory(request.getPersonalHistoryAddRequest());
 		}
-		
+
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 		response.setData(registeredPatientDetails);
@@ -372,8 +370,8 @@ public class RegistrationApi {
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_AND_COUNTER, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_AND_COUNTER, response = Response.class)
 	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("locationId") String locationId,
-			@PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter, 
-			@DefaultValue(value="true") @QueryParam("isPidHasDate") Boolean isPidHasDate) {
+			@PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter,
+			@DefaultValue(value = "true") @QueryParam("isPidHasDate") Boolean isPidHasDate) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, patientInitial, new Integer(patientCounter).toString())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -381,7 +379,8 @@ public class RegistrationApi {
 			logger.warn("Invalid Patient Initial");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Patient Initial");
 		}
-		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(locationId, patientInitial, patientCounter, isPidHasDate);
+		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(locationId, patientInitial,
+				patientCounter, isPidHasDate);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(updateResponse);
 		return response;
@@ -1222,6 +1221,22 @@ public class RegistrationApi {
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(registrationService.updatePatientNumber(doctorId, locationId, hospitalId, patientId,
 				newPatientId, mobileNumber));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST, notes = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST)
+	public Response<Boolean> setDefaultDoctor(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("defaultDoctorId") String defaultDoctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, defaultDoctorId)) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.setDefaultDocter(doctorId, locationId, hospitalId, defaultDoctorId));
 		return response;
 	}
 }

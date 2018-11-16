@@ -120,9 +120,15 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isNutritionist;
 
+
 	@Field
 	private Boolean isSuperAdmin;
 
+	// This Id Use For set default doctor in Get User API At doctor level
+	@Field
+	private ObjectId defaultDoctorId;
+
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -403,6 +409,17 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.isSuperAdmin = isSuperAdmin;
 	}
 
+	public ObjectId getDefaultDoctorId() {
+		return defaultDoctorId;
+	}
+
+	public void setDefaultDoctorId(ObjectId defaultDoctorId) {
+		this.defaultDoctorId = defaultDoctorId;
+	}
+	
+	
+	
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
@@ -416,4 +433,5 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ isSendRegularCheckupSMS + ", regularCheckUpMonths=" + regularCheckUpMonths + ", checkUpTypeEnum="
 				+ checkUpTypeEnum + "]";
 	}
+	
 }

@@ -20,6 +20,16 @@ public class ClinicDoctorResponse {
 
 	private String colorCode;
 
+	private Boolean isDefault=false;
+
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+
 	public String getTitle() {
 		return title;
 	}
