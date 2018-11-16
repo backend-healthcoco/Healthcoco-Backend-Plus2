@@ -1,5 +1,8 @@
 package com.dpdocter.response.v2;
 
+import java.util.List;
+
+import com.dpdocter.beans.Role;
 import com.dpdocter.enums.UserState;
 
 public class ClinicDoctorResponse {
@@ -9,6 +12,8 @@ public class ClinicDoctorResponse {
 	private String userId;
 
 	private String firstName;
+
+	private List<Role> role;
 
 	private Boolean isActivate;
 
@@ -92,6 +97,14 @@ public class ClinicDoctorResponse {
 
 	public void setColorCode(String colorCode) {
 		this.colorCode = colorCode;
+	}
+
+	public List<Role> getRole() {
+		return role;
+	}
+
+	public void setRole(List<Role> role) {
+		this.role = role;
 	}
 
 	@Override
