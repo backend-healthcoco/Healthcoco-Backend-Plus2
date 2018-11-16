@@ -132,6 +132,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isVaccinationModuleOn = false;
 
+	// This Id Use For set default doctor in Get User API At doctor level
+	@Field
+	private ObjectId defaultDoctorId;
+
 	public Boolean getIsNutritionist() {
 		return isNutritionist;
 	}
@@ -434,6 +438,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
+
+	public ObjectId getDefaultDoctorId() {
+		return defaultDoctorId;
+	}
+
+	public void setDefaultDoctorId(ObjectId defaultDoctorId) {
+		this.defaultDoctorId = defaultDoctorId;
 	}
 
 	@Override

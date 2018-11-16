@@ -58,8 +58,6 @@ public class RegistrationApi {
 	@Value(value = "${invalid.input}")
 	private String invalidInput;
 
-	
-
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;
@@ -67,14 +65,12 @@ public class RegistrationApi {
 			return null;
 	}
 
-
-
 	@Path(value = PathProxy.RegistrationUrls.GET_USERS)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USERS, notes = PathProxy.RegistrationUrls.GET_USERS)
-	public Response<ClinicDoctorResponse> getUsers(@PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
-			@QueryParam(value = "size") int size,
+	public Response<ClinicDoctorResponse> getUsers(@QueryParam("doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "role") String role,
 			@DefaultValue("false") @QueryParam(value = "active") Boolean active,
@@ -83,7 +79,7 @@ public class RegistrationApi {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
-		List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, locationId, hospitalId,
+		List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, doctorId, locationId, hospitalId,
 				updatedTime, role, active, userState);
 		Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 		response.setDataList(professionResponse);

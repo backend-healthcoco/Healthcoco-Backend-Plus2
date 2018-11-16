@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;

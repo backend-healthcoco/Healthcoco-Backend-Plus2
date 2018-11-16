@@ -345,10 +345,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	private MasterBabyImmunizationRepository masterBabyImmunizationRepository;
-	
+
 	@Autowired
 	private VaccineRepository vaccineRepository;
 
@@ -399,7 +399,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${patient.welcome.message}")
 	private String patientWelcomeMessage;
-	
+
 	@Value(value = "${doctor.reference.message}")
 	private String doctorReferenceMessage;
 
@@ -566,18 +566,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 					BeanUtil.map(referencesCollection, esReferenceDocument);
 					esRegRistrationService.addEditReference(esReferenceDocument);
 				}
-				
+
 				patientCollection.setReferredBy(referencesCollection.getId());
 			}
 			patientCollection = patientRepository.save(patientCollection);
 
-			if(referencesCollection != null){
-				if(referencesCollection.getMobileNumber() != null)
-				{
-					sendReferenceMessage(patientCollection, locationCollection.getLocationName(), referencesCollection.getMobileNumber());
+			if (referencesCollection != null) {
+				if (referencesCollection.getMobileNumber() != null) {
+					sendReferenceMessage(patientCollection, locationCollection.getLocationName(),
+							referencesCollection.getMobileNumber());
 				}
 			}
-			
+
 			// assign groups
 			if (request.getGroups() != null) {
 				for (String group : request.getGroups()) {
@@ -683,12 +683,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 					sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
 				}
 			}
-			
-			if(request.getIsChild() == true)
-			{
+
+			if (request.getIsChild() == true) {
 				createImmunisationChart(registeredPatientDetails);
 			}
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -721,8 +719,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 				}
 			}
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1082,9 +1079,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			pushNotificationServices.notifyUser(request.getDoctorId(), "New patient created.",
 					ComponentType.PATIENT_REFRESH.getType(), null, null);
-			
-			if(request.getIsChild() == true)
-			{
+
+			if (request.getIsChild() == true) {
 				createImmunisationChart(registeredPatientDetails);
 			}
 		} catch (Exception e) {
@@ -4540,9 +4536,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 
 	}
-	
-	private void sendReferenceMessage(PatientCollection patientCollection, String locationName,
-			String mobileNumber) {
+
+	private void sendReferenceMessage(PatientCollection patientCollection, String locationName, String mobileNumber) {
 		try {
 
 			if (patientCollection != null) {
@@ -4577,21 +4572,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 
 	}
-	
-	
+
 	@Async
 	@Transactional
-	private void createImmunisationChart(RegisteredPatientDetails request)
-	{
+	private void createImmunisationChart(RegisteredPatientDetails request) {
 		List<VaccineCollection> vaccineCollections = new ArrayList<>();
 		Calendar calendar = new GregorianCalendar();
-		if(request.getDob() != null)		
-		{
-			calendar.set(request.getDob().getYears(), request.getDob().getMonths() -1 , request.getDob().getDays(), 0, 0);
+		if (request.getDob() != null) {
+			calendar.set(request.getDob().getYears(), request.getDob().getMonths() - 1, request.getDob().getDays(), 0,
+					0);
 		}
-		
+
 		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
-		
+
 		List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository.findAll();
 		for (MasterBabyImmunizationCollection masterBabyImmunizationCollection : babyImmunizationCollections) {
 			VaccineCollection vaccineCollection = new VaccineCollection();
@@ -4607,15 +4600,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 			dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
 			vaccineCollection.setDueDate(dueDate.toDate());
 			vaccineCollection.setCreatedTime(new Date());
-			if(userCollection != null)
-			{
+			if (userCollection != null) {
 				vaccineCollection.setCreatedBy(userCollection.getFirstName());
 			}
 			vaccineCollections.add(vaccineCollection);
 		}
-		
+
 		vaccineRepository.save(vaccineCollections);
 	}
-	
-	
+
+	@Override
+	public Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId) {
+		Boolean response = false;
+		DoctorClinicProfileCollection doctordoctorClinicProfile = doctorClinicProfileRepository
+				.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+		if (doctordoctorClinicProfile != null) {
+			doctordoctorClinicProfile.setDefaultDoctorId(new ObjectId(defaultDoctorId));
+		}
+		return response;
+	}
+
 }
