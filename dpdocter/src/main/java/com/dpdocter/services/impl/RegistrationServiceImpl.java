@@ -650,6 +650,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 				}
 
+				if (referencesCollection != null) {
+					if (referencesCollection.getMobileNumber() != null) {
+						sendReferenceMessage(patientCollection, locationCollection.getLocationName(),
+								referencesCollection.getMobileNumber());
+					}
+				}
+
 				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
 					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
 						sendWelcomeMessageToPatient(patientCollection, locationCollection, request.getMobileNumber());
