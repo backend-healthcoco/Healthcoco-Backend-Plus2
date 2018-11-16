@@ -38,7 +38,7 @@ public interface PathProxy {
 		public static final String SUBMIT_CLINIC_CONTACT = "/submitClinicContact";
 
 		public static final String SIGNUP_COLLECTION_BOY = "/collectionBoy";
-		
+
 		public static final String WELCOME_USER = "/welcome/{tokenId}";
 
 		public static final String DOCTOR_SIGNUP = "/doctor";
@@ -218,7 +218,7 @@ public interface PathProxy {
 
 		public static final String UPDATE_PATIENT_NUMBER = "/patient/{doctorId}/{locationId}/{hospitalId}/{oldPatientId}";
 
-		public static final String SET_DEFAULT_DOCTOR_IN_LIST = "set/default/doctor";
+		public static final String SET_DEFAULT_DOCTOR_IN_LIST = "set/default/{doctorId}/{locationId}/{hospitalId}/doctor";
 
 	}
 
@@ -1329,6 +1329,7 @@ public interface PathProxy {
 		public static final String EMAIL_MULTIPLE_RECEIPT = "receipt/email";
 
 		public static final String CHANGE_INVOICE_ITEM_TREATMENT_STATUS = "changeInvoiceItemTreatmentStatus";
+
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
@@ -1839,4 +1840,5 @@ public interface PathProxy {
 		public static final String ADD_DIAGRAM = "/addDiagram";
 		public static final String DOWNLOAD_PROCEDURE_SHEET = "/download/{id}";
 	}
+
 }
