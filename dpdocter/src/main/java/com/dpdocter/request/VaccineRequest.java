@@ -22,6 +22,7 @@ public class VaccineRequest {
 	private String vaccineBrandId;
 	private Date givenDate;
 	private Age age;
+	private String note;
 
 	public String getId() {
 		return id;
@@ -133,6 +134,14 @@ public class VaccineRequest {
 
 	public void setPatientId(String patientId) {
 		this.patientId = patientId;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 }

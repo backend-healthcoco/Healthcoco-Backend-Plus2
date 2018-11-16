@@ -197,7 +197,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 	
 	@Override
 	@Transactional
-	public List<VaccineResponse> getVaccineList(String patientId , String doctorId, String locationId, String hospitalId) {
+	public List<VaccineResponse> getVaccineList(String patientId , String doctorId, String locationId, String hospitalId , String updatedTime) {
 		List<VaccineResponse> responses = null;
 		try {
 			Criteria criteria = new Criteria();

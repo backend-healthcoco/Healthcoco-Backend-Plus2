@@ -1,15 +1,22 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "master_baby_immunization_cl")
 public class MasterBabyImmunizationCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private String name;
+	@Field
 	private String longName;
+	@Field
 	private Integer periodTime;
+	@Field
 	private String duration;
 
 	public ObjectId getId() {
