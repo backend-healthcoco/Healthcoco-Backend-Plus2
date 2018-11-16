@@ -10,50 +10,50 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "referrences_in", type = "referrences")
 public class ESReferenceDocument {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.String)
-    private String reference;
+	@Field(type = FieldType.String)
+	private String reference;
 
-    @Field(type = FieldType.String)
-    private String explanation;
-    
-    @Field(type = FieldType.String)
-    private String mobileNumber;
+	@Field(type = FieldType.String)
+	private String explanation;
 
-    @Field(type = FieldType.String)
-    private String doctorId;
+	@Field(type = FieldType.String)
+	private String mobileNumber;
 
-    @Field(type = FieldType.String)
-    private String locationId;
+	@Field(type = FieldType.String)
+	private String doctorId;
 
-    @Field(type = FieldType.String)
-    private String hospitalId;
+	@Field(type = FieldType.String)
+	private String locationId;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.String)
+	private String hospitalId;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    public String getId() {
-	return id;
-    }
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getReference() {
-	return reference;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setReference(String reference) {
-	this.reference = reference;
-    }
+	public String getReference() {
+		return reference;
+	}
 
-    public String getExplanation() {
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -62,44 +62,52 @@ public class ESReferenceDocument {
 	}
 
 	public String getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
 	@Override
 	public String toString() {
