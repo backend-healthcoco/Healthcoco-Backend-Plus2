@@ -139,7 +139,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					criteria.and("user.userState").is(userState);
 				}
 			}
-			if (!DPDoctorUtils.allStringsEmpty(doctorId, locationId)) {
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				doctorClinicProfileCollection = doctorClinicProfileRepository
 						.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 				defaultDoctorId = (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getDefaultDoctorId())
