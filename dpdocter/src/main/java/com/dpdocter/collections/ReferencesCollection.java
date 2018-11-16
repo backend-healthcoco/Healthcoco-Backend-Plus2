@@ -7,44 +7,47 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "referrences_cl")
 public class ReferencesCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String reference;
+	@Field
+	private String reference;
 
-    @Field
-    private String explanation;
+	@Field
+	private String mobileNumber;
 
-    @Field
-    private ObjectId doctorId;
+	@Field
+	private String explanation;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private ObjectId hospitalId;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean discarded = false;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public String getReference() {
-	return reference;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setReference(String reference) {
-	this.reference = reference;
-    }
+	public String getReference() {
+		return reference;
+	}
 
-    public String getExplanation() {
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -53,41 +56,50 @@ public class ReferencesCollection extends GenericCollection {
 	}
 
 	public ObjectId getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    @Override
-    public String toString() {
-	return "ReferencesCollection [id=" + id + ", reference=" + reference + ", explanation=" + explanation + ", doctorId=" + doctorId + ", locationId="
-		+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "ReferencesCollection [id=" + id + ", reference=" + reference + ", explanation=" + explanation
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", discarded=" + discarded + "]";
+	}
 
 }
