@@ -386,6 +386,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${patient.welcome.message}")
 	private String patientWelcomeMessage;
+	
+	@Value(value = "${doctor.reference.message}")
+	private String doctorReferenceMessage;
 
 	@Autowired
 	private DoctorLabReportRepository doctorLabReportRepository;
@@ -550,10 +553,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 					BeanUtil.map(referencesCollection, esReferenceDocument);
 					esRegRistrationService.addEditReference(esReferenceDocument);
 				}
+				
 				patientCollection.setReferredBy(referencesCollection.getId());
 			}
 			patientCollection = patientRepository.save(patientCollection);
 
+		
+			
 			// assign groups
 			if (request.getGroups() != null) {
 				for (String group : request.getGroups()) {
@@ -638,6 +644,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (request.getLocationId() != null) {
 				LocationCollection locationCollection = locationRepository
 						.findOne(new ObjectId(request.getLocationId()));
+				
+				if(referencesCollection != null){
+					if(referencesCollection.getMobileNumber() != null)
+					{
+						sendReferenceMessage(patientCollection, locationCollection.getLocationName(), referencesCollection.getMobileNumber());
+					}
+				}
 
 				if (locationCollection.getIsPatientWelcomeMessageOn() != null) {
 					if (locationCollection.getIsPatientWelcomeMessageOn().equals(Boolean.TRUE)) {
@@ -4581,4 +4594,83 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 
 	}
+
+	
+	private void sendReferenceMessage(PatientCollection patientCollection, String locationName,
+			String mobileNumber) {
+		try {
+
+			if (patientCollection != null) {
+				String message = doctorReferenceMessage;
+				message = StringEscapeUtils.unescapeJava(message);
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());
+				smsTrackDetail.setLocationId(patientCollection.getLocationId());
+				smsTrackDetail.setHospitalId(patientCollection.getHospitalId());
+				smsTrackDetail.setType("DOCTOR_REFERENCE_MESSAGE");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(patientCollection.getUserId());
+				SMS sms = new SMS();
+				smsDetail.setUserName(patientCollection.getLocalPatientName());
+				message = message.replace("{patientName}", patientCollection.getFirstName());
+				message = message.replace("{clinicName}", locationName);
+				sms.setSmsText(message);
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+/*	@Async
+	@Transactional
+	private void createImmunisationChart(RegisteredPatientDetails request)
+	{
+		List<VaccineCollection> vaccineCollections = new ArrayList<>();
+		Calendar calendar = new GregorianCalendar();
+		if(request.getDob() != null)		
+		{
+			calendar.set(request.getDob().getYears(), request.getDob().getMonths() -1 , request.getDob().getDays(), 0, 0);
+		}
+		
+		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+		
+		List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository.findAll();
+		for (MasterBabyImmunizationCollection masterBabyImmunizationCollection : babyImmunizationCollections) {
+			VaccineCollection vaccineCollection = new VaccineCollection();
+			vaccineCollection.setPatientId(new ObjectId(request.getUserId()));
+			vaccineCollection.setLocationId(new ObjectId(request.getLocationId()));
+			vaccineCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+			vaccineCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			vaccineCollection.setLongName(masterBabyImmunizationCollection.getLongName());
+			vaccineCollection.setName(masterBabyImmunizationCollection.getName());
+			vaccineCollection.setDuration(masterBabyImmunizationCollection.getDuration());
+			vaccineCollection.setPeriodTime(masterBabyImmunizationCollection.getPeriodTime());
+			DateTime dueDate = new DateTime(calendar);
+			dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
+			vaccineCollection.setDueDate(dueDate.toDate());
+			vaccineCollection.setCreatedTime(new Date());
+			if(userCollection != null)
+			{
+				vaccineCollection.setCreatedBy(userCollection.getFirstName());
+			}
+			vaccineCollections.add(vaccineCollection);
+		}
+		
+		vaccineRepository.save(vaccineCollections);
+	}
+	*/
+	
 }

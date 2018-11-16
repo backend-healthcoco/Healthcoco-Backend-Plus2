@@ -4,37 +4,39 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ReferenceDetail {
-    private String id;
+	private String id;
 
-    private String reference;
+	private String reference;
 
-    private String explanation;
+	private String explanation;
 
-    private String doctorId;
+	private String mobileNumber;
 
-    private String locationId;
+	private String doctorId;
 
-    private String hospitalId;
+	private String locationId;
 
-    private Boolean discarded = false;
+	private String hospitalId;
 
-    public String getId() {
-	return id;
-    }
+	private Boolean discarded = false;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getReference() {
-	return reference;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setReference(String reference) {
-	this.reference = reference;
-    }
+	public String getReference() {
+		return reference;
+	}
 
-    public String getExplanation() {
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -43,36 +45,44 @@ public class ReferenceDetail {
 	}
 
 	public String getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
 	@Override
 	public String toString() {

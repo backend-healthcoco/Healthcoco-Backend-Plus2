@@ -18,6 +18,9 @@ public class ESReferenceDocument {
 
     @Field(type = FieldType.String)
     private String explanation;
+    
+    @Field(type = FieldType.String)
+    private String mobileNumber;
 
     @Field(type = FieldType.String)
     private String doctorId;

@@ -8,6 +8,8 @@ public class Reference extends GenericCollection {
     private String id;
 
     private String reference;
+    
+    private String mobileNumber;
 
     private String explanation;
 
@@ -74,6 +76,16 @@ public class Reference extends GenericCollection {
     public void setDiscarded(Boolean discarded) {
 	this.discarded = discarded;
     }
+    
+    
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
 	@Override
 	public String toString() {
