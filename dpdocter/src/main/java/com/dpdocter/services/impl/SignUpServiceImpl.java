@@ -885,14 +885,16 @@ public class SignUpServiceImpl implements SignUpService {
 
 			userCollection.setUserState(UserState.NOTACTIVATED);
 			userCollection.setIsVerified(true);
-			char[] salt = DPDoctorUtils.generateSalt();
-			userCollection.setSalt(salt);
-			char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-			for (int i = 0; i < request.getPassword().length; i++)
-				passwordWithSalt[i] = request.getPassword()[i];
-			for (int i = 0; i < salt.length; i++)
-				passwordWithSalt[i + request.getPassword().length] = salt[i];
-			userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
+			if (request.getPassword() != null) {
+				char[] salt = DPDoctorUtils.generateSalt();
+				userCollection.setSalt(salt);
+				char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
+				for (int i = 0; i < request.getPassword().length; i++)
+					passwordWithSalt[i] = request.getPassword()[i];
+				for (int i = 0; i < salt.length; i++)
+					passwordWithSalt[i + request.getPassword().length] = salt[i];
+				userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
+			}
 			userCollection = userRepository.save(userCollection);
 			// save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();
