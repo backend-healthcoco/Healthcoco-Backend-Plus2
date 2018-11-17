@@ -144,7 +144,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 						.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 				defaultDoctorId = (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getDefaultDoctorId())
 						? doctorClinicProfileCollection.getDefaultDoctorId().toString()
-						: null);
+						: doctorClinicProfileCollection.getDoctorId().toString());
+				
 			}
 			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
