@@ -62,6 +62,7 @@ import com.dpdocter.collections.HolterCollection;
 import com.dpdocter.collections.ImplantCollection;
 import com.dpdocter.collections.IndicationOfUSGCollection;
 import com.dpdocter.collections.IndirectLarygoscopyExaminationCollection;
+import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LabourNoteCollection;
@@ -72,6 +73,7 @@ import com.dpdocter.collections.MenstrualHistoryCollection;
 import com.dpdocter.collections.NeckExaminationCollection;
 import com.dpdocter.collections.NoseExaminationCollection;
 import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.NutrientCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.ObstetricHistoryCollection;
@@ -90,6 +92,7 @@ import com.dpdocter.collections.PresentingComplaintOralCavityCollection;
 import com.dpdocter.collections.PresentingComplaintThroatCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
+import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -122,6 +125,7 @@ import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESImplantDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESIndirectLarygoscopyExaminationDocument;
+import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
@@ -130,6 +134,7 @@ import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
+import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
@@ -145,6 +150,7 @@ import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
 import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocument;
 import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
+import com.dpdocter.elasticsearch.document.ESRecipeDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
@@ -152,7 +158,6 @@ import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
-import com.dpdocter.elasticsearch.repository.ESExpenseTypeRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
@@ -161,6 +166,7 @@ import com.dpdocter.elasticsearch.services.ESExpenseTypeService;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
+import com.dpdocter.elasticsearch.services.ESRecipeService;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.AppointmentState;
@@ -196,6 +202,7 @@ import com.dpdocter.repository.HolterRepository;
 import com.dpdocter.repository.ImplantRepository;
 import com.dpdocter.repository.IndicationOfUSGRepository;
 import com.dpdocter.repository.IndirectLarygoscopyExaminationRepository;
+import com.dpdocter.repository.IngredientRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LabourNoteRepository;
@@ -206,6 +213,7 @@ import com.dpdocter.repository.MenstrualHistoryRepository;
 import com.dpdocter.repository.NeckExaminationRepository;
 import com.dpdocter.repository.NoseExaminationRepository;
 import com.dpdocter.repository.NotesRepository;
+import com.dpdocter.repository.NutrientRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.ObstetricHistoryRepository;
@@ -224,6 +232,7 @@ import com.dpdocter.repository.PresentingComplaintOralCavityRepository;
 import com.dpdocter.repository.PresentingComplaintThroatRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProvisionalDiagnosisRepository;
+import com.dpdocter.repository.RecipeRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSTrackRepository;
@@ -471,8 +480,20 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	private ExpenseTypeRepository expenseTypeRepository;
 
 	@Autowired
+	private NutrientRepository nutrientRepository;
+
+	@Autowired
+	private IngredientRepository ingredientRepository;
+
+	@Autowired
+	private RecipeRepository recipeRepository;
+
+	@Autowired
 	private ESExpenseTypeService exExpenseTypeService;
 
+	@Autowired
+	private ESRecipeService ESRecipeService;
+	
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
 
@@ -2417,6 +2438,51 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESExpenseTypeDocument expenseDocument = new ESExpenseTypeDocument();
 				BeanUtil.map(typeCollection, expenseDocument);
 				exExpenseTypeService.addEditExpenseType(expenseDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkRecipe(ObjectId resourceId) {
+		try {
+
+			RecipeCollection recipeCollection = recipeRepository.findOne(resourceId);
+			if (recipeCollection != null) {
+				ESRecipeDocument esRecipeDocument = new ESRecipeDocument();
+				BeanUtil.map(recipeCollection, esRecipeDocument);
+				ESRecipeService.addRecipe(esRecipeDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkIngredient(ObjectId resourceId) {
+		try {
+
+			IngredientCollection ingredientCollection = ingredientRepository.findOne(resourceId);
+			if (ingredientCollection != null) {
+				ESIngredientDocument esIngredientDocument = new ESIngredientDocument();
+				BeanUtil.map(ingredientCollection, esIngredientDocument);
+				ESRecipeService.addIngredient(esIngredientDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkNutrient(ObjectId resourceId) {
+		try {
+
+			NutrientCollection nutrientCollection = nutrientRepository.findOne(resourceId);
+			if (nutrientCollection != null) {
+				ESNutrientDocument esNutrientDocument = new ESNutrientDocument();
+				BeanUtil.map(nutrientCollection, esNutrientDocument);
+				ESRecipeService.addNutrient(esNutrientDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
