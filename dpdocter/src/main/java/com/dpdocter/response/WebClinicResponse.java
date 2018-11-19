@@ -3,8 +3,6 @@ package com.dpdocter.response;
 public class WebClinicResponse {
 
 	private String locationId;
-	
-	private String locationName;
 
 	private String country;
 
@@ -14,9 +12,11 @@ public class WebClinicResponse {
 
 	private String postalCode;
 	
-	private String streetAddress;
-
 	private String locality;
+
+	private String locationName;
+	
+	private String streetAddress;
 
 	public String getLocationId() {
 		return locationId;
@@ -24,14 +24,6 @@ public class WebClinicResponse {
 
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
-	}
-
-	public String getLocationName() {
-		return locationName;
-	}
-
-	public void setLocationName(String locationName) {
-		this.locationName = locationName;
 	}
 
 	public String getCountry() {
@@ -66,14 +58,6 @@ public class WebClinicResponse {
 		this.postalCode = postalCode;
 	}
 
-	public String getStreetAddress() {
-		return streetAddress;
-	}
-
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
-
 	public String getLocality() {
 		return locality;
 	}
@@ -82,10 +66,26 @@ public class WebClinicResponse {
 		this.locality = locality;
 	}
 
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getStreetAddress() {
+		return streetAddress;
+	}
+
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
+
 	@Override
 	public String toString() {
-		return "WebClinicResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country
-				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", streetAddress="
-				+ streetAddress + ", locality=" + locality + "]";
+		return "WebClinicResponse [locationId=" + locationId + ", country=" + country + ", state=" + state + ", city="
+				+ city + ", postalCode=" + postalCode + ", locality=" + locality + ", locationName=" + locationName
+				+ ", streetAddress=" + streetAddress + "]";
 	}
 }

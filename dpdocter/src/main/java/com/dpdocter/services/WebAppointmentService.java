@@ -5,8 +5,8 @@ import com.dpdocter.response.WebDoctorClinicsResponse;
 
 public interface WebAppointmentService {
 
-	WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl);
-
 	SlotDataResponse getTimeSlots(String doctorId, String locationId, String date);
+
+	WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl);
 
 }

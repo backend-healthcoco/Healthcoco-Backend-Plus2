@@ -1823,9 +1823,10 @@ public interface PathProxy {
 	public interface WebAppointmentUrls {
 		public static final String GET_CLINICS_BY_DOCTOR_SLUG_URL = "/clinics/{doctorSlugUrl}";
 		public static final String GET_TIME_SLOTS = "/getTimeSlots/{doctorId}/{locationId}/{date}";
+		public static final String ADD_APPOINTMENT = "/add";
 
 	}
-
+	
 	public static final String Lab_PRINT_BASE_URL = BASE_URL + "/labPrint";
 
 	public interface LabPrintUrls {

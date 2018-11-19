@@ -70,4 +70,5 @@ public class WebDoctorClinicsResponse {
 				+ specialities + ", parentSpecialities=" + parentSpecialities + ", clinics=" + clinics
 				+ ", doctorSlugURL=" + doctorSlugURL + "]";
 	}
+
 }
