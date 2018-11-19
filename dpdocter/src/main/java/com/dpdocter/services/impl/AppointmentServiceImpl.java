@@ -3170,7 +3170,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			return null;
 	}
 
-	private Integer getMinutesOfDay(Date date) {
+	@Override
+	@Transactional
+	public  Integer getMinutesOfDay(Date date) {
 		DateTime dateTime = new DateTime(new Date(), DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 		Integer currentMinute = dateTime.getMinuteOfDay();
@@ -3191,7 +3193,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	// return status;
 	// }
 
-	private Boolean checkToday(int dayOfDate, int yearOfDate, String timeZone) {
+	@Override
+	@Transactional
+	public  Boolean checkToday(int dayOfDate, int yearOfDate, String timeZone) {
 		Boolean status = false;
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
 		if (yearOfDate == localCalendar.get(Calendar.YEAR) && dayOfDate == localCalendar.get(Calendar.DAY_OF_YEAR)) {

@@ -1,0 +1,91 @@
+package com.dpdocter.response;
+
+public class WebClinicResponse {
+
+	private String locationId;
+
+	private String country;
+
+	private String state;
+
+	private String city;
+
+	private String postalCode;
+	
+	private String locality;
+
+	private String locationName;
+	
+	private String streetAddress;
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getStreetAddress() {
+		return streetAddress;
+	}
+
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
+
+	@Override
+	public String toString() {
+		return "WebClinicResponse [locationId=" + locationId + ", country=" + country + ", state=" + state + ", city="
+				+ city + ", postalCode=" + postalCode + ", locality=" + locality + ", locationName=" + locationName
+				+ ", streetAddress=" + streetAddress + "]";
+	}
+}

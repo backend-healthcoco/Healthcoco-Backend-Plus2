@@ -126,4 +126,8 @@ public interface AppointmentService {
 			String toDate);
 
 	Boolean addEditNutritionAppointment(NutritionAppointment request);
+
+	Boolean checkToday(int i, int yearOfDate, String timeZone);
+
+	Integer getMinutesOfDay(Date dateObj);
 }
