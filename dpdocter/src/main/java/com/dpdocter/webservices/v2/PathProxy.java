@@ -186,5 +186,13 @@ public interface PathProxy {
 	public interface DischargeSummaryUrls {
 		public static final String GET_DISCHARGE_SUMMARY = "/getDischargeSummery";
 	}
+	
+	public static final String SOLR_PRESCRIPTION_BASEURL = BASE_URL + "/solr/prescription";
+	
+	public interface SolrPrescriptionUrls {
+
+		public static final String SEARCH_DRUG = "searchDrug/{range}";
+
+	}
 
 }
