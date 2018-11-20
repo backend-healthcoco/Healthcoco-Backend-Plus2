@@ -15,7 +15,10 @@ public class SearchDoctorResponse {
 	private Integer count = 0;
 	private String city;
 	private String locality;
-
+	private String unformattedSpeciality;
+	private String service;
+	private String unformattedService;
+	
 	public String getLocality() {
 		return locality;
 	}
@@ -72,9 +75,36 @@ public class SearchDoctorResponse {
 		this.city = city;
 	}
 
+	public String getUnformattedSpeciality() {
+		return unformattedSpeciality;
+	}
+
+	public void setUnformattedSpeciality(String unformattedSpeciality) {
+		this.unformattedSpeciality = unformattedSpeciality;
+	}
+
+	public String getService() {
+		return service;
+	}
+
+	public void setService(String service) {
+		this.service = service;
+	}
+
+	public String getUnformattedService() {
+		return unformattedService;
+	}
+
+	public void setUnformattedService(String unformattedService) {
+		this.unformattedService = unformattedService;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchDoctorResponse [doctors=" + doctors + ", nearByDoctors=" + nearByDoctors + ", metaData="
-				+ metaData + ", speciality=" + speciality + ", count=" + count + ", city=" + city + "]";
+				+ metaData + ", speciality=" + speciality + ", count=" + count + ", city=" + city + ", locality="
+				+ locality + ", unformattedSpeciality=" + unformattedSpeciality + ", service=" + service
+				+ ", unformattedService=" + unformattedService + "]";
 	}
+
 }

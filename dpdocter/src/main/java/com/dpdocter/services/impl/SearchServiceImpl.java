@@ -35,9 +35,9 @@ import org.springframework.util.StringUtils;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
+import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
-import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
@@ -70,7 +70,6 @@ public class SearchServiceImpl implements SearchService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public SearchDoctorResponse searchDoctors(int page, int size, String city, String location, String latitude,
 			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
@@ -78,61 +77,25 @@ public class SearchServiceImpl implements SearchService {
 			int maxExperience, String service, String locality, Boolean otherArea) {
 		List<ESDoctorDocument> esDoctorDocuments = null;
 		List<ESDoctorDocument> nearByDoctors = null;
-		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		SearchDoctorResponse response = null;
 		try {
 			Set<String> specialityIdSet = new HashSet<String>();
-			Set<String> locationIds = null, doctorIds = null;
 
 			if (city.equalsIgnoreCase("undefined")) {
 				return null;
 			}
-			if (!DPDoctorUtils.anyStringEmpty(service)) {
-				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
-						.findByName(service);
-				if (esTreatmentServiceDocuments != null) {
-					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
-							new BeanToPropertyValueTransformer("id"));
-					Collection<String> specialities = CollectionUtils.collect(esTreatmentServiceDocuments,
-							new BeanToPropertyValueTransformer("speciality"));
+			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
+				speciality = null;
+			}
 
-					for (String specialitySTR : specialities) {
-						List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
-								.findByQueryAnnotation(specialitySTR);
-						if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
-							Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
-									new BeanToPropertyValueTransformer("id"));
-							if (specialityIds != null) {
-								specialityIdSet.addAll(specialityIds);
-							}
-						}
-
-					}
-
-					int count = (int) elasticsearchTemplate.count(
-							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
-							ESTreatmentServiceCostDocument.class);
-					if (count > 0)
-						esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(
-								new NativeSearchQueryBuilder()
-										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
-										.withPageable(new PageRequest(0, count)).build(),
-								ESTreatmentServiceCostDocument.class);
-
-				}
-				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
-					return null;
-				}
-				locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-						new BeanToPropertyValueTransformer("locationId")));
-				doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-						new BeanToPropertyValueTransformer("doctorId")));
-
-				locationIds.remove(null);
-				doctorIds.remove(null);
+			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
+				service = null;
+			} else {
+				service = service.replace("-", " ");
 			}
 
 			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
+			QueryBuilder serviceQueryBuilder = createServiceFilter(service);
 			QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
 
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -143,6 +106,14 @@ public class SearchServiceImpl implements SearchService {
 					.must(QueryBuilders.matchQuery("isClinic", true));
 
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
+
+				long cityCount = elasticsearchTemplate.count(
+						new CriteriaQuery(new Criteria("city").is(city).and("isActivated").is(true)),
+						ESCityDocument.class);
+
+				if (cityCount == 0) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid City");
+				}
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 				boolQueryBuilderForNearByDoctors.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 			}
@@ -152,16 +123,14 @@ public class SearchServiceImpl implements SearchService {
 				boolQueryBuilderForNearByDoctors.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
 			}
 
-			if ((locationIds != null && !locationIds.isEmpty()) && (doctorIds != null && !doctorIds.isEmpty())) {
-				boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds))
-						.must(QueryBuilders.termsQuery("locationId", locationIds));
-				boolQueryBuilderForNearByDoctors.must(QueryBuilders.termsQuery("userId", doctorIds))
-						.must(QueryBuilders.termsQuery("locationId", locationIds));
-			}
-
 			if (specialityQueryBuilder != null) {
 				boolQueryBuilder.must(specialityQueryBuilder);
 				boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
+			}
+
+			if (serviceQueryBuilder != null) {
+				boolQueryBuilder.must(serviceQueryBuilder);
+				boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
 			}
 
 			if (facilityQueryBuilder != null) {
@@ -256,18 +225,6 @@ public class SearchServiceImpl implements SearchService {
 			if (!(esDoctorDocuments == null && nearByDoctors == null)) {
 				response = new SearchDoctorResponse();
 
-				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
-					speciality = speciality.replace("-", " ");
-
-					response.setSpeciality(StringUtils.capitalize(speciality));
-
-					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
-				} else {
-					response.setMetaData("Doctors in ");
-
-					response.setSpeciality("ALL Specialities");
-
-				}
 				if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
 
 					response.setMetaData(response.getMetaData() + StringUtils.capitalize(locality) + ", ");
@@ -286,6 +243,61 @@ public class SearchServiceImpl implements SearchService {
 				if (nearByDoctors != null) {
 					response.setNearByDoctors(formatDoctorData(nearByDoctors, latitude, longitude));
 				}
+
+				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")
+						&& ((response.getDoctors() != null && !response.getDoctors().isEmpty())
+								|| (response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()))) {
+					if (response.getDoctors() != null && !response.getDoctors().isEmpty()) {
+						for (String matchSpeciality : response.getDoctors().get(0).getSpecialities()) {
+							if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+									.replaceAll("-(\\s*-)+", "88"))
+											.equalsIgnoreCase((matchSpeciality.toLowerCase().trim()
+													.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))))
+								response.setUnformattedSpeciality(matchSpeciality);
+						}
+					} else {
+						for (String matchSpeciality : response.getNearByDoctors().get(0).getSpecialities()) {
+							if ((speciality.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+									.replaceAll("-(\\s*-)+", "88"))
+											.equalsIgnoreCase((matchSpeciality.toLowerCase().trim()
+													.replaceAll("[^a-zA-Z0-9-]", "-").replaceAll("-(\\s*-)+", "88"))))
+								response.setUnformattedSpeciality(matchSpeciality);
+						}
+					}
+					speciality = speciality.replace("-", " ");
+					response.setSpeciality(StringUtils.capitalize(speciality));
+					response.setMetaData(StringUtils.capitalize(speciality) + "s in ");
+				} else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")
+						&& ((response.getDoctors() != null && !response.getDoctors().isEmpty())
+								|| (response.getNearByDoctors() != null && !response.getNearByDoctors().isEmpty()))) {
+					if (response.getDoctors() != null && !response.getDoctors().isEmpty()) {
+						for (String matchService : response.getDoctors().get(0).getServices()) {
+							if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+									.replaceAll("-(\\s*-)+", "88"))
+											.equalsIgnoreCase((matchService.toLowerCase().trim()
+													.replaceAll("-(\\s*-)+", "88").replaceAll("--", "-"))))
+								response.setUnformattedService(matchService);
+						}
+					} else {
+
+						for (String matchService : response.getNearByDoctors().get(0).getServices()) {
+							if ((service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-")
+									.replaceAll("-(\\s*-)+", "88"))
+											.equalsIgnoreCase((matchService.toLowerCase().trim()
+													.replaceAll("-(\\s*-)+", "88").replaceAll("--", "-"))))
+								response.setUnformattedService(matchService);
+						}
+
+					}
+					service = service.replace("-", " ");
+					response.setService(StringUtils.capitalize(service));
+					response.setMetaData(StringUtils.capitalize(service) + " services in ");
+				} else {
+					response.setMetaData("Doctors in ");
+
+					response.setSpeciality("ALL Specialities");
+
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -302,29 +314,71 @@ public class SearchServiceImpl implements SearchService {
 		if (esDoctorDocuments != null) {
 
 			List<String> specialities = null;
+			List<String> parentSpecialities = null;
+
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
 				if (doctorDocument.getSpecialities() != null) {
 					specialities = new ArrayList<String>();
+					parentSpecialities = new ArrayList<String>();
+
 					for (String specialityId : doctorDocument.getSpecialities()) {
 						ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
 						if (specialityCollection != null) {
 							specialities.add(specialityCollection.getSuperSpeciality());
-
+							parentSpecialities.add(specialityCollection.getSpeciality());
 						}
 					}
+					doctorWEbSearch.setParentSpecialities(parentSpecialities);
 					doctorWEbSearch.setSpecialities(specialities);
 				}
 
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 
+//				String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
+//						? doctorDocument.getStreetAddress() + ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
+//								? doctorDocument.getLandmarkDetails() + ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
+//								? doctorDocument.getLocality() + ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity()) ? doctorDocument.getCity() + ", "
+//								: "")
+//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
+//								? doctorDocument.getState() + ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
+//								? doctorDocument.getCountry() + ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
+//								? doctorDocument.getPostalCode() : "");
+//
+//				if (address.length()>1 && address.charAt(address.length() - 2) == ',') {
+//					address = address.substring(0, address.length() - 2);
+//				}
+//				doctorWEbSearch.setClinicAddress(address);
 				response.add(doctorWEbSearch);
-
 			}
 		}
 		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private QueryBuilder createServiceFilter(String service) {
+		QueryBuilder queryBuilder = null;
+		if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("DOCTOR")) {
+
+			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
+					.findByName(service);
+
+			if (esTreatmentServiceDocuments != null) {
+				Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
+						new BeanToPropertyValueTransformer("id"));
+				if (serviceIds == null)
+					serviceIds = CollectionUtils.EMPTY_COLLECTION;
+				queryBuilder = QueryBuilders.termsQuery("services", serviceIds);
+			}
+		}
+		return queryBuilder;
 	}
 
 	@SuppressWarnings("unchecked")
