@@ -9,30 +9,22 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GrowthChart;
-import com.dpdocter.beans.NutritionGoalAnalytics;
-import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.collections.GrowthChartCollection;
-import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.NutritionReferenceCollection;
-import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.VaccineBrandAssociationCollection;
 import com.dpdocter.collections.VaccineCollection;
-import com.dpdocter.enums.GoalStatus;
-import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.GrowthChartRepository;
 import com.dpdocter.repository.VaccineRepository;
 import com.dpdocter.request.VaccineRequest;
-import com.dpdocter.response.NutritionReferenceResponse;
+import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
 import com.mongodb.BasicDBObject;
@@ -243,6 +235,40 @@ public class PaediatricServiceImpl implements PaediatricService{
 			throw e;
 
 		}
+		return responses;
+	}
+	
+	@Override
+	@Transactional
+	public List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId , String vaccineBrandId)
+	{
+		
+		List<VaccineBrandAssociationResponse> responses = null;
+		try {
+			Criteria criteria = new Criteria();
+			
+			if (!DPDoctorUtils.anyStringEmpty(vaccineId)) {
+				criteria.and("vaccineId").is(new ObjectId(vaccineId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(vaccineBrandId)) {
+				criteria.and("vaccineBrandId").is(new ObjectId(vaccineBrandId));
+			}
+			
+			responses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
+											true))),
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+					VaccineBrandAssociationCollection.class, VaccineBrandAssociationResponse.class).getMappedResults();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
 		return responses;
 	}
 	

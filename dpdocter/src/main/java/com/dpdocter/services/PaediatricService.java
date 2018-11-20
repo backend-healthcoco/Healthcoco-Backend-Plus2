@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.GrowthChart;
 import com.dpdocter.request.VaccineRequest;
+import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 
 public interface PaediatricService {
@@ -22,5 +23,7 @@ public interface PaediatricService {
 
 	List<VaccineResponse> getVaccineList(String patientId, String doctorId, String locationId, String hospitalId,
 			String updatedTime);
+
+	List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId, String vaccineBrandId);
 
 }

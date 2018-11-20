@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.VaccineRequest;
+import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
 
@@ -78,6 +79,20 @@ public class PaediatricAPI {
 		}
 		List<VaccineResponse> vaccineResponse = paediatricService.getVaccineList(patientId, doctorId, locationId, hospitalId,updatedTime);
 		Response<VaccineResponse> response = new Response<VaccineResponse>();
+		response.setDataList(vaccineResponse);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION, notes = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
+	public Response<VaccineBrandAssociationResponse> getVaccineBrandAssociation(@QueryParam("vaccineId") String vaccineId, @QueryParam("vaccineBrandId") String vaccineBrandId) {
+		if (DPDoctorUtils.allStringsEmpty(vaccineBrandId,vaccineId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<VaccineBrandAssociationResponse> vaccineResponse = paediatricService.getVaccineBrandAssociation(vaccineId, vaccineBrandId);
+		Response<VaccineBrandAssociationResponse> response = new Response<VaccineBrandAssociationResponse>();
 		response.setDataList(vaccineResponse);
 		return response;
 	}

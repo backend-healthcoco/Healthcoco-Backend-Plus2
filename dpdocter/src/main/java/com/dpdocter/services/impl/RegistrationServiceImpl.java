@@ -4677,6 +4677,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
+<<<<<<< HEAD
 	@Override
 	public Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId) {
 		Boolean response = false;
@@ -4770,6 +4771,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private void createImmunisationChart(RegisteredPatientDetails request)
 	{
 		List<VaccineCollection> vaccineCollections = new ArrayList<>();
+
 		Calendar calendar = new GregorianCalendar();
 		if(request.getDob() != null)		
 		{
@@ -4778,26 +4780,39 @@ public class RegistrationServiceImpl implements RegistrationService {
 		
 		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 		
-		List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository.findAll();
-		for (MasterBabyImmunizationCollection masterBabyImmunizationCollection : babyImmunizationCollections) {
-			VaccineCollection vaccineCollection = new VaccineCollection();
-			vaccineCollection.setPatientId(new ObjectId(request.getUserId()));
-			vaccineCollection.setLocationId(new ObjectId(request.getLocationId()));
-			vaccineCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-			vaccineCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-			vaccineCollection.setLongName(masterBabyImmunizationCollection.getLongName());
-			vaccineCollection.setName(masterBabyImmunizationCollection.getName());
-			vaccineCollection.setDuration(masterBabyImmunizationCollection.getDuration());
-			//vaccineCollection.setPeriodTime(masterBabyImmunizationCollection.getPeriodTime());
-			DateTime dueDate = new DateTime(calendar);
-			dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
-			vaccineCollection.setDueDate(dueDate.toDate());
-			vaccineCollection.setCreatedTime(new Date());
-			if(userCollection != null)
-			{
-				vaccineCollection.setCreatedBy(userCollection.getFirstName());
+		vaccineCollections =vaccineRepository.findBypatientdoctorlocationhospital(new ObjectId(request.getUserId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+		if (vaccineCollections == null) {
+			vaccineCollections = new ArrayList<>();
+			List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository
+					.findAll();
+			for (MasterBabyImmunizationCollection masterBabyImmunizationCollection : babyImmunizationCollections) {
+				VaccineCollection vaccineCollection = new VaccineCollection();
+				vaccineCollection.setPatientId(new ObjectId(request.getUserId()));
+				vaccineCollection.setLocationId(new ObjectId(request.getLocationId()));
+				vaccineCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+				vaccineCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+				vaccineCollection.setVaccineId(masterBabyImmunizationCollection.getId());
+				vaccineCollection.setLongName(masterBabyImmunizationCollection.getLongName());
+				vaccineCollection.setName(masterBabyImmunizationCollection.getName());
+				vaccineCollection.setDuration(masterBabyImmunizationCollection.getDuration());
+				vaccineCollection.setPeriodTime(masterBabyImmunizationCollection.getPeriodTime());
+				DateTime dueDate = new DateTime(calendar);
+				dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
+				vaccineCollection.setDueDate(dueDate.toDate());
+				vaccineCollection.setCreatedTime(new Date());
+				if (userCollection != null) {
+					vaccineCollection.setCreatedBy(userCollection.getFirstName());
+				}
+				vaccineCollections.add(vaccineCollection);
 			}
-			vaccineCollections.add(vaccineCollection);
+		}
+		else
+		{
+			for (VaccineCollection vaccineCollection : vaccineCollections) {
+				DateTime dueDate = new DateTime(calendar);
+				dueDate.plusWeeks(vaccineCollection.getPeriodTime());
+				vaccineCollection.setDueDate(dueDate.toDate());
+			}
 		}
 		
 		vaccineRepository.save(vaccineCollections);
