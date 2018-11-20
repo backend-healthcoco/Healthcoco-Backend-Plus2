@@ -17,6 +17,8 @@ public class VaccineCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
+	private ObjectId vaccineId;
+	@Field
 	private ObjectId doctorId;
 	@Field
 	private ObjectId locationId;
@@ -183,6 +185,14 @@ public class VaccineCollection extends GenericCollection {
 
 	public void setPeriodTime(Integer periodTime) {
 		this.periodTime = periodTime;
+	}
+
+	public ObjectId getVaccineId() {
+		return vaccineId;
+	}
+
+	public void setVaccineId(ObjectId vaccineId) {
+		this.vaccineId = vaccineId;
 	}
 
 	@Override

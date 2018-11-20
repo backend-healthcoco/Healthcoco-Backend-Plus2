@@ -9,6 +9,7 @@ import com.dpdocter.enums.VaccineStatus;
 public class VaccineRequest {
 
 	private String id;
+	private String vaccineId;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
@@ -142,6 +143,14 @@ public class VaccineRequest {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public String getVaccineId() {
+		return vaccineId;
+	}
+
+	public void setVaccineId(String vaccineId) {
+		this.vaccineId = vaccineId;
 	}
 
 }

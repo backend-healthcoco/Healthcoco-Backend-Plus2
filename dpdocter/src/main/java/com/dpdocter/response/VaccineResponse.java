@@ -11,6 +11,7 @@ import com.dpdocter.enums.VaccineStatus;
 public class VaccineResponse extends GenericCollection {
 
 	private String id;
+	private String vaccineId;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
@@ -153,6 +154,14 @@ public class VaccineResponse extends GenericCollection {
 
 	public void setDuration(String duration) {
 		this.duration = duration;
+	}
+
+	public String getVaccineId() {
+		return vaccineId;
+	}
+
+	public void setVaccineId(String vaccineId) {
+		this.vaccineId = vaccineId;
 	}
 
 }

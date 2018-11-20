@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GrowthChart;
+import com.dpdocter.beans.VaccineBrandAssociation;
 import com.dpdocter.collections.GrowthChartCollection;
+import com.dpdocter.collections.VaccineBrandAssociationCollection;
 import com.dpdocter.collections.VaccineCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -24,6 +26,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.GrowthChartRepository;
 import com.dpdocter.repository.VaccineRepository;
 import com.dpdocter.request.VaccineRequest;
+import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
 import com.mongodb.BasicDBObject;
@@ -234,6 +237,40 @@ public class PaediatricServiceImpl implements PaediatricService{
 			throw e;
 
 		}
+		return responses;
+	}
+	
+	@Override
+	@Transactional
+	public List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId , String vaccineBrandId)
+	{
+		
+		List<VaccineBrandAssociationResponse> responses = null;
+		try {
+			Criteria criteria = new Criteria();
+			
+			if (!DPDoctorUtils.anyStringEmpty(vaccineId)) {
+				criteria.and("vaccineId").is(new ObjectId(vaccineId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(vaccineBrandId)) {
+				criteria.and("vaccineBrandId").is(new ObjectId(vaccineBrandId));
+			}
+			
+			responses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
+											true))),
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+					VaccineBrandAssociationCollection.class, VaccineBrandAssociationResponse.class).getMappedResults();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
 		return responses;
 	}
 	
