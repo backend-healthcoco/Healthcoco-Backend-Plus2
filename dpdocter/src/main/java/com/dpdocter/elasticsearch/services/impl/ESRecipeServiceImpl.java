@@ -19,7 +19,7 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Exercise;
-import com.dpdocter.elasticsearch.document.ESExerciseTypeDocument;
+import com.dpdocter.elasticsearch.document.ESExerciseDocument;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
@@ -201,13 +201,13 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 			}
 			if (size == 0)
 				size = 15;
-			List<ESExerciseTypeDocument> exercises = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+			List<ESExerciseDocument> exercises = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 					.withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC))
-					.withPageable(new PageRequest(page, size)).build(), ESExerciseTypeDocument.class);
+					.withPageable(new PageRequest(page, size)).build(), ESExerciseDocument.class);
 
 			if (exercises != null && !exercises.isEmpty()) {
 				response = new ArrayList<Exercise>();
-				for (ESExerciseTypeDocument excerciseDocument : exercises) {
+				for (ESExerciseDocument excerciseDocument : exercises) {
 					exerciseResponse = new Exercise();
 					BeanUtil.map(excerciseDocument, exerciseResponse);
 					response.add(exerciseResponse);
