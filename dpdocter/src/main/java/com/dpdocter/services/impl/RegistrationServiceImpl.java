@@ -4635,11 +4635,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	public Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId) {
 		Boolean response = false;
-		DoctorClinicProfileCollection doctordoctorClinicProfile = doctorClinicProfileRepository
+		DoctorClinicProfileCollection doctorClinicProfile = doctorClinicProfileRepository
 				.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
-		if (doctordoctorClinicProfile != null) {
-			doctordoctorClinicProfile.setDefaultDoctorId(new ObjectId(defaultDoctorId));
+		if (doctorClinicProfile != null) {
+			doctorClinicProfile.setDefaultDoctorId(new ObjectId(defaultDoctorId));
+			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
 		}
+		response = true;
+
 		return response;
 	}
 
