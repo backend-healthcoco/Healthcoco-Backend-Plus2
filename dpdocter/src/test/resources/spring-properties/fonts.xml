@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <fontFamilies>
-
+	<fontFamily name="Sakal Bharati">
+		<normal>/home/ubuntu/dpdoctor-data/resource/jasperTemplates/noto/SakalBharati.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+	
 	<fontFamily name="Noto Sans">
 		<normal>/home/healthcoco-neha/jasperTemplates/noto/Khula-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
