@@ -63,11 +63,12 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 		try {
 			
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-					.must(QueryBuilders.matchPhrasePrefixQuery("doctorSlugUrl", doctorSlugUrl));
-			
-			List<ESDoctorDocument> esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
-			
-			if(esDoctorDocuments != null) {
+					.must(QueryBuilders.matchQuery("doctorSlugUrl", doctorSlugUrl));
+
+			List<ESDoctorDocument> esDoctorDocuments = elasticsearchTemplate.queryForList(
+					new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
+
+			if (esDoctorDocuments != null) {
 				webDoctorClinicsResponse = new WebDoctorClinicsResponse();
 				List<WebClinicResponse> clinicResponses = new ArrayList<WebClinicResponse>();
 				for(ESDoctorDocument doctorDocument : esDoctorDocuments) {
