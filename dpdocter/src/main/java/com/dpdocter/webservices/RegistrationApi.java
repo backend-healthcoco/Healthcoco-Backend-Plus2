@@ -1224,7 +1224,7 @@ public class RegistrationApi {
 	}
 
 	@Path(value = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST)
-	@POST
+	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST, notes = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST)
 	public Response<Boolean> setDefaultDoctor(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
