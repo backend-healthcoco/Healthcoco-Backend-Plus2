@@ -42,46 +42,49 @@ import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
 
 @Service
-public class WebAppointmentServiceImpl implements WebAppointmentService{
+public class WebAppointmentServiceImpl implements WebAppointmentService {
 
 	@Autowired
 	ElasticsearchTemplate elasticsearchTemplate;
-	
+
 	@Autowired
 	private ESSpecialityRepository esSpecialityRepository;
-	
+
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Autowired
 	private AppointmentBookedSlotRepository appointmentBookedSlotRepository;
-	
+
 	@Autowired
 	private AppointmentService appointmentService;
-	
+
 	@Override
 	public WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl) {
 		WebDoctorClinicsResponse webDoctorClinicsResponse = null;
 		try {
-			
+
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchPhrasePrefixQuery("doctorSlugUrl", doctorSlugUrl));
-			
-			List<ESDoctorDocument> esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
-			
-			if(esDoctorDocuments != null) {
+
+			List<ESDoctorDocument> esDoctorDocuments = elasticsearchTemplate.queryForList(
+					new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
+
+			if (esDoctorDocuments != null) {
 				webDoctorClinicsResponse = new WebDoctorClinicsResponse();
 				List<WebClinicResponse> clinicResponses = new ArrayList<WebClinicResponse>();
-				for(ESDoctorDocument doctorDocument : esDoctorDocuments) {
-					if(webDoctorClinicsResponse.getDoctorId() == null) {
+				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+					if (webDoctorClinicsResponse.getDoctorId() == null) {
 						webDoctorClinicsResponse.setDoctorId(doctorDocument.getUserId());
 						webDoctorClinicsResponse.setDoctorSlugURL(doctorDocument.getDoctorSlugURL());
-						webDoctorClinicsResponse.setFirstName(doctorDocument.getTitle() +" "+ doctorDocument.getFirstName());
+						webDoctorClinicsResponse
+								.setFirstName(doctorDocument.getTitle() + " " + doctorDocument.getFirstName());
 						if (doctorDocument.getSpecialities() != null) {
 							HashSet<String> specialities = new HashSet<String>();
 							HashSet<String> parentspecialities = new HashSet<String>();
 							for (String specialityId : doctorDocument.getSpecialities()) {
-								ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
+								ESSpecialityDocument specialityCollection = esSpecialityRepository
+										.findOne(specialityId);
 								if (specialityCollection != null) {
 									specialities.add(specialityCollection.getSuperSpeciality());
 									parentspecialities.add(specialityCollection.getSpeciality());
@@ -104,7 +107,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 				}
 				webDoctorClinicsResponse.setClinics(clinicResponses);
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
@@ -146,7 +149,8 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					}
 					if (workingHours != null && !workingHours.isEmpty()) {
 						Date dateObj = new Date(Long.parseLong(date));
-						Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
+						Calendar localCalendar = Calendar
+								.getInstance(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
 						localCalendar.setTime(dateObj);
 						int dayOfDate = localCalendar.get(Calendar.DATE);
 						int monthOfDate = localCalendar.get(Calendar.MONTH) + 1;
@@ -154,11 +158,13 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 
 						DateTime start = new DateTime(yearOfDate, monthOfDate, dayOfDate, 0, 0, 0, DateTimeZone
 								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
-						
+
 						localCalendar.add(Calendar.DAY_OF_MONTH, 6);
-						DateTime end = new DateTime(localCalendar.get(Calendar.YEAR), localCalendar.get(Calendar.MONTH) + 1, localCalendar.get(Calendar.DATE), 23, 59, 59, DateTimeZone
-								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
-						
+						DateTime end = new DateTime(localCalendar.get(Calendar.YEAR),
+								localCalendar.get(Calendar.MONTH) + 1, localCalendar.get(Calendar.DATE), 23, 59, 59,
+								DateTimeZone.forTimeZone(
+										TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
+
 						List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
 								.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end,
 										new Sort(Direction.ASC, "time.fromTime"));
@@ -204,7 +210,8 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 							}
 
 							if (endTime > startTime) {
-								List<Slot> slots = DateAndTimeUtility.sliceTime(startTime, endTime, Math.round(slotTime), true);
+								List<Slot> slots = DateAndTimeUtility.sliceTime(startTime, endTime,
+										Math.round(slotTime), true);
 								if (slots != null)
 									slotResponse.addAll(slots);
 							}
