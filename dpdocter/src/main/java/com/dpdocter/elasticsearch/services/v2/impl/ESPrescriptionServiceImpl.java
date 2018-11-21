@@ -304,6 +304,173 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		}
 		return response;
 	}
-
 	
+	@Override
+	public Long drugCount(String range, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
+		Long response = null;
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+			searchTerm = searchTerm.toUpperCase();
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalDrugsCount(updatedTime, discarded, searchTerm, category, searchByGenericName);
+			break;
+		case CUSTOM:
+			response = getCustomDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			break;
+		case BOTH:
+			response = getCustomGlobalDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			break;
+		case FAVOURITES:
+			response = getFavouritesDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			break;
+		case WEBBOTH:
+			response = getCustomGlobalDrugsForWebCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			break;
+		default:
+			break;
+		}
+		return response;
+
+	}
+	
+	private Long getGlobalDrugsCount(String updatedTime, boolean discarded,
+			String searchTerm, String category, Boolean searchByGenericName) {
+		Long response = null;
+		try {
+			SearchQuery searchQuery = null;
+			if (searchByGenericName) {
+				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, 0, 0, updatedTime, discarded, null,
+						searchTerm, null, category, null, "genericNames.name");
+			} else {
+				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, 0, 0, updatedTime, discarded, null,
+						searchTerm, null, category, null, "drugName");
+			}
+			//response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			response = elasticsearchTemplate.count(searchQuery, ESDrugDocument.class);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+
+	private Long getCustomDrugsCount(String doctorId, String locationId,
+			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category,
+			Boolean searchByGenericName) {
+		Long response = null;
+		try {
+			if (doctorId == null)
+				response = 0l;
+			else {
+				SearchQuery searchQuery = null;
+				if (searchByGenericName) {
+					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId,
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+				} else {
+					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId,
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+				}
+				response = elasticsearchTemplate.count(searchQuery, ESDrugDocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+	
+	private Long getCustomGlobalDrugsCount(String doctorId, String locationId,
+			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category,
+			Boolean searchByGenericName) {
+		Long response = null;
+		try {
+			SearchQuery searchQuery = null;
+
+			if (searchByGenericName) {
+				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, 0, 0, doctorId, locationId,
+						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null,
+						"genericNames.name");
+			} else {
+				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, 0, 0, doctorId, locationId,
+						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
+			}
+
+			response = elasticsearchTemplate.count(searchQuery, ESDrugDocument.class);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+	
+	private Long getFavouritesDrugsCount(String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
+			Boolean searchByGenericName) {
+		Long response = null;
+		try {
+			
+			if (doctorId == null)
+				response = 0l;
+			else {
+				SearchQuery searchQuery = null;
+
+				if (searchByGenericName) {
+					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId,
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+				} else {
+					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId,
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+				}
+
+				 response = elasticsearchTemplate.count(searchQuery,
+						ESDrugDocument.class);
+
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+	
+	private Long getCustomGlobalDrugsForWebCount( String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
+			Boolean searchByGenericName) {
+		Long response = null;
+		try {
+			
+			if (doctorId == null)
+				response = 0l;
+			else {
+				SearchQuery searchQuery = null;
+
+				if (searchByGenericName) {
+					searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, 0, 0, doctorId, locationId,
+							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null,
+							"genericNames.name");
+				} else {
+					searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, 0, 0, doctorId, locationId,
+							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
+				}
+
+				response = elasticsearchTemplate.count(searchQuery,ESDrugDocument.class);
+
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
 }

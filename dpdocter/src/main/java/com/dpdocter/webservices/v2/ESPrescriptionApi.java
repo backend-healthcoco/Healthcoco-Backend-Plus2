@@ -24,7 +24,7 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
+@Component(value = "ESPrescriptionApiV2")
 @Path(PathProxy.SOLR_PRESCRIPTION_BASEURL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -51,11 +51,16 @@ public class ESPrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-
+		// Hack for ios
+		searchByGenericName = false;
+		//
 		List<?> drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
 				updatedTime, discarded, searchTerm, category, searchByGenericName);
+		
+		long drugCount = esPrescriptionService.drugCount(range, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
 		Response<Object> response = new Response<Object>();
 		response.setDataList(drugDocuments);
+		response.setData(drugCount);
 		return response;
 	}
 
