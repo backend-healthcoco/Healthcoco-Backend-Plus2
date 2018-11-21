@@ -81,7 +81,6 @@ import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.beans.UserReminders;
-import com.dpdocter.beans.Vaccine;
 import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
@@ -216,7 +215,6 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
-import common.util.web.DateUtil;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
@@ -4586,7 +4584,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 
-		vaccineCollections =vaccineRepository.findBypatientdoctorlocationhospital(new ObjectId(request.getUserId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+		vaccineCollections = vaccineRepository.findBypatientdoctorlocationhospital(new ObjectId(request.getUserId()),
+				new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+				new ObjectId(request.getHospitalId()));
 		if (vaccineCollections == null) {
 			vaccineCollections = new ArrayList<>();
 			List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository
@@ -4611,9 +4611,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 				vaccineCollections.add(vaccineCollection);
 			}
-		}
-		else
-		{
+		} else {
 			for (VaccineCollection vaccineCollection : vaccineCollections) {
 				DateTime dueDate = new DateTime(calendar);
 				dueDate.plusWeeks(vaccineCollection.getPeriodTime());
@@ -4627,11 +4625,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	public Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId) {
 		Boolean response = false;
-		DoctorClinicProfileCollection doctordoctorClinicProfile = doctorClinicProfileRepository
+		DoctorClinicProfileCollection doctorClinicProfile = doctorClinicProfileRepository
 				.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
-		if (doctordoctorClinicProfile != null) {
-			doctordoctorClinicProfile.setDefaultDoctorId(new ObjectId(defaultDoctorId));
+		if (doctorClinicProfile != null) {
+			doctorClinicProfile.setDefaultDoctorId(new ObjectId(defaultDoctorId));
+			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
 		}
+		response = true;
+
 		return response;
 	}
 
