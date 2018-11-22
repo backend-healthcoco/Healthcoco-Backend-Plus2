@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import java.util.Date;
 
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
@@ -60,8 +61,14 @@ public class AppointmentRequest {
 	private long checkedOutAt = 0;
 
 	private String category;
-	
+
 	private String cancelledByProfile;
+
+	private String gender;
+
+	private DOB dob;
+
+	private Integer age;
 
 	public String getAppointmentId() {
 		return appointmentId;
@@ -290,6 +297,30 @@ public class AppointmentRequest {
 
 	public void setCancelledByProfile(String cancelledByProfile) {
 		this.cancelledByProfile = cancelledByProfile;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
 	}
 
 }
