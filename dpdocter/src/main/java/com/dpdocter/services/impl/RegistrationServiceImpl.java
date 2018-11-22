@@ -4571,7 +4571,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	@SuppressWarnings("unused")
 	@Async
 	@Transactional
 	private void createImmunisationChart(RegisteredPatientDetails request) {
@@ -4613,9 +4612,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 		} else {
 			for (VaccineCollection vaccineCollection : vaccineCollections) {
-				DateTime dueDate = new DateTime(calendar);
-				dueDate.plusWeeks(vaccineCollection.getPeriodTime());
-				vaccineCollection.setDueDate(dueDate.toDate());
+				if (vaccineCollection.getPeriodTime() != null) {
+					DateTime dueDate = new DateTime(calendar);
+					dueDate.plusWeeks(vaccineCollection.getPeriodTime());
+					vaccineCollection.setDueDate(dueDate.toDate());
+				}
 			}
 		}
 
