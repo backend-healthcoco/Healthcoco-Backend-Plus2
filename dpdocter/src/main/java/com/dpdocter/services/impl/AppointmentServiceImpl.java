@@ -1156,6 +1156,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			patientRegistrationRequest.setDoctorId(request.getDoctorId());
 			patientRegistrationRequest.setLocationId(request.getLocationId());
 			patientRegistrationRequest.setHospitalId(request.getHospitalId());
+			patientRegistrationRequest.setGender(request.getGender());
+			patientRegistrationRequest.setDob(request.getDob());
+			patientRegistrationRequest.setAge(request.getAge());
 			RegisteredPatientDetails patientDetails = null;
 			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
 			if (patientDetails != null) {
@@ -1177,6 +1180,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				patientRegistrationRequest.setUserId(request.getPatientId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
+				patientRegistrationRequest.setGender(request.getGender());
+				patientRegistrationRequest.setDob(request.getDob());
+				patientRegistrationRequest.setAge(request.getAge());
 				RegisteredPatientDetails patientDetails = registrationService
 						.registerExistingPatient(patientRegistrationRequest, null);
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
