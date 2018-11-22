@@ -8,10 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EquivalentQuantities;
-import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
+import com.dpdocter.enums.LevelType;
 
 @Document(collection = "recipe_cl")
 public class RecipeCollection extends GenericCollection {
@@ -77,6 +77,9 @@ public class RecipeCollection extends GenericCollection {
 
 	@Field
 	private Double cost = 0.0;
+
+	@Field
+	private LevelType costType;
 
 	@Field
 	private String meal;
@@ -453,6 +456,14 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setCourse(List<String> course) {
 		this.course = course;
+	}
+
+	public LevelType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(LevelType costType) {
+		this.costType = costType;
 	}
 
 }

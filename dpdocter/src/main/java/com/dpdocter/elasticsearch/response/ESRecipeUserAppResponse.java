@@ -26,6 +26,8 @@ public class ESRecipeUserAppResponse {
 	private MealQuantity protein;
 
 	private MealQuantity carbohydreate;
+	
+	
 
 	public String getId() {
 		return id;

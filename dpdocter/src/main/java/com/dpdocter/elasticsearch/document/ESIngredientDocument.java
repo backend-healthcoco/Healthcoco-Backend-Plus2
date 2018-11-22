@@ -11,6 +11,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
+import com.dpdocter.enums.LevelType;
 
 @Document(indexName = "ingredients_in", type = "ingredients")
 public class ESIngredientDocument {
@@ -37,6 +38,12 @@ public class ESIngredientDocument {
 
 	@Field(type = FieldType.String)
 	private String hospitalId;
+
+	@Field(type = FieldType.Double)
+	private Double cost = 0.0;
+
+	@Field(type = FieldType.String)
+	private LevelType costType;
 
 	@Field(type = FieldType.String)
 	private String note;
@@ -255,5 +262,6 @@ public class ESIngredientDocument {
 	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
 	}
+	
 
 }
