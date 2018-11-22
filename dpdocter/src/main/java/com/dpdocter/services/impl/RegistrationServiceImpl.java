@@ -4677,7 +4677,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-<<<<<<< HEAD
+
 	@Override
 	public Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId) {
 		Boolean response = false;
@@ -4766,6 +4766,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 	*/
 	
+
 	@Async
 	@Transactional
 	private void createImmunisationChart(RegisteredPatientDetails request)
@@ -4809,9 +4810,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		else
 		{
 			for (VaccineCollection vaccineCollection : vaccineCollections) {
-				DateTime dueDate = new DateTime(calendar);
-				dueDate.plusWeeks(vaccineCollection.getPeriodTime());
-				vaccineCollection.setDueDate(dueDate.toDate());
+				if (vaccineCollection.getPeriodTime() != null) {
+					DateTime dueDate = new DateTime(calendar);
+					dueDate.plusWeeks(vaccineCollection.getPeriodTime());
+					vaccineCollection.setDueDate(dueDate.toDate());
+				}
 			}
 		}
 		
