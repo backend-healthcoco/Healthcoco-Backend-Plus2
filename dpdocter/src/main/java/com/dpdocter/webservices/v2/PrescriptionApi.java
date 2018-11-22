@@ -36,7 +36,7 @@ import io.swagger.annotations.ApiOperation;
 public class PrescriptionApi {
 
 	private static Logger logger = Logger.getLogger(PrescriptionApi.class.getName());
-	
+
 	@Autowired
 	private PrescriptionServices prescriptionServices;
 
@@ -63,24 +63,27 @@ public class PrescriptionApi {
 		response.setDataList(prescriptions);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrescriptionUrls.SEARCH_DRUGS)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SEARCH_DRUGS, notes = PathProxy.PrescriptionUrls.SEARCH_DRUGS)
-	public Response<Drug> searchDrug( @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+	public Response<Object> searchDrug(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm) {
 
-		if (DPDoctorUtils.anyStringEmpty(doctorId,locationId,hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		List<Drug> drugDocuments = prescriptionServices.getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<Drug> response = new Response<Drug>();
+		List<Drug> drugDocuments = prescriptionServices.getCustomGlobalDrugs(page, size, doctorId, locationId,
+				hospitalId, updatedTime, discarded, searchTerm);
+		Response<Object> response = new Response<Object>();
+		response.setData(prescriptionServices.countCustomGlobalDrugs(doctorId, locationId, hospitalId, updatedTime,
+				discarded, searchTerm));
 		response.setDataList(drugDocuments);
 		return response;
 	}

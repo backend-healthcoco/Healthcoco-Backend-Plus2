@@ -46,6 +46,9 @@ public interface PrescriptionServices {
 	List<Drug> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded, String searchTerm);
 
+	Integer countCustomGlobalDrugs(String doctorId, String locationId, String hospitalId, String updatedTime,
+			boolean discarded, String searchTerm);
+
 	/*List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId);
 
 	Prescription getPrescriptionById(String prescriptionId);
