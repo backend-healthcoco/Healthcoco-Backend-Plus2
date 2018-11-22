@@ -12,6 +12,7 @@ import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeAddItem;
+import com.dpdocter.enums.LevelType;
 
 @Document(indexName = "recipes_in", type = "recipes")
 public class ESRecipeDocument {
@@ -38,10 +39,13 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private List<RecipeAddItem> excludeIngredients;
+
 	@Field(type = FieldType.String)
 	private String locationId;
+
 	@Field(type = FieldType.String)
 	private String doctorId;
+
 	@Field(type = FieldType.String)
 	private String hospitalId;
 
@@ -77,6 +81,9 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Double)
 	private Double cost = 0.0;
+
+	@Field(type = FieldType.String)
+	private LevelType costType;
 
 	@Field(type = FieldType.String)
 	private String meal;
@@ -479,6 +486,5 @@ public class ESRecipeDocument {
 	public void setCuisine(List<String> cuisine) {
 		this.cuisine = cuisine;
 	}
-	
 
 }

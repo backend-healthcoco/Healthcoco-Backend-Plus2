@@ -11,6 +11,7 @@ import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
+import com.dpdocter.enums.LevelType;
 
 @Document(collection = "ingredient_cl")
 public class IngredientCollection extends GenericCollection {
@@ -37,6 +38,12 @@ public class IngredientCollection extends GenericCollection {
 
 	@Field
 	private ObjectId hospitalId;
+
+	@Field
+	private Double cost = 0.0;
+
+	@Field
+	private LevelType costType;
 
 	@Field
 	private String note;
@@ -254,6 +261,22 @@ public class IngredientCollection extends GenericCollection {
 
 	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
 		this.otherNutrients = otherNutrients;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public LevelType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(LevelType costType) {
+		this.costType = costType;
 	}
 
 }

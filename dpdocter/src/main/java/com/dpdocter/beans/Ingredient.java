@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.LevelType;
 
 public class Ingredient extends GenericCollection {
 
@@ -15,6 +16,10 @@ public class Ingredient extends GenericCollection {
 	private List<IngredientAddItem> nutrients;
 
 	private String name;
+	
+	private Double cost = 0.0;
+
+	private LevelType costType;
 
 	private String locationId;
 
@@ -224,6 +229,22 @@ public class Ingredient extends GenericCollection {
 
 	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public LevelType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(LevelType costType) {
+		this.costType = costType;
 	}
 
 }

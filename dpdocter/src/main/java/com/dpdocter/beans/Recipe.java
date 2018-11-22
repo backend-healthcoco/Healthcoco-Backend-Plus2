@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.LevelType;
 
 public class Recipe extends GenericCollection {
 
@@ -44,8 +45,6 @@ public class Recipe extends GenericCollection {
 
 	private Integer forMember = 0;
 
-	private Double cost = 0.0;
-
 	private String meal;
 
 	private List<String> cuisine;
@@ -57,6 +56,10 @@ public class Recipe extends GenericCollection {
 	private String doctorId;
 
 	private String hospitalId;
+
+	private Double cost = 0.0;
+
+	private LevelType costType;
 
 	private Integer preparationTime = 0;
 
@@ -198,14 +201,6 @@ public class Recipe extends GenericCollection {
 
 	public void setForMember(Integer forMember) {
 		this.forMember = forMember;
-	}
-
-	public Double getCost() {
-		return cost;
-	}
-
-	public void setCost(Double cost) {
-		this.cost = cost;
 	}
 
 	public String getMeal() {
@@ -414,6 +409,22 @@ public class Recipe extends GenericCollection {
 
 	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public LevelType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(LevelType costType) {
+		this.costType = costType;
 	}
 
 }

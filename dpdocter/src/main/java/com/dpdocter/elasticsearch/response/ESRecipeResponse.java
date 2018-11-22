@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
+import com.dpdocter.enums.LevelType;
 import com.dpdocter.response.RecipeItemResponse;
 
 public class ESRecipeResponse {
@@ -28,6 +29,8 @@ public class ESRecipeResponse {
 	private String direction;
 
 	private Double cost = 0.0;
+
+	private LevelType costType;
 
 	private MealQuantity fiber;
 
@@ -219,4 +222,11 @@ public class ESRecipeResponse {
 		this.cost = cost;
 	}
 
+	public LevelType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(LevelType costType) {
+		this.costType = costType;
+	}
 }
