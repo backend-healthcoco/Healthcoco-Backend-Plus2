@@ -63,7 +63,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 		try {
 			
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-					.must(QueryBuilders.matchQuery("doctorSlugUrl", doctorSlugUrl));
+					.must(QueryBuilders.termsQuery("doctorSlugUrl", doctorSlugUrl));
 
 			List<ESDoctorDocument> esDoctorDocuments = elasticsearchTemplate.queryForList(
 					new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
