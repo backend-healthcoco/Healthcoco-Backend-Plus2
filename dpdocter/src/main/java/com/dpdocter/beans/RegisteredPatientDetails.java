@@ -332,6 +332,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 				+ locationId + ", hospitalId=" + hospitalId + ", PID=" + PID + ", colorCode=" + colorCode
 				+ ", referredBy=" + referredBy + ", isPartOfClinic=" + isPartOfClinic + ", isPartOfConsultantDoctor="
 				+ isPartOfConsultantDoctor + ", backendPatientId=" + backendPatientId + ", consultantDoctorIds="
-				+ consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + ", PNUM=" + PNUM + "]";
+				+ consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + ", PNUM=" + PNUM
+				+ ", userNutritionSubscriptions=" + userNutritionSubscriptions + ", isChild=" + isChild
+				+ ", fatherName=" + fatherName + ", motherName=" + motherName + "]";
 	}
 }
