@@ -25,6 +25,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.GrowthChartRepository;
 import com.dpdocter.repository.VaccineRepository;
+import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
@@ -161,6 +162,53 @@ public class PaediatricServiceImpl implements PaediatricService{
 				response = new VaccineResponse();
 				 BeanUtil.map(vaccineCollection, response);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean addEditMultipleVaccine(List<VaccineRequest> requests) {
+		Boolean response = false;
+		VaccineCollection vaccineCollection = null;
+		try {
+			for (VaccineRequest request : requests) {
+				if (request.getId() != null) {
+					vaccineCollection = vaccineRepository.findOne(new ObjectId(request.getId()));
+				} else {
+					vaccineCollection = new VaccineCollection();
+				}
+				BeanUtil.map(request, vaccineCollection);
+				vaccineCollection = vaccineRepository.save(vaccineCollection);
+				response = true;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public Boolean addEditMultipleVaccineStatus(MultipleVaccineEditRequest request) {
+		Boolean response = false;
+		VaccineCollection vaccineCollection = null;
+		try {
+			for (String id : request.getIds()) {
+				if (id != null) {
+					vaccineCollection = vaccineRepository.findOne(new ObjectId(id));
+					vaccineCollection.setStatus(request.getStatus());
+					vaccineCollection = vaccineRepository.save(vaccineCollection);
+					response = true;
+				}
+
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

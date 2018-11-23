@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
@@ -98,6 +99,33 @@ public class PaediatricAPI {
 	}
 
 
+	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE)
+	@POST
+	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE, notes = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE)
+	public Response<Boolean> addEditVaccinesMultiple(List<VaccineRequest> requests) {
+		if (requests == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+	//	VaccineResponse vaccineResponse = paediatricService.addEditVaccine(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(paediatricService.addEditMultipleVaccine(requests));
+		return response;
+	}
+	
+	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE_STATUS)
+	@POST
+	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE_STATUS, notes = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE_STATUS)
+	public Response<Boolean> addEditVaccinesMultipleStatus(MultipleVaccineEditRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+	//	VaccineResponse vaccineResponse = paediatricService.addEditVaccine(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(paediatricService.addEditMultipleVaccineStatus(request));
+		return response;
+	}
 	
 	
 }
