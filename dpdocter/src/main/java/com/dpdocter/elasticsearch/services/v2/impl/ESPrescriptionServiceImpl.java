@@ -140,8 +140,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			Boolean searchByGenericName) {
 		List<DrugDocument> response = null;
 		try {
-			if (page > 0)
-				return new ArrayList<DrugDocument>();
+//			if (page > 0)
+//				return new ArrayList<DrugDocument>();
 			if (doctorId == null)
 				response = new ArrayList<DrugDocument>();
 			else {

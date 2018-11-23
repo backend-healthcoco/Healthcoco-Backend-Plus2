@@ -33,6 +33,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private int patientCounter = 1;
 
+	private String doctorSlugURL;
+	
 	private List<String> appointmentBookingNumber;
 
 	private ConsultationFee consultationFee;
@@ -317,19 +319,27 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.hasBillingAccess = hasBillingAccess;
 	}
 
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		this.doctorSlugURL = doctorSlugURL;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", discarded=" + discarded
-				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
-				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
-				+ ", revisitConsultationFee=" + revisitConsultationFee + ", appointmentSlot=" + appointmentSlot
-				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
-				+ ", noOfRecommenations=" + noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed="
-				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user
-				+ ", packageType=" + packageType + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess="
-				+ hasBillingAccess + ", iskiosk=" + iskiosk + "]";
+				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", doctorSlugURL="
+				+ doctorSlugURL + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee="
+				+ consultationFee + ", revisitConsultationFee=" + revisitConsultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", timeZone="
+				+ timeZone + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount
+				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", location=" + location + ", hospital=" + hospital
+				+ ", doctor=" + doctor + ", user=" + user + ", packageType=" + packageType + ", hasLoginAccess="
+				+ hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + ", iskiosk=" + iskiosk
+				+ ", isNutritionist=" + isNutritionist + ", isSuperAdmin=" + isSuperAdmin + "]";
 	}
-
 }
