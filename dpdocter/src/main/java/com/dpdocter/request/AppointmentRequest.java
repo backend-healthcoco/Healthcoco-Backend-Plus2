@@ -70,6 +70,8 @@ public class AppointmentRequest {
 
 	private Integer age;
 
+	private Boolean isChild = false;
+
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -288,7 +290,9 @@ public class AppointmentRequest {
 				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
 				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + ", status=" + status + ", waitedFor="
 				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
-				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + "]";
+				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", cancelledByProfile="
+				+ cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", isChild=" + isChild
+				+ "]";
 	}
 
 	public String getCancelledByProfile() {
@@ -321,6 +325,14 @@ public class AppointmentRequest {
 
 	public void setAge(Integer age) {
 		this.age = age;
+	}
+
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
 	}
 
 }
