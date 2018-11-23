@@ -3,7 +3,6 @@ package com.dpdocter.response;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
@@ -73,8 +72,22 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private Boolean iskiosk = false;
 
-	public Boolean getHasLoginAccess() {
-		return hasLoginAccess;
+	private Boolean isNutritionist = false;
+
+	private Boolean isSuperAdmin = false;
+
+	private Boolean isVaccinationModuleOn = false;
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
 	}
 
 	public void setHasLoginAccess(Boolean hasLoginAccess) {
@@ -312,6 +325,20 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.iskiosk = iskiosk;
 	}
 
-	
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public Boolean getIsVaccinationModuleOn() {
+		return isVaccinationModuleOn;
+	}
+
+	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
+		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
 
 }

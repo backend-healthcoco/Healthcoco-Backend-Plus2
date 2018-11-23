@@ -1,7 +1,5 @@
 package com.dpdocter.response;
 
-
-
 import java.util.List;
 
 import com.dpdocter.beans.AppointmentSlot;
@@ -16,15 +14,15 @@ import com.dpdocter.enums.DoctorFacility;
 
 public class UserLocationWithDoctorClinicProfile {
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private UserCollection user;
+	private UserCollection user;
 
-    private DoctorCollection doctor;
-    
-    private String hospitalId;
+	private DoctorCollection doctor;
+
+	private String hospitalId;
 
 	private String clinicAddress;
 
@@ -47,7 +45,7 @@ public class UserLocationWithDoctorClinicProfile {
 	private ConsultationFee consultationFee;
 
 	private ConsultationFee revisitConsultationFee;
-	
+
 	private AppointmentSlot appointmentSlot;
 
 	private List<WorkingSchedule> workingSchedules;
@@ -87,10 +85,12 @@ public class UserLocationWithDoctorClinicProfile {
 	private Boolean isDoctorListed = true;
 
 	private long rankingCount = 0;
-	
+
 	private Boolean isSendBirthdaySMS = true;
-	
+
 	private Boolean isDoctorRecommended = false;
+
+	private Boolean isVaccinationModuleOn = false;
 
 	public String getDoctorId() {
 		return doctorId;
@@ -394,6 +394,14 @@ public class UserLocationWithDoctorClinicProfile {
 
 	public void setIsDoctorRecommended(Boolean isDoctorRecommended) {
 		this.isDoctorRecommended = isDoctorRecommended;
+	}
+
+	public Boolean getIsVaccinationModuleOn() {
+		return isVaccinationModuleOn;
+	}
+
+	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
+		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
 	@Override

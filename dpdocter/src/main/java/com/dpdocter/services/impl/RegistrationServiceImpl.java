@@ -4785,15 +4785,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		
 		vaccineCollections =vaccineRepository.findBypatientdoctorlocationhospital(new ObjectId(request.getUserId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
-		//System.out.println("Request :: " + request);
-		//System.out.println("Date :: " + calendar);
 		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
-		//System.out.println("User Collection :: " + userCollection);
 		vaccineCollections = vaccineRepository.findBypatientdoctorlocationhospital(new ObjectId(request.getUserId()),
 				new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 				new ObjectId(request.getHospitalId()));
-		//System.out.println("Vaccine Collection :: " + userCollection);
-		if (vaccineCollections == null) {
+	
+		if (vaccineCollections == null || vaccineCollections.isEmpty()) {
 			vaccineCollections = new ArrayList<>();
 			List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository
 					.findAll();
@@ -4815,24 +4812,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 				if (userCollection != null) {
 					vaccineCollection.setCreatedBy(userCollection.getFirstName());
 				}
-			//	System.out.println("Under Loop New Single Vaccine :: " +vaccineCollection);
 				vaccineCollections.add(vaccineCollection);
 			}
 		}
-		else
-		{
+		else {
 			for (VaccineCollection vaccineCollection : vaccineCollections) {
 				if (vaccineCollection.getPeriodTime() != null) {
 					DateTime dueDate = new DateTime(calendar);
 					dueDate.plusWeeks(vaccineCollection.getPeriodTime());
 					vaccineCollection.setDueDate(dueDate.toDate());
-				//	System.out.println("Under Loop Updated Single Vaccine :: " +vaccineCollection);
 				}
 			}
 		}
-		
 		vaccineRepository.save(vaccineCollections);
 	}
-	
-	
 }
