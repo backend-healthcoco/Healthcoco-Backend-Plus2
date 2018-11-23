@@ -638,13 +638,13 @@ public class ContactsServiceImpl implements ContactsService {
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
 						Aggregation.unwind("user"), Aggregation.match(criteria),
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-						Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+						Aggregation.sort(Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-						Aggregation.sort(Direction.DESC, "createdTime"));
+						Aggregation.sort(Direction.DESC, "updatedTime"));
 
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);
