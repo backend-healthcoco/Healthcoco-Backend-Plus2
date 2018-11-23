@@ -197,9 +197,12 @@ public class VaccineCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "VaccineCollection [id=" + id + ", name=" + name + ", dueDate=" + dueDate + ", status=" + status
-				+ ", route=" + route + ", bodySite=" + bodySite + ", dosage=" + dosage + ", vaccineBrandId="
-				+ vaccineBrandId + ", givenDate=" + givenDate + ", age=" + age + "]";
+		return "VaccineCollection [id=" + id + ", vaccineId=" + vaccineId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", name=" + name
+				+ ", longName=" + longName + ", dueDate=" + dueDate + ", status=" + status + ", route=" + route
+				+ ", bodySite=" + bodySite + ", dosage=" + dosage + ", vaccineBrandId=" + vaccineBrandId
+				+ ", givenDate=" + givenDate + ", age=" + age + ", duration=" + duration + ", periodTime=" + periodTime
+				+ "]";
 	}
 
 }
