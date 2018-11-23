@@ -6,21 +6,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.v2.DrugType;
 import com.dpdocter.beans.InventoryItem;
+import com.dpdocter.beans.v2.DrugType;
 import com.dpdocter.elasticsearch.beans.v2.DrugDocument;
-import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.services.v2.ESPrescriptionService;
 import com.dpdocter.enums.Range;
@@ -155,11 +148,19 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				SearchQuery searchQuery = null;
 
 				if (searchByGenericName) {
-					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+					if(size > 0)
+						searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+					else
+						searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
+								updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
 				} else {
-					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+					if(size > 0)
+						searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+					else 
+						searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
+								updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
 
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
