@@ -18,7 +18,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.stereotype.Service;
 import com.dpdocter.beans.Slot;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.WorkingSchedule;
@@ -31,6 +34,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.AppointmentBookedSlotRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.WebClinicResponse;
 import com.dpdocter.response.WebDoctorClinicsResponse;
@@ -56,31 +60,40 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 	
 	@Autowired
 	private AppointmentService appointmentService;
+
+	@Autowired
+	MongoTemplate mongoTemplate;
 	
 	@Override
 	public WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl) {
 		WebDoctorClinicsResponse webDoctorClinicsResponse = null;
 		try {
+			Criteria criteria = new Criteria("doctorSlugUrl").is(doctorSlugUrl);
 			
-			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-					.must(QueryBuilders.termsQuery("doctorSlugUrl", doctorSlugUrl));
+			List<DoctorClinicProfileLookupResponse> clinicProfileCollections = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user"), 
+							Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+							Aggregation.unwind("doctor")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 
-			List<ESDoctorDocument> esDoctorDocuments = elasticsearchTemplate.queryForList(
-					new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
-
-			if (esDoctorDocuments != null) {
+			if (clinicProfileCollections != null) {
 				webDoctorClinicsResponse = new WebDoctorClinicsResponse();
 				List<WebClinicResponse> clinicResponses = new ArrayList<WebClinicResponse>();
-				for(ESDoctorDocument doctorDocument : esDoctorDocuments) {
-					if(webDoctorClinicsResponse.getDoctorId() == null) {
-						webDoctorClinicsResponse.setDoctorId(doctorDocument.getUserId());
+				for (DoctorClinicProfileLookupResponse doctorDocument : clinicProfileCollections) {
+					if (webDoctorClinicsResponse.getDoctorId() == null) {
+						webDoctorClinicsResponse.setDoctorId(doctorDocument.getDoctorId().toString());
 						webDoctorClinicsResponse.setDoctorSlugURL(doctorDocument.getDoctorSlugURL());
-						webDoctorClinicsResponse.setFirstName(doctorDocument.getTitle() +" "+ doctorDocument.getFirstName());
-						if (doctorDocument.getSpecialities() != null) {
+						webDoctorClinicsResponse
+								.setFirstName(doctorDocument.getUser().getTitle() + " " + doctorDocument.getUser().getFirstName());
+						if (doctorDocument.getDoctor().getSpecialities() != null) {
 							HashSet<String> specialities = new HashSet<String>();
 							HashSet<String> parentspecialities = new HashSet<String>();
-							for (String specialityId : doctorDocument.getSpecialities()) {
-								ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
+							for (ObjectId specialityId : doctorDocument.getDoctor().getSpecialities()) {
+								ESSpecialityDocument specialityCollection = esSpecialityRepository
+										.findOne(specialityId.toString());
 								if (specialityCollection != null) {
 									specialities.add(specialityCollection.getSuperSpeciality());
 									parentspecialities.add(specialityCollection.getSpeciality());
@@ -91,14 +104,14 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 						}
 					}
 					WebClinicResponse clinicResponse = new WebClinicResponse();
-					clinicResponse.setCity(doctorDocument.getCity());
-					clinicResponse.setCountry(doctorDocument.getCountry());
-					clinicResponse.setLocality(doctorDocument.getLocality());
-					clinicResponse.setLocationId(doctorDocument.getLocationId());
-					clinicResponse.setLocationName(doctorDocument.getLocationName());
-					clinicResponse.setPostalCode(doctorDocument.getPostalCode());
-					clinicResponse.setState(doctorDocument.getState());
-					clinicResponse.setStreetAddress(doctorDocument.getStreetAddress());
+					clinicResponse.setCity(doctorDocument.getLocation().getCity());
+					clinicResponse.setCountry(doctorDocument.getLocation().getCountry());
+					clinicResponse.setLocality(doctorDocument.getLocation().getLocality());
+					clinicResponse.setLocationId(doctorDocument.getLocation().getId().toString());
+					clinicResponse.setLocationName(doctorDocument.getLocation().getLocationName());
+					clinicResponse.setPostalCode(doctorDocument.getLocation().getPostalCode());
+					clinicResponse.setState(doctorDocument.getLocation().getState());
+					clinicResponse.setStreetAddress(doctorDocument.getLocation().getStreetAddress());
 					clinicResponses.add(clinicResponse);
 				}
 				webDoctorClinicsResponse.setClinics(clinicResponses);

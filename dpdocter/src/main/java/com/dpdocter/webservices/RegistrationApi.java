@@ -1202,7 +1202,7 @@ public class RegistrationApi {
 
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
 	@GET
-	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
+	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
 	public Response<Boolean> updatePatientNumber(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@PathParam("oldPatientId") String patientId, @QueryParam("newPatientId") String newPatientId,

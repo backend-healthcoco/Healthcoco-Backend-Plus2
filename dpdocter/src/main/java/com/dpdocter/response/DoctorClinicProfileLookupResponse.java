@@ -32,6 +32,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private int patientCounter = 1;
 
+	private String doctorSlugURL;
+	
 	private List<String> appointmentBookingNumber;
 
 	private ConsultationFee consultationFee;
@@ -77,30 +79,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private Boolean isSuperAdmin = false;
 
 	private Boolean isVaccinationModuleOn = false;
-
-	public Boolean getIsSuperAdmin() {
-		return isSuperAdmin;
-	}
-
-	public void setIsSuperAdmin(Boolean isSuperAdmin) {
-		this.isSuperAdmin = isSuperAdmin;
-	}
-
-	public Boolean getIsNutritionist() {
-		return isNutritionist;
-	}
-
-	public void setHasLoginAccess(Boolean hasLoginAccess) {
-		this.hasLoginAccess = hasLoginAccess;
-	}
-
-	public Boolean getHasBillingAccess() {
-		return hasBillingAccess;
-	}
-
-	public void setHasBillingAccess(Boolean hasBillingAccess) {
-		this.hasBillingAccess = hasBillingAccess;
-	}
 
 	public ObjectId getId() {
 		return id;
@@ -164,6 +142,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	public void setPatientCounter(int patientCounter) {
 		this.patientCounter = patientCounter;
+	}
+
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		this.doctorSlugURL = doctorSlugURL;
 	}
 
 	public List<String> getAppointmentBookingNumber() {
@@ -270,6 +256,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.location = location;
 	}
 
+	public HospitalCollection getHospital() {
+		return hospital;
+	}
+
+	public void setHospital(HospitalCollection hospital) {
+		this.hospital = hospital;
+	}
+
 	public DoctorCollection getDoctor() {
 		return doctor;
 	}
@@ -286,14 +280,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.user = user;
 	}
 
-	public HospitalCollection getHospital() {
-		return hospital;
-	}
-
-	public void setHospital(HospitalCollection hospital) {
-		this.hospital = hospital;
-	}
-
 	public String getPackageType() {
 		return packageType;
 	}
@@ -302,19 +288,20 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.packageType = packageType;
 	}
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", discarded=" + discarded
-				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
-				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
-				+ ", revisitConsultationFee=" + revisitConsultationFee + ", appointmentSlot=" + appointmentSlot
-				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
-				+ ", noOfRecommenations=" + noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed="
-				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user
-				+ ", packageType=" + packageType + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess="
-				+ hasBillingAccess + ", iskiosk=" + iskiosk + "]";
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
 	}
 
 	public Boolean getIskiosk() {
@@ -325,12 +312,20 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.iskiosk = iskiosk;
 	}
 
-	public Boolean getHasLoginAccess() {
-		return hasLoginAccess;
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
 	}
 
 	public void setIsNutritionist(Boolean isNutritionist) {
 		this.isNutritionist = isNutritionist;
+	}
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
 	}
 
 	public Boolean getIsVaccinationModuleOn() {
@@ -341,4 +336,20 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
+	@Override
+	public String toString() {
+		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", discarded=" + discarded
+				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", doctorSlugURL="
+				+ doctorSlugURL + ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee="
+				+ consultationFee + ", revisitConsultationFee=" + revisitConsultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility
+				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", timeZone="
+				+ timeZone + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount
+				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", location=" + location + ", hospital=" + hospital
+				+ ", doctor=" + doctor + ", user=" + user + ", packageType=" + packageType + ", hasLoginAccess="
+				+ hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + ", iskiosk=" + iskiosk
+				+ ", isNutritionist=" + isNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", isVaccinationModuleOn="
+				+ isVaccinationModuleOn + "]";
+	}
 }
