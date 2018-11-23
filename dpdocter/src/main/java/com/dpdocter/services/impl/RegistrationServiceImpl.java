@@ -843,6 +843,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCollection.setPID(request.getPID());
 					}
 					
+					if (!DPDoctorUtils.anyStringEmpty(request.getFatherName())) {
+						patientCollection.setFatherName(request.getFatherName());
+					}
+					
+					if (!DPDoctorUtils.anyStringEmpty(request.getMotherName())) {
+						patientCollection.setMotherName(request.getMotherName());
+					}
+					
 					patientCollection.setIsChild(request.getIsChild());
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");
@@ -4806,7 +4814,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				vaccineCollection.setDuration(masterBabyImmunizationCollection.getDuration());
 				vaccineCollection.setPeriodTime(masterBabyImmunizationCollection.getPeriodTime());
 				DateTime dueDate = new DateTime(calendar);
-				dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
+				dueDate = dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
 				vaccineCollection.setDueDate(dueDate.toDate());
 				vaccineCollection.setCreatedTime(new Date());
 				if (userCollection != null) {
@@ -4819,11 +4827,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			for (VaccineCollection vaccineCollection : vaccineCollections) {
 				if (vaccineCollection.getPeriodTime() != null) {
 					DateTime dueDate = new DateTime(calendar);
-					dueDate.plusWeeks(vaccineCollection.getPeriodTime());
+					dueDate = dueDate.plusWeeks(vaccineCollection.getPeriodTime());
 					vaccineCollection.setDueDate(dueDate.toDate());
 				}
 			}
 		}
 		vaccineRepository.save(vaccineCollections);
 	}
+
 }

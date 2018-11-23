@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.GrowthChart;
+import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
@@ -25,5 +26,9 @@ public interface PaediatricService {
 			String updatedTime);
 
 	List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId, String vaccineBrandId);
+
+	Boolean addEditMultipleVaccine(List<VaccineRequest> requests);
+
+	Boolean addEditMultipleVaccineStatus(MultipleVaccineEditRequest request);
 
 }
