@@ -466,7 +466,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			user.setFirstName(request.getLocalPatientName());
 			String uniqueUserName = generateUniqueUserNameService.generate(user);
 			userCollection.setUserName(uniqueUserName);
-			userCollection.setPassword(generateRandomAlphanumericString(10));
+			//userCollection.setPassword(generateRandomAlphanumericString(10));
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
 			userCollection.setIsActive(true);
 			userCollection.setCreatedTime(createdTime);
@@ -1324,7 +1324,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.getMappedResults();
 			if (patientCollectionResponses != null && !patientCollectionResponses.isEmpty())
 				patientCard = patientCollectionResponses.get(0);
-			System.out.println(patientCard.getImageUrl());
+			//System.out.println(patientCard.getImageUrl());
 			if (patientCard != null && patientCard.getUser() != null) {
 				Reference reference = null;
 				if (patientCard.getReference() != null) {
@@ -1551,7 +1551,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			localCalendar.setTime(new Date(registrationDate));
+			if(registrationDate != null)
+			{
+				localCalendar.setTime(new Date(registrationDate));
+			}
+			else
+			{
+				localCalendar.setTime(new Date());
+			}
+			
 			int currentDay = localCalendar.get(Calendar.DATE);
 			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 			int currentYear = localCalendar.get(Calendar.YEAR);
