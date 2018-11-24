@@ -2022,6 +2022,7 @@ public interface PathProxy {
 		public static final String GET_VACCINE_BY_ID = "vaccine/get/{id}";
 		public static final String GET_VACCINES = "vaccine/getList";
 		public static final String GET_VACCINE_BRAND_ASSOCIATION = "vaccine/getBrands";
+		public static final String GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION = "vaccine/getMultipleBrands";
 		public static final String ADD_EDIT_MULTIPLE_VACCINE = "vaccine/addEditMultiple";
 		public static final String ADD_EDIT_MULTIPLE_VACCINE_STATUS = "vaccine/addEditMultipleStatus";
 	}

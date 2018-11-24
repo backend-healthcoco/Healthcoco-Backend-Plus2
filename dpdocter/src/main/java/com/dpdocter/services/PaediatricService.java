@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.GrowthChart;
 import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
+import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 
@@ -30,5 +31,7 @@ public interface PaediatricService {
 	Boolean addEditMultipleVaccine(List<VaccineRequest> requests);
 
 	Boolean addEditMultipleVaccineStatus(MultipleVaccineEditRequest request);
+
+	List<GroupedVaccineBrandAssociationResponse> getGroupedVaccineBrandAssociation(List<String> vaccineIds);
 
 }

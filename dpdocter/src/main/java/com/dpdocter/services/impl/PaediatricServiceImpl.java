@@ -1,8 +1,10 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.lucene.search.grouping.AbstractGroupFacetCollector.GroupedFacetResult;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -27,6 +29,7 @@ import com.dpdocter.repository.GrowthChartRepository;
 import com.dpdocter.repository.VaccineRepository;
 import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
+import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
@@ -290,29 +293,35 @@ public class PaediatricServiceImpl implements PaediatricService{
 	
 	@Override
 	@Transactional
-	public List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId , String vaccineBrandId)
-	{
-		
+	public List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId, String vaccineBrandId) {
+
 		List<VaccineBrandAssociationResponse> responses = null;
 		try {
 			Criteria criteria = new Criteria();
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(vaccineId)) {
 				criteria.and("vaccineId").is(new ObjectId(vaccineId));
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(vaccineBrandId)) {
 				criteria.and("vaccineBrandId").is(new ObjectId(vaccineBrandId));
 			}
-			
-			responses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(
-							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-					VaccineBrandAssociationCollection.class, VaccineBrandAssociationResponse.class).getMappedResults();
+
+			responses = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$vaccineBrand")
+													.append("preserveNullAndEmptyArrays", true))),
+									Aggregation.lookup("vaccine_cl", "vaccineId", "_id", "vaccine"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$vaccine").append("preserveNullAndEmptyArrays",
+													true))),
+									Aggregation.match(criteria),
+									Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+							VaccineBrandAssociationCollection.class, VaccineBrandAssociationResponse.class)
+					.getMappedResults();
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -321,5 +330,55 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 		return responses;
 	}
+	
+	
+	@Override
+	@Transactional
+	public List<GroupedVaccineBrandAssociationResponse> getGroupedVaccineBrandAssociation(List<String> vaccineIds)
+	{
+		List<ObjectId> vaccineObjectIds = null;
+		List<GroupedVaccineBrandAssociationResponse> responses = null;
+		try {
+			Criteria criteria = new Criteria();
+			
+			
+			if(vaccineIds != null)
+			{
+				vaccineObjectIds = new ArrayList<>();
+				for (String id : vaccineIds) {
+					vaccineObjectIds.add(new ObjectId(id));
+				}
+			}
+			
+			if (vaccineIds != null) {
+				criteria.and("vaccineId").in(vaccineObjectIds);
+			}
+			
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", new BasicDBObject("name", "$vaccine.name"))
+							.append("vaccine", new BasicDBObject("$push", "$vaccine")).append("name",
+									new BasicDBObject("$first", "$vaccine.name"))
+							.append("id",
+									new BasicDBObject("$first", "$vaccine.id"))));
+			
+			responses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
+											true))),
+							Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+					VaccineBrandAssociationCollection.class, GroupedVaccineBrandAssociationResponse.class).getMappedResults();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return responses;
+	}
+	
+	
+	
 	
 }

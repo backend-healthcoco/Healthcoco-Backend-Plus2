@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import com.dpdocter.beans.Vaccine;
 import com.dpdocter.beans.VaccineBrand;
 import com.dpdocter.collections.GenericCollection;
 
@@ -9,6 +10,7 @@ public class VaccineBrandAssociationResponse extends GenericCollection {
 	private String vaccineId;
 	private String vaccineBrandId;
 	private VaccineBrand vaccineBrand;
+	private Vaccine vaccine;
 	private String isActive;
 
 	public String getId() {
@@ -49,6 +51,14 @@ public class VaccineBrandAssociationResponse extends GenericCollection {
 
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+
+	public Vaccine getVaccine() {
+		return vaccine;
+	}
+
+	public void setVaccine(Vaccine vaccine) {
+		this.vaccine = vaccine;
 	}
 
 }
