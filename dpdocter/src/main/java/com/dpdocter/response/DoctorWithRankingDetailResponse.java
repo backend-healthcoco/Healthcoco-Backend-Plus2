@@ -20,6 +20,10 @@ public class DoctorWithRankingDetailResponse {
 	
 	private int rankingCount = 0;
 		
+	private Double pointIfActive = 0.0;
+	
+	private Double pointIfAdvance = 0.0;
+	
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -92,12 +96,28 @@ public class DoctorWithRankingDetailResponse {
 		this.experienceInYear = experienceInYear;
 	}
 
+	public Double getPointIfActive() {
+		return pointIfActive;
+	}
+
+	public void setPointIfActive(Double pointIfActive) {
+		this.pointIfActive = pointIfActive;
+	}
+
+	public Double getPointIfAdvance() {
+		return pointIfAdvance;
+	}
+
+	public void setPointIfAdvance(Double pointIfAdvance) {
+		this.pointIfAdvance = pointIfAdvance;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorWithRankingDetailResponse [doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", resourceName=" + resourceName + ", experienceInYear=" + experienceInYear + ", rxCount=" + rxCount
 				+ ", patientCount=" + patientCount + ", totalCount=" + totalCount + ", noOfLikes=" + noOfLikes
-				+ ", rankingCount=" + rankingCount + "]";
+				+ ", rankingCount=" + rankingCount + ", pointIfActive=" + pointIfActive + ", pointIfAdvance="
+				+ pointIfAdvance + "]";
 	}
-
 }
