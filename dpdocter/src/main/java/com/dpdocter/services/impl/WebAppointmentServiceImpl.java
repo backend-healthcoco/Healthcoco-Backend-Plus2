@@ -9,15 +9,12 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -28,7 +25,6 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.exceptions.BusinessException;
@@ -44,9 +40,9 @@ import com.dpdocter.services.WebAppointmentService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
-
 @Service
-public class WebAppointmentServiceImpl implements WebAppointmentService {
+public class WebAppointmentServiceImpl implements WebAppointmentService{
+
 
 	@Autowired
 	ElasticsearchTemplate elasticsearchTemplate;
