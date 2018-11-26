@@ -160,6 +160,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 				vaccineCollection = new VaccineCollection();
 			}
 			BeanUtil.map(request, vaccineCollection);
+			vaccineCollection.setUpdatedTime(new Date());
 			vaccineCollection = vaccineRepository.save(vaccineCollection);
 			if(vaccineCollection != null){
 				response = new VaccineResponse();
@@ -185,6 +186,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 					vaccineCollection = new VaccineCollection();
 				}
 				BeanUtil.map(request, vaccineCollection);
+				vaccineCollection.setUpdatedTime(new Date());
 				vaccineCollection = vaccineRepository.save(vaccineCollection);
 				response = true;
 			}
@@ -206,6 +208,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 				if (id != null) {
 					vaccineCollection = vaccineRepository.findOne(new ObjectId(id));
 					vaccineCollection.setStatus(request.getStatus());
+					vaccineCollection.setUpdatedTime(new Date());
 					vaccineCollection = vaccineRepository.save(vaccineCollection);
 					response = true;
 				}
