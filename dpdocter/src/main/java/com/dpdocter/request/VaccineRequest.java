@@ -24,6 +24,8 @@ public class VaccineRequest {
 	private Date givenDate;
 	private Age age;
 	private String note;
+	private String duration;
+	private Integer periodTime;
 
 	public String getId() {
 		return id;
@@ -151,6 +153,22 @@ public class VaccineRequest {
 
 	public void setVaccineId(String vaccineId) {
 		this.vaccineId = vaccineId;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+
+	public Integer getPeriodTime() {
+		return periodTime;
+	}
+
+	public void setPeriodTime(Integer periodTime) {
+		this.periodTime = periodTime;
 	}
 
 }

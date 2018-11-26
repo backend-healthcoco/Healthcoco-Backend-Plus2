@@ -2,6 +2,8 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.VaccineBrand;
 import com.dpdocter.collections.GenericCollection;
@@ -27,6 +29,7 @@ public class VaccineResponse extends GenericCollection {
 	private VaccineBrand vaccineBrand;
 	private String note;
 	private String duration;
+	private Integer periodTime;
 
 	public String getId() {
 		return id;
@@ -162,6 +165,14 @@ public class VaccineResponse extends GenericCollection {
 
 	public void setVaccineId(String vaccineId) {
 		this.vaccineId = vaccineId;
+	}
+
+	public Integer getPeriodTime() {
+		return periodTime;
+	}
+
+	public void setPeriodTime(Integer periodTime) {
+		this.periodTime = periodTime;
 	}
 
 }
