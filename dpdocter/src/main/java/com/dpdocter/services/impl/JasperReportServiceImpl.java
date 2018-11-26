@@ -33,8 +33,6 @@ import net.sf.jasperreports.components.table.StandardTable;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRExpressionChunk;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -112,6 +110,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 			parameters.put("REPORT_CONNECTION", mongoConnection);
 			parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
+
+			if (!DPDoctorUtils.anyStringEmpty(fileName)) {
+				fileName = fileName.replaceAll("[^a-zA-Z0-9]", "");
+			}
+
 			JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin + 45, bottonMargin,
 					leftMargin + 28, rightMargin + 28, componentType, fileName);
 			JasperReport jasperReport = JasperCompileManager.compileReport(design);
@@ -247,7 +250,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 			dsr.setDatasetName("mongo-print-settings-dataset_1");
-
 			expression = new JRDesignExpression();
 			expression.setText("new net.sf.jasperreports.engine.JREmptyDataSource(1)");
 			dsr.setDataSourceExpression(expression);
@@ -268,8 +270,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			}
 		}
 
-		if (parameters.get("showHistory") != null && (boolean) parameters.get("showHistory"))
+		if (parameters.get("showHistory") != null && (boolean) parameters.get("showHistory")) {
 			createHistory(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
+		}
 
 		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())) {
 			if (parameters.get("clinicalNotes") != null)
@@ -522,8 +525,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$P{presentComplaint}", fieldWidth, false, 0,
 				false);
-		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{pastHistory}", fieldWidth, false, 0,
-				false);
+		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{pastHistory}", fieldWidth, false, 0, false);
 
 		if (showTitle) {
 			band = new JRDesignBand();
@@ -740,7 +742,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		reportElement.setComponent(listComponent);
 
 		band.addElement(reportElement);
-
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 	}
 
@@ -4629,8 +4630,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				false);
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
-		addItems(jasperDesign, columnWidth, "$P{SurgeryTitle}", "$P{surgeryTitle}", fieldWidth, false,
-				0, false);
+		addItems(jasperDesign, columnWidth, "$P{SurgeryTitle}", "$P{surgeryTitle}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{OperationalNotes}", "$P{operationalNotes}", fieldWidth, false, 0,
 				false);
 		addItems(jasperDesign, columnWidth, "$P{FinalDiagnosis}", "$P{finalDiagnosis}", fieldWidth, false, 0, false);
