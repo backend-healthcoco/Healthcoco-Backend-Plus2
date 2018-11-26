@@ -111,6 +111,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			parameters.put("REPORT_CONNECTION", mongoConnection);
 			parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 
+			if (!DPDoctorUtils.anyStringEmpty(fileName)) {
+				fileName = fileName.replaceAll("[^a-zA-Z0-9]", "");
+			}
 			JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin + 45, bottonMargin,
 					leftMargin + 28, rightMargin + 28, componentType, fileName);
 			JasperReport jasperReport = JasperCompileManager.compileReport(design);
@@ -246,7 +249,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 			dsr.setDatasetName("mongo-print-settings-dataset_1");
-
 			expression = new JRDesignExpression();
 			expression.setText("new net.sf.jasperreports.engine.JREmptyDataSource(1)");
 			dsr.setDataSourceExpression(expression);
@@ -267,8 +269,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			}
 		}
 
-		if (parameters.get("showHistory") != null && (boolean) parameters.get("showHistory"))
+		if (parameters.get("showHistory") != null && (boolean) parameters.get("showHistory")) {
 			createHistory(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
+		}
 
 		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())) {
 			if (parameters.get("clinicalNotes") != null)
@@ -738,7 +741,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		reportElement.setComponent(listComponent);
 
 		band.addElement(reportElement);
-
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 	}
 
