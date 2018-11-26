@@ -473,10 +473,11 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					Fields.field("address", "$patient.address"), Fields.field("profession", "$patient.profession"),
 					Fields.field("community", "$community"), Fields.field("noOfAdultMember", "$noOfAdultMember"),
 					Fields.field("noOfChildMember", "$noOfChildMember"), Fields.field("createdTime", "$createdTime"),
-					Fields.field("createdBy", "$createdBy"),Fields.field("dietType", "$dietType")));
+					Fields.field("createdBy", "$createdBy"), Fields.field("dietType", "$dietType")));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
+				secondCriteria.and("patient.userId").is(new ObjectId(patientId));
 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -487,17 +488,20 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 				secondCriteria.and("patient.locationId").is(new ObjectId(locationId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 				secondCriteria.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
-			if (updateTime > 0)
+			if (updateTime > 0) {
 				criteria.and("createdTime").lte(new Date(updateTime));
+			}
+
+			criteria.and("discarded").is(discarded);
 			Aggregation aggregation = null;
 			if (size > 0)
 
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), projectList,
 						Aggregation.sort(Sort.Direction.DESC, "createdTime"),
 
@@ -546,49 +550,49 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			List<DiseasesCollection> diseasesCollections = null;
 			DiseaseListResponse diseaseListResponse = null;
 			HistoryCollection historyCollection = historyRepository.findByAssessmentId(new ObjectId(assessmentId));
-			if(historyCollection!=null) {
-			response = new AssessmentFormHistoryResponse();
-			BeanUtil.map(historyCollection, response);
+			if (historyCollection != null) {
+				response = new AssessmentFormHistoryResponse();
+				BeanUtil.map(historyCollection, response);
 
-			if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
-				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAll(historyCollection.getFamilyhistory());
-				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-					for (DiseasesCollection diseasesCollection : diseasesCollections) {
-						diseaseListResponse = new DiseaseListResponse();
-						BeanUtil.map(diseasesCollection, diseaseListResponse);
-						diseaseListResponses.add(diseaseListResponse);
+				if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
+					diseaseListResponses = new ArrayList<DiseaseListResponse>();
+					diseasesCollections = diseasesRepository.findAll(historyCollection.getFamilyhistory());
+					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+						for (DiseasesCollection diseasesCollection : diseasesCollections) {
+							diseaseListResponse = new DiseaseListResponse();
+							BeanUtil.map(diseasesCollection, diseaseListResponse);
+							diseaseListResponses.add(diseaseListResponse);
+						}
 					}
-				}
 
-			}
-			response.setFamilyhistory(diseaseListResponses);
-			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
-				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
-				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-					for (DiseasesCollection diseasesCollection : diseasesCollections) {
-						diseaseListResponse = new DiseaseListResponse();
-						BeanUtil.map(diseasesCollection, diseaseListResponse);
-						diseaseListResponses.add(diseaseListResponse);
+				}
+				response.setFamilyhistory(diseaseListResponses);
+				if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
+					diseaseListResponses = new ArrayList<DiseaseListResponse>();
+					diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+						for (DiseasesCollection diseasesCollection : diseasesCollections) {
+							diseaseListResponse = new DiseaseListResponse();
+							BeanUtil.map(diseasesCollection, diseaseListResponse);
+							diseaseListResponses.add(diseaseListResponse);
+						}
 					}
+
 				}
+				response.setMedicalhistory(diseaseListResponses);
 
-			}
-			response.setMedicalhistory(diseaseListResponses);
-
-			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
-				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
-				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-					for (DiseasesCollection diseasesCollection : diseasesCollections) {
-						diseaseListResponse = new DiseaseListResponse();
-						BeanUtil.map(diseasesCollection, diseaseListResponse);
-						diseaseListResponses.add(diseaseListResponse);
+				if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
+					diseaseListResponses = new ArrayList<DiseaseListResponse>();
+					diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+						for (DiseasesCollection diseasesCollection : diseasesCollections) {
+							diseaseListResponse = new DiseaseListResponse();
+							BeanUtil.map(diseasesCollection, diseaseListResponse);
+							diseaseListResponses.add(diseaseListResponse);
+						}
 					}
-				}
 
-			}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -603,9 +607,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		try {
 			PatientMeasurementCollection measurementCollection = patientMeasurementRepository
 					.findByassessmentId(new ObjectId(assessmentId));
-			if(measurementCollection!=null) {
-			response = new PatientMeasurementInfo();
-			BeanUtil.map(measurementCollection, response);
+			if (measurementCollection != null) {
+				response = new PatientMeasurementInfo();
+				BeanUtil.map(measurementCollection, response);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -621,9 +625,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		try {
 			PatientFoodAndExcerciseCollection foodAndExcerciseCollection = patientFoodAndExerciseRepository
 					.findByassessmentId(new ObjectId(assessmentId));
-			if(foodAndExcerciseCollection!=null) {
-			response = new PatientFoodAndExcercise();
-			BeanUtil.map(foodAndExcerciseCollection, response);
+			if (foodAndExcerciseCollection != null) {
+				response = new PatientFoodAndExcercise();
+				BeanUtil.map(foodAndExcerciseCollection, response);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
