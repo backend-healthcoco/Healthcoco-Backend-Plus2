@@ -2,8 +2,6 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.VaccineBrand;
 import com.dpdocter.collections.GenericCollection;

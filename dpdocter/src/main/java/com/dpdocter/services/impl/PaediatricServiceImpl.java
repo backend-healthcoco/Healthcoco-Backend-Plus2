@@ -312,7 +312,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 									new CustomAggregationOperation(new BasicDBObject("$unwind",
 											new BasicDBObject("path", "$vaccineBrand")
 													.append("preserveNullAndEmptyArrays", true))),
-									Aggregation.lookup("vaccine_cl", "vaccineId", "_id", "vaccine"),
+									Aggregation.lookup("master_baby_immunization_cl", "vaccineId", "_id", "vaccine"),
 									new CustomAggregationOperation(new BasicDBObject("$unwind",
 											new BasicDBObject("path", "$vaccine").append("preserveNullAndEmptyArrays",
 													true))),
