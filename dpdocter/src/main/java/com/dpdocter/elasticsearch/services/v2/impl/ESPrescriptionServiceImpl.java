@@ -31,7 +31,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	private static Logger logger = Logger.getLogger(ESPrescriptionServiceImpl.class.getName());
 
-
 	@Autowired
 	ElasticsearchTemplate elasticsearchTemplate;
 
@@ -41,16 +40,13 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	@Autowired
 	InventoryService inventoryService;
 
-
-
 	@Override
 	public List<?> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<?> response = null;
 		List<ESDrugDocument> esDrugDocuments = null;
 		List<DrugDocument> drugDocuments = null;
-		if (page > 0)
-			return response;
+
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			searchTerm = searchTerm.toUpperCase();
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -148,17 +144,19 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				SearchQuery searchQuery = null;
 
 				if (searchByGenericName) {
-					if(size > 0)
+					if (size > 0)
 						searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+								updatedTime, discarded, "rankingCount", searchTerm, category, null,
+								"genericNames.name");
 					else
 						searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-								updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+								updatedTime, discarded, "rankingCount", searchTerm, category, null,
+								"genericNames.name");
 				} else {
-					if(size > 0)
+					if (size > 0)
 						searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 								updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
-					else 
+					else
 						searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 								updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
@@ -265,8 +263,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs)
-	{
+	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs) {
 
 		for (ESDrugDocument drug : drugs) {
 
@@ -286,7 +283,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs) {
-		List<DrugDocument> response= new ArrayList<>();
+		List<DrugDocument> response = new ArrayList<>();
 
 		for (DrugDocument drug : drugs) {
 
@@ -305,10 +302,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public Long drugCount(String range, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
+	public Long drugCount(String range, String doctorId, String locationId, String hospitalId, String updatedTime,
+			Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		Long response = null;
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			searchTerm = searchTerm.toUpperCase();
@@ -318,16 +315,20 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			response = getGlobalDrugsCount(updatedTime, discarded, searchTerm, category, searchByGenericName);
 			break;
 		case CUSTOM:
-			response = getCustomDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			response = getCustomDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,
+					category, searchByGenericName);
 			break;
 		case BOTH:
-			response = getCustomGlobalDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			response = getCustomGlobalDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,
+					category, searchByGenericName);
 			break;
 		case FAVOURITES:
-			response = getFavouritesDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			response = getFavouritesDrugsCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,
+					category, searchByGenericName);
 			break;
 		case WEBBOTH:
-			response = getCustomGlobalDrugsForWebCount(doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
+			response = getCustomGlobalDrugsForWebCount(doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm, category, searchByGenericName);
 			break;
 		default:
 			break;
@@ -335,9 +336,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 
 	}
-	
-	private Long getGlobalDrugsCount(String updatedTime, boolean discarded,
-			String searchTerm, String category, Boolean searchByGenericName) {
+
+	private Long getGlobalDrugsCount(String updatedTime, boolean discarded, String searchTerm, String category,
+			Boolean searchByGenericName) {
 		Long response = null;
 		try {
 			SearchQuery searchQuery = null;
@@ -348,7 +349,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, 0, 0, updatedTime, discarded, null,
 						searchTerm, null, category, null, "drugName");
 			}
-			//response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			// response = elasticsearchTemplate.queryForList(searchQuery,
+			// ESDrugDocument.class);
 			response = elasticsearchTemplate.count(searchQuery, ESDrugDocument.class);
 
 		} catch (Exception e) {
@@ -359,9 +361,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private Long getCustomDrugsCount(String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category,
-			Boolean searchByGenericName) {
+	private Long getCustomDrugsCount(String doctorId, String locationId, String hospitalId, String updatedTime,
+			boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		Long response = null;
 		try {
 			if (doctorId == null)
@@ -369,11 +370,11 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			else {
 				SearchQuery searchQuery = null;
 				if (searchByGenericName) {
-					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId, updatedTime,
+							discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
 				} else {
-					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId, updatedTime,
+							discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
 				response = elasticsearchTemplate.count(searchQuery, ESDrugDocument.class);
 			}
@@ -384,10 +385,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		}
 		return response;
 	}
-	
-	private Long getCustomGlobalDrugsCount(String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category,
-			Boolean searchByGenericName) {
+
+	private Long getCustomGlobalDrugsCount(String doctorId, String locationId, String hospitalId, String updatedTime,
+			boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		Long response = null;
 		try {
 			SearchQuery searchQuery = null;
@@ -410,30 +410,27 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		}
 		return response;
 	}
-	
-	private Long getFavouritesDrugsCount(String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
-			Boolean searchByGenericName) {
+
+	private Long getFavouritesDrugsCount(String doctorId, String locationId, String hospitalId, String updatedTime,
+			Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		Long response = null;
 		try {
-			
+
 			if (doctorId == null)
 				response = 0l;
 			else {
 				SearchQuery searchQuery = null;
 
 				if (searchByGenericName) {
-					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId, updatedTime,
+							discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
 				} else {
-					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId, updatedTime,
+							discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
 
-				 response = elasticsearchTemplate.count(searchQuery,
-						ESDrugDocument.class);
+				response = elasticsearchTemplate.count(searchQuery, ESDrugDocument.class);
 
-				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -442,13 +439,12 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		}
 		return response;
 	}
-	
-	private Long getCustomGlobalDrugsForWebCount( String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
-			Boolean searchByGenericName) {
+
+	private Long getCustomGlobalDrugsForWebCount(String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		Long response = null;
 		try {
-			
+
 			if (doctorId == null)
 				response = 0l;
 			else {
@@ -463,9 +459,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 				}
 
-				response = elasticsearchTemplate.count(searchQuery,ESDrugDocument.class);
+				response = elasticsearchTemplate.count(searchQuery, ESDrugDocument.class);
 
-				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
