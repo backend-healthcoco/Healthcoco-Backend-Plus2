@@ -493,7 +493,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private ESRecipeService ESRecipeService;
-	
+
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
 
@@ -506,8 +506,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
-	@Scheduled(cron = "00 00 3 * * *", zone = "IST")
-//	@Scheduled(fixedDelay = 1800000)
+	// @Scheduled(cron = "00 00 3 * * *", zone = "IST")
+	@Scheduled(fixedDelay = 1800)
 	@Override
 	@Transactional
 	public void checkResources() {
@@ -683,7 +683,14 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						case EXPENSE_TYPE:
 							checkExpenseType(transactionalCollection.getResourceId());
 							break;
-						case COLLECTION_BOY:
+						case RECIPE:
+							checkRecipe(transactionalCollection.getResourceId());
+							break;
+						case INGREDIENT:
+							checkIngredient(transactionalCollection.getResourceId());
+							break;
+						case NUTRIENT:
+							checkNutrient(transactionalCollection.getResourceId());
 							break;
 						case STATE:
 							break;

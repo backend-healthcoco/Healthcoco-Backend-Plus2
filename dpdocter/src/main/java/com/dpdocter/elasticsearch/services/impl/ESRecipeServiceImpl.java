@@ -112,16 +112,17 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+			boolQueryBuilder
+					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 		}
 		List<ESRecipeDocument> recipes = null;
 		SearchQuery searchQuery = null;
 		if (size > 0)
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+					.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
 		else
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 15, Direction.DESC, "updatedTime")).build();
+					.withPageable(new PageRequest(0, 15, Direction.ASC, "name")).build();
 		recipes = elasticsearchTemplate.queryForList(searchQuery, ESRecipeDocument.class);
 		if (recipes != null && !recipes.isEmpty()) {
 			response = new ArrayList<ESRecipeResponse>();
@@ -139,16 +140,19 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 	public List<ESNutrientResponse> searchNutrient(int page, int size, Boolean discarded, String searchTerm) {
 		List<ESNutrientResponse> response = null;
 		ESNutrientResponse esNutrientResponse = null;
+		SearchQuery searchQuery = null;
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+			boolQueryBuilder
+					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 		}
-		if (size == 0)
+		if (size > 0)
 			size = 15;
-		List<ESNutrientDocument> nutrients = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-				.withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.ASC))
-				.withPageable(new PageRequest(page, size)).build(), ESNutrientDocument.class);
+
+		searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+				.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+		List<ESNutrientDocument> nutrients = elasticsearchTemplate.queryForList(searchQuery, ESNutrientDocument.class);
 		if (nutrients != null && !nutrients.isEmpty()) {
 			response = new ArrayList<ESNutrientResponse>();
 			for (ESNutrientDocument nutrient : nutrients) {
@@ -168,13 +172,15 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+			boolQueryBuilder
+					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 		}
-		if (size == 0)
+		if (size <= 0)
 			size = 15;
-		List<ESIngredientDocument> ingrdients = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-				.withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC))
-				.withPageable(new PageRequest(page, size)).build(), ESIngredientDocument.class);
+		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+				.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+		List<ESIngredientDocument> ingrdients = elasticsearchTemplate.queryForList(searchQuery,
+				ESIngredientDocument.class);
 
 		if (ingrdients != null && !ingrdients.isEmpty()) {
 			response = new ArrayList<ESIngredientResponse>();
@@ -197,9 +203,10 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+				boolQueryBuilder
+						.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 			}
-			if (size == 0)
+			if (size > 0)
 				size = 15;
 			List<ESExerciseDocument> exercises = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 					.withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC))
@@ -234,16 +241,17 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded))
 				.must(QueryBuilders.matchPhrasePrefixQuery("verified", true));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+			boolQueryBuilder
+					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 		}
 		List<ESRecipeDocument> recipes = null;
 		SearchQuery searchQuery = null;
 		if (size > 0)
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+					.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
 		else
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 15, Direction.DESC, "updatedTime")).build();
+					.withPageable(new PageRequest(0, 15, Direction.ASC, "name")).build();
 		recipes = elasticsearchTemplate.queryForList(searchQuery, ESRecipeDocument.class);
 		if (recipes != null && !recipes.isEmpty()) {
 			response = new ArrayList<ESRecipeUserAppResponse>();
