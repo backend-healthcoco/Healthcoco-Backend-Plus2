@@ -39,6 +39,8 @@ public class ESIngredientResponse {
 	private List<IngredientAddItem> mineralNutrients;
 
 	private List<IngredientAddItem> otherNutrients;
+	
+	private List<IngredientAddItem> vitaminNutrients;
 
 	public MealQuantity getCalories() {
 		return calories;
@@ -167,5 +169,15 @@ public class ESIngredientResponse {
 	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
 		this.otherNutrients = otherNutrients;
 	}
+
+	public List<IngredientAddItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
+	}
+	
+	
 
 }
