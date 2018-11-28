@@ -255,7 +255,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			dsr.setDataSourceExpression(expression);
 
 			Boolean showTableOne = (Boolean) parameters.get("showTableOne");
-			jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters));
+			if (parameters.get("footerImage") != null && !parameters.get("footerImage").toString().isEmpty()) {
+				jasperDesign.setPageHeader(createPageImageHeader(columnWidth, parameters));
+			} else {
+				jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters));
+			}
 
 			if (parameters.get("headerHtml") != null && !String.valueOf(parameters.get("headerHtml")).trim().isEmpty())
 
@@ -407,9 +411,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.MULTIPLE_INSPECTION_REPORT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_IMAGE_INVOICE.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType()))
+				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
+			if (parameters.get("footerImage") != null && !parameters.get("footerImage").toString().isEmpty()) {
+				jasperDesign.setPageFooter(createPageImageHeader(columnWidth, parameters));
+			} else {
+				jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
+			}
 
-			jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
+		}
 		// dsr.setDataSourceExpression(new JRDesignExpression("new
 		// net.sf.jasperreports.engine.JREmptyDataSource(1)"));
 		// String logoURL = (String) parameters.get("logoURL");
@@ -1021,6 +1030,29 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
 			band.addElement(jrDesignLine);
 		}
+
+		return band;
+	}
+
+	private JRBand createPageImageHeader(int columnWidth, Map<String, Object> parameters) throws JRException {
+
+		int headerHeight = parameters.get("headerHeight") != null
+				? Integer.parseInt(parameters.get("headerHeight").toString())
+				: 0;
+		band = new JRDesignBand();
+		band.setHeight(headerHeight);
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		band.setPrintWhenExpression(
+				new JRDesignExpression("!$P{headerImage}.equals(null) && !$P{headerImage}.isEmpty()"));
+		JRDesignImage jrDesignImage = new JRDesignImage(null);
+		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		jrDesignImage.setExpression(new JRDesignExpression("$P{headerImg}"));
+		jrDesignImage.setX(0);
+		jrDesignImage.setY(0);
+		jrDesignImage.setHeight(headerHeight);
+		jrDesignImage.setWidth(columnWidth);
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+		band.addElement(jrDesignImage);
 
 		return band;
 	}
@@ -2050,6 +2082,31 @@ public class JasperReportServiceImpl implements JasperReportService {
 			Startwith = Startwith + 62;
 		}
 		band.setHeight(Startwith);
+		return band;
+	}
+
+	private JRBand createPageImageFooter(int columnWidth, Map<String, Object> parameter) throws JRException {
+		band = new JRDesignBand();
+
+		int footerHeight = parameter.get("footerHeight") != null
+				? Integer.parseInt(parameter.get("footerHeight").toString())
+				: 0;
+
+		band = new JRDesignBand();
+		band.setHeight(footerHeight);
+		band.setPrintWhenExpression(
+				new JRDesignExpression("!$P{footerImage}.equals(null) && !$P{footerImage}.isEmpty()"));
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		JRDesignImage jrDesignImage = new JRDesignImage(null);
+		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		jrDesignImage.setExpression(new JRDesignExpression("$P{footerImage}"));
+		jrDesignImage.setX(0);
+		jrDesignImage.setY((0));
+		jrDesignImage.setHeight(footerHeight);
+		jrDesignImage.setWidth(columnWidth);
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+		band.addElement(jrDesignImage);
+
 		return band;
 	}
 

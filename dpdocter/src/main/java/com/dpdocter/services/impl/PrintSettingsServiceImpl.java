@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -49,6 +50,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
+	@Value(value = "${image.path}")
+	private String imagePath;
+
 	@Override
 	@Transactional
 	public PrintSettings saveSettings(PrintSettings request) {
@@ -88,14 +92,23 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				printSettingsCollection.setDiscarded(oldPrintSettingsCollection.getDiscarded());
 				printSettingsCollection.setHospitalUId(oldPrintSettingsCollection.getHospitalUId());
 
-				if (request.getPageSetup() == null)
+				if (request.getPageSetup() == null) {
 					printSettingsCollection.setPageSetup(oldPrintSettingsCollection.getPageSetup());
+				}
 
-				if (request.getHeaderSetup() == null)
+				if (request.getHeaderSetup() == null) {
 					printSettingsCollection.setHeaderSetup(oldPrintSettingsCollection.getHeaderSetup());
+				} else {
+					printSettingsCollection.getHeaderSetup().setHeaderImageUrl(
+							printSettingsCollection.getHeaderSetup().getHeaderImageUrl().replaceAll(imagePath, ""));
 
-				if (request.getFooterSetup() == null)
+				}
+				if (request.getFooterSetup() == null) {
 					printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
+				} else {
+					printSettingsCollection.getFooterSetup().setFooterImageUrl(
+							printSettingsCollection.getFooterSetup().getFooterImageUrl().replaceAll(imagePath, ""));
+				}
 			}
 
 			if (DPDoctorUtils.allStringsEmpty(printSettingsCollection.getHospitalUId())) {
@@ -114,6 +127,17 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 			printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 			BeanUtil.map(printSettingsCollection, response);
+			if (response != null) {
+				if (response.getHeaderSetup() != null) {
+					response.getHeaderSetup()
+							.setHeaderImageUrl(getFinalImageURL(response.getHeaderSetup().getHeaderImageUrl()));
+
+				}
+				if (response.getFooterSetup() != null) {
+					response.getFooterSetup()
+							.setFooterImageUrl(getFinalImageURL(response.getFooterSetup().getFooterImageUrl()));
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -187,6 +211,17 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						collection.setHeaderSetup(null);
 					}
 					BeanUtil.map(collection, printSettings);
+					if (printSettings != null) {
+						if (printSettings.getHeaderSetup() != null) {
+							printSettings.getHeaderSetup().setHeaderImageUrl(
+									getFinalImageURL(printSettings.getHeaderSetup().getHeaderImageUrl()));
+
+						}
+						if (printSettings.getFooterSetup() != null) {
+							printSettings.getFooterSetup().setFooterImageUrl(
+									getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl()));
+						}
+					}
 					response.add(printSettings);
 				}
 			}
@@ -264,6 +299,15 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						printSettingsRepository.save(printSettingsCollection);
 						response = new PrintSettings();
 						BeanUtil.map(printSettingsCollection, response);
+						if (response.getHeaderSetup() != null) {
+							response.getHeaderSetup()
+									.setHeaderImageUrl(getFinalImageURL(response.getHeaderSetup().getHeaderImageUrl()));
+
+						}
+						if (response.getFooterSetup() != null) {
+							response.getFooterSetup()
+									.setFooterImageUrl(getFinalImageURL(response.getFooterSetup().getFooterImageUrl()));
+						}
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.InvalidInput,
@@ -287,4 +331,11 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		return response;
 	}
 
+	private String getFinalImageURL(String imageURL) {
+		if (!DPDoctorUtils.anyStringEmpty(imageURL)) {
+			return imagePath + imageURL;
+		} else
+			return null;
+
+	}
 }
