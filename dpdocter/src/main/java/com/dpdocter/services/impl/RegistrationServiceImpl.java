@@ -4801,7 +4801,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (vaccineCollections == null || vaccineCollections.isEmpty()) {
 			vaccineCollections = new ArrayList<>();
 			List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository
-					.findAll();
+					.findAll(true);
 			for (MasterBabyImmunizationCollection masterBabyImmunizationCollection : babyImmunizationCollections) {
 				VaccineCollection vaccineCollection = new VaccineCollection();
 				vaccineCollection.setPatientId(new ObjectId(request.getUserId()));

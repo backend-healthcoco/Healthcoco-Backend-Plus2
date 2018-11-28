@@ -50,6 +50,8 @@ public class VaccineCollection extends GenericCollection {
 	private String duration;
 	@Field
 	private Integer periodTime;
+	@Field
+	private String note;
 
 	public ObjectId getId() {
 		return id;
@@ -193,6 +195,14 @@ public class VaccineCollection extends GenericCollection {
 
 	public void setVaccineId(ObjectId vaccineId) {
 		this.vaccineId = vaccineId;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	@Override

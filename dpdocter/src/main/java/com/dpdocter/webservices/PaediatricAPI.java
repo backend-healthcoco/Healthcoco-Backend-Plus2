@@ -22,6 +22,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
+import com.dpdocter.response.MasterVaccineResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
@@ -142,5 +143,14 @@ public class PaediatricAPI {
 		return response;
 	}
 	
+	@Path(value = PathProxy.PaediatricUrls.GET_MASTER_VACCINES)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.GET_MASTER_VACCINES, notes = PathProxy.PaediatricUrls.GET_MASTER_VACCINES)
+	public Response<MasterVaccineResponse> getVaccines(@QueryParam("searchTerm") String searchTerm, @QueryParam("isChartVaccine") Boolean isChartVaccine, @QueryParam("page") int  page, @QueryParam("size") int size) {
+		List<MasterVaccineResponse> vaccineResponse = paediatricService.getMasterVaccineList(searchTerm, isChartVaccine, page, size);
+		Response<MasterVaccineResponse> response = new Response<MasterVaccineResponse>();
+		response.setDataList(vaccineResponse);
+		return response;
+	}
 	
 }
