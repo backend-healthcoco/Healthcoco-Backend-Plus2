@@ -1,24 +1,14 @@
-package com.dpdocter.collections;
+package com.dpdocter.response;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "master_baby_immunization_cl")
-public class MasterBabyImmunizationCollection {
+public class MasterVaccineResponse {
 
-	@Id
 	private ObjectId id;
-	@Field
 	private String name;
-	@Field
 	private String longName;
-	@Field
 	private Integer periodTime;
-	@Field
 	private String duration;
-	@Field
 	private Boolean isChartVaccine = false;
 
 	public ObjectId getId() {
@@ -67,12 +57,6 @@ public class MasterBabyImmunizationCollection {
 
 	public void setIsChartVaccine(Boolean isChartVaccine) {
 		this.isChartVaccine = isChartVaccine;
-	}
-
-	@Override
-	public String toString() {
-		return "MasterBabyImmunizationCollection [id=" + id + ", name=" + name + ", longName=" + longName
-				+ ", periodTime=" + periodTime + "]";
 	}
 
 }

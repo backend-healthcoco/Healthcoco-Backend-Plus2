@@ -12,14 +12,18 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GrowthChart;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.VaccineBrandAssociation;
 import com.dpdocter.collections.GrowthChartCollection;
+import com.dpdocter.collections.MasterBabyImmunizationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.VaccineBrandAssociationCollection;
 import com.dpdocter.collections.VaccineCollection;
 import com.dpdocter.exceptions.BusinessException;
@@ -30,6 +34,7 @@ import com.dpdocter.repository.VaccineRepository;
 import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
+import com.dpdocter.response.MasterVaccineResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
@@ -296,6 +301,47 @@ public class PaediatricServiceImpl implements PaediatricService{
 	
 	@Override
 	@Transactional
+	public List<MasterVaccineResponse> getMasterVaccineList(String searchTerm, Boolean isChartVaccine, int page,
+			int size) {
+		List<MasterVaccineResponse> responses = null;
+		try {
+			// Criteria criteria = new Criteria();
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria();
+
+			if (isChartVaccine != null) {
+				criteria.and("isChartVaccine").is(isChartVaccine);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("longName").regex("^" + searchTerm, "i"));
+			}
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(Direction.DESC, "updatedTime"));
+			}
+
+			AggregationResults<MasterVaccineResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					MasterBabyImmunizationCollection.class, MasterVaccineResponse.class);
+			responses = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		}
+		return responses;
+	}
+	
+	@Override
+	@Transactional
 	public List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId, String vaccineBrandId) {
 
 		List<VaccineBrandAssociationResponse> responses = null;
@@ -380,6 +426,8 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 		return responses;
 	}
+	
+	
 	
 	
 	
