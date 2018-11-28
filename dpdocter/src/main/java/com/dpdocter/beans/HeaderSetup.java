@@ -19,6 +19,13 @@ public class HeaderSetup {
     private List<PrintSettingsText> topRightText;
     
     private String headerHtml;
+    
+    private String headerImageUrl;
+    
+    private Boolean showHeaderImage=false;
+    
+    private Integer headerHeight=0;
+    
 
     public Boolean getCustomHeader() {
 	return customHeader;
@@ -74,6 +81,31 @@ public class HeaderSetup {
 
 	public void setHeaderHtml(String headerHtml) {
 		this.headerHtml = headerHtml;
+	}
+
+	public String getHeaderImageUrl() {
+		return headerImageUrl;
+	}
+
+	public void setHeaderImageUrl(String headerImageUrl) {
+		this.headerImageUrl = headerImageUrl;
+	}
+
+	public Boolean getShowHeaderImage() {
+		return showHeaderImage;
+	}
+
+	public void setShowHeaderImage(Boolean showHeaderImage) {
+		this.showHeaderImage = showHeaderImage;
+	}
+
+	
+	public Integer getHeaderHeight() {
+		return headerHeight;
+	}
+
+	public void setHeaderHeight(Integer headerHeight) {
+		this.headerHeight = headerHeight;
 	}
 
 	@Override

@@ -2332,8 +2332,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("printSettingsId",
 				(printSettings != null && printSettings.getId() != null) ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "", footerSignature = "",
-				poweredBy = "", bottomSignText = "";
-		int headerLeftTextLength = 0, headerRightTextLength = 0;
+				poweredBy = "", bottomSignText = "", footerImageUrl = "", headerImageUrl = "";
+		int headerLeftTextLength = 0, headerRightTextLength = 0, footerHeight = 0, headerHeight = 0;
 		Integer contentFontSize = 10;
 		if (printSettings != null) {
 			if (printSettings.getContentSetup() != null) {
@@ -2347,7 +2347,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					parameters.put("instructionAlign", FieldAlign.VERTICAL.getAlign());
 				}
 			}
-			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()) {
+			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()
+					&& !printSettings.getHeaderSetup().getShowHeaderImage()) {
 				parameters.put("headerHtml", printSettings.getHeaderSetup().getHeaderHtml());
 				if (printSettings.getHeaderSetup().getTopLeftText() != null)
 					for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
@@ -2369,7 +2370,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										+ str.getFontSize() + "'>" + text + "</span>";
 						}
 					}
-				if (printSettings.getHeaderSetup().getTopRightText() != null)
+				if (printSettings.getHeaderSetup().getTopRightText() != null
+						&& !printSettings.getHeaderSetup().getShowHeaderImage())
 					for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
 
 						boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
@@ -2393,13 +2395,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 			}
 
-			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()
-					&& printSettings.getHeaderSetup().getCustomLogo() && printSettings.getClinicLogoUrl() != null) {
-				logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
+			if (printSettings.getHeaderSetup() != null) {
+				if (printSettings.getHeaderSetup().getCustomHeader() && printSettings.getHeaderSetup().getCustomLogo()
+						&& printSettings.getClinicLogoUrl() != null
+						&& !printSettings.getHeaderSetup().getShowHeaderImage()) {
+					logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
+				} else if (!DPDoctorUtils.anyStringEmpty(printSettings.getHeaderSetup().getHeaderImageUrl())) {
+					headerImageUrl = getFinalImageURL(printSettings.getHeaderSetup().getHeaderImageUrl());
+				}
 			}
 
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getCustomFooter()
-					&& printSettings.getFooterSetup().getBottomText() != null) {
+					&& printSettings.getFooterSetup().getBottomText() != null
+					&& !printSettings.getFooterSetup().getShowImageFooter()) {
 				for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
 					boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -2419,38 +2427,31 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 
-			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()
-					&& !DPDoctorUtils.anyStringEmpty(doctorId)) {
-				UserCollection doctorUser = userRepository.findOne(doctorId);
-				if (doctorUser != null)
-					footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
-			}
 			if (printSettings.getFooterSetup() != null) {
-				if (printSettings.getFooterSetup().getShowPoweredBy()) {
-					poweredBy = "<font color='#9d9fa0'>" + footerText + "</font>";
+				if (printSettings.getFooterSetup().getShowSignature() && !DPDoctorUtils.anyStringEmpty(doctorId)
+						&& !printSettings.getFooterSetup().getShowImageFooter()) {
+					UserCollection doctorUser = userRepository.findOne(doctorId);
+					if (doctorUser != null)
+						footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
 				}
-				if (printSettings.getFooterSetup().getShowBottomSignText()
-						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
-					bottomSignText = printSettings.getFooterSetup().getBottomSignText();
-				}
-			}
-			if (printSettings.getFooterSetup() != null) {
+
 				if (printSettings.getFooterSetup().getShowPoweredBy()) {
 					parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
-				} else {
-					parameters.put("poweredBy", "");
 				}
 				if (printSettings.getFooterSetup().getShowBottomSignText()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
 					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
-				} else {
-					parameters.put("bottomSignText", "");
 				}
-			} else {
-				parameters.put("poweredBy", "");
+				if (!printSettings.getFooterSetup().getShowImageFooter()) {
+					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
+				}
 			}
-		}
 
+		}
+		parameters.put("footerImage", footerImageUrl);
+		parameters.put("headerImage", headerImageUrl);
+		parameters.put("footerHeight", footerHeight);
+		parameters.put("headerHeight", headerHeight);
 		parameters.put("footerSignature", footerSignature);
 		parameters.put("poweredBy", poweredBy);
 		parameters.put("bottomSignText", bottomSignText);

@@ -17,6 +17,12 @@ public class FooterSetup {
 
 	private String bottomSignText = "";
 
+	private Boolean showImageFooter = false;
+
+	private String footerImageUrl = "";
+
+	private Integer footerHeight = 0;
+
 	public Boolean getShowBottomSignText() {
 		return showBottomSignText;
 	}
@@ -65,6 +71,30 @@ public class FooterSetup {
 
 	public void setBottomText(List<PrintSettingsText> bottomText) {
 		this.bottomText = bottomText;
+	}
+
+	public Boolean getShowImageFooter() {
+		return showImageFooter;
+	}
+
+	public void setShowImageFooter(Boolean showImageFooter) {
+		this.showImageFooter = showImageFooter;
+	}
+
+	public String getFooterImageUrl() {
+		return footerImageUrl;
+	}
+
+	public void setFooterImageUrl(String footerImageUrl) {
+		this.footerImageUrl = footerImageUrl;
+	}
+
+	public Integer getFooterHeight() {
+		return footerHeight;
+	}
+
+	public void setFooterHeight(Integer footerHeight) {
+		this.footerHeight = footerHeight;
 	}
 
 	@Override
