@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Slot;
 import com.dpdocter.beans.WorkingHours;
@@ -43,6 +44,7 @@ import com.dpdocter.services.WebAppointmentService;
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
 
+@Service
 public class WebAppointmentServiceImpl implements WebAppointmentService{
 
 	@Autowired
