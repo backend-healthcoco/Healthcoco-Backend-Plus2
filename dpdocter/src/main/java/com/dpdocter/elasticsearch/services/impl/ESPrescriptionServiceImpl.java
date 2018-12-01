@@ -24,7 +24,6 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.LabTest;
@@ -138,8 +137,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		//Please remove this in next release. Its an hack for IOS 
 			searchByGenericName = false;
 		//
-		if (page > 0)
-			return response;
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			searchTerm = searchTerm.toUpperCase();
 		switch (Range.valueOf(range.toUpperCase())) {
