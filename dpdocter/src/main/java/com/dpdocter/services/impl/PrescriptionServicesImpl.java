@@ -843,6 +843,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
 					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					List<DrugDirection> directions = null;
+					
+					if(item.getDrugQuantity() != null)
+					{
+						item.setAnalyticsDrugQuantity(item.getDrugQuantity());
+					}
+					else
+					{
+						item.setAnalyticsDrugQuantity(1);
+					}
+					
 					if (item.getDirection() != null && !item.getDirection().isEmpty()) {
 						for (DrugDirection drugDirection : item.getDirection()) {
 							if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
@@ -1123,6 +1133,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setUniqueEmrId(oldPrescription.getUniqueEmrId());
 			if (prescriptionCollection.getItems() != null) {
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
+					
+					if(item.getDrugQuantity() != null)
+					{
+						item.setAnalyticsDrugQuantity(item.getDrugQuantity());
+					}
+					else
+					{
+						item.setAnalyticsDrugQuantity(1);
+					}
+					
 					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					if (item.getDrugId() != null) {
 						List<DrugDirection> directions = null;
