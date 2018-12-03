@@ -10,29 +10,27 @@ import com.dpdocter.response.PrescriptionInventoryBatchResponse;
 public class PrescriptionItemDetail {
 	private Drug drug;
 
+	private String drugId;
+
 	private Duration duration;
 
 	private String dosage;
-	/*
-	 * private DrugType drugType;
-	 * 
-	 * private String drugName;
-	 * 
-	 * private Integer drugQuantity;
-	 * 
-	 * 
-	 */
+
+
+	private DrugType drugType;
+
+	private String drugName;
+
+	private Integer drugQuantity;
 
 	private Long totalStock;
+	
 	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
-	/*
-	 * private String explanation;
-	 * 
-	 * private List<Long> dosageTime;
-	 * 
-	 * 
-	 */
+
+	private String explanation;
+
+	private List<Long> dosageTime;
 
 	private List<DrugDirection> direction;
 	
@@ -96,18 +94,67 @@ public class PrescriptionItemDetail {
 		this.direction = direction;
 	}
 
-	@Override
-	public String toString() {
-		return "PrescriptionItemDetail [drug=" + drug + ", inventoryBatchs=" + inventoryBatchs + ", inventoryQuantity="
-				+ inventoryQuantity + "]";
-	}
-
 	public String getInstructions() {
 		return instructions;
 	}
 
 	public void setInstructions(String instructions) {
 		this.instructions = instructions;
+	}
+
+
+	public String getDrugId() {
+		return drugId;
+	}
+
+	public void setDrugId(String drugId) {
+		this.drugId = drugId;
+	}
+
+	public DrugType getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionItemDetail [drug=" + drug + ", inventoryBatchs=" + inventoryBatchs + ", inventoryQuantity="
+				+ inventoryQuantity + "]";
 	}
 
 }
