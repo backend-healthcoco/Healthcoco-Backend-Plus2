@@ -57,9 +57,6 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 	private ESRecipeRepository esRecipeRepository;
 
 	@Autowired
-	private TransportClient transportClient;
-
-	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
 
 	@Override
@@ -147,7 +144,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 			boolQueryBuilder
 					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 		}
-		if (size > 0)
+		if (size == 0)
 			size = 15;
 
 		searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -206,7 +203,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 				boolQueryBuilder
 						.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 			}
-			if (size > 0)
+			if (size == 0)
 				size = 15;
 			List<ESExerciseDocument> exercises = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 					.withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC))
