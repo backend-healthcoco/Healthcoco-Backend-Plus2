@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.enums.LevelType;
 import com.dpdocter.enums.QuantityEnum;
+
 
 public class RecipeItem {
 	private ObjectId id;
@@ -15,6 +17,10 @@ public class RecipeItem {
 
 
 	private MealQuantity quantity;
+
+	private Double cost = 0.0;
+
+	private LevelType costType;
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 	private MealQuantity calories;
@@ -129,7 +135,6 @@ public class RecipeItem {
 		this.name = name;
 	}
 
-
 	public MealQuantity getQuantity() {
 		return quantity;
 	}
@@ -161,7 +166,6 @@ public class RecipeItem {
 	public List<IngredientItem> getGeneralNutrients() {
 		return generalNutrients;
 	}
-	
 
 	public void setGeneralNutrients(List<IngredientItem> generalNutrients) {
 		this.generalNutrients = generalNutrients;
@@ -184,6 +188,7 @@ public class RecipeItem {
 		this.vitaminNutrients = vitaminNutrients;
 	}
 
+
 	public double getValue() {
 		return value;
 	}
@@ -198,6 +203,23 @@ public class RecipeItem {
 
 	public void setType(QuantityEnum type) {
 		this.type = type;
+	}
+
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public LevelType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(LevelType costType) {
+		this.costType = costType;
 	}
 
 

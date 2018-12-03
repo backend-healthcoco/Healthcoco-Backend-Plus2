@@ -121,6 +121,9 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity carbohydreate;
+	
+	@Field(type = FieldType.Nested)
+	private MealQuantity fiber;
 
 	@Field(type = FieldType.Nested)
 	private List<IngredientAddItem> generalNutrients;

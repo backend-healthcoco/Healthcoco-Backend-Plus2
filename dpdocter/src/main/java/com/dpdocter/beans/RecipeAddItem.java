@@ -2,12 +2,16 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.QuantityEnum;
+import com.dpdocter.enums.LevelType;
 
 public class RecipeAddItem {
 	private String id;
 
 	private String name;
+
+	private Double cost = 0.0;
+
+	private LevelType costType;
 
 	private MealQuantity quantity;
 
@@ -79,7 +83,6 @@ public class RecipeAddItem {
 		this.name = name;
 	}
 
-	
 	public MealQuantity getQuantity() {
 		return quantity;
 	}
@@ -174,6 +177,22 @@ public class RecipeAddItem {
 
 	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public LevelType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(LevelType costType) {
+		this.costType = costType;
 	}
 
 }
