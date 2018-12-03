@@ -55,6 +55,9 @@ public interface PrescriptionServices {
 	Long countCustomGlobalDrugs(String doctorId, String locationId, String hospitalId, String updatedTime,
 			boolean discarded, String searchTerm);
 
+	List<Prescription> getPrescriptionsForEMR(int page, int size, String doctorId, String hospitalId, String locationId,
+			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
+
 	/*
 	 * List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds,
 	 * ObjectId visitId);

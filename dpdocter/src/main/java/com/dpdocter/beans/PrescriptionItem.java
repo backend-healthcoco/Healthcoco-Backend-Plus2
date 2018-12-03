@@ -25,6 +25,8 @@ public class PrescriptionItem {
 	private String instructions;
 
 	private Integer drugQuantity;
+	
+	private Integer analyticsDrugQuantity = 1;
 
 	private Long inventoryQuantity;
 
@@ -144,6 +146,14 @@ public class PrescriptionItem {
 
 	public void setDrugQuantity(Integer drugQuantity) {
 		this.drugQuantity = drugQuantity;
+	}
+
+	public Integer getAnalyticsDrugQuantity() {
+		return analyticsDrugQuantity;
+	}
+
+	public void setAnalyticsDrugQuantity(Integer analyticsDrugQuantity) {
+		this.analyticsDrugQuantity = analyticsDrugQuantity;
 	}
 
 	@Override

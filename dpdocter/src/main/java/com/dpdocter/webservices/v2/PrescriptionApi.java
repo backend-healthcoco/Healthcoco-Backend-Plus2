@@ -63,6 +63,26 @@ public class PrescriptionApi {
 		response.setDataList(prescriptions);
 		return response;
 	}
+	
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTIONS_FOR_EMR, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTIONS_FOR_EMR)
+	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTIONS_FOR_EMR)
+	public Response<Prescription> getPrescriptionForEMR(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+		}
+		List<Prescription> prescriptions = null;
+
+		prescriptions = prescriptionServices.getPrescriptionsForEMR(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
+
+		Response<Prescription> response = new Response<Prescription>();
+		response.setDataList(prescriptions);
+		return response;
+	}
 
 	@Path(value = PathProxy.PrescriptionUrls.SEARCH_DRUGS)
 	@GET
