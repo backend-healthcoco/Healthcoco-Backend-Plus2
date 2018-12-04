@@ -4447,7 +4447,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
-					.and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").ne(true);
+					.and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").is(true);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
 
 			response = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientShortCard.class)
