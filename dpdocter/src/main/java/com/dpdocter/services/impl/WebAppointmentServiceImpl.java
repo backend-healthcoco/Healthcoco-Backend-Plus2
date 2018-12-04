@@ -9,16 +9,15 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 
 import com.dpdocter.beans.Slot;
 import com.dpdocter.beans.WorkingHours;
@@ -32,6 +31,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.AppointmentBookedSlotRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.WebClinicResponse;
 import com.dpdocter.response.WebDoctorClinicsResponse;
@@ -65,12 +65,19 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 	public WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl) {
 		WebDoctorClinicsResponse webDoctorClinicsResponse = null;
 		try {
-			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-					.must(QueryBuilders.matchPhrasePrefixQuery("doctorSlugUrl", doctorSlugUrl));
+			Criteria criteria = new Criteria("doctorSlugURL").is(doctorSlugUrl);
 			
-			List<ESDoctorDocument> esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESDoctorDocument.class);
-			
-			if(esDoctorDocuments != null) {
+			List<DoctorClinicProfileLookupResponse> clinicProfileCollections = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user"), 
+							Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+							Aggregation.unwind("doctor")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+
+			if (clinicProfileCollections != null) {
+				System.out.println(clinicProfileCollections);
 				webDoctorClinicsResponse = new WebDoctorClinicsResponse();
 				List<WebClinicResponse> clinicResponses = new ArrayList<WebClinicResponse>();
 				for(ESDoctorDocument doctorDocument : esDoctorDocuments) {
