@@ -82,7 +82,9 @@ public class LocationAndAccessControl {
 	private int patientCounter = 0;
 
 	private Boolean isPidHasDate = true;
-	
+
+	private Boolean isVaccinationModuleOn = false;
+
 	public String getId() {
 		return id;
 	}
@@ -385,6 +387,14 @@ public class LocationAndAccessControl {
 
 	public void setIsPidHasDate(Boolean isPidHasDate) {
 		this.isPidHasDate = isPidHasDate;
+	}
+
+	public Boolean getIsVaccinationModuleOn() {
+		return isVaccinationModuleOn;
+	}
+
+	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
+		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
 	@Override
