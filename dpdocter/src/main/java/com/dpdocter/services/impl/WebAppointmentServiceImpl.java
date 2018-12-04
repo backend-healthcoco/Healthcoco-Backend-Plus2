@@ -67,7 +67,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 		WebDoctorClinicsResponse webDoctorClinicsResponse = null;
 		try {
 
-			Criteria criteria = new Criteria("doctorSlugUrl").is(doctorSlugUrl);
+			Criteria criteria = new Criteria("doctorSlugURL").is(doctorSlugUrl);
 			
 			List<DoctorClinicProfileLookupResponse> clinicProfileCollections = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
@@ -79,6 +79,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 
 			if (clinicProfileCollections != null) {
+				System.out.println(clinicProfileCollections);
 				webDoctorClinicsResponse = new WebDoctorClinicsResponse();
 				List<WebClinicResponse> clinicResponses = new ArrayList<WebClinicResponse>();
 				for (DoctorClinicProfileLookupResponse doctorDocument : clinicProfileCollections) {
