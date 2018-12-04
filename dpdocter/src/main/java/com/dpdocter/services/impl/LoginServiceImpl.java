@@ -217,6 +217,7 @@ public class LoginServiceImpl implements LoginService {
 									getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
 							locationAndAccessControl
 									.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
+							locationAndAccessControl.setIsVaccinationModuleOn(doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
 							List<Role> roles = null;
 
 							Boolean isStaff = false;
