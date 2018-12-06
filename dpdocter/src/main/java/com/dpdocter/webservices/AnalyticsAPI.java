@@ -60,8 +60,10 @@ public class AnalyticsAPI {
 	public Response<PatientAnalyticResponse> getPatientAnalyticnData(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("queryType") String queryType, @QueryParam("searchType") String searchType,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("showDetail") Boolean showDetail) {
+			@DefaultValue("NEW_PATIENT") @QueryParam("queryType") String queryType,
+			@DefaultValue("DAILY") @QueryParam("searchType") String searchType,
+			@QueryParam("searchTerm") String searchTerm,
+			@DefaultValue("false") @QueryParam("showDetail") Boolean showDetail) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");

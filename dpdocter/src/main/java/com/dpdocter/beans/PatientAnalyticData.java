@@ -11,6 +11,7 @@ public class PatientAnalyticData {
 	private Date createdTime;
 	private WorkingHours visitedTime;
 	private String PNUM;
+	private String mobileNumber;
 	
 	public String getId() {
 		return id;
@@ -67,6 +68,12 @@ public class PatientAnalyticData {
 		return "PatientAnalyticData [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
 				+ ", pid=" + pid + ", registrationDate=" + registrationDate + ", createdTime=" + createdTime
 				+ ", visitedTime=" + visitedTime + ", PNUM=" + PNUM + "]";
+	}
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	
