@@ -4792,7 +4792,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			calendar.set(request.getDob().getYears(), request.getDob().getMonths() -1 , request.getDob().getDays(), 0, 0);
 		}
 		
-		vaccineCollections =vaccineRepository.findBypatientdoctorlocationhospital(new ObjectId(request.getUserId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 		vaccineCollections = vaccineRepository.findBypatientdoctorlocationhospital(new ObjectId(request.getUserId()),
 				new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),

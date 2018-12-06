@@ -25,7 +25,7 @@ public class ESPatientDocument {
 
 	@Field(type = FieldType.String)
 	private String PNUM;
-	
+
 	@Field(type = FieldType.String)
 	private String userName;
 
@@ -37,7 +37,7 @@ public class ESPatientDocument {
 
 	@Field(type = FieldType.String)
 	private String localPatientNameFormatted;
-	
+
 	@Field(type = FieldType.String)
 	private String gender;
 
@@ -97,13 +97,22 @@ public class ESPatientDocument {
 
 	@Field(type = FieldType.String)
 	private List<String> consultantDoctorIds;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isPatientDiscarded = false;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean discarded = false;
-	
+
+	@Field(type = FieldType.Boolean)
+	private Boolean isChild = false;
+
+	@Field(type = FieldType.String)
+	private String fatherName;
+
+	@Field(type = FieldType.String)
+	private String motherName;
+
 	public String getId() {
 		return id;
 	}
@@ -344,6 +353,30 @@ public class ESPatientDocument {
 
 	public void setPNUM(String pNUM) {
 		PNUM = pNUM;
+	}
+
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
 	}
 
 	@Override

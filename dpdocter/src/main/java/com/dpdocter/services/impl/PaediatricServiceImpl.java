@@ -314,11 +314,10 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
+						 Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(Direction.DESC, "updatedTime"));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
 			}
 
 			AggregationResults<MasterVaccineResponse> aggregationResults = mongoTemplate.aggregate(aggregation,

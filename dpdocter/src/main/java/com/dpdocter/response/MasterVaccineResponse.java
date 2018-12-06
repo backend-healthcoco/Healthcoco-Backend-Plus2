@@ -1,21 +1,19 @@
 package com.dpdocter.response;
 
-import org.bson.types.ObjectId;
-
 public class MasterVaccineResponse {
 
-	private ObjectId id;
+	private String id;
 	private String name;
 	private String longName;
 	private Integer periodTime;
 	private String duration;
 	private Boolean isChartVaccine = false;
 
-	public ObjectId getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

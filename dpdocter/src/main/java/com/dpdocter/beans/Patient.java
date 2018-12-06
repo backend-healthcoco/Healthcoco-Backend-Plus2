@@ -69,6 +69,12 @@ public class Patient {
 
 	private String PNUM;
 
+	private Boolean isChild = false;
+
+	private String fatherName;
+
+	private String motherName;
+
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -277,7 +283,6 @@ public class Patient {
 		this.lifestyleQuestionAnswers = lifestyleQuestionAnswers;
 	}
 
-
 	public String getLocationId() {
 		return locationId;
 	}
@@ -316,6 +321,30 @@ public class Patient {
 
 	public void setPNUM(String pNUM) {
 		PNUM = pNUM;
+	}
+
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
 	}
 
 	@Override
