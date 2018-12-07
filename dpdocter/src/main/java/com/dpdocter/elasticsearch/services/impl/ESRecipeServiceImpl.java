@@ -110,7 +110,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			boolQueryBuilder
-					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
+					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", " ")));
 		}
 		List<ESRecipeDocument> recipes = null;
 		SearchQuery searchQuery = null;
@@ -170,7 +170,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			boolQueryBuilder
-					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
+					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", " ")));
 		}
 		if (size <= 0)
 			size = 15;
@@ -201,7 +201,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 					.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				boolQueryBuilder
-						.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
+						.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", " ")));
 			}
 			if (size == 0)
 				size = 15;
@@ -239,7 +239,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 				.must(QueryBuilders.matchPhrasePrefixQuery("verified", true));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			boolQueryBuilder
-					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
+					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", " ")));
 		}
 		List<ESRecipeDocument> recipes = null;
 		SearchQuery searchQuery = null;

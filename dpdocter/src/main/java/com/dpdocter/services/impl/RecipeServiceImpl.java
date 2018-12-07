@@ -275,7 +275,7 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public List<Recipe> getRecipes(int size, int page, boolean discarded, String searchTerm, String doctorId,
+	public List<Recipe> getRecipeList(int size, int page, boolean discarded, String searchTerm, String doctorId,
 			String locationId, String hospitalId) {
 		List<Recipe> response = null;
 		try {
@@ -291,42 +291,7 @@ public class RecipeServiceImpl implements RecipeService {
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
-			CustomAggregationOperation aggregationOperationFirst = new CustomAggregationOperation(new BasicDBObject(
-					"$group",
-					new BasicDBObject("_id", new BasicDBObject("id", "$id").append("nutrientId", "$nutrients.id"))
-							.append("videoUrl", new BasicDBObject("$first", "$videoUrl"))
-							.append("quantity", new BasicDBObject("$first", "$quantity"))
-							.append("equivalentMeasurements", new BasicDBObject("$first", "$equivalentMeasurements"))
-							.append("name", new BasicDBObject("$first", "$name"))
-							.append("recipeImages", new BasicDBObject("$first", "$recipeImages"))
-							.append("includeIngredients", new BasicDBObject("$first", "$includeIngredients"))
-							.append("excludeIngredients", new BasicDBObject("$first", "$excludeIngredients"))
-							.append("dishType", new BasicDBObject("$first", "$dishType"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("technique", new BasicDBObject("$first", "$technique"))
-							.append("isPopular", new BasicDBObject("$first", "$isPopular"))
-							.append("isHoliday", new BasicDBObject("$first", "$isHoliday"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("direction", new BasicDBObject("$first", "$direction"))
-							.append("dietaryConcerns", new BasicDBObject("$first", "$dietaryConcerns"))
-							.append("forMember", new BasicDBObject("$first", "$forMember"))
-							.append("cost", new BasicDBObject("$first", "$cost"))
-							.append("meal", new BasicDBObject("$first", "$meal"))
-							.append("cuisine", new BasicDBObject("$first", "$cuisine"))
-							.append("course", new BasicDBObject("$first", "$course"))
-							.append("verified", new BasicDBObject("$first", "$verified"))
-							.append("preparationTime", new BasicDBObject("$first", "$preparationTime"))
-							.append("mealTiming", new BasicDBObject("$first", "$mealTiming"))
-							.append("calaries", new BasicDBObject("$first", "$calaries"))
-							.append("nutrientValueAtRecipeLevel",
-									new BasicDBObject("$first", "$nutrientValueAtRecipeLevel"))
-							.append("nutrients", new BasicDBObject("$first", "$nutrients"))
-							.append("ingredients", new BasicDBObject("$first", "$ingredients"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+		
 
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -341,10 +306,11 @@ public class RecipeServiceImpl implements RecipeService {
 			response = mongoTemplate.aggregate(aggregation, RecipeCollection.class, Recipe.class).getMappedResults();
 			if (response != null && !response.isEmpty()) {
 				for (Recipe recipe : response) {
-					if (recipe.getRecipeImages() != null && !recipe.getRecipeImages().isEmpty())
-						for (int index = 0; index <= recipe.getRecipeImages().size(); index++) {
+					if (recipe.getRecipeImages() != null && !recipe.getRecipeImages().isEmpty()) {
+						for (int index = 0; index < recipe.getRecipeImages().size(); index++) {
 							recipe.getRecipeImages().add(index, getFinalImageURL(recipe.getRecipeImages().get(index)));
 						}
+					}
 					if (!DPDoctorUtils.anyStringEmpty(recipe.getVideoUrl())) {
 						recipe.setVideoUrl(getFinalImageURL(recipe.getVideoUrl()));
 					}

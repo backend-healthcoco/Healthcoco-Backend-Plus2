@@ -473,4 +473,20 @@ public class ESRecipeDocument {
 		this.cuisine = cuisine;
 	}
 
+	public LevelType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(LevelType costType) {
+		this.costType = costType;
+	}
+
+	public MealQuantity getFiber() {
+		return fiber;
+	}
+
+	public void setFiber(MealQuantity fiber) {
+		this.fiber = fiber;
+	}
+
 }
