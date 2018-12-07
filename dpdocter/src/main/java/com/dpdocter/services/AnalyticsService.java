@@ -28,8 +28,9 @@ public interface AnalyticsService {
 	public DoctorprescriptionAnalyticResponse getPrescriptionAnalytic(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate);
 
-	public List<PatientAnalyticResponse> getPatientCount(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String queryType, String searchType, String searchTerm, Boolean showDetail);
+	List<PatientAnalyticResponse> getPatientCount(int size, int page, String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
+			Boolean showDetail);
 
 	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);

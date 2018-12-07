@@ -22,7 +22,6 @@ import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
@@ -76,7 +75,6 @@ import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
-@Service
 @Transactional
 public class AnalyticsServiceImpl implements AnalyticsService {
 
@@ -781,8 +779,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	}
 
 	@Override
-	public List<PatientAnalyticResponse> getPatientCount(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String queryType, String searchType, String searchTerm,
+	public List<PatientAnalyticResponse> getPatientCount(int size, int page, String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
 			Boolean showDetail) {
 		List<PatientAnalyticResponse> response = null;
 
@@ -813,24 +811,24 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
 
-				response = getNewPatientCount(fromTime, toTime, criteria, showDetail, searchType, doctorId, locationId,
-						hospitalId);
+				response = getNewPatientCount(size, page, fromTime, toTime, criteria, showDetail, searchType, doctorId,
+						locationId, hospitalId);
 				break;
 			}
 
 			case CITY_WISE: {
-				response = getPatientCountCitiWise(fromTime, toTime, criteria, showDetail, searchType, doctorId,
-						locationId, hospitalId, searchTerm);
+				response = getPatientCountCitiWise(size, page, fromTime, toTime, criteria, showDetail, searchType,
+						doctorId, locationId, hospitalId, searchTerm);
 				break;
 			}
 			case LOCALITY_WISE: {
-				response = getPatientCountLocalityWise(fromTime, toTime, criteria, showDetail, searchType, doctorId,
-						locationId, hospitalId, searchTerm);
+				response = getPatientCountLocalityWise(size, page, fromTime, toTime, criteria, showDetail, searchType,
+						doctorId, locationId, hospitalId, searchTerm);
 				break;
 			}
 			case IN_GROUP: {
-				response = getPatientCountInGroup(fromTime, toTime, criteria, showDetail, searchType, doctorId,
-						locationId, hospitalId, searchTerm);
+				response = getPatientCountInGroup(size, page, fromTime, toTime, criteria, showDetail, searchType,
+						doctorId, locationId, hospitalId, searchTerm);
 				break;
 			}
 			case TOP_10_VISITED: {
@@ -841,8 +839,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			case VISITED_PATIENT: {
-				response = getVisitedPatientcount(fromTime, toTime, criteria, showDetail, searchType, doctorId,
-						locationId, hospitalId, searchTerm);
+				response = getVisitedPatientcount(size, page, fromTime, toTime, criteria, showDetail, searchType,
+						doctorId, locationId, hospitalId, searchTerm);
 				break;
 			}
 
@@ -3401,8 +3399,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return response;
 	}
 
-	private List<PatientAnalyticResponse> getNewPatientCount(DateTime fromTime, DateTime toTime, Criteria criteria,
-			Boolean showDetail, String searchType, String doctorId, String locationId, String hospitalId) {
+	private List<PatientAnalyticResponse> getNewPatientCount(int size, int page, DateTime fromTime, DateTime toTime,
+			Criteria criteria, Boolean showDetail, String searchType, String doctorId, String locationId,
+			String hospitalId) {
 
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("patient._id", "$userId"),
@@ -3542,14 +3541,26 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			break;
 		}
 
-		Aggregation aggregation = Aggregation
-				.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
-						Aggregation.unwind("user"),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
-				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		Aggregation aggregation = null;
+		if (size > 0)
+			aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")),
+							Aggregation.skip((page) * size), Aggregation.limit(size))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		else
+			aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 				"patient_cl", PatientAnalyticResponse.class);
@@ -3558,9 +3569,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	}
 
-	private List<PatientAnalyticResponse> getPatientCountCitiWise(DateTime fromTime, DateTime toTime, Criteria criteria,
-			Boolean showDetail, String searchType, String doctorId, String locationId, String hospitalId,
-			String searchTerm) {
+	private List<PatientAnalyticResponse> getPatientCountCitiWise(int page, int size, DateTime fromTime,
+			DateTime toTime, Criteria criteria, Boolean showDetail, String searchType, String doctorId,
+			String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("patient._id", "$userId"),
@@ -3711,24 +3722,38 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		default:
 			break;
 		}
-		Aggregation aggregation = Aggregation
-				.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
-						Aggregation.unwind("user"),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
-				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		Aggregation aggregation = null;
+		if (size > 0)
+			aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")),
+							Aggregation.skip((page) * size), Aggregation.limit(size))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		else
+			aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 				"patient_cl", PatientAnalyticResponse.class);
+
 		return aggregationResults.getMappedResults();
 
 	}
 
-	private List<PatientAnalyticResponse> getPatientCountInGroup(DateTime fromTime, DateTime toTime, Criteria criteria,
-			Boolean showDetail, String searchType, String doctorId, String locationId, String hospitalId,
-			String searchTerm) {
+	private List<PatientAnalyticResponse> getPatientCountInGroup(int page, int size, DateTime fromTime, DateTime toTime,
+			Criteria criteria, Boolean showDetail, String searchType, String doctorId, String locationId,
+			String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 				Fields.field("patient.id", "$patient.userId"),
@@ -3904,16 +3929,34 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		default:
 			break;
 		}
-		Aggregation aggregation = Aggregation
-				.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
-						Aggregation.unwind("group"), Aggregation.match(criteria),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
-				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		Aggregation aggregation = null;
+
+		if (size > 0)
+			aggregation = Aggregation
+					.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
+							Aggregation.unwind("group"), Aggregation.match(criteria),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")),
+							Aggregation.skip((page) * size), Aggregation.limit(size))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		else
+
+			aggregation = Aggregation
+					.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
+							Aggregation.unwind("group"), Aggregation.match(criteria),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 				PatientGroupCollection.class, PatientAnalyticResponse.class);
@@ -3921,9 +3964,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return aggregationResults.getMappedResults();
 	}
 
-	private List<PatientAnalyticResponse> getPatientCountLocalityWise(DateTime fromTime, DateTime toTime,
-			Criteria criteria, Boolean showDetail, String searchType, String doctorId, String locationId,
-			String hospitalId, String searchTerm) {
+	private List<PatientAnalyticResponse> getPatientCountLocalityWise(int page, int size, DateTime fromTime,
+			DateTime toTime, Criteria criteria, Boolean showDetail, String searchType, String doctorId,
+			String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("patient._id", "$userId"),
 				Fields.field("patient.localPatientName", "$localPatientName"),
@@ -4066,14 +4109,30 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		default:
 			break;
 		}
-		Aggregation aggregation = Aggregation
-				.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
-						Aggregation.unwind("user"),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
-				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		Aggregation aggregation = null;
+
+		if (size > 0)
+			aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")),
+							Aggregation.skip((page) * size), Aggregation.limit(size))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		else
+			aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")),
+							Aggregation.skip((page) * size), Aggregation.limit(size))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 				"patient_cl", PatientAnalyticResponse.class);
@@ -4240,9 +4299,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	}
 
-	private List<PatientAnalyticResponse> getVisitedPatientcount(DateTime fromTime, DateTime toTime, Criteria criteria,
-			Boolean showDetail, String searchType, String doctorId, String locationId, String hospitalId,
-			String searchTerm) {
+	private List<PatientAnalyticResponse> getVisitedPatientcount(int page, int size, DateTime fromTime, DateTime toTime,
+			Criteria criteria, Boolean showDetail, String searchType, String doctorId, String locationId,
+			String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 				Fields.field("patient.id", "$patient.userId"),
@@ -4381,15 +4440,31 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			break;
 		}
 
-		Aggregation aggregation = Aggregation
-				.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
-				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		Aggregation aggregation = null;
+
+		if (size > 0)
+			aggregation = Aggregation
+					.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"), Aggregation.match(criteria),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")),
+							Aggregation.skip((page) * size), Aggregation.limit(size))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		else
+			aggregation = Aggregation
+					.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"), Aggregation.match(criteria),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 				"patient_visit_cl", PatientAnalyticResponse.class);
