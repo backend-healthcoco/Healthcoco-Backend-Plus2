@@ -339,7 +339,7 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public List<Recipe> getRecipes(int size, int page, boolean discarded, String searchTerm, String doctorId,
+	public List<Recipe> getRecipeList(int size, int page, boolean discarded, String searchTerm, String doctorId,
 			String locationId, String hospitalId) {
 		List<Recipe> response = null;
 		try {
@@ -354,7 +354,6 @@ public class RecipeServiceImpl implements RecipeService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-
 			
 
 			CustomAggregationOperation aggregationOperationFirst = new CustomAggregationOperation(new BasicDBObject(
@@ -394,6 +393,7 @@ public class RecipeServiceImpl implements RecipeService {
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
+
 			
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -408,10 +408,11 @@ public class RecipeServiceImpl implements RecipeService {
 			response = mongoTemplate.aggregate(aggregation, RecipeCollection.class, Recipe.class).getMappedResults();
 			if (response != null && !response.isEmpty()) {
 				for (Recipe recipe : response) {
-					if (recipe.getRecipeImages() != null && !recipe.getRecipeImages().isEmpty())
-						for (int index = 0; index <= recipe.getRecipeImages().size(); index++) {
+					if (recipe.getRecipeImages() != null && !recipe.getRecipeImages().isEmpty()) {
+						for (int index = 0; index < recipe.getRecipeImages().size(); index++) {
 							recipe.getRecipeImages().add(index, getFinalImageURL(recipe.getRecipeImages().get(index)));
 						}
+					}
 					if (!DPDoctorUtils.anyStringEmpty(recipe.getVideoUrl())) {
 						recipe.setVideoUrl(getFinalImageURL(recipe.getVideoUrl()));
 					}

@@ -1,5 +1,7 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -15,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
@@ -34,7 +37,7 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
+@RestController
 @Path(PathProxy.RECIPE_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -223,6 +226,20 @@ public class RecipeApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.RecipeUrls.GET_RECIPES)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES, notes = PathProxy.RecipeUrls.GET_RECIPES)
+	public Response<Recipe> getRecipes(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
+			@QueryParam("searchTerm") String searchTerm) {
+
+		Response<Recipe> response = new Response<Recipe>();
+		response.setDataList(
+				recipeService.getRecipeList(size, page, discarded, searchTerm, doctorId, locationId, hospitalId));
+		return response;
+	}
+
 	@Path(value = PathProxy.RecipeUrls.GET_RECIPE)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE, notes = PathProxy.RecipeUrls.GET_RECIPE)
@@ -234,19 +251,6 @@ public class RecipeApi {
 		}
 		Response<Recipe> response = new Response<Recipe>();
 		response.setData(recipeService.getRecipe(recipeId));
-		return response;
-	}
-
-	@Path(value = PathProxy.RecipeUrls.GET_RECIPES)
-	@GET
-	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES, notes = PathProxy.RecipeUrls.GET_RECIPES)
-	public Response<Recipe> getRecipes(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") Boolean discarded,
-			@QueryParam("searchTerm") String searchTerm) {
-		Response<Recipe> response = new Response<Recipe>();
-		response.setDataList(
-				recipeService.getRecipes(size, page, discarded, searchTerm, doctorId, locationId, hospitalId));
 		return response;
 	}
 
@@ -343,7 +347,7 @@ public class RecipeApi {
 		response.setDataList(recipeService.getFrequentRecipe(size, page, discarded, userId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE, notes = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE)
