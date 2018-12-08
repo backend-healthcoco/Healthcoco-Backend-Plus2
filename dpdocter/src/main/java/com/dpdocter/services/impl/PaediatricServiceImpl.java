@@ -2,7 +2,10 @@ package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +15,20 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GrowthChart;
+import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.GrowthChartCollection;
 import com.dpdocter.collections.MasterBabyImmunizationCollection;
+import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.VaccineBrandAssociationCollection;
 import com.dpdocter.collections.VaccineCollection;
 import com.dpdocter.exceptions.BusinessException;
@@ -29,8 +38,10 @@ import com.dpdocter.repository.GrowthChartRepository;
 import com.dpdocter.repository.VaccineRepository;
 import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
+import com.dpdocter.response.BabyVaccineReminderResponse;
 import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
 import com.dpdocter.response.MasterVaccineResponse;
+import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
@@ -39,47 +50,43 @@ import com.mongodb.BasicDBObject;
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class PaediatricServiceImpl implements PaediatricService{
-	
+public class PaediatricServiceImpl implements PaediatricService {
+
 	@Autowired
 	private GrowthChartRepository growthChartRepository;
-	
+
 	@Autowired
 	private VaccineRepository vaccineRepository;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Override
 	@Transactional
-	public GrowthChart addEditGrowthChart(GrowthChart growthChart)
-	{
+	public GrowthChart addEditGrowthChart(GrowthChart growthChart) {
 		GrowthChart response = null;
 		GrowthChartCollection growthChartCollection = null;
 		try {
-			if(growthChart.getId() != null)
-			{
+			if (growthChart.getId() != null) {
 				growthChartCollection = growthChartRepository.findOne(new ObjectId(growthChart.getId()));
-			}
-			else
-			{
+			} else {
 				growthChartCollection = new GrowthChartCollection();
 			}
 			BeanUtil.map(growthChart, growthChartCollection);
 			growthChartCollection = growthChartRepository.save(growthChartCollection);
-			if(growthChartCollection != null){
+			if (growthChartCollection != null) {
 				response = new GrowthChart();
-				 BeanUtil.map(growthChartCollection, response);
+				BeanUtil.map(growthChartCollection, response);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 			throw e;
-			
+
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public GrowthChart getGrowthChartById(String id) {
@@ -101,26 +108,20 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
-	
-	/*public List<GrowthChart> getGrowthChartById(String patientId, String doctorId, String locationId, String hospitalId, int page, int size) {
-		List<GrowthChart> growthCharts = null;
-		GrowthChartCollection growthChartCollection = null;
-		try {
-			growthChartCollection = growthChartRepository.findOne(new ObjectId(id));
-			if (growthChartCollection != null) {
-				response = new GrowthChart();
-				BeanUtil.map(growthChartCollection, response);
-			} else {
-				throw new BusinessException(ServiceError.NoRecord, "Record not found");
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			throw e;
 
-		}
-		return response;
-	}*/
+	/*
+	 * public List<GrowthChart> getGrowthChartById(String patientId, String
+	 * doctorId, String locationId, String hospitalId, int page, int size) {
+	 * List<GrowthChart> growthCharts = null; GrowthChartCollection
+	 * growthChartCollection = null; try { growthChartCollection =
+	 * growthChartRepository.findOne(new ObjectId(id)); if
+	 * (growthChartCollection != null) { response = new GrowthChart();
+	 * BeanUtil.map(growthChartCollection, response); } else { throw new
+	 * BusinessException(ServiceError.NoRecord, "Record not found"); } } catch
+	 * (Exception e) { // TODO: handle exception e.printStackTrace(); throw e;
+	 * 
+	 * } return response; }
+	 */
 
 	@Override
 	@Transactional
@@ -143,28 +144,23 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
-	
 
 	@Override
 	@Transactional
-	public VaccineResponse addEditVaccine(VaccineRequest request)
-	{
-		 VaccineResponse response = null;
-		 VaccineCollection vaccineCollection = null;
+	public VaccineResponse addEditVaccine(VaccineRequest request) {
+		VaccineResponse response = null;
+		VaccineCollection vaccineCollection = null;
 		try {
-			if(request.getId() != null)
-			{
+			if (request.getId() != null) {
 				vaccineCollection = vaccineRepository.findOne(new ObjectId(request.getId()));
-			}
-			else
-			{
+			} else {
 				vaccineCollection = new VaccineCollection();
 			}
 			BeanUtil.map(request, vaccineCollection);
 			vaccineCollection = vaccineRepository.save(vaccineCollection);
-			if(vaccineCollection != null){
+			if (vaccineCollection != null) {
 				response = new VaccineResponse();
-				 BeanUtil.map(vaccineCollection, response);
+				BeanUtil.map(vaccineCollection, response);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -172,7 +168,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public Boolean addEditMultipleVaccine(List<VaccineRequest> requests) {
@@ -189,7 +185,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 				vaccineCollection = vaccineRepository.save(vaccineCollection);
 				response = true;
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -212,14 +208,14 @@ public class PaediatricServiceImpl implements PaediatricService{
 				}
 
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public VaccineResponse getVaccineById(String id) {
@@ -241,22 +237,23 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<VaccineResponse> getVaccineList(String patientId , String doctorId, String locationId, String hospitalId , String updatedTime) {
+	public List<VaccineResponse> getVaccineList(String patientId, String doctorId, String locationId, String hospitalId,
+			String updatedTime) {
 		List<VaccineResponse> responses = null;
 		try {
-			//Criteria criteria = new Criteria();
-			
+			// Criteria criteria = new Criteria();
+
 			long createdTimestamp = Long.parseLong(updatedTime);
-			
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
-			
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp));
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
@@ -264,17 +261,19 @@ public class PaediatricServiceImpl implements PaediatricService{
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
-		/*	
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("dueDate", "$vaccineResponses.dueDate"))
-							.append("vaccineResponses", new BasicDBObject("$push", "$vaccineResponses")).append("dueDate",
-									new BasicDBObject("$first", "$diagnosticTest.dueDate"))));
-			
-			*/
+			/*
+			 * AggregationOperation aggregationOperation = new
+			 * CustomAggregationOperation(new BasicDBObject("$group", new
+			 * BasicDBObject("_id", new BasicDBObject("dueDate",
+			 * "$vaccineResponses.dueDate")) .append("vaccineResponses", new
+			 * BasicDBObject("$push", "$vaccineResponses")).append("dueDate",
+			 * new BasicDBObject("$first", "$diagnosticTest.dueDate"))));
+			 * 
+			 */
 			responses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(
 							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
@@ -291,7 +290,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return responses;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<MasterVaccineResponse> getMasterVaccineList(String searchTerm, Boolean isChartVaccine, int page,
@@ -313,8 +312,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 			}
 
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						 Aggregation.skip((page) * size),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
@@ -331,7 +329,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return responses;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId, String vaccineBrandId) {
@@ -371,45 +369,43 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 		return responses;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public List<GroupedVaccineBrandAssociationResponse> getGroupedVaccineBrandAssociation(List<String> vaccineIds)
-	{
+	public List<GroupedVaccineBrandAssociationResponse> getGroupedVaccineBrandAssociation(List<String> vaccineIds) {
 		List<ObjectId> vaccineObjectIds = null;
 		List<GroupedVaccineBrandAssociationResponse> responses = null;
 		try {
 			Criteria criteria = new Criteria();
-			
-			
-			if(vaccineIds != null)
-			{
+
+			if (vaccineIds != null) {
 				vaccineObjectIds = new ArrayList<>();
 				for (String id : vaccineIds) {
 					vaccineObjectIds.add(new ObjectId(id));
 				}
 			}
-			
+
 			if (vaccineIds != null) {
 				criteria.and("vaccineId").in(vaccineObjectIds);
 			}
-			
+
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("name", "$vaccine.name"))
-							.append("vaccine", new BasicDBObject("$push", "$vaccine")).append("name",
-									new BasicDBObject("$first", "$vaccine.name"))
-							.append("id",
-									new BasicDBObject("$first", "$vaccine.id"))));
-			
-			responses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(
-							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-					VaccineBrandAssociationCollection.class, GroupedVaccineBrandAssociationResponse.class).getMappedResults();
+							.append("vaccine", new BasicDBObject("$push", "$vaccine"))
+							.append("name", new BasicDBObject("$first", "$vaccine.name"))
+							.append("id", new BasicDBObject("$first", "$vaccine.id"))));
+
+			responses = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$vaccineBrand")
+													.append("preserveNullAndEmptyArrays", true))),
+									Aggregation.match(criteria), aggregationOperation,
+									Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+							VaccineBrandAssociationCollection.class, GroupedVaccineBrandAssociationResponse.class)
+					.getMappedResults();
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -418,10 +414,58 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 		return responses;
 	}
-	
-	
-	
-	
-	
-	
+
+	//@Scheduled(cron = "0 30 0 * * ?", zone = "IST")
+	@Scheduled(fixedDelay = 15000)
+	@Transactional
+	@Override
+	public void sendBabyVaccineReminder() {
+		System.out.println("IN baby vaccine reminder scheduler");
+		List<BabyVaccineReminderResponse> response = null;
+
+		Aggregation aggregation = null;
+		AggregationOperation aggregationOperation = null;
+		
+		Criteria criteria = new Criteria("dueDate").gte(DPDoctorUtils.getStartTime(new Date())).lte(DPDoctorUtils.getEndTime(new Date()));
+
+		try {
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("patientName", "$patient.firstName"),
+							Fields.field("doctorName", "$doctor.firstName"),
+							Fields.field("locationName", "$location.locationName"),
+							Fields.field("vaccines", "$vaccines")));
+			
+			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id",
+							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
+									.append("patientId", "$patientId"))
+											.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+											.append("locationName", new BasicDBObject("$first", "$locationName"))
+											.append("patientName", new BasicDBObject("$first", "$patientName"))
+											.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
+			
+			
+			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
+					Aggregation.unwind("patient"), Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.unwind("location"), Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccines"),
+					Aggregation.unwind("vaccines"), Aggregation.match(criteria),
+					projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").extractMonth()
+							.as("month").and("dueDate").extractYear().as("year").and("dueDate").extractWeek()
+							.as("week"),
+					aggregationOperation);
+			
+			System.out.println(aggregation);
+			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					VaccineCollection.class, BabyVaccineReminderResponse.class);
+			response = aggregationResults.getMappedResults();
+			
+			System.out.println(" response :: " + response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+	}
+
 }

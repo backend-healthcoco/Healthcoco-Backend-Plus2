@@ -37,4 +37,6 @@ public interface PaediatricService {
 
 	List<MasterVaccineResponse> getMasterVaccineList(String searchTerm, Boolean isChartVaccine, int page, int size);
 
+	void sendBabyVaccineReminder();
+
 }
