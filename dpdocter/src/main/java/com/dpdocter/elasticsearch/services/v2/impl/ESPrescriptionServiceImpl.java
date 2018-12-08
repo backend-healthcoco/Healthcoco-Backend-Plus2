@@ -143,10 +143,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				SearchQuery searchQuery = null;
 
 				if (searchByGenericName) {
-					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
+					searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
 				} else {
-					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
+					searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
 
