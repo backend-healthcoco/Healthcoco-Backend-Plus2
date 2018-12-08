@@ -24,7 +24,7 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
+@Component(value = "ESPrescriptionApiV2")
 @Path(PathProxy.SOLR_PRESCRIPTION_BASEURL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
