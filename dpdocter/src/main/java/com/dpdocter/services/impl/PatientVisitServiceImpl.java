@@ -1808,7 +1808,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				UserCollection user = patientVisitLookupResponse.getPatientUser();
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						null, false, false, false, false, false, false, false, false, false, false);
+						null, false, false, false, false, false, false, false, false, false, false, false, false, false,
+						false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
@@ -1892,7 +1893,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private JasperReportResponse createJasper(PatientVisitLookupResponse patientVisitLookupResponse,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
 			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF,
-			Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
+			Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren, Boolean showPrescription, Boolean showTreatment,
+			Boolean showclinicalNotes, Boolean showVitalSign) throws IOException, ParseException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String resourceId = "<b>VID: </b>"
@@ -1916,7 +1918,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			parameters.put("isEnableTreatmentcost", true);
 		}
 		List<DBObject> prescriptions = null;
-		if (!showUSG) {
+		if (!showUSG && !showPrescription) {
 			if (patientVisitLookupResponse.getPrescriptionId() != null) {
 				prescriptions = new ArrayList<DBObject>();
 				for (ObjectId prescriptionId : patientVisitLookupResponse.getPrescriptionId()) {
@@ -1935,7 +1937,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		List<ClinicalNotesJasperDetails> clinicalNotes = null;
 
-		if (!isLabPrint) {
+		if (!isLabPrint && !showclinicalNotes) {
 			if (patientVisitLookupResponse.getClinicalNotesId() != null) {
 				clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 				String contentLineStyle = (printSettings != null
@@ -1953,7 +1955,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		}
 		List<DBObject> patientTreatments = null;
-		if (!showUSG && !isLabPrint) {
+		if (!showUSG && !isLabPrint && !showTreatment) {
 			if (patientVisitLookupResponse.getTreatmentId() != null) {
 				patientTreatments = new ArrayList<DBObject>();
 				for (ObjectId treatmentId : patientVisitLookupResponse.getTreatmentId()) {
@@ -1967,7 +1969,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 		}
-		if (!showUSG && !isLabPrint) {
+		if (!showUSG && !isLabPrint && !showPrescription) {
 			if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
 				EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository
 						.findOne(patientVisitLookupResponse.getEyePrescriptionId());
@@ -2606,7 +2608,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& clinicalNotesCollection.getLocationId() != null) {
 
 					clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
-					if (clinicalNotesCollection.getVitalSigns() != null) {
+					if (clinicalNotesCollection.getVitalSigns() != null && !showVitalSign) {
 						String vitalSigns = null;
 
 						String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
@@ -3433,7 +3435,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
 						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint, isCustomPDF, showLMP,
-						showEDD, showNoOfChildren);
+						showEDD, showNoOfChildren, showPrescription, showTreatment, showclinicalNotes, showVitalSign);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
