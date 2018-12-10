@@ -1948,7 +1948,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 						ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
 								clinicalNotesId.toString(), contentLineStyle, parameters, showUSG, isCustomPDF, showLMP,
-								showEDD, showNoOfChildren, null, null);
+								showEDD, showNoOfChildren, null,showVitalSign );
 						clinicalNotes.add(clinicalJasperDetails);
 					}
 				}
@@ -2601,7 +2601,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		Boolean showTitle = false;
 		try {
-			if (clinicalNotesCollection == null)
+			if (clinicalNotesCollection == null) {
 				clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
 			if (clinicalNotesCollection != null) {
 				if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
@@ -2857,6 +2857,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							+ sdf.format(clinicalNotesCollection.getFromDate());
 					parameters.put("followUpAppointment", "Next Review on " + dateTime);
 				}
+			}
 			} else {
 				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
 				throw new BusinessException(ServiceError.NotFound,
