@@ -237,9 +237,9 @@ public class PatientVisitApi {
 			@DefaultValue("false") @QueryParam("showLMP") Boolean showLMP,
 			@DefaultValue("false") @QueryParam("showEDD") Boolean showEDD,
 			@DefaultValue("false") @QueryParam("showNoOfChildren") Boolean showNoOfChildren,
-			@DefaultValue("false") @QueryParam("showPrescription") Boolean showPrescription,
-			@DefaultValue("false") @QueryParam("showTreatment") Boolean showTreatment,
-			@DefaultValue("false") @QueryParam("showclinicalNotes") Boolean showclinicalNotes,
+			@DefaultValue("true") @QueryParam("showPrescription") Boolean showPrescription,
+			@DefaultValue("true") @QueryParam("showTreatment") Boolean showTreatment,
+			@DefaultValue("true") @QueryParam("showclinicalNotes") Boolean showclinicalNotes,
 			@DefaultValue("false") @QueryParam("showVitalSign") Boolean showVitalSign) {
 		if (DPDoctorUtils.allStringsEmpty(visitId)) {
 			logger.warn("Invalid Input");

@@ -1808,8 +1808,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				UserCollection user = patientVisitLookupResponse.getPatientUser();
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						null, false, false, false, false, false, false, false, false, false, false, false, false, false,
-						false);
+						null, false, false, false, false, false, false, false, false, false, false, true, true, true,
+						false); 
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
@@ -1918,7 +1918,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			parameters.put("isEnableTreatmentcost", true);
 		}
 		List<DBObject> prescriptions = null;
-		if (!showUSG && !showPrescription) {
+		if (!showUSG && showPrescription) {
 			if (patientVisitLookupResponse.getPrescriptionId() != null) {
 				prescriptions = new ArrayList<DBObject>();
 				for (ObjectId prescriptionId : patientVisitLookupResponse.getPrescriptionId()) {
@@ -1937,7 +1937,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		List<ClinicalNotesJasperDetails> clinicalNotes = null;
 
-		if (!isLabPrint && !showclinicalNotes) {
+		if (!isLabPrint && showclinicalNotes) {
 			if (patientVisitLookupResponse.getClinicalNotesId() != null) {
 				clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 				String contentLineStyle = (printSettings != null
@@ -1948,14 +1948,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 						ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
 								clinicalNotesId.toString(), contentLineStyle, parameters, showUSG, isCustomPDF, showLMP,
-								showEDD, showNoOfChildren, null,showVitalSign );
+								showEDD, showNoOfChildren, null, showVitalSign);
 						clinicalNotes.add(clinicalJasperDetails);
 					}
 				}
 			}
 		}
 		List<DBObject> patientTreatments = null;
-		if (!showUSG && !isLabPrint && !showTreatment) {
+		if (!showUSG && !isLabPrint && showTreatment) {
 			if (patientVisitLookupResponse.getTreatmentId() != null) {
 				patientTreatments = new ArrayList<DBObject>();
 				for (ObjectId treatmentId : patientVisitLookupResponse.getTreatmentId()) {
@@ -1969,7 +1969,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 		}
-		if (!showUSG && !isLabPrint && !showPrescription) {
+		if (!showUSG && !isLabPrint && showPrescription) {
 			if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
 				EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository
 						.findOne(patientVisitLookupResponse.getEyePrescriptionId());
@@ -2603,261 +2603,265 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		try {
 			if (clinicalNotesCollection == null) {
 				clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
-			if (clinicalNotesCollection != null) {
-				if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
-						&& clinicalNotesCollection.getLocationId() != null) {
+				if (clinicalNotesCollection != null) {
+					if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
+							&& clinicalNotesCollection.getLocationId() != null) {
 
-					clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
-					if (clinicalNotesCollection.getVitalSigns() != null && !showVitalSign) {
-						String vitalSigns = null;
+						clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
+						if (clinicalNotesCollection.getVitalSigns() != null && !showVitalSign) {
+							String vitalSigns = null;
 
-						String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-						pulse = (pulse != null && !pulse.isEmpty()
-								? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(pulse))
-							vitalSigns = pulse;
+							String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
+							pulse = (pulse != null && !pulse.isEmpty()
+									? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(pulse))
+								vitalSigns = pulse;
 
-						String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-						temp = (temp != null && !temp.isEmpty()
-								? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(temp)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + temp;
-							else
-								vitalSigns = temp;
-						}
-
-						String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-						breathing = (breathing != null && !breathing.isEmpty()
-								? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(breathing)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + breathing;
-							else
-								vitalSigns = breathing;
-						}
-
-						String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-						weight = (weight != null && !weight.isEmpty()
-								? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(weight)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + weight;
-							else
-								vitalSigns = weight;
-						}
-
-						String bloodPressure = "";
-						if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
-							String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
-							systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
-
-							String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
-									.getDiastolic();
-							diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
-
-							if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-								bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
-										+ VitalSignsUnit.BLOODPRESSURE.getUnit();
-							if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+							String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
+							temp = (temp != null && !temp.isEmpty()
+									? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(temp)) {
 								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-									vitalSigns = vitalSigns + ",  " + bloodPressure;
+									vitalSigns = vitalSigns + ",  " + temp;
 								else
-									vitalSigns = bloodPressure;
+									vitalSigns = temp;
 							}
-						}
 
-						String spo2 = clinicalNotesCollection.getVitalSigns().getSpo2();
-						spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(spo2)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + spo2;
-							else
-								vitalSigns = spo2;
-						}
-						String height = clinicalNotesCollection.getVitalSigns().getHeight();
-						height = (height != null && !height.isEmpty()
-								? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(height)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + height;
-							else
-								vitalSigns = spo2;
-						}
+							String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
+							breathing = (breathing != null && !breathing.isEmpty()
+									? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(breathing)) {
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + breathing;
+								else
+									vitalSigns = breathing;
+							}
 
-						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
-						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-							if (bmi.equalsIgnoreCase("nan")) {
+							String weight = clinicalNotesCollection.getVitalSigns().getWeight();
+							weight = (weight != null && !weight.isEmpty()
+									? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(weight)) {
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + weight;
+								else
+									vitalSigns = weight;
+							}
+
+							String bloodPressure = "";
+							if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
+								String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
+										.getSystolic();
+								systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
+
+								String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
+										.getDiastolic();
+								diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
+
+								if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
+									bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
+											+ VitalSignsUnit.BLOODPRESSURE.getUnit();
+								if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+									if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+										vitalSigns = vitalSigns + ",  " + bloodPressure;
+									else
+										vitalSigns = bloodPressure;
+								}
+							}
+
+							String spo2 = clinicalNotesCollection.getVitalSigns().getSpo2();
+							spo2 = (spo2 != null && !spo2.isEmpty()
+									? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(spo2)) {
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + spo2;
+								else
+									vitalSigns = spo2;
+							}
+							String height = clinicalNotesCollection.getVitalSigns().getHeight();
+							height = (height != null && !height.isEmpty()
+									? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(height)) {
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + height;
+								else
+									vitalSigns = spo2;
+							}
+
+							String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
+							if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+								if (bmi.equalsIgnoreCase("nan")) {
+									bmi = "";
+								}
+
+							} else {
 								bmi = "";
 							}
 
-						} else {
-							bmi = "";
-						}
-
-						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-							bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
 							if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-								vitalSigns = vitalSigns + ",  " + bmi;
-							} else {
-								vitalSigns = bmi;
-							}
-						}
-
-						String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
-						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-							if (bsa.equalsIgnoreCase("nan"))
-								bsa = "";
-
-						} else {
-							bsa = "";
-						}
-						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-							bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + bsa;
-							else
-								vitalSigns = bsa;
-						}
-						clinicalNotesJasperDetails
-								.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
-					}
-
-					clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
-					clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
-					clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
-					clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
-
-					clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
-					clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
-					clinicalNotesJasperDetails
-							.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
-					clinicalNotesJasperDetails.setGeneralExam(clinicalNotesCollection.getGeneralExam());
-					clinicalNotesJasperDetails.setSystemExam(clinicalNotesCollection.getSystemExam());
-					clinicalNotesJasperDetails.setMenstrualHistory(clinicalNotesCollection.getMenstrualHistory());
-					clinicalNotesJasperDetails.setObstetricHistory(clinicalNotesCollection.getObstetricHistory());
-					clinicalNotesJasperDetails
-							.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
-
-					if (!isCustomPDF || showUSG) {
-						clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
-					}
-					clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
-					clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
-					clinicalNotesJasperDetails.setPs(clinicalNotesCollection.getPs());
-					clinicalNotesJasperDetails.setEcgDetails(clinicalNotesCollection.getEcgDetails());
-					clinicalNotesJasperDetails.setxRayDetails(clinicalNotesCollection.getxRayDetails());
-					clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
-					clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
-					clinicalNotesJasperDetails.setProcedureNote(clinicalNotesCollection.getProcedureNote());
-					clinicalNotesJasperDetails.setNoseExam(clinicalNotesCollection.getNoseExam());
-					clinicalNotesJasperDetails
-							.setOralCavityThroatExam(clinicalNotesCollection.getOralCavityThroatExam());
-					clinicalNotesJasperDetails
-							.setIndirectLarygoscopyExam(clinicalNotesCollection.getIndirectLarygoscopyExam());
-					clinicalNotesJasperDetails.setEarsExam(clinicalNotesCollection.getEarsExam());
-					clinicalNotesJasperDetails.setNeckExam(clinicalNotesCollection.getNeckExam());
-					clinicalNotesJasperDetails.setPcNose(clinicalNotesCollection.getPcNose());
-					clinicalNotesJasperDetails.setPcOralCavity(clinicalNotesCollection.getPcOralCavity());
-					clinicalNotesJasperDetails.setPcThroat(clinicalNotesCollection.getPcThroat());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails
-							.setPersonalHistoryTobacco(clinicalNotesCollection.getPersonalHistoryTobacco());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails
-							.setPersonalHistoryAlcohol(clinicalNotesCollection.getPersonalHistoryAlcohol());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails
-							.setPersonalHistorySmoking(clinicalNotesCollection.getPersonalHistorySmoking());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails.setPersonalHistoryDiet(clinicalNotesCollection.getPersonalHistoryDiet());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails
-							.setPersonalHistoryOccupation(clinicalNotesCollection.getPersonalHistoryOccupation());
-					clinicalNotesJasperDetails.setGeneralHistoryDrugs(clinicalNotesCollection.getGeneralHistoryDrugs());
-					clinicalNotesJasperDetails
-							.setGeneralHistoryMedicine(clinicalNotesCollection.getGeneralHistoryMedicine());
-					clinicalNotesJasperDetails
-							.setGeneralHistoryAllergies(clinicalNotesCollection.getGeneralHistoryAllergies());
-					clinicalNotesJasperDetails
-							.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
-					clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
-					clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
-					clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
-					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
-						parameters.put("ComplaintsTitle", "Complaints :");
-						showTitle = true;
-					}
-					parameters.put("showPCTitle", showTitle);
-					showTitle = false;
-					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
-						parameters.put("Examination", "Examination :");
-						showTitle = true;
-					}
-					parameters.put("showExamTitle", showTitle);
-
-					if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
-						clinicalNotesJasperDetails
-								.setLmp(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
-					if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
-						clinicalNotesJasperDetails
-								.setEdd(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
-					if ((!isCustomPDF || showNoOfChildren) && (clinicalNotesCollection.getNoOfMaleChildren() > 0
-							|| clinicalNotesCollection.getNoOfFemaleChildren() > 0)) {
-						clinicalNotesJasperDetails.setNoOfChildren(clinicalNotesCollection.getNoOfMaleChildren() + "|"
-								+ clinicalNotesCollection.getNoOfFemaleChildren());
-					}
-
-					List<DBObject> diagramIds = new ArrayList<DBObject>();
-					if (clinicalNotesCollection.getDiagrams() != null)
-						for (ObjectId diagramId : clinicalNotesCollection.getDiagrams()) {
-							DBObject diagram = new BasicDBObject();
-							DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
-							if (diagramsCollection != null) {
-								if (diagramsCollection.getDiagramUrl() != null) {
-									diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
+								bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
+								if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+									vitalSigns = vitalSigns + ",  " + bmi;
+								} else {
+									vitalSigns = bmi;
 								}
-								diagram.put("tags", diagramsCollection.getTags());
-								diagramIds.add(diagram);
 							}
-						}
-					if (!diagramIds.isEmpty())
-						clinicalNotesJasperDetails.setDiagrams(diagramIds);
-					else
-						clinicalNotesJasperDetails.setDiagrams(null);
-				}
-				if (parameters.get("followUpAppointment") == null
-						&& !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId())
-						&& clinicalNotesCollection.getTime() != null) {
-					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-					String _24HourTime = String.format("%02d:%02d",
-							clinicalNotesCollection.getTime().getFromTime() / 60,
-							clinicalNotesCollection.getTime().getFromTime() % 60);
-					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-					sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-					_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-					_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 
-					Date _24HourDt = _24HourSDF.parse(_24HourTime);
-					String dateTime = _12HourSDF.format(_24HourDt) + ", "
-							+ sdf.format(clinicalNotesCollection.getFromDate());
-					parameters.put("followUpAppointment", "Next Review on " + dateTime);
+							String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
+							if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+								if (bsa.equalsIgnoreCase("nan"))
+									bsa = "";
+
+							} else {
+								bsa = "";
+							}
+							if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+								bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + bsa;
+								else
+									vitalSigns = bsa;
+							}
+							clinicalNotesJasperDetails
+									.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+						}
+
+						clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
+						clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
+						clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
+						clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
+
+						clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
+						clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
+						clinicalNotesJasperDetails
+								.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
+						clinicalNotesJasperDetails.setGeneralExam(clinicalNotesCollection.getGeneralExam());
+						clinicalNotesJasperDetails.setSystemExam(clinicalNotesCollection.getSystemExam());
+						clinicalNotesJasperDetails.setMenstrualHistory(clinicalNotesCollection.getMenstrualHistory());
+						clinicalNotesJasperDetails.setObstetricHistory(clinicalNotesCollection.getObstetricHistory());
+						clinicalNotesJasperDetails
+								.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
+
+						if (!isCustomPDF || showUSG) {
+							clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
+						}
+						clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
+						clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
+						clinicalNotesJasperDetails.setPs(clinicalNotesCollection.getPs());
+						clinicalNotesJasperDetails.setEcgDetails(clinicalNotesCollection.getEcgDetails());
+						clinicalNotesJasperDetails.setxRayDetails(clinicalNotesCollection.getxRayDetails());
+						clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
+						clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
+						clinicalNotesJasperDetails.setProcedureNote(clinicalNotesCollection.getProcedureNote());
+						clinicalNotesJasperDetails.setNoseExam(clinicalNotesCollection.getNoseExam());
+						clinicalNotesJasperDetails
+								.setOralCavityThroatExam(clinicalNotesCollection.getOralCavityThroatExam());
+						clinicalNotesJasperDetails
+								.setIndirectLarygoscopyExam(clinicalNotesCollection.getIndirectLarygoscopyExam());
+						clinicalNotesJasperDetails.setEarsExam(clinicalNotesCollection.getEarsExam());
+						clinicalNotesJasperDetails.setNeckExam(clinicalNotesCollection.getNeckExam());
+						clinicalNotesJasperDetails.setPcNose(clinicalNotesCollection.getPcNose());
+						clinicalNotesJasperDetails.setPcOralCavity(clinicalNotesCollection.getPcOralCavity());
+						clinicalNotesJasperDetails.setPcThroat(clinicalNotesCollection.getPcThroat());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistoryTobacco(clinicalNotesCollection.getPersonalHistoryTobacco());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistoryAlcohol(clinicalNotesCollection.getPersonalHistoryAlcohol());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistorySmoking(clinicalNotesCollection.getPersonalHistorySmoking());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistoryDiet(clinicalNotesCollection.getPersonalHistoryDiet());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistoryOccupation(clinicalNotesCollection.getPersonalHistoryOccupation());
+						clinicalNotesJasperDetails
+								.setGeneralHistoryDrugs(clinicalNotesCollection.getGeneralHistoryDrugs());
+						clinicalNotesJasperDetails
+								.setGeneralHistoryMedicine(clinicalNotesCollection.getGeneralHistoryMedicine());
+						clinicalNotesJasperDetails
+								.setGeneralHistoryAllergies(clinicalNotesCollection.getGeneralHistoryAllergies());
+						clinicalNotesJasperDetails
+								.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
+						clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
+						clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
+						clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
+						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
+							parameters.put("ComplaintsTitle", "Complaints :");
+							showTitle = true;
+						}
+						parameters.put("showPCTitle", showTitle);
+						showTitle = false;
+						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
+							parameters.put("Examination", "Examination :");
+							showTitle = true;
+						}
+						parameters.put("showExamTitle", showTitle);
+
+						if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
+							clinicalNotesJasperDetails.setLmp(
+									new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
+						if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
+							clinicalNotesJasperDetails.setEdd(
+									new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
+						if ((!isCustomPDF || showNoOfChildren) && (clinicalNotesCollection.getNoOfMaleChildren() > 0
+								|| clinicalNotesCollection.getNoOfFemaleChildren() > 0)) {
+							clinicalNotesJasperDetails.setNoOfChildren(clinicalNotesCollection.getNoOfMaleChildren()
+									+ "|" + clinicalNotesCollection.getNoOfFemaleChildren());
+						}
+
+						List<DBObject> diagramIds = new ArrayList<DBObject>();
+						if (clinicalNotesCollection.getDiagrams() != null)
+							for (ObjectId diagramId : clinicalNotesCollection.getDiagrams()) {
+								DBObject diagram = new BasicDBObject();
+								DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
+								if (diagramsCollection != null) {
+									if (diagramsCollection.getDiagramUrl() != null) {
+										diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
+									}
+									diagram.put("tags", diagramsCollection.getTags());
+									diagramIds.add(diagram);
+								}
+							}
+						if (!diagramIds.isEmpty())
+							clinicalNotesJasperDetails.setDiagrams(diagramIds);
+						else
+							clinicalNotesJasperDetails.setDiagrams(null);
+					}
+					if (parameters.get("followUpAppointment") == null
+							&& !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId())
+							&& clinicalNotesCollection.getTime() != null) {
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+						String _24HourTime = String.format("%02d:%02d",
+								clinicalNotesCollection.getTime().getFromTime() / 60,
+								clinicalNotesCollection.getTime().getFromTime() % 60);
+						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+
+						Date _24HourDt = _24HourSDF.parse(_24HourTime);
+						String dateTime = _12HourSDF.format(_24HourDt) + ", "
+								+ sdf.format(clinicalNotesCollection.getFromDate());
+						parameters.put("followUpAppointment", "Next Review on " + dateTime);
+					}
 				}
-			}
 			} else {
 				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
 				throw new BusinessException(ServiceError.NotFound,
