@@ -533,7 +533,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					BeanUtil.map(patientVisitlookupBean, patientVisitResponse);
 
 					if (patientVisitlookupBean.getPrescriptionId() != null) {
-						List<Prescription> prescriptions = prescriptionServices.getPrescriptionsByIds(
+						List<Prescription> prescriptions = prescriptionServices.getPrescriptionsByIdsForEMR(
 								patientVisitlookupBean.getPrescriptionId(), patientVisitlookupBean.getId());
 						patientVisitResponse.setPrescriptions(prescriptions);
 					}

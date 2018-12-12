@@ -58,6 +58,8 @@ public interface PrescriptionServices {
 	List<Prescription> getPrescriptionsForEMR(int page, int size, String doctorId, String hospitalId, String locationId,
 			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
 
+	List<Prescription> getPrescriptionsByIdsForEMR(List<ObjectId> prescriptionIds, ObjectId visitId);
+
 	/*
 	 * List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds,
 	 * ObjectId visitId);

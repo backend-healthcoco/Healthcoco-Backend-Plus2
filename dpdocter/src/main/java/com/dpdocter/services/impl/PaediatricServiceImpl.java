@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.lucene.search.grouping.AbstractGroupFacetCollector.GroupedFacetResult;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -19,11 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GrowthChart;
-import com.dpdocter.beans.PatientCard;
-import com.dpdocter.beans.VaccineBrandAssociation;
 import com.dpdocter.collections.GrowthChartCollection;
 import com.dpdocter.collections.MasterBabyImmunizationCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.VaccineBrandAssociationCollection;
 import com.dpdocter.collections.VaccineCollection;
 import com.dpdocter.exceptions.BusinessException;
@@ -428,8 +424,59 @@ public class PaediatricServiceImpl implements PaediatricService{
 	}
 	
 	
-	
-	
-	
-	
+/*
+	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
+	//@Scheduled(fixedDelay = 15000)
+	@Transactional
+	@Override
+	public void sendBabyVaccineReminder() {
+		System.out.println("IN baby vaccine reminder scheduler");
+		List<BabyVaccineReminderResponse> response = null;
+
+		Aggregation aggregation = null;
+		AggregationOperation aggregationOperation = null;
+		
+		Criteria criteria = new Criteria("dueDate").gte(DPDoctorUtils.getStartTime(new Date())).lte(DPDoctorUtils.getEndTime(new Date()));
+
+		try {
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("patientName", "$patient.firstName"),
+							Fields.field("doctorName", "$doctor.firstName"),
+							Fields.field("locationName", "$location.locationName"),
+							Fields.field("vaccines", "$vaccines")));
+			
+			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id",
+							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
+									.append("patientId", "$patientId"))
+											.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+											.append("locationName", new BasicDBObject("$first", "$locationName"))
+											.append("patientName", new BasicDBObject("$first", "$patientName"))
+											.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
+			
+			
+			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
+					Aggregation.unwind("patient"), Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.unwind("location"), Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccines"),
+					Aggregation.unwind("vaccines"), Aggregation.match(criteria),
+					projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").extractMonth()
+							.as("month").and("dueDate").extractYear().as("year").and("dueDate").extractWeek()
+							.as("week"),
+					aggregationOperation);
+			
+			//System.out.println(aggregation);
+			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					VaccineCollection.class, BabyVaccineReminderResponse.class);
+			response = aggregationResults.getMappedResults();
+			
+			//System.out.println(" response :: " + response);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+	}
+
+>>>>>>> Stashed changes*/
 }
