@@ -4,31 +4,33 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.v2.GenericCode;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionAddItem {
-    private String drugId;
-    
-    private DrugType drugType;
+	private String drugId;
 
-    private String drugName;
-    
-    private String explanation;
+	private DrugType drugType;
 
-    private Duration duration;
+	private String drugName;
 
-    private String dosage;
+	private String explanation;
 
-    private List<Long> dosageTime;
-    
-    private List<DrugDirection> direction;
+	private Duration duration;
 
-    private String instructions;
-    
-    private Long inventoryQuantity;
-    
-    public DrugType getDrugType() {
-		return drugType;
-	}
+	private String dosage;
+
+	private List<Long> dosageTime;
+
+	private List<DrugDirection> direction;
+
+	private String instructions;
+
+	private Long inventoryQuantity;
+
+	private Integer drugQuantity;
+
+	private List<GenericCode> genericNames;
 
 	public void setDrugType(DrugType drugType) {
 		this.drugType = drugType;
@@ -59,14 +61,14 @@ public class PrescriptionAddItem {
 	}
 
 	public Duration getDuration() {
-	return duration;
-    }
+		return duration;
+	}
 
-    public void setDuration(Duration duration) {
-	this.duration = duration;
-    }
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
 
-    public String getDosage() {
+	public String getDosage() {
 		return dosage;
 	}
 
@@ -83,20 +85,20 @@ public class PrescriptionAddItem {
 	}
 
 	public List<DrugDirection> getDirection() {
-	return direction;
-    }
+		return direction;
+	}
 
-    public void setDirection(List<DrugDirection> direction) {
-	this.direction = direction;
-    }
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
 
-    public String getInstructions() {
-	return instructions;
-    }
+	public String getInstructions() {
+		return instructions;
+	}
 
-    public void setInstructions(String instructions) {
-	this.instructions = instructions;
-    }
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
 
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
@@ -106,9 +108,32 @@ public class PrescriptionAddItem {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
+	public DrugType getDrugType() {
+		return drugType;
+	}
+
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
-		return "PrescriptionItem [drugId=" + drugId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
+		return "PrescriptionAddItem [drugId=" + drugId + ", drugType=" + drugType + ", drugName=" + drugName
+				+ ", explanation=" + explanation + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
+				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + ", inventoryQuantity="
+				+ inventoryQuantity + ", drugQuantity=" + drugQuantity + ", genericNames=" + genericNames + "]";
 	}
 }
