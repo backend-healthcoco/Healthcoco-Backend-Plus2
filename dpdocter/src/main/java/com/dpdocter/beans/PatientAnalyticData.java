@@ -12,6 +12,8 @@ public class PatientAnalyticData {
 	private WorkingHours visitedTime;
 	private String PNUM;
 	private String mobileNumber;
+	private DOB dob;	
+	private Address address;
 	
 	public String getId() {
 		return id;

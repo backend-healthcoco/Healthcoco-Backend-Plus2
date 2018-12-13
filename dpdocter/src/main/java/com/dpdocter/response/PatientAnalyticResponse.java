@@ -3,6 +3,9 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.beans.Address;
+import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.GroupPatientCount;
 import com.dpdocter.beans.PatientAnalyticData;
 
 public class PatientAnalyticResponse {
@@ -18,21 +21,9 @@ public class PatientAnalyticResponse {
 
 	private String city;
 
-	private String groupName;
-
-	private String groupId;
-
-	private List<PatientAnalyticData> patients;
-
 	private Date date;
 
-	public String getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+	private List<PatientAnalyticData> patients;
 
 	public int getWeek() {
 		return week;
@@ -82,12 +73,12 @@ public class PatientAnalyticResponse {
 		this.count = count;
 	}
 
-	public String getGroupName() {
-		return groupName;
+	public String getCity() {
+		return city;
 	}
 
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	public List<PatientAnalyticData> getPatients() {
@@ -96,14 +87,6 @@ public class PatientAnalyticResponse {
 
 	public void setPatients(List<PatientAnalyticData> patients) {
 		this.patients = patients;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
 	}
 
 }

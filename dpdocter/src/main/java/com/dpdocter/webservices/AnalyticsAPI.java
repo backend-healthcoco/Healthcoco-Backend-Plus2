@@ -59,18 +59,16 @@ public class AnalyticsAPI {
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
 	public Response<PatientAnalyticResponse> getPatientAnalyticnData(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("page") int page,@QueryParam("size") int size,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@DefaultValue("NEW_PATIENT") @QueryParam("queryType") String queryType,
 			@DefaultValue("DAILY") @QueryParam("searchType") String searchType,
-			@QueryParam("searchTerm") String searchTerm,
-			@DefaultValue("false") @QueryParam("showDetail") Boolean showDetail) {
+			@QueryParam("searchTerm") String searchTerm) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
 		}
-		List<PatientAnalyticResponse> patientAnalyticResponse = analyticsService.getPatientCount(size,page,doctorId, locationId,
-				hospitalId, fromDate, toDate, queryType, searchType, searchTerm, showDetail);
+		List<PatientAnalyticResponse> patientAnalyticResponse = analyticsService.getPatientAnalytic(doctorId,
+				locationId, hospitalId, fromDate, toDate, queryType, searchType, searchTerm);
 
 		Response<PatientAnalyticResponse> response = new Response<PatientAnalyticResponse>();
 		response.setDataList(patientAnalyticResponse);

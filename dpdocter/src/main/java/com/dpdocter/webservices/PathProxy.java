@@ -1905,7 +1905,7 @@ public interface PathProxy {
 		public static final String ADD_APPOINTMENT = "/add";
 
 	}
-	
+
 	public static final String Lab_PRINT_BASE_URL = BASE_URL + "/labPrint";
 
 	public interface LabPrintUrls {
