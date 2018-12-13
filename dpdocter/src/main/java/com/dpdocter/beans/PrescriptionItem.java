@@ -5,6 +5,8 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 
+import com.dpdocter.beans.v2.GenericCode;
+
 public class PrescriptionItem {
 	private ObjectId drugId;
 
@@ -32,6 +34,8 @@ public class PrescriptionItem {
 
 	@Transient
 	private Long arrayIndex1;
+	
+	private List<GenericCode> genericNames;
 
 	public PrescriptionItem() {
 		super();
@@ -50,7 +54,6 @@ public class PrescriptionItem {
 		this.direction = direction;
 		this.instructions = instructions;
 	}
-
 
 	public DrugType getDrugType() {
 		return drugType;
@@ -154,6 +157,13 @@ public class PrescriptionItem {
 
 	public void setAnalyticsDrugQuantity(Integer analyticsDrugQuantity) {
 		this.analyticsDrugQuantity = analyticsDrugQuantity;
+	}
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
 	}
 
 	@Override

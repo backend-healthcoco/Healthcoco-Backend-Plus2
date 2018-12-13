@@ -23,7 +23,7 @@ public class PrescriptionItemDetail {
 	private Integer drugQuantity;
 
 	private Long totalStock;
-	
+
 	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
 
 	private String explanation;
@@ -35,6 +35,8 @@ public class PrescriptionItemDetail {
 	private String instructions;
 
 	private Long inventoryQuantity;
+
+	private List<GenericCode> genericNames;
 
 	public Drug getDrug() {
 		return drug;
@@ -150,8 +152,19 @@ public class PrescriptionItemDetail {
 
 	@Override
 	public String toString() {
-		return "PrescriptionItemDetail [drug=" + drug + ", inventoryBatchs=" + inventoryBatchs + ", inventoryQuantity="
-				+ inventoryQuantity + "]";
+		return "PrescriptionItemDetail [drug=" + drug + ", drugId=" + drugId + ", duration=" + duration + ", dosage="
+				+ dosage + ", drugType=" + drugType + ", drugName=" + drugName + ", drugQuantity=" + drugQuantity
+				+ ", totalStock=" + totalStock + ", inventoryBatchs=" + inventoryBatchs + ", explanation=" + explanation
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions
+				+ ", inventoryQuantity=" + inventoryQuantity + ", genericNames=" + genericNames + "]";
+	}
+
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
 	}
 
 }

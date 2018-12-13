@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.v2.GenericCode;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionAddItem {
 	private String drugId;
@@ -24,10 +26,11 @@ public class PrescriptionAddItem {
 
 	private String instructions;
 
+	private Long inventoryQuantity;
+
 	private Integer drugQuantity;
 
-	private Long inventoryQuantity;
-	
+	private List<GenericCode> genericNames;
 
 	public void setDrugType(DrugType drugType) {
 		this.drugType = drugType;
@@ -117,11 +120,19 @@ public class PrescriptionAddItem {
 		return drugType;
 	}
 
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionAddItem [drugId=" + drugId + ", drugType=" + drugType + ", drugName=" + drugName
 				+ ", explanation=" + explanation + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + ", drugQuantity="
-				+ drugQuantity + ", inventoryQuantity=" + inventoryQuantity + "]";
+				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + ", inventoryQuantity="
+				+ inventoryQuantity + ", drugQuantity=" + drugQuantity + ", genericNames=" + genericNames + "]";
 	}
 }

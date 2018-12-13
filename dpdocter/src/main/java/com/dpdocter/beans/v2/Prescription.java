@@ -28,7 +28,7 @@ public class Prescription extends GenericCollection {
 
 	private List<PrescriptionItemDetail> items;
 
-//	private List<TestAndRecordData> tests;
+	// private List<TestAndRecordData> tests;
 
 	private Boolean inHistory = false;
 
@@ -49,7 +49,7 @@ public class Prescription extends GenericCollection {
 	private WorkingHours time;
 
 	private Date fromDate;
-	
+
 	public List<TestAndRecordData> tests;
 
 	private AppointmentDetails appointmentRequest;
@@ -217,6 +217,7 @@ public class Prescription extends GenericCollection {
 	public void setQuantity(Quantity quantity) {
 		this.quantity = quantity;
 	}
+
 
 	@Override
 	public String toString() {
