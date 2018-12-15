@@ -1572,6 +1572,7 @@ public interface PathProxy {
 
 	public interface AnalyticsUrls {
 		public static final String GET_PATIENT_ANALYTICS_DATA = "/patient/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_PATIENT_DETAIL = "/patient/detail/{doctorId}/{locationId}/{hospitalId}";
 		public static final String GET_MOST_PRESCRIBED_PRESCRIPTION_ITEMS = "/mostPrescribed/{type}/{locationId}/{hospitalId}";
 		public static final String GET_APPOINTMENT_ANALYTICS_DATA = "/appointment";
 		public static final String GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA = "/appointment/averageTime";

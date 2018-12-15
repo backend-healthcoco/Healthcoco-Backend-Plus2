@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dpdocter.beans.PatientAnalyticData;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.exceptions.BusinessException;
@@ -36,6 +37,7 @@ import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.PaymentAnalyticsDataResponse;
 import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 import com.dpdocter.services.AnalyticsService;
+import com.dpdocter.services.PatientAnalyticService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -54,10 +56,13 @@ public class AnalyticsAPI {
 	@Autowired
 	private AnalyticsService analyticsService;
 
+	@Autowired
+	private PatientAnalyticService patientAnalyticService;
+
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
-	public Response<PatientAnalyticResponse> getPatientAnalyticnData(@PathParam("doctorId") String doctorId,
+	public Response<PatientAnalyticResponse> getPatientAnalyticData(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@DefaultValue("NEW_PATIENT") @QueryParam("queryType") String queryType,
@@ -67,11 +72,33 @@ public class AnalyticsAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
 		}
-		List<PatientAnalyticResponse> patientAnalyticResponse = analyticsService.getPatientAnalytic(doctorId,
+		List<PatientAnalyticResponse> patientAnalyticResponse = patientAnalyticService.getPatientAnalytic(doctorId,
 				locationId, hospitalId, fromDate, toDate, queryType, searchType, searchTerm);
 
 		Response<PatientAnalyticResponse> response = new Response<PatientAnalyticResponse>();
 		response.setDataList(patientAnalyticResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_DETAIL)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_DETAIL, notes = PathProxy.AnalyticsUrls.GET_PATIENT_DETAIL)
+	public Response<PatientAnalyticData> getPatientDetail(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("toDate") String toDate, @DefaultValue("NEW_PATIENT") @QueryParam("queryType") String queryType,
+			@QueryParam("city") String city, @QueryParam("searchTerm") String searchTerm) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId, locationId, hospitalId should not be empty");
+		}
+		List<PatientAnalyticData> patientDataResponse = patientAnalyticService.getPatientData(page, size, doctorId,
+				locationId, hospitalId, fromDate, toDate, queryType, searchTerm, city);
+
+		Response<PatientAnalyticData> response = new Response<PatientAnalyticData>();
+		response.setDataList(patientDataResponse);
+		response.setCount(patientAnalyticService.getPatientCount(doctorId, locationId, hospitalId, fromDate, toDate,
+				queryType, searchTerm, city));
 		return response;
 	}
 

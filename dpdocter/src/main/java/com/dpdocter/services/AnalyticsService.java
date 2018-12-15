@@ -27,10 +27,7 @@ public interface AnalyticsService {
 
 	public DoctorprescriptionAnalyticResponse getPrescriptionAnalytic(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate);
-
-	List<PatientAnalyticResponse> getPatientAnalytic(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String queryType, String searchType, String searchTerm);
-
+	
 	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
 
