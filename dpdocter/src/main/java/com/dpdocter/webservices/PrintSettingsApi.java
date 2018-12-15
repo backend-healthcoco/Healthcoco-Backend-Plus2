@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.DentalLabPrintSetting;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -165,4 +165,17 @@ public class PrintSettingsApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.PrintSettingsUrls.UPLOAD_FILE)
+	@POST
+	@ApiOperation(value = PathProxy.PrintSettingsUrls.UPLOAD_FILE, notes = PathProxy.PrintSettingsUrls.UPLOAD_FILE)
+	public Response<String> upladFile(FileDetails fileDetails, @QueryParam("type") String type) {
+		if (DPDoctorUtils.anyStringEmpty(type)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<String> response = new Response<String>();
+
+		return response;
+	}
 }

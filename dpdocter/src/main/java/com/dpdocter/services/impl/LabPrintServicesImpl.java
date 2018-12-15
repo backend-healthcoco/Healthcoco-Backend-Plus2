@@ -1,7 +1,6 @@
 package com.dpdocter.services.impl;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,12 +15,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.DentalWork;
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabPrintContentSetup;
 import com.dpdocter.beans.LabPrintDocument;
 import com.dpdocter.beans.LabPrintSetting;
-import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.LabPrintDocumentsCollection;
 import com.dpdocter.collections.LabPrintSettingCollection;
 import com.dpdocter.collections.UserCollection;

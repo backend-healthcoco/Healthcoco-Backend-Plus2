@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -30,6 +32,8 @@ import com.dpdocter.repository.DentalLabPrintSettingRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
+import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.PrintSettingsService;
 
 import common.util.web.DPDoctorUtils;
@@ -53,6 +57,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private FileManager fileManager;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -341,4 +348,23 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			return null;
 
 	}
+
+	@Override
+	public String uploadFile(FileDetails fileDetails, String type) {
+		ImageURLResponse response = null;
+		String path = "";
+		try {
+
+			fileDetails.setFileName(fileDetails.getFileName() + new Date());
+			path = "print/setup" + File.separator + type;
+			 response = fileManager.saveImageAndReturnImageUrl(fileDetails, path, false);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while uploading Image");
+			throw new BusinessException(ServiceError.Unknown, " Error occured while uploading Image");
+		}
+		return getFinalImageURL(response.getImageUrl().replaceAll(imagePath, ""));
+	}
+
 }
