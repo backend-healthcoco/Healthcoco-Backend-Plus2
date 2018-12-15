@@ -859,6 +859,8 @@ public interface PathProxy {
 
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
+		public static final String UPLOAD_FILE = "/upload/file/";
+
 	}
 
 	public static final String SOLR_CLINICAL_NOTES_BASEURL = BASE_URL + "/solr/clinicalNotes";
