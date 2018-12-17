@@ -3591,6 +3591,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 					break;
 				}
+			}else {
+				throw new BusinessException(ServiceError.NotFound,
+						"Error while geting patient last Visit : Last Visit not found");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

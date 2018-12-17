@@ -1131,7 +1131,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			}
 
-			if(request.getIsChild() == true)
+			if(request.getIsChild()!=null&&request.getIsChild() == true)
 			{
 				createImmunisationChart(registeredPatientDetails);
 			}
