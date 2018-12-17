@@ -1048,7 +1048,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				new JRDesignExpression("!$P{headerImage}.equals(null) && !$P{headerImage}.isEmpty()"));
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
 		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
-		jrDesignImage.setExpression(new JRDesignExpression("$P{headerImg}"));
+		jrDesignImage.setExpression(new JRDesignExpression("$P{headerImage}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(0);
 		jrDesignImage.setHeight(headerHeight);
