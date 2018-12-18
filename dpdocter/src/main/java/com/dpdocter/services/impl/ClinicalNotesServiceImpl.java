@@ -8410,20 +8410,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					objectIds.add(new ObjectId(id));
 			}
 			Aggregation aggregate = Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(objectIds)),
-					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
-					new CustomAggregationOperation(new BasicDBObject("$redact",
-							new BasicDBObject("$cond",
-									new BasicDBObject()
-											.append("if", Arrays.asList("$patient.locationId", "$locationId"))
-											.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"),
 					Aggregation.sort(new Sort(Direction.ASC, "createdTime")));
 			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate
 					.aggregate(aggregate.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
 							ClinicalNotesCollection.class, ClinicalnoteLookupBean.class)
-					.getMappedResults();			
+					.getMappedResults();
 			if (clinicalnoteLookupBeans != null && !clinicalnoteLookupBeans.isEmpty()) {
-				PatientCollection patient = clinicalnoteLookupBeans.get(0).getPatient();
+				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+						clinicalnoteLookupBeans.get(0).getPatientId(), clinicalnoteLookupBeans.get(0).getDoctorId(),
+						clinicalnoteLookupBeans.get(0).getLocationId(), clinicalnoteLookupBeans.get(0).getHospitalId());
 				UserCollection user = clinicalnoteLookupBeans.get(0).getPatientUser();
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
