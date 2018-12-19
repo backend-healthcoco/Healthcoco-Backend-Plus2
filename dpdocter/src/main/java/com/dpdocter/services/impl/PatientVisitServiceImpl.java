@@ -1809,7 +1809,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
 						null, false, false, false, false, false, false, false, false, false, false, true, true, true,
-						false); 
+						false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
@@ -2601,7 +2601,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		Boolean showTitle = false;
 		try {
-			if (clinicalNotesCollection == null) {
+			if (clinicalNotesId != null) {
 				clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
 				if (clinicalNotesCollection != null) {
 					if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
@@ -2861,11 +2861,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								+ sdf.format(clinicalNotesCollection.getFromDate());
 						parameters.put("followUpAppointment", "Next Review on " + dateTime);
 					}
+				} else {
+					logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
+
+					throw new BusinessException(ServiceError.NotFound,
+							"Clinical Notes not found. Please check clinicalNotesId.");
 				}
-			} else {
-				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
-				throw new BusinessException(ServiceError.NotFound,
-						"Clinical Notes not found. Please check clinicalNotesId.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3591,7 +3592,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 					break;
 				}
-			}else {
+			} else {
 				throw new BusinessException(ServiceError.NotFound,
 						"Error while geting patient last Visit : Last Visit not found");
 			}
