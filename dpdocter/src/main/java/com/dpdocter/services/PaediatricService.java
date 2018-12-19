@@ -37,4 +37,9 @@ public interface PaediatricService {
 
 	List<MasterVaccineResponse> getMasterVaccineList(String searchTerm, Boolean isChartVaccine, int page, int size);
 
+	void sendBabyVaccineReminder();
+
+	List<GrowthChart> getGrowthChartList(String patientId, String doctorId, String locationId, String hospitalId,
+			String updatedTime);
+
 }

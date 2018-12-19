@@ -102,25 +102,48 @@ public class PaediatricServiceImpl implements PaediatricService{
 		return response;
 	}
 	
-	/*public List<GrowthChart> getGrowthChartById(String patientId, String doctorId, String locationId, String hospitalId, int page, int size) {
-		List<GrowthChart> growthCharts = null;
-		GrowthChartCollection growthChartCollection = null;
+	@Override
+	@Transactional
+	public List<GrowthChart> getGrowthChartList(String patientId, String doctorId, String locationId, String hospitalId,
+			String updatedTime) {
+		List<GrowthChart> responses = null;
 		try {
-			growthChartCollection = growthChartRepository.findOne(new ObjectId(id));
-			if (growthChartCollection != null) {
-				response = new GrowthChart();
-				BeanUtil.map(growthChartCollection, response);
-			} else {
-				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			// Criteria criteria = new Criteria();
+
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
+
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			
+			criteria.and("discarded").is(false);
+			
+			responses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+					GrowthChartCollection.class, GrowthChart.class).getMappedResults();
+
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw e;
 
 		}
-		return response;
-	}*/
+		return responses;
+	}
 
 	@Override
 	@Transactional
@@ -421,6 +444,12 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 
 		return responses;
+	}
+
+	@Override
+	public void sendBabyVaccineReminder() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
