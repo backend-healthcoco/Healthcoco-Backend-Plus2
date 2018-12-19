@@ -15,10 +15,10 @@ public class ClinicalNotes extends GenericCollection {
 
 	private String uniqueEmrId;
 
-//	private List<Diagnoses> diagnoses;
+	// private List<Diagnoses> diagnoses;
 
 	private List<ObjectId> diagramIds;
-	
+
 	private List<Diagram> diagrams;
 
 	private String note;
@@ -102,6 +102,7 @@ public class ClinicalNotes extends GenericCollection {
 	private String generalHistorySurgical;
 
 	private String painScale;
+	private String priorConsultations;
 
 	private boolean inHistory = false;
 
@@ -145,13 +146,13 @@ public class ClinicalNotes extends GenericCollection {
 		this.id = id;
 	}
 
-//	public List<Diagnoses> getDiagnoses() {
-//		return diagnoses;
-//	}
-//
-//	public void setDiagnoses(List<Diagnoses> diagnoses) {
-//		this.diagnoses = diagnoses;
-//	}
+	// public List<Diagnoses> getDiagnoses() {
+	// return diagnoses;
+	// }
+	//
+	// public void setDiagnoses(List<Diagnoses> diagnoses) {
+	// this.diagnoses = diagnoses;
+	// }
 
 	public List<Diagram> getDiagrams() {
 		return diagrams;
@@ -631,6 +632,14 @@ public class ClinicalNotes extends GenericCollection {
 
 	public void setDiagramIds(List<ObjectId> diagramIds) {
 		this.diagramIds = diagramIds;
+	}
+
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
 	}
 
 	@Override

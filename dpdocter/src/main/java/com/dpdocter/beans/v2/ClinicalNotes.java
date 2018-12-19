@@ -131,6 +131,8 @@ public class ClinicalNotes extends GenericCollection {
 
 	private int noOfMaleChildren;
 
+	private String priorConsultations;
+
 	public AppointmentDetails getAppointmentRequest() {
 		return appointmentRequest;
 	}
@@ -633,6 +635,14 @@ public class ClinicalNotes extends GenericCollection {
 
 	public void setDiagramIds(List<ObjectId> diagramIds) {
 		this.diagramIds = diagramIds;
+	}
+
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
 	}
 
 	@Override

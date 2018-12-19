@@ -262,6 +262,8 @@ public class ClinicalNotesAddRequest {
 
 	private String painScale;
 	private Date createdTime;
+	
+	private String priorConsultations;
 
 	public Date getCreatedTime() {
 		return createdTime;
@@ -1208,6 +1210,14 @@ public class ClinicalNotesAddRequest {
 
 	public void setPainScale(String painScale) {
 		this.painScale = painScale;
+	}
+	
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
 	}
 
 	@Override
