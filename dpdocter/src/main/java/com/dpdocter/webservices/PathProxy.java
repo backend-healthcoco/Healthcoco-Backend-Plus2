@@ -1934,6 +1934,10 @@ public interface PathProxy {
 	public static final String PAEDIATRIC_BASE_URL = BASE_URL + "/paediatric";
 	
 	public interface PaediatricUrls {
+		public static final String ADD_EDIT_GROWTH_CHART = "growthChart/addEdit";
+		public static final String GET_GROWTH_CHART_BY_ID = "growthChart/get/{id}";
+		public static final String GET_GROWTH_CHARTS = "growthChart/getList";
+		public static final String DISCARD_GROWTH_CHART_BY_ID = "growthChart/discard/{id}";
 		public static final String ADD_EDIT_VACCINE = "vaccine/addEdit";
 		public static final String GET_VACCINE_BY_ID = "vaccine/get/{id}";
 		public static final String GET_VACCINES = "vaccine/getList";

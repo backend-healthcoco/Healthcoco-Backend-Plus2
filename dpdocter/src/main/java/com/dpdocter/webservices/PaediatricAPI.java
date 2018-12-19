@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.GrowthChart;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.MultipleVaccineEditRequest;
@@ -58,6 +59,21 @@ public class PaediatricAPI {
 		response.setData(vaccineResponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_GROWTH_CHART)
+	@POST
+	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_GROWTH_CHART, notes = PathProxy.PaediatricUrls.ADD_EDIT_GROWTH_CHART)
+	public Response<GrowthChart> addGrowthChart(GrowthChart request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		GrowthChart growthChart = paediatricService.addEditGrowthChart(request);
+		Response<GrowthChart> response = new Response<GrowthChart>();
+		response.setData(growthChart);
+		return response;
+	}
 
 	@Path(value = PathProxy.PaediatricUrls.GET_VACCINE_BY_ID)
 	@GET
@@ -73,6 +89,34 @@ public class PaediatricAPI {
 		return response;
 	}
 	
+	@Path(value = PathProxy.PaediatricUrls.GET_GROWTH_CHART_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROWTH_CHART_BY_ID, notes = PathProxy.PaediatricUrls.GET_GROWTH_CHART_BY_ID)
+	public Response<GrowthChart> getGrowthChartById(@PathParam("id") String id) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		GrowthChart growthChart = paediatricService.getGrowthChartById(id);
+		Response<GrowthChart> response = new Response<GrowthChart>();
+		response.setData(growthChart);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID, notes = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
+	public Response<Boolean> discardGrowthChart(@PathParam("id") String id ,@DefaultValue("false") @QueryParam("discarded") Boolean discarded ) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Boolean status = paediatricService.discardGrowthChart(id, discarded);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(status);
+		return response;
+	}
+	
 	@Path(value = PathProxy.PaediatricUrls.GET_VACCINES)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINES, notes = PathProxy.PaediatricUrls.GET_VACCINES)
@@ -83,6 +127,20 @@ public class PaediatricAPI {
 		}
 		List<VaccineResponse> vaccineResponse = paediatricService.getVaccineList(patientId, doctorId, locationId, hospitalId,updatedTime);
 		Response<VaccineResponse> response = new Response<VaccineResponse>();
+		response.setDataList(vaccineResponse);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS, notes = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS)
+	public Response<GrowthChart> getGrowthCharts(@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+		if (DPDoctorUtils.anyStringEmpty(patientId,doctorId,locationId,hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<GrowthChart> vaccineResponse = paediatricService.getGrowthChartList(patientId, doctorId, locationId, hospitalId, updatedTime);
+		Response<GrowthChart> response = new Response<GrowthChart>();
 		response.setDataList(vaccineResponse);
 		return response;
 	}

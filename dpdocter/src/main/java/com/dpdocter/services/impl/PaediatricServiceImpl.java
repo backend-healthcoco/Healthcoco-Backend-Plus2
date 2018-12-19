@@ -122,6 +122,50 @@ public class PaediatricServiceImpl implements PaediatricService {
 	 * 
 	 * } return response; }
 	 */
+	
+	
+	@Override
+	@Transactional
+	public List<GrowthChart> getGrowthChartList(String patientId, String doctorId, String locationId, String hospitalId,
+			String updatedTime) {
+		List<GrowthChart> responses = null;
+		try {
+			// Criteria criteria = new Criteria();
+
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			
+			criteria.and("discarded").is(false);
+			
+			responses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+					GrowthChartCollection.class, GrowthChart.class).getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		}
+		return responses;
+	}
 
 	@Override
 	@Transactional

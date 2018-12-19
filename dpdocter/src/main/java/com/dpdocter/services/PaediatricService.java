@@ -39,4 +39,7 @@ public interface PaediatricService {
 
 	void sendBabyVaccineReminder();
 
+	List<GrowthChart> getGrowthChartList(String patientId, String doctorId, String locationId, String hospitalId,
+			String updatedTime);
+
 }
