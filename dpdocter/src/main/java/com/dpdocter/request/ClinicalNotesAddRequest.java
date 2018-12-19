@@ -263,6 +263,8 @@ public class ClinicalNotesAddRequest {
 
 	private String painScale;
 	private Date createdTime;
+	
+	private String priorConsultations;
 
 	private Boolean sendNotificationToDoctor = true;
 
@@ -1215,6 +1217,14 @@ public class ClinicalNotesAddRequest {
 
 	public void setPainScale(String painScale) {
 		this.painScale = painScale;
+	}
+	
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
 	}
 
 	public Boolean getSendNotificationToDoctor() {

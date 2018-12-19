@@ -201,10 +201,12 @@ public class ClinicalNotesCollection extends GenericCollection {
 	private String generalHistorySurgical;
 	@Field
 	private String painScale;
+	@Field
+	private String priorConsultations;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
-	
+
 	public String getProcedureNote() {
 		return procedureNote;
 	}
@@ -733,6 +735,14 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
 	}
 
 	@Override

@@ -126,11 +126,12 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
 	private String painScale;
+	private String priorConsultations;
 
 	private PatientCollection patient;
-	
+
 	private UserCollection patientUser;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -641,6 +642,14 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 
 	public void setPainScale(String painScale) {
 		this.painScale = painScale;
+	}
+
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
 	}
 
 	@Override
