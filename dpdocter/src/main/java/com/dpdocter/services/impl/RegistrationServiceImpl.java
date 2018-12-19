@@ -2241,12 +2241,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 					|| doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN.getRole())
 					|| doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN.getRole())
 					|| doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN.getRole())) {
-				String body = mailBodyGenerator.generateActivationEmailBody(
+				String body = mailBodyGenerator.generateActivationEmailBodyForStaff(
 						userCollection.getTitle() + " " + userCollection.getFirstName(), tokenCollection.getId(),
 						"addDoctorToClinicVerifyTemplate.vm", admindoctorName, locationCollection.getLocationName());
 				mailService.sendEmail(userCollection.getEmailAddress(), addDoctorToClinicVerifySub, body, null);
 			} else {
-				String body = mailBodyGenerator.generateActivationEmailBody(
+				String body = mailBodyGenerator.generateActivationEmailBodyForStaff(
 						userCollection.getTitle() + " " + userCollection.getFirstName(), tokenCollection.getId(),
 						"verifyStaffMemberEmailTemplate.vm", admindoctorName, locationCollection.getLocationName());
 				mailService.sendEmail(userCollection.getEmailAddress(), staffmemberAccountVerifySub, body, null);
