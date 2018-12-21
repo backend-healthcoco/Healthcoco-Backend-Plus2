@@ -920,12 +920,12 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 					new Criteria("user.mobileNumber").regex(searchTerm, "i"),
 					new Criteria("PID").regex(searchTerm, "i"));
 		}
-		ProjectionOperation projectList = new ProjectionOperation(
-				Fields.from(Fields.field("id", "$userId"), Fields.field("mobileNumber", "$user.mobileNumber"),
-						Fields.field("localPatientName", "$localPatientName"),
-						Fields.field("firstName", "$user.firstName"), Fields.field("PID", "$PID"),
-						Fields.field("registrationDate", "$registrationDate"), Fields.field("address", "$address"),
-						Fields.field("gender", "$gender"), Fields.field("createdTime", "$createdTime")));
+		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$userId"),
+				Fields.field("mobileNumber", "$user.mobileNumber"),
+				Fields.field("localPatientName", "$localPatientName"), Fields.field("firstName", "$user.firstName"),
+				Fields.field("PID", "$PID"), Fields.field("dob", "$dob"),
+				Fields.field("registrationDate", "$registrationDate"), Fields.field("address", "$address"),
+				Fields.field("gender", "$gender"), Fields.field("createdTime", "$createdTime")));
 		if (toTime != null && fromTime != null) {
 
 			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
@@ -1000,7 +1000,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.from(Fields.field("id", "$patient.userId"), Fields.field("mobileNumber", "$user.mobileNumber"),
 						Fields.field("localPatientName", "$patient.localPatientName"),
 						Fields.field("firstName", "$user.firstName"), Fields.field("PID", "$patient.PID"),
-						Fields.field("registrationDate", "$patient.registrationDate"),
+						Fields.field("dob", "$patient.dob"), Fields.field("registrationDate", "$patient.registrationDate"),
 						Fields.field("address", "$patient.address"), Fields.field("gender", "$patient.gender"),
 						Fields.field("createdTime", "$patient.createdTime"),
 						Fields.field("visitedTime", "$visitedTime"), Fields.field("count", "$patient,userId")));
