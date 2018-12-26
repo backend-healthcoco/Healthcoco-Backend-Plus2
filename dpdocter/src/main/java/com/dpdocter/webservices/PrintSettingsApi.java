@@ -173,9 +173,14 @@ public class PrintSettingsApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
+		if (DPDoctorUtils.anyStringEmpty(fileDetails.getFileEncoded())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
 
 		Response<String> response = new Response<String>();
-
+		String file = printSettingsService.uploadFile(fileDetails, type);
+		response.setData(file);
 		return response;
 	}
 }
