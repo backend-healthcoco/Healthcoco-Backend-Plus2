@@ -2397,6 +2397,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
 				} else if (!DPDoctorUtils.anyStringEmpty(printSettings.getHeaderSetup().getHeaderImageUrl())) {
 					headerImageUrl = getFinalImageURL(printSettings.getHeaderSetup().getHeaderImageUrl());
+					headerHeight = printSettings.getHeaderSetup().getHeaderHeight();
 				}
 			}
 
@@ -2439,6 +2440,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 				if (!printSettings.getFooterSetup().getShowImageFooter()) {
 					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
+					footerHeight = printSettings.getFooterSetup().getFooterHeight();
 				}
 			}
 

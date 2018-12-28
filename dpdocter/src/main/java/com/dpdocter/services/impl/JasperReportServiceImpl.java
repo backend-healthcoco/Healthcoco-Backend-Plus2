@@ -413,7 +413,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 			if (parameters.get("footerImage") != null && !parameters.get("footerImage").toString().isEmpty()) {
-				jasperDesign.setPageFooter(createPageImageHeader(columnWidth, parameters));
+				jasperDesign.setPageFooter(createPageImageFooter(columnWidth, parameters));
 			} else {
 				jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 			}
