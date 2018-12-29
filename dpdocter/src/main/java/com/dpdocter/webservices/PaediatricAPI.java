@@ -204,7 +204,7 @@ public class PaediatricAPI {
 	@Path(value = PathProxy.PaediatricUrls.GET_MASTER_VACCINES)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_MASTER_VACCINES, notes = PathProxy.PaediatricUrls.GET_MASTER_VACCINES)
-	public Response<MasterVaccineResponse> getVaccines(@QueryParam("searchTerm") String searchTerm, @QueryParam("isChartVaccine") Boolean isChartVaccine, @QueryParam("page") int  page, @QueryParam("size") int size) {
+	public Response<MasterVaccineResponse> getVaccines(@QueryParam("searchTerm") String searchTerm, @DefaultValue("false") @QueryParam("isChartVaccine") Boolean isChartVaccine, @QueryParam("page") int  page, @QueryParam("size") int size) {
 		List<MasterVaccineResponse> vaccineResponse = paediatricService.getMasterVaccineList(searchTerm, isChartVaccine, page, size);
 		Response<MasterVaccineResponse> response = new Response<MasterVaccineResponse>();
 		response.setDataList(vaccineResponse);

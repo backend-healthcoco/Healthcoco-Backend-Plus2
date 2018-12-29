@@ -459,8 +459,8 @@ public class PaediatricServiceImpl implements PaediatricService {
 		return responses;
 	}
 
-	//@Scheduled(cron = "0 30 0 * * ?", zone = "IST")
-	@Scheduled(fixedDelay = 15000)
+	@Scheduled(cron = "0 30 0 * * ?", zone = "IST")
+	//@Scheduled(fixedDelay = 15000)
 	@Transactional
 	@Override
 	public void sendBabyVaccineReminder() {
@@ -499,12 +499,12 @@ public class PaediatricServiceImpl implements PaediatricService {
 							.as("week"),
 					aggregationOperation);
 			
-			System.out.println(aggregation);
+			//System.out.println(aggregation);
 			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					VaccineCollection.class, BabyVaccineReminderResponse.class);
 			response = aggregationResults.getMappedResults();
 			
-			System.out.println(" response :: " + response);
+			//System.out.println(" response :: " + response);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
