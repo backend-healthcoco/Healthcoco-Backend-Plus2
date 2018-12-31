@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class TemplateItem {
@@ -20,6 +21,7 @@ public class TemplateItem {
 
 	private Long inventoryQuantity;
 
+	private Integer quantity = 0;
 
 	public ObjectId getDrugId() {
 		return drugId;
@@ -75,6 +77,14 @@ public class TemplateItem {
 
 	public void setInventoryQuantity(Long inventoryQuantity) {
 		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
 	}
 
 	@Override
