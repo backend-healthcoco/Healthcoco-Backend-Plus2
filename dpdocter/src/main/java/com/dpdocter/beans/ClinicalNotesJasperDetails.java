@@ -95,6 +95,7 @@ public class ClinicalNotesJasperDetails {
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
 	private String painScale;
+	private String priorConsultations;
 
 	public String getComplaints() {
 		return complaints;
@@ -478,6 +479,14 @@ public class ClinicalNotesJasperDetails {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
 	}
 
 	@Override

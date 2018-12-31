@@ -335,7 +335,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -394,55 +394,43 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * if(request.getPresentComplaint() != null ||
 			 * !request.getPresentComplaint().isEmpty()) { ArrayList<String>
 			 * presentComplaints = new
-			 * ArrayList<String>(Arrays.asList(request.getPresentComplaint().
-			 * split(","))); for( String presentComplaint : presentComplaints) {
-			 * PresentComplaint complaint = new
-			 * PresentComplaint(presentComplaint, request.getDoctorId(),
-			 * request.getLocationId(), request.getHospitalId(), false, null); }
-			 * }
+			 * ArrayList<String>(Arrays.asList(request.getPresentComplaint(). split(",")));
+			 * for( String presentComplaint : presentComplaints) { PresentComplaint
+			 * complaint = new PresentComplaint(presentComplaint, request.getDoctorId(),
+			 * request.getLocationId(), request.getHospitalId(), false, null); } }
 			 */
 			// complaintIds = new ArrayList<ObjectId>();
 			/*
-			 * if (request.getComplaint() != null &&
-			 * !request.getComplaint().isEmpty() &&
-			 * request.getGlobalComplaints() != null) { Set<String>
-			 * customComplaints = compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getComplaint())), new
-			 * HashSet<>(splitCSV(request.getGlobalComplaints()))); if
-			 * (customComplaints != null) for (String customComplaint :
-			 * customComplaints) { Complaint complaint = new Complaint();
-			 * complaint.setComplaint(customComplaint); ComplaintCollection
-			 * complaintCollection = new ComplaintCollection();
-			 * BeanUtil.map(complaint, complaintCollection);
-			 * complaintCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * complaintCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * complaintCollection.setHospitalId(new
+			 * if (request.getComplaint() != null && !request.getComplaint().isEmpty() &&
+			 * request.getGlobalComplaints() != null) { Set<String> customComplaints =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getComplaint())), new
+			 * HashSet<>(splitCSV(request.getGlobalComplaints()))); if (customComplaints !=
+			 * null) for (String customComplaint : customComplaints) { Complaint complaint =
+			 * new Complaint(); complaint.setComplaint(customComplaint); ComplaintCollection
+			 * complaintCollection = new ComplaintCollection(); BeanUtil.map(complaint,
+			 * complaintCollection); complaintCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); complaintCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); complaintCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * complaintCollection.setCreatedBy(createdBy);
 			 * complaintCollection.setCreatedTime(createdTime);
 			 * complaintCollection.setId(null); complaintCollection =
 			 * complaintRepository.save(complaintCollection);
 			 * 
-			 * transactionalManagementService.addResource(complaintCollection.
-			 * getId(), Resource.COMPLAINT, false); ESComplaintsDocument
-			 * esComplaints = new ESComplaintsDocument();
-			 * BeanUtil.map(complaintCollection, esComplaints);
+			 * transactionalManagementService.addResource(complaintCollection. getId(),
+			 * Resource.COMPLAINT, false); ESComplaintsDocument esComplaints = new
+			 * ESComplaintsDocument(); BeanUtil.map(complaintCollection, esComplaints);
 			 * esClinicalNotesService.addComplaints(esComplaints);
 			 * 
 			 * } }
 			 * 
-			 * // observationIds = new ArrayList<ObjectId>(); if
-			 * (request.getObservation() != null &&
-			 * !request.getObservation().isEmpty() &&
-			 * request.getGlobalObservations() != null) { Set<String>
-			 * customObservations = compareGlobalElements( new
-			 * HashSet<>(splitCSV(request.getObservation())), new
-			 * HashSet<>(splitCSV(request.getGlobalObservations()))); if
-			 * (customObservations != null) for (String customObservation :
-			 * customObservations) { Observation observation = new
-			 * Observation();
+			 * // observationIds = new ArrayList<ObjectId>(); if (request.getObservation()
+			 * != null && !request.getObservation().isEmpty() &&
+			 * request.getGlobalObservations() != null) { Set<String> customObservations =
+			 * compareGlobalElements( new HashSet<>(splitCSV(request.getObservation())), new
+			 * HashSet<>(splitCSV(request.getGlobalObservations()))); if (customObservations
+			 * != null) for (String customObservation : customObservations) { Observation
+			 * observation = new Observation();
 			 * 
 			 * observation.setDoctorId(request.getDoctorId());
 			 * observation.setLocationId(request.getLocationId());
@@ -451,55 +439,46 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * 
 			 * observation.setObservation(customObservation);
 			 * 
-			 * ObservationCollection observationCollection = new
-			 * ObservationCollection(); BeanUtil.map(observation,
-			 * observationCollection); observationCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * observationCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * observationCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
+			 * ObservationCollection observationCollection = new ObservationCollection();
+			 * BeanUtil.map(observation, observationCollection);
+			 * observationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			 * observationCollection.setLocationId(new ObjectId(request.getLocationId()));
+			 * observationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 			 * observationCollection.setCreatedBy(createdBy);
 			 * observationCollection.setCreatedTime(createdTime);
 			 * observationCollection.setId(null); observationCollection =
 			 * observationRepository.save(observationCollection);
 			 * 
-			 * transactionalManagementService.addResource(observationCollection.
-			 * getId(), Resource.OBSERVATION, false); ESObservationsDocument
-			 * esObservations = new ESObservationsDocument();
-			 * BeanUtil.map(observationCollection, esObservations);
-			 * esClinicalNotesService.addObservations(esObservations);
+			 * transactionalManagementService.addResource(observationCollection. getId(),
+			 * Resource.OBSERVATION, false); ESObservationsDocument esObservations = new
+			 * ESObservationsDocument(); BeanUtil.map(observationCollection,
+			 * esObservations); esClinicalNotesService.addObservations(esObservations);
 			 * 
 			 * } }
 			 * 
 			 * // investigationIds = new ArrayList<ObjectId>(); if
-			 * (request.getInvestigation() != null &&
-			 * !request.getInvestigation().isEmpty() &&
-			 * request.getGlobalInvestigations() != null) {
+			 * (request.getInvestigation() != null && !request.getInvestigation().isEmpty()
+			 * && request.getGlobalInvestigations() != null) {
 			 * 
 			 * Set<String> customInvestigations = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getInvestigation())), new
-			 * HashSet<>(splitCSV(request.getGlobalInvestigations()))); for
-			 * (String customInvestigation : customInvestigations) {
-			 * Investigation investigation = new Investigation();
-			 * investigation.setInvestigation(customInvestigation);
+			 * HashSet<>(splitCSV(request.getGlobalInvestigations()))); for (String
+			 * customInvestigation : customInvestigations) { Investigation investigation =
+			 * new Investigation(); investigation.setInvestigation(customInvestigation);
 			 * InvestigationCollection investigationCollection = new
 			 * InvestigationCollection(); BeanUtil.map(investigation,
 			 * investigationCollection); investigationCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * investigationCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * investigationCollection.setHospitalId(new
+			 * ObjectId(request.getDoctorId())); investigationCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); investigationCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * investigationCollection.setCreatedBy(createdBy);
 			 * investigationCollection.setCreatedTime(createdTime);
 			 * investigationCollection.setId(null); investigationCollection =
 			 * investigationRepository.save(investigationCollection);
 			 * 
-			 * transactionalManagementService.addResource(
-			 * investigationCollection.getId(), Resource.INVESTIGATION, false);
-			 * ESInvestigationsDocument esInvestigations = new
-			 * ESInvestigationsDocument(); BeanUtil.map(investigationCollection,
+			 * transactionalManagementService.addResource( investigationCollection.getId(),
+			 * Resource.INVESTIGATION, false); ESInvestigationsDocument esInvestigations =
+			 * new ESInvestigationsDocument(); BeanUtil.map(investigationCollection,
 			 * esInvestigations);
 			 * esClinicalNotesService.addInvestigations(esInvestigations);
 			 * 
@@ -507,28 +486,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * 
 			 * }
 			 * 
-			 * // noteIds = new ArrayList<ObjectId>(); if (request.getNote() !=
-			 * null && !request.getNote().isEmpty() && request.getGlobalNotes()
-			 * != null) {
+			 * // noteIds = new ArrayList<ObjectId>(); if (request.getNote() != null &&
+			 * !request.getNote().isEmpty() && request.getGlobalNotes() != null) {
 			 * 
 			 * Set<String> customNotes = compareGlobalElements(new
 			 * HashSet<>(splitCSV(request.getNote())), new
-			 * HashSet<>(splitCSV(request.getGlobalNotes()))); for (String
-			 * customNote : customNotes) { Notes note = new Notes();
-			 * note.setNote(customNote); NotesCollection notesCollection = new
-			 * NotesCollection(); BeanUtil.map(note, notesCollection);
-			 * notesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-			 * notesCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * notesCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
-			 * notesCollection.setCreatedBy(createdBy);
-			 * notesCollection.setCreatedTime(createdTime);
-			 * notesCollection.setId(null); notesCollection =
-			 * notesRepository.save(notesCollection);
-			 * transactionalManagementService.addResource(notesCollection.getId(
-			 * ), Resource.NOTES, false); ESNotesDocument esNotes = new
-			 * ESNotesDocument(); BeanUtil.map(notesCollection, esNotes);
+			 * HashSet<>(splitCSV(request.getGlobalNotes()))); for (String customNote :
+			 * customNotes) { Notes note = new Notes(); note.setNote(customNote);
+			 * NotesCollection notesCollection = new NotesCollection(); BeanUtil.map(note,
+			 * notesCollection); notesCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); notesCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); notesCollection.setHospitalId(new
+			 * ObjectId(request.getHospitalId())); notesCollection.setCreatedBy(createdBy);
+			 * notesCollection.setCreatedTime(createdTime); notesCollection.setId(null);
+			 * notesCollection = notesRepository.save(notesCollection);
+			 * transactionalManagementService.addResource(notesCollection.getId( ),
+			 * Resource.NOTES, false); ESNotesDocument esNotes = new ESNotesDocument();
+			 * BeanUtil.map(notesCollection, esNotes);
 			 * esClinicalNotesService.addNotes(esNotes); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
@@ -539,15 +513,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * request.getGlobalProvisionalDiagnoses() != null) { Set<String>
 			 * customProvisionalDiagnoses = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getProvisionalDiagnosis())), new
-			 * HashSet<>(splitCSV(request.getGlobalProvisionalDiagnoses())));
-			 * for (String customProvisionalDiagnosis :
-			 * customProvisionalDiagnoses) { ProvisionalDiagnosis
-			 * provisionalDiagnosis = new ProvisionalDiagnosis();
-			 * provisionalDiagnosis.setProvisionalDiagnosis(
-			 * customProvisionalDiagnosis); ProvisionalDiagnosisCollection
-			 * provisionalDiagnosisCollection = new
-			 * ProvisionalDiagnosisCollection();
-			 * BeanUtil.map(provisionalDiagnosis,
+			 * HashSet<>(splitCSV(request.getGlobalProvisionalDiagnoses()))); for (String
+			 * customProvisionalDiagnosis : customProvisionalDiagnoses) {
+			 * ProvisionalDiagnosis provisionalDiagnosis = new ProvisionalDiagnosis();
+			 * provisionalDiagnosis.setProvisionalDiagnosis( customProvisionalDiagnosis);
+			 * ProvisionalDiagnosisCollection provisionalDiagnosisCollection = new
+			 * ProvisionalDiagnosisCollection(); BeanUtil.map(provisionalDiagnosis,
 			 * provisionalDiagnosisCollection);
 			 * provisionalDiagnosisCollection.setDoctorId(new
 			 * ObjectId(request.getDoctorId()));
@@ -557,18 +528,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * ObjectId(request.getHospitalId()));
 			 * provisionalDiagnosisCollection.setCreatedBy(createdBy);
 			 * provisionalDiagnosisCollection.setCreatedTime(createdTime);
-			 * provisionalDiagnosisCollection.setId(null);
-			 * provisionalDiagnosisCollection = provisionalDiagnosisRepository
-			 * .save(provisionalDiagnosisCollection);
+			 * provisionalDiagnosisCollection.setId(null); provisionalDiagnosisCollection =
+			 * provisionalDiagnosisRepository .save(provisionalDiagnosisCollection);
 			 * transactionalManagementService.addResource(
-			 * provisionalDiagnosisCollection.getId(),
-			 * Resource.PROVISIONAL_DIAGNOSIS, false);
-			 * ESProvisionalDiagnosisDocument esProvisionalDiagnosis = new
+			 * provisionalDiagnosisCollection.getId(), Resource.PROVISIONAL_DIAGNOSIS,
+			 * false); ESProvisionalDiagnosisDocument esProvisionalDiagnosis = new
 			 * ESProvisionalDiagnosisDocument();
-			 * BeanUtil.map(provisionalDiagnosisCollection,
-			 * esProvisionalDiagnosis);
-			 * esClinicalNotesService.addProvisionalDiagnosis(
-			 * esProvisionalDiagnosis); // noteIds.add(notesCollection.getId());
+			 * BeanUtil.map(provisionalDiagnosisCollection, esProvisionalDiagnosis);
+			 * esClinicalNotesService.addProvisionalDiagnosis( esProvisionalDiagnosis); //
+			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
@@ -577,14 +545,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * request.getGlobalPresentComplaints() != null) { Set<String>
 			 * customPresentComplaints = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getPresentComplaint())), new
-			 * HashSet<>(splitCSV(request.getGlobalPresentComplaints()))); for
-			 * (String customPresentComplaint : customPresentComplaints) {
-			 * PresentComplaint presentComplaint = new PresentComplaint();
+			 * HashSet<>(splitCSV(request.getGlobalPresentComplaints()))); for (String
+			 * customPresentComplaint : customPresentComplaints) { PresentComplaint
+			 * presentComplaint = new PresentComplaint();
 			 * presentComplaint.setPresentComplaint(customPresentComplaint);
 			 * PresentComplaintCollection presentComplaintCollection = new
 			 * PresentComplaintCollection(); BeanUtil.map(presentComplaint,
-			 * presentComplaintCollection);
-			 * presentComplaintCollection.setDoctorId(new
+			 * presentComplaintCollection); presentComplaintCollection.setDoctorId(new
 			 * ObjectId(request.getDoctorId()));
 			 * presentComplaintCollection.setLocationId(new
 			 * ObjectId(request.getLocationId()));
@@ -592,34 +559,30 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * ObjectId(request.getHospitalId()));
 			 * presentComplaintCollection.setCreatedBy(createdBy);
 			 * presentComplaintCollection.setCreatedTime(createdTime);
-			 * presentComplaintCollection.setId(null);
-			 * presentComplaintCollection =
+			 * presentComplaintCollection.setId(null); presentComplaintCollection =
 			 * presentComplaintRepository.save(presentComplaintCollection);
 			 * transactionalManagementService.addResource(
-			 * presentComplaintCollection.getId(), Resource.PRESENT_COMPLAINT,
-			 * false); ESPresentComplaintDocument esPresentComplaint = new
-			 * ESPresentComplaintDocument();
-			 * BeanUtil.map(presentComplaintCollection, esPresentComplaint);
+			 * presentComplaintCollection.getId(), Resource.PRESENT_COMPLAINT, false);
+			 * ESPresentComplaintDocument esPresentComplaint = new
+			 * ESPresentComplaintDocument(); BeanUtil.map(presentComplaintCollection,
+			 * esPresentComplaint);
 			 * esClinicalNotesService.addPresentComplaint(esPresentComplaint);
 			 * 
 			 * } }
 			 * 
 			 * if (request.getPresentComplaintHistory() != null &&
 			 * !request.getPresentComplaintHistory().isEmpty() &&
-			 * request.getGlobalPresentComplaintHistories() != null) {
-			 * Set<String> customPresentComplaintHistories =
-			 * compareGlobalElements( new
+			 * request.getGlobalPresentComplaintHistories() != null) { Set<String>
+			 * customPresentComplaintHistories = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getPresentComplaintHistory())), new
-			 * HashSet<>(splitCSV(request.getGlobalPresentComplaintHistories()))
-			 * ); for (String customPresentComplaintHistory :
-			 * customPresentComplaintHistories) { PresentComplaintHistory
-			 * presentComplaintHistory = new PresentComplaintHistory();
+			 * HashSet<>(splitCSV(request.getGlobalPresentComplaintHistories())) ); for
+			 * (String customPresentComplaintHistory : customPresentComplaintHistories) {
+			 * PresentComplaintHistory presentComplaintHistory = new
+			 * PresentComplaintHistory();
 			 * presentComplaintHistory.setPresentComplaintHistory(
 			 * customPresentComplaintHistory); PresentComplaintHistoryCollection
-			 * presentComplaintHistoryCollection = new
-			 * PresentComplaintHistoryCollection();
-			 * BeanUtil.map(presentComplaintHistory,
-			 * presentComplaintHistoryCollection);
+			 * presentComplaintHistoryCollection = new PresentComplaintHistoryCollection();
+			 * BeanUtil.map(presentComplaintHistory, presentComplaintHistoryCollection);
 			 * presentComplaintHistoryCollection.setDoctorId(new
 			 * ObjectId(request.getDoctorId()));
 			 * presentComplaintHistoryCollection.setLocationId(new
@@ -629,76 +592,60 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * presentComplaintHistoryCollection.setCreatedBy(createdBy);
 			 * presentComplaintHistoryCollection.setCreatedTime(createdTime);
 			 * presentComplaintHistoryCollection.setId(null);
-			 * presentComplaintHistoryCollection =
-			 * presentComplaintHistoryRepository
+			 * presentComplaintHistoryCollection = presentComplaintHistoryRepository
 			 * .save(presentComplaintHistoryCollection);
 			 * transactionalManagementService.addResource(
 			 * presentComplaintHistoryCollection.getId(),
 			 * Resource.HISTORY_OF_PRESENT_COMPLAINT, false);
 			 * ESPresentComplaintHistoryDocument esPresentComplaintHistory = new
 			 * ESPresentComplaintHistoryDocument();
-			 * BeanUtil.map(presentComplaintHistoryCollection,
-			 * esPresentComplaintHistory);
+			 * BeanUtil.map(presentComplaintHistoryCollection, esPresentComplaintHistory);
 			 * esClinicalNotesService.addPresentComplaintHistory(
 			 * esPresentComplaintHistory);
 			 * 
 			 * } }
 			 * 
-			 * if (request.getGeneralExam() != null &&
-			 * !request.getGeneralExam().isEmpty() &&
-			 * request.getGlobalGeneralExams() != null) { Set<String>
-			 * customGeneralExams = compareGlobalElements( new
-			 * HashSet<>(splitCSV(request.getGeneralExam())), new
-			 * HashSet<>(splitCSV(request.getGlobalGeneralExams()))); for
-			 * (String customGeneralExam : customGeneralExams) { GeneralExam
-			 * generalExam = new GeneralExam();
-			 * generalExam.setGeneralExam(customGeneralExam);
-			 * GeneralExamCollection generalExamCollection = new
-			 * GeneralExamCollection(); BeanUtil.map(generalExam,
-			 * generalExamCollection); generalExamCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * generalExamCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * generalExamCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
+			 * if (request.getGeneralExam() != null && !request.getGeneralExam().isEmpty()
+			 * && request.getGlobalGeneralExams() != null) { Set<String> customGeneralExams
+			 * = compareGlobalElements( new HashSet<>(splitCSV(request.getGeneralExam())),
+			 * new HashSet<>(splitCSV(request.getGlobalGeneralExams()))); for (String
+			 * customGeneralExam : customGeneralExams) { GeneralExam generalExam = new
+			 * GeneralExam(); generalExam.setGeneralExam(customGeneralExam);
+			 * GeneralExamCollection generalExamCollection = new GeneralExamCollection();
+			 * BeanUtil.map(generalExam, generalExamCollection);
+			 * generalExamCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			 * generalExamCollection.setLocationId(new ObjectId(request.getLocationId()));
+			 * generalExamCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 			 * generalExamCollection.setCreatedBy(createdBy);
 			 * generalExamCollection.setCreatedTime(createdTime);
 			 * generalExamCollection.setId(null); generalExamCollection =
 			 * generalExamRepository.save(generalExamCollection);
-			 * transactionalManagementService.addResource(generalExamCollection.
-			 * getId(), Resource.GENERAL_EXAMINATION, false);
-			 * ESGeneralExamDocument esGeneralExam = new
-			 * ESGeneralExamDocument(); BeanUtil.map(generalExamCollection,
-			 * esGeneralExam);
-			 * esClinicalNotesService.addGeneralExam(esGeneralExam); //
+			 * transactionalManagementService.addResource(generalExamCollection. getId(),
+			 * Resource.GENERAL_EXAMINATION, false); ESGeneralExamDocument esGeneralExam =
+			 * new ESGeneralExamDocument(); BeanUtil.map(generalExamCollection,
+			 * esGeneralExam); esClinicalNotesService.addGeneralExam(esGeneralExam); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getSystemExam() != null &&
-			 * !request.getSystemExam().isEmpty() &&
-			 * request.getGlobalSystemExams() != null) { Set<String>
-			 * customSystemExams = compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getSystemExam())), new
+			 * if (request.getSystemExam() != null && !request.getSystemExam().isEmpty() &&
+			 * request.getGlobalSystemExams() != null) { Set<String> customSystemExams =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getSystemExam())), new
 			 * HashSet<>(splitCSV(request.getGlobalSystemExams()))); for (String
-			 * customSystemExam : customSystemExams) { SystemExam systemExam =
-			 * new SystemExam(); systemExam.setSystemExam(customSystemExam);
-			 * SystemExamCollection systemExamCollection = new
-			 * SystemExamCollection(); BeanUtil.map(systemExam,
-			 * systemExamCollection); systemExamCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * systemExamCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * systemExamCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
+			 * customSystemExam : customSystemExams) { SystemExam systemExam = new
+			 * SystemExam(); systemExam.setSystemExam(customSystemExam);
+			 * SystemExamCollection systemExamCollection = new SystemExamCollection();
+			 * BeanUtil.map(systemExam, systemExamCollection);
+			 * systemExamCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			 * systemExamCollection.setLocationId(new ObjectId(request.getLocationId()));
+			 * systemExamCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 			 * systemExamCollection.setCreatedBy(createdBy);
 			 * systemExamCollection.setCreatedTime(createdTime);
 			 * systemExamCollection.setId(null); systemExamCollection =
 			 * systemExamRepository.save(systemExamCollection);
-			 * transactionalManagementService.addResource(systemExamCollection.
-			 * getId(), Resource.SYSTEMIC_EXAMINATION, false);
-			 * ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
-			 * BeanUtil.map(systemExamCollection, esSystemExam);
+			 * transactionalManagementService.addResource(systemExamCollection. getId(),
+			 * Resource.SYSTEMIC_EXAMINATION, false); ESSystemExamDocument esSystemExam =
+			 * new ESSystemExamDocument(); BeanUtil.map(systemExamCollection, esSystemExam);
 			 * esClinicalNotesService.addSystemExam(esSystemExam);
 			 * 
 			 * } }
@@ -708,14 +655,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * request.getGlobalMenstrualHistories() != null) { Set<String>
 			 * customMenstrualHistories = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getMenstrualHistory())), new
-			 * HashSet<>(splitCSV(request.getGlobalMenstrualHistories()))); for
-			 * (String customMenstrualHistory : customMenstrualHistories) {
-			 * MenstrualHistory menstrualHistory = new MenstrualHistory();
+			 * HashSet<>(splitCSV(request.getGlobalMenstrualHistories()))); for (String
+			 * customMenstrualHistory : customMenstrualHistories) { MenstrualHistory
+			 * menstrualHistory = new MenstrualHistory();
 			 * menstrualHistory.setMenstrualHistory(customMenstrualHistory);
 			 * MenstrualHistoryCollection menstrualHistoryCollection = new
 			 * MenstrualHistoryCollection(); BeanUtil.map(menstrualHistory,
-			 * menstrualHistoryCollection);
-			 * menstrualHistoryCollection.setDoctorId(new
+			 * menstrualHistoryCollection); menstrualHistoryCollection.setDoctorId(new
 			 * ObjectId(request.getDoctorId()));
 			 * menstrualHistoryCollection.setLocationId(new
 			 * ObjectId(request.getLocationId()));
@@ -723,16 +669,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * ObjectId(request.getHospitalId()));
 			 * menstrualHistoryCollection.setCreatedBy(createdBy);
 			 * menstrualHistoryCollection.setCreatedTime(createdTime);
-			 * menstrualHistoryCollection.setId(null);
-			 * menstrualHistoryCollection =
+			 * menstrualHistoryCollection.setId(null); menstrualHistoryCollection =
 			 * menstrualHistoryRepository.save(menstrualHistoryCollection);
 			 * transactionalManagementService.addResource(
-			 * menstrualHistoryCollection.getId(), Resource.MENSTRUAL_HISTORY,
-			 * false); ESMenstrualHistoryDocument esMenstrualHistory = new
-			 * ESMenstrualHistoryDocument();
-			 * BeanUtil.map(menstrualHistoryCollection, esMenstrualHistory);
-			 * esClinicalNotesService.addMenstrualHistory(esMenstrualHistory);
-			 * // noteIds.add(notesCollection.getId());
+			 * menstrualHistoryCollection.getId(), Resource.MENSTRUAL_HISTORY, false);
+			 * ESMenstrualHistoryDocument esMenstrualHistory = new
+			 * ESMenstrualHistoryDocument(); BeanUtil.map(menstrualHistoryCollection,
+			 * esMenstrualHistory);
+			 * esClinicalNotesService.addMenstrualHistory(esMenstrualHistory); //
+			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
@@ -741,15 +686,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * request.getGlobalObstetricHistories() != null) { Set<String>
 			 * customObstetricHistories = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getObstetricHistory())), new
-			 * HashSet<>(splitCSV(request.getGlobalObstetricHistories()))); for
-			 * (String customObstetricHistory : customObstetricHistories) {
+			 * HashSet<>(splitCSV(request.getGlobalObstetricHistories()))); for (String
+			 * customObstetricHistory : customObstetricHistories) {
 			 * 
 			 * ObstetricHistory obstetricHistory = new ObstetricHistory();
 			 * obstetricHistory.setObstetricHistory(customObstetricHistory);
 			 * ObstetricHistoryCollection obstetricHistoryCollection = new
 			 * ObstetricHistoryCollection(); BeanUtil.map(obstetricHistory,
-			 * obstetricHistoryCollection);
-			 * obstetricHistoryCollection.setDoctorId(new
+			 * obstetricHistoryCollection); obstetricHistoryCollection.setDoctorId(new
 			 * ObjectId(request.getDoctorId()));
 			 * obstetricHistoryCollection.setLocationId(new
 			 * ObjectId(request.getLocationId()));
@@ -757,46 +701,39 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * ObjectId(request.getHospitalId()));
 			 * obstetricHistoryCollection.setCreatedBy(createdBy);
 			 * obstetricHistoryCollection.setCreatedTime(createdTime);
-			 * obstetricHistoryCollection.setId(null);
-			 * obstetricHistoryCollection =
+			 * obstetricHistoryCollection.setId(null); obstetricHistoryCollection =
 			 * obstetricHistoryRepository.save(obstetricHistoryCollection);
 			 * transactionalManagementService.addResource(
-			 * obstetricHistoryCollection.getId(), Resource.OBSTETRIC_HISTORY,
-			 * false); ESObstetricHistoryDocument esObstetricHistory = new
-			 * ESObstetricHistoryDocument();
-			 * BeanUtil.map(obstetricHistoryCollection, esObstetricHistory);
-			 * esClinicalNotesService.addObstetricsHistory(esObstetricHistory);
-			 * // noteIds.add(notesCollection.getId());
+			 * obstetricHistoryCollection.getId(), Resource.OBSTETRIC_HISTORY, false);
+			 * ESObstetricHistoryDocument esObstetricHistory = new
+			 * ESObstetricHistoryDocument(); BeanUtil.map(obstetricHistoryCollection,
+			 * esObstetricHistory);
+			 * esClinicalNotesService.addObstetricsHistory(esObstetricHistory); //
+			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * // diagnosisIds = new ArrayList<ObjectId>(); if
-			 * (request.getDiagnosis() != null &&
-			 * !request.getDiagnosis().isEmpty() && request.getGlobalDiagnoses()
-			 * != null) { Set<String> customDiagnoses =
-			 * compareGlobalElements(new
+			 * // diagnosisIds = new ArrayList<ObjectId>(); if (request.getDiagnosis() !=
+			 * null && !request.getDiagnosis().isEmpty() && request.getGlobalDiagnoses() !=
+			 * null) { Set<String> customDiagnoses = compareGlobalElements(new
 			 * HashSet<>(splitCSV(request.getDiagnosis())), new
 			 * HashSet<>(splitCSV(request.getGlobalDiagnoses()))); for (String
 			 * customDiagnosis : customDiagnoses) {
 			 * 
 			 * Diagnoses diagnosis = new Diagnoses();
 			 * diagnosis.setDiagnosis(customDiagnosis); DiagnosisCollection
-			 * diagnosisCollection = new DiagnosisCollection();
-			 * BeanUtil.map(diagnosis, diagnosisCollection);
-			 * diagnosisCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * diagnosisCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * diagnosisCollection.setHospitalId(new
+			 * diagnosisCollection = new DiagnosisCollection(); BeanUtil.map(diagnosis,
+			 * diagnosisCollection); diagnosisCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); diagnosisCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); diagnosisCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * diagnosisCollection.setCreatedBy(createdBy);
 			 * diagnosisCollection.setCreatedTime(createdTime);
 			 * diagnosisCollection.setId(null); diagnosisCollection =
 			 * diagnosisRepository.save(diagnosisCollection);
-			 * transactionalManagementService.addResource(diagnosisCollection.
-			 * getId(), Resource.DIAGNOSIS, false); ESDiagnosesDocument
-			 * esDiagnoses = new ESDiagnosesDocument();
-			 * BeanUtil.map(diagnosisCollection, esDiagnoses);
+			 * transactionalManagementService.addResource(diagnosisCollection. getId(),
+			 * Resource.DIAGNOSIS, false); ESDiagnosesDocument esDiagnoses = new
+			 * ESDiagnosesDocument(); BeanUtil.map(diagnosisCollection, esDiagnoses);
 			 * esClinicalNotesService.addDiagnoses(esDiagnoses); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
@@ -807,29 +744,27 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * request.getGlobalIndicationOfUSGs() != null) { Set<String>
 			 * customIndicationOfUSGs = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getIndicationOfUSG())), new
-			 * HashSet<>(splitCSV(request.getGlobalIndicationOfUSGs()))); for
-			 * (String customIndicationOfUSG : customIndicationOfUSGs) {
+			 * HashSet<>(splitCSV(request.getGlobalIndicationOfUSGs()))); for (String
+			 * customIndicationOfUSG : customIndicationOfUSGs) {
 			 * 
 			 * IndicationOfUSG indicationOfUSG = new IndicationOfUSG();
 			 * indicationOfUSG.setIndicationOfUSG(customIndicationOfUSG);
 			 * IndicationOfUSGCollection indicationOfUSGCollection = new
 			 * IndicationOfUSGCollection(); BeanUtil.map(indicationOfUSG,
-			 * indicationOfUSGCollection);
-			 * indicationOfUSGCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * indicationOfUSGCollection.setLocationId(new
+			 * indicationOfUSGCollection); indicationOfUSGCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); indicationOfUSGCollection.setLocationId(new
 			 * ObjectId(request.getLocationId()));
 			 * indicationOfUSGCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * indicationOfUSGCollection.setCreatedBy(createdBy);
 			 * indicationOfUSGCollection.setCreatedTime(createdTime);
-			 * indicationOfUSGCollection.setId(null); indicationOfUSGCollection
-			 * = indicationOfUSGRepository.save(indicationOfUSGCollection);
+			 * indicationOfUSGCollection.setId(null); indicationOfUSGCollection =
+			 * indicationOfUSGRepository.save(indicationOfUSGCollection);
 			 * transactionalManagementService.addResource(
-			 * indicationOfUSGCollection.getId(), Resource.INDICATION_OF_USG,
-			 * false); ESIndicationOfUSGDocument esIndicationOfUSG = new
-			 * ESIndicationOfUSGDocument();
-			 * BeanUtil.map(indicationOfUSGCollection, esIndicationOfUSG);
+			 * indicationOfUSGCollection.getId(), Resource.INDICATION_OF_USG, false);
+			 * ESIndicationOfUSGDocument esIndicationOfUSG = new
+			 * ESIndicationOfUSGDocument(); BeanUtil.map(indicationOfUSGCollection,
+			 * esIndicationOfUSG);
 			 * esClinicalNotesService.addIndicationOfUSG(esIndicationOfUSG); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
@@ -837,136 +772,109 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * 
 			 * if (request.getPa() != null && !request.getPa().isEmpty() &&
 			 * request.getGlobalPAs() != null) { Set<String> customPAs =
-			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPa())),
-			 * new HashSet<>(splitCSV(request.getGlobalPAs()))); for (String
-			 * customPA : customPAs) {
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPa())), new
+			 * HashSet<>(splitCSV(request.getGlobalPAs()))); for (String customPA :
+			 * customPAs) {
 			 * 
-			 * PA pa = new PA(); pa.setPa(customPA); PACollection paCollection =
-			 * new PACollection(); BeanUtil.map(pa, paCollection);
-			 * paCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-			 * paCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * paCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
-			 * paCollection.setCreatedBy(createdBy);
-			 * paCollection.setCreatedTime(createdTime);
-			 * paCollection.setId(null); paCollection =
-			 * paRepository.save(paCollection);
-			 * transactionalManagementService.addResource(paCollection.getId(),
-			 * Resource.PA, false); ESPADocument espa = new ESPADocument();
-			 * BeanUtil.map(paCollection, espa);
-			 * esClinicalNotesService.addPA(espa); //
+			 * PA pa = new PA(); pa.setPa(customPA); PACollection paCollection = new
+			 * PACollection(); BeanUtil.map(pa, paCollection); paCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); paCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); paCollection.setHospitalId(new
+			 * ObjectId(request.getHospitalId())); paCollection.setCreatedBy(createdBy);
+			 * paCollection.setCreatedTime(createdTime); paCollection.setId(null);
+			 * paCollection = paRepository.save(paCollection);
+			 * transactionalManagementService.addResource(paCollection.getId(), Resource.PA,
+			 * false); ESPADocument espa = new ESPADocument(); BeanUtil.map(paCollection,
+			 * espa); esClinicalNotesService.addPA(espa); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
 			 * if (request.getPv() != null && !request.getPv().isEmpty() &&
 			 * request.getGlobalPVs() != null) { Set<String> customPVs =
-			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPv())),
-			 * new HashSet<>(splitCSV(request.getGlobalPVs()))); for (String
-			 * customPV : customPVs) {
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPv())), new
+			 * HashSet<>(splitCSV(request.getGlobalPVs()))); for (String customPV :
+			 * customPVs) {
 			 * 
-			 * PV pv = new PV(); pv.setPv(customPV); PVCollection pvCollection =
-			 * new PVCollection(); BeanUtil.map(pv, pvCollection);
-			 * pvCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-			 * pvCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * pvCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
-			 * pvCollection.setCreatedBy(createdBy);
-			 * pvCollection.setCreatedTime(createdTime);
-			 * pvCollection.setId(null); pvCollection =
-			 * pvRepository.save(pvCollection);
-			 * transactionalManagementService.addResource(pvCollection.getId(),
-			 * Resource.PV, false); ESPVDocument espv = new ESPVDocument();
-			 * BeanUtil.map(pvCollection, espv);
-			 * esClinicalNotesService.addPV(espv); //
+			 * PV pv = new PV(); pv.setPv(customPV); PVCollection pvCollection = new
+			 * PVCollection(); BeanUtil.map(pv, pvCollection); pvCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); pvCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); pvCollection.setHospitalId(new
+			 * ObjectId(request.getHospitalId())); pvCollection.setCreatedBy(createdBy);
+			 * pvCollection.setCreatedTime(createdTime); pvCollection.setId(null);
+			 * pvCollection = pvRepository.save(pvCollection);
+			 * transactionalManagementService.addResource(pvCollection.getId(), Resource.PV,
+			 * false); ESPVDocument espv = new ESPVDocument(); BeanUtil.map(pvCollection,
+			 * espv); esClinicalNotesService.addPV(espv); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
 			 * if (request.getPs() != null && !request.getPs().isEmpty() &&
 			 * request.getGlobalPSs() != null) { Set<String> customPSs =
-			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPs())),
-			 * new HashSet<>(splitCSV(request.getGlobalPSs()))); for (String
-			 * customPS : customPSs) {
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPs())), new
+			 * HashSet<>(splitCSV(request.getGlobalPSs()))); for (String customPS :
+			 * customPSs) {
 			 * 
-			 * PS ps = new PS(); ps.setPs(customPS); ; PSCollection psCollection
-			 * = new PSCollection(); BeanUtil.map(ps, psCollection);
-			 * psCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-			 * psCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * psCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
-			 * psCollection.setCreatedBy(createdBy);
-			 * psCollection.setCreatedTime(createdTime);
-			 * psCollection.setId(null); psCollection =
-			 * psRepository.save(psCollection);
-			 * transactionalManagementService.addResource(psCollection.getId(),
-			 * Resource.PS, false); ESPSDocument esps = new ESPSDocument();
-			 * BeanUtil.map(psCollection, esps);
-			 * esClinicalNotesService.addPS(esps); //
+			 * PS ps = new PS(); ps.setPs(customPS); ; PSCollection psCollection = new
+			 * PSCollection(); BeanUtil.map(ps, psCollection); psCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); psCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); psCollection.setHospitalId(new
+			 * ObjectId(request.getHospitalId())); psCollection.setCreatedBy(createdBy);
+			 * psCollection.setCreatedTime(createdTime); psCollection.setId(null);
+			 * psCollection = psRepository.save(psCollection);
+			 * transactionalManagementService.addResource(psCollection.getId(), Resource.PS,
+			 * false); ESPSDocument esps = new ESPSDocument(); BeanUtil.map(psCollection,
+			 * esps); esClinicalNotesService.addPS(esps); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getxRayDetails() != null &&
-			 * !request.getxRayDetails().isEmpty() &&
-			 * request.getGlobalXRayDetails() != null) { Set<String>
-			 * customXrayDetails = compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getxRayDetails())), new
+			 * if (request.getxRayDetails() != null && !request.getxRayDetails().isEmpty()
+			 * && request.getGlobalXRayDetails() != null) { Set<String> customXrayDetails =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getxRayDetails())), new
 			 * HashSet<>(splitCSV(request.getGlobalXRayDetails()))); for (String
 			 * customXrayDetail : customXrayDetails) {
 			 * 
 			 * XRayDetails xRayDetails = new XRayDetails();
-			 * xRayDetails.setxRayDetails(customXrayDetail);
-			 * XRayDetailsCollection xRayDetailsCollection = new
-			 * XRayDetailsCollection(); BeanUtil.map(xRayDetails,
-			 * xRayDetailsCollection); xRayDetailsCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * xRayDetailsCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * xRayDetailsCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
+			 * xRayDetails.setxRayDetails(customXrayDetail); XRayDetailsCollection
+			 * xRayDetailsCollection = new XRayDetailsCollection();
+			 * BeanUtil.map(xRayDetails, xRayDetailsCollection);
+			 * xRayDetailsCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			 * xRayDetailsCollection.setLocationId(new ObjectId(request.getLocationId()));
+			 * xRayDetailsCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 			 * xRayDetailsCollection.setCreatedBy(createdBy);
 			 * xRayDetailsCollection.setCreatedTime(createdTime);
 			 * xRayDetailsCollection.setId(null); xRayDetailsCollection =
 			 * xRayDetailsRepository.save(xRayDetailsCollection);
-			 * transactionalManagementService.addResource(xRayDetailsCollection.
-			 * getId(), Resource.XRAY, false); ESXRayDetailsDocument
-			 * esxRayDetails = new ESXRayDetailsDocument();
-			 * BeanUtil.map(xRayDetailsCollection, esxRayDetails);
+			 * transactionalManagementService.addResource(xRayDetailsCollection. getId(),
+			 * Resource.XRAY, false); ESXRayDetailsDocument esxRayDetails = new
+			 * ESXRayDetailsDocument(); BeanUtil.map(xRayDetailsCollection, esxRayDetails);
 			 * esClinicalNotesService.addXRayDetails(esxRayDetails); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getEcgDetails() != null &&
-			 * !request.getEcgDetails().isEmpty() &&
-			 * request.getGlobalEcgDetails() != null) { Set<String>
-			 * customECGDetails = compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getEcgDetails())), new
+			 * if (request.getEcgDetails() != null && !request.getEcgDetails().isEmpty() &&
+			 * request.getGlobalEcgDetails() != null) { Set<String> customECGDetails =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getEcgDetails())), new
 			 * HashSet<>(splitCSV(request.getGlobalEcgDetails()))); for (String
 			 * customECGDetail : customECGDetails) {
 			 * 
 			 * ECGDetails ecgDetails = new ECGDetails();
 			 * ecgDetails.setEcgDetails(customECGDetail); ; ECGDetailsCollection
-			 * ecgDetailsCollection = new ECGDetailsCollection();
-			 * BeanUtil.map(ecgDetails, ecgDetailsCollection);
-			 * ecgDetailsCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * ecgDetailsCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * ecgDetailsCollection.setHospitalId(new
+			 * ecgDetailsCollection = new ECGDetailsCollection(); BeanUtil.map(ecgDetails,
+			 * ecgDetailsCollection); ecgDetailsCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); ecgDetailsCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); ecgDetailsCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * ecgDetailsCollection.setCreatedBy(createdBy);
 			 * ecgDetailsCollection.setCreatedTime(createdTime);
 			 * ecgDetailsCollection.setId(null); ecgDetailsCollection =
 			 * ecgDetailsRepository.save(ecgDetailsCollection);
-			 * transactionalManagementService.addResource(ecgDetailsCollection.
-			 * getId(), Resource.ECG, false); ESECGDetailsDocument esecgDetails
-			 * = new ESECGDetailsDocument(); BeanUtil.map(ecgDetailsCollection,
-			 * esecgDetails);
+			 * transactionalManagementService.addResource(ecgDetailsCollection. getId(),
+			 * Resource.ECG, false); ESECGDetailsDocument esecgDetails = new
+			 * ESECGDetailsDocument(); BeanUtil.map(ecgDetailsCollection, esecgDetails);
 			 * esClinicalNotesService.addECGDetails(esecgDetails); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
@@ -974,104 +882,84 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * 
 			 * if (request.getEcho() != null && !request.getEcho().isEmpty() &&
 			 * request.getGlobalEchoes() != null) { Set<String> customEchoes =
-			 * compareGlobalElements(new HashSet<>(splitCSV(request.getEcho())),
-			 * new HashSet<>(splitCSV(request.getGlobalEchoes()))); for (String
-			 * customEcho : customEchoes) {
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getEcho())), new
+			 * HashSet<>(splitCSV(request.getGlobalEchoes()))); for (String customEcho :
+			 * customEchoes) {
 			 * 
 			 * Echo echo = new Echo(); echo.setEcho(customEcho); EchoCollection
-			 * echoCollection = new EchoCollection(); BeanUtil.map(echo,
-			 * echoCollection); echoCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * echoCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * echoCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
+			 * echoCollection = new EchoCollection(); BeanUtil.map(echo, echoCollection);
+			 * echoCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			 * echoCollection.setLocationId(new ObjectId(request.getLocationId()));
+			 * echoCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 			 * echoCollection.setCreatedBy(createdBy);
-			 * echoCollection.setCreatedTime(createdTime);
-			 * echoCollection.setId(null); echoCollection =
-			 * echoRepository.save(echoCollection);
-			 * transactionalManagementService.addResource(echoCollection.getId()
-			 * , Resource.ECHO, false); ESEchoDocument esEcho = new
-			 * ESEchoDocument(); BeanUtil.map(echoCollection, esEcho);
-			 * esClinicalNotesService.addEcho(esEcho); //
-			 * noteIds.add(notesCollection.getId());
+			 * echoCollection.setCreatedTime(createdTime); echoCollection.setId(null);
+			 * echoCollection = echoRepository.save(echoCollection);
+			 * transactionalManagementService.addResource(echoCollection.getId() ,
+			 * Resource.ECHO, false); ESEchoDocument esEcho = new ESEchoDocument();
+			 * BeanUtil.map(echoCollection, esEcho); esClinicalNotesService.addEcho(esEcho);
+			 * // noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getHolter() != null && !request.getHolter().isEmpty()
-			 * && request.getGlobalHolters() != null) { Set<String>
-			 * customHolters = compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getHolter())), new
-			 * HashSet<>(splitCSV(request.getGlobalHolters()))); for (String
-			 * customHolter : customHolters) {
+			 * if (request.getHolter() != null && !request.getHolter().isEmpty() &&
+			 * request.getGlobalHolters() != null) { Set<String> customHolters =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getHolter())), new
+			 * HashSet<>(splitCSV(request.getGlobalHolters()))); for (String customHolter :
+			 * customHolters) {
 			 * 
 			 * Holter holter = new Holter(); holter.setHolter(customHolter);
 			 * HolterCollection holterCollection = new HolterCollection();
-			 * BeanUtil.map(holter, holterCollection);
-			 * holterCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * holterCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * holterCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
-			 * holterCollection.setCreatedBy(createdBy);
-			 * holterCollection.setCreatedTime(createdTime);
-			 * holterCollection.setId(null); holterCollection =
-			 * holterRepository.save(holterCollection);
-			 * transactionalManagementService.addResource(holterCollection.getId
-			 * (), Resource.HOLTER, false); ESHolterDocument esHolter = new
-			 * ESHolterDocument(); BeanUtil.map(holterCollection, esHolter);
+			 * BeanUtil.map(holter, holterCollection); holterCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId())); holterCollection.setLocationId(new
+			 * ObjectId(request.getLocationId())); holterCollection.setHospitalId(new
+			 * ObjectId(request.getHospitalId())); holterCollection.setCreatedBy(createdBy);
+			 * holterCollection.setCreatedTime(createdTime); holterCollection.setId(null);
+			 * holterCollection = holterRepository.save(holterCollection);
+			 * transactionalManagementService.addResource(holterCollection.getId (),
+			 * Resource.HOLTER, false); ESHolterDocument esHolter = new ESHolterDocument();
+			 * BeanUtil.map(holterCollection, esHolter);
 			 * esClinicalNotesService.addHolter(esHolter); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
 			 * if (request.getProcedureNote() != null &&
-			 * !request.getProcedureNote().isEmpty() &&
-			 * request.getGlobalProcedureNotes() != null) { Set<String>
-			 * customProcedureNotes = compareGlobalElements( new
+			 * !request.getProcedureNote().isEmpty() && request.getGlobalProcedureNotes() !=
+			 * null) { Set<String> customProcedureNotes = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getProcedureNote())), new
-			 * HashSet<>(splitCSV(request.getGlobalProcedureNotes()))); for
-			 * (String customProcedureNote : customProcedureNotes) {
+			 * HashSet<>(splitCSV(request.getGlobalProcedureNotes()))); for (String
+			 * customProcedureNote : customProcedureNotes) {
 			 * 
 			 * ProcedureNote procedureNote = new ProcedureNote();
-			 * procedureNote.setProcedureNote(customProcedureNote);
-			 * ProcedureNoteCollection procedureNoteCollection = new
-			 * ProcedureNoteCollection(); BeanUtil.map(procedureNote,
-			 * procedureNoteCollection); procedureNoteCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
-			 * procedureNoteCollection.setLocationId(new
-			 * ObjectId(request.getLocationId()));
-			 * procedureNoteCollection.setHospitalId(new
-			 * ObjectId(request.getHospitalId()));
+			 * procedureNote.setProcedureNote(customProcedureNote); ProcedureNoteCollection
+			 * procedureNoteCollection = new ProcedureNoteCollection();
+			 * BeanUtil.map(procedureNote, procedureNoteCollection);
+			 * procedureNoteCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			 * procedureNoteCollection.setLocationId(new ObjectId(request.getLocationId()));
+			 * procedureNoteCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 			 * procedureNoteCollection.setCreatedBy(createdBy);
 			 * procedureNoteCollection.setCreatedTime(createdTime);
 			 * procedureNoteCollection.setId(null); procedureNoteCollection =
 			 * procedureNoteRepository.save(procedureNoteCollection);
-			 * transactionalManagementService.addResource(
-			 * procedureNoteCollection.getId(), Resource.PROCEDURE_NOTE, false);
-			 * ESProcedureNoteDocument esProcedureNoteDocument = new
-			 * ESProcedureNoteDocument(); BeanUtil.map(procedureNoteCollection,
-			 * esProcedureNoteDocument);
-			 * esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
-			 * // noteIds.add(notesCollection.getId());
+			 * transactionalManagementService.addResource( procedureNoteCollection.getId(),
+			 * Resource.PROCEDURE_NOTE, false); ESProcedureNoteDocument
+			 * esProcedureNoteDocument = new ESProcedureNoteDocument();
+			 * BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
+			 * esClinicalNotesService.addProcedureNote(esProcedureNoteDocument); //
+			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getPcNose() != null && !request.getPcNose().isEmpty()
-			 * && request.getGlobalPCNose() != null) { Set<String> customPCNoses
-			 * = compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getPcNose())), new
-			 * HashSet<>(splitCSV(request.getGlobalPCNose()))); for (String
-			 * customPCNose : customPCNoses) {
+			 * if (request.getPcNose() != null && !request.getPcNose().isEmpty() &&
+			 * request.getGlobalPCNose() != null) { Set<String> customPCNoses =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPcNose())), new
+			 * HashSet<>(splitCSV(request.getGlobalPCNose()))); for (String customPCNose :
+			 * customPCNoses) {
 			 * 
 			 * PresentingComplaintNose presentingComplaintNose = new
-			 * PresentingComplaintNose();
-			 * presentingComplaintNose.setPcNose(customPCNose);
-			 * PresentingComplaintNoseCollection
-			 * presentingComplaintNoseCollection = new
-			 * PresentingComplaintNoseCollection();
-			 * BeanUtil.map(presentingComplaintNose,
+			 * PresentingComplaintNose(); presentingComplaintNose.setPcNose(customPCNose);
+			 * PresentingComplaintNoseCollection presentingComplaintNoseCollection = new
+			 * PresentingComplaintNoseCollection(); BeanUtil.map(presentingComplaintNose,
 			 * presentingComplaintNoseCollection);
 			 * presentingComplaintNoseCollection.setDoctorId(new
 			 * ObjectId(request.getDoctorId()));
@@ -1082,34 +970,29 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * presentingComplaintNoseCollection.setCreatedBy(createdBy);
 			 * presentingComplaintNoseCollection.setCreatedTime(createdTime);
 			 * presentingComplaintNoseCollection.setId(null);
-			 * presentingComplaintNoseCollection =
-			 * presentingComplaintNotesRepository
+			 * presentingComplaintNoseCollection = presentingComplaintNotesRepository
 			 * .save(presentingComplaintNoseCollection);
 			 * transactionalManagementService.addResource(
-			 * presentingComplaintNoseCollection.getId(), Resource.PC_NOSE,
-			 * false); ESPresentingComplaintNoseDocument
-			 * esPresentingComplaintNoseDocument = new
+			 * presentingComplaintNoseCollection.getId(), Resource.PC_NOSE, false);
+			 * ESPresentingComplaintNoseDocument esPresentingComplaintNoseDocument = new
 			 * ESPresentingComplaintNoseDocument();
 			 * BeanUtil.map(presentingComplaintNoseCollection,
-			 * esPresentingComplaintNoseDocument);
-			 * esClinicalNotesService.addPCNose(
-			 * esPresentingComplaintNoseDocument); //
-			 * noteIds.add(notesCollection.getId());
+			 * esPresentingComplaintNoseDocument); esClinicalNotesService.addPCNose(
+			 * esPresentingComplaintNoseDocument); // noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getPcOralCavity() != null &&
-			 * !request.getPcOralCavity().isEmpty() &&
-			 * request.getGlobalPCOralCavity() != null) { Set<String>
+			 * if (request.getPcOralCavity() != null && !request.getPcOralCavity().isEmpty()
+			 * && request.getGlobalPCOralCavity() != null) { Set<String>
 			 * customPCOralCavities = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getPcOralCavity())), new
-			 * HashSet<>(splitCSV(request.getGlobalPCOralCavity()))); for
-			 * (String customPCOralCavity : customPCOralCavities) {
+			 * HashSet<>(splitCSV(request.getGlobalPCOralCavity()))); for (String
+			 * customPCOralCavity : customPCOralCavities) {
 			 * 
 			 * PresentingComplaintOralCavity presentingComplaintOralCavity = new
 			 * PresentingComplaintOralCavity();
-			 * presentingComplaintOralCavity.setPcOralCavity(customPCOralCavity)
-			 * ; PresentingComplaintOralCavityCollection
+			 * presentingComplaintOralCavity.setPcOralCavity(customPCOralCavity) ;
+			 * PresentingComplaintOralCavityCollection
 			 * presentingComplaintOralCavityCollection = new
 			 * PresentingComplaintOralCavityCollection();
 			 * BeanUtil.map(presentingComplaintOralCavity,
@@ -1121,40 +1004,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * presentingComplaintOralCavityCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * presentingComplaintOralCavityCollection.setCreatedBy(createdBy);
-			 * presentingComplaintOralCavityCollection.setCreatedTime(
-			 * createdTime);
+			 * presentingComplaintOralCavityCollection.setCreatedTime( createdTime);
 			 * presentingComplaintOralCavityCollection.setId(null);
 			 * presentingComplaintOralCavityCollection =
 			 * presentingComplaintOralCavityRepository
 			 * .save(presentingComplaintOralCavityCollection);
 			 * transactionalManagementService.addResource(
-			 * presentingComplaintOralCavityCollection.getId(),
-			 * Resource.PC_ORAL_CAVITY, false);
-			 * ESPresentingComplaintEarsDocument
-			 * esPresentingComplaintEarsDocument = new
-			 * ESPresentingComplaintEarsDocument();
+			 * presentingComplaintOralCavityCollection.getId(), Resource.PC_ORAL_CAVITY,
+			 * false); ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument =
+			 * new ESPresentingComplaintEarsDocument();
 			 * BeanUtil.map(presentingComplaintOralCavityCollection,
-			 * esPresentingComplaintEarsDocument);
-			 * esClinicalNotesService.addPCEars(
-			 * esPresentingComplaintEarsDocument); //
-			 * noteIds.add(notesCollection.getId());
+			 * esPresentingComplaintEarsDocument); esClinicalNotesService.addPCEars(
+			 * esPresentingComplaintEarsDocument); // noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getPcEars() != null && !request.getPcEars().isEmpty()
-			 * && request.getGlobalPCEars() != null) { Set<String> customPCEars
-			 * = compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getPcNose())), new
-			 * HashSet<>(splitCSV(request.getPcNose()))); for (String
-			 * customPCEar : customPCEars) {
+			 * if (request.getPcEars() != null && !request.getPcEars().isEmpty() &&
+			 * request.getGlobalPCEars() != null) { Set<String> customPCEars =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPcNose())), new
+			 * HashSet<>(splitCSV(request.getPcNose()))); for (String customPCEar :
+			 * customPCEars) {
 			 * 
 			 * PresentingComplaintEars presentingComplaintEars = new
-			 * PresentingComplaintEars();
-			 * presentingComplaintEars.setPcEars(customPCEar);
-			 * PresentingComplaintEarsCollection
-			 * presentingComplaintEarsCollection = new
-			 * PresentingComplaintEarsCollection();
-			 * BeanUtil.map(presentingComplaintEars,
+			 * PresentingComplaintEars(); presentingComplaintEars.setPcEars(customPCEar);
+			 * PresentingComplaintEarsCollection presentingComplaintEarsCollection = new
+			 * PresentingComplaintEarsCollection(); BeanUtil.map(presentingComplaintEars,
 			 * presentingComplaintEarsCollection);
 			 * presentingComplaintEarsCollection.setDoctorId(new
 			 * ObjectId(request.getDoctorId()));
@@ -1165,36 +1039,29 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * presentingComplaintEarsCollection.setCreatedBy(createdBy);
 			 * presentingComplaintEarsCollection.setCreatedTime(createdTime);
 			 * presentingComplaintEarsCollection.setId(null);
-			 * presentingComplaintEarsCollection =
-			 * presentingComplaintEarsRepository
+			 * presentingComplaintEarsCollection = presentingComplaintEarsRepository
 			 * .save(presentingComplaintEarsCollection);
 			 * transactionalManagementService.addResource(
-			 * presentingComplaintEarsCollection.getId(), Resource.PC_EARS,
-			 * false); ESPresentingComplaintEarsDocument
-			 * esPresentingComplaintEarsDocument = new
+			 * presentingComplaintEarsCollection.getId(), Resource.PC_EARS, false);
+			 * ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument = new
 			 * ESPresentingComplaintEarsDocument();
 			 * BeanUtil.map(presentingComplaintEarsCollection,
-			 * esPresentingComplaintEarsDocument);
-			 * esClinicalNotesService.addPCEars(
-			 * esPresentingComplaintEarsDocument); //
-			 * noteIds.add(notesCollection.getId());
+			 * esPresentingComplaintEarsDocument); esClinicalNotesService.addPCEars(
+			 * esPresentingComplaintEarsDocument); // noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getPcThroat() != null &&
-			 * !request.getPcThroat().isEmpty() && request.getGlobalPCThroat()
-			 * != null) { Set<String> customPCOralThroats =
-			 * compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getPcThroat())), new
+			 * if (request.getPcThroat() != null && !request.getPcThroat().isEmpty() &&
+			 * request.getGlobalPCThroat() != null) { Set<String> customPCOralThroats =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())), new
 			 * HashSet<>(splitCSV(request.getGlobalPCThroat()))); for (String
 			 * customPCOralThroat : customPCOralThroats) {
 			 * 
 			 * PresentingComplaintThroat presentingComplaintThroat = new
 			 * PresentingComplaintThroat();
 			 * presentingComplaintThroat.setPcThroat(customPCOralThroat);
-			 * PresentingComplaintThroatCollection
-			 * presentingComplaintOralThroatCollection = new
-			 * PresentingComplaintThroatCollection();
+			 * PresentingComplaintThroatCollection presentingComplaintOralThroatCollection =
+			 * new PresentingComplaintThroatCollection();
 			 * BeanUtil.map(presentingComplaintThroat,
 			 * presentingComplaintOralThroatCollection);
 			 * presentingComplaintOralThroatCollection.setDoctorId(new
@@ -1204,39 +1071,32 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * presentingComplaintOralThroatCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
-			 * presentingComplaintOralThroatCollection.setCreatedTime(
-			 * createdTime);
+			 * presentingComplaintOralThroatCollection.setCreatedTime( createdTime);
 			 * presentingComplaintOralThroatCollection.setId(null);
-			 * presentingComplaintOralThroatCollection =
-			 * presentingComplaintThroatRepository
+			 * presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
 			 * .save(presentingComplaintOralThroatCollection);
 			 * transactionalManagementService.addResource(
-			 * presentingComplaintOralThroatCollection.getId(),
-			 * Resource.PC_THROAT, false); ESPresentingComplaintThroatDocument
-			 * esPresentingComplaintThroatDocument = new
+			 * presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT, false);
+			 * ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new
 			 * ESPresentingComplaintThroatDocument();
 			 * BeanUtil.map(presentingComplaintOralThroatCollection,
-			 * esPresentingComplaintThroatDocument);
-			 * esClinicalNotesService.addPCThroat(
+			 * esPresentingComplaintThroatDocument); esClinicalNotesService.addPCThroat(
 			 * esPresentingComplaintThroatDocument); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getPcThroat() != null &&
-			 * !request.getPcThroat().isEmpty() && request.getGlobalPCThroat()
-			 * != null) { Set<String> customPCOralThroats =
-			 * compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getPcThroat())), new
+			 * if (request.getPcThroat() != null && !request.getPcThroat().isEmpty() &&
+			 * request.getGlobalPCThroat() != null) { Set<String> customPCOralThroats =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())), new
 			 * HashSet<>(splitCSV(request.getGlobalPCThroat()))); for (String
 			 * customPCOralThroat : customPCOralThroats) {
 			 * 
 			 * PresentingComplaintThroat presentingComplaintThroat = new
 			 * PresentingComplaintThroat();
 			 * presentingComplaintThroat.setPcThroat(customPCOralThroat);
-			 * PresentingComplaintThroatCollection
-			 * presentingComplaintOralThroatCollection = new
-			 * PresentingComplaintThroatCollection();
+			 * PresentingComplaintThroatCollection presentingComplaintOralThroatCollection =
+			 * new PresentingComplaintThroatCollection();
 			 * BeanUtil.map(presentingComplaintThroat,
 			 * presentingComplaintOralThroatCollection);
 			 * presentingComplaintOralThroatCollection.setDoctorId(new
@@ -1246,39 +1106,32 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * presentingComplaintOralThroatCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
-			 * presentingComplaintOralThroatCollection.setCreatedTime(
-			 * createdTime);
+			 * presentingComplaintOralThroatCollection.setCreatedTime( createdTime);
 			 * presentingComplaintOralThroatCollection.setId(null);
-			 * presentingComplaintOralThroatCollection =
-			 * presentingComplaintThroatRepository
+			 * presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
 			 * .save(presentingComplaintOralThroatCollection);
 			 * transactionalManagementService.addResource(
-			 * presentingComplaintOralThroatCollection.getId(),
-			 * Resource.PC_THROAT, false); ESPresentingComplaintThroatDocument
-			 * esPresentingComplaintThroatDocument = new
+			 * presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT, false);
+			 * ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new
 			 * ESPresentingComplaintThroatDocument();
 			 * BeanUtil.map(presentingComplaintOralThroatCollection,
-			 * esPresentingComplaintThroatDocument);
-			 * esClinicalNotesService.addPCThroat(
+			 * esPresentingComplaintThroatDocument); esClinicalNotesService.addPCThroat(
 			 * esPresentingComplaintThroatDocument); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getPcThroat() != null &&
-			 * !request.getPcThroat().isEmpty() && request.getGlobalPCThroat()
-			 * != null) { Set<String> customPCOralThroats =
-			 * compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getPcThroat())), new
+			 * if (request.getPcThroat() != null && !request.getPcThroat().isEmpty() &&
+			 * request.getGlobalPCThroat() != null) { Set<String> customPCOralThroats =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())), new
 			 * HashSet<>(splitCSV(request.getGlobalPCThroat()))); for (String
 			 * customPCOralThroat : customPCOralThroats) {
 			 * 
 			 * PresentingComplaintThroat presentingComplaintThroat = new
 			 * PresentingComplaintThroat();
 			 * presentingComplaintThroat.setPcThroat(customPCOralThroat);
-			 * PresentingComplaintThroatCollection
-			 * presentingComplaintOralThroatCollection = new
-			 * PresentingComplaintThroatCollection();
+			 * PresentingComplaintThroatCollection presentingComplaintOralThroatCollection =
+			 * new PresentingComplaintThroatCollection();
 			 * BeanUtil.map(presentingComplaintThroat,
 			 * presentingComplaintOralThroatCollection);
 			 * presentingComplaintOralThroatCollection.setDoctorId(new
@@ -1288,155 +1141,131 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * presentingComplaintOralThroatCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
-			 * presentingComplaintOralThroatCollection.setCreatedTime(
-			 * createdTime);
+			 * presentingComplaintOralThroatCollection.setCreatedTime( createdTime);
 			 * presentingComplaintOralThroatCollection.setId(null);
-			 * presentingComplaintOralThroatCollection =
-			 * presentingComplaintThroatRepository
+			 * presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
 			 * .save(presentingComplaintOralThroatCollection);
 			 * transactionalManagementService.addResource(
-			 * presentingComplaintOralThroatCollection.getId(),
-			 * Resource.PC_THROAT, false); ESPresentingComplaintThroatDocument
-			 * esPresentingComplaintThroatDocument = new
+			 * presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT, false);
+			 * ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new
 			 * ESPresentingComplaintThroatDocument();
 			 * BeanUtil.map(presentingComplaintOralThroatCollection,
-			 * esPresentingComplaintThroatDocument);
-			 * esClinicalNotesService.addPCThroat(
+			 * esPresentingComplaintThroatDocument); esClinicalNotesService.addPCThroat(
 			 * esPresentingComplaintThroatDocument); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getNeckExam() != null &&
-			 * !request.getNeckExam().isEmpty() && request.getGlobalNeckExam()
-			 * != null) { Set<String> customNeckExams =
-			 * compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getNeckExam())), new
-			 * HashSet<>(splitCSV(request.getGlobalNeckExam()))); for (String
-			 * customNeckExam : customNeckExams) {
+			 * if (request.getNeckExam() != null && !request.getNeckExam().isEmpty() &&
+			 * request.getGlobalNeckExam() != null) { Set<String> customNeckExams =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getNeckExam())), new
+			 * HashSet<>(splitCSV(request.getGlobalNeckExam()))); for (String customNeckExam
+			 * : customNeckExams) {
 			 * 
 			 * NeckExamination neckExamination = new NeckExamination();
-			 * neckExamination.setNeckExam(customNeckExam);
-			 * NeckExaminationCollection neckExaminationCollection = new
-			 * NeckExaminationCollection(); BeanUtil.map(neckExamination,
-			 * neckExaminationCollection);
-			 * neckExaminationCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
+			 * neckExamination.setNeckExam(customNeckExam); NeckExaminationCollection
+			 * neckExaminationCollection = new NeckExaminationCollection();
+			 * BeanUtil.map(neckExamination, neckExaminationCollection);
+			 * neckExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			 * neckExaminationCollection.setLocationId(new
 			 * ObjectId(request.getLocationId()));
 			 * neckExaminationCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * neckExaminationCollection.setCreatedBy(createdBy);
 			 * neckExaminationCollection.setCreatedTime(createdTime);
-			 * neckExaminationCollection.setId(null); neckExaminationCollection
-			 * = neckExaminationRepository.save(neckExaminationCollection);
+			 * neckExaminationCollection.setId(null); neckExaminationCollection =
+			 * neckExaminationRepository.save(neckExaminationCollection);
 			 * transactionalManagementService.addResource(
 			 * neckExaminationCollection.getId(), Resource.NECK_EXAM, false);
 			 * ESNeckExaminationDocument esNeckExaminationDocument = new
-			 * ESNeckExaminationDocument();
-			 * BeanUtil.map(neckExaminationCollection,
+			 * ESNeckExaminationDocument(); BeanUtil.map(neckExaminationCollection,
 			 * esNeckExaminationDocument);
 			 * esClinicalNotesService.addNeckExam(esNeckExaminationDocument); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getNoseExam() != null &&
-			 * !request.getNoseExam().isEmpty() && request.getGlobalNoseExam()
-			 * != null) { Set<String> customNoseExams =
-			 * compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getNoseExam())), new
-			 * HashSet<>(splitCSV(request.getGlobalNoseExam()))); for (String
-			 * customNoseExam : customNoseExams) {
+			 * if (request.getNoseExam() != null && !request.getNoseExam().isEmpty() &&
+			 * request.getGlobalNoseExam() != null) { Set<String> customNoseExams =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getNoseExam())), new
+			 * HashSet<>(splitCSV(request.getGlobalNoseExam()))); for (String customNoseExam
+			 * : customNoseExams) {
 			 * 
 			 * NoseExamination noseExamination = new NoseExamination();
-			 * noseExamination.setNoseExam(customNoseExam);
-			 * NoseExaminationCollection noseExaminationCollection = new
-			 * NoseExaminationCollection(); BeanUtil.map(noseExamination,
-			 * noseExaminationCollection);
-			 * noseExaminationCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
+			 * noseExamination.setNoseExam(customNoseExam); NoseExaminationCollection
+			 * noseExaminationCollection = new NoseExaminationCollection();
+			 * BeanUtil.map(noseExamination, noseExaminationCollection);
+			 * noseExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			 * noseExaminationCollection.setLocationId(new
 			 * ObjectId(request.getLocationId()));
 			 * noseExaminationCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * noseExaminationCollection.setCreatedBy(createdBy);
 			 * noseExaminationCollection.setCreatedTime(createdTime);
-			 * noseExaminationCollection.setId(null); noseExaminationCollection
-			 * = noseExaminationRepository.save(noseExaminationCollection);
+			 * noseExaminationCollection.setId(null); noseExaminationCollection =
+			 * noseExaminationRepository.save(noseExaminationCollection);
 			 * transactionalManagementService.addResource(
 			 * noseExaminationCollection.getId(), Resource.NOSE_EXAM, false);
 			 * ESNeckExaminationDocument esNeckExaminationDocument = new
-			 * ESNeckExaminationDocument();
-			 * BeanUtil.map(noseExaminationCollection,
+			 * ESNeckExaminationDocument(); BeanUtil.map(noseExaminationCollection,
 			 * esNeckExaminationDocument);
 			 * esClinicalNotesService.addNeckExam(esNeckExaminationDocument); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getEarsExam() != null &&
-			 * !request.getEarsExam().isEmpty() && request.getGlobalEarsExam()
-			 * != null) { Set<String> customEarsExams =
-			 * compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getEarsExam())), new
-			 * HashSet<>(splitCSV(request.getGlobalEarsExam()))); for (String
-			 * customEarsExam : customEarsExams) {
+			 * if (request.getEarsExam() != null && !request.getEarsExam().isEmpty() &&
+			 * request.getGlobalEarsExam() != null) { Set<String> customEarsExams =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getEarsExam())), new
+			 * HashSet<>(splitCSV(request.getGlobalEarsExam()))); for (String customEarsExam
+			 * : customEarsExams) {
 			 * 
 			 * EarsExamination earsExamination = new EarsExamination();
-			 * earsExamination.setEarsExam(customEarsExam);
-			 * EarsExaminationCollection earsExaminationCollection = new
-			 * EarsExaminationCollection(); BeanUtil.map(earsExamination,
-			 * earsExaminationCollection);
-			 * earsExaminationCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
+			 * earsExamination.setEarsExam(customEarsExam); EarsExaminationCollection
+			 * earsExaminationCollection = new EarsExaminationCollection();
+			 * BeanUtil.map(earsExamination, earsExaminationCollection);
+			 * earsExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			 * earsExaminationCollection.setLocationId(new
 			 * ObjectId(request.getLocationId()));
 			 * earsExaminationCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * earsExaminationCollection.setCreatedBy(createdBy);
 			 * earsExaminationCollection.setCreatedTime(createdTime);
-			 * earsExaminationCollection.setId(null); earsExaminationCollection
-			 * = earsExaminationRepository.save(earsExaminationCollection);
+			 * earsExaminationCollection.setId(null); earsExaminationCollection =
+			 * earsExaminationRepository.save(earsExaminationCollection);
 			 * transactionalManagementService.addResource(
 			 * earsExaminationCollection.getId(), Resource.EARS_EXAM, false);
 			 * ESEarsExaminationDocument esEarsExaminationDocument = new
-			 * ESEarsExaminationDocument();
-			 * BeanUtil.map(earsExaminationCollection,
+			 * ESEarsExaminationDocument(); BeanUtil.map(earsExaminationCollection,
 			 * esEarsExaminationDocument);
 			 * esClinicalNotesService.addEarsExam(esEarsExaminationDocument); //
 			 * noteIds.add(notesCollection.getId());
 			 * 
 			 * } }
 			 * 
-			 * if (request.getEarsExam() != null &&
-			 * !request.getEarsExam().isEmpty() && request.getGlobalEarsExam()
-			 * != null) { Set<String> customEarsExams =
-			 * compareGlobalElements(new
-			 * HashSet<>(splitCSV(request.getEarsExam())), new
-			 * HashSet<>(splitCSV(request.getGlobalEarsExam()))); for (String
-			 * customEarsExam : customEarsExams) {
+			 * if (request.getEarsExam() != null && !request.getEarsExam().isEmpty() &&
+			 * request.getGlobalEarsExam() != null) { Set<String> customEarsExams =
+			 * compareGlobalElements(new HashSet<>(splitCSV(request.getEarsExam())), new
+			 * HashSet<>(splitCSV(request.getGlobalEarsExam()))); for (String customEarsExam
+			 * : customEarsExams) {
 			 * 
 			 * EarsExamination earsExamination = new EarsExamination();
-			 * earsExamination.setEarsExam(customEarsExam);
-			 * EarsExaminationCollection earsExaminationCollection = new
-			 * EarsExaminationCollection(); BeanUtil.map(earsExamination,
-			 * earsExaminationCollection);
-			 * earsExaminationCollection.setDoctorId(new
-			 * ObjectId(request.getDoctorId()));
+			 * earsExamination.setEarsExam(customEarsExam); EarsExaminationCollection
+			 * earsExaminationCollection = new EarsExaminationCollection();
+			 * BeanUtil.map(earsExamination, earsExaminationCollection);
+			 * earsExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			 * earsExaminationCollection.setLocationId(new
 			 * ObjectId(request.getLocationId()));
 			 * earsExaminationCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * earsExaminationCollection.setCreatedBy(createdBy);
 			 * earsExaminationCollection.setCreatedTime(createdTime);
-			 * earsExaminationCollection.setId(null); earsExaminationCollection
-			 * = earsExaminationRepository.save(earsExaminationCollection);
+			 * earsExaminationCollection.setId(null); earsExaminationCollection =
+			 * earsExaminationRepository.save(earsExaminationCollection);
 			 * transactionalManagementService.addResource(
 			 * earsExaminationCollection.getId(), Resource.EARS_EXAM, false);
 			 * ESEarsExaminationDocument esEarsExaminationDocument = new
-			 * ESEarsExaminationDocument();
-			 * BeanUtil.map(earsExaminationCollection,
+			 * ESEarsExaminationDocument(); BeanUtil.map(earsExaminationCollection,
 			 * esEarsExaminationDocument);
 			 * esClinicalNotesService.addEarsExam(esEarsExaminationDocument); //
 			 * noteIds.add(notesCollection.getId());
@@ -1448,15 +1277,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * request.getGlobalIndirectLarygoscopyExam() != null) { Set<String>
 			 * customIndirectLagyroScopyExams = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getIndirectLarygoscopyExam())), new
-			 * HashSet<>(splitCSV(request.getGlobalIndirectLarygoscopyExam())));
-			 * for (String customIndirectLagyroScopyExam :
-			 * customIndirectLagyroScopyExams) {
+			 * HashSet<>(splitCSV(request.getGlobalIndirectLarygoscopyExam()))); for (String
+			 * customIndirectLagyroScopyExam : customIndirectLagyroScopyExams) {
 			 * 
-			 * IndirectLarygoscopyExamination indirectLarygoscopyExamination =
-			 * new IndirectLarygoscopyExamination();
+			 * IndirectLarygoscopyExamination indirectLarygoscopyExamination = new
+			 * IndirectLarygoscopyExamination();
 			 * indirectLarygoscopyExamination.setIndirectLarygoscopyExam(
-			 * customIndirectLagyroScopyExam);
-			 * IndirectLarygoscopyExaminationCollection
+			 * customIndirectLagyroScopyExam); IndirectLarygoscopyExaminationCollection
 			 * indirectLarygoscopyExaminationCollection = new
 			 * IndirectLarygoscopyExaminationCollection();
 			 * BeanUtil.map(indirectLarygoscopyExamination,
@@ -1468,8 +1295,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * indirectLarygoscopyExaminationCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * indirectLarygoscopyExaminationCollection.setCreatedBy(createdBy);
-			 * indirectLarygoscopyExaminationCollection.setCreatedTime(
-			 * createdTime);
+			 * indirectLarygoscopyExaminationCollection.setCreatedTime( createdTime);
 			 * indirectLarygoscopyExaminationCollection.setId(null);
 			 * indirectLarygoscopyExaminationCollection =
 			 * indirectLarygoscopyExaminationRepository
@@ -1493,15 +1319,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * request.getGlobalOralCavityThroatExam() != null) { Set<String>
 			 * customOralCavityThroatExams = compareGlobalElements( new
 			 * HashSet<>(splitCSV(request.getOralCavityThroatExam())), new
-			 * HashSet<>(splitCSV(request.getGlobalOralCavityThroatExam())));
-			 * for (String customOralCavityThroatExam :
-			 * customOralCavityThroatExams) {
+			 * HashSet<>(splitCSV(request.getGlobalOralCavityThroatExam()))); for (String
+			 * customOralCavityThroatExam : customOralCavityThroatExams) {
 			 * 
-			 * OralCavityAndThroatExamination oralCavityAndThroatExamination =
-			 * new OralCavityAndThroatExamination();
+			 * OralCavityAndThroatExamination oralCavityAndThroatExamination = new
+			 * OralCavityAndThroatExamination();
 			 * oralCavityAndThroatExamination.setOralCavityThroatExam(
-			 * customOralCavityThroatExam);
-			 * OralCavityAndThroatExaminationCollection
+			 * customOralCavityThroatExam); OralCavityAndThroatExaminationCollection
 			 * oralCavityAndThroatExaminationCollection = new
 			 * OralCavityAndThroatExaminationCollection();
 			 * BeanUtil.map(oralCavityAndThroatExamination,
@@ -1513,8 +1337,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * oralCavityAndThroatExaminationCollection.setHospitalId(new
 			 * ObjectId(request.getHospitalId()));
 			 * oralCavityAndThroatExaminationCollection.setCreatedBy(createdBy);
-			 * oralCavityAndThroatExaminationCollection.setCreatedTime(
-			 * createdTime);
+			 * oralCavityAndThroatExaminationCollection.setCreatedTime( createdTime);
 			 * oralCavityAndThroatExaminationCollection.setId(null);
 			 * oralCavityAndThroatExaminationCollection =
 			 * oralCavityThroatExaminationRepository
@@ -1585,11 +1408,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 														Aggregation.match(new Criteria("id").in(diagramIds))),
 												DiagramsCollection.class, Diagram.class).getMappedResults(),
 										diagramIds));
-			
+
 			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
-					"Clinical Notes Added",
-					ComponentType.CLINICAL_NOTES_REFRESH.getType(), clinicalNotesCollection.getPatientId().toString(), null);
-			
+					"Clinical Notes Added", ComponentType.CLINICAL_NOTES_REFRESH.getType(),
+					clinicalNotesCollection.getPatientId().toString(), null);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1657,11 +1480,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				// NotesCollection.class, Notes.class).getMappedResults(),
 				// clinicalNotesCollection.getNotes()));
 				if (clinicalNotesCollection.getDiagrams() != null && !clinicalNotesCollection.getDiagrams().isEmpty())
-					clinicalNote.setDiagrams(sortDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(
-							Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagrams()))),
+					clinicalNote
+							.setDiagrams(
+									sortDiagrams(
+											mongoTemplate.aggregate(
+													Aggregation.newAggregation(Aggregation.match(new Criteria("id")
+															.in(clinicalNotesCollection.getDiagrams()))),
 
-							DiagramsCollection.class, Diagram.class).getMappedResults(),
-							clinicalNotesCollection.getDiagrams()));
+													DiagramsCollection.class, Diagram.class).getMappedResults(),
+											clinicalNotesCollection.getDiagrams()));
 
 				if (DPDoctorUtils.anyStringEmpty(visitId)) {
 					PatientVisitCollection patientVisitCollection = patientVisitRepository
@@ -1757,10 +1584,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 														Aggregation.match(new Criteria("id").in(diagramIds))),
 												DiagramsCollection.class, Diagram.class).getMappedResults(),
 										diagramIds));
-			
+
 			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
-					"Clinical Notes Added",
-					ComponentType.CLINICAL_NOTES_REFRESH.getType(), clinicalNotesCollection.getPatientId().toString(), null);
+					"Clinical Notes Added", ComponentType.CLINICAL_NOTES_REFRESH.getType(),
+					clinicalNotesCollection.getPatientId().toString(), null);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1853,8 +1680,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
-								"appointmentRequest"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
@@ -1925,12 +1751,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNote
 					.setDiagrams(
 							sortDiagrams(
-									mongoTemplate
-											.aggregate(
-													Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-															.in(clinicalNotesCollection.getDiagrams()))),
-													DiagramsCollection.class, Diagram.class)
-											.getMappedResults(),
+									mongoTemplate.aggregate(
+											Aggregation.newAggregation(Aggregation.match(
+													new Criteria("id").in(clinicalNotesCollection.getDiagrams()))),
+											DiagramsCollection.class, Diagram.class).getMappedResults(),
 									clinicalNotesCollection.getDiagrams()));
 
 		PatientVisitCollection patientVisitCollection = patientVisitRepository
@@ -2819,7 +2643,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		Integer clinicalNotesCount = 0;
 		try {
 
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
+					.and("isPatientDiscarded").ne(true);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -3988,8 +3813,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Clinical Notes", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Clinical Notes", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Clinical Notes", body, mailResponse.getMailAttachment());
 
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
@@ -4051,19 +3876,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						response.setMailAttachment(mailAttachment);
 						response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
+								? locationCollection.getStreetAddress() + ", "
+								: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
+										? locationCollection.getLandmarkDetails() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
+										? locationCollection.getLocality() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
+										? locationCollection.getCity() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
+										? locationCollection.getState() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
+										? locationCollection.getCountry() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+										? locationCollection.getPostalCode()
+										: "");
 
 						if (address.charAt(address.length() - 2) == ',') {
 							address = address.substring(0, address.length() - 2);
@@ -4154,8 +3986,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			} else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
-								"appointmentRequest"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
@@ -4304,6 +4135,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("generalHistorySurgical", clinicalNotesCollection.getGeneralHistorySurgical());
 		parameters.put("pastHistory", clinicalNotesCollection.getPastHistory());
 		parameters.put("familyHistory", clinicalNotesCollection.getFamilyHistory());
+		parameters.put("priorConsultations", clinicalNotesCollection.getPriorConsultations());
 		parameters.put("painScale", clinicalNotesCollection.getPainScale());
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
@@ -4344,7 +4176,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
 			temp = (temp != null && !temp.isEmpty()
-					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
+					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit()
+					: "");
 			if (!DPDoctorUtils.allStringsEmpty(temp)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + temp;
@@ -4354,7 +4187,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
 			breathing = (breathing != null && !breathing.isEmpty()
-					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit() : "");
+					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit()
+					: "");
 			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + breathing;
@@ -4364,7 +4198,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
 			weight = (weight != null && !weight.isEmpty()
-					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
+					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit()
+					: "");
 			if (!DPDoctorUtils.allStringsEmpty(temp)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + weight;
@@ -4464,17 +4299,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 		}
-		patientVisitService
-				.generatePatientDetails(
-						(printSettings != null && printSettings.getHeaderSetup() != null
-								? printSettings.getHeaderSetup().getPatientDetails() : null),
-						patient,
-						"<b>CID: </b>" + (clinicalNotesCollection.getUniqueEmrId() != null
-								? clinicalNotesCollection.getUniqueEmrId() : "--"),
-						patient.getLocalPatientName(), user.getMobileNumber(),
-						parameters, clinicalNotesCollection.getCreatedTime() != null
-								? clinicalNotesCollection.getCreatedTime() : new Date(),
-						printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
+				patient,
+				"<b>CID: </b>"
+						+ (clinicalNotesCollection.getUniqueEmrId() != null ? clinicalNotesCollection.getUniqueEmrId()
+								: "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				clinicalNotesCollection.getCreatedTime() != null ? clinicalNotesCollection.getCreatedTime()
+						: new Date(),
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
@@ -4483,18 +4319,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 		response = jasperReportService.createPDF(ComponentType.CLINICAL_NOTES, parameters, clinicalNotesA4FileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
@@ -8509,19 +8350,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response.setMailAttachment(mailAttachment);
 				response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -8556,25 +8404,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	public String downloadMultipleClinicalNotes(List<String> ids) {
 		String response = null;
 		try {
-			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(new Criteria("id").in(ids)),
-					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
-					new CustomAggregationOperation(new BasicDBObject("$redact",
-							new BasicDBObject("$cond",
+			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"),
+							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
-													Arrays.asList("$patient.locationId",
-															"$locationId"))).append("then", "$$KEEP")
-																	.append("else", "$$PRUNE")))),
-					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), 
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser"),
+							Aggregation.sort(new Sort(Direction.ASC, "createdTime"))),
 					ClinicalNotesCollection.class, ClinicalnoteLookupBean.class).getMappedResults();
 
-			
 			if (clinicalnoteLookupBeans != null && !clinicalnoteLookupBeans.isEmpty()) {
 				PatientCollection patient = clinicalnoteLookupBeans.get(0).getPatient();
 				UserCollection user = clinicalnoteLookupBeans.get(0).getPatientUser();
-				
-				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(clinicalnoteLookupBeans, patient, user);
+
+				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
+						clinicalnoteLookupBeans, patient, user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -8592,64 +8441,78 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private JasperReportResponse createJasperForMultipleClinicalNotes(List<ClinicalnoteLookupBean> clinicalnoteLookupBeans, PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
-		
+	private JasperReportResponse createJasperForMultipleClinicalNotes(
+			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans, PatientCollection patient, UserCollection user)
+			throws NumberFormatException, IOException {
+
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<ClinicalNotesJasperDetails> clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-		
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(clinicalnoteLookupBeans.get(0).getDoctorId(), clinicalnoteLookupBeans.get(0).getLocationId(),
-						clinicalnoteLookupBeans.get(0).getHospitalId(), ComponentType.ALL.getType());
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				clinicalnoteLookupBeans.get(0).getDoctorId(), clinicalnoteLookupBeans.get(0).getLocationId(),
+				clinicalnoteLookupBeans.get(0).getHospitalId(), ComponentType.ALL.getType());
 
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
-				
-		String contentLineStyle = (printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ? printSettings.getContentLineStyle() : LineStyle.INLINE.name();
-				
+
+		String contentLineStyle = (printSettings != null
+				&& !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+						? printSettings.getContentLineStyle()
+						: LineStyle.INLINE.name();
+
 		for (ClinicalnoteLookupBean clinicalnote : clinicalnoteLookupBeans) {
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			BeanUtil.map(clinicalnote, clinicalNotesCollection);
-			ClinicalNotesJasperDetails clinicalJasperDetails = patientVisitService.getClinicalNotesJasperDetails(clinicalnote.getId().toString(), contentLineStyle, parameters, 
-									false, false, false, false, false, clinicalNotesCollection,false);
-			clinicalJasperDetails.setTitle(simpleDateFormat.format(clinicalNotesCollection.getCreatedTime()) + "(Clinical Notes : " + clinicalNotesCollection.getUniqueEmrId() +")");
+			ClinicalNotesJasperDetails clinicalJasperDetails = patientVisitService.getClinicalNotesJasperDetails(
+					clinicalnote.getId().toString(), contentLineStyle, parameters, false, false, false, false, false,
+					clinicalNotesCollection, false);
+			clinicalJasperDetails.setTitle(simpleDateFormat.format(clinicalNotesCollection.getCreatedTime())
+					+ "(Clinical Notes : " + clinicalNotesCollection.getUniqueEmrId() + ")");
 			clinicalNotes.add(clinicalJasperDetails);
 		}
-		parameters.put("clinicalNotes", clinicalNotes);	
-		
-		patientVisitService.generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
-				new Date(), printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
-		
+		parameters.put("clinicalNotes", clinicalNotes);
+
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
+				patient, null, patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date(),
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
+
 		patientVisitService.generatePrintSetup(parameters, printSettings, printSettings.getDoctorId());
-		
+
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
-		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? (printSettings.getPageSetup().getPageSize() != null
-						? printSettings.getPageSetup().getPageSize() : "A4") : "A4")
-				: "A4";
+		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null
+				? (printSettings.getPageSetup().getPageSize() != null ? printSettings.getPageSetup().getPageSize()
+						: "A4")
+				: "A4") : "A4";
 
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "MULTIPLECLINICALNOTES-"
-				 + new Date().getTime();
+				+ new Date().getTime();
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 
 		response = jasperReportService.createPDF(ComponentType.VISITS, parameters, visitA4FileName, layout, pageSize,
@@ -8665,24 +8528,24 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		MailAttachment mailAttachment = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(new Criteria("id").in(ids)),
-					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
-					new CustomAggregationOperation(new BasicDBObject("$redact",
-							new BasicDBObject("$cond",
+			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"),
+							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
-													Arrays.asList("$patient.locationId",
-															"$locationId"))).append("then", "$$KEEP")
-																	.append("else", "$$PRUNE")))),
-					Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"), Aggregation.unwind("patientUser"), Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), 
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser"),
+							Aggregation.sort(new Sort(Direction.ASC, "createdTime"))),
 					ClinicalNotesCollection.class, ClinicalnoteLookupBean.class).getMappedResults();
 
-			
 			if (clinicalnoteLookupBeans != null && !clinicalnoteLookupBeans.isEmpty()) {
 				PatientCollection patient = clinicalnoteLookupBeans.get(0).getPatient();
 				UserCollection user = clinicalnoteLookupBeans.get(0).getPatientUser();
-				
+
 				emailTrackCollection.setDoctorId(clinicalnoteLookupBeans.get(0).getDoctorId());
 				emailTrackCollection.setHospitalId(clinicalnoteLookupBeans.get(0).getHospitalId());
 				emailTrackCollection.setLocationId(clinicalnoteLookupBeans.get(0).getLocationId());
@@ -8692,32 +8555,41 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					emailTrackCollection.setPatientName(user.getFirstName());
 					emailTrackCollection.setPatientId(user.getId());
 				}
-				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(clinicalnoteLookupBeans, patient, user);
-				
+				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
+						clinicalnoteLookupBeans, patient, user);
+
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 				UserCollection doctorUser = userRepository.findOne(clinicalnoteLookupBeans.get(0).getDoctorId());
-				LocationCollection locationCollection = locationRepository.findOne(clinicalnoteLookupBeans.get(0).getLocationId());
+				LocationCollection locationCollection = locationRepository
+						.findOne(clinicalnoteLookupBeans.get(0).getLocationId());
 
 				mailResponse = new MailResponse();
 				mailResponse.setMailAttachment(mailAttachment);
 				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
-				
+
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -8728,19 +8600,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				emailTackService.saveEmailTrack(emailTrackCollection);
 				String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
-						mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
-						"", "Clinical Notes", "multipleEmrMailTemplate.vm");
-				Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Clinical Notes", body,
+						mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), "",
+						"Clinical Notes", "multipleEmrMailTemplate.vm");
+				Boolean response = mailService.sendEmail(emailAddress,
+						mailResponse.getDoctorName() + " sent you Clinical Notes", body,
 						mailResponse.getMailAttachment());
 
-				if (response != null && mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (response != null && mailResponse.getMailAttachment() != null
+						&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 					if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
-						mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();				
-			}else {
+						mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+			} else {
 				logger.warn("Clinical Notes Ids does not exist");
 				throw new BusinessException(ServiceError.NotFound, "Clinical Notes Ids does not exist");
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while emailing Clinical Notes PDF");

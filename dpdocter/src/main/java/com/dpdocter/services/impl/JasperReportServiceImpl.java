@@ -254,7 +254,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			dsr.setDataSourceExpression(expression);
 
 			Boolean showTableOne = (Boolean) parameters.get("showTableOne");
-			if (parameters.get("footerImage") != null && !parameters.get("footerImage").toString().isEmpty()) {
+			if (parameters.get("headerImage") != null && !parameters.get("headerImage").toString().isEmpty()) {
 				jasperDesign.setPageHeader(createPageImageHeader(columnWidth, parameters));
 			} else {
 				jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters));
@@ -413,7 +413,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 			if (parameters.get("footerImage") != null && !parameters.get("footerImage").toString().isEmpty()) {
-				jasperDesign.setPageFooter(createPageImageHeader(columnWidth, parameters));
+				jasperDesign.setPageFooter(createPageImageFooter(columnWidth, parameters));
 			} else {
 				jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 			}
@@ -558,6 +558,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{PCEars}", "$P{pcEars}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{PH}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$P{priorConsultations}", fieldWidth, false, 0,
+				false);
 
 		band = new JRDesignBand();
 		band.setHeight(20);
@@ -1158,6 +1160,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{PCEars}", "$F{pcEars}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PastHistory}", "$F{pastHistory}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$F{priorConsultations}", fieldWidth, false, 0,
+				false);
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression(

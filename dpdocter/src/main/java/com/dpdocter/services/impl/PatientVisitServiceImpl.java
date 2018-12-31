@@ -2442,7 +2442,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
 					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
 				}
-				if (!printSettings.getFooterSetup().getShowImageFooter()) {
+				if (printSettings.getFooterSetup().getShowImageFooter()
+						&& printSettings.getFooterSetup().getShowImageFooter()) {
 					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
 				}
 			}
@@ -2812,6 +2813,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
 					clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
 					clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
+					clinicalNotesJasperDetails.setPriorConsultations(clinicalNotesCollection.getPriorConsultations());
 					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
