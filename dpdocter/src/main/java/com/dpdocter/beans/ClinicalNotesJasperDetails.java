@@ -10,7 +10,7 @@ import com.mongodb.DBObject;
 public class ClinicalNotesJasperDetails {
 
 	private String title;
-	
+
 	private String complaints;
 
 	private String observations;
@@ -95,6 +95,7 @@ public class ClinicalNotesJasperDetails {
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
 	private String painScale;
+	private String priorConsultations;
 
 	public String getComplaints() {
 		return complaints;
@@ -502,4 +503,13 @@ public class ClinicalNotesJasperDetails {
 				+ ", generalHistoryAllergies=" + generalHistoryAllergies + ", generalHistorySurgical="
 				+ generalHistorySurgical + ", painScale=" + painScale + "]";
 	}
+
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
+	}
+
 }

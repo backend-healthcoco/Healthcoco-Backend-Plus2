@@ -537,6 +537,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{pastHistory}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{PH}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$P{priorConsultations}", fieldWidth, false, 0,
+				false);
 
 		if (showTitle) {
 			band = new JRDesignBand();
@@ -1133,6 +1135,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		addItems(jasperDesign, columnWidth, "$P{PastHistory}", "$F{pastHistory}", fieldWidth, false, 0, false);
 
+		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$F{priorConsultations}", fieldWidth, false, 0,
+				false);
 		if (showTitle) {
 
 			band = new JRDesignBand();

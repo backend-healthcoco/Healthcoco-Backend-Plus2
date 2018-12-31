@@ -2810,6 +2810,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								.setGeneralHistoryAllergies(clinicalNotesCollection.getGeneralHistoryAllergies());
 						clinicalNotesJasperDetails
 								.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
+						clinicalNotesJasperDetails
+						.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
 						clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
 						clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
 						clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
