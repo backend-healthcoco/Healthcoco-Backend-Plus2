@@ -255,7 +255,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			dsr.setDataSourceExpression(expression);
 
 			Boolean showTableOne = (Boolean) parameters.get("showTableOne");
-			if (parameters.get("footerImage") != null && !parameters.get("footerImage").toString().isEmpty()) {
+			if (parameters.get("headerImage") != null && !parameters.get("headerImage").toString().isEmpty()) {
 				jasperDesign.setPageHeader(createPageImageHeader(columnWidth, parameters));
 			} else {
 				jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters));
@@ -560,7 +560,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{PCThroat}", "$P{pcThroat}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PCEars}", "$P{pcEars}", fieldWidth, false, 0, false);
 
-
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression(
@@ -686,7 +685,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$P{procedureNote}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$P{investigations}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0, true);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0, false);
@@ -1053,7 +1052,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		band.addElement(jrDesignImage);
-
 		return band;
 	}
 
@@ -1129,7 +1127,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		// add clinical notes items
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$F{vitalSigns}", fieldWidth, false, 0, false);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$F{presentComplaint}", fieldWidth, false, 0,
 				false);
 
@@ -1220,7 +1218,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 				fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{FamilyHistory}", "$F{familyHistory}", fieldWidth, false, 0, false);
 
-
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$F{presentComplaintHistory}", fieldWidth,
@@ -1282,12 +1279,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		addItems(jasperDesign, columnWidth, "$P{Observations}", "$F{observations}", fieldWidth, false, 0, false);
 
-		addItems(jasperDesign, columnWidth, "$P{PainScale}", "$F{painScale}", fieldWidth, false, 0, false);		
+		addItems(jasperDesign, columnWidth, "$P{PainScale}", "$F{painScale}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$F{procedureNote}", fieldWidth, false, 0, false);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$F{investigations}", fieldWidth, false, 0, false);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$F{diagnosis}", fieldWidth, false, 0, true);
 
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$F{provisionalDiagnosis}", fieldWidth, false,
@@ -2106,7 +2103,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		band.addElement(jrDesignImage);
-
 		return band;
 	}
 
