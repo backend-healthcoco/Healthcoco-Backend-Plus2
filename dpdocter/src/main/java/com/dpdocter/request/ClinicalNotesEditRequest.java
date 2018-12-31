@@ -174,6 +174,8 @@ public class ClinicalNotesEditRequest {
 	private String painScale;
 
 	private Date createdTime;
+	
+	private String priorConsultations;
 
 	public Date getLmp() {
 		return lmp;
