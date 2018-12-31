@@ -270,7 +270,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			clinicalNotesPermission.add(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
 			clinicalNotesPermission.add(GynacPermissionsEnum.LMP.getPermissions());
 			clinicalNotesPermission.add(GynacPermissionsEnum.EDD.getPermissions());
-			clinicalNotesPermission.add(GynacPermissionsEnum.USG_GENDER_COUNT.getPermissions());
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
 			profilePermission.add(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());

@@ -374,8 +374,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 									.remove(GynacPermissionsEnum.EDD.getPermissions());
 							uiPermissions.getClinicalNotesPermissions()
 									.remove(GynacPermissionsEnum.LMP.getPermissions());
-							uiPermissions.getClinicalNotesPermissions()
-									.remove(GynacPermissionsEnum.USG_GENDER_COUNT.getPermissions());
 							uiPermissions.getProfilePermissions()
 									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
 						}
