@@ -108,14 +108,16 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 				if (request.getHeaderSetup() == null) {
 					printSettingsCollection.setHeaderSetup(oldPrintSettingsCollection.getHeaderSetup());
-				} else {
+				} else if (!DPDoctorUtils
+						.anyStringEmpty(printSettingsCollection.getHeaderSetup().getHeaderImageUrl())) {
 					printSettingsCollection.getHeaderSetup().setHeaderImageUrl(
 							printSettingsCollection.getHeaderSetup().getHeaderImageUrl().replaceAll(imagePath, ""));
 
 				}
 				if (request.getFooterSetup() == null) {
 					printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
-				} else {
+				} else if (!DPDoctorUtils
+						.anyStringEmpty(printSettingsCollection.getFooterSetup().getFooterImageUrl())) {
 					printSettingsCollection.getFooterSetup().setFooterImageUrl(
 							printSettingsCollection.getFooterSetup().getFooterImageUrl().replaceAll(imagePath, ""));
 				}
@@ -357,7 +359,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 			fileDetails.setFileName(fileDetails.getFileName() + new Date());
 			path = "print/setup" + File.separator + type;
-			 response = fileManager.saveImageAndReturnImageUrl(fileDetails, path, false);
+			response = fileManager.saveImageAndReturnImageUrl(fileDetails, path, false);
 
 		} catch (Exception e) {
 			e.printStackTrace();
