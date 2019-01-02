@@ -70,7 +70,8 @@ public class PrintSettingsApi {
 			@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
 			@QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@DefaultValue("true") @QueryParam(value = "isWeb") Boolean isWeb) {
 
 		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
 			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
@@ -85,6 +86,8 @@ public class PrintSettingsApi {
 				((PrintSettings) pSettings)
 						.setClinicLogoUrl(getFinalImageURL(((PrintSettings) pSettings).getClinicLogoUrl()));
 			}
+		}else if(!isWeb && printSettings == null) {
+			printSettings=null;
 		}
 		Response<PrintSettings> response = new Response<PrintSettings>();
 		response.setDataList(printSettings);
