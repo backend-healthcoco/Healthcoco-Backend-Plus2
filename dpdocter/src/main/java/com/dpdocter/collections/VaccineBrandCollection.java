@@ -8,6 +8,7 @@ public class VaccineBrandCollection extends GenericCollection {
 
 	private ObjectId id;
 	private String name;
+	private String groupFrom;
 
 	public ObjectId getId() {
 		return id;
@@ -23,6 +24,14 @@ public class VaccineBrandCollection extends GenericCollection {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getGroupFrom() {
+		return groupFrom;
+	}
+
+	public void setGroupFrom(String groupFrom) {
+		this.groupFrom = groupFrom;
 	}
 
 	@Override
