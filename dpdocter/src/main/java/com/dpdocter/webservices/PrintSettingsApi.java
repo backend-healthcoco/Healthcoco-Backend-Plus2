@@ -86,8 +86,8 @@ public class PrintSettingsApi {
 				((PrintSettings) pSettings)
 						.setClinicLogoUrl(getFinalImageURL(((PrintSettings) pSettings).getClinicLogoUrl()));
 			}
-		}else if(!isWeb && printSettings == null) {
-			printSettings=null;
+		} else if (!isWeb && (printSettings == null || printSettings.isEmpty())) {
+			printSettings = null;
 		}
 		Response<PrintSettings> response = new Response<PrintSettings>();
 		response.setDataList(printSettings);
