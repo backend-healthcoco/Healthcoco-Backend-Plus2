@@ -38,6 +38,7 @@ import com.dpdocter.enums.AccessPermissionType;
 import com.dpdocter.enums.AdmitCardPermissionEnum;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.ClinicalNotesPermissionEnum;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DentalLabRequestPermissions;
 import com.dpdocter.enums.DentistPermissionEnum;
 import com.dpdocter.enums.DischargeSummaryPermissions;
@@ -73,6 +74,7 @@ import com.dpdocter.request.NutrirtionUIRequest;
 import com.dpdocter.response.DynamicUIResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.DynamicUIService;
+import com.dpdocter.services.PushNotificationServices;
 
 import common.util.web.DPDoctorUtils;
 
@@ -108,6 +110,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 	@Autowired
 	private NutritionUIRepository nutritionUIRepository;
+	
+	@Autowired
+	private PushNotificationServices pushNotificationServices;
 
 	@Override
 	@Transactional
@@ -613,6 +618,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dataDynamicUI = new DataDynamicUI();
 			BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
 		}
+		
+		pushNotificationServices.notifyUser(dynamicUIRequest.getDoctorId(), "",
+				ComponentType.REFRESH_DATA_SETTING.getType(), null, null);
+		
 		return dataDynamicUI;
 	}
 
