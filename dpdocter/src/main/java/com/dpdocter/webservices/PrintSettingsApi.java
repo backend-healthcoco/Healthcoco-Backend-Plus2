@@ -81,16 +81,19 @@ public class PrintSettingsApi {
 
 		List<PrintSettings> printSettings = printSettingsService.getSettings(printFilter, doctorId, locationId,
 				hospitalId, page, size, updatedTime, discarded);
+		Response<PrintSettings> response = new Response<PrintSettings>();
 		if (printSettings != null) {
 			for (Object pSettings : printSettings) {
 				((PrintSettings) pSettings)
 						.setClinicLogoUrl(getFinalImageURL(((PrintSettings) pSettings).getClinicLogoUrl()));
 			}
-		} else if (!isWeb && (printSettings == null || printSettings.isEmpty())) {
-			printSettings = null;
+			response.setDataList(printSettings);
 		}
-		Response<PrintSettings> response = new Response<PrintSettings>();
-		response.setDataList(printSettings);
+		if (!isWeb && (printSettings == null || printSettings.isEmpty())) {
+			System.out.println("hell0");
+			response.setDataList(null);
+		}
+
 		return response;
 	}
 
