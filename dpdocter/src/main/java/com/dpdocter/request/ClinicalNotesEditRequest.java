@@ -1144,6 +1144,14 @@ public class ClinicalNotesEditRequest {
 		this.painScale = painScale;
 	}
 
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", observation=" + observation
