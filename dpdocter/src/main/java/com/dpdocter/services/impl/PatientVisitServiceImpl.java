@@ -2811,10 +2811,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						clinicalNotesJasperDetails
 								.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
 						clinicalNotesJasperDetails
-						.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
+								.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
 						clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
 						clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
 						clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
+						clinicalNotesJasperDetails
+								.setPriorConsultations(clinicalNotesCollection.getPriorConsultations());
 						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
 								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
 								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
