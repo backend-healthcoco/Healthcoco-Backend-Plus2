@@ -273,7 +273,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptions = aggregationResults.getMappedResults();
 
 			if (prescriptions != null && !prescriptions.isEmpty()) {
-				
+
 				for (Prescription prescription : prescriptions) {
 
 					if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
@@ -313,9 +313,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
 						for (PrescriptionItemDetail prescriptionItemDetail : prescription.getItems()) {
-							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
-									prescription.getLocationId(), prescription.getHospitalId(),
-									prescriptionItemDetail.getDrug().getDrugCode());
+							InventoryItem inventoryItem = null;
+							if (prescriptionItemDetail.getDrug() != null
+									&& !DPDoctorUtils.anyStringEmpty(prescriptionItemDetail.getDrug().getDrugCode())) {
+								inventoryItem = inventoryService.getInventoryItemByResourceId(
+										prescription.getLocationId(), prescription.getHospitalId(),
+										prescriptionItemDetail.getDrug().getDrugCode());
+							}
 							if (inventoryItem != null) {
 								InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
 										.getInventoryItem(inventoryItem.getId());
