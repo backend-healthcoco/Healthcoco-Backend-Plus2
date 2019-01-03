@@ -10,7 +10,6 @@ import java.util.TimeZone;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -109,18 +108,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
+			long date = 0l;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("discarded").is(false);
@@ -152,26 +152,25 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		try {
 			Criteria criteria = null;
 			Criteria itemCriteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
+			
 			Date from = null;
 			Date to = null;
+			long date = 0l;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
+			
 			criteria = getCriteria(doctorId, locationId, null);
 
 			Aggregation aggregation = null;
@@ -320,18 +319,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("discarded").is(false);
@@ -395,18 +395,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Date from = null;
 			Date to = null;
 			Date lastdate = null;
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 			long diff = to.getTime() - from.getTime();
@@ -536,12 +537,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(0);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(0);
 				to = new Date();
 			}
 			long diff = to.getTime() - from.getTime();
@@ -551,6 +552,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime last = new DateTime(lastdate);
 			fromTime = new DateTime(from);
 			toTime = new DateTime(to);
+
 			criteria = getCriteria(null, locationId, hospitalId);
 			data.setTotalPatient((int) mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
@@ -558,7 +560,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							Aggregation.sort(Direction.DESC, "createdTime")),
 					PatientCollection.class, PatientCollection.class).getMappedResults().size());
 
-			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime);
+			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(from).lte(to);
 			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
 
 			// hike in patient
@@ -567,13 +569,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (data.getTotalNewPatient() > 0) {
 				// hike in patient
 
-				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(last).lte(fromTime);
+				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(lastdate).lte(from);
 				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
 				data.setChangeInTotalPatientInPercent(total);
 
 			}
 			// visited patient
-			criteria = getCriteria(null, locationId, hospitalId).and("visit.adminCreatedTime").gte(fromTime).lte(toTime)
+			criteria = getCriteria(null, locationId, hospitalId).and("visit.adminCreatedTime").gte(from).lte(to)
 					.and("visit.locationId").is(new ObjectId(locationId)).and("visit.discarded").is(false)
 					.and("visit.hospitalId").is(new ObjectId(hospitalId));
 
@@ -608,18 +610,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 
@@ -803,12 +806,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(0);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(0);
 				to = new Date();
 			}
 			fromTime = new DateTime(from);
@@ -955,18 +958,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 			fromTime = new DateTime(from);
@@ -1126,18 +1130,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 
@@ -1217,18 +1222,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 			fromTime = new DateTime(from);
@@ -1326,9 +1332,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				
+
 				DateTime fromTime = new DateTime(new Date(Long.parseLong(fromDate)));
 
 				criteria.and("fromDate").gte(fromTime);
@@ -1441,23 +1446,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+				
 
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
 				criteria.and("date").gt(start);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+				
 
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
 				criteria.and("date").lte(end);
 			}
 
@@ -1581,23 +1578,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+				
 
-				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
 				criteria.and("fromDate").gt(start);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				localCalendar.setTime(new Date(Long.parseLong(toDate)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+				
 
-				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
 				criteria.and("fromDate").lte(end);
 			}
 
@@ -1703,7 +1692,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-
 				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
 				criteria2.and("appointment.fromDate").lte(end);
 			}
@@ -2843,6 +2831,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
@@ -2993,19 +2982,19 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
-
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 
@@ -3137,7 +3126,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
-
+			long date=0;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
@@ -3146,10 +3135,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(fromDate));
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(date);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(date);
 				to = new Date();
 			}
 
