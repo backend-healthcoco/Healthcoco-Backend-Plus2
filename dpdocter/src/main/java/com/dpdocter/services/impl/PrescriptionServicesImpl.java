@@ -950,11 +950,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						drugAddEditRequest.setExplanation(item.getInstructions());
 						drugCollection.setExplanation(item.getInstructions());
 					}
-					if(item.getInventoryQuantity() == null && item.getInventoryQuantity() == 0l )
-					{
+					if (item.getInventoryQuantity() == null || item.getInventoryQuantity() == 0l) {
 						item.setInventoryQuantity(1l);
 					}
-					
+
 					drugAddEditRequest.setDirection(item.getDirection());
 					drugAddEditRequest.setDuration(item.getDuration());
 					drugAddEditRequest.setDosage(item.getDosage());
