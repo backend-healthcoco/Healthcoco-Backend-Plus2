@@ -6,7 +6,6 @@ import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrintSettings extends GenericCollection {
 
 	private String id;

@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -90,8 +91,9 @@ public class PrintSettingsApi {
 			response.setDataList(printSettings);
 		}
 		if (!isWeb && (printSettings == null || printSettings.isEmpty())) {
-			System.out.println("hell0");
-			response.setDataList(null);
+			printSettings = new ArrayList<PrintSettings>();
+			printSettings.add(new PrintSettings());
+			response.setDataList(printSettings);
 		}
 
 		return response;
