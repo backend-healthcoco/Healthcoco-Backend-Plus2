@@ -1333,14 +1333,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-
 				DateTime fromTime = new DateTime(new Date(Long.parseLong(fromDate)));
-
-				criteria.and("fromDate").gte(fromTime);
-			}
+				criteria.and("fromDate").gte(fromTime);			
+				}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				DateTime toTime = new DateTime(new Date(Long.parseLong(toDate)));
-
 				criteria.and("toDate").lte(toTime);
 			}
 			criteria.and("discarded").is(false);
@@ -1445,11 +1442,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				
-
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {		
 				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("date").gt(start);
+				criteria.and("date").gte(start);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				
@@ -1581,7 +1576,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				
 
 				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("fromDate").gt(start);
+				criteria.and("fromDate").gte(start);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				
@@ -1688,7 +1683,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria2.and("appointment.fromDate").gt(start);
+				criteria2.and("appointment.fromDate").gte(start);
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
