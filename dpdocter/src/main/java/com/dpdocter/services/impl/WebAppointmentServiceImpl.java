@@ -33,6 +33,7 @@ import com.dpdocter.repository.AppointmentBookedSlotRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.SlotDataResponse;
+import com.dpdocter.response.WebAppointmentSlotDataResponse;
 import com.dpdocter.response.WebClinicResponse;
 import com.dpdocter.response.WebDoctorClinicsResponse;
 import com.dpdocter.services.AppointmentService;
@@ -120,16 +121,19 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 	}
 
 	@Override
-	public SlotDataResponse getTimeSlots(String doctorId, String locationId, String date) {
+	public WebAppointmentSlotDataResponse getTimeSlots(String doctorId, String locationId, String date) {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		List<Slot> slotResponse = null;
-		SlotDataResponse response = null;
+		List<SlotDataResponse> slotDataResponses = null;
+		WebAppointmentSlotDataResponse response = null;
 		try {
 			ObjectId doctorObjectId = null, locationObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
+
+			Date dateObj = new Date(Long.parseLong(date));
 
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorObjectId,
 					locationObjectId);
@@ -139,95 +143,114 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 				float slotTime = 0;
 				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
 				sdf.setTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
-				String day = sdf.format(date);
-				if (doctorClinicProfileCollection.getWorkingSchedules() != null
-						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
-					slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
-					response = new SlotDataResponse();
-					response.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
-					slotResponse = new ArrayList<Slot>();
-					List<WorkingHours> workingHours = null;
-					for (WorkingSchedule workingSchedule : doctorClinicProfileCollection.getWorkingSchedules()) {
-						if (workingSchedule.getWorkingDay().getDay().equalsIgnoreCase(day)) {
-							workingHours = workingSchedule.getWorkingHours();
+				
+				Calendar localCalendar = Calendar
+						.getInstance(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
+				localCalendar.setTime(dateObj);
+				
+				response = new WebAppointmentSlotDataResponse();
+				response.setDoctorId(doctorId);
+				response.setLocationId(locationId);
+				response.setDoctorSlugURL(doctorClinicProfileCollection.getDoctorSlugURL());
+				
+				slotDataResponses = new ArrayList<SlotDataResponse>();
+				if (doctorClinicProfileCollection.getWorkingSchedules() != null && doctorClinicProfileCollection.getAppointmentSlot() != null) {
+					for(int j=0;j<6;j++) {
+						String day = sdf.format(localCalendar.getTime());
+						slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
+						
+						SlotDataResponse slotDataResponse = new SlotDataResponse();
+						slotDataResponse.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
+						slotDataResponse.setDate(localCalendar.getTime().getTime());
+						
+						slotResponse = new ArrayList<Slot>();
+						List<WorkingHours> workingHours = null;
+						for (WorkingSchedule workingSchedule : doctorClinicProfileCollection.getWorkingSchedules()) {
+							if (workingSchedule.getWorkingDay().getDay().equalsIgnoreCase(day)) {
+								workingHours = workingSchedule.getWorkingHours();
+							}
 						}
-					}
-					if (workingHours != null && !workingHours.isEmpty()) {
-						Date dateObj = new Date(Long.parseLong(date));
-						Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
-						localCalendar.setTime(dateObj);
-						int dayOfDate = localCalendar.get(Calendar.DATE);
-						int monthOfDate = localCalendar.get(Calendar.MONTH) + 1;
-						int yearOfDate = localCalendar.get(Calendar.YEAR);
+						if (workingHours != null && !workingHours.isEmpty()) {
+							
+							int dayOfDate = localCalendar.get(Calendar.DATE);
+							int monthOfDate = localCalendar.get(Calendar.MONTH) + 1;
+							int yearOfDate = localCalendar.get(Calendar.YEAR);
 
-						DateTime start = new DateTime(yearOfDate, monthOfDate, dayOfDate, 0, 0, 0, DateTimeZone
-								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
-						
-						localCalendar.add(Calendar.DAY_OF_MONTH, 6);
-						DateTime end = new DateTime(localCalendar.get(Calendar.YEAR), localCalendar.get(Calendar.MONTH) + 1, localCalendar.get(Calendar.DATE), 23, 59, 59, DateTimeZone
-								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
-						
-						List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
-								.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end,
-										new Sort(Direction.ASC, "time.fromTime"));
-						int i = 0;
-						for (WorkingHours hours : workingHours) {
-							startTime = hours.getFromTime();
-							endTime = hours.getToTime();
+							DateTime start = new DateTime(yearOfDate, monthOfDate, dayOfDate, 0, 0, 0, DateTimeZone
+									.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
 
-							if (bookedSlots != null && !bookedSlots.isEmpty()) {
-								while (i < bookedSlots.size()) {
-									AppointmentBookedSlotCollection bookedSlot = bookedSlots.get(i);
-									if (endTime > startTime) {
-										if (bookedSlot.getTime().getFromTime() >= startTime
-												|| bookedSlot.getTime().getToTime() >= endTime) {
-											if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
-												if (bookedSlot.getIsAllDayEvent()) {
-													if (bookedSlot.getFromDate().equals(date))
-														bookedSlot.getTime().setToTime(719);
-													if (bookedSlot.getToDate().equals(date))
-														bookedSlot.getTime().setFromTime(0);
+							localCalendar.add(Calendar.DAY_OF_MONTH, 6);
+							DateTime end = new DateTime(localCalendar.get(Calendar.YEAR),
+									localCalendar.get(Calendar.MONTH) + 1, localCalendar.get(Calendar.DATE), 23, 59, 59,
+									DateTimeZone.forTimeZone(
+											TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
+
+							List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
+									.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end,
+											new Sort(Direction.ASC, "time.fromTime"));
+							int i = 0;
+							for (WorkingHours hours : workingHours) {
+								startTime = hours.getFromTime();
+								endTime = hours.getToTime();
+
+								if (bookedSlots != null && !bookedSlots.isEmpty()) {
+									while (i < bookedSlots.size()) {
+										AppointmentBookedSlotCollection bookedSlot = bookedSlots.get(i);
+										if (endTime > startTime) {
+											if (bookedSlot.getTime().getFromTime() >= startTime
+													|| bookedSlot.getTime().getToTime() >= endTime) {
+												if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
+													if (bookedSlot.getIsAllDayEvent()) {
+														if (bookedSlot.getFromDate().equals(date))
+															bookedSlot.getTime().setToTime(719);
+														if (bookedSlot.getToDate().equals(date))
+															bookedSlot.getTime().setFromTime(0);
+													}
 												}
-											}
-											List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
-													bookedSlot.getTime().getFromTime(), Math.round(slotTime), true);
-											if (slots != null)
-												slotResponse.addAll(slots);
+												List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
+														bookedSlot.getTime().getFromTime(), Math.round(slotTime), true);
+												if (slots != null)
+													slotResponse.addAll(slots);
 
-											slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(),
-													bookedSlot.getTime().getToTime(), Math.round(slotTime), false);
-											if (slots != null)
-												slotResponse.addAll(slots);
-											startTime = bookedSlot.getTime().getToTime();
-											i++;
+												slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(),
+														bookedSlot.getTime().getToTime(), Math.round(slotTime), false);
+												if (slots != null)
+													slotResponse.addAll(slots);
+												startTime = bookedSlot.getTime().getToTime();
+												i++;
+											} else {
+												i++;
+												break;
+											}
 										} else {
 											i++;
 											break;
 										}
-									} else {
-										i++;
-										break;
 									}
 								}
-							}
 
-							if (endTime > startTime) {
-								List<Slot> slots = DateAndTimeUtility.sliceTime(startTime, endTime, Math.round(slotTime), true);
-								if (slots != null)
-									slotResponse.addAll(slots);
-							}
-						}
-
-						if (appointmentService.checkToday(localCalendar.get(Calendar.DAY_OF_YEAR), yearOfDate,
-								doctorClinicProfileCollection.getTimeZone()))
-							for (Slot slot : slotResponse) {
-								if (slot.getMinutesOfDay() < appointmentService.getMinutesOfDay(dateObj)) {
-									slot.setIsAvailable(false);
-									slotResponse.set(slotResponse.indexOf(slot), slot);
+								if (endTime > startTime) {
+									List<Slot> slots = DateAndTimeUtility.sliceTime(startTime, endTime,
+											Math.round(slotTime), true);
+									if (slots != null)
+										slotResponse.addAll(slots);
 								}
 							}
+
+							if (appointmentService.checkToday(localCalendar.get(Calendar.DAY_OF_YEAR), yearOfDate,
+									doctorClinicProfileCollection.getTimeZone()))
+								for (Slot slot : slotResponse) {
+									if (slot.getMinutesOfDay() < appointmentService.getMinutesOfDay(dateObj)) {
+										slot.setIsAvailable(false);
+										slotResponse.set(slotResponse.indexOf(slot), slot);
+									}
+								}
+							slotDataResponse.setSlots(slotResponse);
+						}
+					slotDataResponses.add(slotDataResponse);
+					localCalendar.add(Calendar.DATE, 1);
 					}
-					response.setSlots(slotResponse);
+				response.setSlots(slotDataResponses);
 				}
 			}
 		} catch (Exception e) {
