@@ -214,7 +214,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			leftMargin = 0;
 			rightMargin = 0;
 			topMargin = 0;
+		} else if (parameters.get("headerImage") != null && !parameters.get("headerImage").toString().isEmpty()) {
+			topMargin = 10;
 		}
+
 		int columnWidth = pageWidth - leftMargin - rightMargin;
 		jasperDesign.setPageWidth(pageWidth);
 		jasperDesign.setPageHeight(pageHeight);
@@ -413,7 +416,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.PROCEDURE_SHEET.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
 			if (parameters.get("footerImage") != null && !parameters.get("footerImage").toString().isEmpty()) {
-				jasperDesign.setPageFooter(createPageImageFooter(columnWidth, parameters));
+				jasperDesign.setPageFooter(createPageImageFooter(columnWidth, parameters, contentFontSize));
 			} else {
 				jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 			}
@@ -2027,7 +2030,22 @@ public class JasperReportServiceImpl implements JasperReportService {
 		int Startwith = 2;
 
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
-
+		
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+			jrDesignTextField.setFontSize(new Float(9));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
@@ -2059,7 +2077,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 			Startwith = Startwith + (count * 18) + 2;
-
 		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
 
@@ -2086,27 +2103,46 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 	}
 
-	private JRBand createPageImageFooter(int columnWidth, Map<String, Object> parameter) throws JRException {
+	private JRBand createPageImageFooter(int columnWidth, Map<String, Object> parameter, Integer contentFontSize)
+			throws JRException {
+
 		band = new JRDesignBand();
+		int Startwith = 2;
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
+			jrDesignTextField.setX(176);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(22);
+			jrDesignTextField.setWidth(columnWidth - 176);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())
+				|| !DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			Startwith = Startwith + 25;
+		}
 
 		int footerHeight = parameter.get("footerHeight") != null
 				? Integer.parseInt(parameter.get("footerHeight").toString())
 				: 0;
-
-		band = new JRDesignBand();
-		band.setHeight(footerHeight);
-		band.setPrintWhenExpression(
-				new JRDesignExpression("!$P{footerImage}.equals(null) && !$P{footerImage}.isEmpty()"));
-		band.setSplitType(SplitTypeEnum.STRETCH);
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
 		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		jrDesignImage.setPrintWhenExpression(
+				new JRDesignExpression("!$P{footerImage}.equals(null) && !$P{footerImage}.isEmpty()"));
 		jrDesignImage.setExpression(new JRDesignExpression("$P{footerImage}"));
 		jrDesignImage.setX(0);
-		jrDesignImage.setY((0));
+		jrDesignImage.setY((Startwith));
 		jrDesignImage.setHeight(footerHeight);
 		jrDesignImage.setWidth(columnWidth);
 		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		band.addElement(jrDesignImage);
+		band.setHeight(footerHeight + Startwith);
 		return band;
 	}
 
