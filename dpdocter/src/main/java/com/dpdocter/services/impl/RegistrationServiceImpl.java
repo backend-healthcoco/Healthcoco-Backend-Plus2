@@ -4595,11 +4595,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		//System.out.println("Request :: " + request);
 		//System.out.println("Date :: " + calendar);
-		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+		
 		//System.out.println("User Collection :: " + userCollection);
-		vaccineCollections = vaccineRepository.findBypatientdoctorlocationhospital(new ObjectId(request.getUserId()),
-				new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-				new ObjectId(request.getHospitalId()));
+		vaccineCollections = vaccineRepository.findBypatientId(new ObjectId(request.getUserId()));
 		//System.out.println("Vaccine Collection :: " + vaccineCollections);
 		if (vaccineCollections == null || vaccineCollections.isEmpty()) {
 			vaccineCollections = new ArrayList<>();
@@ -4608,9 +4606,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			for (MasterBabyImmunizationCollection masterBabyImmunizationCollection : babyImmunizationCollections) {
 				VaccineCollection vaccineCollection = new VaccineCollection();
 				vaccineCollection.setPatientId(new ObjectId(request.getUserId()));
-				vaccineCollection.setLocationId(new ObjectId(request.getLocationId()));
-				vaccineCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-				vaccineCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+				//vaccineCollection.setLocationId(new ObjectId(request.getLocationId()));
+				//vaccineCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+				//vaccineCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 				vaccineCollection.setVaccineId(masterBabyImmunizationCollection.getId());
 				vaccineCollection.setLongName(masterBabyImmunizationCollection.getLongName());
 				vaccineCollection.setName(masterBabyImmunizationCollection.getName());
@@ -4620,9 +4618,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				dueDate = dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
 				vaccineCollection.setDueDate(dueDate.toDate());
 				vaccineCollection.setCreatedTime(new Date());
-				if (userCollection != null) {
-					vaccineCollection.setCreatedBy(userCollection.getFirstName());
-				}
 				//System.out.println("Under Loop New Single Vaccine :: " +vaccineCollection);
 				vaccineCollections.add(vaccineCollection);
 			}
@@ -4632,7 +4627,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					DateTime dueDate = new DateTime(calendar);
 					dueDate = dueDate.plusWeeks(vaccineCollection.getPeriodTime());
 					vaccineCollection.setDueDate(dueDate.toDate());
-					//System.out.println("Under Loop Updated Single Vaccine :: " +vaccineCollection);
 				}
 			}
 		}

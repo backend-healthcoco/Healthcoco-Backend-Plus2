@@ -640,6 +640,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			templateCollection.setCreatedBy(oldTemplate.getCreatedBy());
 			templateCollection.setCreatedTime(oldTemplate.getCreatedTime());
+			templateCollection.setIsDefault(oldTemplate.getIsDefault());
 			templateCollection.setDiscarded(oldTemplate.getDiscarded());
 			List<TemplateItem> items = null;
 			for (TemplateItem item : templateCollection.getItems()) {
