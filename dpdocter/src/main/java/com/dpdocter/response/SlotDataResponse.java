@@ -7,9 +7,21 @@ import com.dpdocter.beans.Slot;
 
 public class SlotDataResponse {
 
+	long date;
+	
 	List<Slot> slots;
 	
 	AppointmentSlot appointmentSlot;
+
+	String nextAvailableSlotDate;
+	
+	public long getDate() {
+		return date;
+	}
+
+	public void setDate(long date) {
+		this.date = date;
+	}
 
 	public List<Slot> getSlots() {
 		return slots;
@@ -27,8 +39,17 @@ public class SlotDataResponse {
 		this.appointmentSlot = appointmentSlot;
 	}
 
+	public String getNextAvailableSlotDate() {
+		return nextAvailableSlotDate;
+	}
+
+	public void setNextAvailableSlotDate(String nextAvailableSlotDate) {
+		this.nextAvailableSlotDate = nextAvailableSlotDate;
+	}
+
 	@Override
 	public String toString() {
-		return "SlotDataResponse [slots=" + slots + ", appointmentSlot=" + appointmentSlot + "]";
+		return "SlotDataResponse [date=" + date + ", slots=" + slots + ", appointmentSlot=" + appointmentSlot
+				+ ", nextAvailableSlotDate=" + nextAvailableSlotDate + "]";
 	}
 }
