@@ -18,4 +18,8 @@ public interface VaccineRepository extends MongoRepository<VaccineCollection, Ob
 	 public List<VaccineCollection> findVaccinations(DateTime start, DateTime end);
 
 	
+	 
+	 @Query("{'patientId': ?0}")
+	 public List<VaccineCollection> findBypatientId(ObjectId patientId);
+	
 }
