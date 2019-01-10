@@ -25,12 +25,14 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.AppointmentBookedSlotRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.WebAppointmentSlotDataResponse;
@@ -54,6 +56,9 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
+	@Autowired
+	private DoctorRepository doctorRepository;
+	
 	@Autowired
 	private AppointmentBookedSlotRepository appointmentBookedSlotRepository;
 
@@ -143,6 +148,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					locationObjectId);
 			if (doctorClinicProfileCollection != null) {
 
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(doctorObjectId);
 				Integer startTime = 0, endTime = 0;
 				float slotTime = 0;
 				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
@@ -156,6 +162,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 				response.setDoctorId(doctorId);
 				response.setLocationId(locationId);
 				response.setDoctorSlugURL(doctorClinicProfileCollection.getDoctorSlugURL());
+				response.setExperience(doctorCollection.getExperience());
 				
 				slotDataResponses = new ArrayList<SlotDataResponse>();
 				if (doctorClinicProfileCollection.getWorkingSchedules() != null && doctorClinicProfileCollection.getAppointmentSlot() != null) {
