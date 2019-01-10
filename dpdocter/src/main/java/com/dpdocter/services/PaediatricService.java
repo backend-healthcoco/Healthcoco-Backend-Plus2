@@ -42,4 +42,6 @@ public interface PaediatricService {
 	List<GrowthChart> getGrowthChartList(String patientId, String doctorId, String locationId, String hospitalId,
 			String updatedTime);
 
+	void sendBirthBabyVaccineReminder();
+
 }

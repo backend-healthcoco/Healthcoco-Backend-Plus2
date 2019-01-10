@@ -121,7 +121,7 @@ public class PaediatricAPI {
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINES, notes = PathProxy.PaediatricUrls.GET_VACCINES)
 	public Response<VaccineResponse> getVaccines(@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
-		if (DPDoctorUtils.anyStringEmpty(patientId,doctorId,locationId,hospitalId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

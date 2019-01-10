@@ -10,6 +10,8 @@ public class BabyVaccineReminderResponse {
 	private String doctorName;
 	private String locationName;
 	private List<Vaccine> vaccines;
+	private String mobileNumber;
+	private String clinicNumber;
 
 	public String getPatientName() {
 		return patientName;
@@ -43,10 +45,27 @@ public class BabyVaccineReminderResponse {
 		this.vaccines = vaccines;
 	}
 
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getClinicNumber() {
+		return clinicNumber;
+	}
+
+	public void setClinicNumber(String clinicNumber) {
+		this.clinicNumber = clinicNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "BabyVaccineReminderResponse [patientName=" + patientName + ", doctorName=" + doctorName
-				+ ", locationName=" + locationName + ", vaccines=" + vaccines + "]";
+				+ ", locationName=" + locationName + ", vaccines=" + vaccines + ", mobileNumber=" + mobileNumber + "]";
 	}
 
 }
