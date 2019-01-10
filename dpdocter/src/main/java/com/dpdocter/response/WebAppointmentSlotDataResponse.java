@@ -2,6 +2,8 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorExperience;
+
 public class WebAppointmentSlotDataResponse {
 
 	private String doctorSlugURL;
@@ -11,6 +13,8 @@ public class WebAppointmentSlotDataResponse {
 	private String locationId;
 	
 	List<SlotDataResponse> slots;
+
+	private DoctorExperience experience;
 
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
@@ -44,9 +48,17 @@ public class WebAppointmentSlotDataResponse {
 		this.slots = slots;
 	}
 
+	public DoctorExperience getExperience() {
+		return experience;
+	}
+
+	public void setExperience(DoctorExperience experience) {
+		this.experience = experience;
+	}
+
 	@Override
 	public String toString() {
 		return "WebAppointmentSlotDataResponse [doctorSlugURL=" + doctorSlugURL + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", slots=" + slots + "]";
+				+ ", locationId=" + locationId + ", slots=" + slots + ", experience=" + experience + "]";
 	}
 }
