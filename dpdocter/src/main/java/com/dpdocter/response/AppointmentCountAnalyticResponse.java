@@ -9,7 +9,7 @@ public class AppointmentCountAnalyticResponse {
 	private Long count;
 
 	private String groupName;
-	
+
 	public Date getDate() {
 		return date;
 	}

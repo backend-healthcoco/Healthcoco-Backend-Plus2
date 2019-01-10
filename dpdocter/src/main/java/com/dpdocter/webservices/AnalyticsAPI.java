@@ -62,18 +62,17 @@ public class AnalyticsAPI {
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
-	public Response<PatientAnalyticResponse> getPatientAnalyticData(@PathParam("doctorId") String doctorId,
+	public Response<PatientAnalyticResponse> getPatientAnalyticData(@QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@DefaultValue("NEW_PATIENT") @QueryParam("queryType") String queryType,
 			@DefaultValue("DAILY") @QueryParam("searchType") String searchType,
-			@QueryParam("searchTerm") String searchTerm) {
-		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"doctorId, locationId, hospitalId should not be empty");
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("groupId") String groupId) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
 		}
 		List<PatientAnalyticResponse> patientAnalyticResponse = patientAnalyticService.getPatientAnalytic(doctorId,
-				locationId, hospitalId, fromDate, toDate, queryType, searchType, searchTerm);
+				locationId, hospitalId, groupId, fromDate, toDate, queryType, searchType, searchTerm);
 
 		Response<PatientAnalyticResponse> response = new Response<PatientAnalyticResponse>();
 		response.setDataList(patientAnalyticResponse);
@@ -83,22 +82,22 @@ public class AnalyticsAPI {
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_DETAIL)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_DETAIL, notes = PathProxy.AnalyticsUrls.GET_PATIENT_DETAIL)
-	public Response<PatientAnalyticData> getPatientDetail(@PathParam("doctorId") String doctorId,
+	public Response<PatientAnalyticData> getPatientDetail(@QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("size") int size, @QueryParam("page") int page,
 			@QueryParam("toDate") String toDate, @DefaultValue("NEW_PATIENT") @QueryParam("queryType") String queryType,
-			@QueryParam("city") String city, @QueryParam("searchTerm") String searchTerm) {
-		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"doctorId, locationId, hospitalId should not be empty");
+			@QueryParam("city") String city, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("groupId") String groupId) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
 		}
 		List<PatientAnalyticData> patientDataResponse = patientAnalyticService.getPatientData(page, size, doctorId,
-				locationId, hospitalId, fromDate, toDate, queryType, searchTerm, city);
+				locationId, hospitalId, groupId, fromDate, toDate, queryType, searchTerm, city);
 
 		Response<PatientAnalyticData> response = new Response<PatientAnalyticData>();
 		response.setDataList(patientDataResponse);
-		response.setCount(patientAnalyticService.getPatientCount(doctorId, locationId, hospitalId, fromDate, toDate,
-				queryType, searchTerm, city));
+		response.setCount(patientAnalyticService.getPatientCount(doctorId, locationId, hospitalId, groupId, fromDate,
+				toDate, queryType, searchTerm, city));
 		return response;
 	}
 
@@ -136,8 +135,7 @@ public class AnalyticsAPI {
 			@QueryParam("queryType") String queryType, @QueryParam("searchType") String searchType,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"doctorId, locationId, hospitalId should not be empty");
+			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
 		}
 		AppointmentAnalyticResponse appointmentAnalyticResponse = analyticsService.getAppointmentAnalyticsData(doctorId,
 				locationId, hospitalId, fromDate, toDate, queryType, searchType, searchTerm, page, size);
@@ -156,9 +154,8 @@ public class AnalyticsAPI {
 			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
 			@QueryParam("searchType") String searchType, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("page") int page, @QueryParam("size") int size) {
-		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"doctorId, locationId, hospitalId should not be empty");
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
 		}
 		List<AppointmentAverageTimeAnalyticResponse> appointmentAnalyticResponse = analyticsService
 				.getAppointmentAverageTimeAnalyticsData(doctorId, locationId, hospitalId, fromDate, toDate, queryType,
@@ -178,9 +175,8 @@ public class AnalyticsAPI {
 			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
 			@QueryParam("searchType") String searchType, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("page") int page, @QueryParam("size") int size) {
-		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"doctorId, locationId, hospitalId should not be empty");
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
 		List<AppointmentCountAnalyticResponse> appointmentAnalyticResponse = analyticsService
 				.getAppointmentCountAnalyticsData(doctorId, locationId, hospitalId, fromDate, toDate, queryType,

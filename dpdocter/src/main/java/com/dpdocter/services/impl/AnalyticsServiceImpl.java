@@ -1569,6 +1569,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 					response = getAppointmentCountAnalyticnDataByPatientGroup(doctorId, locationId, hospitalId,
 							fromDate, toDate, page, size);
 					return response;
+				}else {
+					criteria.and("state").is(queryType);
 				}
 			}
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));

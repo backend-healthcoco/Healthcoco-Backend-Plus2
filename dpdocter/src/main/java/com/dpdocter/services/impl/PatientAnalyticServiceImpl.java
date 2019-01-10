@@ -39,7 +39,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	@Override
 	public List<PatientAnalyticResponse> getPatientAnalytic(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String queryType, String searchType, String searchTerm) {
+			String groupId, String fromDate, String toDate, String queryType, String searchType, String searchTerm) {
 		List<PatientAnalyticResponse> response = null;
 
 		try {
@@ -55,16 +55,16 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(0l);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(0l);
 				to = new Date();
 			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
 
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
@@ -77,6 +77,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			case CITY_WISE: {
 				response = getPatientCountCitiWise(fromTime, toTime, criteria, searchType, doctorId, locationId,
 						hospitalId, searchTerm);
+				break;
+			}
+
+			case IN_GROUP: {
+				if (DPDoctorUtils.allStringsEmpty(groupId)) {
+					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
+				}
+				response = getPatientCountGroupWise(fromTime, toTime, criteria, searchType, doctorId, locationId,
+						hospitalId, groupId, searchTerm);
 				break;
 			}
 
@@ -199,7 +208,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")))
+						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -303,7 +312,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")))
+						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -313,154 +322,96 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<PatientAnalyticResponse> getPatientAnalyticInGroup(DateTime fromTime, DateTime toTime,
-			Criteria criteria, String searchType, String doctorId, String locationId, String hospitalId,
+	private List<PatientAnalyticResponse> getPatientCountGroupWise(DateTime fromTime, DateTime toTime,
+			Criteria criteria, String searchType, String doctorId, String locationId, String hospitalId, String groupId,
 			String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
-		CustomAggregationOperation aggregationOperation2 = null;
-		ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-				Fields.field("groups.groupCreatedDate", "$group.createdTime"), Fields.field("count", "$patientId"),
-				Fields.field("groupName", "$group.name"), Fields.field("date", "$createdTime"),
-				Fields.field("groups.patientCount", "$group._id"), Fields.field("groupId", "$group._id")));
+		Criteria criteria2 = new Criteria();
+		ProjectionOperation projectList = new ProjectionOperation(
+				Fields.from(Fields.field("date", "$patientGroup.createdTime"), Fields.field("city", "$address.city"),
+						Fields.field("groupName", "$group.name"), Fields.field("count", "$userId")));
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
-
+			criteria2.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis()))
+					.lte(new Date(toTime.getMillis()));
 		} else if (toTime != null) {
-			criteria.and("createdTime").lte(toTime);
+			criteria2.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
-			criteria.and("createdTime").gte(fromTime);
+			criteria2.and("createdTime").gte(fromTime);
+		}
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			criteria.and("address.city").is(searchTerm);
 		}
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-			criteria = criteria.and("group.doctorId").is(new ObjectId(doctorId));
+			criteria2 = criteria2.and("group.doctorId").is(new ObjectId(doctorId));
 		}
+		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
+			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
+		}
+
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-			criteria = criteria.and("patient.locationId").is(new ObjectId(locationId)).and("group.locationId")
-					.is(new ObjectId(locationId));
+			criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			criteria2 = criteria2.and("group.locationId").is(new ObjectId(locationId));
+
 		}
 		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-			criteria = criteria.and("patient.hospitalId").is(new ObjectId(hospitalId)).and("group.hospitalId")
-					.is(new ObjectId(hospitalId));
+			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			criteria2 = criteria2.and("group.hospitalId").is(new ObjectId(hospitalId));
 		}
-
-		criteria = criteria.and("discarded").is(false);
-
 		switch (SearchType.valueOf(searchType.toUpperCase())) {
 		case DAILY: {
 
 			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
-									.append("groupId", "$groupId")).append("day", new BasicDBObject("$first", "$day"))
+									.append("city", "$city")).append("day", new BasicDBObject("$first", "$day"))
+											.append("city", new BasicDBObject("$first", "$city"))
+											.append("week", new BasicDBObject("$first", "$week"))
 											.append("month", new BasicDBObject("$first", "$month"))
 											.append("year", new BasicDBObject("$first", "$year"))
-											.append("groups.groupName",
-													new BasicDBObject("$first", "$groups.groupName"))
-											.append("groups.groupId", new BasicDBObject("$first", "$groups.groupName"))
-											.append("groups.patientCount", new BasicDBObject("$sum", 1))
-											.append("groups.groupCreatedDate",
-													new BasicDBObject("$first", "$groups.groupCreatedDate"))
 											.append("date", new BasicDBObject("$first", "$date"))
-											.append("week", new BasicDBObject("$first", "$week"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 											.append("count", new BasicDBObject("$sum", 1))));
-
-			aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id",
-							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("groups", new BasicDBObject("$push", "$groups"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("week", new BasicDBObject("$first", "$week"))
-									.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
-
 		case WEEKLY: {
-
-			aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id",
-							new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
-									.append("year", new BasicDBObject("$first", "$year"))
-									.append("groups", new BasicDBObject("$push", "$groups"))
-									.append("date", new BasicDBObject("$first", "$date"))
-									.append("week", new BasicDBObject("$first", "$week"))
-									.append("count", new BasicDBObject("$sum", 1))));
 
 			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
-									.append("groupId", "$groupId")).append("day", new BasicDBObject("$first", "$day"))
-											.append("month", new BasicDBObject("$first", "$month"))
+									.append("city", "$city")).append("month", new BasicDBObject("$first", "$month"))
 											.append("year", new BasicDBObject("$first", "$year"))
-											.append("groups.groupName",
-													new BasicDBObject("$first", "$groups.groupName"))
-											.append("groups.groupId", new BasicDBObject("$first", "$groups.groupName"))
-											.append("groups.patientCount", new BasicDBObject("$sum", 1))
-											.append("groups.groupCreatedDate",
-													new BasicDBObject("$first", "$groups.groupCreatedDate"))
-											.append("date", new BasicDBObject("$first", "$date"))
 											.append("week", new BasicDBObject("$first", "$week"))
+											.append("city", new BasicDBObject("$first", "$city"))
+											.append("date", new BasicDBObject("$first", "$date"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 											.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
 
 		case MONTHLY: {
+
 			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id",
-							new BasicDBObject("month", "$month").append("year", "$year").append("groupId", "$groupId"))
-									.append("day", new BasicDBObject("$first", "$day"))
-									.append("month", new BasicDBObject("$first", "$month"))
+							new BasicDBObject("month", "$month").append("year", "$year").append("city", "$city"))
 									.append("year", new BasicDBObject("$first", "$year"))
-									.append("groups.groupName", new BasicDBObject("$first", "$groups.groupName"))
-									.append("groups.groupId", new BasicDBObject("$first", "$groups.groupId"))
-									.append("groups.patientCount", new BasicDBObject("$sum", 1))
-									.append("groups.groupCreatedDate",
-											new BasicDBObject("$first", "$groups.groupCreatedDate"))
+									.append("city", new BasicDBObject("$first", "$city"))
 									.append("date", new BasicDBObject("$first", "$date"))
-									.append("week", new BasicDBObject("$first", "$week"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("count", new BasicDBObject("$sum", 1))));
-
-			aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-							.append("day", new BasicDBObject("$first", "$day"))
-							.append("month", new BasicDBObject("$first", "$month"))
-							.append("year", new BasicDBObject("$first", "$year"))
-							.append("groups", new BasicDBObject("$push", "$groups"))
-							.append("date", new BasicDBObject("$first", "$date"))
-							.append("week", new BasicDBObject("$first", "$week"))
-							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
 		}
 		case YEARLY: {
 
 			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("year", "$year").append("groupId", "$groupId"))
-							.append("day", new BasicDBObject("$first", "$day"))
-							.append("month", new BasicDBObject("$first", "$month"))
+					new BasicDBObject("_id", new BasicDBObject("year", "$year").append("city", "$city"))
 							.append("year", new BasicDBObject("$first", "$year"))
-							.append("groups.groupName", new BasicDBObject("$first", "$groups.groupName"))
-							.append("groups.groupId", new BasicDBObject("$first", "$groups.groupName"))
-							.append("groups.patientCount", new BasicDBObject("$sum", 1))
-							.append("groups.groupCreatedDate", new BasicDBObject("$first", "$groups.groupCreatedDate"))
+							.append("city", new BasicDBObject("$first", "$city"))
 							.append("date", new BasicDBObject("$first", "$date"))
-							.append("week", new BasicDBObject("$first", "$week"))
-							.append("count", new BasicDBObject("$sum", 1))));
-
-			aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-							.append("day", new BasicDBObject("$first", "$day"))
-							.append("month", new BasicDBObject("$first", "$month"))
-							.append("year", new BasicDBObject("$first", "$year"))
-							.append("groups", new BasicDBObject("$push", "$groups"))
-							.append("date", new BasicDBObject("$first", "$date"))
-							.append("week", new BasicDBObject("$first", "$week"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("count", new BasicDBObject("$sum", 1))));
 
 			break;
@@ -471,22 +422,23 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 		Aggregation aggregation = null;
 
-		aggregation = Aggregation
-				.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
-						Aggregation.unwind("group"), Aggregation.match(criteria),
-						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
-								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
-								.extractWeek().as("week"),
-						aggregationOperation, aggregationOperation2,
-						Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
+		aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+				Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
+				Aggregation.unwind("patientGroup"),
+				Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"), Aggregation.unwind("group"),
+				Aggregation.match(criteria2),
+				projectList.and("patientGroup.createdTime").extractDayOfMonth().as("day")
+						.and("patientGroup.createdTime").extractMonth().as("month").and("patientGroup.createdTime")
+						.extractYear().as("year").and("patientGroup.createdTime").extractWeek().as("week"),
+				aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-				PatientGroupCollection.class, PatientAnalyticResponse.class);
+				"patient_cl", PatientAnalyticResponse.class);
 
 		return aggregationResults.getMappedResults();
+
 	}
 
 	private List<PatientAnalyticResponse> getPatientAnalyticLocalityWise(DateTime fromTime, DateTime toTime,
@@ -833,7 +785,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
 						firstAggregationOperation, secondAggregationOperation,
-						Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")))
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -844,7 +796,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	@Override
 	public List<PatientAnalyticData> getPatientData(int page, int size, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchTerm, String city) {
+			String hospitalId, String groupId, String fromDate, String toDate, String queryType, String searchTerm,
+			String city) {
 		List<PatientAnalyticData> response = null;
 
 		try {
@@ -882,6 +835,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			case CITY_WISE: {
 				response = getPatientDetail(page, size, fromTime, toTime, criteria, city, doctorId, locationId,
 						hospitalId, searchTerm);
+				break;
+			}
+
+			case IN_GROUP: {
+				if (DPDoctorUtils.allStringsEmpty(groupId)) {
+					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
+				}
+				response = getGroupPatientDetail(page, size, fromTime, toTime, criteria, city, doctorId, locationId,
+						hospitalId, groupId, searchTerm);
 				break;
 			}
 
@@ -934,9 +896,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		} else if (fromTime != null) {
 			criteria.and("createdTime").gte(fromTime);
 		}
-		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			criteria.and("address.city").is(searchTerm);
-		}
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
@@ -950,14 +909,79 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
 							Aggregation.unwind("user"), projectList,
-							Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 							Aggregation.skip((page) * size), Aggregation.limit(size))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		else
 			aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
 							Aggregation.unwind("user"), projectList,
-							Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")))
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		AggregationResults<PatientAnalyticData> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
+				PatientAnalyticData.class);
+
+		return aggregationResults.getMappedResults();
+
+	}
+
+	private List<PatientAnalyticData> getGroupPatientDetail(int page, int size, DateTime fromTime, DateTime toTime,
+			Criteria criteria, String city, String doctorId, String locationId, String hospitalId, String groupId,
+			String searchTerm) {
+
+		if (!DPDoctorUtils.anyStringEmpty(city)) {
+			criteria.and("address.city").is(city);
+		}
+		Criteria criteria2 = new Criteria();
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			criteria.orOperator(new Criteria("localPatientName").regex(searchTerm, "i"),
+					new Criteria("user.firstName").regex(searchTerm, "i"),
+					new Criteria("user.mobileNumber").regex(searchTerm, "i"),
+					new Criteria("PID").regex(searchTerm, "i"));
+		}
+		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$userId"),
+				Fields.field("mobileNumber", "$user.mobileNumber"),
+				Fields.field("localPatientName", "$localPatientName"), Fields.field("firstName", "$user.firstName"),
+				Fields.field("PID", "$PID"), Fields.field("dob", "$dob"),
+				Fields.field("registrationDate", "$registrationDate"), Fields.field("address", "$address"),
+				Fields.field("gender", "$gender"), Fields.field("createdTime", "$patientGroup.createdTime")));
+		if (toTime != null && fromTime != null) {
+
+			criteria.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+		} else if (toTime != null) {
+			criteria.and("patientGroup.createdTime").lte(toTime);
+		} else if (fromTime != null) {
+			criteria.and("patientGroup.createdTime").gte(fromTime);
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			criteria = criteria.and("locationId").is(new ObjectId(locationId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
+			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
+		}
+
+		Aggregation aggregation = null;
+		if (size > 0)
+			aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
+							Aggregation.unwind("patientGroup"), Aggregation.match(criteria2), projectList,
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		else
+			aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
+							Aggregation.unwind("patientGroup"), Aggregation.match(criteria2), projectList,
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticData> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
@@ -996,14 +1020,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId)).and("patient.hospitalId")
 					.is(new ObjectId(hospitalId));
 		}
-		ProjectionOperation projectList = new ProjectionOperation(
-				Fields.from(Fields.field("id", "$patient.userId"), Fields.field("mobileNumber", "$user.mobileNumber"),
-						Fields.field("localPatientName", "$patient.localPatientName"),
-						Fields.field("firstName", "$user.firstName"), Fields.field("PID", "$patient.PID"),
-						Fields.field("dob", "$patient.dob"), Fields.field("registrationDate", "$patient.registrationDate"),
-						Fields.field("address", "$patient.address"), Fields.field("gender", "$patient.gender"),
-						Fields.field("createdTime", "$patient.createdTime"),
-						Fields.field("visitedTime", "$visitedTime"), Fields.field("count", "$patient,userId")));
+		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$patient.userId"),
+				Fields.field("mobileNumber", "$user.mobileNumber"),
+				Fields.field("localPatientName", "$patient.localPatientName"),
+				Fields.field("firstName", "$user.firstName"), Fields.field("PID", "$patient.PID"),
+				Fields.field("dob", "$patient.dob"), Fields.field("registrationDate", "$patient.registrationDate"),
+				Fields.field("address", "$patient.address"), Fields.field("gender", "$patient.gender"),
+				Fields.field("createdTime", "$patient.createdTime"), Fields.field("visitedTime", "$visitedTime"),
+				Fields.field("count", "$patient.userId")));
 
 		aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", "$id").append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
@@ -1039,8 +1063,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 	}
 
 	@Override
-	public Integer getPatientCount(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate, String queryType, String searchTerm, String city) {
+	public Integer getPatientCount(String doctorId, String locationId, String hospitalId, String groupId,
+			String fromDate, String toDate, String queryType, String searchTerm, String city) {
 		Integer response = 0;
 
 		try {
@@ -1070,7 +1094,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
 
-				response = getPatientDetailCount(fromTime, toTime, criteria, city, doctorId, locationId, hospitalId,
+				response = getPatientDetailCount(fromTime, toTime, criteria, null, doctorId, locationId, hospitalId,
 						searchTerm);
 				break;
 			}
@@ -1078,6 +1102,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			case CITY_WISE: {
 				response = getPatientDetailCount(fromTime, toTime, criteria, city, doctorId, locationId, hospitalId,
 						searchTerm);
+				break;
+			}
+
+			case IN_GROUP: {
+				if (DPDoctorUtils.allStringsEmpty(groupId)) {
+					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
+				}
+				response = getGroupPatientDetailCount(fromTime, toTime, criteria, city, doctorId, locationId,
+						hospitalId, groupId, searchTerm);
 				break;
 			}
 
@@ -1112,7 +1145,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 
 		if (toTime != null && fromTime != null) {
-
 			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
 		} else if (toTime != null) {
 			criteria.and("createdTime").lte(toTime);
@@ -1138,6 +1170,52 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		aggregation = Aggregation
 				.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
 						Aggregation.unwind("user"))
+				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		AggregationResults<PatientAnalyticData> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
+				PatientAnalyticData.class);
+
+		return aggregationResults.getMappedResults().size();
+
+	}
+
+	private Integer getGroupPatientDetailCount(DateTime fromTime, DateTime toTime, Criteria criteria, String city,
+			String doctorId, String locationId, String hospitalId, String groupId, String searchTerm) {
+		Criteria criteria2 = new Criteria();
+		if (!DPDoctorUtils.anyStringEmpty(city)) {
+			criteria.and("address.city").is(city);
+		}
+
+		if (toTime != null && fromTime != null) {
+			criteria.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+		} else if (toTime != null) {
+			criteria.and("patientGroup.createdTime").lte(toTime);
+		} else if (fromTime != null) {
+			criteria.and("patientGroup.createdTime").gte(fromTime);
+		}
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			criteria.orOperator(new Criteria("localPatientName").regex(searchTerm, "i"),
+					new Criteria("user.firstName").regex(searchTerm, "i"),
+					new Criteria("user.mobileNumber").regex(searchTerm, "i"),
+					new Criteria("PID").regex(searchTerm, "i"));
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			criteria = criteria.and("locationId").is(new ObjectId(locationId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
+			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
+		}
+		Aggregation aggregation = null;
+
+		aggregation = Aggregation
+				.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						Aggregation.unwind("user"),
+						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
+						Aggregation.unwind("patientGroup"), Aggregation.match(criteria2))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<PatientAnalyticData> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",

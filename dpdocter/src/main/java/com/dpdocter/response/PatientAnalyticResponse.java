@@ -22,6 +22,8 @@ public class PatientAnalyticResponse {
 	private String city;
 
 	private Date date;
+	
+	private String groupName;
 
 	private List<PatientAnalyticData> patients;
 
@@ -87,6 +89,14 @@ public class PatientAnalyticResponse {
 
 	public void setPatients(List<PatientAnalyticData> patients) {
 		this.patients = patients;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
 	}
 
 }
