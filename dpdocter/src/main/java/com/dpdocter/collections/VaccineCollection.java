@@ -52,6 +52,8 @@ public class VaccineCollection extends GenericCollection {
 	private Integer periodTime;
 	@Field
 	private String note;
+	@Field
+	private Boolean isUpdatedByPatient = false;
 
 	public ObjectId getId() {
 		return id;
@@ -203,6 +205,14 @@ public class VaccineCollection extends GenericCollection {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public Boolean getIsUpdatedByPatient() {
+		return isUpdatedByPatient;
+	}
+
+	public void setIsUpdatedByPatient(Boolean isUpdatedByPatient) {
+		this.isUpdatedByPatient = isUpdatedByPatient;
 	}
 
 	@Override
