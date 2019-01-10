@@ -26,6 +26,7 @@ public class VaccineRequest {
 	private String note;
 	private String duration;
 	private Integer periodTime;
+	private Boolean isUpdatedByPatient = false;
 
 	public String getId() {
 		return id;
@@ -169,6 +170,14 @@ public class VaccineRequest {
 
 	public void setPeriodTime(Integer periodTime) {
 		this.periodTime = periodTime;
+	}
+
+	public Boolean getIsUpdatedByPatient() {
+		return isUpdatedByPatient;
+	}
+
+	public void setIsUpdatedByPatient(Boolean isUpdatedByPatient) {
+		this.isUpdatedByPatient = isUpdatedByPatient;
 	}
 
 }
