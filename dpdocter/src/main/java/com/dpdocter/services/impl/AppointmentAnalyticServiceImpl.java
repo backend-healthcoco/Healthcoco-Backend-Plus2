@@ -473,7 +473,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		List<AnalyticResponse> response = null;
 
 		if (!DPDoctorUtils.anyStringEmpty(queryType)) {
-			if (queryType.equals("PATIENTGROUP")) {
+			if (queryType.equals("IN_GROUP")) {
 				response = getpatientGroupAppointmentAnalytic(doctorId, locationId, hospitalId, fromDate, toDate, state,
 						searchType, page, size);
 			} else {

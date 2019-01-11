@@ -128,6 +128,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			criteria.and("createdTime").gte(fromTime);
 		}
 
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
+
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
 		}
@@ -343,9 +347,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			criteria2 = criteria2.and("group.doctorId").is(new ObjectId(doctorId));
+			criteria.and("doctorId").is(new ObjectId(doctorId));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
 			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
 		}
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
@@ -357,6 +365,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			criteria2 = criteria2.and("group.hospitalId").is(new ObjectId(hospitalId));
 		}
+		criteria2.and("group.discarded").is(false);
 		switch (SearchType.valueOf(searchType.toUpperCase())) {
 		case DAILY: {
 
@@ -897,12 +906,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		} else if (fromTime != null) {
 			criteria.and("createdTime").gte(fromTime);
 		}
-
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			 criteria.and("hospitalId").is(new ObjectId(hospitalId));
 		}
 
 		Aggregation aggregation = null;
@@ -948,15 +959,16 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("registrationDate", "$registrationDate"), Fields.field("address", "$address"),
 				Fields.field("gender", "$gender"), Fields.field("createdTime", "$patientGroup.createdTime")));
 		if (toTime != null && fromTime != null) {
-
-			criteria.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis()))
-					.lte(new Date(toTime.getMillis()));
+			criteria.and("patientGroup.createdTime").gte(fromTime)
+					.lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("patientGroup.createdTime").lte(toTime);
 		} else if (fromTime != null) {
 			criteria.and("patientGroup.createdTime").gte(fromTime);
 		}
-
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
 		}
@@ -966,6 +978,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
 			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
 		}
+		
+		criteria2 = criteria2.and("patientGroup.discarded").is(false);
 
 		Aggregation aggregation = null;
 		if (size > 0)
@@ -1160,6 +1174,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 					new Criteria("PID").regex(searchTerm, "i"));
 		}
 
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
 		}
@@ -1202,7 +1219,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 					new Criteria("user.mobileNumber").regex(searchTerm, "i"),
 					new Criteria("PID").regex(searchTerm, "i"));
 		}
-
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
 		}
@@ -1212,6 +1231,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
 			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
 		}
+		criteria2.and("patientGroup.discarded").is(false);
 		Aggregation aggregation = null;
 
 		aggregation = Aggregation
@@ -1247,7 +1267,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 					new Criteria("patient.PID").regex(searchTerm, "i"));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId)).and("patient.doctorId")
+					.is(new ObjectId(doctorId));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId)).and("patient.locationId")
