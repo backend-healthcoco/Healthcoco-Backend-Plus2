@@ -12,6 +12,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -25,14 +26,12 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.AppointmentBookedSlotRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
-import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.WebAppointmentSlotDataResponse;
@@ -57,9 +56,6 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Autowired
-	private DoctorRepository doctorRepository;
-	
-	@Autowired
 	private AppointmentBookedSlotRepository appointmentBookedSlotRepository;
 
 	@Autowired
@@ -67,6 +63,9 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 
 	@Autowired
 	MongoTemplate mongoTemplate;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
 	
 	@Override
 	public WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl) {
@@ -85,7 +84,6 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 
 			if (clinicProfileCollections != null) {
-				System.out.println(clinicProfileCollections);
 				webDoctorClinicsResponse = new WebDoctorClinicsResponse();
 				List<WebClinicResponse> clinicResponses = new ArrayList<WebClinicResponse>();
 				for (DoctorClinicProfileLookupResponse doctorDocument : clinicProfileCollections) {
@@ -94,6 +92,9 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 						webDoctorClinicsResponse.setDoctorSlugURL(doctorDocument.getDoctorSlugURL());
 						webDoctorClinicsResponse
 								.setFirstName(doctorDocument.getUser().getTitle() + " " + doctorDocument.getUser().getFirstName());
+						webDoctorClinicsResponse.setExperience(doctorDocument.getDoctor().getExperience());
+						webDoctorClinicsResponse.setThumbnailUrl(getFinalImageURL(doctorDocument.getUser().getThumbnailUrl()));
+						
 						if (doctorDocument.getDoctor().getSpecialities() != null) {
 							HashSet<String> specialities = new HashSet<String>();
 							HashSet<String> parentspecialities = new HashSet<String>();
@@ -118,6 +119,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					clinicResponse.setPostalCode(doctorDocument.getLocation().getPostalCode());
 					clinicResponse.setState(doctorDocument.getLocation().getState());
 					clinicResponse.setStreetAddress(doctorDocument.getLocation().getStreetAddress());
+					clinicResponse.setConsultationFee(doctorDocument.getConsultationFee());
 					clinicResponses.add(clinicResponse);
 				}
 				webDoctorClinicsResponse.setClinics(clinicResponses);
@@ -148,7 +150,6 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					locationObjectId);
 			if (doctorClinicProfileCollection != null) {
 
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(doctorObjectId);
 				Integer startTime = 0, endTime = 0;
 				float slotTime = 0;
 				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
@@ -162,7 +163,6 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 				response.setDoctorId(doctorId);
 				response.setLocationId(locationId);
 				response.setDoctorSlugURL(doctorClinicProfileCollection.getDoctorSlugURL());
-				response.setExperience(doctorCollection.getExperience());
 				
 				slotDataResponses = new ArrayList<SlotDataResponse>();
 				if (doctorClinicProfileCollection.getWorkingSchedules() != null && doctorClinicProfileCollection.getAppointmentSlot() != null) {
@@ -190,7 +190,6 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 							DateTime start = new DateTime(yearOfDate, monthOfDate, dayOfDate, 0, 0, 0, DateTimeZone
 									.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
 
-							localCalendar.add(Calendar.DAY_OF_MONTH, 6);
 							DateTime end = new DateTime(localCalendar.get(Calendar.YEAR),
 									localCalendar.get(Calendar.MONTH) + 1, localCalendar.get(Calendar.DATE), 23, 59, 59,
 									DateTimeZone.forTimeZone(
@@ -204,47 +203,49 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 								startTime = hours.getFromTime();
 								endTime = hours.getToTime();
 
-								if (bookedSlots != null && !bookedSlots.isEmpty()) {
-									while (i < bookedSlots.size()) {
-										AppointmentBookedSlotCollection bookedSlot = bookedSlots.get(i);
-										if (endTime > startTime) {
-											if (bookedSlot.getTime().getFromTime() >= startTime
-													|| bookedSlot.getTime().getToTime() >= endTime) {
-												if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
-													if (bookedSlot.getIsAllDayEvent()) {
-														if (bookedSlot.getFromDate().equals(date))
-															bookedSlot.getTime().setToTime(719);
-														if (bookedSlot.getToDate().equals(date))
-															bookedSlot.getTime().setFromTime(0);
+								if(startTime != null && endTime != null) {
+									if (bookedSlots != null && !bookedSlots.isEmpty()) {
+										while (i < bookedSlots.size()) {
+											AppointmentBookedSlotCollection bookedSlot = bookedSlots.get(i);
+											if (endTime > startTime) {
+												if (bookedSlot.getTime().getFromTime() >= startTime
+														|| bookedSlot.getTime().getToTime() >= endTime) {
+													if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
+														if (bookedSlot.getIsAllDayEvent()) {
+															if (bookedSlot.getFromDate().equals(date))
+																bookedSlot.getTime().setToTime(719);
+															if (bookedSlot.getToDate().equals(date))
+																bookedSlot.getTime().setFromTime(0);
+														}
 													}
-												}
-												List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
-														bookedSlot.getTime().getFromTime(), Math.round(slotTime), true);
-												if (slots != null)
-													slotResponse.addAll(slots);
+													List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
+															bookedSlot.getTime().getFromTime(), Math.round(slotTime), true);
+													if (slots != null)
+														slotResponse.addAll(slots);
 
-												slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(),
-														bookedSlot.getTime().getToTime(), Math.round(slotTime), false);
-												if (slots != null)
-													slotResponse.addAll(slots);
-												startTime = bookedSlot.getTime().getToTime();
-												i++;
+													slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(),
+															bookedSlot.getTime().getToTime(), Math.round(slotTime), false);
+													if (slots != null)
+														slotResponse.addAll(slots);
+													startTime = bookedSlot.getTime().getToTime();
+													i++;
+												} else {
+													i++;
+													break;
+												}
 											} else {
 												i++;
 												break;
 											}
-										} else {
-											i++;
-											break;
 										}
 									}
-								}
 
-								if (endTime > startTime) {
-									List<Slot> slots = DateAndTimeUtility.sliceTime(startTime, endTime,
-											Math.round(slotTime), true);
-									if (slots != null)
-										slotResponse.addAll(slots);
+									if (endTime > startTime) {
+										List<Slot> slots = DateAndTimeUtility.sliceTime(startTime, endTime,
+												Math.round(slotTime), true);
+										if (slots != null)
+											slotResponse.addAll(slots);
+									}
 								}
 							}
 
@@ -271,4 +272,10 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 		return response;
 	}
 
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
 }
