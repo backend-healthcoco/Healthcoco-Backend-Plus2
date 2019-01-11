@@ -813,7 +813,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					Aggregation.unwind("appointment"), Aggregation.match(criteria2),
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("id", "$group._id"))
-									.append("groupName", new BasicDBObject("$first", "$group.name"))
+									.append("groupName", new BasicDBObject("$first", "$group.name")
+											.append("date", new BasicDBObject("$first", "$appointment.fromDate")))
 									.append("count", new BasicDBObject("$sum", 1)))));
 
 			response = mongoTemplate
