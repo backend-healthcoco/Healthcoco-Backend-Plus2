@@ -528,7 +528,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 											.append("week", new BasicDBObject("$first", "$week"))
 											.append("year", new BasicDBObject("$first", "$year"))
 											.append("count", new BasicDBObject("$sum", 1))
-											.append("date", new BasicDBObject("$first", "$fromDate"))));
+											.append("date", new BasicDBObject("$first", "$date"))));
 
 					break;
 				}
@@ -542,7 +542,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 													.append("week", new BasicDBObject("$first", "$week"))
 													.append("year", new BasicDBObject("$first", "$year"))
 													.append("count", new BasicDBObject("$sum", 1))
-													.append("date", new BasicDBObject("$first", "$fromDate"))));
+													.append("date", new BasicDBObject("$first", "$date"))));
 
 					break;
 				}
@@ -553,7 +553,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$fromDate"))));
+									.append("date", new BasicDBObject("$first", "$date"))));
 
 					break;
 				}
@@ -563,7 +563,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$fromDate"))));
+									.append("date", new BasicDBObject("$first", "$date"))));
 
 					break;
 
@@ -580,13 +580,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.append("week", new BasicDBObject("$first", "$week"))
 										.append("year", new BasicDBObject("$first", "$year"))
 										.append("count", new BasicDBObject("$sum", 1))
-										.append("date", new BasicDBObject("$first", "$fromDate"))));
+										.append("date", new BasicDBObject("$first", "$date"))));
 			}
 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
+						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
 								Fields.field("count", "$appointmentId"))).and("fromDate").extractDayOfMonth().as("day")
 										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
 										.as("year").and("fromDate").extractWeek().as("week"),
@@ -594,7 +594,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
+						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
 								Fields.field("count", "$appointmentId"))).and("fromDate").extractDayOfMonth().as("day")
 										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
 										.as("year").and("fromDate").extractWeek().as("week"),
@@ -813,8 +813,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					Aggregation.unwind("appointment"), Aggregation.match(criteria2),
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("id", "$group._id"))
-									.append("groupName", new BasicDBObject("$first", "$group.name")
-											.append("date", new BasicDBObject("$first", "$group.createdTime")))
+									.append("groupName", new BasicDBObject("$first", "$group.name"))
+											.append("date", new BasicDBObject("$first", "$group.createdTime"))
 									.append("count", new BasicDBObject("$sum", 1)))));
 
 			response = mongoTemplate
