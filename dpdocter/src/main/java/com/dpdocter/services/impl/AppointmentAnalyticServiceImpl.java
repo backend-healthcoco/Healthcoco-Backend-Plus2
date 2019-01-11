@@ -360,7 +360,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				from = new Date(date);
 				to = new Date();
 			}
-			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
+			criteria.and("date").gte(new DateTime(from)).lte(new DateTime(to));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
