@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.PatientAnalyticData;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.enums.PrescriptionItems;
@@ -189,7 +190,8 @@ public class AnalyticsAPI {
 
 		Response<AppointmentAnalyticGroupWiseResponse> response = new Response<AppointmentAnalyticGroupWiseResponse>();
 		response.setDataList(appointmentAnalyticResponse);
-		response.setCount(appointmentAnalyticsService.countAppointmentAnalyticPatientGroup(doctorId, locationId, hospitalId, fromDate, toDate, state, page, size));
+		response.setCount(appointmentAnalyticsService.countAppointmentAnalyticPatientGroup(doctorId, locationId,
+				hospitalId, fromDate, toDate, state, page, size));
 		return response;
 	}
 
@@ -210,6 +212,31 @@ public class AnalyticsAPI {
 
 		Response<AppointmentAnalyticResponse> response = new Response<AppointmentAnalyticResponse>();
 		response.setData(appointmentAnalyticResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTICS_DETAIL)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTICS_DETAIL, notes = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTICS_DETAIL)
+	public Response<AppointmentAnalyticData> getAppointmentAnalyticsDetail(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
+			@QueryParam("queryType") String queryType, @QueryParam("searchType") String searchType,
+			@QueryParam("state") String state, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("page") int page, @QueryParam("size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
+		}
+		List<AppointmentAnalyticData> appointmentAnalyticResponse = null;
+		int count = appointmentAnalyticsService.countPatientAppointmentAnalyticsDetail(doctorId, locationId, hospitalId,
+				fromDate, toDate, state, searchTerm, page, size);
+		if (count > 0) {
+			appointmentAnalyticResponse = appointmentAnalyticsService.getPatientAppointmentAnalyticsDetail(doctorId,
+					locationId, hospitalId, fromDate, toDate, state, searchTerm, page, size);
+		}
+		Response<AppointmentAnalyticData> response = new Response<AppointmentAnalyticData>();
+		response.setDataList(appointmentAnalyticResponse);
+		response.setCount(count);
 		return response;
 	}
 

@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.AppointmentCollection;
@@ -212,6 +213,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			int size) {
 		AppointmentAnalyticResponse response = null;
 		try {
+			Date from = null;
+			Date to = null;
+			Long date = 0l;
 			Criteria criteria = new Criteria();
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -230,14 +234,21 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				DateTime fromTime = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("fromDate").gte(fromTime);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				DateTime toTime = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("toDate").lte(toTime);
-			}
+			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 
 			criteria.and("discarded").is(false);
 			long count = mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
@@ -251,10 +262,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 									new BasicDBObject("path", "$patientQueue")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
-													true))),
+							new CustomAggregationOperation(new BasicDBObject(
+									"$unwind", new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+											true))),
+							Aggregation.match(new Criteria("patientQueue.discarded").is(false)),
 							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
 									.append("date", new BasicDBObject("$first", "$fromDate"))
 									.append("fromTime", new BasicDBObject("$first", "$time.fromTime"))
@@ -333,22 +344,30 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		try {
 
 			Criteria criteria = new Criteria();
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
-			}
-
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("date").gte(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-
-				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("date").lte(end);
 			}
 
 			criteria.and("discarded").is(false);
@@ -472,6 +491,24 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		List<AnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
+			long date = 0;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
@@ -483,16 +520,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
 				criteria.and("state").is(state);
 
-			}
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-
-				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("fromDate").gte(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-
-				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("fromDate").lte(end);
 			}
 
 			criteria.and("discarded").is(false);
@@ -599,7 +626,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		List<AnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
-
+			long date = 0;
+			Date from = null;
+			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
@@ -621,15 +650,22 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						.is(new ObjectId(locationId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("appointment.fromDate").gte(start);
-			}
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
 
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("appointment.fromDate").lte(end);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
 			}
+			criteria.and("appointment.fromDate").gte(new DateTime(from)).lte(new DateTime(to));
+
 			criteria = criteria.and("appointment.type").is(AppointmentType.APPOINTMENT);
 			criteria.and("appointment.discarded").is(false);
 			criteria.and("group.discarded").is(false).and("discarded").is(false);
@@ -721,7 +757,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("group_cl", "groupId", "_id", "group"),
-						Aggregation.unwind("group"), Aggregation.match(criteria),
+						Aggregation.unwind("group"),
 						Aggregation.lookup("appointment_cl", "patientId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"), Aggregation.match(criteria),
 						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$appointment.fromDate"),
@@ -750,6 +786,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		try {
 			Criteria criteria = new Criteria();
 			Criteria criteria2 = new Criteria();
+			Long date = 0l;
+			Date from = null;
+			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("group.doctorId").in(new ObjectId(doctorId));
 				criteria2.and("appointment.doctorId").in(new ObjectId(doctorId));
@@ -759,15 +798,21 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria2.and("appointment.locationId").is(new ObjectId(locationId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria2.and("appointment.fromDate").gte(start);
-			}
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
 
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria2.and("appointment.fromDate").lte(end);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
 			}
+			criteria2.and("appointment.fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			criteria2.and("appointment.type").is(AppointmentType.APPOINTMENT);
 			criteria2.and("appointment.discarded").is(false);
 			criteria.and("group.discarded").is(false).and("discarded").is(false);
@@ -802,6 +847,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		try {
 			Criteria criteria = new Criteria();
 			Criteria criteria2 = new Criteria();
+			Date from = null;
+			Date to = null;
+			Long date = 0l;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("group.doctorId").in(new ObjectId(doctorId));
 				criteria2.and("appointment.doctorId").in(new ObjectId(doctorId));
@@ -811,15 +859,21 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria2.and("appointment.locationId").is(new ObjectId(locationId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria2.and("appointment.fromDate").gte(start);
-			}
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
 
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria2.and("appointment.fromDate").lte(end);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
 			}
+			criteria2.and("appointment.fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			criteria2.and("appointment.type").is(AppointmentType.APPOINTMENT);
 			criteria2.and("appointment.discarded").is(false);
 			criteria.and("group.discarded").is(false).and("discarded").is(false);
@@ -849,7 +903,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		List<DoctorAppointmentAnalyticPieChartResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
-
+			Date from = null;
+			Date to = null;
+			Long date = 0l;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
@@ -861,16 +917,22 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria.and("state").is(state);
 
 			}
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 
-				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("fromDate").gte(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
 
-				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("fromDate").lte(end);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
 			}
+			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 			criteria.and("discarded").is(false);
 			AggregationOperation aggregationOperation = null;
@@ -907,4 +969,150 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		}
 		return response;
 	}
+
+	@Override
+	public List<AppointmentAnalyticData> getPatientAppointmentAnalyticsDetail(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String state, String searchTerm, int page, int size) {
+		List<AppointmentAnalyticData> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			Criteria criteria2 = new Criteria();
+			Date from = null;
+			Date to = null;
+			Long date = 0l;
+
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").in(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+				criteria2.and("profile.locationId").is(new ObjectId(locationId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(state)) {
+				criteria.and("state").is(state);
+
+			}
+
+			criteria.and("discarded").is(false);
+			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+						Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "profile"),
+						Aggregation.unwind("profile"), Aggregation.match(criteria2),
+						new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+								Fields.field("toDate", "$toDate"),
+								Fields.field("localPatientName", "$profile.localPatientName"),
+								Fields.field("firstName", "$patient.firstName"),
+								Fields.field("doctorName", "$doctor.firstName"),
+								Fields.field("explanation", "$explanation"), Fields.field("subject", "$subject"),
+								Fields.field("appointmentId", "$appointmentId"),
+								Fields.field("fromDate", "$fromDate"))),
+						Aggregation.sort(Direction.DESC, "fromDate"), Aggregation.skip(page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+						Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "profile"),
+						Aggregation.unwind("profile"), Aggregation.match(criteria2),
+						new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+								Fields.field("toDate", "$toDate"),
+								Fields.field("localPatientName", "$profile.localPatientName"),
+								Fields.field("firstName", "$patient.firstName"),
+								Fields.field("doctorName", "$doctor.firstName"),
+								Fields.field("explanation", "$explanation"), Fields.field("subject", "$subject"),
+								Fields.field("appointmentId", "$appointmentId"),
+								Fields.field("fromDate", "$fromDate"))),
+						Aggregation.sort(Direction.DESC, "fromDate"));
+			}
+			AggregationResults<AppointmentAnalyticData> aggregationResults = mongoTemplate.aggregate(aggregation,
+					AppointmentCollection.class, AppointmentAnalyticData.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting appointment count analytics data");
+			throw new BusinessException(ServiceError.Unknown,
+					"Error Occurred While getting appointment count analytics data");
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countPatientAppointmentAnalyticsDetail(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate, String state, String searchTerm, int page, int size) {
+		Integer response = null;
+		try {
+			Criteria criteria = new Criteria();
+
+			Date from = null;
+			Date to = null;
+			Long date = 0l;
+
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").in(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(state)) {
+				criteria.and("state").is(state);
+
+			}
+
+			criteria.and("discarded").is(false);
+			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
+
+			Aggregation aggregation = null;
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+
+			response = mongoTemplate.aggregate(aggregation, AppointmentCollection.class, AppointmentCollection.class)
+					.getMappedResults().size();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Count appointment count analytics data");
+			throw new BusinessException(ServiceError.Unknown,
+					"Error Occurred While Count appointment count analytics data");
+		}
+		return response;
+	}
+
 }
