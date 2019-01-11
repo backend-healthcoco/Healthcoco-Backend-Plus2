@@ -209,7 +209,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchType, String searchTerm, int page,
+			String hospitalId, String fromDate, String toDate, String searchTerm, int page,
 			int size) {
 		AppointmentAnalyticResponse response = null;
 		try {
@@ -228,9 +228,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(searchType)) {
-				criteria = criteria.and("state").is(searchType);
-			}
 
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
