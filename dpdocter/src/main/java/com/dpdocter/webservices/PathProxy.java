@@ -1576,9 +1576,12 @@ public interface PathProxy {
 		public static final String GET_PATIENT_ANALYTICS_DATA = "/patient/{locationId}/{hospitalId}";
 		public static final String GET_PATIENT_DETAIL = "/patient/detail/{locationId}/{hospitalId}";
 		public static final String GET_MOST_PRESCRIBED_PRESCRIPTION_ITEMS = "/mostPrescribed/{type}/{locationId}/{hospitalId}";
-		public static final String GET_APPOINTMENT_ANALYTICS_DATA = "/appointment";
-		public static final String GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA = "/appointment/averageTime";
-		public static final String GET_APPOINTMENT_COUNT_ANALYTICS_DATA = "/appointment/count";
+		public static final String GET_APPOINTMENT_ANALYTICS_DATA = "/appointment/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_ANALYTICS_DETAIL = "/appointment/Detail/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA = "/appointment/averageTime/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_PATIENT_GROUP_ANALYTICS_FOR_PIE = "/appointment/patient/group/{locationId}/{hospitalId}";
+		public static final String GET_DOCTOR_APPOINTMENT_ANALYTICS_FOR_PIE = "/appointment/doctor/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_MAX_TIME_ANALYTICS_DATA = "/appointment/maxtime/{locationId}/{hospitalId}";
 		public static final String GET_INCOME_DETAILS_ANALYTICS_DATA = "/incomeDetails";
 		public static final String GET_INCOME_ANALYTICS_DATA = "/income";
 		public static final String GET_PAYMENT_DETAILS_ANALYTICS_DATA = "/paymentDetails";

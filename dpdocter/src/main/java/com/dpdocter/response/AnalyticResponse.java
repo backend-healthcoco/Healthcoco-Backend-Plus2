@@ -8,7 +8,7 @@ import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.GroupPatientCount;
 import com.dpdocter.beans.PatientAnalyticData;
 
-public class PatientAnalyticResponse {
+public class AnalyticResponse {
 	private int day;
 
 	private int month;
@@ -22,7 +22,7 @@ public class PatientAnalyticResponse {
 	private String city;
 
 	private Date date;
-	
+
 	private String groupName;
 
 	private List<PatientAnalyticData> patients;
@@ -83,20 +83,20 @@ public class PatientAnalyticResponse {
 		this.city = city;
 	}
 
-	public List<PatientAnalyticData> getPatients() {
-		return patients;
-	}
-
-	public void setPatients(List<PatientAnalyticData> patients) {
-		this.patients = patients;
-	}
-
 	public String getGroupName() {
 		return groupName;
 	}
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public List<PatientAnalyticData> getPatients() {
+		return patients;
+	}
+
+	public void setPatients(List<PatientAnalyticData> patients) {
+		this.patients = patients;
 	}
 
 }

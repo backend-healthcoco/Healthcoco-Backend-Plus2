@@ -6,10 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
-import com.dpdocter.response.AppointmentAnalyticResponse;
-import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
-import com.dpdocter.response.AppointmentCountAnalyticResponse;
-import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
 import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
@@ -18,7 +14,6 @@ import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
-import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.PaymentAnalyticsDataResponse;
 import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 
@@ -30,18 +25,6 @@ public interface AnalyticsService {
 	
 	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
-
-	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
-			int page, int size);
-
-	public List<AppointmentAverageTimeAnalyticResponse> getAppointmentAverageTimeAnalyticsData(String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String queryType, String searchType,
-			String searchTerm, int page, int size);
-
-	public List<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
-			int page, int size);
 
 	public List<InvoiceAnalyticsDataDetailResponse> getIncomeDetailsAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
@@ -66,9 +49,6 @@ public interface AnalyticsService {
 
 	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate);
-
-	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate);
 
 	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(int page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String type, String searchTerm);

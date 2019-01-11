@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
-public class AppointmentCountAnalyticResponse {
+public class AppointmentAnalyticGroupWiseResponse {
 
 	private Date date;
 

@@ -14,13 +14,13 @@ import com.dpdocter.beans.Hospital;
 import com.dpdocter.collections.DentalImagingInvoiceResponse;
 import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
+import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DentalImagingDataResponse;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
-import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.PatientDentalImagignVisitAnalyticsResponse;
 
 public interface DentalImagingService {
@@ -77,11 +77,11 @@ public interface DentalImagingService {
 			String dentalImagingLocationId, String dentalImagingHospitalId, String patientId, Long from, Long to,
 			String searchTerm, int size, int page);
 
-	List<PatientAnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate, String dentalImagingLocationId,
+	List<AnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate, String dentalImagingLocationId,
 			String dentalImagingHospitalId, String searchType);
 
 	public String downloadInvoice(String invoiceId);
-	
+
 	Boolean emailInvoice(String invoiceId, String emailAddress);
 
 	Boolean emailReports(String id, String emailAddress);
@@ -102,6 +102,6 @@ public interface DentalImagingService {
 
 	DentalImagingInvoice addEditInvoice(DentalImagingInvoice request, Boolean fromRequest);
 
-	Integer countHospitalAssociatedDoctor(String hospitalId,String searchTerm);
+	Integer countHospitalAssociatedDoctor(String hospitalId, String searchTerm);
 
 }

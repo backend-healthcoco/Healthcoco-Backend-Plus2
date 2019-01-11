@@ -104,6 +104,7 @@ import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DentalImagingDataResponse;
 import com.dpdocter.response.DentalImagingInvoiceItemResponse;
 import com.dpdocter.response.DentalImagingInvoiceJasper;
@@ -116,7 +117,6 @@ import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
-import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.PatientDentalImagignVisitAnalyticsResponse;
 import com.dpdocter.services.DentalImagingService;
 import com.dpdocter.services.EmailTackService;
@@ -2055,10 +2055,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Override
 	@Transactional
-	public List<PatientAnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate,
-			String dentalImagingLocationId, String dentalImagingHospitalId, String searchType) {
+	public List<AnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate, String dentalImagingLocationId,
+			String dentalImagingHospitalId, String searchType) {
 
-		List<PatientAnalyticResponse> response = null;
+		List<AnalyticResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			AggregationOperation aggregationOperation = null;
@@ -2152,13 +2152,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.as("month").and("createdTime").extractYear().as("year").and("createdTime").extractWeek()
 							.as("week"),
 					aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					"dental_imaging_cl", PatientAnalyticResponse.class);
+			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					"dental_imaging_cl", AnalyticResponse.class);
 			response = aggregationResults.getMappedResults();
 
-			for (PatientAnalyticResponse patientAnalyticResponse : response) {
-				patientAnalyticResponse.setCount(patientAnalyticResponse.getPatients().size());
-				patientAnalyticResponse.setPatients(null);
+			for (AnalyticResponse analyticResponse : response) {
+				analyticResponse.setCount(analyticResponse.getPatients().size());
+				analyticResponse.setPatients(null);
 			}
 
 			/*
