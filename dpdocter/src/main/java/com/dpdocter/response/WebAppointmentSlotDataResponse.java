@@ -14,8 +14,6 @@ public class WebAppointmentSlotDataResponse {
 	
 	List<SlotDataResponse> slots;
 
-	private DoctorExperience experience;
-
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
 	}
@@ -48,17 +46,10 @@ public class WebAppointmentSlotDataResponse {
 		this.slots = slots;
 	}
 
-	public DoctorExperience getExperience() {
-		return experience;
-	}
-
-	public void setExperience(DoctorExperience experience) {
-		this.experience = experience;
-	}
-
 	@Override
 	public String toString() {
 		return "WebAppointmentSlotDataResponse [doctorSlugURL=" + doctorSlugURL + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", slots=" + slots + ", experience=" + experience + "]";
+				+ ", locationId=" + locationId + ", slots=" + slots + "]";
 	}
+
 }

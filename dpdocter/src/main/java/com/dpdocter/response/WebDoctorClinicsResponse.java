@@ -2,6 +2,8 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorExperience;
+
 public class WebDoctorClinicsResponse {
 
 	private String doctorId;
@@ -16,6 +18,10 @@ public class WebDoctorClinicsResponse {
 	
 	private List<WebClinicResponse> clinics;
 
+	private DoctorExperience experience;
+
+	private String thumbnailUrl;
+	
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -64,10 +70,26 @@ public class WebDoctorClinicsResponse {
 		this.clinics = clinics;
 	}
 
+	public DoctorExperience getExperience() {
+		return experience;
+	}
+
+	public void setExperience(DoctorExperience experience) {
+		this.experience = experience;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "WebDoctorClinicsResponse [doctorId=" + doctorId + ", doctorSlugURL=" + doctorSlugURL + ", firstName="
 				+ firstName + ", specialities=" + specialities + ", parentSpecialities=" + parentSpecialities
-				+ ", clinics=" + clinics + "]";
+				+ ", clinics=" + clinics + ", experience=" + experience + ", thumbnailUrl=" + thumbnailUrl + "]";
 	}
 }
