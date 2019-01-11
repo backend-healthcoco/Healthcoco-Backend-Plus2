@@ -106,13 +106,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			// total
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT").and("discarded").is(true);
+					.and("type").is("APPOINTMENT");
 
 			data.setTotalNoOfAppointment((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			// cancel by doctor
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT").and("discarded").is(true);
+					.and("type").is("APPOINTMENT");
 
 			data.setCancelBydoctor((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
 					.is(AppointmentCreatedBy.DOCTOR.getType()).and("state").is("CANCEL")),
@@ -120,7 +120,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			// cancel by Patient
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is("APPOINTMENT").and("discarded").is(true);
+					.and("type").is("APPOINTMENT");
 			data.setCancelByPatient((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
 					.is(AppointmentCreatedBy.PATIENT.getType()).and("state").is("CANCEL")),
 					AppointmentCollection.class));
@@ -136,7 +136,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 				// Booked percent
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-						.and("type").is("APPOINTMENT").and("discarded").is(true);
+						.and("type").is("APPOINTMENT");
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
 						AppointmentCollection.class);
 
@@ -146,7 +146,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				// Scheduled percent
 
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-						.and("type").is("APPOINTMENT").and("discarded").is(true);
+						.and("type").is("APPOINTMENT");
 				appointmentCount = (int) mongoTemplate.count(
 						new Query(criteria.and("status").is("SCHEDULED").and("state").is("NEW")),
 						AppointmentCollection.class);
@@ -156,7 +156,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 				// hike
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(last).lte(fromTime)
-						.and("type").is("APPOINTMENT").and("discarded").is(true);
+						.and("type").is("APPOINTMENT");
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 
 				data.setChangeInAppointmentPercent(
@@ -167,7 +167,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria = getCriteria(null, locationId, hospitalId).and("appointment.locationId")
 						.is(new ObjectId(locationId)).and("appointment.hospitalId").is(new ObjectId(hospitalId))
 						.and("appointment.fromDate").gte(fromTime).and("appointment.type").is("APPOINTMENT")
-						.and("appointment.discarded").is(true);
+						;
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
 				}
@@ -250,7 +250,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 
-			criteria.and("discarded").is(false);
 			long count = mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 			if (count > 0) {
 				response = new AppointmentAnalyticResponse();
@@ -364,13 +363,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			}
 
-			criteria.and("discarded").is(false);
+			
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType)) {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
@@ -511,7 +510,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -522,7 +521,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			}
 
-			criteria.and("discarded").is(false);
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType))
@@ -630,7 +628,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			Date from = null;
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -642,8 +640,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("group.doctorId").in(new ObjectId(doctorId));
-				criteria.and("appointment.doctorId").in(new ObjectId(doctorId));
+				criteria.and("group.doctorId").is(new ObjectId(doctorId));
+				criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("group.locationId").is(new ObjectId(locationId)).and("appointment.locationId")
@@ -667,7 +665,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria.and("appointment.fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 
 			criteria = criteria.and("appointment.type").is(AppointmentType.APPOINTMENT);
-			criteria.and("appointment.discarded").is(false);
 			criteria.and("group.discarded").is(false).and("discarded").is(false);
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType))
@@ -791,7 +788,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("group.doctorId").in(new ObjectId(doctorId));
-				criteria2.and("appointment.doctorId").in(new ObjectId(doctorId));
+				criteria2.and("appointment.doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("group.locationId").is(new ObjectId(locationId));
@@ -814,7 +811,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			criteria2.and("appointment.fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			criteria2.and("appointment.type").is(AppointmentType.APPOINTMENT);
-			criteria2.and("appointment.discarded").is(false);
 			criteria.and("group.discarded").is(false).and("discarded").is(false);
 
 			Aggregation aggregation = Aggregation.newAggregation(
@@ -851,7 +847,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			Date to = null;
 			Long date = 0l;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("group.doctorId").in(new ObjectId(doctorId));
+				criteria.and("group.doctorId").is(new ObjectId(doctorId));
 				criteria2.and("appointment.doctorId").in(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
@@ -875,7 +871,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			criteria2.and("appointment.fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			criteria2.and("appointment.type").is(AppointmentType.APPOINTMENT);
-			criteria2.and("appointment.discarded").is(false);
 			criteria.and("group.discarded").is(false).and("discarded").is(false);
 
 			Aggregation aggregation = Aggregation.newAggregation(
@@ -907,7 +902,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			Date to = null;
 			Long date = 0l;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -934,7 +929,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
-			criteria.and("discarded").is(false);
 			AggregationOperation aggregationOperation = null;
 
 			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -997,7 +991,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -1009,7 +1003,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			}
 
-			criteria.and("discarded").is(false);
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
 			Aggregation aggregation = null;
@@ -1084,7 +1077,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -1096,7 +1089,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			}
 
-			criteria.and("discarded").is(false);
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
 			Aggregation aggregation = null;

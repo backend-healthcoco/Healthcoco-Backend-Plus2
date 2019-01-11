@@ -221,7 +221,6 @@ public class AnalyticsAPI {
 	public Response<AppointmentAnalyticData> getAppointmentAnalyticsDetail(@QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("queryType") String queryType, @QueryParam("searchType") String searchType,
 			@QueryParam("state") String state, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
