@@ -23,7 +23,7 @@ import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.response.PatientAnalyticResponse;
+import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.services.PatientAnalyticService;
 import com.mongodb.BasicDBObject;
 
@@ -38,9 +38,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 	Logger logger = Logger.getLogger(PatientAnalyticServiceImpl.class);
 
 	@Override
-	public List<PatientAnalyticResponse> getPatientAnalytic(String doctorId, String locationId, String hospitalId,
+	public List<AnalyticResponse> getPatientAnalytic(String doctorId, String locationId, String hospitalId,
 			String groupId, String fromDate, String toDate, String queryType, String searchType, String searchTerm) {
-		List<PatientAnalyticResponse> response = null;
+		List<AnalyticResponse> response = null;
 
 		try {
 			Criteria criteria = new Criteria();
@@ -112,9 +112,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<PatientAnalyticResponse> getNewPatientAnalyticData(DateTime fromTime, DateTime toTime,
-			Criteria criteria, String searchType, String doctorId, String locationId, String hospitalId,
-			String searchTerm) {
+	private List<AnalyticResponse> getNewPatientAnalyticData(DateTime fromTime, DateTime toTime, Criteria criteria,
+			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		Criteria secondCriteria = new Criteria();
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("count", "$userId"),
@@ -211,14 +210,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
-		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-				"patient_cl", PatientAnalyticResponse.class);
+		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
+				AnalyticResponse.class);
 
 		return aggregationResults.getMappedResults();
 
 	}
 
-	private List<PatientAnalyticResponse> getPatientCountCitiWise(DateTime fromTime, DateTime toTime, Criteria criteria,
+	private List<AnalyticResponse> getPatientCountCitiWise(DateTime fromTime, DateTime toTime, Criteria criteria,
 			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 
@@ -315,15 +314,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
-		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-				"patient_cl", PatientAnalyticResponse.class);
+		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
+				AnalyticResponse.class);
 
 		return aggregationResults.getMappedResults();
 
 	}
 
-	private List<PatientAnalyticResponse> getPatientCountGroupWise(DateTime fromTime, DateTime toTime,
-			Criteria criteria, String searchType, String doctorId, String locationId, String hospitalId, String groupId,
+	private List<AnalyticResponse> getPatientCountGroupWise(DateTime fromTime, DateTime toTime, Criteria criteria,
+			String searchType, String doctorId, String locationId, String hospitalId, String groupId,
 			String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 		Criteria criteria2 = new Criteria();
@@ -369,6 +368,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 											.append("week", new BasicDBObject("$first", "$week"))
 											.append("month", new BasicDBObject("$first", "$month"))
 											.append("year", new BasicDBObject("$first", "$year"))
+											.append("groupName", new BasicDBObject("$first", "$groupName"))
 											.append("date", new BasicDBObject("$first", "$date"))
 											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 											.append("count", new BasicDBObject("$sum", 1))));
@@ -385,6 +385,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 											.append("week", new BasicDBObject("$first", "$week"))
 											.append("city", new BasicDBObject("$first", "$city"))
 											.append("date", new BasicDBObject("$first", "$date"))
+											.append("groupName", new BasicDBObject("$first", "$groupName"))
 											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 											.append("count", new BasicDBObject("$sum", 1))));
 
@@ -399,6 +400,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("city", new BasicDBObject("$first", "$city"))
 									.append("date", new BasicDBObject("$first", "$date"))
+									.append("groupName", new BasicDBObject("$first", "$groupName"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("count", new BasicDBObject("$sum", 1))));
 
@@ -411,6 +413,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 							.append("year", new BasicDBObject("$first", "$year"))
 							.append("city", new BasicDBObject("$first", "$city"))
 							.append("date", new BasicDBObject("$first", "$date"))
+							.append("groupName", new BasicDBObject("$first", "$groupName"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("count", new BasicDBObject("$sum", 1))));
 
@@ -434,16 +437,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
-		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-				"patient_cl", PatientAnalyticResponse.class);
+		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
+				AnalyticResponse.class);
 
 		return aggregationResults.getMappedResults();
 
 	}
 
-	private List<PatientAnalyticResponse> getPatientAnalyticLocalityWise(DateTime fromTime, DateTime toTime,
-			Criteria criteria, String searchType, String doctorId, String locationId, String hospitalId,
-			String searchTerm) {
+	private List<AnalyticResponse> getPatientAnalyticLocalityWise(DateTime fromTime, DateTime toTime, Criteria criteria,
+			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(
 				Fields.from(Fields.field("date", "$createdTime"), Fields.field("date", "$createdTime"),
@@ -536,15 +538,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
-		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-				"patient_cl", PatientAnalyticResponse.class);
+		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
+				AnalyticResponse.class);
 		return aggregationResults.getMappedResults();
 
 	}
 
-	private List<PatientAnalyticResponse> getTopTenVisitedPatientData(DateTime fromTime, DateTime toTime,
-			Criteria criteria, String searchType, String doctorId, String locationId, String hospitalId,
-			String searchTerm) {
+	private List<AnalyticResponse> getTopTenVisitedPatientData(DateTime fromTime, DateTime toTime, Criteria criteria,
+			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("patient.id", "$userId"),
 				Fields.field("patient.localPatientName", "$localPatientName"),
@@ -643,13 +644,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.skip((0) * 10), Aggregation.limit(10))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
-		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-				"patient_cl", PatientAnalyticResponse.class);
+		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
+				AnalyticResponse.class);
 		return aggregationResults.getMappedResults();
 
 	}
 
-	private List<PatientAnalyticResponse> getVisitedPatientcount(DateTime fromTime, DateTime toTime, Criteria criteria,
+	private List<AnalyticResponse> getVisitedPatientcount(DateTime fromTime, DateTime toTime, Criteria criteria,
 			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation firstAggregationOperation = null;
 		CustomAggregationOperation secondAggregationOperation = null;
@@ -788,8 +789,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
-		AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-				"patient_visit_cl", PatientAnalyticResponse.class);
+		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+				"patient_visit_cl", AnalyticResponse.class);
 		return aggregationResults.getMappedResults();
 
 	}
@@ -948,7 +949,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("gender", "$gender"), Fields.field("createdTime", "$patientGroup.createdTime")));
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis()))
+					.lte(new Date(toTime.getMillis()));
 		} else if (toTime != null) {
 			criteria.and("patientGroup.createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -1187,7 +1189,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 
 		if (toTime != null && fromTime != null) {
-			criteria.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis()))
+					.lte(new Date(toTime.getMillis()));
 		} else if (toTime != null) {
 			criteria.and("patientGroup.createdTime").lte(toTime);
 		} else if (fromTime != null) {

@@ -35,7 +35,7 @@ import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupRespon
 import com.dpdocter.response.DentalImagingResponse;
 import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
-import com.dpdocter.response.PatientAnalyticResponse;
+import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.PatientDentalImagignVisitAnalyticsResponse;
 import com.dpdocter.services.DentalImagingService;
 
@@ -322,7 +322,7 @@ public class DentalImagingAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_PATIENT_VISIT_ANALYTICS, notes = PathProxy.DentalImagingUrl.GET_PATIENT_VISIT_ANALYTICS)
 
-	public Response<PatientAnalyticResponse> getPatientVisitAnalytics(
+	public Response<AnalyticResponse> getPatientVisitAnalytics(
 			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
 			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
 			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
@@ -331,7 +331,7 @@ public class DentalImagingAPI {
 
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<PatientAnalyticResponse> response = new Response<PatientAnalyticResponse>();
+		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
 		response.setDataList(dentalImagingService.getPatientVisitAnalytics(from, to, dentalImagingLocationId,
 				dentalImagingHospitalId, searchType));
 		return response;
