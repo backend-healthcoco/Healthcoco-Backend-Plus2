@@ -166,8 +166,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 				criteria = getCriteria(null, locationId, hospitalId).and("appointment.locationId")
 						.is(new ObjectId(locationId)).and("appointment.hospitalId").is(new ObjectId(hospitalId))
-						.and("appointment.fromDate").gte(fromTime).and("appointment.type").is("APPOINTMENT")
-						;
+						.and("appointment.fromDate").gte(fromTime).and("appointment.type").is("APPOINTMENT");
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
 				}
@@ -209,8 +208,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchTerm, int page,
-			int size) {
+			String hospitalId, String fromDate, String toDate, String searchTerm, int page, int size) {
 		AppointmentAnalyticResponse response = null;
 		try {
 			Date from = null;
@@ -227,7 +225,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
-
 
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
@@ -366,7 +363,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria.and("locationId").is(new ObjectId(locationId));
 			}
 
-			
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType)) {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
@@ -816,8 +812,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					Aggregation.lookup("appointment_cl", "patientId", "patientId", "appointment"),
 					Aggregation.unwind("appointment"), Aggregation.match(criteria2),
 					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", new BasicDBObject("Id", "$group._id"))
-									.append("groupName", "$group.name")
+							new BasicDBObject("_id", new BasicDBObject("id", "$group._id"))
+									.append("groupName", new BasicDBObject("$first", "$group.name"))
 									.append("count", new BasicDBObject("$sum", 1)))));
 
 			response = mongoTemplate
