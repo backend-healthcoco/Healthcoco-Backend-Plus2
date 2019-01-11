@@ -506,8 +506,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
-	// @Scheduled(cron = "00 00 3 * * *", zone = "IST")
-	@Scheduled(fixedDelay = 1800)
+	@Scheduled(cron = "00 00 3 * * *", zone = "IST")
+//	@Scheduled(fixedDelay = 1800)
 	@Override
 	@Transactional
 	public void checkResources() {
