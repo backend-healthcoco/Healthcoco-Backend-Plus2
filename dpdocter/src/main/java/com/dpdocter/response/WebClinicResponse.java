@@ -1,5 +1,7 @@
 package com.dpdocter.response;
 
+import com.dpdocter.beans.ConsultationFee;
+
 public class WebClinicResponse {
 
 	private String locationId;
@@ -18,6 +20,8 @@ public class WebClinicResponse {
 	
 	private String streetAddress;
 
+	private ConsultationFee consultationFee;
+	
 	public String getLocationId() {
 		return locationId;
 	}
@@ -82,10 +86,18 @@ public class WebClinicResponse {
 		this.locality = locality;
 	}
 
+	public ConsultationFee getConsultationFee() {
+		return consultationFee;
+	}
+
+	public void setConsultationFee(ConsultationFee consultationFee) {
+		this.consultationFee = consultationFee;
+	}
+
 	@Override
 	public String toString() {
 		return "WebClinicResponse [locationId=" + locationId + ", country=" + country + ", state=" + state + ", city="
 				+ city + ", postalCode=" + postalCode + ", locality=" + locality + ", locationName=" + locationName
-				+ ", streetAddress=" + streetAddress + "]";
+				+ ", streetAddress=" + streetAddress + ", consultationFee=" + consultationFee + "]";
 	}
 }
