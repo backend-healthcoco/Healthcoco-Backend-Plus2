@@ -200,14 +200,14 @@ public class AnalyticsAPI {
 	public Response<AppointmentAnalyticResponse> getAppointmentAnalytics(@QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("searchType") String searchType, @QueryParam("state") String state,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("state") String state, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
 		AppointmentAnalyticResponse appointmentAnalyticResponse = appointmentAnalyticsService
-				.getAppointmentAnalyticsData(doctorId, locationId, hospitalId, fromDate, toDate, searchType, searchTerm,
-						page, size);
+				.getAppointmentAnalyticsData(doctorId, locationId, hospitalId, fromDate, toDate, searchTerm, page,
+						size);
 
 		Response<AppointmentAnalyticResponse> response = new Response<AppointmentAnalyticResponse>();
 		response.setData(appointmentAnalyticResponse);

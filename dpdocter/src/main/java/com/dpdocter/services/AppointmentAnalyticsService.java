@@ -11,7 +11,7 @@ import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 
 public interface AppointmentAnalyticsService {
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchType, String searchTerm, int page,
+			String hospitalId, String fromDate, String toDate,  String searchTerm, int page,
 			int size);
 
 	public List<AppointmentAverageTimeAnalyticResponse> getAppointmentAverageTimeAnalyticsData(String doctorId,
