@@ -216,6 +216,7 @@ public class AnalyticsAPI {
 		}
 		Response<DoctorAppointmentAnalyticPieChartResponse> response = new Response<DoctorAppointmentAnalyticPieChartResponse>();
 		response.setDataList(appointmentAnalyticResponse);
+		response.setCount(count);
 		return response;
 	}
 
