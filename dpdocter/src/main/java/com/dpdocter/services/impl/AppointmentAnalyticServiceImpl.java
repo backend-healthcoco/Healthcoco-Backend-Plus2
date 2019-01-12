@@ -933,6 +933,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
 								Fields.field("firstName", "$doctor.firstName"),
 								Fields.field("count", "$appointmentId"))),
