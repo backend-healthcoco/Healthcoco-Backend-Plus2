@@ -832,7 +832,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public Integer countAppointmentAnalyticPatientGroup(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state, int page, int size) {
+			String fromDate, String toDate, String state) {
 		Integer response = 0;
 		try {
 			Criteria criteria = new Criteria();
@@ -1047,7 +1047,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public Integer countPatientAppointmentAnalyticsDetail(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state, String searchTerm, int page, int size) {
+		String fromDate, String toDate, String state, String searchTerm) {
 		Integer response = null;
 		try {
 			Criteria criteria = new Criteria();

@@ -30,13 +30,13 @@ public interface AppointmentAnalyticsService {
 			String locationId, String hospitalId, String fromDate, String toDate, String state, int page, int size);
 
 	public Integer countAppointmentAnalyticPatientGroup(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state, int page, int size);
+			String fromDate, String toDate, String state);
 
 	public List<AppointmentAnalyticData> getPatientAppointmentAnalyticsDetail(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String state, String searchTerm, int page, int size);
 
 	public Integer countPatientAppointmentAnalyticsDetail(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state, String searchTerm, int page, int size);
+			String fromDate, String toDate, String state, String searchTerm);
 
 	List<DoctorAppointmentAnalyticPieChartResponse> getDoctorAppointmentAnalyticsForPieChart(String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String state, String searchTerm,
