@@ -211,7 +211,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
+						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
@@ -315,7 +315,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
+						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
@@ -443,7 +443,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				projectList.and("patientGroup.createdTime").extractDayOfMonth().as("day")
 						.and("patientGroup.createdTime").extractMonth().as("month").and("patientGroup.createdTime")
 						.extractYear().as("year").and("patientGroup.createdTime").extractWeek().as("week"),
-				aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
+				aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
@@ -649,7 +649,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						projectList.and("visit.createdTime").extractDayOfMonth().as("day").and("visit.createdTime")
 								.extractMonth().as("month").and("visit.createdTime").extractYear().as("year")
 								.and("visit.createdTime").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "day")),
+						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")),
 						Aggregation.skip((0) * 10), Aggregation.limit(10))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
@@ -795,7 +795,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
 						firstAggregationOperation, secondAggregationOperation,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")))
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,

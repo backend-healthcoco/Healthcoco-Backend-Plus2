@@ -7,6 +7,7 @@ import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
+import com.dpdocter.response.DoctorAppointmentAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 
 public interface AppointmentAnalyticsService {
@@ -36,5 +37,9 @@ public interface AppointmentAnalyticsService {
 
 	public Integer countPatientAppointmentAnalyticsDetail(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String state, String searchTerm, int page, int size);
+
+	List<DoctorAppointmentAnalyticPieChartResponse> getDoctorAppointmentAnalyticsForPieChart(String doctorId,
+			String locationId, String hospitalId, String fromDate, String toDate, String state, String searchTerm,
+			int page, int size);
 
 }
