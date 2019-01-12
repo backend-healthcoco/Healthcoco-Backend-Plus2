@@ -25,6 +25,7 @@ import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
+import com.dpdocter.response.DoctorAppointmentAnalyticPieChartResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
@@ -191,6 +192,26 @@ public class AnalyticsAPI {
 		response.setDataList(appointmentAnalyticResponse);
 		response.setCount(appointmentAnalyticsService.countAppointmentAnalyticPatientGroup(doctorId, locationId,
 				hospitalId, fromDate, toDate, state, page, size));
+		return response;
+	}
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_DOCTOR_APPOINTMENT_ANALYTICS_FOR_PIE)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_DOCTOR_APPOINTMENT_ANALYTICS_FOR_PIE, notes = PathProxy.AnalyticsUrls.GET_DOCTOR_APPOINTMENT_ANALYTICS_FOR_PIE)
+	public Response<DoctorAppointmentAnalyticPieChartResponse> getDoctorAppointmentAnalyticsData(
+			@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
+			@QueryParam("searchType") String searchType, @QueryParam("state") String state,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
+		}
+		List<DoctorAppointmentAnalyticPieChartResponse> appointmentAnalyticResponse = appointmentAnalyticsService
+				.getDoctorAppointmentAnalyticsForPieChart(doctorId, locationId, hospitalId, fromDate, toDate, state,
+						searchTerm, page, size);
+		Response<DoctorAppointmentAnalyticPieChartResponse> response = new Response<DoctorAppointmentAnalyticPieChartResponse>();
+		response.setDataList(appointmentAnalyticResponse);
 		return response;
 	}
 
