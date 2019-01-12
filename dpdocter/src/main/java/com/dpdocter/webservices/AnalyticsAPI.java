@@ -191,7 +191,7 @@ public class AnalyticsAPI {
 		Response<AppointmentAnalyticGroupWiseResponse> response = new Response<AppointmentAnalyticGroupWiseResponse>();
 		response.setDataList(appointmentAnalyticResponse);
 		response.setCount(appointmentAnalyticsService.countAppointmentAnalyticPatientGroup(doctorId, locationId,
-				hospitalId, fromDate, toDate, state, page, size));
+				hospitalId, fromDate, toDate, state));
 		return response;
 	}
 
@@ -201,15 +201,19 @@ public class AnalyticsAPI {
 	public Response<DoctorAppointmentAnalyticPieChartResponse> getDoctorAppointmentAnalyticsData(
 			@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("state") String state,
+			@QueryParam("toDate") String toDate, @QueryParam("state") String state,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
-		List<DoctorAppointmentAnalyticPieChartResponse> appointmentAnalyticResponse = appointmentAnalyticsService
-				.getDoctorAppointmentAnalyticsForPieChart(doctorId, locationId, hospitalId, fromDate, toDate, state,
-						searchTerm, page, size);
+
+		List<DoctorAppointmentAnalyticPieChartResponse> appointmentAnalyticResponse = null;
+		int count = appointmentAnalyticsService.countPatientAppointmentAnalyticsDetail(doctorId, locationId, hospitalId,
+				fromDate, toDate, state, searchTerm);
+		if (count > 0) {
+			appointmentAnalyticResponse = appointmentAnalyticsService.getDoctorAppointmentAnalyticsForPieChart(doctorId,
+					locationId, hospitalId, fromDate, toDate, state, searchTerm, page, size);
+		}
 		Response<DoctorAppointmentAnalyticPieChartResponse> response = new Response<DoctorAppointmentAnalyticPieChartResponse>();
 		response.setDataList(appointmentAnalyticResponse);
 		return response;
@@ -248,7 +252,7 @@ public class AnalyticsAPI {
 		}
 		List<AppointmentAnalyticData> appointmentAnalyticResponse = null;
 		int count = appointmentAnalyticsService.countPatientAppointmentAnalyticsDetail(doctorId, locationId, hospitalId,
-				fromDate, toDate, state, searchTerm, page, size);
+				fromDate, toDate, state, searchTerm);
 		if (count > 0) {
 			appointmentAnalyticResponse = appointmentAnalyticsService.getPatientAppointmentAnalyticsDetail(doctorId,
 					locationId, hospitalId, fromDate, toDate, state, searchTerm, page, size);
