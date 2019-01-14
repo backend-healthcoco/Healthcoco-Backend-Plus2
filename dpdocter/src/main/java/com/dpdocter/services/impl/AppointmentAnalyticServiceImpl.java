@@ -29,6 +29,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
+import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
@@ -510,10 +511,15 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				criteria.and("state").is(state);
+				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+					criteria.and("state").is(state);
+				} else {
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("state").is(AppointmentState.NEW.toString()));
+				}
 
 			}
-
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 			AggregationOperation aggregationOperation = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchType))
@@ -586,18 +592,20 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
-								Fields.field("count", "$appointmentId"))).and("fromDate").extractDayOfMonth().as("day")
-										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
-										.as("year").and("fromDate").extractWeek().as("week"),
+						new ProjectionOperation(
+								Fields.from(Fields.field("date", "$fromDate"), Fields.field("count", "$appointmentId")))
+										.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
+										.as("month").and("fromDate").extractYear().as("year").and("fromDate")
+										.extractWeek().as("week"),
 						aggregationOperation, Aggregation.sort(Direction.ASC, "date"), Aggregation.skip(page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
-								Fields.field("count", "$appointmentId"))).and("fromDate").extractDayOfMonth().as("day")
-										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
-										.as("year").and("fromDate").extractWeek().as("week"),
+						new ProjectionOperation(
+								Fields.from(Fields.field("date", "$fromDate"), Fields.field("count", "$appointmentId")))
+										.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
+										.as("month").and("fromDate").extractYear().as("year").and("fromDate")
+										.extractWeek().as("week"),
 						aggregationOperation, Aggregation.sort(Direction.ASC, "date"));
 			}
 			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -628,7 +636,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				criteria.and("appointment.state").is(state.toUpperCase());
+				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+					criteria.and("appointment.state").is(state);
+				} else {
+					criteria.orOperator(new Criteria("appointment.state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("appointment.state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("appointment.state").is(AppointmentState.NEW.toString()));
+				}
 
 			}
 
@@ -814,7 +828,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("id", "$group._id"))
 									.append("groupName", new BasicDBObject("$first", "$group.name"))
-											.append("date", new BasicDBObject("$first", "$group.createdTime"))
+									.append("date", new BasicDBObject("$first", "$group.createdTime"))
 									.append("count", new BasicDBObject("$sum", 1)))));
 
 			response = mongoTemplate
@@ -885,6 +899,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		}
 		return response;
 	}
+
 	@Override
 	public List<DoctorAppointmentAnalyticPieChartResponse> getDoctorAppointmentAnalyticsForPieChart(String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String state, String searchTerm,
@@ -903,7 +918,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				criteria.and("state").is(state);
+				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+					criteria.and("state").is(state);
+				} else {
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("state").is(AppointmentState.NEW.toString()));
+				}
 
 			}
 
@@ -994,7 +1015,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				criteria.and("state").is(state);
+				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+					criteria.and("state").is(state);
+				} else {
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("state").is(AppointmentState.NEW.toString()));
+				}
 
 			}
 
@@ -1047,7 +1074,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public Integer countPatientAppointmentAnalyticsDetail(String doctorId, String locationId, String hospitalId,
-		String fromDate, String toDate, String state, String searchTerm) {
+			String fromDate, String toDate, String state, String searchTerm) {
 		Integer response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -1080,7 +1107,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				criteria.and("state").is(state);
+				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+					criteria.and("state").is(state);
+				} else {
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("state").is(AppointmentState.NEW.toString()));
+				}
 
 			}
 
