@@ -3237,7 +3237,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.XRAY, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
-					"xRayDetail");
+					"xRayDetails");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESXRayDetailsDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3293,7 +3293,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			}
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.XRAY, page, size, updatedTime, discarded,
-					null, searchTerm, specialities, null, null, "xRayDetail");
+					null, searchTerm, specialities, null, null, "xRayDetails");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESXRayDetailsDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3323,7 +3323,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				response = new ArrayList<ESXRayDetailsDocument>();
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
-						updatedTime, discarded, null, searchTerm, null, null, "xRayDetail");
+						updatedTime, discarded, null, searchTerm, null, null, "xRayDetails");
 				response = elasticsearchTemplate.queryForList(searchQuery, ESXRayDetailsDocument.class);
 			}
 		} catch (Exception e) {
@@ -3683,7 +3683,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.ECG, page, size, doctorId,
 					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
-					"ecgDetail");
+					"ecgDetails");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESECGDetailsDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3739,7 +3739,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			}
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.ECG, page, size, updatedTime, discarded,
-					null, searchTerm, specialities, null, null, "ecgDetail");
+					null, searchTerm, specialities, null, null, "ecgDetails");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESECGDetailsDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3769,7 +3769,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				response = new ArrayList<ESECGDetailsDocument>();
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
-						updatedTime, discarded, null, searchTerm, null, null, "ecgDetail");
+						updatedTime, discarded, null, searchTerm, null, null, "ecgDetails");
 				response = elasticsearchTemplate.queryForList(searchQuery, ESECGDetailsDocument.class);
 			}
 		} catch (Exception e) {
