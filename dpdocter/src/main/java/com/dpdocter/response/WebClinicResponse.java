@@ -6,6 +6,8 @@ public class WebClinicResponse {
 
 	private String locationId;
 
+	private String hospitalId;
+
 	private String country;
 
 	private String state;
@@ -94,10 +96,19 @@ public class WebClinicResponse {
 		this.consultationFee = consultationFee;
 	}
 
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
-		return "WebClinicResponse [locationId=" + locationId + ", country=" + country + ", state=" + state + ", city="
-				+ city + ", postalCode=" + postalCode + ", locality=" + locality + ", locationName=" + locationName
-				+ ", streetAddress=" + streetAddress + ", consultationFee=" + consultationFee + "]";
+		return "WebClinicResponse [locationId=" + locationId + ", hospitalId=" + hospitalId + ", country=" + country
+				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", locality=" + locality
+				+ ", locationName=" + locationName + ", streetAddress=" + streetAddress + ", consultationFee="
+				+ consultationFee + "]";
 	}
 }
