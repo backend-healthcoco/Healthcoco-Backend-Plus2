@@ -112,6 +112,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					clinicResponse.setCountry(doctorDocument.getLocation().getCountry());
 					clinicResponse.setLocality(doctorDocument.getLocation().getLocality());
 					clinicResponse.setLocationId(doctorDocument.getLocation().getId().toString());
+					clinicResponse.setHospitalId(doctorDocument.getLocation().getHospitalId().toString());
 					clinicResponse.setLocationName(doctorDocument.getLocation().getLocationName());
 					clinicResponse.setPostalCode(doctorDocument.getLocation().getPostalCode());
 					clinicResponse.setState(doctorDocument.getLocation().getState());
@@ -129,7 +130,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 	}
 
 	@Override
-	public WebAppointmentSlotDataResponse getTimeSlots(String doctorId, String locationId, String date) {
+	public WebAppointmentSlotDataResponse getTimeSlots(String doctorId, String locationId, String hospitalId, String date) {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		List<Slot> slotResponse = null;
 		List<SlotDataResponse> slotDataResponses = null;
@@ -160,6 +161,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 				response.setDoctorId(doctorId);
 				response.setLocationId(locationId);
 				response.setDoctorSlugURL(doctorClinicProfileCollection.getDoctorSlugURL());
+				response.setHospitalId(hospitalId);
 				
 				slotDataResponses = new ArrayList<SlotDataResponse>();
 				if (doctorClinicProfileCollection.getWorkingSchedules() != null && doctorClinicProfileCollection.getAppointmentSlot() != null) {

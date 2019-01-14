@@ -100,9 +100,9 @@ public class WebAppointmentApi {
 	@GET
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS, notes = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS)
 	public Response<WebAppointmentSlotDataResponse> getTimeSlots(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("date") String date) {
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("date") String date) {
 		
-		WebAppointmentSlotDataResponse slots = webAppointmentService.getTimeSlots(doctorId, locationId, date);
+		WebAppointmentSlotDataResponse slots = webAppointmentService.getTimeSlots(doctorId, locationId, hospitalId, date);
 		Response<WebAppointmentSlotDataResponse> response = new Response<WebAppointmentSlotDataResponse>();
 		response.setData(slots);
 		return response;

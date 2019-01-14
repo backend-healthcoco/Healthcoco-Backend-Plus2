@@ -12,6 +12,8 @@ public class WebAppointmentSlotDataResponse {
 	
 	private String locationId;
 	
+	private String hospitalId;
+	
 	List<SlotDataResponse> slots;
 
 	public String getDoctorSlugURL() {
@@ -46,10 +48,17 @@ public class WebAppointmentSlotDataResponse {
 		this.slots = slots;
 	}
 
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
 		return "WebAppointmentSlotDataResponse [doctorSlugURL=" + doctorSlugURL + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", slots=" + slots + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", slots=" + slots + "]";
 	}
-
 }
