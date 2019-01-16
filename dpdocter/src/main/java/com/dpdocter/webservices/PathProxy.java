@@ -2048,4 +2048,20 @@ public interface PathProxy {
 		public static final String SEARCH_EXPENSE_TYPES = "searchExpenceTypes/{range}";
 
 	}
+	public static final String CONFERENCE_URL = BASE_URL + "/conference";
+
+	public interface ConferenceUrls{
+	public static final String GET_SESSION_TOPICS = "/sessionTopic/get";
+	public static final String GET_SESSION_TOPIC = "/sessionTopic/{id}/get";
+	public static final String GET_SPEAKER_PROFILES = "/speakerProfile/get";
+	public static final String GET_SPEAKER_PROFILE = "/speakerProfile/{id}/get";
+	public static final String GET_DOCTOR_CONFERENCES = "/doctor/get";
+	public static final String GET_DOCTOR_CONFERENCE = "/doctor/{id}/get";
+	public static final String GET_CONFERENCE_SESSIONS = "/session/{conferenceId}/list";
+	public static final String GET_CONFERENCE_SESSION = "/session/{id}/get";
+	public static final String GET_CONFERENCE_AGENDAS = "/agenda/{conferenceId}/list";
+	public static final String GET_CONFERENCE_AGENDA = "/agenda/{id}/get";
+
+	}
+	
 }
