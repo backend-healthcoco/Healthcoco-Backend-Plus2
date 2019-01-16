@@ -1810,7 +1810,7 @@ public interface PathProxy {
 		public static final String GET_DENTAL_IMAGING_DATA = "/getDentalImagingData";
 	}
 
-	public static final String WEB_SEARCH_BASE_URL =  "/websearch";
+	public static final String WEB_SEARCH_BASE_URL = "/websearch";
 
 	public interface SearchUrls {
 
@@ -1825,7 +1825,7 @@ public interface PathProxy {
 		public static final String GET_TIME_SLOTS = "/getTimeSlots/{doctorId}/{locationId}/{date}";
 
 	}
-	
+
 	public static final String Lab_PRINT_BASE_URL = BASE_URL + "/labPrint";
 
 	public interface LabPrintUrls {
@@ -1850,7 +1850,6 @@ public interface PathProxy {
 		public static final String ADD_DIAGRAM = "/addDiagram";
 		public static final String DOWNLOAD_PROCEDURE_SHEET = "/download/{id}";
 	}
-
 
 	public static final String SOLR_RECIPE_BASE_URL = BASE_URL + "/solr/recipe";
 
@@ -1932,9 +1931,9 @@ public interface PathProxy {
 		public static final String GET_WEIGHT_COUNTER_SETTING = "weight/setting/{userId}/get";
 
 	}
-	
+
 	public static final String PAEDIATRIC_BASE_URL = BASE_URL + "/paediatric";
-	
+
 	public interface PaediatricUrls {
 		public static final String ADD_EDIT_GROWTH_CHART = "growthChart/addEdit";
 		public static final String GET_GROWTH_CHART_BY_ID = "growthChart/get/{id}";
@@ -1950,5 +1949,21 @@ public interface PathProxy {
 		public static final String ADD_EDIT_MULTIPLE_VACCINE_STATUS = "vaccine/addEditMultipleStatus";
 		public static final String UPDATE_OLD_DATA = "/updateOldData";
 	}
-	
+
+	public static final String CONFERENCE_URL = BASE_URL + "/conference";
+
+	public interface ConferenceUrls {
+		public static final String GET_SESSION_TOPICS = "/sessionTopic/get";
+		public static final String GET_SESSION_TOPIC = "/sessionTopic/{id}/get";
+		public static final String GET_SPEAKER_PROFILES = "/speakerProfile/get";
+		public static final String GET_SPEAKER_PROFILE = "/speakerProfile/{id}/get";
+		public static final String GET_DOCTOR_CONFERENCES = "/doctor/get";
+		public static final String GET_DOCTOR_CONFERENCE = "/doctor/{id}/get";
+		public static final String GET_CONFERENCE_SESSIONS = "/session/{conferenceId}/list";
+		public static final String GET_CONFERENCE_SESSION = "/session/{id}/get";
+		public static final String GET_CONFERENCE_AGENDAS = "/agenda/{conferenceId}/list";
+		public static final String GET_CONFERENCE_AGENDA = "/agenda/{id}/get";
+
+	}
+
 }
