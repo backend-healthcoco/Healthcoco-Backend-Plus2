@@ -30,6 +30,8 @@ public class DoctorConferenceSession extends GenericCollection {
 
 	private Boolean discarded = false;
 
+	private Integer noOfQuestion = 0;
+
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -116,6 +118,14 @@ public class DoctorConferenceSession extends GenericCollection {
 
 	public void setSpeakers(List<OrganizingCommitteeResponse> speakers) {
 		this.speakers = speakers;
+	}
+
+	public Integer getNoOfQuestion() {
+		return noOfQuestion;
+	}
+
+	public void setNoOfQuestion(Integer noOfQuestion) {
+		this.noOfQuestion = noOfQuestion;
 	}
 
 }

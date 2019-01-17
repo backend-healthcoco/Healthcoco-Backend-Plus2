@@ -81,7 +81,7 @@ public class DoctorConferenceAPI {
 			@QueryParam("discarded") boolean discarded, @QueryParam("searchTerm") String searchTerm) {
 
 		Response<SpeakerProfile> response = new Response<SpeakerProfile>();
-		response.setDataList(conferenceService.getTopics(size, page, discarded, searchTerm));
+		response.setDataList(conferenceService.getSpeakerProfiles(size, page, discarded, searchTerm));
 		return response;
 
 	}
