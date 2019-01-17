@@ -36,8 +36,8 @@ import com.dpdocter.repository.DoctorConferenceSessionRepository;
 import com.dpdocter.repository.DoctorconferenceAgendaRepository;
 import com.dpdocter.repository.SessionTopicRepository;
 import com.dpdocter.repository.SpeakerProfileRepository;
-import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.response.OrganizingCommitteeResponse;
+import com.dpdocter.response.SessionDateResponse;
 import com.dpdocter.services.ConferenceService;
 import com.dpdocter.services.FileManager;
 import com.mongodb.BasicDBObject;
@@ -323,28 +323,23 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
-			response = mongoTemplate
-					.aggregate(
-							Aggregation.newAggregation(
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
-													true))),
-									Aggregation.lookup("session_topic_cl", "topics", "_id", "topic"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
-													true))),
-									groupFirst,
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays",
-													true))),
-									Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speakers"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays",
-													true))),
-									projectListThird, groupThird),
+			response = mongoTemplate.aggregate(Aggregation.newAggregation(
 
-							DoctorConferenceSessionCollection.class, DoctorConferenceSession.class)
-					.getUniqueMappedResult();
+					Aggregation.match(new Criteria("id").is(new ObjectId(id)).and("discarded").is(false)),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("session_topic_cl", "topics", "_id", "topic"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays", true))),
+					groupFirst,
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speakers"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
+					projectListThird, groupThird),
+
+					DoctorConferenceSessionCollection.class, DoctorConferenceSession.class).getUniqueMappedResult();
 
 			if (response.getSpeakers() != null && !response.getSpeakers().isEmpty()) {
 				for (OrganizingCommitteeResponse committeeResponse : response.getSpeakers()) {
@@ -358,6 +353,40 @@ public class ConferenceServiceImpl implements ConferenceService {
 			if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage())) {
 				response.setTitleImage(getFinalImageURL(response.getTitleImage()));
 			}
+		} catch (BusinessException e) {
+			logger.error("Error while getting Conference Session " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting Conference Session" + e.getMessage());
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public List<SessionDateResponse> getConferenceSessionDate(String conferenceId) {
+		List<SessionDateResponse> response = null;
+		try {
+			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
+							.append("onDate", new BasicDBObject("$first", "$onDate"))
+							.append("conferenceId", new BasicDBObject("$first", "$conferenceId")));
+
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("onDate", "$onDate"), Fields.field("schedules", "$schedules"),
+							Fields.field("topics", "$topics"), Fields.field("conferenceId", "$conferenceId")));
+
+			response = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("conferenceId").is(new ObjectId(conferenceId))
+									.and("discarded").is(false)),
+							projectList.and("onDate").extractDayOfMonth().as("day").and("onDate").extractMonth()
+									.as("month").and("onDate").extractYear().as("year").and("onDate").extractWeek()
+									.as("week"),
+							group, Aggregation.sort(new Sort(Direction.ASC, "onDate"))),
+					DoctorConferenceSessionCollection.class, SessionDateResponse.class).getMappedResults();
+
 		} catch (BusinessException e) {
 			logger.error("Error while getting Conference Session " + e.getMessage());
 			e.printStackTrace();
@@ -388,12 +417,12 @@ public class ConferenceServiceImpl implements ConferenceService {
 
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				criteria.and("fromDate").gte(new Date(Long.parseLong(fromDate))).and("toDate")
-						.lte(new Date(Long.parseLong(toDate)));
+						.lt(new Date(Long.parseLong(toDate)));
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				criteria.and("fromDate").gte(new Date(Long.parseLong(fromDate)));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria.and("toDate").lte(new Date(Long.parseLong(toDate)));
+				criteria.and("toDate").lt(new Date(Long.parseLong(toDate)));
 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(city))
@@ -594,23 +623,23 @@ public class ConferenceServiceImpl implements ConferenceService {
 				criteria.and("conferenceId").is(new ObjectId(conferenceId));
 
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				criteria.and("onDate").gte(new Date(Long.parseLong(fromDate))).lte(new Date(Long.parseLong(toDate)));
+				criteria.and("onDate").gt(new Date(Long.parseLong(fromDate))).lte(new Date(Long.parseLong(toDate)));
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				criteria.and("onDate").gte(new Date(Long.parseLong(fromDate)));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria.and("onDate").lte(new Date(Long.parseLong(toDate)));
+				criteria.and("onDate").lt(new Date(Long.parseLong(toDate)));
 
 			}
 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "schedules.fromTime")), Aggregation.skip(page * size),
-						Aggregation.limit(size));
+						Aggregation.sort(new Sort(Direction.ASC, "schedules.fromTime", "onTime")),
+						Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "schedules.fromTime")));
+						Aggregation.sort(new Sort(Direction.ASC, "schedules.fromTime", "onTime")));
 			}
 			response = mongoTemplate
 					.aggregate(aggregation, DoctorConferenceAgendaCollection.class, DoctorConferenceAgenda.class)

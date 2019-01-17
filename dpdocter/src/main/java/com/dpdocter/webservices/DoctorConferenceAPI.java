@@ -24,6 +24,7 @@ import com.dpdocter.beans.SessionTopic;
 import com.dpdocter.beans.SpeakerProfile;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.SessionDateResponse;
 import com.dpdocter.services.ConferenceService;
 
 import common.util.web.DPDoctorUtils;
@@ -187,6 +188,23 @@ public class DoctorConferenceAPI {
 
 		Response<DoctorConferenceAgenda> response = new Response<DoctorConferenceAgenda>();
 		response.setData(agenda);
+
+		return response;
+	}
+
+	@Path(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION_DATES)
+	@GET
+	@ApiOperation(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION_DATES, notes = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION_DATES)
+	public Response<SessionDateResponse> getConferenceSessionDate(@PathParam("conferenceId") String conferenceId) {
+		if (DPDoctorUtils.anyStringEmpty(conferenceId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		List<SessionDateResponse> dates = conferenceService.getConferenceSessionDate(conferenceId);
+
+		Response<SessionDateResponse> response = new Response<SessionDateResponse>();
+		response.setDataList(dates);
 
 		return response;
 	}

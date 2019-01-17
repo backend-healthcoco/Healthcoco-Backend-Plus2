@@ -7,6 +7,7 @@ import com.dpdocter.beans.DoctorConferenceAgenda;
 import com.dpdocter.beans.DoctorConferenceSession;
 import com.dpdocter.beans.SessionTopic;
 import com.dpdocter.beans.SpeakerProfile;
+import com.dpdocter.response.SessionDateResponse;
 
 public interface ConferenceService {
 
@@ -33,5 +34,7 @@ public interface ConferenceService {
 			String toDate, String searchTerm, String conferenceId);
 
 	public DoctorConferenceAgenda getConferenceAgenda(String id);
+	
+	public List<SessionDateResponse> getConferenceSessionDate(String conferenceId);
 
 }
