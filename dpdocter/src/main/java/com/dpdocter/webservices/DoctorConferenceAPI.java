@@ -109,9 +109,8 @@ public class DoctorConferenceAPI {
 	public Response<DoctorConferenceSession> getConferenceSessions(@QueryParam("size") int size,
 			@QueryParam("page") int page, @QueryParam("discarded") boolean discarded, @QueryParam("city") String city,
 			@QueryParam("fromtime") @DefaultValue("0") Integer fromtime,
-			@QueryParam("toTime") @DefaultValue("0") Integer toTime,
-			@QueryParam("fromDate") @DefaultValue("0") String fromDate,
-			@QueryParam("toDate") @DefaultValue("0") String toDate, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("toTime") @DefaultValue("0") Integer toTime, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm,
 			@PathParam("conferenceId") String conferenceId, @MatrixParam("topics") List<String> topics) {
 		if (DPDoctorUtils.anyStringEmpty(conferenceId)) {
 			logger.warn("Invalid Input");
@@ -144,8 +143,8 @@ public class DoctorConferenceAPI {
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCES, notes = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCES)
 	public Response<DoctorConference> getDoctorConference(@QueryParam("size") int size, @QueryParam("page") int page,
 			@QueryParam("discarded") boolean discarded, @QueryParam("city") String city,
-			@QueryParam("speciality") String speciality, @QueryParam("fromDate") @DefaultValue("0") String fromDate,
-			@QueryParam("toDate") @DefaultValue("0") String toDate, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("speciality") String speciality, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm) {
 		List<DoctorConference> coference = conferenceService.getDoctorConference(size, page, discarded, city,
 				speciality, fromDate, toDate, searchTerm);
 		Response<DoctorConference> response = new Response<DoctorConference>();
@@ -159,9 +158,8 @@ public class DoctorConferenceAPI {
 	public Response<DoctorConferenceAgenda> getConferenceAgenda(@QueryParam("size") int size,
 			@QueryParam("page") int page, @QueryParam("discarded") boolean discarded, @QueryParam("city") String city,
 			@QueryParam("fromtime") @DefaultValue("0") Integer fromtime,
-			@QueryParam("toTime") @DefaultValue("0") Integer toTime,
-			@QueryParam("fromDate") @DefaultValue("0") String fromDate,
-			@QueryParam("toDate") @DefaultValue("0") String toDate, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("toTime") @DefaultValue("0") Integer toTime, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm,
 			@PathParam("conferenceId") String conferenceId) {
 		if (DPDoctorUtils.anyStringEmpty(conferenceId)) {
 			logger.warn("Invalid Input");
