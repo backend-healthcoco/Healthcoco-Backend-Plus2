@@ -9,6 +9,7 @@ public class QuestionResponse {
 	private String questionerId;
 	private Boolean isLiked = false;
 	private String question;
+<<<<<<< HEAD
 
 	public String getId() {
 		return id;
@@ -84,6 +85,8 @@ public class QuestionResponse {
 	private Integer noOfLikes;
 	private String questioner;
 	private String userId;
+=======
+>>>>>>> 813314eae... HAPPY-4143
 
 	public String getId() {
 		return id;
@@ -125,12 +128,28 @@ public class QuestionResponse {
 		this.questioner = questioner;
 	}
 
-	public String getUserId() {
-		return userId;
+	public Boolean getIsLiked() {
+		return isLiked;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setIsLiked(Boolean isLiked) {
+		this.isLiked = isLiked;
+	}
+
+	public String getQuestionerId() {
+		return questionerId;
+	}
+
+	public void setQuestionerId(String questionerId) {
+		this.questionerId = questionerId;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
 	}
 
 }
