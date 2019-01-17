@@ -57,22 +57,13 @@ public class ConferenceServiceImpl implements ConferenceService {
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
-	private FileManager fileManager;
-
-	@Autowired
 	private SpeakerProfileRepository speakerProfileRepository;
 
 	@Autowired
 	private SessionTopicRepository sessionTopicRepository;
 
 	@Autowired
-	private DoctorConferenceRepository doctorConferenceRepository;
-
-	@Autowired
 	private DoctorconferenceAgendaRepository doctorConferenceAgendaRepository;
-
-	@Autowired
-	private DoctorConferenceSessionRepository doctorConferenceSessionRepository;
 
 	@Override
 	public List<SessionTopic> getTopics(int size, int page, boolean discarded, String searchTerm) {

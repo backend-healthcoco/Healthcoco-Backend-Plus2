@@ -6,8 +6,9 @@ public class SessionQuestion extends GenericCollection {
 	private String id;
 	private String type = "CONFERENCE_SESSION";
 	private String sessionId;
-	private String userId;
-	private Integer noOfLikes;
+	private String questionerId;
+	private Integer noOfLikes = 0;
+	private String question;
 
 	public String getId() {
 		return id;
@@ -33,12 +34,20 @@ public class SessionQuestion extends GenericCollection {
 		this.sessionId = sessionId;
 	}
 
-	public String getUserId() {
-		return userId;
+	public String getQuestionerId() {
+		return questionerId;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setQuestionerId(String questionerId) {
+		this.questionerId = questionerId;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
 	}
 
 	public Integer getNoOfLikes() {

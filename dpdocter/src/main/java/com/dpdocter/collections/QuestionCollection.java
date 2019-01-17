@@ -11,13 +11,15 @@ public class QuestionCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String type = "CONFERENCE_SESSION";
+	private String type = "CONFERENCE_SESSION";	
+	@Field
+	private String question;
 	@Field
 	private ObjectId sessionId;
 	@Field
 	private ObjectId userId;
 	@Field
-	private Integer noOfLikes;
+	private Integer noOfLikes=0;
 
 	public ObjectId getId() {
 		return id;
@@ -57,6 +59,14 @@ public class QuestionCollection extends GenericCollection {
 
 	public void setNoOfLikes(Integer noOfLikes) {
 		this.noOfLikes = noOfLikes;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
 	}
 	
 
