@@ -118,6 +118,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					clinicResponse.setState(doctorDocument.getLocation().getState());
 					clinicResponse.setStreetAddress(doctorDocument.getLocation().getStreetAddress());
 					clinicResponse.setConsultationFee(doctorDocument.getConsultationFee());
+					clinicResponse.setFacility(doctorDocument.getFacility());
 					clinicResponses.add(clinicResponse);
 				}
 				webDoctorClinicsResponse.setClinics(clinicResponses);
