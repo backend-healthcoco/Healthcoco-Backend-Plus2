@@ -676,7 +676,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				BeanUtil.map(doctorClinicProfileLookupResponse, doctorClinic);
 			doctorClinic.setLocationId(doctorClinicProfileLookupResponse.getLocationId().toString());
 			doctorClinic.setDoctorId(doctorClinicProfileLookupResponse.getDoctorId().toString());
-
+			doctorClinic.setDoctorSlugURL(doctorClinicProfileLookupResponse.getDoctorSlugURL());
 			Criteria criteria = new Criteria("doctorId").is(doctorClinicProfileLookupResponse.getDoctorId())
 					.and("locationId").is(locationCollection.getId()).and("hospitalId")
 					.is(locationCollection.getHospitalId());
