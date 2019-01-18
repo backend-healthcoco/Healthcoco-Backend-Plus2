@@ -254,7 +254,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
 								groupFirst, Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onTime")),
+								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onDate")),
 								Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation
@@ -267,7 +267,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
 								groupFirst, Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onTime")));
+								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onDate")));
 			}
 			response = mongoTemplate
 					.aggregate(aggregation, DoctorConferenceSessionCollection.class, DoctorConferenceSession.class)
@@ -646,11 +646,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onTime")),
+						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onDate")),
 						Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onTime")));
+						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onDate")));
 			}
 			response = mongoTemplate
 					.aggregate(aggregation, DoctorConferenceAgendaCollection.class, DoctorConferenceAgenda.class)
