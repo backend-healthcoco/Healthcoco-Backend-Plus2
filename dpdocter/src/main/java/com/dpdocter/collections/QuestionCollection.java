@@ -21,15 +21,16 @@ public class QuestionCollection extends GenericCollection {
 	@Field
 	private Integer noOfLikes = 0;
 	@Field
-	private Boolean discareded=false;
+	private Boolean discarded=false;
 	
 
-	public Boolean getDiscareded() {
-		return discareded;
+
+	public Boolean getDiscarded() {
+		return discarded;
 	}
 
-	public void setDiscareded(Boolean discareded) {
-		this.discareded = discareded;
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	public ObjectId getId() {
