@@ -208,23 +208,23 @@ public class ConferenceServiceImpl implements ConferenceService {
 				criteria.and("conferenceId").is(new ObjectId(conferenceId));
 
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				criteria.and("onDate").gte(new Date(Long.parseLong(fromDate))).lte(new Date(Long.parseLong(toDate)));
+				criteria.and("onDate").gte(new Date(Long.parseLong(fromDate))).lt(new Date(Long.parseLong(toDate)));
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				criteria.and("onDate").gte(new Date(Long.parseLong(fromDate)));
 
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria.and("onDate").lte(new Date(Long.parseLong(toDate)));
+				criteria.and("onDate").lt(new Date(Long.parseLong(toDate)));
 
 			}
 
 			if (fromtime > 0 && toTime > 0) {
-				criteria.and("schedules.fromTime").gte(fromtime);
-				criteria.and("schedules.toTime").lte(toTime);
+				criteria.and("schedule.fromTime").gte(fromtime);
+				criteria.and("schedule.toTime").lte(toTime);
 			} else if (fromtime > 0) {
-				criteria.and("schedules.fromTime").gte(fromtime);
+				criteria.and("schedule.fromTime").gte(fromtime);
 
 			} else if (toTime > 0) {
-				criteria.and("schedules.toTime").lte(toTime);
+				criteria.and("schedule.toTime").lte(toTime);
 
 			}
 			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -232,7 +232,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("onDate", new BasicDBObject("$first", "$onDate"))
-							.append("schedules", new BasicDBObject("$first", "$schedules"))
+							.append("noOfQuestion", new BasicDBObject("$first", "$noOfQuestion"))
+							.append("schedule", new BasicDBObject("$first", "$schedule"))
 							.append("topics", new BasicDBObject("$push", "$topics.topic"))
 							.append("conferenceId", new BasicDBObject("$first", "$conferenceId"))
 							.append("address", new BasicDBObject("$first", "$address"))
@@ -253,7 +254,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
 								groupFirst, Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Direction.ASC, "schedules.fromTime")),
+								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onTime")),
 								Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation
@@ -266,7 +267,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
 								groupFirst, Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Direction.ASC, "schedules.fromTime")));
+								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onTime")));
 			}
 			response = mongoTemplate
 					.aggregate(aggregation, DoctorConferenceSessionCollection.class, DoctorConferenceSession.class)
@@ -296,7 +297,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("onDate", new BasicDBObject("$first", "$onDate"))
-							.append("schedules", new BasicDBObject("$first", "$schedules"))
+							.append("schedule", new BasicDBObject("$first", "$schedule"))
+							.append("noOfQuestion", new BasicDBObject("$first", "$noOfQuestion"))
 							.append("speakers", new BasicDBObject("$first", "$speakers"))
 							.append("topics", new BasicDBObject("$push", "$topics.topic"))
 							.append("conferenceId", new BasicDBObject("$first", "$conferenceId"))
@@ -309,8 +311,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 			ProjectionOperation projectListThird = new ProjectionOperation(
 					Fields.from(Fields.field("id", "$id"), Fields.field("title", "$title"),
 							Fields.field("titleImage", "$titleImage"), Fields.field("description", "$description"),
-							Fields.field("topi", "$description"), Fields.field("onDate", "$onDate"),
-							Fields.field("schedules", "$schedules"), Fields.field("topics", "$topics"),
+							Fields.field("address", "$address"),Fields.field("noOfQuestion", "$noOfQuestion"), Fields.field("onDate", "$onDate"),
+							Fields.field("schedule", "$schedule"), Fields.field("topics", "$topics"),
 							Fields.field("discarded", "$discarded"), Fields.field("conferenceId", "$conferenceId"),
 							Fields.field("speakers.role", "$speaker.role"), Fields.field("speakers.id", "$speakers.id"),
 							Fields.field("speakers.firstName", "$speakers.firstName"),
@@ -321,8 +323,9 @@ public class ConferenceServiceImpl implements ConferenceService {
 					new BasicDBObject("id", "$id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
-							.append("schedules", new BasicDBObject("$first", "$schedules"))
+							.append("schedule", new BasicDBObject("$first", "$schedule"))
 							.append("onDate", new BasicDBObject("$first", "$onDate"))
+							.append("noOfQuestion", new BasicDBObject("$first", "$noOfQuestion"))
 							.append("topics", new BasicDBObject("$first", "$topics"))
 							.append("speakers", new BasicDBObject("$push", "$speakers"))
 							.append("conferenceId", new BasicDBObject("$first", "$conferenceId"))
@@ -382,7 +385,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("conferenceId", new BasicDBObject("$first", "$conferenceId")));
 
 			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("onDate", "$onDate"), Fields.field("schedules", "$schedules"),
+					Fields.from(Fields.field("onDate", "$onDate"), Fields.field("schedule", "$schedule"),
 							Fields.field("topics", "$topics"), Fields.field("conferenceId", "$conferenceId")));
 
 			response = mongoTemplate.aggregate(
@@ -643,11 +646,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "schedules.fromTime", "onTime")),
+						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onTime")),
 						Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "schedules.fromTime", "onTime")));
+						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onTime")));
 			}
 			response = mongoTemplate
 					.aggregate(aggregation, DoctorConferenceAgendaCollection.class, DoctorConferenceAgenda.class)
