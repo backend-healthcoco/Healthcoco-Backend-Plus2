@@ -346,7 +346,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					groupFirst,
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speakers"),
+					Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speaker"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
 					projectListThird, groupThird),
@@ -518,6 +518,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("description", "$description"), Fields.field("fromDate", "$fromDate"),
 					Fields.field("toDate", "$toDate"), Fields.field("address", "$address"),
 					Fields.field("discarded", "$discarded"), Fields.field("specialities", "$specialities"),
+					Fields.field("speakers", "$speakers"),
 					Fields.field("commiteeMember.role", "$commiteeMember.role"),
 					Fields.field("commiteeMember.id", "$member.id"),
 					Fields.field("commiteeMember.firstName", "$member.firstName"),
@@ -531,6 +532,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("toDate", new BasicDBObject("$first", "$toDate"))
 							.append("commiteeMember", new BasicDBObject("$push", "$commiteeMember"))
+							.append("speakers", new BasicDBObject("$first", "$speakers"))
 							.append("specialities", new BasicDBObject("$first", "$specialities"))
 							.append("address", new BasicDBObject("$first", "$address"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
@@ -546,6 +548,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("speakers.role", "$speakers.role"), Fields.field("speakers.id", "$speaker.id"),
 					Fields.field("speakers.firstName", "$speaker.firstName"),
 					Fields.field("speakers.profileImage", "$speaker.profileImage"),
+					Fields.field("commiteeMember",  "$commiteeMember"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
