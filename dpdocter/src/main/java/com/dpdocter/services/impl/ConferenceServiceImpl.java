@@ -759,7 +759,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			if (questionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor Question not found");
 			}
-			questionCollection.setDiscareded(discarded);
+			questionCollection.setDiscarded(discarded);
 
 			questionCollection = questionRepository.save(questionCollection);
 			DoctorConferenceSessionCollection conferenceSessionCollection = doctorConferenceSessionRepository
