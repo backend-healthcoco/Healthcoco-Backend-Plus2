@@ -228,7 +228,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 
 			}
 			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$id").append("title", new BasicDBObject("$first", "$title"))
+					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("onDate", new BasicDBObject("$first", "$onDate"))
@@ -254,7 +254,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
 								groupFirst, Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onDate")),
+								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime")),
 								Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation
@@ -267,7 +267,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
 								groupFirst, Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onDate")));
+								Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime")));
 			}
 			response = mongoTemplate
 					.aggregate(aggregation, DoctorConferenceSessionCollection.class, DoctorConferenceSession.class)
@@ -294,7 +294,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 		DoctorConferenceSession response = null;
 		try {
 			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$id").append("title", new BasicDBObject("$first", "$title"))
+					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("onDate", new BasicDBObject("$first", "$onDate"))
@@ -321,7 +321,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$id").append("title", new BasicDBObject("$first", "$title"))
+					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("schedule", new BasicDBObject("$first", "$schedule"))
@@ -442,7 +442,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 						new Criteria("address.city").regex("^" + searchTerm));
 
 			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$_id").append("title", new BasicDBObject("$first", "$title"))
+					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
@@ -500,13 +500,12 @@ public class ConferenceServiceImpl implements ConferenceService {
 		try {
 
 			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$id").append("title", new BasicDBObject("$first", "$title"))
+					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("toDate", new BasicDBObject("$first", "$toDate"))
 							.append("speakers", new BasicDBObject("$first", "$speakers"))
-							.append("commiteeMember", new BasicDBObject("$first", "$commiteeMember"))
 							.append("specialities", new BasicDBObject("$push", "$specialities.specialities"))
 							.append("address", new BasicDBObject("$first", "$address"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
@@ -518,15 +517,14 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("description", "$description"), Fields.field("fromDate", "$fromDate"),
 					Fields.field("toDate", "$toDate"), Fields.field("address", "$address"),
 					Fields.field("discarded", "$discarded"), Fields.field("specialities", "$specialities"),
-					Fields.field("speakers", "$speakers"),
-					Fields.field("commiteeMember.role", "$commiteeMember.role"),
+					Fields.field("speakers", "$speakers"), Fields.field("commiteeMember.role", "$commiteeMember.role"),
 					Fields.field("commiteeMember.id", "$member.id"),
 					Fields.field("commiteeMember.firstName", "$member.firstName"),
 					Fields.field("commiteeMember.profileImage", "$member.profileImage"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 			CustomAggregationOperation groupSecond = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$id").append("title", new BasicDBObject("$first", "$title"))
+					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
@@ -548,11 +546,12 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("speakers.role", "$speakers.role"), Fields.field("speakers.id", "$speaker.id"),
 					Fields.field("speakers.firstName", "$speaker.firstName"),
 					Fields.field("speakers.profileImage", "$speaker.profileImage"),
-					Fields.field("commiteeMember",  "$commiteeMember"),
-					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-					Fields.field("createdBy", "$createdBy")));
+					Fields.field("commiteeMember", "$commiteeMember"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
+
 			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$id").append("title", new BasicDBObject("$first", "$title"))
+					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
+							.append("id", new BasicDBObject("$first", "$id"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
@@ -718,7 +717,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			if (conferenceSessionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor Conference Session not found");
 			}
-			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				questionCollection = new QuestionCollection();
 				request.setCreatedTime(new Date());
 				request.setCreatedBy((user.getTitle() != null ? user.getTitle() + " " : "") + user.getFirstName());
