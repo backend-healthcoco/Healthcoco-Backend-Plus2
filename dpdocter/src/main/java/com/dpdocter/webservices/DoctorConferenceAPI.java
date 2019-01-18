@@ -3,9 +3,11 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.DoctorConference;
 import com.dpdocter.beans.DoctorConferenceAgenda;
 import com.dpdocter.beans.DoctorConferenceSession;
+import com.dpdocter.beans.SessionQuestion;
 import com.dpdocter.beans.SessionTopic;
 import com.dpdocter.beans.SpeakerProfile;
 import com.dpdocter.exceptions.BusinessException;
@@ -205,6 +208,103 @@ public class DoctorConferenceAPI {
 		response.setDataList(dates);
 
 		return response;
+	}
+
+	@Path(value = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION)
+	@POST
+	@ApiOperation(value = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION)
+	public Response<SessionQuestion> addEditQuestion(SessionQuestion request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getQuestionerId(), request.getSessionId())) {
+			logger.warn("questionerId and sessionId should not null or empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"questionerId and sessionId should not null or empty");
+
+		}
+		SessionQuestion question = conferenceService.addeditQuestion(request);
+
+		Response<SessionQuestion> response = new Response<SessionQuestion>();
+		response.setData(question);
+
+		return response;
+	}
+
+	@Path(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS)
+	@GET
+	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS, notes = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS)
+	public Response<SessionQuestion> getConferenceSessionQuestion(@QueryParam("size") int size,
+			@QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
+			@PathParam("sessionId") String sessionId) {
+
+		if (DPDoctorUtils.anyStringEmpty(sessionId)) {
+			logger.warn("sessionId should not null or empty");
+			throw new BusinessException(ServiceError.InvalidInput, "sessionId should not null or empty");
+
+		}
+		List<SessionQuestion> questions = conferenceService.getQuestion(page, size, sessionId, discarded);
+
+		Response<SessionQuestion> response = new Response<SessionQuestion>();
+		response.setDataList(questions);
+
+		return response;
+	}
+
+	@Path(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTION)
+	@GET
+	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.GET_SESSION_QUESTION)
+	public Response<SessionQuestion> getConferenceSessionQuestion(@PathParam("id") String id) {
+
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("id should not null or empty");
+			throw new BusinessException(ServiceError.InvalidInput, "id should not null or empty");
+
+		}
+		SessionQuestion question = conferenceService.getQuestion(id);
+
+		Response<SessionQuestion> response = new Response<SessionQuestion>();
+		response.setData(question);
+
+		return response;
+	}
+
+	@Path(value = PathProxy.ConferenceUrls.DELETE_SESSION_QUESTION)
+	@DELETE
+	@ApiOperation(value = PathProxy.ConferenceUrls.DELETE_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.DELETE_SESSION_QUESTION)
+	public Response<SessionQuestion> deleteConferenceSessionQuestion(@PathParam("id") String id,
+			@QueryParam("userId") String userId, @QueryParam("discarded") boolean discarded) {
+
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("id should not null or empty");
+			throw new BusinessException(ServiceError.InvalidInput, "id should not null or empty");
+
+		}
+		SessionQuestion question = conferenceService.deleteQuestion(id, userId, discarded);
+
+		Response<SessionQuestion> response = new Response<SessionQuestion>();
+		response.setData(question);
+
+		return response;
+	}
+
+	@Path(value = PathProxy.ConferenceUrls.LIKE_SESSION_QUESTION)
+	@GET
+	@ApiOperation(value = PathProxy.ConferenceUrls.LIKE_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.LIKE_SESSION_QUESTION)
+	public Response<Boolean> likeQuestion(@PathParam("questionId") String questionId,
+			@QueryParam("userId") String userId) {
+		if (DPDoctorUtils.anyStringEmpty(userId, questionId)) {
+			logger.warn("userId,questionId should not null or empty");
+			throw new BusinessException(ServiceError.InvalidInput, "userId,questionId should not null or empty");
+
+		}
+		Response<Boolean> response = new Response<Boolean>();
+
+		response.setData(conferenceService.likeQuestion(questionId, userId));
+		return response;
+
 	}
 
 	private String getFinalImageURL(String imageURL) {

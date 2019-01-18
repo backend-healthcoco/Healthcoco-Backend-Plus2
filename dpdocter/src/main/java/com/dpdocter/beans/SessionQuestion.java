@@ -9,6 +9,15 @@ public class SessionQuestion extends GenericCollection {
 	private String questionerId;
 	private Integer noOfLikes = 0;
 	private String question;
+	private Boolean discarded = false;
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public String getId() {
 		return id;

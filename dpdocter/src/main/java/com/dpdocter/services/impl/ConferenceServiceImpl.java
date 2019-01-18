@@ -21,25 +21,30 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorConference;
 import com.dpdocter.beans.DoctorConferenceAgenda;
 import com.dpdocter.beans.DoctorConferenceSession;
+import com.dpdocter.beans.SessionQuestion;
 import com.dpdocter.beans.SessionTopic;
 import com.dpdocter.beans.SpeakerProfile;
 import com.dpdocter.collections.DoctorConferenceAgendaCollection;
 import com.dpdocter.collections.DoctorConferenceCollection;
 import com.dpdocter.collections.DoctorConferenceSessionCollection;
+import com.dpdocter.collections.QuestionCollection;
+import com.dpdocter.collections.QuestionLikeCollection;
 import com.dpdocter.collections.SessionTopicCollection;
 import com.dpdocter.collections.SpeakerProfileCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DoctorConferenceRepository;
 import com.dpdocter.repository.DoctorConferenceSessionRepository;
 import com.dpdocter.repository.DoctorconferenceAgendaRepository;
+import com.dpdocter.repository.QuestionLikeRepository;
+import com.dpdocter.repository.QuestionRepository;
 import com.dpdocter.repository.SessionTopicRepository;
 import com.dpdocter.repository.SpeakerProfileRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.OrganizingCommitteeResponse;
 import com.dpdocter.response.SessionDateResponse;
 import com.dpdocter.services.ConferenceService;
-import com.dpdocter.services.FileManager;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -64,6 +69,18 @@ public class ConferenceServiceImpl implements ConferenceService {
 
 	@Autowired
 	private DoctorconferenceAgendaRepository doctorConferenceAgendaRepository;
+
+	@Autowired
+	private QuestionLikeRepository questionLikeRepository;
+
+	@Autowired
+	private QuestionRepository questionRepository;
+
+	@Autowired
+	private UserRepository userRepsitory;
+
+	@Autowired
+	private DoctorConferenceSessionRepository doctorConferenceSessionRepository;
 
 	@Override
 	public List<SessionTopic> getTopics(int size, int page, boolean discarded, String searchTerm) {
@@ -677,6 +694,177 @@ public class ConferenceServiceImpl implements ConferenceService {
 			return imagePath + imageURL;
 		else
 			return null;
+	}
+
+	@Override
+	public SessionQuestion addeditQuestion(SessionQuestion request) {
+		SessionQuestion response = null;
+		try {
+			QuestionCollection questionCollection = null;
+			UserCollection user = userRepsitory.findOne(new ObjectId(request.getQuestionerId()));
+			if (user == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
+			}
+			DoctorConferenceSessionCollection conferenceSessionCollection = doctorConferenceSessionRepository
+					.findOne(new ObjectId(request.getSessionId()));
+
+			if (conferenceSessionCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor Conference Session not found");
+			}
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				questionCollection = new QuestionCollection();
+				request.setCreatedTime(new Date());
+				request.setCreatedBy((user.getTitle() != null ? user.getTitle() + " " : "") + user.getFirstName());
+				BeanUtil.map(request, questionCollection);
+				conferenceSessionCollection.setNoOfQuestion(conferenceSessionCollection.getNoOfQuestion() + 1);
+			} else {
+				questionCollection = questionRepository.findOne(new ObjectId(request.getId()));
+				request.setCreatedTime(questionCollection.getCreatedTime());
+				request.setCreatedBy((user.getTitle() != null ? user.getTitle() + " " : "") + user.getFirstName());
+				BeanUtil.map(request, questionCollection);
+			}
+			questionCollection = questionRepository.save(questionCollection);
+			conferenceSessionCollection = doctorConferenceSessionRepository.save(conferenceSessionCollection);
+			response = new SessionQuestion();
+			BeanUtil.map(questionCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while add edit Question " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while add edit Question " + e.getMessage());
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public SessionQuestion deleteQuestion(String id, String userId, boolean discarded) {
+		SessionQuestion response = null;
+		try {
+			QuestionCollection questionCollection = null;
+			UserCollection user = userRepsitory.findOne(new ObjectId(userId));
+			if (user == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
+			}
+
+			questionCollection = questionRepository.findOne(new ObjectId(id));
+
+			if (questionCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor Question not found");
+			}
+			questionCollection.setDiscareded(discarded);
+
+			questionCollection = questionRepository.save(questionCollection);
+			DoctorConferenceSessionCollection conferenceSessionCollection = doctorConferenceSessionRepository
+					.findOne(questionCollection.getSessionId());
+			conferenceSessionCollection.setNoOfQuestion(conferenceSessionCollection.getNoOfQuestion() - 1);
+			conferenceSessionCollection = doctorConferenceSessionRepository.save(conferenceSessionCollection);
+			response = new SessionQuestion();
+			BeanUtil.map(questionCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while add edit Question " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while add edit Question " + e.getMessage());
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded) {
+		List<SessionQuestion> response = null;
+		try {
+
+			Criteria criteria = new Criteria("discarded").is(discarded);
+
+			if (!DPDoctorUtils.anyStringEmpty(sessionId))
+				criteria = criteria.and("sessionId").is(new ObjectId(sessionId));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")), Aggregation.skip(page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, QuestionCollection.class, SessionQuestion.class)
+					.getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting Question " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Question " + e.getMessage());
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public SessionQuestion getQuestion(String id) {
+		SessionQuestion response = null;
+		try {
+			QuestionCollection questionCollection = questionRepository.findOne(new ObjectId(id));
+			response = new SessionQuestion();
+			BeanUtil.map(questionCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting Question " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Question " + e.getMessage());
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public Boolean likeQuestion(String questionId, String userId) {
+		Boolean response = false;
+		try {
+			QuestionLikeCollection likeCollection = null;
+			QuestionCollection questionCollection = null;
+			UserCollection user = userRepsitory.findOne(new ObjectId(userId));
+			if (user == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
+			}
+			questionCollection = questionRepository.findOne(new ObjectId(questionId));
+			if (questionCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Session Question not found");
+			}
+			likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(questionId),
+					new ObjectId(userId));
+			if (likeCollection == null) {
+				likeCollection = new QuestionLikeCollection();
+				likeCollection.setQuestionId(new ObjectId(questionId));
+				likeCollection.setUserId(new ObjectId(userId));
+				likeCollection.setCreatedTime(new Date());
+				likeCollection
+						.setCreatedBy((user.getTitle() != null ? user.getTitle() + " " : "") + user.getFirstName());
+			} else {
+				if (likeCollection.getDiscarded()) {
+					questionCollection.setNoOfLikes(questionCollection.getNoOfLikes() + 1);
+				} else {
+					questionCollection.setNoOfLikes(questionCollection.getNoOfLikes() - 1);
+				}
+				likeCollection.setDiscarded(!likeCollection.getDiscarded());
+			}
+			likeCollection = questionLikeRepository.save(likeCollection);
+			questionCollection = questionRepository.save(questionCollection);
+			response = !likeCollection.getDiscarded();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting Question " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting loke on Question " + e.getMessage());
+
+		}
+		return response;
 	}
 
 }
