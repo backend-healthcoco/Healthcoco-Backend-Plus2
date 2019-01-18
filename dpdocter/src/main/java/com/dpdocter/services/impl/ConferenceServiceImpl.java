@@ -315,9 +315,9 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("noOfQuestion", "$noOfQuestion"), Fields.field("onDate", "$onDate"),
 					Fields.field("schedule", "$schedule"), Fields.field("topics", "$topics"),
 					Fields.field("discarded", "$discarded"), Fields.field("conferenceId", "$conferenceId"),
-					Fields.field("speakers.role", "$speaker.role"), Fields.field("speakers.id", "$speakers.id"),
-					Fields.field("speakers.firstName", "$speakers.firstName"),
-					Fields.field("speakers.profileImage", "$speakers.profileImage"),
+					Fields.field("speakers.role", "$speakers.role"), Fields.field("speakers.id", "$speaker.id"),
+					Fields.field("speakers.firstName", "$speaker.firstName"),
+					Fields.field("speakers.profileImage", "$speaker.profileImage"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -345,10 +345,10 @@ public class ConferenceServiceImpl implements ConferenceService {
 							new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays", true))),
 					groupFirst,
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
+							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speakers"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
+							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
 					projectListThird, groupThird),
 
 					DoctorConferenceSessionCollection.class, DoctorConferenceSession.class).getUniqueMappedResult();
@@ -543,9 +543,9 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("description", "$description"), Fields.field("fromDate", "$fromDate"),
 					Fields.field("toDate", "$toDate"), Fields.field("address", "$address"),
 					Fields.field("discarded", "$discarded"), Fields.field("specialities", "$specialities"),
-					Fields.field("speakers.role", "$speaker.role"), Fields.field("speakers.id", "$speakers.id"),
-					Fields.field("speakers.firstName", "$speakers.firstName"),
-					Fields.field("speakers.profileImage", "$speakers.profileImage"),
+					Fields.field("speakers.role", "$speakers.role"), Fields.field("speakers.id", "$speaker.id"),
+					Fields.field("speakers.firstName", "$speaker.firstName"),
+					Fields.field("speakers.profileImage", "$speaker.profileImage"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -582,10 +582,10 @@ public class ConferenceServiceImpl implements ConferenceService {
 									new BasicDBObject("path", "$member").append("preserveNullAndEmptyArrays", true))),
 							projectListSecond, groupSecond,
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speakers"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speaker"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
 							projectListThird, groupThird),
 
 					DoctorConferenceCollection.class, DoctorConference.class).getUniqueMappedResult();
