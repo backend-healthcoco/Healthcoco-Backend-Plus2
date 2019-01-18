@@ -1964,6 +1964,11 @@ public interface PathProxy {
 		public static final String GET_CONFERENCE_SESSION_DATES = "/session/{conferenceId}/date";
 		public static final String GET_CONFERENCE_AGENDAS = "/agenda/{conferenceId}/list";
 		public static final String GET_CONFERENCE_AGENDA = "/agenda/{id}/get";
+		public static final String ADD_EDIT_SESSION_QUESTION = "/session/question/addEdit";
+		public static final String GET_SESSION_QUESTIONS = "/session/question/{sessionId}/list";
+		public static final String GET_SESSION_QUESTION = "/session/question/{id}/get";
+		public static final String DELETE_SESSION_QUESTION = "/session/question/{id}/delete";
+		public static final String LIKE_SESSION_QUESTION = "/session/question/{questionId}/like";
 
 	}
 

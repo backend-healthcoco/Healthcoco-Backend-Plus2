@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.DoctorConference;
 import com.dpdocter.beans.DoctorConferenceAgenda;
 import com.dpdocter.beans.DoctorConferenceSession;
+import com.dpdocter.beans.SessionQuestion;
 import com.dpdocter.beans.SessionTopic;
 import com.dpdocter.beans.SpeakerProfile;
 import com.dpdocter.response.SessionDateResponse;
@@ -34,7 +35,17 @@ public interface ConferenceService {
 			String toDate, String searchTerm, String conferenceId);
 
 	public DoctorConferenceAgenda getConferenceAgenda(String id);
-	
+
 	public List<SessionDateResponse> getConferenceSessionDate(String conferenceId);
+
+	public Boolean likeQuestion(String questionId, String userId);
+
+	public SessionQuestion addeditQuestion(SessionQuestion request);
+
+	public SessionQuestion deleteQuestion(String id, String userId, boolean discarded);
+
+	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded);
+
+	public SessionQuestion getQuestion(String id);
 
 }

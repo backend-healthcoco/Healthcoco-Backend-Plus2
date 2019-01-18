@@ -7,8 +7,8 @@ import org.springframework.data.mongodb.repository.Query;
 import com.dpdocter.collections.BlogLikesCollection;
 import com.dpdocter.collections.QuestionLikeCollection;
 
-public interface QuestionLikeRepository extends MongoRepository<QuestionLikeCollection, ObjectId>{
+public interface QuestionLikeRepository extends MongoRepository<QuestionLikeCollection, ObjectId> {
 
 	@Query("{'questionId': ?0,'userId': ?1}")
-	public QuestionLikeCollection findbyBlogIdAndUserId(ObjectId questionId, ObjectId userId);
+	public QuestionLikeCollection findbyQuestionAndUserId(ObjectId questionId, ObjectId userId);
 }
