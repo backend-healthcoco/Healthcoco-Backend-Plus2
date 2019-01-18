@@ -308,17 +308,17 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
-			ProjectionOperation projectListThird = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$id"), Fields.field("title", "$title"),
-							Fields.field("titleImage", "$titleImage"), Fields.field("description", "$description"),
-							Fields.field("address", "$address"),Fields.field("noOfQuestion", "$noOfQuestion"), Fields.field("onDate", "$onDate"),
-							Fields.field("schedule", "$schedule"), Fields.field("topics", "$topics"),
-							Fields.field("discarded", "$discarded"), Fields.field("conferenceId", "$conferenceId"),
-							Fields.field("speakers.role", "$speaker.role"), Fields.field("speakers.id", "$speakers.id"),
-							Fields.field("speakers.firstName", "$speakers.firstName"),
-							Fields.field("speakers.profileImage", "$speakers.profileImage"),
-							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-							Fields.field("createdBy", "$createdBy")));
+			ProjectionOperation projectListThird = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("title", "$title"), Fields.field("titleImage", "$titleImage"),
+					Fields.field("description", "$description"), Fields.field("address", "$address"),
+					Fields.field("noOfQuestion", "$noOfQuestion"), Fields.field("onDate", "$onDate"),
+					Fields.field("schedule", "$schedule"), Fields.field("topics", "$topics"),
+					Fields.field("discarded", "$discarded"), Fields.field("conferenceId", "$conferenceId"),
+					Fields.field("speakers.role", "$speaker.role"), Fields.field("speakers.id", "$speakers.id"),
+					Fields.field("speakers.firstName", "$speakers.firstName"),
+					Fields.field("speakers.profileImage", "$speakers.profileImage"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("createdBy", "$createdBy")));
 			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("id", "$id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
@@ -380,13 +380,13 @@ public class ConferenceServiceImpl implements ConferenceService {
 		List<SessionDateResponse> response = null;
 		try {
 			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-							.append("onDate", new BasicDBObject("$first", "$onDate"))
-							.append("conferenceId", new BasicDBObject("$first", "$conferenceId")));
+					new BasicDBObject("_id",
+							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
+									.append("onDate", new BasicDBObject("$first", "$onDate"))
+									.append("conferenceId", new BasicDBObject("$first", "$conferenceId"))));
 
 			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("onDate", "$onDate"), Fields.field("schedule", "$schedule"),
-							Fields.field("topics", "$topics"), Fields.field("conferenceId", "$conferenceId")));
+					Fields.from(Fields.field("onDate", "$onDate"), Fields.field("conferenceId", "$conferenceId")));
 
 			response = mongoTemplate.aggregate(
 					Aggregation.newAggregation(
