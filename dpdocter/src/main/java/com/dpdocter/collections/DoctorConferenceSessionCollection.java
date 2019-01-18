@@ -36,6 +36,8 @@ public class DoctorConferenceSessionCollection extends GenericCollection {
 	private List<OrganizingCommittee> speakers;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private Integer noOfQuestion = 0;
 
 	public ObjectId getConferenceId() {
 		return conferenceId;
@@ -123,6 +125,14 @@ public class DoctorConferenceSessionCollection extends GenericCollection {
 
 	public void setSpeakers(List<OrganizingCommittee> speakers) {
 		this.speakers = speakers;
+	}
+
+	public Integer getNoOfQuestion() {
+		return noOfQuestion;
+	}
+
+	public void setNoOfQuestion(Integer noOfQuestion) {
+		this.noOfQuestion = noOfQuestion;
 	}
 
 }

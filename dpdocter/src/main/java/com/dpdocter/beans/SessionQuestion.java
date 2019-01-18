@@ -10,6 +10,7 @@ public class SessionQuestion extends GenericCollection {
 	private Integer noOfLikes = 0;
 	private String question;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	public String getId() {
 		return id;
@@ -124,6 +125,17 @@ public class SessionQuestion extends GenericCollection {
 	private Integer noOfLikes;
 =======
 >>>>>>> 813314eae... HAPPY-4143
+=======
+	private Boolean discarded = false;
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+>>>>>>> ef5ce8210... HAPPY-4143
 
 	public String getId() {
 		return id;

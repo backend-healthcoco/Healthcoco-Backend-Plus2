@@ -11,7 +11,7 @@ public class QuestionCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String type = "CONFERENCE_SESSION";	
+	private String type = "CONFERENCE_SESSION";
 	@Field
 	private String question;
 <<<<<<< HEAD
@@ -91,9 +91,20 @@ public class QuestionCollection extends GenericCollection {
 	@Field
 	private ObjectId sessionId;
 	@Field
-	private ObjectId userId;
+	private ObjectId questionerId;
 	@Field
-	private Integer noOfLikes=0;
+	private Integer noOfLikes = 0;
+	@Field
+	private Boolean discareded=false;
+	
+
+	public Boolean getDiscareded() {
+		return discareded;
+	}
+
+	public void setDiscareded(Boolean discareded) {
+		this.discareded = discareded;
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -119,12 +130,12 @@ public class QuestionCollection extends GenericCollection {
 		this.sessionId = sessionId;
 	}
 
-	public ObjectId getUserId() {
-		return userId;
+	public ObjectId getQuestionerId() {
+		return questionerId;
 	}
 
-	public void setUserId(ObjectId userId) {
-		this.userId = userId;
+	public void setQuestionerId(ObjectId questionerId) {
+		this.questionerId = questionerId;
 	}
 
 	public Integer getNoOfLikes() {
@@ -142,6 +153,5 @@ public class QuestionCollection extends GenericCollection {
 	public void setQuestion(String question) {
 		this.question = question;
 	}
-	
 
 }
