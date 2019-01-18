@@ -155,6 +155,22 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCE)
+	@GET
+	@ApiOperation(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCE, notes = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCE)
+	public Response<DoctorConference> getDoctorConference(@PathParam("id") String id) {
+
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		DoctorConference coference = conferenceService.getDoctorConference(id);
+		Response<DoctorConference> response = new Response<DoctorConference>();
+		response.setData(coference);
+		return response;
+	}
+
 	@Path(value = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDAS)
 	@GET
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDAS, notes = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDAS)

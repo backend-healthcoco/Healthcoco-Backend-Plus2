@@ -273,9 +273,10 @@ public class ConferenceServiceImpl implements ConferenceService {
 					.aggregate(aggregation, DoctorConferenceSessionCollection.class, DoctorConferenceSession.class)
 					.getMappedResults();
 
-			if (response != null && response != null) {
-				for (DoctorConferenceSession session : response)
+			if (response != null && !response.isEmpty()) {
+				for (DoctorConferenceSession session : response) {
 					session.setTitleImage(getFinalImageURL(session.getTitleImage()));
+				}
 			}
 
 		} catch (BusinessException e) {
@@ -442,7 +443,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 
 			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("id", "$_id").append("title", new BasicDBObject("$first", "$title"))
-							.append("titleImage", new BasicDBObject("$push", "$titleImage"))
+							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("toDate", new BasicDBObject("$first", "$toDate"))
