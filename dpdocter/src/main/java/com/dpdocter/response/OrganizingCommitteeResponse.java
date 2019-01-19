@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 public class OrganizingCommitteeResponse {
 
-	private String id;
+	private String speakerId;
 
 	private String profileImage;
 
@@ -10,12 +10,14 @@ public class OrganizingCommitteeResponse {
 
 	private String role;
 
-	public String getId() {
-		return id;
+	
+
+	public String getSpeakerId() {
+		return speakerId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setSpeakerId(String speakerId) {
+		this.speakerId = speakerId;
 	}
 
 	public String getProfileImage() {
