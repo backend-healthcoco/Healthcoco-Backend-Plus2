@@ -466,12 +466,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				drugCollection.setDosageTime(request.getDosageTime());
 				drugCollection.setDirection(request.getDirection());
 				drugCollection.setExplanation(request.getExplanation());
-				if (drugCollection.getDrugType() != null) {
-					if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
+				if (request.getDrugType() != null) {
+					if (DPDoctorUtils.anyStringEmpty(request.getDrugType().getId()))
 						drugCollection.setDrugType(null);
 					else {
 						DrugTypeCollection drugTypeCollection = drugTypeRepository
-								.findOne(new ObjectId(drugCollection.getDrugType().getId()));
+								.findOne(new ObjectId(request.getDrugType().getId()));
 						if (drugTypeCollection != null) {
 							DrugType drugType = new DrugType();
 							BeanUtil.map(drugTypeCollection, drugType);

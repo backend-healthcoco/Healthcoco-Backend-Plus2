@@ -214,8 +214,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			leftMargin = 0;
 			rightMargin = 0;
 			topMargin = 0;
-		} else if (parameters.get("headerImage") != null && !parameters.get("headerImage").toString().isEmpty()) {
-			topMargin = 10;
+		} else if (parameters.get("headerImage") != null
+				&& !DPDoctorUtils.allStringsEmpty(parameters.get("headerImage").toString())) {
+			topMargin = topMargin - 45;
 		}
 
 		int columnWidth = pageWidth - leftMargin - rightMargin;
@@ -2030,7 +2031,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		int Startwith = 2;
 
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
-		
+
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));

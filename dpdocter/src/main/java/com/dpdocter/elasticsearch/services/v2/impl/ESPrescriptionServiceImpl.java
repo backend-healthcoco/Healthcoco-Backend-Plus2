@@ -412,10 +412,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 				if (searchByGenericName) {
 					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId, updatedTime,
-							discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+							discarded, null, searchTerm, category, null, "genericNames.name");
 				} else {
 					searchQuery = DPDoctorUtils.createCustomQuery(0, 0, doctorId, locationId, hospitalId, updatedTime,
-							discarded, "rankingCount", searchTerm, category, null, "drugName");
+							discarded, null, searchTerm, category, null, "drugName");
 				}
 
 				response = elasticsearchTemplate.count(searchQuery, ESDrugDocument.class);

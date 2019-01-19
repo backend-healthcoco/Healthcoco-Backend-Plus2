@@ -52,7 +52,7 @@ public class ESPrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		long drugCount = esPrescriptionService.drugCount(range, doctorId, locationId, hospitalId, updatedTime,
-				discarded, searchTerm, category, true);
+				discarded, searchTerm, category, searchByGenericName);
 		List<?> drugDocuments = null;
 		if (drugCount > 0) {
 			drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
