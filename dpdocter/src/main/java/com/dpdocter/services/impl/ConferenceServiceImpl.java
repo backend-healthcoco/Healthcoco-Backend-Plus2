@@ -247,9 +247,9 @@ public class ConferenceServiceImpl implements ConferenceService {
 				aggregation = Aggregation
 						.newAggregation(
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
+										new BasicDBObject("path", "$topicIds").append("preserveNullAndEmptyArrays",
 												true))),
-								Aggregation.lookup("session_topic_cl", "topics", "_id", "topics"),
+								Aggregation.lookup("session_topic_cl", "topicIds", "_id", "topics"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
@@ -260,9 +260,9 @@ public class ConferenceServiceImpl implements ConferenceService {
 				aggregation = Aggregation
 						.newAggregation(
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
+										new BasicDBObject("path", "$topicIds").append("preserveNullAndEmptyArrays",
 												true))),
-								Aggregation.lookup("session_topic_cl", "topics", "_id", "topics"),
+								Aggregation.lookup("session_topic_cl", "topicIds", "_id", "topics"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
@@ -339,8 +339,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 
 					Aggregation.match(new Criteria("id").is(new ObjectId(id)).and("discarded").is(false)),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("session_topic_cl", "topics", "_id", "topic"),
+							new BasicDBObject("path", "$topicIds").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("session_topic_cl", "topicIds", "_id", "topic"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays", true))),
 					groupFirst,
@@ -529,7 +529,6 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("toDate", new BasicDBObject("$first", "$toDate"))
-							.append("commiteeMember", new BasicDBObject("$push", "$commiteeMember"))
 							.append("speakers", new BasicDBObject("$first", "$speakers"))
 							.append("specialities", new BasicDBObject("$first", "$specialities"))
 							.append("address", new BasicDBObject("$first", "$address"))
@@ -546,18 +545,16 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("speakers.role", "$speakers.role"), Fields.field("speakers.id", "$speaker.id"),
 					Fields.field("speakers.firstName", "$speaker.firstName"),
 					Fields.field("speakers.profileImage", "$speaker.profileImage"),
-					Fields.field("commiteeMember", "$commiteeMember"), Fields.field("createdTime", "$createdTime"),
-					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("createdBy", "$createdBy")));
 
 			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
-							.append("id", new BasicDBObject("$first", "$id"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("toDate", new BasicDBObject("$first", "$toDate"))
 							.append("speakers", new BasicDBObject("$push", "$speakers"))
-							.append("commiteeMember", new BasicDBObject("$first", "$commiteeMember"))
 							.append("specialities", new BasicDBObject("$first", "$specialities"))
 							.append("address", new BasicDBObject("$first", "$address"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))

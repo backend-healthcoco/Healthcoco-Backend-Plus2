@@ -31,7 +31,7 @@ public class DoctorConferenceSessionCollection extends GenericCollection {
 	@Field
 	private Address address;
 	@Field
-	private List<ObjectId> topics;
+	private List<ObjectId> topicIds;
 	@Field
 	private List<OrganizingCommittee> speakers;
 	@Field
@@ -111,12 +111,12 @@ public class DoctorConferenceSessionCollection extends GenericCollection {
 		this.address = address;
 	}
 
-	public List<ObjectId> getTopics() {
-		return topics;
+	public List<ObjectId> getTopicIds() {
+		return topicIds;
 	}
 
-	public void setTopics(List<ObjectId> topics) {
-		this.topics = topics;
+	public void setTopicIds(List<ObjectId> topicIds) {
+		this.topicIds = topicIds;
 	}
 
 	public List<OrganizingCommittee> getSpeakers() {
