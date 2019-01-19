@@ -315,11 +315,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("noOfQuestion", "$noOfQuestion"), Fields.field("onDate", "$onDate"),
 					Fields.field("schedule", "$schedule"), Fields.field("topics", "$topics"),
 					Fields.field("discarded", "$discarded"), Fields.field("conferenceId", "$conferenceId"),
-					Fields.field("speakers.role", "$speakers.role"), Fields.field("speakers.id", "$speaker.id"),
+					Fields.field("speakers.speakerId", "$speaker.speakerId"),
 					Fields.field("speakers.firstName", "$speaker.firstName"),
 					Fields.field("speakers.profileImage", "$speaker.profileImage"),
-					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-					Fields.field("createdBy", "$createdBy")));
+					Fields.field("speakers.role", "$speakers.role"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
 			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
@@ -337,21 +337,21 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(
 
-					Aggregation.match(new Criteria("id").is(new ObjectId(id)).and("discarded").is(false)),
+					Aggregation.match(new Criteria("_id").is(new ObjectId(id)).and("discarded").is(false)),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$topicIds").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("session_topic_cl", "topicIds", "_id", "topic"),
+					Aggregation.lookup("session_topic_cl", "topicIds", "_id", "topics"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays", true))),
 					groupFirst,
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speaker"),
+					Aggregation.lookup("speaker_profile_cl", "speakers.speakerId", "_id", "speaker"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
 					projectListThird, groupThird),
 
-					DoctorConferenceSessionCollection.class, DoctorConferenceSession.class).getUniqueMappedResult();
+					"doctor_conference_session_cl", DoctorConferenceSession.class).getUniqueMappedResult();
 
 			if (response.getSpeakers() != null && !response.getSpeakers().isEmpty()) {
 				for (OrganizingCommitteeResponse committeeResponse : response.getSpeakers()) {
@@ -506,54 +506,33 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("toDate", new BasicDBObject("$first", "$toDate"))
 							.append("speakers", new BasicDBObject("$first", "$speakers"))
-							.append("specialities", new BasicDBObject("$push", "$specialities.specialities"))
-							.append("address", new BasicDBObject("$first", "$address"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
-			ProjectionOperation projectListSecond = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
-					Fields.field("title", "$title"), Fields.field("titleImage", "$titleImage"),
-					Fields.field("description", "$description"), Fields.field("fromDate", "$fromDate"),
-					Fields.field("toDate", "$toDate"), Fields.field("address", "$address"),
-					Fields.field("discarded", "$discarded"), Fields.field("specialities", "$specialities"),
-					Fields.field("speakers", "$speakers"), Fields.field("commiteeMember.role", "$commiteeMember.role"),
-					Fields.field("commiteeMember.id", "$member.id"),
-					Fields.field("commiteeMember.firstName", "$member.firstName"),
-					Fields.field("commiteeMember.profileImage", "$member.profileImage"),
-					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-					Fields.field("createdBy", "$createdBy")));
-			CustomAggregationOperation groupSecond = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
-							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
-							.append("description", new BasicDBObject("$first", "$description"))
-							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-							.append("toDate", new BasicDBObject("$first", "$toDate"))
-							.append("speakers", new BasicDBObject("$first", "$speakers"))
-							.append("specialities", new BasicDBObject("$first", "$specialities"))
+							.append("commiteeMember", new BasicDBObject("$first", "$commiteeMember"))
+							.append("specialities", new BasicDBObject("$push", "$specialities.superSpeciality"))
 							.append("address", new BasicDBObject("$first", "$address"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
-			ProjectionOperation projectListThird = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+			ProjectionOperation projectListsecond = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 					Fields.field("title", "$title"), Fields.field("titleImage", "$titleImage"),
 					Fields.field("description", "$description"), Fields.field("fromDate", "$fromDate"),
 					Fields.field("toDate", "$toDate"), Fields.field("address", "$address"),
 					Fields.field("discarded", "$discarded"), Fields.field("specialities", "$specialities"),
-					Fields.field("speakers.role", "$speakers.role"), Fields.field("speakers.id", "$speaker.id"),
+					Fields.field("speakers.speakerId", "$speakers.speakerId"),
 					Fields.field("speakers.firstName", "$speaker.firstName"),
+					Fields.field("speakers.role", "$speakers.role"),
 					Fields.field("speakers.profileImage", "$speaker.profileImage"),
-					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-					Fields.field("createdBy", "$createdBy")));
+					Fields.field("commiteeMember", "$commiteeMember"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupsecond = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("toDate", new BasicDBObject("$first", "$toDate"))
+							.append("commiteeMember", new BasicDBObject("$first", "$commiteeMember"))
 							.append("speakers", new BasicDBObject("$push", "$speakers"))
 							.append("specialities", new BasicDBObject("$first", "$specialities"))
 							.append("address", new BasicDBObject("$first", "$address"))
@@ -561,33 +540,51 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
-			response = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(id))),
-							new CustomAggregationOperation(new BasicDBObject(
-									"$unwind",
-									new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays",
-											true))),
 
-							Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays",
-											true))),
-							groupFirst,
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$commiteeMember").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.lookup("speaker_profile_cl", "commiteeMember.id", "_id", "member"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$member").append("preserveNullAndEmptyArrays", true))),
-							projectListSecond, groupSecond,
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("speaker_profile_cl", "speakers.id", "_id", "speaker"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
-							projectListThird, groupThird),
+			ProjectionOperation projectListThird = new ProjectionOperation(
+					Fields.from(Fields.field("id", "$id"), Fields.field("title", "$title"),
+							Fields.field("titleImage", "$titleImage"), Fields.field("description", "$description"),
+							Fields.field("fromDate", "$fromDate"), Fields.field("toDate", "$toDate"),
+							Fields.field("address", "$address"), Fields.field("discarded", "$discarded"),
+							Fields.field("specialities", "$specialities"), Fields.field("speakers", "$speakers"),
+							Fields.field("member.speakerId", "$commiteeMember.speakerId"),
+							Fields.field("commiteeMember.firstName", "$member.firstName"),
+							Fields.field("commiteeMember.profileImage", "$member.profileImage"),
+							Fields.field("commiteeMember.role", "$commiteeMember.role"),
+							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+							Fields.field("createdBy", "$createdBy")));
 
-					DoctorConferenceCollection.class, DoctorConference.class).getUniqueMappedResult();
+			CustomAggregationOperation groupthird = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("id", "$_id").append("title", new BasicDBObject("$first", "$title"))
+							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
+							.append("description", new BasicDBObject("$first", "$description"))
+							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+							.append("toDate", new BasicDBObject("$first", "$toDate"))
+							.append("commiteeMember", new BasicDBObject("$push", "$commiteeMember"))
+							.append("speakers", new BasicDBObject("$first", "$speakers"))
+							.append("specialities", new BasicDBObject("$first", "$specialities"))
+							.append("address", new BasicDBObject("$first", "$address"))
+							.append("discarded", new BasicDBObject("$first", "$discarded"))
+							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("_id").is(new ObjectId(id))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays", true))),
+
+					Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays", true))),
+					groupFirst,
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("speaker_profile_cl", "speakers.speakerId", "_id", "speaker"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
+					projectListsecond, groupsecond);
+			response = mongoTemplate.aggregate(aggregation, "doctor_conference_cl", DoctorConference.class)
+					.getUniqueMappedResult();
 
 			if (response.getSpeakers() != null && !response.getSpeakers().isEmpty()) {
 				for (OrganizingCommitteeResponse committeeResponse : response.getSpeakers()) {
@@ -599,9 +596,15 @@ public class ConferenceServiceImpl implements ConferenceService {
 			}
 			if (response.getCommiteeMember() != null && !response.getCommiteeMember().isEmpty()) {
 				for (OrganizingCommitteeResponse committeeResponse : response.getSpeakers()) {
-					if (!DPDoctorUtils.anyStringEmpty(committeeResponse.getProfileImage())) {
+					if (!DPDoctorUtils.anyStringEmpty(committeeResponse.getSpeakerId())) {
+						SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository
+								.findOne(new ObjectId(committeeResponse.getSpeakerId()));
+						committeeResponse.setFirstName(speakerProfileCollection.getFirstName());
+						if (!DPDoctorUtils.anyStringEmpty(speakerProfileCollection.getProfileImage())) {
 
-						committeeResponse.setProfileImage(getFinalImageURL(committeeResponse.getProfileImage()));
+							committeeResponse
+									.setProfileImage(getFinalImageURL(speakerProfileCollection.getProfileImage()));
+						}
 					}
 				}
 			}
