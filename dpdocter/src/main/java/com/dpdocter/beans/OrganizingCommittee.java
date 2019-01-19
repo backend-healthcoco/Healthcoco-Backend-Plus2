@@ -3,15 +3,16 @@ package com.dpdocter.beans;
 import org.bson.types.ObjectId;
 
 public class OrganizingCommittee {
-	private ObjectId id;
+	private ObjectId speakerId;
 	private String role;
 
-	public ObjectId getId() {
-		return id;
+
+	public ObjectId getSpeakerId() {
+		return speakerId;
 	}
 
-	public void setId(ObjectId id) {
-		this.id = id;
+	public void setSpeakerId(ObjectId speakerId) {
+		this.speakerId = speakerId;
 	}
 
 	public String getRole() {
