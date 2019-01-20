@@ -44,8 +44,8 @@ public interface ConferenceService {
 
 	public SessionQuestion deleteQuestion(String id, String userId, boolean discarded);
 
-	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded);
+	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded, String userId);
 
-	public SessionQuestion getQuestion(String id);
+	public SessionQuestion getQuestion(String id, String userId);
 
 }

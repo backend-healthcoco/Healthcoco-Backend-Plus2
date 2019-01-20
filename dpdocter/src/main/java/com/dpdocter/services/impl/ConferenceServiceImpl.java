@@ -733,6 +733,14 @@ public class ConferenceServiceImpl implements ConferenceService {
 			conferenceSessionCollection = doctorConferenceSessionRepository.save(conferenceSessionCollection);
 			response = new SessionQuestion();
 			BeanUtil.map(questionCollection, response);
+			QuestionLikeCollection likeCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(response.getQuestionerId())) {
+				likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(response.getId()),
+						new ObjectId(response.getQuestionerId()));
+				if (likeCollection != null) {
+					response.setIsLiked(!likeCollection.getDiscarded());
+				}
+			}
 
 		} catch (BusinessException e) {
 			logger.error("Error while add edit Question " + e.getMessage());
@@ -768,6 +776,14 @@ public class ConferenceServiceImpl implements ConferenceService {
 			conferenceSessionCollection = doctorConferenceSessionRepository.save(conferenceSessionCollection);
 			response = new SessionQuestion();
 			BeanUtil.map(questionCollection, response);
+			QuestionLikeCollection likeCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(userId)) {
+				likeCollection = questionLikeRepository.findbyQuestionAndUserId(questionCollection.getId(),
+						new ObjectId(userId));
+				if (likeCollection != null) {
+					response.setIsLiked(!likeCollection.getDiscarded());
+				}
+			}
 
 		} catch (BusinessException e) {
 			logger.error("Error while add edit Question " + e.getMessage());
@@ -780,7 +796,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 	}
 
 	@Override
-	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded) {
+	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded, String userId) {
 		List<SessionQuestion> response = null;
 		try {
 
@@ -792,6 +808,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+
 						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")), Aggregation.skip(page * size),
 						Aggregation.limit(size));
 			} else {
@@ -800,6 +817,18 @@ public class ConferenceServiceImpl implements ConferenceService {
 			}
 			response = mongoTemplate.aggregate(aggregation, QuestionCollection.class, SessionQuestion.class)
 					.getMappedResults();
+			QuestionLikeCollection likeCollection = null;
+			if (response != null && response.isEmpty()) {
+				if (!DPDoctorUtils.anyStringEmpty(userId)) {
+					for (SessionQuestion sessionQuestion : response) {
+						likeCollection = questionLikeRepository
+								.findbyQuestionAndUserId(new ObjectId(sessionQuestion.getId()), new ObjectId(userId));
+						if (likeCollection != null) {
+							sessionQuestion.setIsLiked(!likeCollection.getDiscarded());
+						}
+					}
+				}
+			}
 
 		} catch (BusinessException e) {
 			logger.error("Error while getting Question " + e.getMessage());
@@ -812,12 +841,19 @@ public class ConferenceServiceImpl implements ConferenceService {
 	}
 
 	@Override
-	public SessionQuestion getQuestion(String id) {
+	public SessionQuestion getQuestion(String id, String userId) {
 		SessionQuestion response = null;
 		try {
+			QuestionLikeCollection likeCollection = null;
 			QuestionCollection questionCollection = questionRepository.findOne(new ObjectId(id));
+			if (!DPDoctorUtils.anyStringEmpty(userId)) {
+				likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(id), new ObjectId(userId));
+			}
 			response = new SessionQuestion();
 			BeanUtil.map(questionCollection, response);
+			if (likeCollection != null) {
+				response.setIsLiked(!likeCollection.getDiscarded());
+			}
 
 		} catch (BusinessException e) {
 			logger.error("Error while getting Question " + e.getMessage());

@@ -10,6 +10,15 @@ public class SessionQuestion extends GenericCollection {
 	private Integer noOfLikes = 0;
 	private String question;
 	private Boolean discarded = false;
+	private Boolean isLiked = false;
+
+	public Boolean getIsLiked() {
+		return isLiked;
+	}
+
+	public void setIsLiked(Boolean isLiked) {
+		this.isLiked = isLiked;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;
