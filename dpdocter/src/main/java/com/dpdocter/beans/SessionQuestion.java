@@ -127,6 +127,15 @@ public class SessionQuestion extends GenericCollection {
 >>>>>>> 813314eae... HAPPY-4143
 =======
 	private Boolean discarded = false;
+	private Boolean isLiked = false;
+
+	public Boolean getIsLiked() {
+		return isLiked;
+	}
+
+	public void setIsLiked(Boolean isLiked) {
+		this.isLiked = isLiked;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;
