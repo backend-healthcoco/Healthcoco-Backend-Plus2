@@ -117,7 +117,9 @@ public class ConferenceServiceImpl implements ConferenceService {
 		try {
 			SessionTopicCollection sessionTopicCollection = sessionTopicRepository.findOne(new ObjectId(id));
 			response = new SessionTopic();
+			if(sessionTopicCollection!=null){
 			BeanUtil.map(sessionTopicCollection, response);
+			}
 		} catch (BusinessException e) {
 			logger.error("Error while getting Session Topic " + e.getMessage());
 			e.printStackTrace();
@@ -170,6 +172,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 		try {
 			SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository.findOne(new ObjectId(id));
 			response = new SpeakerProfile();
+			
 			BeanUtil.map(speakerProfileCollection, response);
 
 			if (!DPDoctorUtils.anyStringEmpty(response.getProfileImage())) {
@@ -315,7 +318,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("noOfQuestion", "$noOfQuestion"), Fields.field("onDate", "$onDate"),
 					Fields.field("schedule", "$schedule"), Fields.field("topics", "$topics"),
 					Fields.field("discarded", "$discarded"), Fields.field("conferenceId", "$conferenceId"),
-					Fields.field("speakers.speakerId", "$speaker.speakerId"),
+					Fields.field("speakers.speakerId", "$speakers.speakerId"),
 					Fields.field("speakers.firstName", "$speaker.firstName"),
 					Fields.field("speakers.profileImage", "$speaker.profileImage"),
 					Fields.field("speakers.role", "$speakers.role"), Fields.field("createdTime", "$createdTime"),
@@ -346,7 +349,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					groupFirst,
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("speaker_profile_cl", "speakers.speakerId", "_id", "speaker"),
+					Aggregation.lookup("speaker_profile_cl", "$speakers.speakerId", "_id", "speaker"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
 					projectListThird, groupThird),
@@ -579,7 +582,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					groupFirst,
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("speaker_profile_cl", "speakers.speakerId", "_id", "speaker"),
+					Aggregation.lookup("speaker_profile_cl", "$speakers.speakerId", "_id", "speaker"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
 					projectListsecond, groupsecond);
@@ -853,9 +856,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 				likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(id), new ObjectId(userId));
 			}
 			response = new SessionQuestion();
+			if(questionCollection!=null){
 			BeanUtil.map(questionCollection, response);
 			if (likeCollection != null) {
 				response.setIsLiked(!likeCollection.getDiscarded());
+			}
 			}
 
 		} catch (BusinessException e) {
