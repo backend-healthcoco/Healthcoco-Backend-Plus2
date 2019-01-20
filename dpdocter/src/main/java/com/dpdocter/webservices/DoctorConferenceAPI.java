@@ -294,9 +294,9 @@ public class DoctorConferenceAPI {
 	public Response<SessionQuestion> deleteConferenceSessionQuestion(@PathParam("id") String id,
 			@QueryParam("userId") String userId, @QueryParam("discarded") boolean discarded) {
 
-		if (DPDoctorUtils.anyStringEmpty(id)) {
+		if (DPDoctorUtils.anyStringEmpty(id,userId)) {
 			logger.warn("id should not null or empty");
-			throw new BusinessException(ServiceError.InvalidInput, "id should not null or empty");
+			throw new BusinessException(ServiceError.InvalidInput, "id and userId should not null or empty");
 
 		}
 		SessionQuestion question = conferenceService.deleteQuestion(id, userId, discarded);
