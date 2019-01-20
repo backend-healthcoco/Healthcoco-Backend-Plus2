@@ -254,14 +254,14 @@ public class DoctorConferenceAPI {
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS, notes = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS)
 	public Response<SessionQuestion> getConferenceSessionQuestion(@QueryParam("size") int size,
 			@QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-			@PathParam("sessionId") String sessionId) {
+			@PathParam("sessionId") String sessionId, @QueryParam("userId") String userId) {
 
 		if (DPDoctorUtils.anyStringEmpty(sessionId)) {
 			logger.warn("sessionId should not null or empty");
 			throw new BusinessException(ServiceError.InvalidInput, "sessionId should not null or empty");
 
 		}
-		List<SessionQuestion> questions = conferenceService.getQuestion(page, size, sessionId, discarded);
+		List<SessionQuestion> questions = conferenceService.getQuestion(page, size, sessionId, discarded, userId);
 
 		Response<SessionQuestion> response = new Response<SessionQuestion>();
 		response.setDataList(questions);
@@ -272,14 +272,15 @@ public class DoctorConferenceAPI {
 	@Path(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTION)
 	@GET
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.GET_SESSION_QUESTION)
-	public Response<SessionQuestion> getConferenceSessionQuestion(@PathParam("id") String id) {
+	public Response<SessionQuestion> getConferenceSessionQuestion(@PathParam("id") String id,
+			@QueryParam("userId") String userId) {
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("id should not null or empty");
 			throw new BusinessException(ServiceError.InvalidInput, "id should not null or empty");
 
 		}
-		SessionQuestion question = conferenceService.getQuestion(id);
+		SessionQuestion question = conferenceService.getQuestion(id, userId);
 
 		Response<SessionQuestion> response = new Response<SessionQuestion>();
 		response.setData(question);
