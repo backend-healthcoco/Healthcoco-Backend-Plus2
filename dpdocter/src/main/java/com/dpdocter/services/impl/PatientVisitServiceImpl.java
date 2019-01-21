@@ -2425,8 +2425,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 
 			if (printSettings.getFooterSetup() != null) {
-				if (printSettings.getFooterSetup().getShowSignature() && !DPDoctorUtils.anyStringEmpty(doctorId)
-						) {
+				if (printSettings.getFooterSetup().getShowSignature() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
 					UserCollection doctorUser = userRepository.findOne(doctorId);
 					if (doctorUser != null)
 						footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
@@ -2439,7 +2438,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
 					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
 				}
-				if (printSettings.getFooterSetup().getShowImageFooter()) {
+				if (printSettings.getFooterSetup().getShowImageFooter()
+						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getFooterImageUrl())) {
 					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
 					footerHeight = printSettings.getFooterSetup().getFooterHeight();
 				}
