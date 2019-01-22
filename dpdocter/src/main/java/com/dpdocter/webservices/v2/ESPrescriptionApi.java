@@ -54,9 +54,9 @@ public class ESPrescriptionApi {
 		long drugCount = esPrescriptionService.drugCount(range, doctorId, locationId, hospitalId, updatedTime,
 				discarded, searchTerm, category, searchByGenericName);
 		List<?> drugDocuments = null;
-		if (drugCount > 0) {
-			drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
-					updatedTime, discarded, searchTerm, category, searchByGenericName);
+		if(drugCount>0) {
+		drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
+				updatedTime, discarded, searchTerm, category, searchByGenericName);
 		}
 		Response<Object> response = new Response<Object>();
 		response.setDataList(drugDocuments);

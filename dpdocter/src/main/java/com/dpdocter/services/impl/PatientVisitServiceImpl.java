@@ -2432,11 +2432,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 
 				if (printSettings.getFooterSetup().getShowPoweredBy()) {
-					parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
+					poweredBy = "<font color='#9d9fa0'>" + footerText + "</font>";
 				}
 				if (printSettings.getFooterSetup().getShowBottomSignText()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
-					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
+					bottomSignText = printSettings.getFooterSetup().getBottomSignText();
 				}
 				if (printSettings.getFooterSetup().getShowImageFooter()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getFooterImageUrl())) {
