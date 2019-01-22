@@ -117,8 +117,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 		try {
 			SessionTopicCollection sessionTopicCollection = sessionTopicRepository.findOne(new ObjectId(id));
 			response = new SessionTopic();
-			if(sessionTopicCollection!=null){
-			BeanUtil.map(sessionTopicCollection, response);
+			if (sessionTopicCollection != null) {
+				BeanUtil.map(sessionTopicCollection, response);
 			}
 		} catch (BusinessException e) {
 			logger.error("Error while getting Session Topic " + e.getMessage());
@@ -172,7 +172,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 		try {
 			SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository.findOne(new ObjectId(id));
 			response = new SpeakerProfile();
-			
+
 			BeanUtil.map(speakerProfileCollection, response);
 
 			if (!DPDoctorUtils.anyStringEmpty(response.getProfileImage())) {
@@ -598,7 +598,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 				}
 			}
 			if (response.getCommiteeMember() != null && !response.getCommiteeMember().isEmpty()) {
-				for (OrganizingCommitteeResponse committeeResponse : response.getSpeakers()) {
+				for (OrganizingCommitteeResponse committeeResponse : response.getCommiteeMember()) {
 					if (!DPDoctorUtils.anyStringEmpty(committeeResponse.getSpeakerId())) {
 						SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository
 								.findOne(new ObjectId(committeeResponse.getSpeakerId()));
@@ -856,11 +856,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 				likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(id), new ObjectId(userId));
 			}
 			response = new SessionQuestion();
-			if(questionCollection!=null){
-			BeanUtil.map(questionCollection, response);
-			if (likeCollection != null) {
-				response.setIsLiked(!likeCollection.getDiscarded());
-			}
+			if (questionCollection != null) {
+				BeanUtil.map(questionCollection, response);
+				if (likeCollection != null) {
+					response.setIsLiked(!likeCollection.getDiscarded());
+				}
 			}
 
 		} catch (BusinessException e) {
