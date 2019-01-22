@@ -65,7 +65,8 @@ public class BabyVaccineReminderResponse {
 	@Override
 	public String toString() {
 		return "BabyVaccineReminderResponse [patientName=" + patientName + ", doctorName=" + doctorName
-				+ ", locationName=" + locationName + ", vaccines=" + vaccines + ", mobileNumber=" + mobileNumber + "]";
+				+ ", locationName=" + locationName + ", vaccines=" + vaccines + ", mobileNumber=" + mobileNumber
+				+ ", clinicNumber=" + clinicNumber + "]";
 	}
 
 }
