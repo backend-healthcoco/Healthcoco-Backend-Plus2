@@ -20,7 +20,7 @@ public class DoctorConferenceSession extends GenericCollection {
 
 	private Date onDate;
 
-	private WorkingHours schedules;
+	private WorkingHours schedule;
 
 	private Address address;
 
@@ -88,12 +88,12 @@ public class DoctorConferenceSession extends GenericCollection {
 		this.onDate = onDate;
 	}
 
-	public WorkingHours getSchedules() {
-		return schedules;
+	public WorkingHours getSchedule() {
+		return schedule;
 	}
 
-	public void setSchedules(WorkingHours schedules) {
-		this.schedules = schedules;
+	public void setSchedule(WorkingHours schedule) {
+		this.schedule = schedule;
 	}
 
 	public Address getAddress() {
