@@ -802,7 +802,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 	}
 
 	@Override
-	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded, String userId) {
+	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded, String userId,Boolean topLiked) {
 		List<SessionQuestion> response = null;
 		try {
 
@@ -810,16 +810,23 @@ public class ConferenceServiceImpl implements ConferenceService {
 
 			if (!DPDoctorUtils.anyStringEmpty(sessionId))
 				criteria = criteria.and("sessionId").is(new ObjectId(sessionId));
+			 Sort sort=null;
+			if(topLiked) {
+				sort=new Sort(Direction.DESC, "noOfLikes");
+				
+			}else {
+				sort=new Sort(Direction.DESC, "updatedTime");
+			}
 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
-						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")), Aggregation.skip(page * size),
+						Aggregation.sort(sort), Aggregation.skip(page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "updatedTime")));
+						Aggregation.sort(sort));
 			}
 			response = mongoTemplate.aggregate(aggregation, QuestionCollection.class, SessionQuestion.class)
 					.getMappedResults();
