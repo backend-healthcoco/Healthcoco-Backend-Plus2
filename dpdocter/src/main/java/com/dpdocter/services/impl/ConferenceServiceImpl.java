@@ -896,6 +896,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 				likeCollection.setCreatedTime(new Date());
 				likeCollection
 						.setCreatedBy((user.getTitle() != null ? user.getTitle() + " " : "") + user.getFirstName());
+				questionCollection.setNoOfLikes(questionCollection.getNoOfLikes() + 1);
 			} else {
 				if (likeCollection.getDiscarded()) {
 					questionCollection.setNoOfLikes(questionCollection.getNoOfLikes() + 1);
