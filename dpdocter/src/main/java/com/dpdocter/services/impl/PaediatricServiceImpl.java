@@ -506,6 +506,7 @@ public class PaediatricServiceImpl implements PaediatricService {
 
 	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
 	@Override
+	//@Scheduled(fixedDelay = 25000)
 	public void sendBabyVaccineReminder() {
 		// TODO Auto-generated method stub
 		List<BabyVaccineReminderResponse> response = null;
@@ -514,8 +515,8 @@ public class PaediatricServiceImpl implements PaediatricService {
 		Aggregation aggregation = null;
 		AggregationOperation aggregationOperation = null;
 
-		Criteria criteria = new Criteria("dueDate").gte(DPDoctorUtils.getStartTime(new Date()))
-				.lte(DPDoctorUtils.getEndTime(new Date()));
+		Criteria criteria = new Criteria("dueDate").gte(DPDoctorUtils.getStartTimeUTC(new Date()))
+				.lte(DPDoctorUtils.getEndTimeUTC(new Date()));
 
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
@@ -549,11 +550,12 @@ public class PaediatricServiceImpl implements PaediatricService {
 							.and("dueDate").extractYear().as("year").and("dueDate").extractWeek().as("week"),
 					aggregationOperation);
 
-			// System.out.println(aggregation);
+			 //System.out.println(aggregation);
 			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					VaccineCollection.class, BabyVaccineReminderResponse.class);
 			response = aggregationResults.getMappedResults();
 
+			//System.out.println(response);
 			for (BabyVaccineReminderResponse vaccineReminderResponse : response) {
 
 				if (vaccineReminderResponse.getMobileNumber() != null) {
@@ -576,13 +578,13 @@ public class PaediatricServiceImpl implements PaediatricService {
 								+ ((vaccineReminderResponse.getClinicNumber() != "" || vaccineReminderResponse.getClinicNumber() != null )
 										? ", " + vaccineReminderResponse.getClinicNumber() : "")
 								+ " on " + dateTime + ". Download Healthcoco App- " + patientAppBitLink;
-						/*
+					/*	
 						System.err.println("----------------");
 						System.out.println("Message :: " + message);
 						System.err.println("----------------");
 						System.out.println("Mobile number :: " + vaccineReminderResponse.getMobileNumber());
-						System.err.println("----------------");
-						*/
+						System.err.println("----------------");*/
+						
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 						smsTrackDetail.setType("Vaccination_SMS");
@@ -613,7 +615,7 @@ public class PaediatricServiceImpl implements PaediatricService {
 		}
 	}
 
-	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
+	@Scheduled(cron = "0 45 6 * * ?", zone = "IST")
 	@Override
 	//@Scheduled(fixedDelay = 15000)
 	public void sendBirthBabyVaccineReminder() {
@@ -623,12 +625,12 @@ public class PaediatricServiceImpl implements PaediatricService {
 
 		Aggregation aggregation = null;
 		AggregationOperation aggregationOperation = null;
-		DateTime previousdate = DPDoctorUtils.getStartTime(new Date()).minusDays(3);
+		DateTime previousdate = DPDoctorUtils.getStartTimeUTC(new Date()).minusDays(3);
 
-		Criteria criteria = new Criteria("dueDate").gte(previousdate).lte(DPDoctorUtils.getEndTime(new Date()));
+		Criteria criteria = new Criteria("dueDate").gte(previousdate).lte(DPDoctorUtils.getEndTimeUTC(new Date()));
 
 		criteria.and("status").is(VaccineStatus.PLANNED);
-		criteria.and("periodTime").is("0");
+		criteria.and("periodTime").is(0);
 
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
@@ -693,11 +695,13 @@ public class PaediatricServiceImpl implements PaediatricService {
 							+ ((vaccineReminderResponse.getClinicNumber() != "" || vaccineReminderResponse.getClinicNumber() != null )
 									? ", " + vaccineReminderResponse.getClinicNumber() : "")
 							+ " on " + dateTime + ". Download Healthcoco App- " + patientAppBitLink;
-					
-					/*System.err.println("----------------");
+					/*
+					System.err.println("----------------");
 					System.out.println("Message :: " + message);
-					System.err.println("----------------");*/
-					
+					System.err.println("----------------");
+					System.out.println("Mobile :: " + vaccineReminderResponse.getMobileNumber());
+					System.err.println("----------------");
+					*/
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 					smsTrackDetail.setType("Vaccination_SMS");

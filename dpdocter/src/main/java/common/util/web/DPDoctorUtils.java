@@ -663,6 +663,19 @@ public class DPDoctorUtils {
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 	}
+	
+	public static DateTime getStartTimeUTC(Date date) {
+
+		Calendar localCalendar = Calendar.getInstance();
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+
+		return new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+	}
 
 	public static Date getFormTime(Date date) {
 
@@ -718,6 +731,20 @@ public class DPDoctorUtils {
 
 	}
 
+	public static DateTime getEndTimeUTC(Date date) {
+
+		Calendar localCalendar = Calendar.getInstance();
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+
+		return new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+	}
+
+	
 	public static Long getEndTimeInMillis(Date date) {
 
 		DateTime endTime = null;
