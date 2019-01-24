@@ -20,7 +20,7 @@ public class DoctorConferenceAgendaCollection extends GenericCollection {
 	@Field
 	private WorkingHours schedule;
 	@Field
-	private String titlemage;
+	private String titleImage;
 	@Field
 	private String colorCode;
 	@Field
@@ -36,12 +36,12 @@ public class DoctorConferenceAgendaCollection extends GenericCollection {
 		this.onDate = onDate;
 	}
 
-	public String getTitlemage() {
-		return titlemage;
+	public String getTitleImage() {
+		return titleImage;
 	}
 
-	public void setTitlemage(String titlemage) {
-		this.titlemage = titlemage;
+	public void setTitleImage(String titleImage) {
+		this.titleImage = titleImage;
 	}
 
 	public ObjectId getId() {
