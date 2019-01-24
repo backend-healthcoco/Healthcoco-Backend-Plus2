@@ -41,12 +41,7 @@ public interface AnalyticsService {
 	public List<AmountDueAnalyticsDataResponse> getAmountDueAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
 
-	public List<TreatmentService> getTreatmentsAnalyticsData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, int page, int size);
-
-	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(int page, int size, String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm);
-
+	
 	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate);
 

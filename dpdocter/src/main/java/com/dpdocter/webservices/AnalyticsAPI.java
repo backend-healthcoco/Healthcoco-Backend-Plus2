@@ -23,10 +23,10 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AnalyticResponse;
+import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticPieChartResponse;
-import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
 import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
@@ -41,6 +41,7 @@ import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 import com.dpdocter.services.AnalyticsService;
 import com.dpdocter.services.AppointmentAnalyticsService;
 import com.dpdocter.services.PatientAnalyticService;
+import com.dpdocter.services.TreatmentAnalyticsService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -64,6 +65,9 @@ public class AnalyticsAPI {
 
 	@Autowired
 	private PatientAnalyticService patientAnalyticService;
+
+	@Autowired
+	private TreatmentAnalyticsService treatmentAnalyticsService;
 
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_ANALYTICS_DATA)
 	@GET
@@ -376,8 +380,8 @@ public class AnalyticsAPI {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
-		List<TreatmentService> objects = analyticsService.getTreatmentsAnalyticsData(doctorId, locationId, hospitalId,
-				fromDate, toDate, searchType, page, size);
+		List<TreatmentService> objects = treatmentAnalyticsService.getTreatmentsAnalyticsData(doctorId, locationId,
+				hospitalId, fromDate, toDate, searchType, page, size);
 
 		Response<TreatmentService> response = new Response<TreatmentService>();
 		response.setDataList(objects);
@@ -428,8 +432,8 @@ public class AnalyticsAPI {
 			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
 
-		List<DoctorTreatmentAnalyticResponse> data = analyticsService.getTreatmentAnalytic(page, size, doctorId,
-				locationId, hospitalId, fromDate, toDate, searchTerm);
+		List<DoctorTreatmentAnalyticResponse> data = treatmentAnalyticsService.getTreatmentAnalytic(page, size,
+				doctorId, locationId, hospitalId, fromDate, toDate, searchTerm);
 		Response<DoctorTreatmentAnalyticResponse> response = new Response<DoctorTreatmentAnalyticResponse>();
 		response.setDataList(data);
 		return response;
