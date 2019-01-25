@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class DoctorConferenceAgenda extends GenericCollection {
+public class DoctorConferenceAgenda {
 
 	private String id;
 
