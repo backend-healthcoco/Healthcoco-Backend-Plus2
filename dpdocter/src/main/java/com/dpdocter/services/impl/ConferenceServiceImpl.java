@@ -656,7 +656,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 						Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime", "onDate")));
+						Aggregation.sort(new Sort(Direction.ASC, "schedule.fromTime")),
+						Aggregation.sort(new Sort(Direction.ASC, "onDate")));
 			}
 			response = mongoTemplate
 					.aggregate(aggregation, DoctorConferenceAgendaCollection.class, DoctorConferenceAgenda.class)
@@ -802,7 +803,8 @@ public class ConferenceServiceImpl implements ConferenceService {
 	}
 
 	@Override
-	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded, String userId,Boolean topLiked) {
+	public List<SessionQuestion> getQuestion(int page, int size, String sessionId, boolean discarded, String userId,
+			Boolean topLiked) {
 		List<SessionQuestion> response = null;
 		try {
 
@@ -810,28 +812,26 @@ public class ConferenceServiceImpl implements ConferenceService {
 
 			if (!DPDoctorUtils.anyStringEmpty(sessionId))
 				criteria = criteria.and("sessionId").is(new ObjectId(sessionId));
-			 Sort sort=null;
-			if(topLiked) {
-				sort=new Sort(Direction.DESC, "noOfLikes");
-				
-			}else {
-				sort=new Sort(Direction.DESC, "updatedTime");
+			Sort sort = null;
+			if (topLiked) {
+				sort = new Sort(Direction.DESC, "noOfLikes");
+
+			} else {
+				sort = new Sort(Direction.DESC, "updatedTime");
 			}
 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
-						Aggregation.sort(sort), Aggregation.skip(page * size),
-						Aggregation.limit(size));
+						Aggregation.sort(sort), Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(sort));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(sort));
 			}
 			response = mongoTemplate.aggregate(aggregation, QuestionCollection.class, SessionQuestion.class)
 					.getMappedResults();
 			QuestionLikeCollection likeCollection = null;
-			if (response != null && response.isEmpty()) {
+			if (response != null && !response.isEmpty()) {
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 					for (SessionQuestion sessionQuestion : response) {
 						likeCollection = questionLikeRepository
