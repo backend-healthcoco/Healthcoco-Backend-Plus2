@@ -1,6 +1,6 @@
 package com.dpdocter.response;
 
-public class DoctorAppointmentAnalyticPieChartResponse {
+public class DoctorAnalyticPieChartResponse {
 
 	private String firstName;
 

@@ -7,13 +7,12 @@ import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
-import com.dpdocter.response.DoctorAppointmentAnalyticPieChartResponse;
+import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 
 public interface AppointmentAnalyticsService {
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate,  String searchTerm, int page,
-			int size);
+			String hospitalId, String fromDate, String toDate, String searchTerm, int page, int size);
 
 	public List<AppointmentAverageTimeAnalyticResponse> getAppointmentAverageTimeAnalyticsData(String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String searchType, String searchTerm,
@@ -38,8 +37,7 @@ public interface AppointmentAnalyticsService {
 	public Integer countPatientAppointmentAnalyticsDetail(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String state, String searchTerm);
 
-	List<DoctorAppointmentAnalyticPieChartResponse> getDoctorAppointmentAnalyticsForPieChart(String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String state, String searchTerm,
-			int page, int size);
+	List<DoctorAnalyticPieChartResponse> getDoctorAppointmentAnalyticsForPieChart(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String state, String searchTerm, int page, int size);
 
 }

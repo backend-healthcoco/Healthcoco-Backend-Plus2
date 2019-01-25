@@ -39,7 +39,7 @@ import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.AppointmentDeatilAnalyticResponse;
-import com.dpdocter.response.DoctorAppointmentAnalyticPieChartResponse;
+import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.services.AppointmentAnalyticsService;
 import com.mongodb.BasicDBObject;
@@ -901,10 +901,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 
 	@Override
-	public List<DoctorAppointmentAnalyticPieChartResponse> getDoctorAppointmentAnalyticsForPieChart(String doctorId,
+	public List<DoctorAnalyticPieChartResponse> getDoctorAppointmentAnalyticsForPieChart(String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String state, String searchTerm,
 			int page, int size) {
-		List<DoctorAppointmentAnalyticPieChartResponse> response = null;
+		List<DoctorAnalyticPieChartResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
 			Date from = null;
@@ -968,8 +968,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 								Fields.field("count", "$appointmentId"))),
 						aggregationOperation, Aggregation.sort(Direction.DESC, "count"));
 			}
-			AggregationResults<DoctorAppointmentAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(
-					aggregation, AppointmentCollection.class, DoctorAppointmentAnalyticPieChartResponse.class);
+			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, AppointmentCollection.class, DoctorAnalyticPieChartResponse.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,10 +1,8 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -22,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.TreatmentAnalyticDetail;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TretmentAnalyticMongoResponse;
 import com.dpdocter.collections.PatientTreatmentCollection;
@@ -29,6 +28,7 @@ import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AnalyticResponse;
+import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.services.TreatmentAnalyticsService;
 import com.mongodb.BasicDBObject;
@@ -59,7 +59,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 		return criteria;
 
 	}
-@Override
+
+	@Override
 	public List<AnalyticResponse> getTreatmentAnalyticData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, String searchTerm) {
 		List<AnalyticResponse> response = null;
@@ -165,8 +166,10 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			}
 
 			Aggregation aggregation = Aggregation
-					.newAggregation(Aggregation.match(criteria), 
-							
+					.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
+							Aggregation.lookup(
+									"treatment_services_cl", "treatments.treatmentServiceId", "_id", "treatments"),
+							Aggregation.unwind("treatments"),
 							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
 									.extractMonth().as("month").and("createdTime").extractYear().as("year")
 									.and("createdTime").extractWeek().as("week"),
@@ -188,8 +191,9 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 		return response;
 
 	}
+
 	@Override
-	public List<TreatmentService> getTreatmentsAnalyticsData(String doctorId, String locationId, String hospitalId,
+	public List<TreatmentService> getTreatmentsAnalytics(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, int page, int size) {
 		List<TreatmentService> response = null;
 		try {
@@ -235,10 +239,10 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$treatments"),
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
 								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
-								Aggregation.unwind("$treatmentServices"),
+								Aggregation.unwind("treatmentServices"),
 								new CustomAggregationOperation(
 										new BasicDBObject("$group",
 												new BasicDBObject("id", "$_id")
@@ -284,10 +288,10 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 								Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("$treatments"),
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
 								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
-								Aggregation.unwind("$treatmentServices"),
+								Aggregation.unwind("treatmentServices"),
 								new CustomAggregationOperation(
 										new BasicDBObject("$group",
 												new BasicDBObject("id", "$_id")
@@ -341,14 +345,13 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 		}
 		return response;
 	}
-	
+
 	@Override
-	public List<DoctorTreatmentAnalyticResponse> getTreatmentAnalytic(int page, int size, String doctorId,
+	public List<DoctorTreatmentAnalyticResponse> getMostTreatmentAnalytic(int page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
 		List<DoctorTreatmentAnalyticResponse> response = null;
 		try {
 			Criteria criteria = null;
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			DateTime fromTime = null;
 			DateTime toTime = null;
 			Date from = null;
@@ -410,7 +413,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 				aggregation = Aggregation
 						.newAggregation(Aggregation.unwind("treatments"),
-								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+								Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
 										"totalTreatmentService"),
 
 								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
@@ -482,6 +485,290 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 				}
 				response.add(analyticResponse);
 			}
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Treatment analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Treatment analytic");
+		}
+
+		return response;
+	}
+
+	@Override
+	public List<TreatmentAnalyticDetail> getTreatmentAnalyticDetail(int page, int size, String doctorId,
+			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
+		List<TreatmentAnalyticDetail> response = null;
+		try {
+			Criteria criteria = null;
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+					.and("discarded").is(false);
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("patient.locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("patient.hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+
+				criteria.orOperator(new Criteria("service.name").regex(searchTerm, "i"),
+						new Criteria("patient.firstName").regex(searchTerm, "i"));
+			}
+			Aggregation aggregation = null;
+			if (size > 0) {
+
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
+						Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
+								"services"),
+						Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+
+						Aggregation.unwind("patient"), Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+								.append("services", new BasicDBObject("$push", "$services"))
+								.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
+								.append("firstName", new BasicDBObject("$first", "$patient.firstName"))
+								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
+						Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
+								"services"),
+						Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+						Aggregation.unwind("patient"), Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+								.append("services", new BasicDBObject("$push", "$services"))
+								.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
+								.append("firstName", new BasicDBObject("$first", "$patient.firstName"))
+								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			AggregationResults<TreatmentAnalyticDetail> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, TreatmentAnalyticDetail.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Treatment analytic Detail");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Treatment analytic Detail");
+		}
+
+		return response;
+	}
+
+	@Override
+	public List<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(String locationId, String hospitalId,
+			String fromDate, String toDate) {
+		List<DoctorAnalyticPieChartResponse> response = null;
+		try {
+			Criteria criteria = new Criteria();
+
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+
+			toTime = new DateTime(to);
+
+			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
+			criteria.and("discarded").is(false);
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("id", "$_id").append("date", new BasicDBObject("$first", "$fromDate"))
+							.append("locationId", new BasicDBObject("$first", "$locationId"))
+							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+							.append("firstName", new BasicDBObject("$first", "$doctor.firstName"))));
+
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.unwind("treatments"),
+					Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id", "services"),
+					Aggregation.unwind("services"),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"),					
+					group,
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("id",
+									new BasicDBObject("doctorId", "$doctorId").append("locationId", "$locationId"))
+											.append("count", new BasicDBObject("$count", "$doctorId")).append("firstName", new BasicDBObject("$first", "$doctor.firstName")))));
+
+			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, DoctorAnalyticPieChartResponse.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Treatment analytic Detail");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Treatment analytic Detail");
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countTreatmentsAnalytic(String doctorId, String locationId, String hospitalId, String fromDate,
+			String toDate, String searchType) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+
+			toTime = new DateTime(to);
+
+			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
+			criteria.and("discarded").is(false);
+
+			Aggregation aggregation = null;
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
+					Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
+					Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
+					Aggregation.unwind("treatmentServices"));
+
+			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, TreatmentService.class)
+					.getMappedResults().size();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting most Treatments count");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting most Treatment count ");
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countMostTreatmentAnalytic(String doctorId, String locationId, String hospitalId, String fromDate,
+			String toDate, String searchTerm) {
+		Integer response = 0;
+		try {
+			Criteria criteria = null;
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
+					.and("discarded").is(false);
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.and("totalTreatmentService.name").regex(searchTerm, "i");
+			}
+			Aggregation aggregation = null;
+
+			aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
+					Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+							"totalTreatmentService"),
+
+					Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", "$treatments.treatmentServiceId").append("treatmentServiceId",
+									new BasicDBObject("$first", "$treatments.treatmentServiceId")))));
+
+			response = mongoTemplate
+					.aggregate(aggregation, PatientTreatmentCollection.class, TretmentAnalyticMongoResponse.class)
+					.getMappedResults().size();
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
