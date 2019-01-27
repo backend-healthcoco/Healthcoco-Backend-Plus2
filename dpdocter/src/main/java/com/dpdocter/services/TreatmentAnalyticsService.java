@@ -13,7 +13,7 @@ public interface TreatmentAnalyticsService {
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm);
 
 	public List<TreatmentService> getTreatmentsAnalytics(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, int page, int size);
+			String fromDate, String toDate, String searchType, int page, int size,String searchTerm);
 
 	public List<AnalyticResponse> getTreatmentAnalyticData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, String searchTerm);
@@ -24,10 +24,10 @@ public interface TreatmentAnalyticsService {
 	public List<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(String locationId, String hospitalId,
 			String fromDate, String toDate);
 
-	public Integer countTreatmentsAnalytic(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate, String searchType);
+	public Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate,
+			String toDate);
 
-	public Integer countMostTreatmentAnalytic(String doctorId, String locationId, String hospitalId, String fromDate,
+	public Integer countTreatmentService(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate, String searchTerm);
 
 }
