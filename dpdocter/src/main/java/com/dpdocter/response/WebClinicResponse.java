@@ -1,7 +1,6 @@
 package com.dpdocter.response;
 
 import com.dpdocter.beans.ConsultationFee;
-import com.dpdocter.enums.DoctorFacility;
 
 public class WebClinicResponse {
 
@@ -25,8 +24,6 @@ public class WebClinicResponse {
 
 	private ConsultationFee consultationFee;
 	
-	private DoctorFacility facility;
-
 	public String getLocationId() {
 		return locationId;
 	}
@@ -107,19 +104,11 @@ public class WebClinicResponse {
 		this.hospitalId = hospitalId;
 	}
 
-	public DoctorFacility getFacility() {
-		return facility;
-	}
-
-	public void setFacility(DoctorFacility facility) {
-		this.facility = facility;
-	}
-
 	@Override
 	public String toString() {
 		return "WebClinicResponse [locationId=" + locationId + ", hospitalId=" + hospitalId + ", country=" + country
 				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", locality=" + locality
 				+ ", locationName=" + locationName + ", streetAddress=" + streetAddress + ", consultationFee="
-				+ consultationFee + ", facility=" + facility + "]";
+				+ consultationFee + "]";
 	}
 }
