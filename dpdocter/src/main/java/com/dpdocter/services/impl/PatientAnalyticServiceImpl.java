@@ -120,7 +120,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("date", "$createdTime"), Fields.field("createdTime", "$createdTime")));
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime).lte(toTime);
 
 		} else if (toTime != null) {
 			criteria.and("createdTime").lte(toTime);
@@ -229,7 +229,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("city", "$address.city"), Fields.field("count", "$userId")));
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -315,7 +315,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime").extractMonth()
 								.as("month").and("createdTime").extractYear().as("year").and("createdTime")
 								.extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
+						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")))
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation, "patient_cl",
@@ -335,8 +335,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Fields.field("groupName", "$group.name"), Fields.field("count", "$userId")));
 		if (toTime != null && fromTime != null) {
 
-			criteria2.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis()))
-					.lte(new Date(toTime.getMillis()));
+			criteria2.and("patientGroup.createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria2.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -461,7 +460,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Fields.field("city", "$address.city"), Fields.field("count", "$userId")));
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -565,7 +564,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("date", "$visit.createdTime"), Fields.field("count", "$userId")));
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("visit.createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("visit.createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("visit.createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -667,11 +666,11 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("date", "$createdTime"), Fields.field("createdTime", "$createdTime")));
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
-			criteria.and("createdTime").lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime);
 		}
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			criteria.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
@@ -690,6 +689,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId)).and("patient.hospitalId")
 					.is(new ObjectId(hospitalId));
 		}
+		criteria.and("discarded").is(false);
 		switch (SearchType.valueOf(searchType.toUpperCase())) {
 		case DAILY: {
 			firstAggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
@@ -900,7 +900,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("gender", "$gender"), Fields.field("createdTime", "$createdTime")));
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -913,7 +913,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-			 criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			criteria.and("hospitalId").is(new ObjectId(hospitalId));
 		}
 
 		Aggregation aggregation = null;
@@ -959,8 +959,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("registrationDate", "$registrationDate"), Fields.field("address", "$address"),
 				Fields.field("gender", "$gender"), Fields.field("createdTime", "$patientGroup.createdTime")));
 		if (toTime != null && fromTime != null) {
-			criteria.and("patientGroup.createdTime").gte(fromTime)
-					.lte(toTime);
+			criteria.and("patientGroup.createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("patientGroup.createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -978,7 +977,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
 			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
 		}
-		
+
 		criteria2 = criteria2.and("patientGroup.discarded").is(false);
 
 		Aggregation aggregation = null;
@@ -1013,11 +1012,11 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
-			criteria.and("createdTime").lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime);
 		}
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			criteria.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
@@ -1036,6 +1035,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId)).and("patient.hospitalId")
 					.is(new ObjectId(hospitalId));
 		}
+		criteria.and("discarded").is(false);
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$patient.userId"),
 				Fields.field("mobileNumber", "$user.mobileNumber"),
 				Fields.field("localPatientName", "$patient.localPatientName"),
@@ -1161,7 +1161,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 
 		if (toTime != null && fromTime != null) {
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -1206,8 +1206,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 
 		if (toTime != null && fromTime != null) {
-			criteria.and("patientGroup.createdTime").gte(new Date(fromTime.getMillis()))
-					.lte(new Date(toTime.getMillis()));
+			criteria.and("patientGroup.createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("patientGroup.createdTime").lte(toTime);
 		} else if (fromTime != null) {
@@ -1254,11 +1253,11 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 		if (toTime != null && fromTime != null) {
 
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis())).lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
-			criteria.and("createdTime").lte(new Date(toTime.getMillis()));
+			criteria.and("createdTime").lte(toTime);
 		} else if (fromTime != null) {
-			criteria.and("createdTime").gte(new Date(fromTime.getMillis()));
+			criteria.and("createdTime").gte(fromTime);
 		}
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			criteria.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
