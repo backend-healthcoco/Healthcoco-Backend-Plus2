@@ -7,6 +7,7 @@ public class SessionQuestion extends GenericCollection {
 	private String type = "CONFERENCE_SESSION";
 	private String sessionId;
 	private String questionerId;
+	private String userId;
 	private Integer noOfLikes;
 	private Boolean discarded = false;
 	private Boolean isLiked = false;

@@ -106,7 +106,7 @@ public interface PrescriptionServices {
 
 	DrugDurationUnitAddEditResponse deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
 
-	public List<?> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
+	public Response<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, Boolean isAdmin,
 			String disease, String searchTerm);
 
@@ -203,7 +203,7 @@ public interface PrescriptionServices {
 	
 	Instructions addEditInstructions(Instructions instruction);
 
-	List<Instructions> getInstructions(int page, int size, String doctorId, String locationId, String hospitalId,
+	Response<Instructions> getInstructions(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded);
 
 	Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,

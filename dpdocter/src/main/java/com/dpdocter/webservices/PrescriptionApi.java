@@ -723,11 +723,9 @@ public class PrescriptionApi {
 				}
 			}
 		}
-		List<?> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId,
+		Response<Object> response = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId,
 				hospitalId, updatedTime, discarded, false, disease, null);
 
-		Response<Object> response = new Response<Object>();
-		response.setDataList(clinicalItems);
 		return response;
 	}
 
@@ -1260,10 +1258,7 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		} 
-		List<Instructions> instructions = prescriptionServices.getInstructions(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-
-		Response<Instructions> response = new Response<Instructions>();
-		response.setDataList(instructions);
+		Response<Instructions> response = prescriptionServices.getInstructions(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		return response;
 	}
 	

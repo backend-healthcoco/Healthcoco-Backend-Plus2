@@ -677,6 +677,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setLocationId(doctorClinicProfileLookupResponse.getLocationId().toString());
 			doctorClinic.setDoctorId(doctorClinicProfileLookupResponse.getDoctorId().toString());
 			doctorClinic.setDoctorSlugURL(doctorClinicProfileLookupResponse.getDoctorSlugURL());
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 			Criteria criteria = new Criteria("doctorId").is(doctorClinicProfileLookupResponse.getDoctorId())
 					.and("locationId").is(locationCollection.getId()).and("hospitalId")
 					.is(locationCollection.getHospitalId());

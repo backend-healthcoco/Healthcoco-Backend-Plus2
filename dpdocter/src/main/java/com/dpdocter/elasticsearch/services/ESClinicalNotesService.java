@@ -1,7 +1,5 @@
 package com.dpdocter.elasticsearch.services;
 
-import java.util.List;
-
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
@@ -34,6 +32,8 @@ import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 
+import common.util.web.Response;
+
 public interface ESClinicalNotesService {
 
 	boolean addComplaints(ESComplaintsDocument request);
@@ -62,62 +62,62 @@ public interface ESClinicalNotesService {
 
 	boolean addMenstrualHistory(ESMenstrualHistoryDocument request);
 
-	List<ESObservationsDocument> searchObservations(String range, int page, int size, String doctorId,
+	Response<ESObservationsDocument> searchObservations(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESInvestigationsDocument> searchInvestigations(String range, int page, int size, String doctorId,
+	Response<ESInvestigationsDocument> searchInvestigations(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESDiagramsDocument> searchDiagrams(String range, int page, int size, String doctorId, String locationId,
+	Response<ESDiagramsDocument> searchDiagrams(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESNotesDocument> searchNotes(String range, int page, int size, String doctorId, String locationId,
+	Response<ESNotesDocument> searchNotes(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESDiagnosesDocument> searchDiagnoses(String range, int page, int size, String doctorId, String locationId,
+	Response<ESDiagnosesDocument> searchDiagnoses(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESComplaintsDocument> searchComplaints(String range, int page, int size, String doctorId, String locationId,
+	Response<ESComplaintsDocument> searchComplaints(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESPresentComplaintDocument> searchPresentComplaints(String range, int page, int size, String doctorId,
+	Response<ESPresentComplaintDocument> searchPresentComplaints(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESPresentComplaintHistoryDocument> searchPresentComplaintsHistory(String range, int page, int size,
+	Response<ESPresentComplaintHistoryDocument> searchPresentComplaintsHistory(String range, int page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm);
 
-	List<ESProvisionalDiagnosisDocument> searchProvisionalDiagnosis(String range, int page, int size, String doctorId,
+	Response<ESProvisionalDiagnosisDocument> searchProvisionalDiagnosis(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESGeneralExamDocument> searchGeneralExam(String range, int page, int size, String doctorId, String locationId,
+	Response<ESGeneralExamDocument> searchGeneralExam(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESSystemExamDocument> searchSystemExam(String range, int page, int size, String doctorId, String locationId,
+	Response<ESSystemExamDocument> searchSystemExam(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESMenstrualHistoryDocument> searchMenstrualHistory(String range, int page, int size, String doctorId,
+	Response<ESMenstrualHistoryDocument> searchMenstrualHistory(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 	boolean addObstetricsHistory(ESObstetricHistoryDocument request);
 
-	List<ESObstetricHistoryDocument> searchObstetricHistory(String range, int page, int size, String doctorId,
+	Response<ESObstetricHistoryDocument> searchObstetricHistory(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESIndicationOfUSGDocument> searchIndicationOfUSG(String range, int page, int size, String doctorId,
+	Response<ESIndicationOfUSGDocument> searchIndicationOfUSG(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 	boolean addIndicationOfUSG(ESIndicationOfUSGDocument request);
 
 	boolean addPA(ESPADocument request);
 
-	List<ESPADocument> searchPA(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	Response<ESPADocument> searchPA(String range, int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESPVDocument> searchPV(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	Response<ESPVDocument> searchPV(String range, int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESPSDocument> searchPS(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	Response<ESPSDocument> searchPS(String range, int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm);
 
 	boolean addPV(ESPVDocument request);
@@ -132,21 +132,21 @@ public interface ESClinicalNotesService {
 
 	boolean addHolter(ESHolterDocument request);
 
-	List<ESXRayDetailsDocument> searchXRayDetails(String range, int page, int size, String doctorId, String locationId,
+	Response<ESXRayDetailsDocument> searchXRayDetails(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESECGDetailsDocument> searchECGDetails(String range, int page, int size, String doctorId, String locationId,
+	Response<ESECGDetailsDocument> searchECGDetails(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESEchoDocument> searchEcho(String range, int page, int size, String doctorId, String locationId,
+	Response<ESEchoDocument> searchEcho(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESHolterDocument> searchHolter(String range, int page, int size, String doctorId, String locationId,
+	Response<ESHolterDocument> searchHolter(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 	boolean addProcedureNote(ESProcedureNoteDocument request);
 
-	List<ESProcedureNoteDocument> searchProcedureNote(String range, int page, int size, String doctorId,
+	Response<ESProcedureNoteDocument> searchProcedureNote(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 	boolean addPCNose(ESPresentingComplaintNoseDocument request);
@@ -157,16 +157,16 @@ public interface ESClinicalNotesService {
 
 	boolean addPCOralCavity(ESPresentingComplaintOralCavityDocument request);
 
-	List<ESPresentingComplaintNoseDocument> searchPCNose(String range, int page, int size, String doctorId,
+	Response<ESPresentingComplaintNoseDocument> searchPCNose(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESPresentingComplaintEarsDocument> searchPCEars(String range, int page, int size, String doctorId,
+	Response<ESPresentingComplaintEarsDocument> searchPCEars(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(String range, int page, int size, String doctorId,
+	Response<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESPresentingComplaintThroatDocument> searchPCThroat(String range, int page, int size, String doctorId,
+	Response<ESPresentingComplaintThroatDocument> searchPCThroat(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 	boolean addNeckExam(ESNeckExaminationDocument request);
@@ -179,21 +179,21 @@ public interface ESClinicalNotesService {
 
 	boolean addIndirectLarygoscopyExam(ESIndirectLarygoscopyExaminationDocument request);
 
-	List<ESNeckExaminationDocument> searchNeckExam(String range, int page, int size, String doctorId, String locationId,
+	Response<ESNeckExaminationDocument> searchNeckExam(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESNoseExaminationDocument> searchNoseExam(String range, int page, int size, String doctorId, String locationId,
+	Response<ESNoseExaminationDocument> searchNoseExam(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESIndirectLarygoscopyExaminationDocument> searchIndirectLarygoscopyExam(String range, int page, int size,
+	Response<ESIndirectLarygoscopyExaminationDocument> searchIndirectLarygoscopyExam(String range, int page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm);
 
-	List<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(String range, int page, int size,
+	Response<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(String range, int page, int size,
 			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 			String searchTerm);
 
-	List<ESEarsExaminationDocument> searchEarsExam(String range, int page, int size, String doctorId, String locationId,
+	Response<ESEarsExaminationDocument> searchEarsExam(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 }

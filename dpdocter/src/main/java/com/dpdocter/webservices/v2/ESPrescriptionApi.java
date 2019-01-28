@@ -1,7 +1,5 @@
 package com.dpdocter.webservices.v2;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -54,16 +52,8 @@ public class ESPrescriptionApi {
 		// Hack for ios
 		searchByGenericName = false;
 		//
-		List<?> drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
+		Response<Object> response = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
 				updatedTime, discarded, searchTerm, category, searchByGenericName);
-		
-		long drugCount = esPrescriptionService.drugCount(range, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category, searchByGenericName);
-		Response<Object> response = new Response<Object>();
-		response.setDataList(drugDocuments);
-		response.setData(drugCount);
 		return response;
 	}
-
-	
-
 }

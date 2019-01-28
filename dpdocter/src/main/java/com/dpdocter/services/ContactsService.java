@@ -14,6 +14,8 @@ import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 
+import common.util.web.Response;
+
 public interface ContactsService {
 
 	DoctorContactsResponse getDoctorContacts(GetDoctorContactsRequest request);
@@ -36,7 +38,7 @@ public interface ContactsService {
 
 	PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
-	List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
+	Response<Object> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded);
 
 	DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId,
