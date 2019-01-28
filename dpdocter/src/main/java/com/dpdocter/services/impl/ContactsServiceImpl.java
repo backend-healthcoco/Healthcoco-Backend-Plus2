@@ -39,6 +39,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -67,6 +68,7 @@ import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class ContactsServiceImpl implements ContactsService {
@@ -493,12 +495,15 @@ public class ContactsServiceImpl implements ContactsService {
 	 */
 	@Override
 	@Transactional
-	public List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
+	public Response<Object> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
+		Response<Object> response =  new Response<Object>();
 		List<Group> groups = null;
 		List<GroupCollection> groupCollections = null;
 
 		try {
+			String packageType = "ADVANCE";
+
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
 			Criteria criteriafirst = new Criteria();
@@ -527,30 +532,57 @@ public class ContactsServiceImpl implements ContactsService {
 					Fields.field("packageType", "$doctorClinic.packageType"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
-						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
-						Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+			
+			Integer count = (int)mongoTemplate.count(new Query(criteriafirst), GroupCollection.class);
+			if(count>0) {
+				response = new Response<Object>();
+				response.setCount(count);
+				if (size > 0) {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
+							Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
+							Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+							Aggregation.limit(size));
 
-			} else {
+				} else {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
+							Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
+							Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
-						Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
-						Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+				}
+				AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation, GroupCollection.class,
+						Group.class);
+				groups = aggregationResults.getMappedResults();
+				if (groups != null) {
+					for (Group group : groups) {
+						GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
+						getDoctorContactsRequest.setDoctorId(doctorId);
+						List<String> groupList = new ArrayList<String>();
+						groupList.add(group.getId());
 
+						if (!DPDoctorUtils.anyStringEmpty(group.getPackageType())) {
+							packageType = group.getPackageType();
+
+						}
+						getDoctorContactsRequest.setGroups(groupList);
+						int ttlCount = getContactsTotalSize(getDoctorContactsRequest);
+						group.setCount(ttlCount);
+					}
+				} else {
+					response.setData(PackageType.ADVANCE.getType());
+				}
+
+				response.setData(packageType);
+				response.setDataList(groups);
 			}
-			AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation, GroupCollection.class,
-					Group.class);
-			groups = aggregationResults.getMappedResults();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return groups;
+		return response;
 	}
 
 	@Override

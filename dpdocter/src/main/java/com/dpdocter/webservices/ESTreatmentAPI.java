@@ -47,11 +47,8 @@ public class ESTreatmentAPI {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-	List<?> list = esTreatmentService.search(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-	
-	Response<Object> response = new Response<Object>();
-	response.setDataList(list);
-	return response;
+    	Response<Object> response = esTreatmentService.search(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		return response;
     }
 
 }

@@ -103,4 +103,39 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
 	DiseasesCollection find(String disease, ObjectId doctorObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, Boolean discarded);
 
+	@Query(value = "{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}", count = true)
+	Integer findGlobalDiseasesCount(Date date, boolean[] discards);
+
+	@Query(value = "{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}", count = true)
+	Integer findGlobalDiseasesForAdminCount(Date date, boolean[] discards);
+
+	@Query(value = "{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?2}, 'disease' : {$regex : '^?1', $options : 'i'}}", count = true)
+	Integer findGlobalDiseasesForAdminCount(Date date, String searchTerm, boolean[] discards);
+
+	@Query(value = "{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}", count = true)
+	Integer findCustomGlobalDiseasesForAdminCount(Date date, boolean[] discards);
+
+	@Query(value = "{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2', $options : 'i'}}", count = true)
+	Integer findCustomGlobalDiseasesForAdminCount(Date date, boolean[] discards, String searchTerm);
+
+	@Query(value = "{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}", count = true)
+	Integer findCustomGlobalDiseasesCount(ObjectId doctorObjectId, Date date, boolean[] discards);
+
+	@Query(value = "{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}", count = true)
+	Integer findCustomGlobalDiseasesCount(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
+			Date date, boolean[] discards);
+
+	@Query(value = "{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}", count = true)
+	Integer findCustomDiseasesForAdminCount(Date date, boolean[] discards);
+
+	@Query(value = "{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2', $options : 'i'}}", count = true)
+	Integer findCustomDiseasesForAdminCount(Date date, boolean[] discards, String searchTerm);
+
+	@Query(value = "{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}", count = true)
+	Integer findCustomDiseasesCount(ObjectId doctorObjectId, Date date, boolean[] discards);
+
+	@Query(value = "{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}", count = true)
+	Integer findCustomDiseasesCount(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
+			Date date, boolean[] discards);
+
 }

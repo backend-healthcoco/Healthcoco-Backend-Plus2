@@ -1,7 +1,5 @@
 package com.dpdocter.webservices.v2;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -51,17 +49,11 @@ public class ESPrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		long drugCount = esPrescriptionService.drugCount(range, doctorId, locationId, hospitalId, updatedTime,
-				discarded, searchTerm, category, searchByGenericName);
-		List<?> drugDocuments = null;
-		if(drugCount>0) {
-		drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
+		// Hack for ios
+		searchByGenericName = false;
+		//
+		Response<Object> response = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
 				updatedTime, discarded, searchTerm, category, searchByGenericName);
-		}
-		Response<Object> response = new Response<Object>();
-		response.setDataList(drugDocuments);
-		response.setData(drugCount);
 		return response;
 	}
-
 }

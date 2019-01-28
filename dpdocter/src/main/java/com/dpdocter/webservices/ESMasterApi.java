@@ -70,19 +70,7 @@ public class ESMasterApi {
 
 	@Autowired
 	private ESCityService esCityService;
-
-    @Autowired
-    private LocaleRepository localeRepository;
-    
-    @Autowired 
-    private UserRepository userRepository;
-    
-    @Autowired
-    private ESUserLocaleRepository esUserLocaleRepository;
-    
-	@Autowired
-	private LocationServices locationServices;
-    
+ 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_REFERENCE)
     @GET
     @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_REFERENCE, notes = PathProxy.SolrMasterUrls.SEARCH_REFERENCE)
@@ -95,10 +83,9 @@ public class ESMasterApi {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-	List<Reference> searchResonse = esMasterService.searchReference(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-		searchTerm);
-	Response<Reference> response = new Response<Reference>();
-	response.setDataList(searchResonse);
+	
+    Response<Reference> response = esMasterService.searchReference(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+    		searchTerm);
 	return response;
     }
 
