@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "doctor_conference_agenda_cl")
-public class DoctorConferenceAgendaCollection extends GenericCollection {
+public class DoctorConferenceAgendaCollection {
 	@Id
 	private ObjectId id;
 	@Field
