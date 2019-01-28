@@ -61,11 +61,12 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
-			String clinicName) throws Exception {
+			String clinicName , String addedBy) throws Exception {
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("fName", fName);
 		model.put("doctorName", doctorName);
+		model.put("addedBy", addedBy);
 		model.put("clinicName", clinicName);
 		model.put("link", link + "/" + tokenId);
 		model.put("loginLink", loginLink);
