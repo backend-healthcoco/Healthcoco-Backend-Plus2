@@ -336,6 +336,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										PrescriptionInventoryBatchResponse response = new PrescriptionInventoryBatchResponse();
 										BeanUtil.map(inventoryBatch, response);
 										inventoryBatchs.add(response);
+
 									}
 									prescriptionItemDetail.setInventoryBatchs(inventoryBatchs);
 								}
