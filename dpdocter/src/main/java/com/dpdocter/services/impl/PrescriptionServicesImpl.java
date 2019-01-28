@@ -2585,7 +2585,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					.and("locationId").is(null).and("hospitalId").is(null);
 			if (!discarded)criteria.and("discarded").is(discarded);
 			
-			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirection.class);
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirectionCollection.class);
 			if(count > 0) {
 				AggregationResults<DrugDirection> results = mongoTemplate.aggregate(
 						DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null, null),
@@ -2618,7 +2618,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			
-			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirection.class);
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirectionCollection.class);
 			if(count > 0) {
 				AggregationResults<DrugDirection> results = mongoTemplate
 						.aggregate(
@@ -2662,7 +2662,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				criteria.orOperator(new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 						.is(new ObjectId(hospitalId)), new Criteria("locationId").is(null).and("hospitalId").is(null));
 			} 
-			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirection.class);
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirectionCollection.class);
 			if(count > 0) {
 				AggregationResults<DrugDirection> results = mongoTemplate.aggregate(
 						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
