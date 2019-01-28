@@ -2182,12 +2182,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 					|| doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN.getRole())) {
 				String body = mailBodyGenerator.generateActivationEmailBody(
 						userCollection.getTitle() + " " + userCollection.getFirstName(), tokenCollection.getId(),
-						"addDoctorToClinicVerifyTemplate.vm", admindoctorName, locationCollection.getLocationName());
+						"addDoctorToClinicVerifyTemplate.vm", admindoctorName, locationCollection.getLocationName() , request.getAddedBy());
 				mailService.sendEmail(userCollection.getEmailAddress(), addDoctorToClinicVerifySub, body, null);
 			} else {
 				String body = mailBodyGenerator.generateActivationEmailBody(
 						userCollection.getTitle() + " " + userCollection.getFirstName(), tokenCollection.getId(),
-						"verifyStaffMemberEmailTemplate.vm", admindoctorName, locationCollection.getLocationName());
+						"verifyStaffMemberEmailTemplate.vm", admindoctorName, locationCollection.getLocationName() ,request.getAddedBy());
 				mailService.sendEmail(userCollection.getEmailAddress(), staffmemberAccountVerifySub, body, null);
 			}
 			response = new RegisterDoctorResponse();
@@ -2333,7 +2333,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					String body = mailBodyGenerator.generateActivationEmailBody(
 							userCollection.getTitle() + " " + userCollection.getFirstName(), null,
 							"addExistingDoctorToClinicTemplate.vm", admindoctorName,
-							locationCollection.getLocationName());
+							locationCollection.getLocationName() , request.getAddedBy());
 					mailService.sendEmail(userCollection.getEmailAddress(),
 							addExistingDoctorToClinicSub + " " + locationCollection.getLocationName(), body, null);
 				}

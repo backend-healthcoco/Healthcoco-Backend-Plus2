@@ -15,9 +15,9 @@ public class DoctorRegisterRequest {
 	private String mobileNumber;
 
 	private Boolean hasLoginAccess = true;
-	
+
 	private Boolean hasBillingAccess = true;
-	
+
 	private String locationId;
 
 	private String hospitalId;
@@ -31,6 +31,8 @@ public class DoctorRegisterRequest {
 	private String colorCode;
 
 	private List<String> speciality;
+
+	private String addedBy;
 
 	public List<String> getSpeciality() {
 		return speciality;
@@ -99,7 +101,7 @@ public class DoctorRegisterRequest {
 	public String getRegisterNumber() {
 		return registerNumber;
 	}
-	
+
 	public void setRegisterNumber(String registerNumber) {
 		this.registerNumber = registerNumber;
 	}
@@ -144,6 +146,14 @@ public class DoctorRegisterRequest {
 		this.hasBillingAccess = hasBillingAccess;
 	}
 
+	public String getAddedBy() {
+		return addedBy;
+	}
+
+	public void setAddedBy(String addedBy) {
+		this.addedBy = addedBy;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorRegisterRequest [title=" + title + ", userId=" + userId + ", firstName=" + firstName
@@ -152,6 +162,5 @@ public class DoctorRegisterRequest {
 				+ ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", roleId=" + roleId
 				+ ", isActivate=" + isActivate + ", colorCode=" + colorCode + ", speciality=" + speciality + "]";
 	}
-	
-	
+
 }
