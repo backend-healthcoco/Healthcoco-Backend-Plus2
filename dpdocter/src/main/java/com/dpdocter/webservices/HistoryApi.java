@@ -157,7 +157,6 @@ public class HistoryApi {
 		}
 		Response<DiseaseListResponse> response = historyServices.getDiseases(range, page, size, doctorId,
 				hospitalId, locationId, updatedTime, discarded, false, null);
-		response.setDataList(diseaseListResponse);
 		return response;
 	}
 

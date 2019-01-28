@@ -168,11 +168,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 							Aggregation.lookup(
-<<<<<<< Updated upstream
 									"treatment_services_cl", "$treatments.treatmentServiceId", "_id", "treatments"),
-=======
-									"treatment_services_cl", "treatments.treatmentServiceId", "_id", "treatments"),
->>>>>>> Stashed changes
 							Aggregation.unwind("treatments"),
 							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
 									.extractMonth().as("month").and("createdTime").extractYear().as("year")
@@ -198,18 +194,11 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 	@Override
 	public List<TreatmentService> getTreatmentsAnalytics(String doctorId, String locationId, String hospitalId,
-<<<<<<< Updated upstream
 			String fromDate, String toDate, String searchType, int page, int size,String searchTerm) {
 		List<TreatmentService> response = null;
 		try {
 			Criteria criteria = new Criteria();
 			Criteria criteriaSecond = new Criteria();
-=======
-			String fromDate, String toDate, String searchType, int page, int size) {
-		List<TreatmentService> response = null;
-		try {
-			Criteria criteria = new Criteria();
->>>>>>> Stashed changes
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -220,12 +209,9 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
-<<<<<<< Updated upstream
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteriaSecond.and("treatmentServices.name").regex(searchTerm, "i");
 			}
-=======
->>>>>>> Stashed changes
 
 			DateTime fromTime = null;
 			DateTime toTime = null;
@@ -261,16 +247,10 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 								Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
 								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
 								Aggregation.unwind("treatmentServices"),
-<<<<<<< Updated upstream
 								Aggregation.match(criteriaSecond),
 								new CustomAggregationOperation(
 										new BasicDBObject("$group",
 												new BasicDBObject("_id", "$_id")
-=======
-								new CustomAggregationOperation(
-										new BasicDBObject("$group",
-												new BasicDBObject("id", "$_id")
->>>>>>> Stashed changes
 														.append("locationId",
 																new BasicDBObject("$first",
 																		"$treatmentServices.locationId"))
@@ -317,16 +297,10 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 								Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
 								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
 								Aggregation.unwind("treatmentServices"),
-<<<<<<< Updated upstream
 								Aggregation.match(criteriaSecond),
 								new CustomAggregationOperation(
 										new BasicDBObject("$group",
 												new BasicDBObject("_id", "$_id")
-=======
-								new CustomAggregationOperation(
-										new BasicDBObject("$group",
-												new BasicDBObject("id", "$_id")
->>>>>>> Stashed changes
 														.append("locationId",
 																new BasicDBObject("$first",
 																		"$treatmentServices.locationId"))
@@ -417,11 +391,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 				aggregation = Aggregation
 						.newAggregation(Aggregation.unwind("treatments"),
-<<<<<<< Updated upstream
 								Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
-=======
-								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
->>>>>>> Stashed changes
 										"totalTreatmentService"),
 
 								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
@@ -665,11 +635,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			}
 
 			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
-<<<<<<< Updated upstream
 					new BasicDBObject("_id", "$_id").append("date", new BasicDBObject("$first", "$fromDate"))
-=======
-					new BasicDBObject("id", "$_id").append("date", new BasicDBObject("$first", "$fromDate"))
->>>>>>> Stashed changes
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
@@ -678,7 +644,6 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.unwind("treatments"),
 					Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id", "services"),
-<<<<<<< Updated upstream
 					Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), group,
 					new CustomAggregationOperation(new BasicDBObject("$group",
@@ -686,16 +651,6 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 									new BasicDBObject("doctorId", "$doctorId").append("locationId", "$locationId"))
 											.append("count", new BasicDBObject("$count", "$doctorId"))
 											.append("firstName", new BasicDBObject("$first", "$doctor.firstName")))));
-=======
-					Aggregation.unwind("services"),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-					Aggregation.unwind("doctor"),					
-					group,
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("id",
-									new BasicDBObject("doctorId", "$doctorId").append("locationId", "$locationId"))
-											.append("count", new BasicDBObject("$count", "$doctorId")).append("firstName", new BasicDBObject("$first", "$doctor.firstName")))));
->>>>>>> Stashed changes
 
 			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, DoctorAnalyticPieChartResponse.class);
@@ -710,13 +665,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 	}
 
 	@Override
-<<<<<<< Updated upstream
 	public Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate) {
-=======
-	public Integer countTreatmentsAnalytic(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate, String searchType) {
->>>>>>> Stashed changes
 		Integer response = 0;
 		try {
 			Criteria criteria = new Criteria();
@@ -761,16 +711,10 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			Aggregation aggregation = null;
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
-<<<<<<< Updated upstream
 					Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
 							"treatmentServices"),
 					Aggregation.unwind("treatmentServices"),
 					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
-=======
-					Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
-					Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
-					Aggregation.unwind("treatmentServices"));
->>>>>>> Stashed changes
 
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, TreatmentService.class)
 					.getMappedResults().size();
@@ -783,11 +727,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 	}
 
 	@Override
-<<<<<<< Updated upstream
 	public Integer countTreatmentService(String doctorId, String locationId, String hospitalId, String fromDate,
-=======
-	public Integer countMostTreatmentAnalytic(String doctorId, String locationId, String hospitalId, String fromDate,
->>>>>>> Stashed changes
 			String toDate, String searchTerm) {
 		Integer response = 0;
 		try {
@@ -825,17 +765,9 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
 					Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 							"totalTreatmentService"),
-<<<<<<< Updated upstream
 					Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", "$treatments.treatmentServiceId"))));
-=======
-
-					Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$treatments.treatmentServiceId").append("treatmentServiceId",
-									new BasicDBObject("$first", "$treatments.treatmentServiceId")))));
->>>>>>> Stashed changes
 
 			response = mongoTemplate
 					.aggregate(aggregation, PatientTreatmentCollection.class, TretmentAnalyticMongoResponse.class)
@@ -844,19 +776,10 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 		} catch (Exception e) {
 
 			e.printStackTrace();
-<<<<<<< Updated upstream
 			logger.error(e + " Error Occurred While count Treatment Service");
 			throw new BusinessException(ServiceError.Unknown, " Error Occurred While count Treatment Service");
-=======
-			logger.error(e + " Error Occurred While getting Treatment analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Treatment analytic");
->>>>>>> Stashed changes
 		}
 
 		return response;
 	}
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 }

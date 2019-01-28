@@ -382,11 +382,6 @@ public class AnalyticsAPI {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
-<<<<<<< Updated upstream
-=======
-		List<TreatmentService> objects = treatmentAnalyticsService.getTreatmentsAnalytics(doctorId, locationId,
-				hospitalId, fromDate, toDate, searchType, page, size);
->>>>>>> Stashed changes
 
 		Response<TreatmentService> response = new Response<TreatmentService>();
 
@@ -530,18 +525,13 @@ public class AnalyticsAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_TREATMENT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_TREATMENT_ANALYTICS_DATA)
 	public Response<AnalyticResponse> getTreatmentAnalyticData(@QueryParam("doctorId") String doctorId,
-<<<<<<< Updated upstream
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-=======
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
->>>>>>> Stashed changes
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("searchType") String searchType) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
 
-<<<<<<< Updated upstream
 		List<AnalyticResponse> data = null;
 
 		data = treatmentAnalyticsService.getTreatmentAnalyticData(doctorId, locationId, hospitalId, fromDate, toDate,
@@ -597,12 +587,6 @@ public class AnalyticsAPI {
 		}
 		response.setDataList(data);
 		response.setCount(count);
-=======
-		List<AnalyticResponse> data = treatmentAnalyticsService.getTreatmentAnalyticData(doctorId, locationId,
-				hospitalId, fromDate, toDate, searchType, searchTerm);
-		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
-		response.setDataList(data);
->>>>>>> Stashed changes
 		return response;
 	}
 

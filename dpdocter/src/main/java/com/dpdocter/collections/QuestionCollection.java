@@ -12,24 +12,16 @@ public class QuestionCollection extends GenericCollection {
 	private ObjectId id;
 	@Field
 	private String type = "CONFERENCE_SESSION";
-<<<<<<< Updated upstream
-=======
+
 	@Field
 	private String question;
->>>>>>> Stashed changes
 	@Field
 	private ObjectId sessionId;
 	@Field
 	private ObjectId questionerId;
-<<<<<<< Updated upstream
 	@Field
 	private Integer noOfLikes = 0;
 	@Field
-=======
-	@Field
-	private Integer noOfLikes = 0;
-	@Field
->>>>>>> Stashed changes
 	private Boolean discarded=false;
 	
 
@@ -87,8 +79,4 @@ public class QuestionCollection extends GenericCollection {
 		return "QuestionCollection [id=" + id + ", type=" + type + ", sessionId=" + sessionId + ", questionerId="
 				+ questionerId + ", noOfLikes=" + noOfLikes + ", discarded=" + discarded + "]";
 	}
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 }
