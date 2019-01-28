@@ -820,7 +820,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			request.setDiagnosticTests(null);
 			BeanUtil.map(request, prescriptionCollection);
-
+		
 			if (DPDoctorUtils.anyStringEmpty(createdBy)) {
 				UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 				createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -874,6 +874,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						items = new ArrayList<PrescriptionItem>();
 						itemDetails = new ArrayList<PrescriptionItemDetail>();
 					}
+					
 					BeanUtil.map(item, prescriptionItemDetail);
 					if (!DPDoctorUtils.allStringsEmpty(item.getDrugId())) {
 						drugCollection = drugRepository.findOne(item.getDrugId());
@@ -1135,13 +1136,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptionCollection.getItems() != null) {
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
 					
-					if(item.getDrugQuantity() != null)
+					if(item.getInventoryQuantity() != null)
 					{
-						item.setAnalyticsDrugQuantity(item.getDrugQuantity());
+						item.setInventoryQuantity(item.getInventoryQuantity());
 					}
 					else
 					{
-						item.setAnalyticsDrugQuantity(1);
+						item.setInventoryQuantity(1l);
 					}
 					
 					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();

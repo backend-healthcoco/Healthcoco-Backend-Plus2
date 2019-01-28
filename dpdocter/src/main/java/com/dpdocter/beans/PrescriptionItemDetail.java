@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.v2.GenericCode;
 import com.dpdocter.response.PrescriptionInventoryBatchResponse;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -14,10 +15,10 @@ public class PrescriptionItemDetail {
 
 	private String dosage;
 
-	private DrugType drugType; 
+	private DrugType drugType;
 
 	private String drugName;
-	
+
 	private Integer drugQuantity;
 
 	private Long totalStock;
@@ -33,6 +34,8 @@ public class PrescriptionItemDetail {
 	private String instructions;
 
 	private Long inventoryQuantity;
+
+	private List<GenericCode> genericNames;
 
 	public DrugType getDrugType() {
 		return drugType;
@@ -138,6 +141,14 @@ public class PrescriptionItemDetail {
 		this.drugQuantity = drugQuantity;
 	}
 
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", drugType="
@@ -146,5 +157,5 @@ public class PrescriptionItemDetail {
 				+ ", direction=" + direction + ", instructions=" + instructions + ", inventoryQuantity="
 				+ inventoryQuantity + "]";
 	}
-	
+
 }

@@ -312,24 +312,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
 						for (PrescriptionItemDetail prescriptionItemDetail : prescription.getItems()) {
-							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
-									prescription.getLocationId(), prescription.getHospitalId(),
-									prescriptionItemDetail.getDrug().getDrugCode());
-							if (inventoryItem != null) {
-								InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
-										.getInventoryItem(inventoryItem.getId());
-								prescriptionItemDetail.setTotalStock(inventoryItemLookupResposne.getTotalStock());
-								List<PrescriptionInventoryBatchResponse> inventoryBatchs = null;
-								if (inventoryItemLookupResposne.getInventoryBatchs() != null) {
-									inventoryBatchs = new ArrayList<>();
-									for (InventoryBatch inventoryBatch : inventoryItemLookupResposne
-											.getInventoryBatchs()) {
-										PrescriptionInventoryBatchResponse response = new PrescriptionInventoryBatchResponse();
-										BeanUtil.map(inventoryBatch, response);
-										inventoryBatchs.add(response);
+							if (prescriptionItemDetail.getDrug() != null
+									&& prescriptionItemDetail.getDrug().getDrugCode() != null) {
+								InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+										prescription.getLocationId(), prescription.getHospitalId(),
+										prescriptionItemDetail.getDrug().getDrugCode());
+								if (inventoryItem != null) {
+									InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
+											.getInventoryItem(inventoryItem.getId());
+									prescriptionItemDetail.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+									List<PrescriptionInventoryBatchResponse> inventoryBatchs = null;
+									if (inventoryItemLookupResposne.getInventoryBatchs() != null) {
+										inventoryBatchs = new ArrayList<>();
+										for (InventoryBatch inventoryBatch : inventoryItemLookupResposne
+												.getInventoryBatchs()) {
+											PrescriptionInventoryBatchResponse response = new PrescriptionInventoryBatchResponse();
+											BeanUtil.map(inventoryBatch, response);
+											inventoryBatchs.add(response);
+										}
 									}
+									prescriptionItemDetail.setInventoryBatchs(inventoryBatchs);
 								}
-								prescriptionItemDetail.setInventoryBatchs(inventoryBatchs);
 							}
 						}
 					}
