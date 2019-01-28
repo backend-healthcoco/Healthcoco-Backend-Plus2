@@ -226,6 +226,8 @@ public class PrescriptionCollection extends GenericCollection {
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
+	
+	
 
 	@Override
 	public String toString() {

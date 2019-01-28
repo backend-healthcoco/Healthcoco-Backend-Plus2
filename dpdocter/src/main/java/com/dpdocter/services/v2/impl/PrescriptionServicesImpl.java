@@ -333,8 +333,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										BeanUtil.map(inventoryBatch, response);
 										inventoryBatchs.add(response);
 									}
+									prescriptionItemDetail.setInventoryBatchs(inventoryBatchs);
 								}
-								prescriptionItemDetail.setInventoryBatchs(inventoryBatchs);
 							}
 						}
 					}

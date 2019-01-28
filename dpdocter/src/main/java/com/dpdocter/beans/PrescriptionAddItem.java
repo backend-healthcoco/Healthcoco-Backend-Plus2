@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionAddItem {
     private String drugId;
