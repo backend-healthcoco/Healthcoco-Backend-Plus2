@@ -45,8 +45,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		try {
 			Criteria criteria = new Criteria();
 
-			DateTime fromTime = null;
-			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
@@ -63,20 +61,19 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				from = new Date(0l);
 				to = new Date();
 			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
+			
 
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
 
-				response = getNewPatientAnalyticData(fromTime, toTime, criteria, searchType, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getNewPatientAnalyticData(from, to, criteria, searchType, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
 			case CITY_WISE: {
-				response = getPatientCountCitiWise(fromTime, toTime, criteria, searchType, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getPatientCountCitiWise(from, to, criteria, searchType, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
@@ -84,14 +81,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				if (DPDoctorUtils.allStringsEmpty(groupId)) {
 					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
 				}
-				response = getPatientCountGroupWise(fromTime, toTime, criteria, searchType, doctorId, locationId,
-						hospitalId, groupId, searchTerm);
+				response = getPatientCountGroupWise(from, to, criteria, searchType, doctorId, locationId, hospitalId,
+						groupId, searchTerm);
 				break;
 			}
 
 			case VISITED_PATIENT: {
-				response = getVisitedPatientcount(fromTime, toTime, criteria, searchType, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getVisitedPatientcount(from, to, criteria, searchType, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
@@ -112,7 +109,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<AnalyticResponse> getNewPatientAnalyticData(DateTime fromTime, DateTime toTime, Criteria criteria,
+	private List<AnalyticResponse> getNewPatientAnalyticData(Date fromTime, Date toTime, Criteria criteria,
 			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		Criteria secondCriteria = new Criteria();
 		CustomAggregationOperation aggregationOperation = null;
@@ -221,7 +218,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<AnalyticResponse> getPatientCountCitiWise(DateTime fromTime, DateTime toTime, Criteria criteria,
+	private List<AnalyticResponse> getPatientCountCitiWise(Date fromTime, Date toTime, Criteria criteria,
 			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 
@@ -325,7 +322,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<AnalyticResponse> getPatientCountGroupWise(DateTime fromTime, DateTime toTime, Criteria criteria,
+	private List<AnalyticResponse> getPatientCountGroupWise(Date fromTime, Date toTime, Criteria criteria,
 			String searchType, String doctorId, String locationId, String hospitalId, String groupId,
 			String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
@@ -452,14 +449,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<AnalyticResponse> getPatientAnalyticLocalityWise(DateTime fromTime, DateTime toTime, Criteria criteria,
+	private List<AnalyticResponse> getPatientAnalyticLocalityWise(Date fromTime, Date toTime, Criteria criteria,
 			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(
 				Fields.from(Fields.field("date", "$createdTime"), Fields.field("date", "$createdTime"),
 						Fields.field("city", "$address.city"), Fields.field("count", "$userId")));
 		if (toTime != null && fromTime != null) {
-
 			criteria.and("createdTime").gte(fromTime).lte(toTime);
 		} else if (toTime != null) {
 			criteria.and("createdTime").lte(toTime);
@@ -552,7 +548,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<AnalyticResponse> getTopTenVisitedPatientData(DateTime fromTime, DateTime toTime, Criteria criteria,
+	private List<AnalyticResponse> getTopTenVisitedPatientData(Date fromTime, Date toTime, Criteria criteria,
 			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("patient.id", "$userId"),
@@ -658,7 +654,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<AnalyticResponse> getVisitedPatientcount(DateTime fromTime, DateTime toTime, Criteria criteria,
+	private List<AnalyticResponse> getVisitedPatientcount(Date fromTime, Date toTime, Criteria criteria,
 			String searchType, String doctorId, String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation firstAggregationOperation = null;
 		CustomAggregationOperation secondAggregationOperation = null;
@@ -823,12 +819,12 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(0l);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(0l);
 				to = new Date();
 			}
 			fromTime = DPDoctorUtils.getStartTime(from);
@@ -1086,8 +1082,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		try {
 			Criteria criteria = new Criteria();
 
-			DateTime fromTime = null;
-			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
@@ -1096,27 +1090,26 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(fromDate));
+				to = new Date();
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(Long.parseLong(toDate));
+				from = new Date(0l);
 				to = new Date(Long.parseLong(toDate));
 			} else {
-				from = new Date();
+				from = new Date(0l);
 				to = new Date();
 			}
-			fromTime = DPDoctorUtils.getStartTime(from);
-			toTime = DPDoctorUtils.getEndTime(to);
+			
 
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
 
-				response = getPatientDetailCount(fromTime, toTime, criteria, null, doctorId, locationId, hospitalId,
+				response = getPatientDetailCount(from, to, criteria, null, doctorId, locationId, hospitalId,
 						searchTerm);
 				break;
 			}
 
 			case CITY_WISE: {
-				response = getPatientDetailCount(fromTime, toTime, criteria, city, doctorId, locationId, hospitalId,
+				response = getPatientDetailCount(from, to, criteria, city, doctorId, locationId, hospitalId,
 						searchTerm);
 				break;
 			}
@@ -1125,13 +1118,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				if (DPDoctorUtils.allStringsEmpty(groupId)) {
 					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
 				}
-				response = getGroupPatientDetailCount(fromTime, toTime, criteria, city, doctorId, locationId,
+				response = getGroupPatientDetailCount(from, to, criteria, city, doctorId, locationId,
 						hospitalId, groupId, searchTerm);
 				break;
 			}
 
 			case VISITED_PATIENT: {
-				response = getVisitedPatientCount(fromTime, toTime, criteria, doctorId, locationId, hospitalId,
+				response = getVisitedPatientCount(from, to, criteria, doctorId, locationId, hospitalId,
 						searchTerm);
 				break;
 			}
@@ -1153,7 +1146,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private Integer getPatientDetailCount(DateTime fromTime, DateTime toTime, Criteria criteria, String city,
+	private Integer getPatientDetailCount(Date fromTime, Date toTime, Criteria criteria, String city,
 			String doctorId, String locationId, String hospitalId, String searchTerm) {
 
 		if (!DPDoctorUtils.anyStringEmpty(city)) {
@@ -1198,7 +1191,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private Integer getGroupPatientDetailCount(DateTime fromTime, DateTime toTime, Criteria criteria, String city,
+	private Integer getGroupPatientDetailCount(Date fromTime, Date toTime, Criteria criteria, String city,
 			String doctorId, String locationId, String hospitalId, String groupId, String searchTerm) {
 		Criteria criteria2 = new Criteria();
 		if (!DPDoctorUtils.anyStringEmpty(city)) {
@@ -1247,7 +1240,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private Integer getVisitedPatientCount(DateTime fromTime, DateTime toTime, Criteria criteria, String doctorId,
+	private Integer getVisitedPatientCount(Date fromTime, Date toTime, Criteria criteria, String doctorId,
 			String locationId, String hospitalId, String searchTerm) {
 		CustomAggregationOperation aggregationOperation = null;
 
