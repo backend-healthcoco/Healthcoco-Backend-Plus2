@@ -1,35 +1,15 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
-import com.dpdocter.collections.GenericCollection;
-
-public class SessionQuestion extends GenericCollection {
+public class QuestionResponse {
 	private String id;
 	private String type = "CONFERENCE_SESSION";
 	private String sessionId;
-
-	private String userId;
+	private Integer noOfLikes;
 	private String questioner;
+	private String userId;
 	private String questionerId;
-	private Integer noOfLikes = 0;
-	private String question;
-	private Boolean discarded = false;
 	private Boolean isLiked = false;
-
-	public Boolean getIsLiked() {
-		return isLiked;
-	}
-
-	public void setIsLiked(Boolean isLiked) {
-		this.isLiked = isLiked;
-	}
-
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
+	private String question;
 
 	public String getId() {
 		return id;
@@ -63,16 +43,27 @@ public class SessionQuestion extends GenericCollection {
 		this.noOfLikes = noOfLikes;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
 	public String getQuestioner() {
 		return questioner;
 	}
 
 	public void setQuestioner(String questioner) {
 		this.questioner = questioner;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public Boolean getIsLiked() {
+		return isLiked;
+	}
+
+	public void setIsLiked(Boolean isLiked) {
+		this.isLiked = isLiked;
 	}
 
 	public String getQuestionerId() {
@@ -90,12 +81,6 @@ public class SessionQuestion extends GenericCollection {
 	public void setQuestion(String question) {
 		this.question = question;
 	}
-
 	
-	@Override
-	public String toString() {
-		return "SessionQuestion [id=" + id + ", type=" + type + ", sessionId=" + sessionId + ", userId=" + userId
-				+ ", noOfLikes=" + noOfLikes + ", discarded=" + discarded + ", isLiked=" + isLiked + "]";
-	}
 
 }
