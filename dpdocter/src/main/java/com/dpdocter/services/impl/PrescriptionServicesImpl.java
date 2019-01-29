@@ -762,6 +762,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("isDefault", "$isDefault"),
 					Fields.field("updatedTime", "$updatedTime")));
 
 			Aggregation aggregation = Aggregation.newAggregation(
@@ -784,6 +785,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									.append("items", new BasicDBObject("$push", "$items"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("isDefault", new BasicDBObject("$first", "$isDefault"))
 									.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
 
 			AggregationResults<TemplateAddEditResponseDetails> groupResults = mongoTemplate.aggregate(aggregation,

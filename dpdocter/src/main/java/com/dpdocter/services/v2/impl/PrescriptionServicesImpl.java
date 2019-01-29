@@ -176,6 +176,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("items.genericNames", "$items.genericNames"),
 					Fields.field("tests", "$diagnosticTests"), Fields.field("locationName", "$location.locationName")));
 			Aggregation aggregation = null;
 
@@ -275,7 +276,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptions != null && !prescriptions.isEmpty()) {
 				for (Prescription prescription : prescriptions) {
 
-					if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
+					/*if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
 						for (PrescriptionItemDetail itemDetail : prescription.getItems()) {
 							if (itemDetail.getDrug() != null) {
 								itemDetail.getDrug().setDosage(itemDetail.getDosage());
@@ -288,7 +289,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							itemDetail.setDirection(null);
 
 						}
-					}
+					}*/
 
 					if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
@@ -368,6 +369,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
+					Fields.field("items.genericNames", "$items.genericNames"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -409,7 +411,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptions = aggregationResults.getMappedResults();
 			if (prescriptions != null && !prescriptions.isEmpty()) {
 				for (Prescription prescription : prescriptions) {
-					if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
+					/*if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
 						for (PrescriptionItemDetail itemDetail : prescription.getItems()) {
 							if (itemDetail.getDrug() != null) {
 								itemDetail.getDrug().setDosage(itemDetail.getDosage());
@@ -422,7 +424,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							itemDetail.setDirection(null);
 
 						}
-					}
+					}*/
 
 					if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
@@ -489,6 +491,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
+					Fields.field("items.genericNames", "$items.genericNames"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(prescriptionId))),
@@ -767,6 +770,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("items.genericNames", "$items.genericNames"),
 					Fields.field("tests", "$diagnosticTests"), Fields.field("locationName", "$location.locationName")));
 			Aggregation aggregation = null;
 
@@ -926,6 +930,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
+					Fields.field("items.genericNames", "$items.genericNames"),
 					Fields.field("tests", "$diagnosticTests")));
 			
 			

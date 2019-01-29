@@ -1,4 +1,3 @@
-
 package com.dpdocter.response;
 
 public class QuestionResponse {
@@ -8,6 +7,9 @@ public class QuestionResponse {
 	private Integer noOfLikes;
 	private String questioner;
 	private String userId;
+	private String questionerId;
+	private Boolean isLiked = false;
+	private String question;
 
 	public String getId() {
 		return id;
@@ -56,5 +58,29 @@ public class QuestionResponse {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+	public Boolean getIsLiked() {
+		return isLiked;
+	}
+
+	public void setIsLiked(Boolean isLiked) {
+		this.isLiked = isLiked;
+	}
+
+	public String getQuestionerId() {
+		return questionerId;
+	}
+
+	public void setQuestionerId(String questionerId) {
+		this.questionerId = questionerId;
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+	
 
 }

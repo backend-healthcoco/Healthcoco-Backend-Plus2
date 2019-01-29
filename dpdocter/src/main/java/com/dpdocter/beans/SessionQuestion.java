@@ -6,6 +6,9 @@ public class SessionQuestion extends GenericCollection {
 	private String id;
 	private String type = "CONFERENCE_SESSION";
 	private String sessionId;
+
+	private String userId;
+	private String questioner;
 	private String questionerId;
 	private String userId;
 	private Integer noOfLikes;
@@ -60,12 +63,30 @@ public class SessionQuestion extends GenericCollection {
 		this.noOfLikes = noOfLikes;
 	}
 
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getQuestioner() {
+		return questioner;
+	}
+
+	public void setQuestioner(String questioner) {
+		this.questioner = questioner;
+	}
+
 	public String getQuestionerId() {
 		return questionerId;
 	}
 
 	public void setQuestionerId(String questionerId) {
 		this.questionerId = questionerId;
+	}
+
+	@Override
+	public String toString() {
+		return "SessionQuestion [id=" + id + ", type=" + type + ", sessionId=" + sessionId + ", userId=" + userId
+				+ ", noOfLikes=" + noOfLikes + ", discarded=" + discarded + ", isLiked=" + isLiked + "]";
 	}
 
 }
