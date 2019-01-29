@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,6 +52,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DiagnosticTestRepository;
+import com.dpdocter.repository.DoctorPatientInvoiceRepository;
+import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.DownloadDataRequestRepository;
 import com.dpdocter.request.ExportRequest;
 import com.dpdocter.services.DownloadDataService;
@@ -68,8 +71,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 	@Autowired
 	DownloadDataRequestRepository downloadDataRequestRepository;
 	
-	private static final String COMMA_DELIMITER = ",";
-
 	private static final String NEW_LINE_SEPARATOR = "\n";
 
 //	@Value(value = "${patients.data.file}")
@@ -83,6 +84,12 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 	
 	@Autowired
 	private MailService mailService;
+	
+	@Autowired
+	private DoctorPatientInvoiceRepository doctorPatientInvoiceRepository;
+	
+	@Autowired
+	private DoctorPatientReceiptRepository doctorPatientReceiptRepository;
 	
 	@Override
 	public Boolean downlaodData(ExportRequest request) {
@@ -168,6 +175,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 											.append("preserveNullAndEmptyArrays", true))),
 							
 							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+									.append("registrationDate", "$registrationDate")
 									.append("patientId", "$PID")
 									.append("localPatientName", "$localPatientName")
 									.append("mobileNumber", "$user.mobileNumber")
@@ -191,6 +199,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("groups", "$groups.name"))),
 							
 							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+									.append("registrationDate", new BasicDBObject("$first","$registrationDate"))
 									.append("patientId", new BasicDBObject("$first","$patientId"))
 									.append("localPatientName", new BasicDBObject("$first","$localPatientName"))
 									.append("mobileNumber", new BasicDBObject("$first","$mobileNumber"))
@@ -213,7 +222,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("referredBy", new BasicDBObject("$first","$referredBy"))
 									.append("groups", new BasicDBObject("$push","$groups")))),
 							
-							Aggregation.sort(new Sort(Direction.ASC, "createdTime"))
+							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1)))
 							);
 
 			List<PatientDownloadData> patientDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), PatientCollection.class, PatientDownloadData.class).getMappedResults();
@@ -228,6 +237,11 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		    			patientDownloadData.setDateOfBirth(patientDownloadData.getDob().getDays() +"/"+ patientDownloadData.getDob().getMonths()+"/" + patientDownloadData.getDob().getYears() +"/");
 		    			if(patientDownloadData.getDob().getAge() != null)patientDownloadData.setAge(patientDownloadData.getDob().getAge().getYears()+"");
 		    		}
+		    		if(patientDownloadData.getRegistrationDate() != null) {
+		    			SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
+			    		patientDownloadData.setDate(sdf.format(new Date(patientDownloadData.getRegistrationDate())));
+		    		}
+		    		
 		    		patientDownloadData.setDob(null);
 		    		writeData(patientDownloadData, csvWriter, ComponentType.PATIENT, null);
 		    }
@@ -235,7 +249,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error downloading patient data");
-			throw new BusinessException(ServiceError.Unknown, "Error downloading patient data");
+//			throw new BusinessException(ServiceError.Unknown, "Error downloading patient data");
 		}finally {
 			try {
 				if (csvWriter != null) {
@@ -250,111 +264,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		return mailAttachment;
 		
 	}
-
-//	private void writeHeader(Class classOfObject, FileWriter fileWriter, ComponentType componentType, List<String> fieldsName) throws IOException {
-//		String headerString = "";
-//	    
-//		switch (componentType) {
-//			case PATIENT:
-//				for (Field field : classOfObject.getDeclaredFields()) {
-//					field.setAccessible(true);
-//		        
-//					if(!field.getName().equalsIgnoreCase("dob")) {
-//						if(DPDoctorUtils.anyStringEmpty(headerString)) headerString = headerString + field.getName();
-//						else headerString = headerString + COMMA_DELIMITER + field.getName();
-//					}
-//				}
-//				break;
-//
-//			case PRESCRIPTIONS:
-//				for (Field field : classOfObject.getDeclaredFields()) {
-//					field.setAccessible(true);
-//		        
-//					if(!field.getName().equalsIgnoreCase("diagnosticTests")) {
-//						if(DPDoctorUtils.anyStringEmpty(headerString)) headerString = headerString + field.getName();
-//						else headerString = headerString + COMMA_DELIMITER + field.getName();
-//					}
-//				}
-//				break;	
-//			case CLINICAL_NOTES:
-//				for (String field : fieldsName) {
-//	    			if(field.equalsIgnoreCase("vitalSigns")) {
-//	    				headerString = headerString + COMMA_DELIMITER + "pulse" + COMMA_DELIMITER + "temperature" + COMMA_DELIMITER + "breathing" + COMMA_DELIMITER + "bloodPressure"
-//	    						 + COMMA_DELIMITER + "height" + COMMA_DELIMITER + "weight" + COMMA_DELIMITER + "spo2" + COMMA_DELIMITER + "bmi" + COMMA_DELIMITER + "bsa";
-//	    			}else {
-//	    				if(DPDoctorUtils.anyStringEmpty(headerString)) headerString = headerString + field;
-//						else headerString = headerString + COMMA_DELIMITER + field;	
-//	    			}
-//				}
-//				break;	
-//			default:
-//				for (Field field : classOfObject.getDeclaredFields()) {
-//					field.setAccessible(true);
-//					
-//					if(DPDoctorUtils.anyStringEmpty(headerString)) headerString = headerString + field.getName();
-//					else headerString = headerString + COMMA_DELIMITER + field.getName();
-//				}
-//				break;
-//		}
-//		
-//	    fileWriter.append(headerString);
-//	    fileWriter.append(NEW_LINE_SEPARATOR);
-//	}
-//
-//	private void writeData(Object obj, FileWriter fileWriter, ComponentType componentType, List<String> fieldsName) throws IllegalArgumentException, IllegalAccessException, IOException, NoSuchFieldException, SecurityException {
-//		String dataString = "";
-//		
-//		switch (componentType) {
-//			case PATIENT:
-//				for (Field field : obj.getClass().getDeclaredFields()) {
-//		    		field.setAccessible(true);
-//		    		if(!field.getName().equalsIgnoreCase("dob")) {
-//			    		if(DPDoctorUtils.anyStringEmpty(dataString)) dataString = dataString + (field.get(obj) != null ? field.get(obj) : "");
-//					    else {
-//					    	dataString = dataString + COMMA_DELIMITER + (field.get(obj) != null ? field.get(obj) : "");
-//					    }
-//		    		}
-//		    }
-//				break;
-//	
-//			case PRESCRIPTIONS:
-//				for (Field field : obj.getClass().getDeclaredFields()) {
-//		    		field.setAccessible(true);
-//		    		if(!field.getName().equalsIgnoreCase("diagnosticTests")) {
-//			    		if(DPDoctorUtils.anyStringEmpty(dataString)) dataString = dataString + (field.get(obj) != null ? field.get(obj) : "");
-//					    else dataString = dataString + COMMA_DELIMITER + (field.get(obj) != null ? field.get(obj) : "");
-//		    		}
-//		    }
-//				break;	
-//			case CLINICAL_NOTES:
-//				for (Field field : obj.getClass().getDeclaredFields()) {
-//		    		field.setAccessible(true);
-//		    		if(fieldsName.contains(field.getName())) {
-//		    			if(field.getName().equalsIgnoreCase("vitalSigns")) {
-//		    				dataString = dataString + COMMA_DELIMITER + obj.getClass().getDeclaredField("vitalSignsString").get(obj);
-//		    			}
-//		    			else {
-//		    				if(DPDoctorUtils.anyStringEmpty(dataString)) dataString = dataString + "'"+(field.get(obj) != null ? field.get(obj) : "")+"'";
-//						    else dataString = dataString + COMMA_DELIMITER + "'"+(field.get(obj) != null ? field.get(obj) : "")+"'";
-//		    			}
-//			    		
-//		    		}
-//		    }
-//				break;	
-//			default:
-//				for (Field field : obj.getClass().getDeclaredFields()) {
-//		    		field.setAccessible(true);
-//		    		if(DPDoctorUtils.anyStringEmpty(dataString)) dataString = dataString + (field.get(obj) != null ? field.get(obj) : "");
-//					else dataString = dataString + COMMA_DELIMITER + (field.get(obj) != null ? field.get(obj) : "");
-//				}
-//				break;
-//		}
-//	    
-//		dataString = dataString.replaceAll("\\[", "'");
-//		dataString = dataString.replaceAll("\\]", "'");
-//	    fileWriter.append(dataString);
-//	    fileWriter.append(NEW_LINE_SEPARATOR);
-//	}
 
 	@Override
 	public Boolean downloadClinicalItems(String doctorId, String locationId, String hospitalId) {
@@ -541,7 +450,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("advice", "$advice")
 									.append("date", new BasicDBObject("$dateToString", new BasicDBObject("format", "%Y-%m-%d").append("date","$createdTime"))))),
 							
-							Aggregation.sort(new Sort(Direction.ASC, "createdTime")));
+							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
 
 			List<PrescriptionDownloadData> prescriptionDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), PrescriptionCollection.class, PrescriptionDownloadData.class).getMappedResults();
 			
@@ -621,7 +530,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("status", "$state")
 									.append("explanation", "$explanation"))),
 							
-							Aggregation.sort(new Sort(Direction.ASC, "createdTime")));
+							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
 
 			List<AppointmentDownloadData> appointmentDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), AppointmentCollection.class, AppointmentDownloadData.class).getMappedResults();
 			
@@ -702,7 +611,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("finalCost", "$treatments.finalCost")
 									.append("note", "$treatments.note"))),
 														
-							Aggregation.sort(new Sort(Direction.ASC, "createdTime")));
+							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
 
 			List<TreatmentDownloadData> treatmentDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), PatientTreatmentCollection.class, TreatmentDownloadData.class).getMappedResults();
 			
@@ -809,7 +718,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("indirectLarygoscopyExam","$indirectLarygoscopyExam")
 									.append("neckExam", "$neckExam")
 									.append("earsExam", "$earsExam"))),
-							Aggregation.sort(new Sort(Direction.ASC, "createdTime")));
+							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
 
 			List<ClinicalNotesDownloadData> clinicalNotesDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), ClinicalNotesCollection.class, ClinicalNotesDownloadData.class).getMappedResults();
 			
@@ -847,7 +756,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				clinicalNotesFields.add("diagnosis");
 				clinicalNotesFields.add("note");
 			}
-			csvWriter.writeNext(clinicalNotesFields.toArray(new String[0]));
 		    writeHeader(ClinicalNotesDownloadData.class, csvWriter, ComponentType.CLINICAL_NOTES, clinicalNotesFields);
 		    
 		    for (ClinicalNotesDownloadData clinicalNotesDownloadData : clinicalNotesDownloadDatas) {
@@ -880,7 +788,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				for (Field field : classOfObject.getDeclaredFields()) {
 					field.setAccessible(true);
 		        
-					if(!field.getName().equalsIgnoreCase("dob")) {
+					if(!field.getName().equalsIgnoreCase("dob") && !field.getName().equalsIgnoreCase("registrationDate")) {
 						headerString.add(field.getName());
 					}
 				}
@@ -918,8 +826,8 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			case PATIENT:
 				for (Field field : obj.getClass().getDeclaredFields()) {
 		    		field.setAccessible(true);
-		    		if(!field.getName().equalsIgnoreCase("dob")) {
-		    			dataString.add((String)(field.get(obj)+""));
+		    		if(!field.getName().equalsIgnoreCase("dob") && !field.getName().equalsIgnoreCase("registrationDate")) {
+		    			dataString.add((field.get(obj) != null ? (String)(field.get(obj)+"") : ""));
 		    		}
 		    }
 				break;
@@ -928,7 +836,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				for (Field field : obj.getClass().getDeclaredFields()) {
 		    		field.setAccessible(true);
 		    		if(!field.getName().equalsIgnoreCase("diagnosticTests")) {
-		    			dataString.add((String)field.get(obj));
+		    			dataString.add((field.get(obj) != null ? (String)(field.get(obj)+"") : ""));
 		    		}
 		    }
 				break;	
@@ -936,14 +844,15 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 				for (Field field : obj.getClass().getDeclaredFields()) {
 		    		field.setAccessible(true);
 		    		if(fieldsName.contains(field.getName())) {
-		    				dataString.add((String)field.get(obj));
+		    			dataString.add((field.get(obj) != null ? (String)(field.get(obj)) : ""));
 		    		}
 		    }
 				break;	
 			default:
 				for (Field field : obj.getClass().getDeclaredFields()) {
 		    		field.setAccessible(true);
-		    		dataString.add((String)(field.get(obj)+""));				}
+		    		dataString.add((field.get(obj) != null ? (String)(field.get(obj)+"") : ""));
+		    	}
 				break;
 		}
 	   		writer.writeNext(dataString.toArray(new String [0]));
@@ -989,16 +898,16 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("invoiceId", "$uniqueInvoiceId")
 									.append("name", new BasicDBObject("$concat",Arrays.asList("'","$invoiceItems.name","'")))
 									.append("cost", "$invoiceItems.cost")
-									.append("quantity", "$treatments.quantity.value")
-									.append("quantityType","$treatments.quantity.type")
-									.append("discount","$treatments.discount.value")
-									.append("discountUnit","$treatments.discount.unit")
-									.append("tax","$treatments.tax.value")
-									.append("taxUnit","$treatments.tax.unit")
+									.append("quantity", "$invoiceItems.quantity.value")
+									.append("quantityType","$invoiceItems.quantity.type")
+									.append("discount","$invoiceItems.discount.value")
+									.append("discountUnit","$invoiceItems.discount.unit")
+									.append("tax","$invoiceItems.tax.value")
+									.append("taxUnit","$invoiceItems.tax.unit")
 									.append("finalCost", "$invoiceItems.finalCost")
 									.append("note", "$invoiceItems.note"))),
 							
-							Aggregation.sort(new Sort(Direction.ASC, "createdTime")));
+							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
 
 			List<InvoiceDownloadData> treatmentDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), DoctorPatientInvoiceCollection.class, InvoiceDownloadData.class).getMappedResults();
 			
@@ -1065,7 +974,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("modeOfPayment", "$modeOfPayment")
 									.append("amountPaid", "$amountPaid"))),
 							
-							Aggregation.sort(new Sort(Direction.ASC, "createdTime")));
+							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
 
 			List<ReceiptDownloadData> receiptDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), DoctorPatientReceiptCollection.class, ReceiptDownloadData.class).getMappedResults();
 			
@@ -1094,6 +1003,33 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		}
 		
 		return mailAttachment;
+	}
+
+	@Override
+	public Boolean update(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		try {
+			List<DoctorPatientReceiptCollection> doctorPatientReceiptCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
+							.and("uniqueReceiptId").is(null)),
+					Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), 
+					DoctorPatientReceiptCollection.class, DoctorPatientReceiptCollection.class).getMappedResults();
+			if(doctorPatientReceiptCollections != null) {
+				int i = 3;
+				for(DoctorPatientReceiptCollection doctorPatientReceiptCollection : doctorPatientReceiptCollections) {
+					
+					doctorPatientReceiptCollection.setUniqueReceiptId("RC"+i);
+					i = i +1;
+					doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
+				}
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error updating data");
+//			throw new BusinessException(ServiceError.Unknown, "Error downloading receipt data");
+		}
+		return response;
 	}
 	
 }

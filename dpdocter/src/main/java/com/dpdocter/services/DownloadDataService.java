@@ -27,4 +27,6 @@ public interface DownloadDataService {
 
 	MailAttachment downloadPaymentsData(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
 
+	Boolean update(String doctorId, String locationId, String hospitalId);
+
 }

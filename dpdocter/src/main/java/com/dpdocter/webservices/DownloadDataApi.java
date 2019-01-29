@@ -137,6 +137,7 @@ public class DownloadDataApi {
 		response.setData(true);
 		return response;
 	}
+	
 	@Path(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
 	@GET
 	@ApiOperation(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS, notes = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
@@ -151,4 +152,13 @@ public class DownloadDataApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.UploadDataUrls.UPDATE_EMR)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_EMR, notes = PathProxy.UploadDataUrls.UPDATE_EMR)
+	public Response<Boolean> update() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(downloadDataService.update("5927cdc6e4b098e7a0b9dd90", "5927cdc7e4b098e7a0b9dd93", "5927cdc6e4b098e7a0b9dd92"));
+		return response;
+	}
 }
