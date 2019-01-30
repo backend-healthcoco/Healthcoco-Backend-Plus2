@@ -639,6 +639,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+							.append("count", new BasicDBObject("$first", "$doctorId"))
 							.append("firstName", new BasicDBObject("$first", "$doctor.firstName"))));
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -649,7 +650,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("doctorId", "$doctorId").append("locationId", "$locationId"))
-											.append("count", new BasicDBObject("$count", "$doctorId"))
+											.append("count", new BasicDBObject("$sum", 1))
 											.append("firstName", new BasicDBObject("$first", "$doctor.firstName")))));
 
 			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
