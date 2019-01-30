@@ -51,6 +51,7 @@ import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.BabyVaccineReminderResponse;
 import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
 import com.dpdocter.response.MasterVaccineResponse;
+import com.dpdocter.response.PatientVaccineGroupedResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
@@ -473,10 +474,31 @@ public class PaediatricServiceImpl implements PaediatricService{
 				criteria.and("vaccineId").in(vaccineObjectIds);
 			}
 			
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
+							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
+							Fields.field("patientLabTestSamples.uid", "$patientLabTestSamples.uid"),
+							Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
+							Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
+							Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
+							Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
+							Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
+							Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
+							Fields.field("parentLabLocationId", "$parentLabLocationId"),
+							Fields.field("collectionBoyId", "$collectionBoyId"),
+							Fields.field("daughterLabLocationId", "$daughterLabLocationId"),
+							Fields.field("discarded", "$discarded"),
+							Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
+							Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
+							Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
+							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+							Fields.field("createdBy", "$createdBy")));
+
+			
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("name", "$vaccine.name"))
-							.append("vaccine", new BasicDBObject("$push", "$vaccine")).append("name",
-									new BasicDBObject("$first", "$vaccine.name"))
+					new BasicDBObject("_id", new BasicDBObject("duration", "$vaccine.duration"))
+							.append("vaccineBrandAssociationResponses", new BasicDBObject("$push", "$vaccineBrandAssociationResponses")).append("name",
+									new BasicDBObject("$first", "$vaccine.duration"))
 							.append("id",
 									new BasicDBObject("$first", "$vaccine.id"))));
 			
@@ -485,9 +507,12 @@ public class PaediatricServiceImpl implements PaediatricService{
 							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
+											true))),Aggregation.lookup("master_baby_immunization_cl", "vaccineId", "_id", "vaccine"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$vaccine").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-					VaccineBrandAssociationCollection.class, GroupedVaccineBrandAssociationResponse.class).getMappedResults();
+					VaccineCollection.class, GroupedVaccineBrandAssociationResponse.class).getMappedResults();
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -496,6 +521,42 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 		return responses;
 	}
+	
+	
+	@Override
+	@Transactional
+	public List<PatientVaccineGroupedResponse> getPatientGroupedVaccines(String patientId)
+	{
+		List<PatientVaccineGroupedResponse> responses = null;
+		Aggregation aggregation = null;
+		try {
+			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId));
+			
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", new BasicDBObject("duration", "$duration")).
+					append("vaccines",
+							new BasicDBObject("$push", "$vaccine")).append("duration",
+									new BasicDBObject("$first", "$duration")).append("periodTime",
+											new BasicDBObject("$first", "$periodTime"))));
+			aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccine"),
+					Aggregation.unwind("vaccine"),
+					Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.ASC, "periodTime")));
+			
+			responses = mongoTemplate
+					.aggregate(aggregation, VaccineCollection.class, PatientVaccineGroupedResponse.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return responses;
+	}
+	
+	
+	
 
 	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
 	@Override

@@ -924,12 +924,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
 					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.drugId", "$items.drugId"), 
+					Fields.field("items.drugName", "$items.drugName"), 
+					Fields.field("items.drugType", "$items.drugType"), 
 					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
-					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("items.genericNames", "$items.genericNames"),
 					Fields.field("tests", "$diagnosticTests")));
 			
