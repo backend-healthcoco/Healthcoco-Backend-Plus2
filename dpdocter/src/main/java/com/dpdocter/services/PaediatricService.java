@@ -7,6 +7,7 @@ import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
 import com.dpdocter.response.MasterVaccineResponse;
+import com.dpdocter.response.PatientVaccineGroupedResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 
@@ -45,5 +46,7 @@ public interface PaediatricService {
 	void sendBirthBabyVaccineReminder();
 
 	Boolean updateOldPatientData();
+	
+	List<PatientVaccineGroupedResponse> getPatientGroupedVaccines(String patientId);
 
 }

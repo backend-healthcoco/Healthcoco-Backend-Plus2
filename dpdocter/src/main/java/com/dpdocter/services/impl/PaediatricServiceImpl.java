@@ -53,6 +53,7 @@ import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.BabyVaccineReminderResponse;
 import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
 import com.dpdocter.response.MasterVaccineResponse;
+import com.dpdocter.response.PatientVaccineGroupedResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
@@ -503,6 +504,42 @@ public class PaediatricServiceImpl implements PaediatricService {
 
 		return responses;
 	}
+	
+	
+	@Override
+	@Transactional
+	public List<PatientVaccineGroupedResponse> getPatientGroupedVaccines(String patientId)
+	{
+		List<PatientVaccineGroupedResponse> responses = null;
+		Aggregation aggregation = null;
+		try {
+			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId));
+			
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", new BasicDBObject("duration", "$duration")).
+					append("vaccines",
+							new BasicDBObject("$push", "$vaccine")).append("duration",
+									new BasicDBObject("$first", "$duration")).append("periodTime",
+											new BasicDBObject("$first", "$periodTime"))));
+			aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccine"),
+					Aggregation.unwind("vaccine"),
+					Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.ASC, "periodTime")));
+			
+			responses = mongoTemplate
+					.aggregate(aggregation, VaccineCollection.class, PatientVaccineGroupedResponse.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return responses;
+	}
+	
+	
+	
 
 	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
 	@Override

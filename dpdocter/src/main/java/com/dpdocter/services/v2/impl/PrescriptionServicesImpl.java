@@ -914,8 +914,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
 					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-					Fields.field("updatedTime", "$updatedTime"), /*Fields.field("items.drug", "$drug"),*/
-					Fields.field("items.duration", "$items.duration"), Fields.field("items.drugId", "$items.drugId"), 
+
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.drugId", "$items.drugId"), 
 					Fields.field("items.drugName", "$items.drugName"), 
 					Fields.field("items.drugType", "$items.drugType"), 
 					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
