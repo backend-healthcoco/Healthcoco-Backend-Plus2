@@ -651,7 +651,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 							new BasicDBObject("_id",
 									new BasicDBObject("doctorId", "$doctorId").append("locationId", "$locationId"))
 											.append("count", new BasicDBObject("$sum", 1))
-											.append("firstName", new BasicDBObject("$first", "$doctor.firstName")))));
+											.append("firstName", new BasicDBObject("$first", "$firstName")))));
 
 			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, DoctorAnalyticPieChartResponse.class);
