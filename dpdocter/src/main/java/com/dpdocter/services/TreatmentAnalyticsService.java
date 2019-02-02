@@ -28,6 +28,6 @@ public interface TreatmentAnalyticsService {
 	List<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(String locationId, String hospitalId,
 			String fromDate, String toDate);
 
-	Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate, String toDate);
+	Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate, String toDate,String searchTerm);
 
 }

@@ -8,21 +8,25 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.PatientAnalyticData;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AnalyticResponse;
+import com.dpdocter.response.DoctorPatientAnalyticResponse;
 import com.dpdocter.services.PatientAnalyticService;
 import com.mongodb.BasicDBObject;
 
@@ -36,6 +40,22 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	Logger logger = Logger.getLogger(PatientAnalyticServiceImpl.class);
 
+	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
+		Criteria criteria = new Criteria();
+
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			criteria.and("locationId").is(new ObjectId(locationId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+			criteria.and("hospitalId").is(new ObjectId(hospitalId));
+		}
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
+		return criteria;
+
+	}
+
 	@Override
 	public List<AnalyticResponse> getPatientAnalytic(String doctorId, String locationId, String hospitalId,
 			String groupId, String fromDate, String toDate, String queryType, String searchType, String searchTerm) {
@@ -43,8 +63,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
 
@@ -63,19 +81,17 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				from = new Date(date);
 				to = new Date();
 			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
 
-				response = getNewPatientAnalyticData(from, to, criteria, searchType, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getNewPatientAnalyticData(from, to, criteria, searchType, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
 			case CITY_WISE: {
-				response = getPatientCountCitiWise(from, to, criteria, searchType, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getPatientCountCitiWise(from, to, criteria, searchType, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
@@ -83,14 +99,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				if (DPDoctorUtils.allStringsEmpty(groupId)) {
 					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
 				}
-				response = getPatientCountGroupWise(from, to, criteria, searchType, doctorId, locationId,
-						hospitalId, groupId, searchTerm);
+				response = getPatientCountGroupWise(from, to, criteria, searchType, doctorId, locationId, hospitalId,
+						groupId, searchTerm);
 				break;
 			}
 
 			case VISITED_PATIENT: {
-				response = getVisitedPatientcount(from, to, criteria, searchType, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getVisitedPatientcount(from, to, criteria, searchType, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
@@ -566,8 +582,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
 
@@ -586,20 +600,18 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				from = new Date(date);
 				to = new Date();
 			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
 
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
 
-				response = getPatientDetail(page, size, from, to, criteria, null, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getPatientDetail(page, size, from, to, criteria, null, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
 			case CITY_WISE: {
-				response = getPatientDetail(page, size, from, to, criteria, city, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getPatientDetail(page, size, from, to, criteria, city, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
@@ -607,14 +619,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				if (DPDoctorUtils.allStringsEmpty(groupId)) {
 					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
 				}
-				response = getGroupPatientDetail(page, size, from, to, criteria, city, doctorId, locationId,
-						hospitalId, groupId, searchTerm);
+				response = getGroupPatientDetail(page, size, from, to, criteria, city, doctorId, locationId, hospitalId,
+						groupId, searchTerm);
 				break;
 			}
 
 			case VISITED_PATIENT: {
-				response = getVisitedPatientData(page, size,from, to, criteria, doctorId, locationId,
-						hospitalId, searchTerm);
+				response = getVisitedPatientData(page, size, from, to, criteria, doctorId, locationId, hospitalId,
+						searchTerm);
 				break;
 			}
 
@@ -635,7 +647,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<PatientAnalyticData> getPatientDetail(int page, int size,  Date fromTime, Date toTime,
+	private List<PatientAnalyticData> getPatientDetail(int page, int size, Date fromTime, Date toTime,
 			Criteria criteria, String city, String doctorId, String locationId, String hospitalId, String searchTerm) {
 
 		if (!DPDoctorUtils.anyStringEmpty(city)) {
@@ -693,7 +705,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private List<PatientAnalyticData> getGroupPatientDetail(int page, int size,  Date fromTime, Date toTime,
+	private List<PatientAnalyticData> getGroupPatientDetail(int page, int size, Date fromTime, Date toTime,
 			Criteria criteria, String city, String doctorId, String locationId, String hospitalId, String groupId,
 			String searchTerm) {
 
@@ -840,8 +852,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 		try {
 			Criteria criteria = new Criteria();
-			DateTime fromTime = null;
-			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
 
@@ -860,8 +870,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				from = new Date(date);
 				to = new Date();
 			}
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
 
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
 			case NEW_PATIENT: {
@@ -881,14 +889,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				if (DPDoctorUtils.allStringsEmpty(groupId)) {
 					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
 				}
-				response = getGroupPatientDetailCount(from, to, criteria, city, doctorId, locationId,
-						hospitalId, groupId, searchTerm);
+				response = getGroupPatientDetailCount(from, to, criteria, city, doctorId, locationId, hospitalId,
+						groupId, searchTerm);
 				break;
 			}
 
 			case VISITED_PATIENT: {
-				response = getVisitedPatientCount(from, to, criteria, doctorId, locationId, hospitalId,
-						searchTerm);
+				response = getVisitedPatientCount(from, to, criteria, doctorId, locationId, hospitalId, searchTerm);
 				break;
 			}
 
@@ -909,8 +916,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	}
 
-	private Integer getPatientDetailCount(Date fromTime, Date toTime, Criteria criteria, String city,
-			String doctorId, String locationId, String hospitalId, String searchTerm) {
+	private Integer getPatientDetailCount(Date fromTime, Date toTime, Criteria criteria, String city, String doctorId,
+			String locationId, String hospitalId, String searchTerm) {
 
 		if (!DPDoctorUtils.anyStringEmpty(city)) {
 			criteria.and("address.city").is(city);
@@ -1048,5 +1055,77 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				"patient_visit_cl", PatientAnalyticData.class);
 		return aggregationResults.getMappedResults().size();
 
+	}
+
+	@Override
+	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate) {
+		DoctorPatientAnalyticResponse data = new DoctorPatientAnalyticResponse();
+		try {
+			Criteria criteria = null;
+			Date from = null;
+			Date to = null;
+			Date lastdate = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(0);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(0);
+				to = new Date();
+			}
+			long diff = to.getTime() - from.getTime();
+			long diffDays = (diff / (24 * 60 * 60 * 1000));
+			lastdate = new Date(from.getTime() - ((diffDays + 1) * (24 * 60 * 60 * 1000)));
+			criteria = getCriteria(null, locationId, hospitalId);
+			data.setTotalPatient((int) mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.sort(Direction.DESC, "createdTime")),
+					PatientCollection.class, PatientCollection.class).getMappedResults().size());
+
+			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(from).lte(to);
+			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
+
+			// hike in patient
+			int total = 0;
+
+			if (data.getTotalNewPatient() > 0) {
+				// hike in patient
+
+				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(lastdate).lte(from);
+				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
+				data.setChangeInTotalPatientInPercent(total);
+
+			}
+			// visited patient
+			criteria = getCriteria(null, locationId, hospitalId).and("visit.adminCreatedTime").gte(from).lte(to)
+					.and("visit.locationId").is(new ObjectId(locationId)).and("visit.discarded").is(false)
+					.and("visit.hospitalId").is(new ObjectId(hospitalId));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("visit.doctorId").is(new ObjectId(doctorId));
+			}
+
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"), Aggregation.unwind("visit"),
+					Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
+			total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
+					.getMappedResults().size();
+			data.setTotalVisitedPatient(total);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Patient analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Patient analytic");
+		}
+		return data;
 	}
 }

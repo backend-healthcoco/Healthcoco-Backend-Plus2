@@ -423,7 +423,7 @@ public class AnalyticsAPI {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
-		DoctorPatientAnalyticResponse data = analyticsService.getPatientAnalytic(doctorId, locationId, hospitalId,
+		DoctorPatientAnalyticResponse data = patientAnalyticService.getPatientAnalytic(doctorId, locationId, hospitalId,
 				fromDate, toDate);
 		Response<DoctorPatientAnalyticResponse> response = new Response<DoctorPatientAnalyticResponse>();
 		response.setData(data);
@@ -556,8 +556,7 @@ public class AnalyticsAPI {
 		}
 		Response<TreatmentAnalyticDetail> response = new Response<TreatmentAnalyticDetail>();
 		Integer count = 0;
-		count = treatmentAnalyticsService.countTreatmentService(doctorId, locationId, hospitalId, fromDate, toDate,
-				searchTerm);
+		count = treatmentAnalyticsService.countTreatments(doctorId, locationId, hospitalId, fromDate, toDate,searchTerm);
 		List<TreatmentAnalyticDetail> data = null;
 		if (count > 0) {
 			data = treatmentAnalyticsService.getTreatmentAnalyticDetail(page, size, doctorId, locationId, hospitalId,
@@ -580,7 +579,7 @@ public class AnalyticsAPI {
 		}
 		Response<DoctorAnalyticPieChartResponse> response = new Response<DoctorAnalyticPieChartResponse>();
 		Integer count = 0;
-		count = treatmentAnalyticsService.countTreatments(null, locationId, hospitalId, fromDate, toDate);
+		count = treatmentAnalyticsService.countTreatments(null, locationId, hospitalId, fromDate, toDate,searchTerm);
 		List<DoctorAnalyticPieChartResponse> data = null;
 		if (count > 0) {
 			data = treatmentAnalyticsService.getTreatmentAnalyticForPieChart(locationId, hospitalId, fromDate, toDate);

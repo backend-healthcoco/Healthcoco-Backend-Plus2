@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.PatientAnalyticData;
 import com.dpdocter.response.AnalyticResponse;
+import com.dpdocter.response.DoctorPatientAnalyticResponse;
 
 public interface PatientAnalyticService {
 
@@ -16,4 +17,6 @@ public interface PatientAnalyticService {
 	public List<PatientAnalyticData> getPatientData(int page, int size, String doctorId, String locationId,
 			String hospitalId, String groupId, String fromDate, String toDate, String queryType, String searchTerm,
 			String city);
+	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate);
 }

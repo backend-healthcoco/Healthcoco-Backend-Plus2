@@ -30,7 +30,6 @@ import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -42,7 +41,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.DiagnosticTestsAnalyticsData;
-import com.dpdocter.response.DoctorPatientAnalyticResponse;
 import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
 import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
@@ -137,23 +135,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria = null;
 			Criteria itemCriteria = new Criteria();
 
-			Date from = null;
-			Date to = null;
-			long date = 0l;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
+			
 
 			criteria = getCriteria(doctorId, locationId, null);
 
@@ -366,87 +348,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return data;
 
 	}
-
-	@Override
-	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate) {
-		DoctorPatientAnalyticResponse data = new DoctorPatientAnalyticResponse();
-		try {
-			Criteria criteria = null;
-			DateTime fromTime = null;
-			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
-			Date lastdate = null;
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(0);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(0);
-				to = new Date();
-			}
-			long diff = to.getTime() - from.getTime();
-			long diffDays = (diff / (24 * 60 * 60 * 1000));
-			lastdate = new Date(from.getTime() - ((diffDays + 1) * (24 * 60 * 60 * 1000)));
-
-			DateTime last = new DateTime(lastdate);
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
-
-			criteria = getCriteria(null, locationId, hospitalId);
-			data.setTotalPatient((int) mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-							Aggregation.sort(Direction.DESC, "createdTime")),
-					PatientCollection.class, PatientCollection.class).getMappedResults().size());
-
-			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(from).lte(to);
-			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
-
-			// hike in patient
-			int total = 0;
-
-			if (data.getTotalNewPatient() > 0) {
-				// hike in patient
-
-				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(lastdate).lte(from);
-				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
-				data.setChangeInTotalPatientInPercent(total);
-
-			}
-			// visited patient
-			criteria = getCriteria(null, locationId, hospitalId).and("visit.adminCreatedTime").gte(from).lte(to)
-					.and("visit.locationId").is(new ObjectId(locationId)).and("visit.discarded").is(false)
-					.and("visit.hospitalId").is(new ObjectId(hospitalId));
-
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("visit.doctorId").is(new ObjectId(doctorId));
-			}
-
-			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"), Aggregation.unwind("visit"),
-					Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
-			total = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientCollection.class)
-					.getMappedResults().size();
-			data.setTotalVisitedPatient(total);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While getting Patient analytic");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Patient analytic");
-		}
-		return data;
-	}
-
-	
 
 	@Override
 	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
@@ -2255,7 +2156,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		return response;
 	}
 
-	
 	@Override
 	public List<ExpenseCountResponse> getDoctorExpenseAnalytic(String doctorId, String searchType, String locationId,
 			String hospitalId, Boolean discarded, String fromDate, String toDate, String expenseType,

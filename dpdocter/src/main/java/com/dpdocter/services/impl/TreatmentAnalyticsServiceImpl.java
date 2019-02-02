@@ -88,8 +88,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			toTime = new DateTime(to);
 
 			CustomAggregationOperation aggregationOperation = null;
-			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("count", "$patientId"),
-					Fields.field("date", "$createdTime"), Fields.field("createdTime", "$createdTime")));
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("count", "$patientId"), Fields.field("createdTime", "$createdTime")));
 
 			criteria.and("createdTime").gte(fromTime).lte(toTime);
 
@@ -115,7 +115,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 										.append("month", new BasicDBObject("$first", "$month"))
 										.append("year", new BasicDBObject("$first", "$year"))
 										.append("week", new BasicDBObject("$first", "$week"))
-										.append("date", new BasicDBObject("$first", "$date"))
+										.append("date", new BasicDBObject("$first", "$createdTime"))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("count", new BasicDBObject("$sum", 1))));
 
@@ -130,7 +130,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 										.append("month", new BasicDBObject("$first", "$month"))
 										.append("year", new BasicDBObject("$first", "$year"))
 										.append("week", new BasicDBObject("$first", "$week"))
-										.append("date", new BasicDBObject("$first", "$date"))
+										.append("date", new BasicDBObject("$first", "$createdTime"))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("count", new BasicDBObject("$sum", 1))));
 
@@ -143,7 +143,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 						new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 								.append("month", new BasicDBObject("$first", "$month"))
 								.append("year", new BasicDBObject("$first", "$year"))
-								.append("date", new BasicDBObject("$first", "$date"))
+								.append("date", new BasicDBObject("$first", "$createdTime"))
 								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 								.append("count", new BasicDBObject("$sum", 1))));
 
@@ -154,7 +154,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 						new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 								.append("year", new BasicDBObject("$first", "$year"))
-								.append("date", new BasicDBObject("$first", "$date"))
+								.append("date", new BasicDBObject("$first", "$createdTime"))
 								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 								.append("count", new BasicDBObject("$sum", 1))));
 
@@ -170,7 +170,13 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 							Aggregation.lookup(
 									"treatment_services_cl", "$treatments.treatmentServiceId", "_id", "treatments"),
 							Aggregation.unwind("treatments"),
-							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "$_id")
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("patientId", new BasicDBObject("$first", "$patientId")))),
+
+							projectList.and("createdTime").as("date").and("createdTime").extractDayOfMonth().as("day").and("createdTime")
 									.extractMonth().as("month").and("createdTime").extractYear().as("year")
 									.and("createdTime").extractWeek().as("week"),
 							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
@@ -194,7 +200,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 	@Override
 	public List<TreatmentService> getTreatmentsAnalytics(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, int page, int size,String searchTerm) {
+			String fromDate, String toDate, String searchType, int page, int size, String searchTerm) {
 		List<TreatmentService> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -246,8 +252,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
 								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
-								Aggregation.unwind("treatmentServices"),
-								Aggregation.match(criteriaSecond),
+								Aggregation.unwind("treatmentServices"), Aggregation.match(criteriaSecond),
 								new CustomAggregationOperation(
 										new BasicDBObject("$group",
 												new BasicDBObject("_id", "$_id")
@@ -296,8 +301,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.group("$treatments.treatmentServiceId").count().as("count"),
 								Aggregation.lookup("treatment_services_cl", "_id", "_id", "treatmentServices"),
-								Aggregation.unwind("treatmentServices"),
-								Aggregation.match(criteriaSecond),
+								Aggregation.unwind("treatmentServices"), Aggregation.match(criteriaSecond),
 								new CustomAggregationOperation(
 										new BasicDBObject("$group",
 												new BasicDBObject("_id", "$_id")
@@ -538,8 +542,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 				criteria.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-
-				criteria.orOperator(new Criteria("service.name").regex(searchTerm, "i"),
+				criteria.orOperator(new Criteria("services.name").regex(searchTerm, "i"),
 						new Criteria("patient.firstName").regex(searchTerm, "i"));
 			}
 			Aggregation aggregation = null;
@@ -667,7 +670,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 	@Override
 	public Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate) {
+			String toDate, String searchTerm) {
 		Integer response = 0;
 		try {
 			Criteria criteria = new Criteria();
@@ -682,6 +685,11 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+
+				criteria.orOperator(new Criteria("services.name").regex(searchTerm, "i"),
+						new Criteria("patient.firstName").regex(searchTerm, "i"));
+			}
 			DateTime fromTime = null;
 			DateTime toTime = null;
 			Date from = null;
@@ -711,10 +719,11 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 			Aggregation aggregation = null;
 
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
-					Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
-							"treatmentServices"),
-					Aggregation.unwind("treatmentServices"),
+			aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
+					Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id", "services"),
+					Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+					Aggregation.unwind("doctor"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+					Aggregation.unwind("patient"), Aggregation.match(criteria),
 					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
 
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, TreatmentService.class)
@@ -767,8 +776,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 							"totalTreatmentService"),
 					Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$treatments.treatmentServiceId"))));
+					new CustomAggregationOperation(
+							new BasicDBObject("$group", new BasicDBObject("_id", "$treatments.treatmentServiceId"))));
 
 			response = mongoTemplate
 					.aggregate(aggregation, PatientTreatmentCollection.class, TretmentAnalyticMongoResponse.class)
