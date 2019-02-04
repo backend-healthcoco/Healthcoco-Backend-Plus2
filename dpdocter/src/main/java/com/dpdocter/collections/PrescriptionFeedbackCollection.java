@@ -30,6 +30,9 @@ public class PrescriptionFeedbackCollection extends GenericCollection {
 	@Field
 	private String doctorReply;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -102,12 +105,19 @@ public class PrescriptionFeedbackCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionFeedbackCollection [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
 				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", medicationOnTime=" + medicationOnTime
 				+ ", medicationEffectType=" + medicationEffectType + ", description=" + description + ", doctorReply="
-				+ doctorReply + "]";
+				+ doctorReply + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

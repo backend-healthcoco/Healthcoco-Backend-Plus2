@@ -32,7 +32,9 @@ public class NutritionRecordCollection extends GenericCollection {
 	private ObjectId hospitalId;
 	@Field
 	private Boolean discarded = false;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -119,6 +121,23 @@ public class NutritionRecordCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "NutritionRecordCollection [id=" + id + ", uniqueRecordId=" + uniqueRecordId + ", recordsFiles="
+				+ recordsFiles + ", recordsLabel=" + recordsLabel + ", explanation=" + explanation
+				+ ", shareWithPatient=" + shareWithPatient + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

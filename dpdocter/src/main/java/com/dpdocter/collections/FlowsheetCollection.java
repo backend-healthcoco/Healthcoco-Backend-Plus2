@@ -32,7 +32,9 @@ public class FlowsheetCollection extends GenericCollection {
 	private Boolean discarded = false;
 	@Field
 	private String dischargeSummaryUniqueEMRId;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public String getUniqueId() {
 		return uniqueId;
 	}
@@ -113,12 +115,21 @@ public class FlowsheetCollection extends GenericCollection {
 		this.dischargeSummaryUniqueEMRId = dischargeSummaryUniqueEMRId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "FlowsheetCollection [id=" + id + ", dischargeSummaryId=" + dischargeSummaryId + ", uniqueId=" + uniqueId
 				+ ", flowSheets=" + flowSheets + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
-				+ ", dischargeSummaryUniqueEMRId=" + dischargeSummaryUniqueEMRId + "]";
+				+ ", dischargeSummaryUniqueEMRId=" + dischargeSummaryUniqueEMRId + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
 
 }

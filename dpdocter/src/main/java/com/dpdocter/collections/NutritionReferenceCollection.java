@@ -40,7 +40,8 @@ public class NutritionReferenceCollection extends GenericCollection {
 	private ObjectId referredLocationId;
 	@Field
 	private ObjectId referredHospitalId;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
 	public ObjectId getId() {
 		return id;
 	}
@@ -145,13 +146,22 @@ public class NutritionReferenceCollection extends GenericCollection {
 		this.referredHospitalId = referredHospitalId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "NutritionReferenceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", details=" + details
 				+ ", durationInMonths=" + durationInMonths + ", reports=" + reports + ", regularityStatus="
 				+ regularityStatus + ", goalStatus=" + goalStatus + ", referredDoctorId=" + referredDoctorId
-				+ ", referredLocationId=" + referredLocationId + ", referredHospitalId=" + referredHospitalId + "]";
+				+ ", referredLocationId=" + referredLocationId + ", referredHospitalId=" + referredHospitalId
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

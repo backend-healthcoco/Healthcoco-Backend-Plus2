@@ -52,6 +52,9 @@ public class UserRecordsCollection extends GenericCollection {
 	@Field
 	private ObjectId shareWith;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getShareWith() {
 		return shareWith;
 	}
@@ -154,6 +157,23 @@ public class UserRecordsCollection extends GenericCollection {
 
 	public void setRecordsFiles(List<RecordsFile> recordsFiles) {
 		this.recordsFiles = recordsFiles;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "UserRecordsCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsFiles=" + recordsFiles
+				+ ", recordsLabel=" + recordsLabel + ", explanation=" + explanation + ", patientId=" + patientId
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", isVisible=" + isVisible + ", discarded=" + discarded + ", uploadedBy=" + uploadedBy
+				+ ", shareWith=" + shareWith + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

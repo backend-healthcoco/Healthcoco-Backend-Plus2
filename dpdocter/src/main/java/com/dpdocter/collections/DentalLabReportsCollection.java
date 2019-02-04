@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.response.ImageURLResponse;
 
@@ -36,6 +37,9 @@ public class DentalLabReportsCollection extends GenericCollection {
 
 	private String recordsState;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -140,13 +144,21 @@ public class DentalLabReportsCollection extends GenericCollection {
 		this.recordsState = recordsState;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DentalLabReportsCollection [id=" + id + ", requestId=" + requestId + ", patientId=" + patientId
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", dentalLabReports=" + dentalLabReports + ", explanation=" + explanation + ", discarded=" + discarded
 				+ ", uploadedByDoctorId=" + uploadedByDoctorId + ", uploadedByLocationId=" + uploadedByLocationId
-				+ ", uploadedByHospitalId=" + uploadedByHospitalId + ", recordsState=" + recordsState + "]";
+				+ ", uploadedByHospitalId=" + uploadedByHospitalId + ", recordsState=" + recordsState
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

@@ -2,7 +2,6 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 //@Document(collection = "inventory_stock_cl")
@@ -38,7 +37,9 @@ public class InventoryStockCollection extends GenericCollection {
 	private String resourceId;
 	@Field
 	private ObjectId invoiceId;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -159,12 +160,21 @@ public class InventoryStockCollection extends GenericCollection {
 		this.totalPrice = totalPrice;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "InventoryStockCollection [id=" + id + ", itemId=" + itemId + ", quantity=" + quantity + ", batchId="
 				+ batchId + ", costPrice=" + costPrice + ", retailPrice=" + retailPrice + ", stockType=" + stockType
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", totalPrice=" + totalPrice + ", resourceId=" + resourceId + "]";
+				+ ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", discarded=" + discarded + ", totalPrice=" + totalPrice + ", resourceId=" + resourceId
+				+ ", invoiceId=" + invoiceId + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

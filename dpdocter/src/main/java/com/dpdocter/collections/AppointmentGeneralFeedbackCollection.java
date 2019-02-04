@@ -42,7 +42,9 @@ public class AppointmentGeneralFeedbackCollection extends GenericCollection {
 	private Boolean isApproved;
 	@Field
 	private String adminUpdatedExperienceWithDoctor;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -179,14 +181,25 @@ public class AppointmentGeneralFeedbackCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentGeneralFeedbackCollection [id=" + id + ", locationId=" + locationId + ", doctorId="
-				+ doctorId + ", patientId=" + patientId + ", doctorRecommendation=" + doctorRecommendation
-				+ ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime + ", howLateWasAppointment="
-				+ howLateWasAppointment + ", overallExperience=" + overallExperience + ", reasonOfVisit="
-				+ reasonOfVisit + ", experienceWithDoctor=" + experienceWithDoctor + ", noOfRecommendation="
-				+ noOfRecommendation + ", doctorReply=" + doctorReply + ", isAnonymous=" + isAnonymous + "]";
+				+ doctorId + ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", patientName=" + patientName
+				+ ", doctorRecommendation=" + doctorRecommendation + ", isAppointmentStartedOnTime="
+				+ isAppointmentStartedOnTime + ", howLateWasAppointment=" + howLateWasAppointment
+				+ ", overallExperience=" + overallExperience + ", reasonOfVisit=" + reasonOfVisit
+				+ ", experienceWithDoctor=" + experienceWithDoctor + ", noOfRecommendation=" + noOfRecommendation
+				+ ", doctorReply=" + doctorReply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved
+				+ ", adminUpdatedExperienceWithDoctor=" + adminUpdatedExperienceWithDoctor + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
 
 }

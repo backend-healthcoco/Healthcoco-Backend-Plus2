@@ -36,6 +36,9 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 	@Field
 	private Boolean isDiscarded = false;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -142,4 +145,22 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 		this.pharmacyReply = pharmacyReply;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "PharmacyFeedbackCollection [id=" + id + ", patientId=" + patientId + ", localeId=" + localeId
+				+ ", patientName=" + patientName + ", pharmacyRecommendation=" + pharmacyRecommendation
+				+ ", overallExperience=" + overallExperience + ", experienceWithPharmacy=" + experienceWithPharmacy
+				+ ", noOfRecommendation=" + noOfRecommendation + ", pharmacyReply=" + pharmacyReply + ", isAnonymous="
+				+ isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperienceWithPharmacy="
+				+ adminUpdatedExperienceWithPharmacy + ", isDiscarded=" + isDiscarded + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
+	}
 }

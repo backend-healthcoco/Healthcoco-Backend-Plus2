@@ -32,7 +32,9 @@ public class DietPlanCollection extends GenericCollection {
 	private List<DietplanItem> items;
 	@Field
 	private MealQuantity calories;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -103,6 +105,22 @@ public class DietPlanCollection extends GenericCollection {
 
 	public void setCalories(MealQuantity calories) {
 		this.calories = calories;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DietPlanCollection [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
+				+ ", discarded=" + discarded + ", items=" + items + ", calories=" + calories + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
 
 }

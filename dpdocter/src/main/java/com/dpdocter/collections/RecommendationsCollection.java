@@ -22,6 +22,9 @@ public class RecommendationsCollection extends GenericCollection {
 	@Field
 	private Boolean discarded = false;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -62,6 +65,18 @@ public class RecommendationsCollection extends GenericCollection {
 		this.locationId = locationId;
 	}
 
-	
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
 
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "RecommendationsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", patientId=" + patientId + ", discarded=" + discarded + ", isPatientDiscarded=" + isPatientDiscarded
+				+ "]";
+	}
 }

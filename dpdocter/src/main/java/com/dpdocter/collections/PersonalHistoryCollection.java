@@ -26,7 +26,9 @@ public class PersonalHistoryCollection extends GenericCollection {
 	private ObjectId hospitalId;
 	@Field
 	private ObjectId patientId;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -99,11 +101,20 @@ public class PersonalHistoryCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "PersonalHistoryCollection [id=" + id + ", diet=" + diet + ", addictions=" + addictions + ", bowelHabit="
 				+ bowelHabit + ", bladderHabit=" + bladderHabit + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + "]";
+				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
 
 }

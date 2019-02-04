@@ -94,6 +94,9 @@ public class ConsentFormCollection extends GenericCollection {
 	@Field
 	private String PNUM;
 	
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -310,6 +313,14 @@ public class ConsentFormCollection extends GenericCollection {
 		PNUM = pNUM;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "ConsentFormCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -320,7 +331,7 @@ public class ConsentFormCollection extends GenericCollection {
 				+ declaration + ", title=" + title + ", dateOfSign=" + dateOfSign + ", signImageURL=" + signImageURL
 				+ ", medicalHistory=" + medicalHistory + ", discarded=" + discarded + ", templateId=" + templateId
 				+ ", inputElements=" + inputElements + ", type=" + type + ", templateHtmlText=" + templateHtmlText
-				+ ", PNUM=" + PNUM + "]";
+				+ ", PNUM=" + PNUM + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

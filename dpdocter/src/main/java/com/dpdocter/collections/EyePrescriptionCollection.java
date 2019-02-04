@@ -74,6 +74,9 @@ public class EyePrescriptionCollection extends GenericCollection {
 	@Field
 	private String quality;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -250,6 +253,14 @@ public class EyePrescriptionCollection extends GenericCollection {
 		this.quality = quality;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "EyePrescriptionCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId
@@ -259,6 +270,7 @@ public class EyePrescriptionCollection extends GenericCollection {
 				+ ", remarks=" + remarks + ", replacementInterval=" + replacementInterval + ", lensColor=" + lensColor
 				+ ", lensBrand=" + lensBrand + ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory
 				+ ", discarded=" + discarded + ", isOTPVerified=" + isOTPVerified + ", visitId=" + visitId
-				+ ", quality=" + quality + "]";
+				+ ", quality=" + quality + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
+
 }

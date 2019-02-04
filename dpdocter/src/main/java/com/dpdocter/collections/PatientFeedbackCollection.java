@@ -61,7 +61,9 @@ public class PatientFeedbackCollection extends GenericCollection {
 	private ObjectId prescriptionId;
 	@Field
 	private List<QuestionAnswers> questionAnswers;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -246,6 +248,14 @@ public class PatientFeedbackCollection extends GenericCollection {
 		this.questionAnswers = questionAnswers;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedbackCollection [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
@@ -255,7 +265,8 @@ public class PatientFeedbackCollection extends GenericCollection {
 				+ overallExperience + ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply="
 				+ reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
-				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType + "]";
+				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType
+				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + ", questionAnswers="
+				+ questionAnswers + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

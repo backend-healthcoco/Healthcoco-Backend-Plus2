@@ -1,22 +1,34 @@
 package com.dpdocter.collections;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.BirthAchievement;
-import com.dpdocter.beans.GrowthChart;
+@Document(collection = "share_report_with_patient_cl")
+public class SharedReportCollection extends GenericCollection {
 
-public class BirthDetailsCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
-	private List<BirthAchievement> birthAchievements;
-	private GrowthChart growthChart;
+
+	@Field
 	private ObjectId doctorId;
+
+	@Field
 	private ObjectId locationId;
+
+	@Field
 	private ObjectId hospitalId;
+
+	@Field
 	private ObjectId patientId;
+
+	@Field
+	private ObjectId reportId;
+
+	@Field
+	private Boolean discarded = false;
+
 	@Field
 	private Boolean isPatientDiscarded = false;
 	
@@ -26,22 +38,6 @@ public class BirthDetailsCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public List<BirthAchievement> getBirthAchievements() {
-		return birthAchievements;
-	}
-
-	public void setBirthAchievements(List<BirthAchievement> birthAchievements) {
-		this.birthAchievements = birthAchievements;
-	}
-
-	public GrowthChart getGrowthChart() {
-		return growthChart;
-	}
-
-	public void setGrowthChart(GrowthChart growthChart) {
-		this.growthChart = growthChart;
 	}
 
 	public ObjectId getDoctorId() {
@@ -76,6 +72,22 @@ public class BirthDetailsCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public ObjectId getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(ObjectId reportId) {
+		this.reportId = reportId;
+	}
+
 	public Boolean getIsPatientDiscarded() {
 		return isPatientDiscarded;
 	}
@@ -86,9 +98,8 @@ public class BirthDetailsCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "BirthDetailsCollection [id=" + id + ", birthAchievements=" + birthAchievements + ", growthChart="
-				+ growthChart + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+		return "SharedReportCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", reportId=" + reportId + ", discarded="
+				+ discarded + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

@@ -47,6 +47,9 @@ public class PatientMeasurementCollection extends GenericCollection {
 	@Field
 	private BodyContent legBody;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -191,4 +194,21 @@ public class PatientMeasurementCollection extends GenericCollection {
 		this.assessmentId = assessmentId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientMeasurementCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", assessmentId=" + assessmentId
+				+ ", weightInKG=" + weightInKG + ", heightInCM=" + heightInCM + ", bmi=" + bmi + ", bodyAge=" + bodyAge
+				+ ", waistHipRatio=" + waistHipRatio + ", bodyFat=" + bodyFat + ", bmr=" + bmr + ", vfat=" + vfat
+				+ ", wholeBody=" + wholeBody + ", armBody=" + armBody + ", trunkBody=" + trunkBody + ", legBody="
+				+ legBody + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+	}
 }

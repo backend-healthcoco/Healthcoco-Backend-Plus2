@@ -44,7 +44,7 @@ public interface RegistrationService {
 	RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request, List<String> infoType);
 
 	List<RegisteredPatientDetails> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId,
-			String hospitalId, String role);
+			String hospitalId, String role, Boolean forChangeNumber);
 
 	RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId,
 			String hospitalId);

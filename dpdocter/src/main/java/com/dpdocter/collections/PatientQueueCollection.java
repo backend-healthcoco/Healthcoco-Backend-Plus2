@@ -66,6 +66,9 @@ public class PatientQueueCollection extends GenericCollection {
     @Field
     private long checkedOutAt = 0;
     
+    @Field
+	private Boolean isPatientDiscarded = false;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -194,12 +197,21 @@ public class PatientQueueCollection extends GenericCollection {
 		this.engagedFor = engagedFor;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientQueueCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", date=" + date + ", startTime="
 				+ startTime + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + ", discarded="
 				+ discarded + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor
-				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + "]";
+				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 }
