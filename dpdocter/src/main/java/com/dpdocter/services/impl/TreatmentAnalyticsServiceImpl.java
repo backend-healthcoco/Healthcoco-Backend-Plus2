@@ -104,66 +104,66 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			criteria.and("discarded").is(false);
+			if (!DPDoctorUtils.anyStringEmpty(searchType))
+				switch (SearchType.valueOf(searchType.toUpperCase())) {
+				case DAILY: {
 
-			switch (SearchType.valueOf(searchType.toUpperCase())) {
-			case DAILY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
+											.append("day", new BasicDBObject("$first", "$day"))
+											.append("month", new BasicDBObject("$first", "$month"))
+											.append("year", new BasicDBObject("$first", "$year"))
+											.append("week", new BasicDBObject("$first", "$week"))
+											.append("date", new BasicDBObject("$first", "$createdTime"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("count", new BasicDBObject("$sum", 1))));
 
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
-										.append("day", new BasicDBObject("$first", "$day"))
-										.append("month", new BasicDBObject("$first", "$month"))
-										.append("year", new BasicDBObject("$first", "$year"))
-										.append("week", new BasicDBObject("$first", "$week"))
-										.append("date", new BasicDBObject("$first", "$createdTime"))
-										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-										.append("count", new BasicDBObject("$sum", 1))));
+					break;
+				}
 
-				break;
-			}
+				case WEEKLY: {
 
-			case WEEKLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("week", "$week").append("month", "$month").append("year",
+											"$year")).append("month", new BasicDBObject("$first", "$month"))
+													.append("year", new BasicDBObject("$first", "$year"))
+													.append("week", new BasicDBObject("$first", "$week"))
+													.append("date", new BasicDBObject("$first", "$createdTime"))
+													.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+													.append("count", new BasicDBObject("$sum", 1))));
 
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id",
-								new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year"))
-										.append("month", new BasicDBObject("$first", "$month"))
-										.append("year", new BasicDBObject("$first", "$year"))
-										.append("week", new BasicDBObject("$first", "$week"))
-										.append("date", new BasicDBObject("$first", "$createdTime"))
-										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-										.append("count", new BasicDBObject("$sum", 1))));
+					break;
+				}
 
-				break;
-			}
+				case MONTHLY: {
 
-			case MONTHLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$createdTime"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
-								.append("month", new BasicDBObject("$first", "$month"))
-								.append("year", new BasicDBObject("$first", "$year"))
-								.append("date", new BasicDBObject("$first", "$createdTime"))
-								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-								.append("count", new BasicDBObject("$sum", 1))));
+					break;
+				}
+				case YEARLY: {
 
-				break;
-			}
-			case YEARLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$createdTime"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-						new BasicDBObject("_id", new BasicDBObject("year", "$year"))
-								.append("year", new BasicDBObject("$first", "$year"))
-								.append("date", new BasicDBObject("$first", "$createdTime"))
-								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-								.append("count", new BasicDBObject("$sum", 1))));
+					break;
 
-				break;
-
-			}
-			default:
-				break;
-			}
+				}
+				default:
+					break;
+				}
 
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
@@ -176,9 +176,9 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 											.append("patientId", new BasicDBObject("$first", "$patientId")))),
 
-							projectList.and("createdTime").as("date").and("createdTime").extractDayOfMonth().as("day").and("createdTime")
-									.extractMonth().as("month").and("createdTime").extractYear().as("year")
-									.and("createdTime").extractWeek().as("week"),
+							projectList.and("createdTime").as("date").and("createdTime").extractDayOfMonth().as("day")
+									.and("createdTime").extractMonth().as("month").and("createdTime").extractYear()
+									.as("year").and("createdTime").extractWeek().as("week"),
 							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
@@ -199,8 +199,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 	}
 
 	@Override
-	public List<TreatmentService> getTreatmentsAnalytics(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, int page, int size, String searchTerm) {
+	public List<TreatmentService> getTreatmentServiceAnalytics(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate, int page, int size, String searchTerm) {
 		List<TreatmentService> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -357,8 +357,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 	}
 
 	@Override
-	public List<DoctorTreatmentAnalyticResponse> getMostTreatmentAnalytic(int page, int size, String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
+	public List<DoctorTreatmentAnalyticResponse> getTreatmentServiceAnalyticWithStatus(int page, int size,
+			String doctorId, String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
 		List<DoctorTreatmentAnalyticResponse> response = null;
 		try {
 			Criteria criteria = null;

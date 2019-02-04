@@ -16,10 +16,10 @@ public interface TreatmentAnalyticsService {
 	Integer countTreatmentService(String doctorId, String locationId, String hospitalId, String fromDate, String toDate,
 			String searchTerm);
 
-	List<TreatmentService> getTreatmentsAnalytics(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, int page, int size, String searchTerm);
+	List<TreatmentService> getTreatmentServiceAnalytics(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate,  int page, int size, String searchTerm);
 
-	List<DoctorTreatmentAnalyticResponse> getMostTreatmentAnalytic(int page, int size, String doctorId,
+	List<DoctorTreatmentAnalyticResponse> getTreatmentServiceAnalyticWithStatus(int page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm);
 
 	List<TreatmentAnalyticDetail> getTreatmentAnalyticDetail(int page, int size, String doctorId, String locationId,
