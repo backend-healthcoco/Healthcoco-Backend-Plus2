@@ -62,6 +62,7 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
+import com.dpdocter.beans.Immunisation;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.NutritionPlan;
@@ -84,9 +85,21 @@ import com.dpdocter.beans.UserReminders;
 import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
+import com.dpdocter.collections.AssessmentPersonalDetailCollection;
+import com.dpdocter.collections.BirthDetailsCollection;
+import com.dpdocter.collections.BirthHistoryCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ConsentFormCollection;
+import com.dpdocter.collections.DailyImprovementFeedbackCollection;
 import com.dpdocter.collections.DeliveryReportsCollection;
+import com.dpdocter.collections.DentalImagingCollection;
+import com.dpdocter.collections.DentalImagingInvoiceCollection;
+import com.dpdocter.collections.DentalImagingReportsCollection;
+import com.dpdocter.collections.DentalLabPickupCollection;
+import com.dpdocter.collections.DentalLabReportsCollection;
+import com.dpdocter.collections.DentalWorkInvoiceCollection;
+import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -95,35 +108,59 @@ import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
+import com.dpdocter.collections.DrugsAndAllergiesCollection;
 import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.EyeObservationCollection;
+import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.FeedbackCollection;
+import com.dpdocter.collections.FeedbackRecommendationCollection;
+import com.dpdocter.collections.FlowsheetCollection;
 import com.dpdocter.collections.FormContentCollection;
 import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.collections.GrowthChartCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.IPDReportsCollection;
+import com.dpdocter.collections.ImmunisationCollection;
+import com.dpdocter.collections.InventoryStockCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MasterBabyImmunizationCollection;
+import com.dpdocter.collections.NutritionGoalStatusStampingCollection;
+import com.dpdocter.collections.NutritionRecordCollection;
+import com.dpdocter.collections.NutritionReferenceCollection;
+import com.dpdocter.collections.NutritionReferralCollection;
 import com.dpdocter.collections.OPDReportsCollection;
 import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientFeedbackCollection;
+import com.dpdocter.collections.PatientFoodAndExcerciseCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PatientLifeStyleCollection;
+import com.dpdocter.collections.PatientMeasurementCollection;
+import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
+import com.dpdocter.collections.PersonalHistoryCollection;
+import com.dpdocter.collections.PharmacyFeedbackCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.PrescriptionFeedbackCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.ProcedureSheetCollection;
 import com.dpdocter.collections.ProfessionCollection;
+import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.SharedReportCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserAddressCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserNutritionSubscriptionCollection;
+import com.dpdocter.collections.UserRecordsCollection;
 import com.dpdocter.collections.UserRemindersCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.collections.VaccineCollection;
@@ -159,6 +196,7 @@ import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
+import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MasterBabyImmunizationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
@@ -407,6 +445,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private SMSServices smsServices;
 
+	@Autowired
+	private GroupRepository groupRepository;
+	
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -1123,7 +1164,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public List<RegisteredPatientDetails> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId,
-			String hospitalId, String role) {
+			String hospitalId, String role, Boolean forChangeNumber) {
 		List<RegisteredPatientDetails> users = null;
 		try {
 			List<UserLookupResponse> userLookupResponses = mongoTemplate.aggregate(
@@ -1186,7 +1227,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 							user.setIsPartOfClinic(isPartOfClinic);
 							user.setIsPartOfConsultantDoctor(isPartOfConsultantDoctor);
 						}
-						users.add(user);
+						if(forChangeNumber) {
+							if(!user.getIsPartOfClinic())users.add(user);
+						}
+						else {
+							users.add(user);
+						}
 					}
 				}
 			}
@@ -4350,9 +4396,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (patientCollections != null && !patientCollections.isEmpty()) {
 
-				criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
-						.and("hospitalId").is(hospitalObjectId).and("patientId").is(patientObjectId);
-
 				for (PatientCollection patientCollection : patientCollections) {
 					patientCollection.setIsPatientDiscarded(discarded);
 					patientCollection.setDiscarded(discarded);
@@ -4365,64 +4408,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					esPatientDocument.setDiscarded(discarded);
 					esPatientDocument = esPatientRepository.save(esPatientDocument);
 
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							PrescriptionCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							ClinicalNotesCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							PatientVisitCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							PatientTreatmentCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							HistoryCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							RecordsCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							DoctorPatientInvoiceCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							DoctorPatientReceiptCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							DischargeSummaryCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							AdmitCardCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							AppointmentCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							AppointmentBookedSlotCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							DoctorPatientLedgerCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							DoctorPatientDueAmountCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							IPDReportsCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							LabReportsCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							OPDReportsCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							OTReportsCollection.class);
-					mongoTemplate.updateMulti(new Query(criteria),
-							Update.update("isPatientDiscarded", discarded).currentDate("updatedTime"),
-							DeliveryReportsCollection.class);
-
+					updatePatientData(locationObjectId, hospitalObjectId, patientObjectId, "isPatientDiscarded", discarded);
+					
 					response = true;
 				}
 			}
@@ -4461,6 +4448,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
 			String newPatientId, String mobileNumber) {
@@ -4479,26 +4467,79 @@ public class RegistrationServiceImpl implements RegistrationService {
 				ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
 				esPatientDocument.setUserId(newPatientId);
 				esPatientDocument = esPatientRepository.save(esPatientDocument);
-				response = true;
+
+				updatePatientData(locationObjectId, hospitalObjectId, patientObjectId, "patientId", patientCollection.getUserId());
+				
+				List<GroupCollection> groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorObjectId, locationObjectId, hospitalObjectId, new Sort(Direction.ASC, "createdTime"));
+				if(groupCollections != null && !groupCollections.isEmpty()) {
+					
+					Collection<ObjectId> groupIds = CollectionUtils.collect(groupCollections,
+							new BeanToPropertyValueTransformer("id"));
+							
+					Criteria criteria = new Criteria("groupId").in(groupIds).and("patientId").is(patientObjectId);
+					mongoTemplate.updateMulti(new Query(criteria),
+							Update.update("patientId", patientCollection.getUserId()).currentDate("updatedTime"),
+							PatientGroupCollection.class);
+				}
 			} else if (!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 				UserCollection userCollection = userRepository.findOne(patientObjectId);
-				if (userCollection != null) {
-					userCollection.setMobileNumber(mobileNumber);
-					userCollection.setUpdatedTime(new Date());
-					userCollection = userRepository.save(userCollection);
+				
+				List<PatientCollection> patientCollections = patientRepository.findByUserId(patientObjectId);
+				if(patientCollections != null && !patientCollections.isEmpty()) {
+					if(patientCollections.size() == 1) {
+						if (userCollection != null) {
+							userCollection.setMobileNumber(mobileNumber);
+							userCollection.setUpdatedTime(new Date());
+							userCollection = userRepository.save(userCollection);
 
-					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-							patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-					patientCollection.setUpdatedTime(new Date());
-					patientCollection = patientRepository.save(patientCollection);
+							PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+									patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+							patientCollection.setUpdatedTime(new Date());
+							patientCollection = patientRepository.save(patientCollection);
 
-					ESPatientDocument esPatientDocument = esPatientRepository
-							.findOne(patientCollection.getId().toString());
-					esPatientDocument.setMobileNumber(mobileNumber);
-					esPatientDocument = esPatientRepository.save(esPatientDocument);
+							ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
+							esPatientDocument.setMobileNumber(mobileNumber);
+							esPatientDocument = esPatientRepository.save(esPatientDocument);
 
-					response = true;
+							response = true;
+						}
+					}else {
+						UserCollection userCollectionNew = new UserCollection();
+						BeanUtil.map(userCollection, userCollectionNew);
+						
+						userCollectionNew.setId(null);
+						userCollectionNew.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
+						userCollectionNew.setMobileNumber(mobileNumber);
+						userCollectionNew.setUpdatedTime(new Date());
+						userCollectionNew = userRepository.save(userCollection);
+
+						PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+						
+						patientCollection.setUserId(userCollectionNew.getId());
+						patientCollection.setUpdatedTime(new Date());
+						patientCollection = patientRepository.save(patientCollection);
+
+						ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
+						esPatientDocument.setMobileNumber(mobileNumber);
+						esPatientDocument.setUserId(userCollectionNew.getId().toString());
+						esPatientDocument.setUserUId(userCollectionNew.getUserUId());
+						esPatientDocument = esPatientRepository.save(esPatientDocument);
+						
+						updatePatientData(locationObjectId, hospitalObjectId, patientObjectId, "patientId", patientCollection.getUserId());
+						List<GroupCollection> groupCollections = groupRepository.findByDoctorIdPatientIdHospitalId(doctorObjectId, locationObjectId, hospitalObjectId, new Sort(Direction.ASC, "createdTime"));
+						if(groupCollections != null && !groupCollections.isEmpty()) {
+							
+							Collection<ObjectId> groupIds = CollectionUtils.collect(groupCollections,
+									new BeanToPropertyValueTransformer("id"));
+									
+							Criteria criteria = new Criteria("groupId").in(groupIds).and("patientId").is(patientObjectId);
+							mongoTemplate.updateMulti(new Query(criteria),
+									Update.update("patientId", patientCollection.getUserId()).currentDate("updatedTime"),
+									PatientGroupCollection.class);
+						}
+					}
 				}
+				
 
 			}
 
@@ -4508,6 +4549,220 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number");
 		}
 		return response;
+	}
+
+	private void updatePatientData(ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, String fieldName, Object fieldValue) {
+		Criteria criteria = new Criteria("locationId").is(locationObjectId)
+				.and("hospitalId").is(hospitalObjectId).and("patientId").is(patientObjectId);
+		
+		
+		//A
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				AdmitCardCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				AppointmentCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				AppointmentGeneralFeedbackCollection.class); 
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				AssessmentPersonalDetailCollection.class);		
+		
+		//B
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				BirthDetailsCollection.class); 
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				BirthHistoryCollection.class);
+		
+		//C
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				ClinicalNotesCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				ConsentFormCollection.class);
+		
+		//D
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DailyImprovementFeedbackCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DeliveryReportsCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DentalImagingCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DentalImagingInvoiceCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DentalImagingReportsCollection.class);				
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DentalLabPickupCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DentalLabReportsCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DentalWorkInvoiceCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DietPlanCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DischargeSummaryCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DoctorLabReportCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DoctorPatientDueAmountCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DoctorPatientInvoiceCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DoctorPatientLedgerCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DoctorPatientReceiptCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				DrugsAndAllergiesCollection.class);
+		
+		
+		//E
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				EmailTrackCollection.class);
+		
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				EyeObservationCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				EyePrescriptionCollection.class);
+		
+		//F
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				FeedbackRecommendationCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				FlowsheetCollection.class);
+		
+		//G
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				GrowthChartCollection.class);
+		
+		//H
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				HistoryCollection.class);
+		
+		//I
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				InventoryStockCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				IPDReportsCollection.class);
+		
+		//L
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				LabReportsCollection.class);
+		
+		//N
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				NutritionGoalStatusStampingCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				NutritionRecordCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				NutritionReferenceCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				NutritionReferralCollection.class);
+		
+		//O
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				OPDReportsCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				OTReportsCollection.class);
+		
+		//P
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PatientFeedbackCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PatientFoodAndExcerciseCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PatientLifeStyleCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PatientMeasurementCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PatientQueueCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PatientTreatmentCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PatientVisitCollection.class);				
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PersonalHistoryCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PharmacyFeedbackCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PrescriptionCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				PrescriptionFeedbackCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				ProcedureSheetCollection.class);
+		
+		//R
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				RecommendationsCollection.class);
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				RecordsCollection.class);
+		
+		//S
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				SharedReportCollection.class);
+		
+		//U
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				UserRecordsCollection.class);
+		
+		//V
+		mongoTemplate.updateMulti(new Query(criteria),
+				Update.update(fieldName, fieldValue).currentDate("updatedTime"),
+				VaccineCollection.class);
+		
 	}
 
 	private void sendWelcomeMessageToPatient(PatientCollection patientCollection, LocationCollection locationCollection,

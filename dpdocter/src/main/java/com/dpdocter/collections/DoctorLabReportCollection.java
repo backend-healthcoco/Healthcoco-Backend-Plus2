@@ -49,7 +49,9 @@ public class DoctorLabReportCollection extends GenericCollection {
 	private String doctorName;
 	@Field
 	private String doctorMobileNumber;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public String getDoctorName() {
 		return doctorName;
 	}
@@ -202,6 +204,14 @@ public class DoctorLabReportCollection extends GenericCollection {
 		this.uploadedByHospitalId = uploadedByHospitalId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLabReportCollection [id=" + id + ", uniqueReportId=" + uniqueReportId + ", recordsFiles="
@@ -210,7 +220,7 @@ public class DoctorLabReportCollection extends GenericCollection {
 				+ ", shareWithDoctor=" + shareWithDoctor + ", patientId=" + patientId + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", uploadedByDoctorId="
 				+ uploadedByDoctorId + ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId="
-				+ uploadedByHospitalId + ", discarded=" + discarded + "]";
+				+ uploadedByHospitalId + ", discarded=" + discarded + ", doctorName=" + doctorName
+				+ ", doctorMobileNumber=" + doctorMobileNumber + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

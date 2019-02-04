@@ -37,7 +37,9 @@ public class PatientFoodAndExcerciseCollection extends GenericCollection {
 	private List<Excercise> exercise;
 	@Field
 	private List<PrescriptionItem> drugs;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public List<PrescriptionItem> getDrugs() {
 		return drugs;
 	}
@@ -124,6 +126,23 @@ public class PatientFoodAndExcerciseCollection extends GenericCollection {
 
 	public void setAssessmentId(ObjectId assessmentId) {
 		this.assessmentId = assessmentId;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientFoodAndExcerciseCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", assessmentId=" + assessmentId
+				+ ", foodPrefer=" + foodPrefer + ", mealTimeAndPattern=" + mealTimeAndPattern + ", foodCravings="
+				+ foodCravings + ", exercise=" + exercise + ", drugs=" + drugs + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
 
 }

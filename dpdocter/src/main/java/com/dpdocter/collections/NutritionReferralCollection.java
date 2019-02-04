@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.PersonalHistory;
@@ -42,6 +43,9 @@ public class NutritionReferralCollection extends GenericCollection{
 
 	private List<String> tests;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -161,7 +165,23 @@ public class NutritionReferralCollection extends GenericCollection{
 	public void setTests(List<String> tests) {
 		this.tests = tests;
 	}
-	
-	
-	
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "NutritionReferralCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referralDoctorId=" + referralDoctorId
+				+ ", referralLocationId=" + referralLocationId + ", referralHospitalId=" + referralHospitalId
+				+ ", note=" + note + ", familyhistory=" + familyhistory + ", medicalhistory=" + medicalhistory
+				+ ", drugsAndAllergies=" + drugsAndAllergies + ", personalHistory=" + personalHistory
+				+ ", everHospitalized=" + everHospitalized + ", tests=" + tests + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
+	}	
 }

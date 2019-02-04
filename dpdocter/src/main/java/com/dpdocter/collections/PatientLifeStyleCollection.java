@@ -53,6 +53,9 @@ public class PatientLifeStyleCollection extends GenericCollection {
 	@Field
 	private SleepPattern mobileUsage;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -203,6 +206,26 @@ public class PatientLifeStyleCollection extends GenericCollection {
 
 	public void setMobileUsage(SleepPattern mobileUsage) {
 		this.mobileUsage = mobileUsage;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientLifeStyleCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", assessmentId=" + assessmentId
+				+ ", workingschedules=" + workingschedules + ", sleepPatterns=" + sleepPatterns + ", offDays=" + offDays
+				+ ", trivalingPeriod=" + trivalingPeriod + ", socialMediaTime=" + socialMediaTime + ", tvViewTime="
+				+ tvViewTime + ", loptopUseTime=" + loptopUseTime + ", tvInBedRoom=" + tvInBedRoom
+				+ ", laptopInBedRoom=" + laptopInBedRoom + ", tvInBedRoomForMinute=" + tvInBedRoomForMinute
+				+ ", laptopInBedRoomForMinute=" + laptopInBedRoomForMinute + ", type=" + type + ", mobileUsage="
+				+ mobileUsage + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

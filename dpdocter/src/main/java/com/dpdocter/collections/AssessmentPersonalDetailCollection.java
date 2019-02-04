@@ -41,7 +41,9 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	private String mobileNumber;
 	@Field
 	private DishType dietType = DishType.VEG;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public DishType getDietType() {
 		return dietType;
 	}
@@ -162,4 +164,21 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 		this.mobileNumber = mobileNumber;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "AssessmentPersonalDetailCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", assessmentUniqueId="
+				+ assessmentUniqueId + ", physicalStatusType=" + physicalStatusType + ", goal=" + goal + ", community="
+				+ community + ", discarded=" + discarded + ", noOfAdultMember=" + noOfAdultMember + ", noOfChildMember="
+				+ noOfChildMember + ", profession=" + profession + ", mobileNumber=" + mobileNumber + ", dietType="
+				+ dietType + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+	}
 }

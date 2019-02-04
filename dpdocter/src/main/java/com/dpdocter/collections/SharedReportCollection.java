@@ -29,6 +29,9 @@ public class SharedReportCollection extends GenericCollection {
 	@Field
 	private Boolean discarded = false;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -77,11 +80,26 @@ public class SharedReportCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public ObjectId getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(ObjectId reportId) {
+		this.reportId = reportId;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "SharedReportCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", reportId=" + reportId + ", discarded="
-				+ discarded + "]";
+				+ discarded + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

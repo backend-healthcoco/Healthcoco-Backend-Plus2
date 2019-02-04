@@ -43,6 +43,9 @@ public class EmailTrackCollection {
     @Field
     private Date sentTime = new Date();
 
+    @Field
+	private Boolean isPatientDiscarded = false;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -115,10 +118,20 @@ public class EmailTrackCollection {
 	this.sentTime = sentTime;
     }
 
-    @Override
-    public String toString() {
-	return "EmailTrackCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
-		+ patientId + ", patientName=" + patientName + ", subject=" + subject + ", type=" + type + ", sentTime=" + sentTime + "]";
-    }
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "EmailTrackCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", patientName=" + patientName
+				+ ", subject=" + subject + ", type=" + type + ", sentTime=" + sentTime + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
+	}
 
 }

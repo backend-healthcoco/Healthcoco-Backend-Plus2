@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EyeTest;
 import com.dpdocter.beans.VisualAcuity;
@@ -29,6 +30,9 @@ public class EyeObservationCollection extends GenericCollection {
 
 	private Boolean isOTPVerified = false;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -109,12 +113,20 @@ public class EyeObservationCollection extends GenericCollection {
 		this.isOTPVerified = isOTPVerified;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "EyeObservationCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", visualAcuities=" + visualAcuities
 				+ ", eyeTests=" + eyeTests + ", inHistory=" + inHistory + ", discarded=" + discarded
-				+ ", isOTPVerified=" + isOTPVerified + "]";
+				+ ", isOTPVerified=" + isOTPVerified + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

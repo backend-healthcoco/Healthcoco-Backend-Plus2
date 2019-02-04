@@ -37,7 +37,9 @@ public class InventoryStockCollection extends GenericCollection {
 	private String resourceId;
 	@Field
 	private ObjectId invoiceId;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -158,14 +160,20 @@ public class InventoryStockCollection extends GenericCollection {
 		this.invoiceId = invoiceId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "InventoryStockCollection [id=" + id + ", itemId=" + itemId + ", quantity=" + quantity + ", batchId="
 				+ batchId + ", costPrice=" + costPrice + ", retailPrice=" + retailPrice + ", stockType=" + stockType
 				+ ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", discarded=" + discarded + ", totalPrice=" + totalPrice + ", resourceId=" + resourceId
-				+ ", invoiceId=" + invoiceId + "]";
+				+ ", invoiceId=" + invoiceId + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
-
 }

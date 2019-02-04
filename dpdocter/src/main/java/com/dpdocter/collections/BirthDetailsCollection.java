@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.BirthAchievement;
 import com.dpdocter.beans.GrowthChart;
@@ -16,7 +17,9 @@ public class BirthDetailsCollection extends GenericCollection {
 	private ObjectId locationId;
 	private ObjectId hospitalId;
 	private ObjectId patientId;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -73,11 +76,19 @@ public class BirthDetailsCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "BirthDetailsCollection [id=" + id + ", birthAchievements=" + birthAchievements + ", growthChart="
 				+ growthChart + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + "]";
+				+ ", patientId=" + patientId + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }
