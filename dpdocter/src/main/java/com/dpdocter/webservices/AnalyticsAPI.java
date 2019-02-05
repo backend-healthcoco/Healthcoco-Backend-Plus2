@@ -659,14 +659,11 @@ public class AnalyticsAPI {
 					" locationId, hospitalId ,searchType should not be empty");
 		}
 
-		List<AnalyticResponse> data = null;
-
-		data = prescriptionAnalyticService.getPrescriptionAnalyticData(doctorId, locationId, hospitalId, fromDate,
-				toDate, searchType, searchTerm);
+		List<AnalyticResponse> data = prescriptionAnalyticService.getPrescriptionAnalyticData(doctorId, locationId,
+				hospitalId, fromDate, toDate, searchType, searchTerm);
 
 		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
 		response.setDataList(data);
-
 		return response;
 	}
 }
