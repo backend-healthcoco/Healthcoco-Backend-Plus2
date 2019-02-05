@@ -115,7 +115,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 											.append("month", new BasicDBObject("$first", "$month"))
 											.append("year", new BasicDBObject("$first", "$year"))
 											.append("week", new BasicDBObject("$first", "$week"))
-											.append("date", new BasicDBObject("$first", "$date"))
+											.append("date", new BasicDBObject("$first", "$createdTime"))
 											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 											.append("count", new BasicDBObject("$sum", 1))));
 
@@ -130,7 +130,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 											"$year")).append("month", new BasicDBObject("$first", "$month"))
 													.append("year", new BasicDBObject("$first", "$year"))
 													.append("week", new BasicDBObject("$first", "$week"))
-													.append("date", new BasicDBObject("$first", "$date"))
+													.append("date", new BasicDBObject("$first", "$createdTime"))
 													.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 													.append("count", new BasicDBObject("$sum", 1))));
 
@@ -143,7 +143,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))
+									.append("date", new BasicDBObject("$first", "$createdTime"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("count", new BasicDBObject("$sum", 1))));
 
@@ -154,7 +154,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("year", new BasicDBObject("$first", "$year"))
-									.append("date", new BasicDBObject("$first", "$date"))
+									.append("date", new BasicDBObject("$first", "$createdTime"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("count", new BasicDBObject("$sum", 1))));
 

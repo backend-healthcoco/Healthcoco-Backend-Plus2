@@ -1315,7 +1315,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					Fields.field("localPatientName", "$patient.localPatientName"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("drugs.drug", "$drug"),
 					Fields.field("drugs.duration", "$items.duration"), Fields.field("drugs.dosage", "$items.dosage"),
-					Fields.field("drugs.dosageTime", "$drugs.dosageTime"),
+					Fields.field("drugs.dosageTime", "$items.dosageTime"),
 					Fields.field("drugs.direction", "$items.direction"),
 					Fields.field("drugs.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("drugs.drugQuantity", "$items.drugQuantity"),
