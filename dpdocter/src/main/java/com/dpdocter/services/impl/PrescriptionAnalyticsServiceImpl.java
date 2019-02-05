@@ -1249,13 +1249,9 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			}
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "$_id")
-											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-											.append("patientId", new BasicDBObject("$first", "$patientId")))),
-							projectList.and("createdTime").as("date").and("createdTime").extractDayOfMonth().as("day")
-									.and("createdTime").extractMonth().as("month").and("createdTime").extractYear()
-									.as("year").and("createdTime").extractWeek().as("week"),
+							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
+									.extractMonth().as("month").and("createdTime").extractYear().as("year")
+									.and("createdTime").extractWeek().as("week"),
 							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
