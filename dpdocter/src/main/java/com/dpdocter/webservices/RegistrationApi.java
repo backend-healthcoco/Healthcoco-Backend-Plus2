@@ -266,7 +266,7 @@ public class RegistrationApi {
 		Response<Integer> response = new Response<Integer>();
 		Integer patientCountByMobNum = 0;
 		List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null, null,
-				null);
+				null, null);
 		if (users != null) {
 			patientCountByMobNum = users.size();
 		}
