@@ -80,10 +80,11 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			Criteria criteria = null;
 			Criteria itemCriteria = new Criteria();
 
-			criteria = getCriteria(doctorId, locationId, hospitalId);
+			criteria = getCriteria(doctorId, locationId, null);
 
 			Aggregation aggregation = null;
 
+			if(!DPDoctorUtils.anyStringEmpty(type)) {
 			switch (PrescriptionItems.valueOf(type.toUpperCase())) {
 
 			case DRUGS: {
@@ -126,7 +127,6 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						Aggregation.lookup("diagnostic_test_cl", "doctorid", "doctorid", "totalCount"),
 
 						Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
-
 						new CustomAggregationOperation(
 								new BasicDBObject("$group", new BasicDBObject("_id", "$totalCount._id"))));
 
@@ -138,7 +138,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 			response = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class,
 					DoctorPrescriptionItemAnalyticResponse.class).getMappedResults().size();
-
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Count Prescription items analytic");
@@ -156,12 +156,36 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			Criteria criteria = null;
 			Criteria itemCriteria = new Criteria();
 
-			criteria = getCriteria(doctorId, locationId, hospitalId);
+			criteria = getCriteria(doctorId, locationId, null);
 
-			Aggregation aggregation = null;
+			Aggregation aggregation = null;	
+			
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				itemCriteria = itemCriteria.and("prescription.createdTime").gte(fromTime).lte(toTime);
+			}
 
 			switch (PrescriptionItems.valueOf(type.toUpperCase())) {
-
 			case DRUGS: {
 				itemCriteria.and("totalCount.hospitalId").is(new ObjectId(hospitalId)).and("totalCount.locationId")
 						.is(new ObjectId(locationId)).and("prescription.hospitalId").is(new ObjectId(hospitalId))
@@ -932,7 +956,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			String toDate, String type) {
 		Integer response = 0;
 		try {
-
+      System.out.println(type);
 			switch (PrescriptionItems.valueOf(type.toUpperCase())) {
 
 			case DRUGS: {

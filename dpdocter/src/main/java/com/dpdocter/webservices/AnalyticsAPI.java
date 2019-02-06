@@ -127,8 +127,9 @@ public class AnalyticsAPI {
 		if (DPDoctorUtils.allStringsEmpty(type, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
+	
 		int count = prescriptionAnalyticService.countPrescripedItems(doctorId, locationId, hospitalId, fromDate, toDate,
-				searchType);
+				type);
 		List<?> objects = null;
 		if (count > 0) {
 			objects = prescriptionAnalyticService.getMostPrescripedPrescriptionItems(type, doctorId, locationId,
@@ -136,6 +137,7 @@ public class AnalyticsAPI {
 		}
 		Response<Object> response = new Response<Object>();
 		response.setDataList(objects);
+		response.setCount(count);
 		return response;
 	}
 
@@ -485,10 +487,10 @@ public class AnalyticsAPI {
 		List<DoctorPrescriptionItemAnalyticResponse> data = null;
 		int count = prescriptionAnalyticService.countPrescriptionItemAnalytic(doctorId, locationId, hospitalId,
 				fromDate, toDate, type, searchTerm);
-		if (count > 0) {
-			data = prescriptionAnalyticService.getPrescriptionItemAnalytic(page, size, doctorId, locationId, hospitalId,
-					fromDate, toDate, type, searchTerm);
-		}
+
+		data = prescriptionAnalyticService.getPrescriptionItemAnalytic(page, size, doctorId, locationId, hospitalId,
+				fromDate, toDate, type, searchTerm);
+
 		response.setDataList(data);
 		response.setCount(count);
 		return response;
