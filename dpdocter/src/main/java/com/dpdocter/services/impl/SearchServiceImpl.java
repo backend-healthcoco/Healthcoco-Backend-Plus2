@@ -293,9 +293,18 @@ public class SearchServiceImpl implements SearchService {
 					response.setService(StringUtils.capitalize(service));
 					response.setMetaData(StringUtils.capitalize(service) + " services in ");
 				} else {
-					response.setMetaData("Doctors in ");
-
-					response.setSpeciality("ALL Specialities");
+					
+					if(!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
+						response.setSpeciality(StringUtils.capitalize(speciality));
+						response.setMetaData("Doctors in ");
+					}
+					else if(!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")) {
+						response.setService(StringUtils.capitalize(service));
+						response.setMetaData(StringUtils.capitalize(service) + " services in ");
+					}else {
+						response.setSpeciality("ALL Specialities");
+						response.setMetaData("Doctors in ");
+					}
 
 				}
 			}
