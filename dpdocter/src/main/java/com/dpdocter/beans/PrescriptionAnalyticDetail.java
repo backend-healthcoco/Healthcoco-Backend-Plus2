@@ -10,7 +10,7 @@ public class PrescriptionAnalyticDetail {
 	private String localPatientName;
 	private String uniqueEmrId;
 	private Date createdTime;
-	private List<PrescriptionItemDetail> durgs;
+	private List<PrescriptionItemDetail> drugs;
 	private List<DiagnosticTest> diagnosticTests;
 	private List<TestAndRecordData> tests;
 	private String doctorName;
@@ -64,12 +64,13 @@ public class PrescriptionAnalyticDetail {
 		this.createdTime = createdTime;
 	}
 
-	public List<PrescriptionItemDetail> getDurgs() {
-		return durgs;
+	
+	public List<PrescriptionItemDetail> getDrugs() {
+		return drugs;
 	}
 
-	public void setDurgs(List<PrescriptionItemDetail> durgs) {
-		this.durgs = durgs;
+	public void setDrugs(List<PrescriptionItemDetail> drugs) {
+		this.drugs = drugs;
 	}
 
 	public List<DiagnosticTest> getDiagnosticTests() {

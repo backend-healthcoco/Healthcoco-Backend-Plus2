@@ -13,7 +13,7 @@ public interface PrescriptionAnalyticsService {
 	public DoctorprescriptionAnalyticResponse getPrescriptionAnalytic(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate);
 
-	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
+	public List<?> getMostPrescripedPrescriptionItems(String type, String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
 
 	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(int page, int size, String doctorId,
@@ -30,8 +30,11 @@ public interface PrescriptionAnalyticsService {
 
 	public List<PrescriptionAnalyticDetail> getPrescriptionAnalyticDetail(int page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm);
-	
-	public Integer countPrescribedItems(String doctorId, String locationId, String hospitalId, String fromDate,
+
+	public Integer countPrescripedItems(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate, String type);
+
+	public Integer countPrescriptionItemAnalytic(String doctorId, String locationId, String hospitalId, String fromDate,
+			String toDate, String type, String searchTerm);
 
 }

@@ -73,6 +73,82 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 	}
 
 	@Override
+	public Integer countPrescriptionItemAnalytic(String doctorId, String locationId, String hospitalId, String fromDate,
+			String toDate, String type, String searchTerm) {
+		Integer response = 0;
+		try {
+			Criteria criteria = null;
+			Criteria itemCriteria = new Criteria();
+
+			criteria = getCriteria(doctorId, locationId, hospitalId);
+
+			Aggregation aggregation = null;
+
+			switch (PrescriptionItems.valueOf(type.toUpperCase())) {
+
+			case DRUGS: {
+				itemCriteria.and("totalCount.hospitalId").is(new ObjectId(hospitalId)).and("totalCount.locationId")
+						.is(new ObjectId(locationId)).and("prescription.hospitalId").is(new ObjectId(hospitalId))
+						.and("prescription.locationId").is(new ObjectId(locationId));
+
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					itemCriteria = itemCriteria.and("totalCount.drugName").regex(searchTerm, "i");
+				}
+
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "prescription"),
+						Aggregation.unwind("prescription"), Aggregation.unwind("prescription.items"),
+						Aggregation.lookup("drug_cl", "doctorId", "doctorId", "totalCount"),
+						Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
+
+						new CustomAggregationOperation(new BasicDBObject("$project",
+								new BasicDBObject("totalCount", "$totalCount").append("itemId",
+										"$prescription.items.drugId"))),
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", new BasicDBObject("drugId", "$totalCount._id")))));
+
+				break;
+			}
+			case DIAGNOSTICTEST: {
+				itemCriteria.and("totalCount.hospitalId").is(new ObjectId(hospitalId)).and("totalCount.locationId")
+						.is(new ObjectId(locationId));
+
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					itemCriteria = itemCriteria.and("totalCount.testName").regex(searchTerm, "i");
+				}
+
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.unwind("diagnosticTests"),
+						new CustomAggregationOperation(
+								new BasicDBObject("$group", new BasicDBObject("_id", "$diagnosticTests.testId"))
+										.append("itemId", new BasicDBObject("$first", "$diagnosticTests.testId"))),
+
+						Aggregation.lookup("diagnostic_test_cl", "doctorid", "doctorid", "totalCount"),
+
+						Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
+
+						new CustomAggregationOperation(
+								new BasicDBObject("$group", new BasicDBObject("_id", "$totalCount._id"))));
+
+				break;
+			}
+			default:
+				break;
+			}
+
+			response = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class,
+					DoctorPrescriptionItemAnalyticResponse.class).getMappedResults().size();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Count Prescription items analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Count Prescription items analytic");
+		}
+		return response;
+
+	}
+
+	@Override
 	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(int page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String type, String searchTerm) {
 		List<DoctorPrescriptionItemAnalyticResponse> response = null;
@@ -140,9 +216,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("itemId", "$drug._id"))
 															.append("then", "$Count").append("else", 0))))),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount"))
-
-					);
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")));
 				}
 
 				break;
@@ -293,7 +367,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 	}
 
 	@Override
-	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
+	public List<?> getMostPrescripedPrescriptionItems(String type, String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
 			int size) {
 		List<?> response = null;
@@ -302,21 +376,21 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 			case DRUGS: {
 				if (!DPDoctorUtils.anyStringEmpty(queryType) && queryType.equalsIgnoreCase("TOP")) {
-					response = getMostPrescribedDrugs(doctorId, locationId, hospitalId, fromDate, toDate, searchType,
+					response = getMostPrescripedDrugs(doctorId, locationId, hospitalId, fromDate, toDate, searchType,
 							page, size);
 					break;
 				} else
-					response = getMostPrescribedDrugsByDate(doctorId, locationId, hospitalId, fromDate, toDate,
+					response = getMostPrescripedDrugsByDate(doctorId, locationId, hospitalId, fromDate, toDate,
 							searchType, page, size);
 				break;
 			}
 			case DIAGNOSTICTEST: {
 				if (!DPDoctorUtils.anyStringEmpty(queryType) && queryType.equalsIgnoreCase("TOP")) {
-					response = getMostPrescribedLabTests(doctorId, locationId, hospitalId, fromDate, toDate, searchType,
+					response = getMostPrescripedLabTests(doctorId, locationId, hospitalId, fromDate, toDate, searchType,
 							page, size);
 					break;
 				} else
-					response = getMostPrescribedLabTestsByDate(doctorId, locationId, hospitalId, fromDate, toDate,
+					response = getMostPrescripedLabTestsByDate(doctorId, locationId, hospitalId, fromDate, toDate,
 							searchType, page, size);
 				break;
 			}
@@ -333,7 +407,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 		return response;
 	}
 
-	private List<?> getMostPrescribedLabTestsByDate(String doctorId, String locationId, String hospitalId,
+	private List<?> getMostPrescripedLabTestsByDate(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, int page, int size) {
 		List<DiagnosticTestsAnalyticsData> response = null;
 		try {
@@ -490,7 +564,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 		return response;
 	}
 
-	private List<?> getMostPrescribedDrugsByDate(String doctorId, String locationId, String hospitalId, String fromDate,
+	private List<?> getMostPrescripedDrugsByDate(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate, String searchType, int page, int size) {
 		List<DrugsAnalyticsData> response = null;
 		try {
@@ -661,7 +735,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 		return response;
 	}
 
-	private List<?> getMostPrescribedLabTests(String doctorId, String locationId, String hospitalId, String fromDate,
+	private List<?> getMostPrescripedLabTests(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate, String searchType, int page, int size) {
 		List<DiagnosticTest> response = null;
 		try {
@@ -751,12 +825,11 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 	}
 
-	private List<Drug> getMostPrescribedDrugs(String doctorId, String locationId, String hospitalId, String fromDate,
+	private List<Drug> getMostPrescripedDrugs(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate, String searchType, int page, int size) {
 		List<Drug> response = null;
 		try {
-			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
-					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			Criteria criteria = getCriteria(doctorId, locationId, hospitalId);
 
 			DateTime fromTime = null;
 			DateTime toTime = null;
@@ -855,7 +928,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 	}
 
 	@Override
-	public Integer countPrescribedItems(String doctorId, String locationId, String hospitalId, String fromDate,
+	public Integer countPrescripedItems(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate, String type) {
 		Integer response = 0;
 		try {
@@ -863,11 +936,11 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			switch (PrescriptionItems.valueOf(type.toUpperCase())) {
 
 			case DRUGS: {
-				response = countPrescribedDrugs(doctorId, locationId, hospitalId, fromDate, toDate);
+				response = countPrescripedDrugs(doctorId, locationId, hospitalId, fromDate, toDate);
 				break;
 			}
 			case LABTEST: {
-				response = countPrescribedLabTests(doctorId, locationId, hospitalId, fromDate, toDate);
+				response = countPrescripedLabTests(doctorId, locationId, hospitalId, fromDate, toDate);
 				break;
 			}
 			default:
@@ -876,14 +949,14 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Occurred While counting most prescribed Items");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While countting most prescribed Items");
+			logger.error(e + " Error Occurred While counting most prescriped Items");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While countting most prescriped Items");
 		}
 		return response;
 
 	}
 
-	private Integer countPrescribedLabTests(String doctorId, String locationId, String hospitalId, String fromDate,
+	private Integer countPrescripedLabTests(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate) {
 		Integer response = 0;
 		try {
@@ -936,7 +1009,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 	}
 
-	private Integer countPrescribedDrugs(String doctorId, String locationId, String hospitalId, String fromDate,
+	private Integer countPrescripedDrugs(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate) {
 		Integer response = 0;
 		try {
