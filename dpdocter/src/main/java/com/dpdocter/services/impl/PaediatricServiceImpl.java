@@ -504,7 +504,7 @@ public class PaediatricServiceImpl implements PaediatricService {
 		return responses;
 	}
 
-	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
+//	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
 	@Override
 	//@Scheduled(fixedDelay = 25000)
 	public void sendBabyVaccineReminder() {
@@ -615,7 +615,7 @@ public class PaediatricServiceImpl implements PaediatricService {
 		}
 	}
 
-	@Scheduled(cron = "0 45 6 * * ?", zone = "IST")
+//	@Scheduled(cron = "0 45 6 * * ?", zone = "IST")
 	@Override
 	//@Scheduled(fixedDelay = 15000)
 	public void sendBirthBabyVaccineReminder() {

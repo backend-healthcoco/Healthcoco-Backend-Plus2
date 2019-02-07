@@ -474,7 +474,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
-	@Scheduled(cron="00 00 3 * * *", zone="IST")
+	//@Scheduled(cron="00 00 3 * * *", zone="IST")
 	@Override
 	@Transactional
 	public void checkResources() {
@@ -665,7 +665,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
 	// Appointment Reminder to Doctor, if appointment > 0
-	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
+	//@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
 	@Override
 	@Transactional
 	public void sendReminderToDoctor() {
@@ -1242,7 +1242,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
 	// Appointment Reminder to Patient
-	@Scheduled(cron = "${appointment.reminder.to.patient.cron.time}", zone = "IST")
+	//@Scheduled(cron = "${appointment.reminder.to.patient.cron.time}", zone = "IST")
 	@Override
 	@Transactional
 	public void sendReminderToPatient() {
@@ -1341,7 +1341,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	@Scheduled(cron = "0 30 23 * * *", zone = "IST")
+//	@Scheduled(cron = "0 30 23 * * *", zone = "IST")
 	@Transactional
 	public void clearAppLinkDetails() {
 		List<AppLinkDetailsCollection> appLinkDetailsCollections = appLinkDetailsRepository.findAll();
@@ -1351,7 +1351,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		appLinkDetailsRepository.save(appLinkDetailsCollections);
 	}
 
-	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
+	//@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
 	@Override
 	@Transactional
 	public void updateActivePrescription() {

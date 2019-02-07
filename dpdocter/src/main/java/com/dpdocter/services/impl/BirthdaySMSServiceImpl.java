@@ -146,7 +146,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 	}
 
-	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+//	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToDoctors() {
 		try {
