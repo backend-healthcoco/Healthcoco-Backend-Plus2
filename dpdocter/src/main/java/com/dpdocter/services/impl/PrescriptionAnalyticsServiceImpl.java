@@ -1405,18 +1405,19 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.and("patient.firstName").regex(searchTerm, "i");
 			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+
+				criteria.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
+						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
+			}
 			Aggregation aggregation = null;
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("advice", "$advice"),
 					Fields.field("doctorName", "$doctor.firstName"), Fields.field("firstName", "$patient.firstName"),
 					Fields.field("localPatientName", "$patient.localPatientName"),
-					Fields.field("createdTime", "$createdTime"), Fields.field("drugs.drug", "$drug"),
-					Fields.field("drugs.duration", "$items.duration"), Fields.field("drugs.dosage", "$items.dosage"),
-					Fields.field("drugs.dosageTime", "$items.dosageTime"),
-					Fields.field("drugs.direction", "$items.direction"),
-					Fields.field("drugs.inventoryQuantity", "$items.inventoryQuantity"),
-					Fields.field("drugs.drugQuantity", "$items.drugQuantity"),
-					Fields.field("drugs.instructions", "$items.instructions"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("drugs", "$drug"),
+				
 					Fields.field("tests", "$diagnosticTests")));
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(

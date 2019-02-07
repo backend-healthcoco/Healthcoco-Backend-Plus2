@@ -176,9 +176,9 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 											.append("patientId", new BasicDBObject("$first", "$patientId")))),
 
-							projectList.and("createdTime").as("date").and("createdTime").extractDayOfMonth().as("day").and("createdTime")
-									.extractMonth().as("month").and("createdTime").extractYear().as("year")
-									.and("createdTime").extractWeek().as("week"),
+							projectList.and("createdTime").as("date").and("createdTime").extractDayOfMonth().as("day")
+									.and("createdTime").extractMonth().as("month").and("createdTime").extractYear()
+									.as("year").and("createdTime").extractWeek().as("week"),
 							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
 					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
@@ -542,8 +542,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 				criteria.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.orOperator(new Criteria("services.name").regex(searchTerm, "i"),
-						new Criteria("patient.firstName").regex(searchTerm, "i"));
+				criteria.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
+						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
 			}
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -687,8 +687,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 
-				criteria.orOperator(new Criteria("services.name").regex(searchTerm, "i"),
-						new Criteria("patient.firstName").regex(searchTerm, "i"));
+				criteria.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
+						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
 			}
 			DateTime fromTime = null;
 			DateTime toTime = null;

@@ -16,6 +16,24 @@ public class AppointmentAnalyticData {
 	private String subject;
 	private String explanation;
 	private String doctorName;
+	private DOB dob;
+	private String gender;
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
 	public String getId() {
 		return id;

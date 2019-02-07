@@ -534,7 +534,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 											.append("week", new BasicDBObject("$first", "$week"))
 											.append("year", new BasicDBObject("$first", "$year"))
 											.append("count", new BasicDBObject("$sum", 1))
-											.append("date", new BasicDBObject("$first", "$date"))));
+											.append("date", new BasicDBObject("$first", "$fromDate"))));
 
 					break;
 				}
@@ -548,7 +548,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 													.append("week", new BasicDBObject("$first", "$week"))
 													.append("year", new BasicDBObject("$first", "$year"))
 													.append("count", new BasicDBObject("$sum", 1))
-													.append("date", new BasicDBObject("$first", "$date"))));
+													.append("date", new BasicDBObject("$first", "$fromDate"))));
 
 					break;
 				}
@@ -559,7 +559,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$date"))));
+									.append("date", new BasicDBObject("$first", "$fromDate"))));
 
 					break;
 				}
@@ -569,7 +569,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$date"))));
+									.append("date", new BasicDBObject("$first", "$fromDate"))));
 
 					break;
 
@@ -586,7 +586,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.append("week", new BasicDBObject("$first", "$week"))
 										.append("year", new BasicDBObject("$first", "$year"))
 										.append("count", new BasicDBObject("$sum", 1))
-										.append("date", new BasicDBObject("$first", "$date"))));
+										.append("date", new BasicDBObject("$first", "$fromDate"))));
 			}
 
 			Aggregation aggregation = null;
@@ -968,8 +968,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 								Fields.field("count", "$appointmentId"))),
 						aggregationOperation, Aggregation.sort(Direction.DESC, "count"));
 			}
-			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(
-					aggregation, AppointmentCollection.class, DoctorAnalyticPieChartResponse.class);
+			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					AppointmentCollection.class, DoctorAnalyticPieChartResponse.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1027,6 +1027,12 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
+						new Criteria("patient.firstName").regex(searchTerm, "i"),
+						new Criteria("profile.mobileNumber").regex(searchTerm, "i"));
+			}
+
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1056,8 +1062,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 								Fields.field("firstName", "$patient.firstName"),
 								Fields.field("doctorName", "$doctor.firstName"),
 								Fields.field("explanation", "$explanation"), Fields.field("subject", "$subject"),
-								Fields.field("appointmentId", "$appointmentId"),
-								Fields.field("fromDate", "$fromDate"))),
+								Fields.field("appointmentId", "$appointmentId"), Fields.field("dob", "$profile.dob"),
+								Fields.field("gender", "$profile.gender"), Fields.field("fromDate", "$fromDate"))),
 						Aggregation.sort(Direction.DESC, "fromDate"));
 			}
 			AggregationResults<AppointmentAnalyticData> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1078,7 +1084,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		Integer response = null;
 		try {
 			Criteria criteria = new Criteria();
-
+			Criteria criteria2 = new Criteria();
 			Date from = null;
 			Date to = null;
 			Long date = 0l;
@@ -1103,6 +1109,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
+				criteria2.and("profile.locationId").is(new ObjectId(locationId));
 
 			}
 
@@ -1121,7 +1128,11 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			Aggregation aggregation = null;
 
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.match(criteria),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient"),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "profile"),
+					Aggregation.unwind("profile"), Aggregation.match(criteria2));
 
 			response = mongoTemplate.aggregate(aggregation, AppointmentCollection.class, AppointmentCollection.class)
 					.getMappedResults().size();
