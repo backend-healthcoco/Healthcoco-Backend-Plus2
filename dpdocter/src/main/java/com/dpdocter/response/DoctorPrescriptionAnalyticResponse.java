@@ -1,6 +1,6 @@
 package com.dpdocter.response;
 
-public class DoctorprescriptionAnalyticResponse {
+public class DoctorPrescriptionAnalyticResponse {
 	
 	private Integer totalPrescription=0;
 	

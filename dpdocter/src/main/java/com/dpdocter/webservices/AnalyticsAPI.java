@@ -33,7 +33,7 @@ import com.dpdocter.response.DoctorPatientAnalyticResponse;
 import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
-import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
+import com.dpdocter.response.DoctorPrescriptionAnalyticResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
@@ -458,16 +458,16 @@ public class AnalyticsAPI {
 	@Path(value = PathProxy.AnalyticsUrls.GET_PRESCRIPTION_ANALYTIC)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PRESCRIPTION_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_PRESCRIPTION_ANALYTIC)
-	public Response<DoctorprescriptionAnalyticResponse> getPrescriptionAnalytic(@QueryParam("doctorId") String doctorId,
+	public Response<DoctorPrescriptionAnalyticResponse> getPrescriptionAnalytic(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "locationId, hospitalId should not be empty");
 		}
 
-		DoctorprescriptionAnalyticResponse data = prescriptionAnalyticService.getPrescriptionAnalytic(doctorId,
+		DoctorPrescriptionAnalyticResponse data = prescriptionAnalyticService.getPrescriptionAnalytic(doctorId,
 				locationId, hospitalId, fromDate, toDate);
-		Response<DoctorprescriptionAnalyticResponse> response = new Response<DoctorprescriptionAnalyticResponse>();
+		Response<DoctorPrescriptionAnalyticResponse> response = new Response<DoctorPrescriptionAnalyticResponse>();
 		response.setData(data);
 		return response;
 	}

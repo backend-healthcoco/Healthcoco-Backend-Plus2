@@ -6,11 +6,11 @@ import com.dpdocter.beans.PrescriptionAnalyticDetail;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
-import com.dpdocter.response.DoctorprescriptionAnalyticResponse;
+import com.dpdocter.response.DoctorPrescriptionAnalyticResponse;
 
 public interface PrescriptionAnalyticsService {
 
-	public DoctorprescriptionAnalyticResponse getPrescriptionAnalytic(String doctorId, String locationId,
+	public DoctorPrescriptionAnalyticResponse getPrescriptionAnalytic(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate);
 
 	public List<?> getMostPrescripedPrescriptionItems(String type, String doctorId, String locationId,

@@ -592,20 +592,18 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(
-								Fields.from(Fields.field("date", "$fromDate"), Fields.field("count", "$appointmentId")))
-										.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
-										.as("month").and("fromDate").extractYear().as("year").and("fromDate")
-										.extractWeek().as("week"),
+						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
+								Fields.field("count", "$appointmentId"))).and("fromDate").extractDayOfMonth().as("day")
+										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
+										.as("year").and("fromDate").extractWeek().as("week"),
 						aggregationOperation, Aggregation.sort(Direction.ASC, "date"), Aggregation.skip(page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(
-								Fields.from(Fields.field("date", "$fromDate"), Fields.field("count", "$appointmentId")))
-										.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
-										.as("month").and("fromDate").extractYear().as("year").and("fromDate")
-										.extractWeek().as("week"),
+						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
+								Fields.field("count", "$appointmentId"))).and("fromDate").extractDayOfMonth().as("day")
+										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
+										.as("year").and("fromDate").extractWeek().as("week"),
 						aggregationOperation, Aggregation.sort(Direction.ASC, "date"));
 			}
 			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -885,7 +883,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					Aggregation.lookup("group_cl", "groupId", "_id", "group"), Aggregation.unwind("group"),
 					Aggregation.match(criteria),
 					Aggregation.lookup("appointment_cl", "patientId", "patientId", "appointment"),
-					Aggregation.unwind("appointment"), Aggregation.match(criteria2));
+					Aggregation.unwind("appointment"), Aggregation.match(criteria2),
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("id", "$group._id")))));
 
 			response = mongoTemplate
 					.aggregate(aggregation, PatientGroupCollection.class, AppointmentAnalyticGroupWiseResponse.class)
@@ -956,7 +956,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
-								Fields.field("firstName", "$doctor.firstName"),
+								Fields.field("doctorId", "$doctorId"), Fields.field("firstName", "$doctor.firstName"),
 								Fields.field("count", "$appointmentId"))),
 						aggregationOperation, Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
 						Aggregation.limit(size));
@@ -964,8 +964,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
-								Fields.field("firstName", "$doctor.firstName"),
-								Fields.field("count", "$appointmentId"))),
+								Fields.field("doctorId", "$doctorId"), Fields.field("firstName", "$doctor.firstName"))),
 						aggregationOperation, Aggregation.sort(Direction.DESC, "count"));
 			}
 			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1028,9 +1027,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
+				criteria2.orOperator(new Criteria("profile.localPatientName").regex(searchTerm, "i"),
 						new Criteria("patient.firstName").regex(searchTerm, "i"),
-						new Criteria("profile.mobileNumber").regex(searchTerm, "i"));
+						new Criteria("patient.mobileNumber").regex(searchTerm, "i"));
 			}
 
 			Aggregation aggregation = null;
@@ -1123,16 +1122,21 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 
 			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria2.orOperator(new Criteria("profile.localPatientName").regex(searchTerm, "i"),
+						new Criteria("patient.firstName").regex(searchTerm, "i"),
+						new Criteria("patient.mobileNumber").regex(searchTerm, "i"));
+			}
 
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
 			Aggregation aggregation = null;
 
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.match(criteria),
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient"),
-					Aggregation.lookup("patient_cl", "patientId", "userId", "profile"),
-					Aggregation.unwind("profile"), Aggregation.match(criteria2));
+					Aggregation.lookup("patient_cl", "patientId", "userId", "profile"), Aggregation.unwind("profile"),
+					Aggregation.match(criteria2));
 
 			response = mongoTemplate.aggregate(aggregation, AppointmentCollection.class, AppointmentCollection.class)
 					.getMappedResults().size();
