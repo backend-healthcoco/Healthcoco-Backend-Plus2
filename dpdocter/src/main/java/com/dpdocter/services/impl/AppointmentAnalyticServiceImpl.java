@@ -520,8 +520,12 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 
 			}
+
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 			AggregationOperation aggregationOperation = null;
+
+			ProjectionOperation project = new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
+					Fields.field("date", "$fromDate"), Fields.field("count", "$appointmentId")));
 			if (!DPDoctorUtils.anyStringEmpty(searchType))
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 
@@ -533,8 +537,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 											.append("month", new BasicDBObject("$first", "$month"))
 											.append("week", new BasicDBObject("$first", "$week"))
 											.append("year", new BasicDBObject("$first", "$year"))
-											.append("count", new BasicDBObject("$sum", 1))
-											.append("date", new BasicDBObject("$first", "$fromDate"))));
+											.append("date", new BasicDBObject("$first", "$fromDate"))
+											.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -547,8 +551,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 											"$year")).append("month", new BasicDBObject("$first", "$month"))
 													.append("week", new BasicDBObject("$first", "$week"))
 													.append("year", new BasicDBObject("$first", "$year"))
-													.append("count", new BasicDBObject("$sum", 1))
-													.append("date", new BasicDBObject("$first", "$fromDate"))));
+													.append("date", new BasicDBObject("$first", "$fromDate"))
+													.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -558,8 +562,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
-									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$fromDate"))));
+									.append("date", new BasicDBObject("$first", "$fromDate"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -568,8 +572,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("year", new BasicDBObject("$first", "$year"))
-									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$fromDate"))));
+									.append("date", new BasicDBObject("$first", "$fromDate"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 
@@ -585,25 +589,21 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.append("month", new BasicDBObject("$first", "$month"))
 										.append("week", new BasicDBObject("$first", "$week"))
 										.append("year", new BasicDBObject("$first", "$year"))
-										.append("count", new BasicDBObject("$sum", 1))
-										.append("date", new BasicDBObject("$first", "$fromDate"))));
+										.append("date", new BasicDBObject("$first", "$fromDate"))
+										.append("count", new BasicDBObject("$sum", 1))));
 			}
 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
-								Fields.field("count", "$appointmentId"))).and("fromDate").extractDayOfMonth().as("day")
-										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
-										.as("year").and("fromDate").extractWeek().as("week"),
+						project.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth().as("month")
+								.and("fromDate").extractYear().as("year").and("fromDate").extractWeek().as("week"),
 						aggregationOperation, Aggregation.sort(Direction.ASC, "date"), Aggregation.skip(page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
-								Fields.field("count", "$appointmentId"))).and("fromDate").extractDayOfMonth().as("day")
-										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
-										.as("year").and("fromDate").extractWeek().as("week"),
+						project.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth().as("month")
+								.and("fromDate").extractYear().as("year").and("fromDate").extractWeek().as("week"),
 						aggregationOperation, Aggregation.sort(Direction.ASC, "date"));
 			}
 			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -684,8 +684,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 											.append("year", new BasicDBObject("$first", "$year"))
 											.append("week", new BasicDBObject("$first", "$week"))
 											.append("groupName", new BasicDBObject("$first", "$groupName"))
-											.append("count", new BasicDBObject("$sum", 1))
-											.append("date", new BasicDBObject("$first", "$fromDate"))));
+											.append("date", new BasicDBObject("$first", "$fromDate"))
+											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+											.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -699,8 +700,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 													.append("year", new BasicDBObject("$first", "$year"))
 													.append("week", new BasicDBObject("$first", "$week"))
 													.append("groupName", new BasicDBObject("$first", "$groupName"))
-													.append("count", new BasicDBObject("$sum", 1))
-													.append("date", new BasicDBObject("$first", "$fromDate"))));
+													.append("date", new BasicDBObject("$first", "$fromDate"))
+													.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+													.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -711,8 +713,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("groupName", new BasicDBObject("$first", "$groupName"))
-									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$fromDate"))));
+									.append("date", new BasicDBObject("$first", "$fromDate"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 				}
@@ -722,8 +725,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("groupName", new BasicDBObject("$first", "$groupName"))
-									.append("count", new BasicDBObject("$sum", 1))
-									.append("date", new BasicDBObject("$first", "$fromDate"))));
+									.append("date", new BasicDBObject("$first", "$fromDate"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
 
@@ -740,8 +744,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.append("week", new BasicDBObject("$first", "$week"))
 										.append("year", new BasicDBObject("$first", "$year"))
 										.append("groupName", new BasicDBObject("$first", "$groupName"))
-										.append("count", new BasicDBObject("$sum", 1))
-										.append("date", new BasicDBObject("$first", "$fromDate"))));
+										.append("date", new BasicDBObject("$first", "$fromDate"))
+										.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+										.append("count", new BasicDBObject("$sum", 1))));
 			}
 
 			Aggregation aggregation = null;
@@ -755,7 +760,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.extractDayOfMonth().as("day").and("appointment.fromDate").extractMonth()
 										.as("month").and("appointment.fromDate").extractYear().as("year")
 										.and("appointment.fromDate").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(Direction.ASC, "date"), Aggregation.skip(page * size),
+						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"), Aggregation.skip(page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("group_cl", "groupId", "_id", "group"),
@@ -766,7 +771,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 								Fields.field("groupName", "$group.name"))).and("fromDate").extractDayOfMonth().as("day")
 										.and("fromDate").extractMonth().as("month").and("fromDate").extractYear()
 										.as("year").and("fromDate").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(Direction.ASC, "date"));
+						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"));
 			}
 
 			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -947,15 +952,15 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			AggregationOperation aggregationOperation = null;
 
 			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$doctorId").append("count", new BasicDBObject("$sum", 1))
-							.append("firstName", new BasicDBObject("$first", "$firstName"))
-							.append("date", new BasicDBObject("$first", "$date"))));
+					new BasicDBObject("_id", "$doctorId").append("firstName", new BasicDBObject("$first", "$firstName"))
+							.append("date", new BasicDBObject("$first", "$fromDate"))
+							.append("count", new BasicDBObject("$sum", 1))));
 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
+						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
 								Fields.field("doctorId", "$doctorId"), Fields.field("firstName", "$doctor.firstName"),
 								Fields.field("count", "$appointmentId"))),
 						aggregationOperation, Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
@@ -963,8 +968,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),
-								Fields.field("doctorId", "$doctorId"), Fields.field("firstName", "$doctor.firstName"))),
+						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
+								Fields.field("count", "$appointmentId"), Fields.field("doctorId", "$doctorId"),
+								Fields.field("firstName", "$doctor.firstName"))),
 						aggregationOperation, Aggregation.sort(Direction.DESC, "count"));
 			}
 			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,

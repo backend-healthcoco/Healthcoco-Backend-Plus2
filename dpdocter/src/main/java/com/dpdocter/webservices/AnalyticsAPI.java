@@ -30,10 +30,10 @@ import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
+import com.dpdocter.response.DoctorPrescriptionAnalyticResponse;
 import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
-import com.dpdocter.response.DoctorPrescriptionAnalyticResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
 import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
@@ -127,7 +127,7 @@ public class AnalyticsAPI {
 		if (DPDoctorUtils.allStringsEmpty(type, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Type, locationId, hospitalId should not be empty");
 		}
-	
+
 		int count = prescriptionAnalyticService.countPrescripedItems(doctorId, locationId, hospitalId, fromDate, toDate,
 				type);
 		List<?> objects = null;
@@ -220,15 +220,13 @@ public class AnalyticsAPI {
 		}
 
 		List<DoctorAnalyticPieChartResponse> appointmentAnalyticResponse = null;
-		int count = appointmentAnalyticsService.countPatientAppointmentAnalyticsDetail(doctorId, locationId, hospitalId,
-				fromDate, toDate, state, searchTerm);
-		if (count > 0) {
+		
 			appointmentAnalyticResponse = appointmentAnalyticsService.getDoctorAppointmentAnalyticsForPieChart(doctorId,
 					locationId, hospitalId, fromDate, toDate, state, searchTerm, page, size);
-		}
+		
 		Response<DoctorAnalyticPieChartResponse> response = new Response<DoctorAnalyticPieChartResponse>();
 		response.setDataList(appointmentAnalyticResponse);
-		response.setCount(count);
+		
 		return response;
 	}
 
