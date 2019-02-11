@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.BirthAchievement;
 import com.dpdocter.beans.GrowthChart;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -75,6 +76,20 @@ public class PaediatricAPI {
 		response.setData(growthChart);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT)
+	@POST
+	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT)
+	public Response<BirthAchievement> addEditBirthAchievement(BirthAchievement request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		BirthAchievement growthChart = paediatricService.addEditBirthAchievement(request);
+		Response<BirthAchievement> response = new Response<BirthAchievement>();
+		response.setData(growthChart);
+		return response;
+	}
 
 	@Path(value = PathProxy.PaediatricUrls.GET_VACCINE_BY_ID)
 	@GET
@@ -103,7 +118,21 @@ public class PaediatricAPI {
 		response.setData(growthChart);
 		return response;
 	}
-
+	
+	@Path(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID, notes = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID)
+	public Response<BirthAchievement> getbirthAchievementById(@PathParam("id") String id) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		BirthAchievement birthAchievement = paediatricService.getBirthAchievementById(id);
+		Response<BirthAchievement> response = new Response<BirthAchievement>();
+		response.setData(birthAchievement);
+		return response;
+	}
+	
 	@Path(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID, notes = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
@@ -154,7 +183,22 @@ public class PaediatricAPI {
 		response.setDataList(vaccineResponse);
 		return response;
 	}
-
+	
+	@Path(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS, notes = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
+	public Response<BirthAchievement> getGrowthCharts(@PathParam("patientId") String patientId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<BirthAchievement> vaccineResponse = paediatricService.getBirthAchievementList(patientId, updatedTime);
+		Response<BirthAchievement> response = new Response<BirthAchievement>();
+		response.setDataList(vaccineResponse);
+		return response;
+	}
+	
+	
 	@Path(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION, notes = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)

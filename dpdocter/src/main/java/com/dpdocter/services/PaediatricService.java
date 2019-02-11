@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.BirthAchievement;
 import com.dpdocter.beans.GrowthChart;
 import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
@@ -48,5 +49,11 @@ public interface PaediatricService {
 	Boolean updateOldPatientData();
 	
 	List<PatientVaccineGroupedResponse> getPatientGroupedVaccines(String patientId);
+
+	BirthAchievement addEditBirthAchievement(BirthAchievement birthAchievement);
+
+	BirthAchievement getBirthAchievementById(String id);
+
+	List<BirthAchievement> getBirthAchievementList(String patientId, String updatedTime);
 
 }
