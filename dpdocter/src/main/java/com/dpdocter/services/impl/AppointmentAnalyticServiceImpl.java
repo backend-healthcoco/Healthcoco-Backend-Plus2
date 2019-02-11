@@ -538,6 +538,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 											.append("week", new BasicDBObject("$first", "$week"))
 											.append("year", new BasicDBObject("$first", "$year"))
 											.append("date", new BasicDBObject("$first", "$fromDate"))
+											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 											.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
@@ -552,6 +553,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 													.append("week", new BasicDBObject("$first", "$week"))
 													.append("year", new BasicDBObject("$first", "$year"))
 													.append("date", new BasicDBObject("$first", "$fromDate"))
+													.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 													.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
@@ -563,6 +565,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("date", new BasicDBObject("$first", "$fromDate"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
@@ -573,6 +576,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("date", new BasicDBObject("$first", "$fromDate"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 									.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
@@ -590,6 +594,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.append("week", new BasicDBObject("$first", "$week"))
 										.append("year", new BasicDBObject("$first", "$year"))
 										.append("date", new BasicDBObject("$first", "$fromDate"))
+										.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 										.append("count", new BasicDBObject("$sum", 1))));
 			}
 
@@ -598,13 +603,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						project.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth().as("month")
 								.and("fromDate").extractYear().as("year").and("fromDate").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(Direction.ASC, "date"), Aggregation.skip(page * size),
-						Aggregation.limit(size));
+						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"),
+						Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						project.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth().as("month")
 								.and("fromDate").extractYear().as("year").and("fromDate").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(Direction.ASC, "date"));
+						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"));
 			}
 			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					AppointmentCollection.class, AnalyticResponse.class);
@@ -760,8 +765,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.extractDayOfMonth().as("day").and("appointment.fromDate").extractMonth()
 										.as("month").and("appointment.fromDate").extractYear().as("year")
 										.and("appointment.fromDate").extractWeek().as("week"),
-						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"), Aggregation.skip(page * size),
-						Aggregation.limit(size));
+						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"),
+						Aggregation.skip(page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("group_cl", "groupId", "_id", "group"),
 						Aggregation.unwind("group"),
