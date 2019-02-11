@@ -2047,6 +2047,9 @@ public interface PathProxy {
 		public static final String GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION = "vaccine/getMultipleBrands";
 		public static final String ADD_EDIT_MULTIPLE_VACCINE = "vaccine/addEditMultiple";
 		public static final String ADD_EDIT_MULTIPLE_VACCINE_STATUS = "vaccine/addEditMultipleStatus";
+		public static final String ADD_EDIT_ACHIEVEMENT = "achievement/addEdit";
+		public static final String GET_ACHIEVEMENT_BY_ID = "achievement/get/{id}";
+		public static final String GET_ACHIEVEMENTS = "achievement/getList/{patientId}";
 	}
 
 	public static final String SOLR_BILLING_BASE_URL = BASE_URL + "/solr/billing";

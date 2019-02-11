@@ -24,12 +24,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.BirthAchievement;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GrowthChart;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.Vaccine;
+import com.dpdocter.collections.BirthAchievementCollection;
 import com.dpdocter.collections.GrowthChartCollection;
 import com.dpdocter.collections.MasterBabyImmunizationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -42,6 +44,7 @@ import com.dpdocter.enums.VaccineStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BirthAchievementRepository;
 import com.dpdocter.repository.GrowthChartRepository;
 import com.dpdocter.repository.UserDeviceRepository;
 import com.dpdocter.repository.UserRepository;
@@ -65,6 +68,9 @@ public class PaediatricServiceImpl implements PaediatricService{
 	
 	@Autowired
 	private GrowthChartRepository growthChartRepository;
+	
+	@Autowired
+	private BirthAchievementRepository birthAchievementRepository;
 	
 	@Autowired
 	private VaccineRepository vaccineRepository;
@@ -852,5 +858,88 @@ public class PaediatricServiceImpl implements PaediatricService{
 			}
 
 		}
+	}
+	
+	
+	@Override
+	@Transactional
+	public BirthAchievement addEditBirthAchievement(BirthAchievement birthAchievement)
+	{
+		BirthAchievement response = null;
+		BirthAchievementCollection birthAchievementCollection = null;
+		try {
+			if(birthAchievement.getId() != null)
+			{
+				birthAchievementCollection = birthAchievementRepository.findOne(new ObjectId(birthAchievement.getId()));
+			}
+			else
+			{
+				birthAchievementCollection = new BirthAchievementCollection();
+				birthAchievement.setCreatedTime(new Date());
+			}
+			BeanUtil.map(birthAchievement, birthAchievementCollection);
+			birthAchievementCollection = birthAchievementRepository.save(birthAchievementCollection);
+			if(birthAchievementCollection != null){
+				response = new BirthAchievement();
+				 BeanUtil.map(birthAchievementCollection, response);
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw e;
+			
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public BirthAchievement getBirthAchievementById(String id) {
+		BirthAchievement response = null;
+		BirthAchievementCollection birthAchievementCollection = null;
+		try {
+			birthAchievementCollection = birthAchievementRepository.findOne(new ObjectId(id));
+			if (birthAchievementCollection != null) {
+				response = new BirthAchievement();
+				BeanUtil.map(birthAchievementCollection, response);
+			} else {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw e;
+
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<BirthAchievement> getBirthAchievementList(String patientId,String updatedTime) {
+		List<BirthAchievement> responses = null;
+		try {
+			// Criteria criteria = new Criteria();
+
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp));
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			
+			responses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "achievementDate"))),
+					BirthAchievementCollection.class, BirthAchievement.class).getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		}
+		return responses;
 	}
 }

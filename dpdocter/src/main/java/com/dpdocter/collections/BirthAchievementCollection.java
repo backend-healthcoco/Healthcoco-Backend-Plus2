@@ -1,27 +1,27 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
-import com.dpdocter.collections.GenericCollection;
+import org.bson.types.ObjectId;
 
-public class BirthAchievement extends GenericCollection {
+public class BirthAchievementCollection extends GenericCollection{
 
-	private String id;
-	private String patientId;
+	private ObjectId id;
+	private ObjectId patientId;
 	private String achievement;
 	private Long achievementDate;
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public String getPatientId() {
+	public ObjectId getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(String patientId) {
+	public void setPatientId(ObjectId patientId) {
 		this.patientId = patientId;
 	}
 
@@ -39,11 +39,6 @@ public class BirthAchievement extends GenericCollection {
 
 	public void setAchievementDate(Long achievementDate) {
 		this.achievementDate = achievementDate;
-	}
-
-	@Override
-	public String toString() {
-		return "BirthAchievement [achievement=" + achievement + ", achievementDate=" + achievementDate + "]";
 	}
 
 }
