@@ -117,8 +117,8 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "totalCount"),
 						Aggregation.unwind("totalCount"),
 
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", new BasicDBObject("drugId", "$totalCount._id")))));
+						new CustomAggregationOperation(
+								new BasicDBObject("$group", new BasicDBObject("_id", "$totalCount._id"))));
 
 				break;
 			}
@@ -204,7 +204,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
 
 							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", new BasicDBObject("drugId", "$totalCount._id"))
+									new BasicDBObject("_id", "$totalCount._id")
 											.append("name", new BasicDBObject("$first", "$totalCount.drugName"))
 											.append("totalCount", new BasicDBObject("$sum", 1)))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")),
@@ -213,14 +213,12 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 							Aggregation.lookup("drug_cl", "items.drugId", "_id", "totalCount"),
 							Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
-
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", new BasicDBObject("drugId", "$totalCount._id"))
+							new CustomAggregationOperation(
+									new BasicDBObject("$group", new BasicDBObject("_id", "$totalCount._id"))
 											.append("name", new BasicDBObject("$first", "$totalCount.drugName"))
-											.append("totalCount", new BasicDBObject("$sum", 1)))),
+											.append("totalCount", new BasicDBObject("$sum", 1))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "totalCount")));
 				}
-
 				break;
 			}
 			case DIAGNOSTICTEST: {
@@ -757,6 +755,10 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						Aggregation.unwind("diagnosticTests"),
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
 						Aggregation.unwind("test"),
+						new CustomAggregationOperation(new BasicDBObject("$project",
+								new BasicDBObject("test", "$test")
+										.append("count", "$diagnosticTests.testId").append("diagnosticTests",
+												"$diagnosticTests"))),
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$diagnosticTests.testId")
 										.append("locationId", new BasicDBObject("$first", "$test.locationId"))
@@ -777,6 +779,10 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						Aggregation.unwind("diagnosticTests"),
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
 						Aggregation.unwind("test"),
+						new CustomAggregationOperation(new BasicDBObject("$project",
+								new BasicDBObject("test", "$test")
+										.append("count", "$diagnosticTests.testId").append("diagnosticTests",
+												"$diagnosticTests"))),
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$diagnosticTests.testId")
 										.append("locationId", new BasicDBObject("$first", "$test.locationId"))
@@ -838,57 +844,69 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			criteria.and("discarded").is(false);
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
-						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"), Aggregation.unwind("drug"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$items.drugId")
-										.append("locationId", new BasicDBObject("$first", "$drug.locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$drug.hospitalId"))
-										.append("doctorId", new BasicDBObject("$first", "$drug.doctorId"))
-										.append("drugName", new BasicDBObject("$first", "$drug.drugName"))
-										.append("drugType", new BasicDBObject("$first", "$drug.drugType"))
-										.append("explanation", new BasicDBObject("$first", "$drug.explanation"))
-										.append("discarded", new BasicDBObject("$first", "$drug.discarded"))
-										.append("duration", new BasicDBObject("$first", "$drug.duration"))
-										.append("dosage", new BasicDBObject("$first", "$drug.dosage"))
-										.append("dosageTime", new BasicDBObject("$first", "$drug.dosageTime"))
-										.append("direction", new BasicDBObject("$first", "$drug.direction"))
-										.append("categories", new BasicDBObject("$first", "$drug.categories"))
-										.append("rankingCount", new BasicDBObject("$max", "$drug.rankingCount"))
-										.append("genericNames", new BasicDBObject("$first", "$drug.genericNames"))
-										.append("drugCode", new BasicDBObject("$first", "$drug.drugCode"))
-										.append("createdTime", new BasicDBObject("$first", "$drug.createdTime"))
-										.append("updatedTime", new BasicDBObject("$first", "$drug.updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$drug.createdBy"))
-										.append("count", new BasicDBObject("$sum", 1)))),
-						Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
+								Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+								Aggregation.unwind("drug"),
+								new CustomAggregationOperation(new BasicDBObject("$project",
+										new BasicDBObject("drug", "$drug").append("count", "$items.drugId")
+												.append("drug", "$drug"))),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$items.drugId")
+												.append("locationId", new BasicDBObject("$first", "$drug.locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$drug.hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$drug.doctorId"))
+												.append("drugName", new BasicDBObject("$first", "$drug.drugName"))
+												.append("drugType", new BasicDBObject("$first", "$drug.drugType"))
+												.append("explanation", new BasicDBObject("$first", "$drug.explanation"))
+												.append("discarded", new BasicDBObject("$first", "$drug.discarded"))
+												.append("duration", new BasicDBObject("$first", "$drug.duration"))
+												.append("dosage", new BasicDBObject("$first", "$drug.dosage"))
+												.append("dosageTime", new BasicDBObject("$first", "$drug.dosageTime"))
+												.append("direction", new BasicDBObject("$first", "$drug.direction"))
+												.append("categories", new BasicDBObject("$first", "$drug.categories"))
+												.append("rankingCount", new BasicDBObject("$max", "$drug.rankingCount"))
+												.append("genericNames",
+														new BasicDBObject("$first", "$drug.genericNames"))
+												.append("drugCode", new BasicDBObject("$first", "$drug.drugCode"))
+												.append("createdTime", new BasicDBObject("$first", "$drug.createdTime"))
+												.append("updatedTime", new BasicDBObject("$first", "$drug.updatedTime"))
+												.append("createdBy", new BasicDBObject("$first", "$drug.createdBy"))
+												.append("count", new BasicDBObject("$sum", 1)))),
+								Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
+								Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
-						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"), Aggregation.unwind("drug"),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$items.drugId")
-										.append("locationId", new BasicDBObject("$first", "$drug.locationId"))
-										.append("hospitalId", new BasicDBObject("$first", "$drug.hospitalId"))
-										.append("doctorId", new BasicDBObject("$first", "$drug.doctorId"))
-										.append("drugName", new BasicDBObject("$first", "$drug.drugName"))
-										.append("drugType", new BasicDBObject("$first", "$drug.drugType"))
-										.append("explanation", new BasicDBObject("$first", "$drug.explanation"))
-										.append("discarded", new BasicDBObject("$first", "$drug.discarded"))
-										.append("duration", new BasicDBObject("$first", "$drug.duration"))
-										.append("dosage", new BasicDBObject("$first", "$drug.dosage"))
-										.append("dosageTime", new BasicDBObject("$first", "$drug.dosageTime"))
-										.append("direction", new BasicDBObject("$first", "$drug.direction"))
-										.append("categories", new BasicDBObject("$first", "$drug.categories"))
-										.append("rankingCount", new BasicDBObject("$max", "$drug.rankingCount"))
-										.append("genericNames", new BasicDBObject("$first", "$drug.genericNames"))
-										.append("drugCode", new BasicDBObject("$first", "$drug.drugCode"))
-										.append("createdTime", new BasicDBObject("$first", "$drug.createdTime"))
-										.append("updatedTime", new BasicDBObject("$first", "$drug.updatedTime"))
-										.append("createdBy", new BasicDBObject("$first", "$drug.createdBy"))
-										.append("count", new BasicDBObject("$sum", 1)))),
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
+								Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+								Aggregation.unwind("drug"),
+								new CustomAggregationOperation(new BasicDBObject("$project",
+										new BasicDBObject("drug", "$drug").append("count", "$items.drugId")
+												.append("drug", "$drug"))),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$items.drugId")
+												.append("locationId", new BasicDBObject("$first", "$drug.locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$drug.hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$drug.doctorId"))
+												.append("drugName", new BasicDBObject("$first", "$drug.drugName"))
+												.append("drugType", new BasicDBObject("$first", "$drug.drugType"))
+												.append("explanation", new BasicDBObject("$first", "$drug.explanation"))
+												.append("discarded", new BasicDBObject("$first", "$drug.discarded"))
+												.append("duration", new BasicDBObject("$first", "$drug.duration"))
+												.append("dosage", new BasicDBObject("$first", "$drug.dosage"))
+												.append("dosageTime", new BasicDBObject("$first", "$drug.dosageTime"))
+												.append("direction", new BasicDBObject("$first", "$drug.direction"))
+												.append("categories", new BasicDBObject("$first", "$drug.categories"))
+												.append("rankingCount", new BasicDBObject("$max", "$drug.rankingCount"))
+												.append("genericNames",
+														new BasicDBObject("$first", "$drug.genericNames"))
+												.append("drugCode", new BasicDBObject("$first", "$drug.drugCode"))
+												.append("createdTime", new BasicDBObject("$first", "$drug.createdTime"))
+												.append("updatedTime", new BasicDBObject("$first", "$drug.updatedTime"))
+												.append("createdBy", new BasicDBObject("$first", "$drug.createdBy"))
+												.append("count", new BasicDBObject("$sum", 1)))),
 
-						Aggregation.sort(Direction.DESC, "count"));
+								Aggregation.sort(Direction.DESC, "count"));
 			}
 
 			response = mongoTemplate.aggregate(aggregation, PrescriptionCollection.class, Drug.class)
