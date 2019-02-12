@@ -79,7 +79,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			Criteria criteria = null;
 			Criteria itemCriteria = new Criteria();
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("discarded").is(false);
-			;
+			
 			Aggregation aggregation = null;
 
 			DateTime fromTime = null;
@@ -113,13 +113,12 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					itemCriteria = itemCriteria.and("totalCount.drugName").regex(searchTerm, "i");
 				}
+
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "totalCount"),
-						Aggregation.unwind("totalCount"),
-
-						new CustomAggregationOperation(
-								new BasicDBObject("$group", new BasicDBObject("_id", "$totalCount._id"))));
-
+						Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$totalCount._id"))));
 				break;
 			}
 			case DIAGNOSTICTEST: {
